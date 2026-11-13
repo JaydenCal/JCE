@@ -36,8 +36,11 @@ export function createTopbarUI({ root, config, getState, actions }) {
     itemButtons.clear();
     menu.append(el('div', { class: 'psp-menu-head' }, locked ? 'Part of the Plan Pack' : 'Download for this design'));
     const allowed = st.portal?.exports || null; // client logins: the builder's choice, PDF only by default
-    for (const item of EXPORT_ITEMS) {
-      if (allowed && !allowed.includes(item.type)) continue;
+    for (const base of EXPORT_ITEMS) {
+      if (allowed && !allowed.includes(base.type)) continue;
+      // Commercial layouts export the commercial plan set and the DXF; the 3D and HTML files come with the commercial 3D stage.
+      if (st.commercial && !['pdf', 'dxf'].includes(base.type)) continue;
+      const item = st.commercial && base.type === 'pdf' ? { ...base, label: 'Commercial plan set (PDF)', hint: 'A3 sheets C000 to C103, indicative' } : base;
       const busy = busyType === item.type;
       const btn = el('button', {
         class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: item.type },
@@ -74,17 +77,10 @@ export function createTopbarUI({ root, config, getState, actions }) {
       el('span', null, ' Exports are watermarked during your free trial. ', el('a', { href: billingHref() }, 'Add a card in Billing')));
   }
 
-  const SOON = 'Commercial plan set coming soon';
   function renderSlot() {
     const st = getState();
     clear(slot);
-    // Commercial layouts have no plan set or exports yet (they come with a later stage): say so rather than offer a purchase.
-    menuBtn.style.display = st.commercial ? 'none' : '';
-    if (st.commercial) {
-      closeMenu(false);
-      slot.append(el('button', { class: 'psp-btn', type: 'button', disabled: true, dataset: { ps: 'commercial-soon' }, title: 'Plans and exports for commercial layouts are not available yet' }, icon('lock', 14), SOON));
-      return;
-    }
+    menuBtn.style.display = '';
     if (st.portal?.watermark) slot.append(el('span', { class: 'psp-trial-badge', title: 'Exports are watermarked during your free trial' }, 'Trial'));
     if (st.entitled) {
       const left = st.credits && Number.isFinite(st.credits.remaining) ? ` ${st.credits.remaining} of ${st.credits.total} AI credits left.` : '';

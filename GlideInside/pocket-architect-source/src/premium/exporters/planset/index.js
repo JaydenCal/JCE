@@ -1,6 +1,8 @@
 // Lot viewer plan set: ONE A3 landscape PDF.
 //   kind 'site':  1. cover sheet (C000)  2. site plan (C100)  3. house plan (A100)
 //   kind 'house': 1. cover sheet (C000)  2. house plan (A100)
+//   kind 'commercial': C000 cover and locality, C100 existing site, C101 proposed layout, C102 mezzanine level plan, C103 yield summary
+//     (the project is in commercial mode: project.mode 'commercial' with project.commercial; see ./commercial.js)
 //
 //   const { blob, filename } = await exportPlanSet({ project, lot, kind: 'site', builderName: 'Hunter Homes', download: true });
 //
@@ -13,12 +15,14 @@ import { projectCode, projectTitle } from '../eng/brand.js';
 import { alignProject } from '../eng/index.js';
 import { clean, cleanedDoc, withSuperscripts } from '../eng/kit.js';
 import { titleLotDp } from '../../../site/lotplan.js';
-import { prepare } from './lot.js';
+import { prepare, toSiteLot } from './lot.js';
 import { drawStrip, drawConceptNote, drawWatermark, ddmmyyyy, ABN, ENTITY } from './frame.js';
 import { drawCover, localityScale, localityView } from './cover.js';
 import { resolveLocality } from './locality.js';
 import { drawSite, siteView } from './site.js';
 import { drawHouseSheet, houseSheets } from './house.js';
+import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, drawLayout, drawMezzanine, drawYield, coverThumbnail, COMMERCIAL_NOTES } from './commercial.js';
+import { lotOf } from '../../../model/placement.js';
 
 void schemeColours;
 
@@ -42,6 +46,7 @@ async function loadJsPDF(given) {
  * Returns [{ id: 'cover'|'site'|'house', code: 'C000'|'C100'|'A100', title, scale }].
  */
 export function planSetSheets({ project, lot, kind, catalogue = null }) {
+  if (kind === 'commercial') return commercialSheetPlan(project, toSiteLot(lot) || (lotOf(project) ? project.site.lot : null));
   const sheets = [{ id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX', scale: 'AS SHOWN' }];
   if (kind === 'site') sheets.push({ id: 'site', code: 'C100', title: 'SITE PLAN', scale: lot ? `1:${siteView(project, lot).scale} @ A3` : 'NTS' });
   const hs = houseSheets(alignProject(project).project, catalogue);
@@ -57,7 +62,7 @@ export function planSetSheets({ project, lot, kind, catalogue = null }) {
  * @param {Object} o
  * @param {Object} o.project  Pocket Architect project (schema 2), the house design.
  * @param {import('./lot.js').PlanSetLot} [o.lot]  The lot (see lot.js). Required for kind 'site'.
- * @param {'site'|'house'} o.kind
+ * @param {'site'|'house'|'commercial'} o.kind
  * @param {string} [o.builderName]  Adds the diagonal watermark "Prepared for <builderName>" and the client field.
  * @param {boolean} [o.download=true]  Trigger the browser download.
  * @param {Object} [o.jsPDF]  jsPDF class (loaded on demand when omitted).
@@ -72,22 +77,27 @@ export function planSetSheets({ project, lot, kind, catalogue = null }) {
  */
 export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null } = {}) {
   if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Pocket Architect project');
-  if (kind !== 'site' && kind !== 'house') throw new Error("exportPlanSet kind must be 'site' or 'house'");
-  const prep = prepare(project, lot);
-  if (kind === 'site' && !prep.lot) throw new Error('A site plan needs the lot (boundary polygon).');
+  if (kind !== 'site' && kind !== 'house' && kind !== 'commercial') throw new Error("exportPlanSet kind must be 'site', 'house' or 'commercial'");
+  const commercial = kind === 'commercial';
+  if (commercial && !(project.mode === 'commercial' && project.commercial)) throw new Error('A commercial plan set needs a project in commercial mode.');
+  // A commercial layout is never moved onto the lot (the house placement would drag its generated walls away from the spec).
+  const prep = commercial ? { project: structuredClone(project), lot: withLotIds(toSiteLot(lot) || (lotOf(project) ? project.site.lot : null)) } : prepare(project, lot);
+  if ((kind === 'site' || commercial) && !prep.lot) throw new Error(`A ${commercial ? 'commercial plan set' : 'site plan'} needs the lot (boundary polygon).`);
   const wp = prep.project;
-  const siteLot = kind === 'site' ? prep.lot : prep.lot; // the house plan also quotes the lot when there is one
+  if (commercial) wp.site = { ...(wp.site || {}), lot: prep.lot };
+  const siteLot = prep.lot; // the house plan also quotes the lot when there is one
   const JsPDF = await loadJsPDF(jsPDF);
   const builder = clean(builderName);
   const dateStr = clean(project.titleBlock?.date) || ddmmyyyy(date);
-  const sheets = planSetSheets({ project: wp, lot: kind === 'site' ? siteLot : null, kind, catalogue });
-  const aligned = alignProject(wp);
+  const sheets = planSetSheets({ project: wp, lot: kind === 'site' || commercial ? siteLot : null, kind, catalogue });
+  const aligned = commercial ? { project: wp } : alignProject(wp);
   const id = projectCode(wp);
-  const title = projectTitle(wp);
+  const title = commercial ? commercialTitle(wp) : projectTitle(wp);
+  const cmodel = commercial ? commercialModel(wp, siteLot) : null;
   sheets.forEach((s, i) => { s.n = i + 1; s.no = `GI-${id}-${s.code}`; });
 
   const raw = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3', compress: true });
-  raw.setProperties({ title: `${ascii(title)} concept plan set`, subject: 'Concept design plans, to be checked by a suitably qualified person', author: ENTITY, creator: 'Glide Inside lot viewer' });
+  raw.setProperties({ title: `${ascii(title)} concept plan set`, subject: 'Concept design plans, to be checked by a suitably qualified person', author: ENTITY, creator: commercial ? 'Glide Inside commercial layout' : 'Glide Inside lot viewer' });
   const doc = withSuperscripts(cleanedDoc(raw));
   const address = clean(wp.titleBlock?.address || siteLot?.address || '');
   const lotDp = clean(siteLot ? titleLotDp(wp) || siteLot.lotLabel || '' : '');
@@ -100,7 +110,20 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
     if (i > 0) raw.addPage('a3', 'landscape');
     doc.setLineDashPattern([], 0);
     let strip = { n: s.n, no: s.no, title: s.title, scale: s.scale, rev: 'A', kv: [], notes: [] };
-    if (s.id === 'cover') {
+    if (commercial) {
+      let r = null;
+      if (s.id === 'cover') {
+        const z = siteLot.zoning ? [siteLot.zoning.code && `Zone ${siteLot.zoning.code}`, siteLot.zoning.name].filter(Boolean).join(' ') : '';
+        drawCover(doc, { project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: COMMERCIAL_NOTES, lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
+        strip = { ...strip, subtitle: 'Commercial unit layout', kvTitle: 'SITE DATA', kv: [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`], ['Units', String(cmodel.stats.units)]], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
+      } else {
+        if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null });
+        else if (s.id === 'layout') r = drawLayout(doc, cmodel);
+        else if (s.id === 'mezz') r = drawMezzanine(doc, cmodel);
+        else r = drawYield(doc, cmodel);
+        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' ? 'SITE DATA' : s.id === 'yield' ? 'KEY FIGURES' : s.id === 'mezz' ? 'MEZZANINE DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
+      }
+    } else if (s.id === 'cover') {
       drawCover(doc, { project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
       strip = { ...strip, subtitle: kind === 'site' ? 'Site plan and house plan' : 'House plan', kvTitle: 'SITE DATA', kv: siteLot ? [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`]] : [], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
     } else if (s.id === 'site') {
@@ -117,7 +140,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
 
   const bytes = new Uint8Array(raw.output('arraybuffer'));
   const blob = new Blob([bytes], { type: 'application/pdf' });
-  const filename = `Glide-Inside-${slugify(title, 'concept')}-${kind === 'site' ? 'site-plan-set' : 'house-plan-set'}.pdf`;
+  const filename = `Glide-Inside-${slugify(title, 'concept')}-${commercial ? 'commercial-plan-set' : kind === 'site' ? 'site-plan-set' : 'house-plan-set'}.pdf`;
   if (download && typeof document !== 'undefined') {
     const { downloadBlob } = await import('../download.js');
     downloadBlob(blob, filename);

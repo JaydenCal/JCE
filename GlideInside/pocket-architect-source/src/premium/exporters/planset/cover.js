@@ -12,9 +12,9 @@ const GREY = [120, 124, 132];
 /** White wash over the aerial (60 percent): linework, labels and the red boundary read over it. */
 export const WASH = 0.6;
 const LOC = { x0: 206, y0: 24, x1: AREA.x1 - 5, y1: 150 };
-const THUMB = { x0: 206, y0: 156, x1: AREA.x1 - 5, y1: 262 };
+export const THUMB = { x0: 206, y0: 156, x1: AREA.x1 - 5, y1: 262 };
 
-const frame = (doc, r, title) => {
+export const frame = (doc, r, title) => {
   doc.setDrawColor(...PEN.ink);
   doc.setLineWidth(0.3);
   doc.rect(r.x0, r.y0, r.x1 - r.x0, r.y1 - r.y0);
@@ -316,7 +316,10 @@ function thumbnail(doc, project, catalogue, title) {
   [['Living', t.living], ['Garage', t.garage], ['Alfresco', t.alfresco], ['Total', t.total]].forEach(([k, v], i) => doc.text(`${k} ${v.toFixed(1)} m²`, THUMB.x0 + 4 + i * 28, THUMB.y1 - 4));
 }
 
-/** Draws the cover. ctx: { project, lot, projectTitle, address, lotDp, builderName, dateStr, catalogue, index: [{ no, title, scale }] }. Returns { locScale }. */
+/**
+ * Draws the cover. ctx: { project, lot, projectTitle, address, lotDp, builderName, dateStr, catalogue, index: [{ no, title, scale }] }. Returns { locScale }.
+ * Commercial plan sets pass `notes` (general notes), `thumbnail: { title, draw(doc, rect) }` (in place of the house thumbnail) and `lotLine` (the grey line under the address).
+ */
 export function drawCover(doc, ctx) {
   const { project, lot } = ctx;
   const X = AREA.x0 + 6;
@@ -330,7 +333,7 @@ export function drawCover(doc, ctx) {
   wrap(doc, ctx.projectTitle.toUpperCase(), 185).slice(0, 2).forEach((l) => { doc.text(l, X, y); y += 10; });
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(11);
-  for (const t of [ctx.address, ctx.lotDp, [lot?.lga, lot?.zoning?.code && `Zone ${lot.zoning.code}`, lot?.areaM2 && `${Math.round(lot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   ')]) {
+  for (const t of [ctx.address, ctx.lotDp, ctx.lotLine ?? [lot?.lga, lot?.zoning?.code && `Zone ${lot.zoning.code}`, lot?.areaM2 && `${Math.round(lot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   ')]) {
     if (!t) continue;
     doc.text(fit(doc, clean(t), 185), X, y);
     y += 6;
@@ -396,7 +399,7 @@ export function drawCover(doc, ctx) {
   doc.text('GENERAL NOTES', X, ny);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.6);
-  const notes = [
+  const notes = ctx.notes || [
     'Concept only. This set shows a house design sited on a lot for discussion. It is not a development application or construction drawing set.',
     'Boundaries are from the cadastre (DCDB) and are not a survey. Dimensions and areas must be confirmed by a registered surveyor.',
     'Setbacks and planning controls shown are indicative. They must be checked with the council and a suitably qualified person.',
@@ -411,6 +414,6 @@ export function drawCover(doc, ctx) {
   });
 
   const locScale = locality(doc, lot, project, ctx.locality || {});
-  thumbnail(doc, project, ctx.catalogue, 'HOUSE PLAN (GROUND FLOOR)');
+  if (ctx.thumbnail) { frame(doc, THUMB, ctx.thumbnail.title); ctx.thumbnail.draw(doc, THUMB); } else thumbnail(doc, project, ctx.catalogue, 'HOUSE PLAN (GROUND FLOOR)');
   return { locScale };
 }

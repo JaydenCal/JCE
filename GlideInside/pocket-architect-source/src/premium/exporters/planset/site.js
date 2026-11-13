@@ -153,7 +153,7 @@ const inVP = (p) => p.x >= VP.x0 && p.x <= VP.x1 && p.y >= VP.y0 && p.y <= VP.y1
 const lenOf = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const regRing = (field, pts, closed = true, soft = false) => field.addRing(pts, closed, soft);
 
-function northPoint(doc, cx, cy, deg) {
+export function northPoint(doc, cx, cy, deg) {
   const r = 8.5;
   const a = (deg * Math.PI) / 180;
   const d = { x: Math.sin(a), y: -Math.cos(a) };
@@ -224,7 +224,7 @@ function scheduleBlock(rows) {
 
 // The sheet ---------------------------------------------------------------------------------------------------------------------
 /** Draws the site plan; returns { scale, scaleLabel, kv, blocks, notes, clearance, tooBig }. */
-export function drawSite(doc, project, lot) {
+export function drawSite(doc, project, lot, { overAerial = false } = {}) {
   const view = siteView(project, lot);
   const { T: S, scale } = view;
   const field = new LabelField(VP);
@@ -237,8 +237,8 @@ export function drawSite(doc, project, lot) {
 
   // Adjoining lots (DCDB context).
   dashOff();
-  doc.setLineWidth(0.15);
-  doc.setDrawColor(...GREYLINE);
+  doc.setLineWidth(overAerial ? 0.2 : 0.15);
+  doc.setDrawColor(...(overAerial ? [70, 74, 84] : GREYLINE));
   for (const n of lot.neighbours || []) {
     if (!n.ring || n.ring.length < 3 || n.isRoad) continue;
     polyLine(doc, n.ring.map(S));
@@ -296,8 +296,8 @@ export function drawSite(doc, project, lot) {
   // Setback line.
   const env = envelopePoly(lot);
   if (env) {
-    doc.setLineWidth(0.2);
-    doc.setDrawColor(...GREYLINE);
+    doc.setLineWidth(overAerial ? 0.3 : 0.2);
+    doc.setDrawColor(...(overAerial ? PEN.envelopeAerial : GREYLINE));
     doc.setLineDashPattern([1.8, 1.1], 0);
     polyLine(doc, env.map(S));
     dashOff();
@@ -355,8 +355,8 @@ export function drawSite(doc, project, lot) {
     field.addBox({ x0: sc.x - w / 2 - 0.5, y0: sc.y - 2, x1: sc.x + w / 2 + 0.5, y1: sc.y + 1.4 });
   }
 
-  // Lot boundary and corners.
-  doc.setDrawColor(...PEN.ink);
+  // Lot boundary and corners (red over an aerial, the owner convention for cadastral boundaries).
+  doc.setDrawColor(...(overAerial ? PEN.cadRed : PEN.ink));
   doc.setLineWidth(0.75);
   if (lot.proposed) doc.setLineDashPattern([5, 2], 0);
   polyLine(doc, lot.boundary.map(S));

@@ -343,3 +343,61 @@ test('locality plan: the hook is told not to fetch a picture when the aerial in 
   await run('site', { lot: g, fetchSite: async (a) => { need = a.request.need; return null; } });
   assert.deepEqual(need, { aerial: true, cadastre: true });
 });
+
+// ---- Commercial plan set (kind 'commercial') ----
+const { commercialProject } = await import('./helpers/commercial-fixture.mjs');
+const cproject = commercialProject({ plain: false });
+const crun = async (extra = {}) => {
+  const { Rec, texts } = recorder();
+  const r = await exportPlanSet({ project: cproject, kind: 'commercial', download: false, jsPDF: Rec, fetchSite: null, date: new Date(2026, 10, 13), ...extra });
+  return { r, text: texts.join('\n'), texts };
+};
+
+test('commercial kind: C000 to C103 sheets, one page each', async () => {
+  const { r } = await crun();
+  assert.equal(r.pages, 5);
+  assert.equal(await pagesOf(r.blob), 5);
+  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'C101', 'C102', 'C103']);
+  assert.match(r.filename, /commercial-plan-set\.pdf$/);
+  assert.equal(planSetSheets({ project: cproject, lot: null, kind: 'commercial' }).length, 5);
+});
+
+test('commercial kind: PROPOSED UNIT n labels, areas, schedule and title block', async () => {
+  const { text } = await crun({ builderName: '' });
+  for (let n = 1; n <= 16; n++) assert.ok(text.includes(`PROPOSED UNIT ${n}`), `unit ${n} named`);
+  for (const want of ['UNIT SCHEDULE', 'SITE SUMMARY', 'ROLLER DOOR SCHEDULE', 'BOLLARD SCHEDULE', 'VALUES NOT VERIFIED', 'MEZZANINE OFFICE', 'LEGEND', '13/11/2026', 'ABN 29 699 165 663', 'Rate source and status', 'Parking required', 'Accessible bays', 'LANDSCAPING', 'OSD BASIN PLACEHOLDER']) assert.ok(text.includes(want), `missing ${want}`);
+  assert.ok(text.includes('Concept only. Setbacks and planning controls shown are indicative'));
+  assert.ok(text.includes('Medium rigid vehicle turning radius'), 'an UNVERIFIED value is listed');
+  assert.ok(!/\d{4}-\d{2}-\d{2}/.test(text));
+});
+
+test('commercial kind: no forbidden words, dashes or builder brands; watermark only with builderName', async () => {
+  const a = await crun({ builderName: 'Sample Builder' });
+  const b = await crun();
+  for (const t of [a.text, b.text]) {
+    assert.ok(!/compliant/i.test(t));
+    assert.ok(!/[–—]/.test(t));
+    assert.ok(!/hunter|hotondo|gj gardner|g\.j\. gardner/i.test(t));
+  }
+  assert.ok(a.texts.filter((x) => x === 'Prepared for Sample Builder').length >= 5);
+  assert.equal(b.texts.filter((x) => /^Prepared for/.test(x)).length, 0);
+});
+
+test('commercial kind: needs commercial mode and the lot; the caller project is not changed', async () => {
+  const before = JSON.stringify(cproject);
+  await crun();
+  assert.equal(JSON.stringify(cproject), before);
+  await assert.rejects(exportPlanSet({ project, lot, kind: 'commercial', download: false, jsPDF }), /commercial mode/);
+  const noLot = structuredClone(cproject);
+  noLot.site.lot = null;
+  await assert.rejects(exportPlanSet({ project: noLot, kind: 'commercial', download: false, jsPDF }), /lot/i);
+});
+
+test('commercial exports go through buildExport: pdf is the plan set, dxf still builds', async () => {
+  const { buildExport } = await import('../src/premium/exporters/index.js');
+  const pdf = await buildExport('pdf', cproject, { jsPDF });
+  assert.match(pdf.filename, /commercial-plan-set\.pdf$/);
+  assert.equal(await pagesOf(new Blob([pdf.bytes])), 5);
+  const dxf = await buildExport('dxf', cproject, {});
+  assert.ok(dxf.bytes.length > 1000);
+});

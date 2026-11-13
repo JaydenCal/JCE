@@ -744,6 +744,24 @@ function browser(query, body, { size } = {}) {
   return JSON.parse(line.slice(6));
 }
 
+test('UI, commercial mode: Exports menu and the buttons are back, no "coming soon"', { skip: skipUi }, () => {
+  const r = browser('?state=locked', String.raw`
+    S.apply('Switch to commercial layout', (p) => { p.mode = 'commercial'; });
+    await sleep(120);
+    const btn = $('.psp-menu-wrap > .psp-btn');
+    out.exportsShown = !!btn && btn.style.display !== 'none';
+    btn.click();
+    await sleep(60);
+    out.items = $$('.psp-menu-item').map((b) => text(b.querySelector('span')));
+    out.soon = document.body.textContent.includes('coming soon') || !!$('[data-ps="commercial-soon"]');
+    out.unlock = text($('#tp-topbar .psp-btn--primary'));
+  `);
+  assert.equal(r.exportsShown, true);
+  assert.deepEqual(r.items, ['Commercial plan set (PDF)', 'DXF drawing']);
+  assert.equal(r.soon, false);
+  assert.equal(r.unlock, 'Unlock plans, A$30');
+});
+
 test('UI, locked by default: Unlock button, locked Exports menu, locked assistant, upgrade modal, checkout, no browser dialogs', { skip: skipUi }, () => {
   const r = browser('?state=locked', String.raw`
     let dialogs = 0;

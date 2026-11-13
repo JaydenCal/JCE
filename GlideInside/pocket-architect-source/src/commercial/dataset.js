@@ -80,3 +80,43 @@ export const NCC_CLASSES = Object.freeze([
 export function mrvDefaults() {
   return { code: 'MRV', lengthM: facts('mrvLength').value, widthM: facts('mrvWidth').value, heightM: facts('mrvHeight').value, turningRadiusM: facts('mrvRadius').value ?? null };
 }
+
+/** Plain names for the dataset values, for the plan set's value status lists. */
+export const FACT_LABELS = Object.freeze({
+  accessibleClass5: 'Accessible bay rate, Class 5 office (NCC D4D6)',
+  accessibleClass6: 'Accessible bay rate, Class 6 shop (NCC D4D6)',
+  accessibleClass7: 'Accessible bay rate, Class 7 warehouse (NCC D4D6)',
+  accessibleClass8: 'Accessible bay rate, Class 8 workshop (NCC D4D6)',
+  bay: 'Accessible bay size 2.4 x 5.4 m (AS/NZS 2890.6)',
+  sharedZone: 'Accessible shared zone beside the bay (AS/NZS 2890.6)',
+  headroom: 'Accessible bay headroom 2.5 m (AS/NZS 2890.6)',
+  accessibleBollard: 'Bollard in the accessible shared zone (AS/NZS 2890.6)',
+  accessibleBollardOffset: 'Accessible bollard offset 800 mm from the entry',
+  accessibleBollardHeight: 'Accessible bollard height and diameter',
+  parkingUnits: 'Parking rate for unit complexes, 1 per 75 m² (council DCP)',
+  parkingOffice: 'Parking rate for ancillary office, 1 per 40 m² (council DCP)',
+  mezzStorey: 'Mezzanine counted as a storey (NCC C2D3)',
+  ceilingRoom: 'Ceiling height of general rooms 2.4 m (NCC F5D2)',
+  ceilingStore: 'Ceiling height of store rooms 2.1 m (NCC F5D2)',
+  mezzClear: 'Clear heights above and below a mezzanine',
+  barrier: 'Barrier height 1000 mm (NCC D3D18)',
+  barrierStair: 'Barrier height at stairs 865 mm (NCC D3D18)',
+  mrvLength: 'Medium rigid vehicle length (AS 2890.2)',
+  mrvWidth: 'Medium rigid vehicle width (AS 2890.2)',
+  mrvHeight: 'Medium rigid vehicle height (AS 2890.2)',
+  mrvRadius: 'Medium rigid vehicle turning radius (AS 2890.2)',
+  aisle: 'Car aisle width for 2.4 m bays (AS/NZS 2890.1)',
+});
+
+/** The dataset values by status: { unverified: [{ key, label, clause }], secondary: [...], primary: [...] }. */
+export function factsByStatus() {
+  const out = { unverified: [], secondary: [], primary: [] };
+  for (const key of Object.keys(FACT_LABELS)) {
+    const f = facts(key);
+    const row = { key, label: FACT_LABELS[key], clause: f.clause };
+    if (f.status === 'VERIFIED_PRIMARY') out.primary.push(row);
+    else if (f.status === 'VERIFIED_SECONDARY') out.secondary.push(row);
+    else out.unverified.push(row);
+  }
+  return out;
+}

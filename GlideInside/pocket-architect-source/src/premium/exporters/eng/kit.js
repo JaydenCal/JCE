@@ -521,7 +521,10 @@ export function withSuperscripts(doc) {
               off += t.getTextWidth(SUP[p]);
               t.setFontSize(size);
             } else {
-              t.text(p, x + d.x * off, y + d.y * off, rest);
+              // The wrapped document trims every piece it draws, so a leading space is added to the position instead.
+              const lead = (/^\s*/.exec(p) || [''])[0].length;
+              const sp = lead ? lead * t.getTextWidth(' ') : 0;
+              t.text(p, x + d.x * (off + sp), y + d.y * (off + sp), rest);
               off += t.getTextWidth(p);
             }
           }

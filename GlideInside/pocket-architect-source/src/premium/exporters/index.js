@@ -15,7 +15,7 @@ export const EXPORT_TYPES = {
 
 export const exportFilename = (type, project) => {
   const slug = slugify(project?.name);
-  return { pdf: `${slug}-plans.pdf`, dxf: `${slug}.dxf`, glb: `${slug}.glb`, obj: `${slug}-obj.zip`, html: `${slug}.html` }[type];
+  return { pdf: project?.mode === 'commercial' ? `${slug}-commercial-plan-set.pdf` : `${slug}-plans.pdf`, dxf: `${slug}.dxf`, glb: `${slug}.glb`, obj: `${slug}-obj.zip`, html: `${slug}.html` }[type];
 };
 
 // Base64 without Buffer, so this also runs on edge runtimes.
@@ -43,6 +43,12 @@ async function packGlb(bytes) {
  * the default; style 'legacy' gives the earlier plan sheets, and is also the fallback if the engineering builder cannot run.
  */
 export async function buildPdfBytes(project, o) {
+  if (project?.mode === 'commercial' && project.commercial) {
+    // Commercial layouts: the commercial plan set (C000 to C103). The same gating applies as for any PDF (trial watermark via o.jsPDF, Plan Pack on the server).
+    const { exportPlanSet } = await import('./planset/index.js');
+    const out = await exportPlanSet({ project, kind: 'commercial', download: false, jsPDF: o.jsPDF, aerial: o.aerial || null, builderName: o.builder?.name || '' });
+    return new Uint8Array(await out.blob.arrayBuffer());
+  }
   if (o.style !== 'legacy') {
     try {
       const { toEngineeringPDF } = await import('./eng/index.js');
