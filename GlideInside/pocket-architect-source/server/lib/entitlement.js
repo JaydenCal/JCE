@@ -55,7 +55,7 @@ export async function verifyToken(token, secret, nowSec) {
     const rawOk = safeEqual(await hmacSha256(secret, body), given);
     if (!liveOk && !rawOk) return null;
     const payload = JSON.parse(dec.decode(body));
-    if (!(payload?.eid && payload?.pid) && !(payload?.oid && payload?.lid)) return null;
+    if (!(payload?.eid && payload?.pid) && !(payload?.oid && payload?.lid) && !(payload?.ct === 1 && payload?.tid)) return null; // ct: the commercial trial login token (lib/commercial.js)
     if (typeof payload.exp === 'number' && payload.exp <= nowSec) return null;
     return payload;
   } catch {

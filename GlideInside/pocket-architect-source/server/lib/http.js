@@ -44,6 +44,12 @@ export const ERROR_STATUS = {
   EXPIRED: 410,
   PDF_LIMIT_REACHED: 403,
   EXPORT_FAILED: 500,
+  // Commercial subscription and trial login (lib/commercial.js).
+  SUBSCRIPTION_COMING_SOON: 503,
+  TRIAL_DISABLED: 403,
+  TRIAL_EXPIRED: 403,
+  FAIR_USE_LIMIT: 429,
+  TRIAL_LIMIT: 429,
 };
 
 export class HttpError extends Error {

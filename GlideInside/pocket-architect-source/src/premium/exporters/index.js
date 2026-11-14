@@ -77,7 +77,7 @@ export async function buildExport(type, project, options = {}) {
     bytes = new TextEncoder().encode(toDXF(project, { layerMap: options.layerMap, catalogue, notes: config.disclaimer ? [config.disclaimer] : [], trial }));
   } else if (type === 'pdf') {
     const baseJsPDF = options.jsPDF || (await options.loadJsPDF?.());
-    const jsPDF = trial && typeof baseJsPDF === 'function' ? trialJsPDF(baseJsPDF) : baseJsPDF;
+    const jsPDF = trial && typeof baseJsPDF === 'function' ? trialJsPDF(baseJsPDF, options.watermarkTitle || undefined) : baseJsPDF;
     bytes = await buildPdfBytes(project, { jsPDF, image: options.image || null, config, catalogue, scale: options.scale || null, style: options.style, builder: options.builder, aerial: options.aerial || null });
   } else if (type === 'html') {
     const { toHTML } = await import('./html.js');

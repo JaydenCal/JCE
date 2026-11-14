@@ -16,7 +16,7 @@ const ENG_SH = 297;
 const ENG_TB_TOP = 238;
 
 /** Draw the mark on every page of a jsPDF document (diagonal title, small footer line), at about 22 percent opacity. */
-export function stampPdf(doc) {
+export function stampPdf(doc, title = TRIAL_TITLE) {
   const pages = doc.internal.getNumberOfPages();
   for (let n = 1; n <= pages; n++) {
     doc.setPage(n);
@@ -26,18 +26,18 @@ export function stampPdf(doc) {
     // Diagonal title: sized so the text spans about 62 percent of the page diagonal.
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(100);
-    const base = doc.getTextWidth(TRIAL_TITLE);
+    const base = doc.getTextWidth(title);
     const diag = Math.hypot(w, h);
     const size = Math.max(10, (100 * 0.62 * diag) / base);
     doc.setFontSize(size);
-    const tw = doc.getTextWidth(TRIAL_TITLE);
+    const tw = doc.getTextWidth(title);
     const theta = Math.atan2(h, w);
     const deg = (theta * 180) / Math.PI;
     doc.setGState(new doc.GState({ opacity: 0.2 }));
     doc.setTextColor(190, 50, 50);
     const x0 = w / 2 - (tw / 2) * Math.cos(theta);
     const y0 = h / 2 + (tw / 2) * Math.sin(theta);
-    doc.text(TRIAL_TITLE, x0, y0, { angle: deg });
+    doc.text(title, x0, y0, { angle: deg });
     doc.restoreGraphicsState();
     // Footer line in dark grey at full strength. On an engineering plan sheet (A3 landscape, or A1 at twice the scale) it sits inside the
     // sheet frame, just above the title block; other documents keep it near the bottom edge.
@@ -61,7 +61,7 @@ export function stampPdf(doc) {
 }
 
 /** A jsPDF class whose documents are stamped when they are finalised (output). The builders only ever see a normal jsPDF. */
-export function trialJsPDF(JsPDF) {
+export function trialJsPDF(JsPDF, title = TRIAL_TITLE) {
   function TrialPDF(...args) {
     const doc = new JsPDF(...args);
     const output = doc.output.bind(doc);
@@ -69,7 +69,7 @@ export function trialJsPDF(JsPDF) {
     doc.output = (...a) => {
       if (!stamped) {
         stamped = true;
-        stampPdf(doc);
+        stampPdf(doc, title);
         try { doc.setProperties({ keywords: TRIAL_NOTE }); } catch { /* optional */ }
       }
       return output(...a);

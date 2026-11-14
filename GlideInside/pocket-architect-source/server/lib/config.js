@@ -103,5 +103,18 @@ export function readConfig(env = {}) {
     // PDF_SET_LIMIT=1 brings back the old live rule: ONE PDF plan set per job, a repeat request gets the same file back.
     pdfSetLimit: !['0', 'false', 'off', 'no'].includes(str(env.PDF_SET_LIMIT, '0').toLowerCase()),
     pdfWaitMs: Math.round(num(env.EXPORT_PDF_WAIT_MS, 10000)),
+    // Commercial Developer subscription and the shared commercial trial login (lib/commercial.js). Owner decision 15/11/2026: both are
+    // UNLIMITED for plan set PDFs. The AI assistant is limited (monthly allowance, trial total, top-up packs); optional caps are OFF at 0.
+    commercialSubPriceId: str(env.COMMERCIAL_SUB_PRICE_ID), // the A$50 per month recurring price the owner creates in Stripe; empty = "Coming soon"
+    commercialSubPriceAud: num(env.COMMERCIAL_SUB_PRICE_AUD, 50), // display only
+    commercialAiMonthly: Math.max(0, Math.round(num(env.COMMERCIAL_AI_MONTHLY, 100))), // assistant messages per billing period for a subscriber
+    commercialAiTopupPriceId: str(env.COMMERCIAL_AI_TOPUP_PRICE_ID), // one-off Stripe price for one top-up pack; empty = "Coming soon"
+    commercialAiTopupQty: Math.max(1, Math.round(num(env.COMMERCIAL_AI_TOPUP_QTY, 100))), // messages in one top-up pack
+    commercialExportRatePerHour: Math.max(1, Math.round(num(env.COMMERCIAL_EXPORT_RATE_PER_HOUR, 120))), // anti-abuse only, per account
+    commercialTrialDailyPdfs: Math.max(0, Math.round(num(env.COMMERCIAL_TRIAL_DAILY_PDFS, 0))), // 0 = off (plan set PDFs are unlimited)
+    commercialTrialAiTotal: Math.max(0, Math.round(num(env.COMMERCIAL_TRIAL_AI_TOTAL, 50))), // assistant messages for the whole trial login, owner can reset
+    commercialTrialWatermark: !['0', 'false', 'off', 'no'].includes(str(env.COMMERCIAL_TRIAL_WATERMARK, '1').toLowerCase()), // on by default
+    commercialTrialKeepDays: Math.max(1, num(env.COMMERCIAL_TRIAL_KEEP_DAYS, 30)), // trial saved projects are cleared after this
+    commercialTrialSessionHours: Math.max(1, num(env.COMMERCIAL_TRIAL_SESSION_HOURS, 168)),
   };
 }
