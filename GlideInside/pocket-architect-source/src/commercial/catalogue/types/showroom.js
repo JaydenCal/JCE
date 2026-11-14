@@ -87,6 +87,7 @@ function build(p) {
   // 3D props: a blank sign panel over the entry, entry canopy blade, trolley bay slab.
   pl.box('sign', W / 2 - 3000, -120, W / 2 + 3000, 0, H - 1300, H - 400, 'sign', '#dcdcd6');
   pl.box('steel', W / 2 - 1500, -p.awningDepthMm, W / 2 + 1500, -p.awningDepthMm + 120, AWNING_Z - 500, AWNING_Z, 'steel', '#6b7480');
+  pl.sym({ t: 'text', x: W / 2, y: D + 900, text: 'PROPOSED SHOWROOM', size: 800 });
   pl.sym({ t: 'text', x: W / 2, y: -p.awningDepthMm - 1200, text: 'ENTRY', size: 700, fill: '#444' });
   pl.sym({ pts: [{ x: W / 2 - 1200, y: -1500 }, { x: W / 2 + 1200, y: -1500 }, { x: W / 2 + 1200, y: 0 }, { x: W / 2 - 1200, y: 0 }], closed: true, stroke: '#c33', w: 50 });
   pl.meta = { issues, panels: left + right };
@@ -97,7 +98,7 @@ function siteFn(p, plan) {
   const u = plan.uses;
   const r1 = (v) => Math.round((v || 0) * 10) / 10;
   return {
-    parking: { ratePerM2: [{ use: 'showroom', per: 50, m2: r1(u.showroom) }, { use: 'warehouse', per: 300, m2: r1(u.warehouse) }, { use: 'office', per: 40, m2: r1(u.office) }], accessible: true, zone: plan.zone },
+    parking: { ratePerM2: [{ use: 'showroom', per: 50, m2: r1(u.showroom), status: 'ESTIMATE' }, { use: 'warehouse', per: 300, m2: r1(u.warehouse), status: 'ESTIMATE' }, { use: 'office', per: 40, m2: r1(u.office), status: 'ESTIMATE' }], accessible: true, zone: plan.zone },
     vehicles: { design: 'MRV', apronDepthMm: 14000, docks: 0 },
     landscapeFrontMm: 3000,
     notes: ['Parking rates are indicative: 1 per 50 m2 of showroom floor, 1 per 300 m2 of warehouse floor and 1 per 40 m2 of office floor, check with council.', 'Customer parking is at the frontage, deliveries use the rear apron.'],

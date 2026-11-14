@@ -273,6 +273,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       frontageEdit: !!store.ui.frontageEdit,
       overlay: state.overlay,
       selectedRow: state.selectedRow || store.ui.commercialRow || null,
+      selectedBuilding: store.ui.commercialBuilding || null,
       furnSize: ed.furnSize,
       scaleRight: !!document.querySelector('.lc-root:not([hidden])'),
     };

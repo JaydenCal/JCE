@@ -174,6 +174,7 @@ function build(p) {
   const S = (x) => X(x);
   const bx = (x0, y0, x1, y1, z0, z1, slot, colour) => { const a = S(x0); const b = S(x1); pl.box(slot, Math.min(a, b), y0, Math.max(a, b), y1, z0, z1, slot, colour); };
   const yf = dockY;
+  pl.sym({ t: 'text', x: W / 2, y: D + 900, text: 'PROPOSED WAREHOUSE', size: 800 });
   dockX.forEach((cx, i) => {
     bx(cx - 1450, yf - 350, cx - 1250, yf, DOCK_SILL, DOCK_SILL + DOCK_H + 250, 'seal', '#2b2f33');
     bx(cx + 1250, yf - 350, cx + 1450, yf, DOCK_SILL, DOCK_SILL + DOCK_H + 250, 'seal', '#2b2f33');
@@ -203,6 +204,7 @@ function build(p) {
       for (const x of p.roofType === 'gable' ? [W * 0.25, W * 0.75] : [W * 0.3, W * 0.7]) {
         const zz = p.roofType === 'gable' ? H + Math.min(x, W - x) * tan : H + (D - y) * tan;
         bx(x - 750, y - 1500, x + 750, y + 1500, zz + 20, zz + 140, 'glass', '#a8cfe0');
+        pl.skylightM2 = (pl.skylightM2 || 0) + (1500 * 3000) / 1e6;
       }
     }
   }
@@ -214,7 +216,7 @@ function siteFn(p, plan) {
   const L = plan.meta.layout;
   const u = plan.uses;
   return {
-    parking: { ratePerM2: [{ use: 'warehouse', per: 300, m2: Math.round((u.warehouse || 0) * 10) / 10 }, { use: 'office', per: 40, m2: Math.round((u.office || 0) * 10) / 10 }], accessible: true, zone: plan.zone },
+    parking: { ratePerM2: [{ use: 'warehouse', per: 300, m2: Math.round((u.warehouse || 0) * 10) / 10, status: 'ESTIMATE' }, { use: 'office', per: 40, m2: Math.round((u.office || 0) * 10) / 10, status: 'ESTIMATE' }], accessible: true, zone: plan.zone },
     vehicles: { design: p.truckDesign, apronDepthMm: p.apronDepthMm, docks: p.docks },
     landscapeFrontMm: 3000,
     notes: [

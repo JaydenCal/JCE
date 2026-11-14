@@ -21,7 +21,10 @@ import { isCommercial } from './schema.js';
 import { layoutUnits } from './layout.js';
 import { zoneClass, RESIDENTIAL_NOTE } from './zones.js';
 import { CLADDING, DOORS, finishesOf, finishLine, applyFinishes } from './finishes.js';
-import { LAYOUT_LIST, chooseLayout, applyLayout, currentLayoutIndex, stepLayout, layoutPagerText } from './layouts.js';
+import { stepLayout } from './layouts.js';
+import { activeTypeId, typeChoices, switcherList, switcherIndex, pagerText, chooseFor, applyChoice } from './catalogue/picker.js';
+import { STRATA_ID } from './catalogue/types/index.js';
+import { buildingsOf } from './catalogue/buildings.js';
 import { commercialCardStats, zoneLine, unitList, commercialStatus, feasibilityHeadline, exteriorPose, unitWalkPose } from './card-model.js';
 import { summaryRows, costRows, money, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT, DATA_DATE } from './feasibility.js';
 
@@ -93,6 +96,13 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   const list = h('div', { class: 'cc-list lc-glass', role: 'listbox', 'aria-label': 'Layouts', hidden: true, dataset: { ps: 'cc-layout-list' } });
   const pager = E('lc-pager lc-glass', 'div', { dataset: { ps: 'lc-pager' } }, list, pgP, pgT, pgN);
 
+  // The Building type picker, above the layout switcher: strata units and every registered type, each with an icon and its label.
+  const tyIcon = h('span', { class: 'cc-ty-i' });
+  const tyName = h('b');
+  const tyBtn = h('button', { class: 'cc-tyb', type: 'button', 'aria-haspopup': 'listbox', 'aria-expanded': 'false', 'aria-label': 'Building type', dataset: { ps: 'cc-type-btn' }, onclick: () => toggleTypes() }, tyIcon, h('span', { class: 'cc-ty-t' }, h('i', null, 'Building type'), tyName), h('span', { class: 'cc-ty-c', 'aria-hidden': 'true' }, '▾'));
+  const tyList = h('div', { class: 'cc-types lc-glass', role: 'listbox', 'aria-label': 'Building types', hidden: true, dataset: { ps: 'cc-type-list' } });
+  const typeBar = E('cc-typebar lc-glass', 'div', { dataset: { ps: 'cc-typebar' } }, tyList, tyBtn);
+
   // Views strip for compact widths (the same pills as in the card, as the housing card does for its rooms).
   const viewsCompact = E('lc-tabs', 'div', { role: 'tablist', 'aria-label': 'Views', dataset: { ps: 'cc-views-compact' } });
   const rooms = E('lc-rooms lc-glass', 'div', { dataset: { ps: 'lc-rooms' } }, viewsCompact);
@@ -127,7 +137,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   })();
   function paintMenu() { const it = menuList.lastElementChild; if (it) it.textContent = mini.classList.contains('is-big') ? 'Shrink top view' : 'Enlarge top view'; }
   const foot = E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, 'Concept only · Glide Inside · JCE Infrastructure');
-  const root = E('lc-root lc-embed cc-root', 'div', { dataset: { ps: 'lot-card-root', mode: 'commercial' } }, head, compass, findPill, menuBtn, menuList, card, rooms, panel, pager, mini, foot);
+  const root = E('lc-root lc-embed cc-root', 'div', { dataset: { ps: 'lot-card-root', mode: 'commercial' } }, head, compass, findPill, menuBtn, menuList, card, rooms, panel, typeBar, pager, mini, foot);
   host.append(root);
 
   // Address search -------------------------------------------------------------------------------------------------------------
@@ -219,17 +229,31 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   }
 
   // Layouts --------------------------------------------------------------------------------------------------------------------
-  const toggleList = () => { list.hidden ? openList() : closeList(); };
+  const toggleList = () => { closeTypes(); list.hidden ? openList() : closeList(); };
   function openList() {
-    const cur = currentLayoutIndex(store.project);
-    list.replaceChildren(...LAYOUT_LIST.map((l, i) => h('button', { type: 'button', role: 'option', 'aria-current': String(i === cur), dataset: { layout: l.id }, onclick: () => { closeList(); setLayout(l.id); } }, h('span', null, l.label), h('i', null, `${i + 1} / ${LAYOUT_LIST.length}`))));
+    const cur = switcherIndex(store.project);
+    const LIST = switcherList(activeTypeId(store.project));
+    list.replaceChildren(...LIST.map((l, i) => h('button', { type: 'button', role: 'option', 'aria-current': String(i === cur), dataset: { layout: l.id }, onclick: () => { closeList(); setLayout(l.id); } }, h('span', null, l.label), h('i', null, `${i + 1} / ${LIST.length}`))));
     list.hidden = false;
     pgT.setAttribute('aria-expanded', 'true');
   }
   function closeList() { list.hidden = true; pgT.setAttribute('aria-expanded', 'false'); }
+  const toggleTypes = () => { tyList.hidden ? openTypes() : closeTypes(); };
+  function openTypes() {
+    closeList();
+    tyList.replaceChildren(...typeChoices(store.project).map((t) => h('button', { type: 'button', role: 'option', 'aria-current': String(t.active), dataset: { type: t.id }, onclick: () => { closeTypes(); setType(t.id); } }, icon(t.icon, { size: 18 }), h('span', null, t.label))));
+    tyList.hidden = false;
+    tyBtn.setAttribute('aria-expanded', 'true');
+  }
+  function closeTypes() { tyList.hidden = true; tyBtn.setAttribute('aria-expanded', 'false'); }
+  /** Choosing a type puts its Best fit on the lot (strata units: the Best fit rows). */
+  function setType(id) {
+    if (id === activeTypeId(store.project)) return Promise.resolve(false);
+    return setLayout(null, id);
+  }
 
   // Placing a layout runs a frame later (the auto fit tries every layout, turn and position), so the pager shows "Placing layout" first.
-  function setLayout(id) {
+  function setLayout(id, typeId = activeTypeId(store.project)) {
     if (stepping) return Promise.resolve(false);
     stepping = true;
     pager.classList.add('is-busy');
@@ -242,9 +266,9 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     return new Promise((resolve) => {
       const run = () => {
         try {
-          const choice = chooseLayout(store.project, id);
+          const choice = chooseFor(store.project, typeId, id);
           if (!choice) { toast('There is no lot to put a layout on yet.', { kind: 'info' }); resolve(false); return; }
-          applyLayout(store, choice);
+          applyChoice(store, typeId, choice);
           if (choice.tooBig) toast(`${choice.label} is too big for this block.`, { kind: 'info' });
           go('aerial');
           resolve(true);
@@ -266,8 +290,9 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   }
   function step(dir) {
     if (stepping) return Promise.resolve(false);
-    const i = stepLayout(currentLayoutIndex(store.project), dir);
-    return setLayout(LAYOUT_LIST[i].id);
+    const LIST = switcherList(activeTypeId(store.project));
+    const i = stepLayout(switcherIndex(store.project), dir, LIST.length);
+    return setLayout(LIST[i].id);
   }
 
   // Colours --------------------------------------------------------------------------------------------------------------------
@@ -331,7 +356,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
         h('table', { dataset: { ps: 'cc-units' } },
           h('thead', null, h('tr', null, h('th', null, 'Unit'), h('th', null, 'Size'), h('th', { class: 'n' }, 'Ground m²'), h('th', { class: 'n' }, 'Mezz. m²'), h('th', { class: 'n' }, 'GFA m²'))),
           h('tbody', null, ...us.map((u) => h('tr', { class: 'cc-unit', dataset: { unit: String(u.n) }, tabindex: '0', onclick: () => { closePanel(); selView = 'walk'; go('walk', { unit: u.n }); }, onkeydown: (e) => { if (e.key === 'Enter') e.currentTarget.click(); } },
-            h('td', null, `Unit ${u.n}`), h('td', null, u.size), h('td', { class: 'n' }, u.ground.toFixed(1)), h('td', { class: 'n' }, u.mezz ? u.mezz.toFixed(1) : 'none'), h('td', { class: 'n' }, u.gfa.toFixed(1)))),
+            h('td', null, u.building ? `${u.n} ${u.label}` : `Unit ${u.n}`), h('td', null, u.size), h('td', { class: 'n' }, u.ground.toFixed(1)), h('td', { class: 'n' }, u.mezz ? u.mezz.toFixed(1) : 'none'), h('td', { class: 'n' }, u.gfa.toFixed(1)))),
             h('tr', { class: 'cc-total' }, h('td', null, 'Total'), h('td'), h('td'), h('td'), h('td', { class: 'n' }, (Math.round(gfa * 10) / 10).toFixed(1))))));
       return;
     }
@@ -362,7 +387,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     const p = store.project;
     const lot = lotOf(p);
     const view = store.ui.view;
-    const ready = !!lot && isCommercial(p) && layoutUnits(p.commercial).length > 0;
+    const ready = !!lot && isCommercial(p) && (layoutUnits(p.commercial).length > 0 || buildingsOf(p.commercial).length > 0);
     const show = ready && view !== 'walk';
     root.hidden = !show;
     root.dataset.view = view;
@@ -376,7 +401,10 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
 
     headT.textContent = lotHeading(lot);
     headS.textContent = 'Concept only';
-    const pg = layoutPagerText(p);
+    const pg = pagerText(p);
+    const ct = typeChoices(p).find((t) => t.active);
+    tyIcon.replaceChildren(icon(ct?.icon || 'bt-strata', { size: 20 }));
+    tyName.textContent = ct?.label || 'Strata units';
     title.textContent = pg.name;
     const z = zoneClass(lot);
     sub.replaceChildren(h('span', null, lotLine(lot)), h('span', { class: 'lc-sc', title: finishLine(p) }, zoneLine(lot)));
@@ -489,9 +517,19 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     try {
       const { parkingLayout } = await import('./parking.js');
       if (disposed || store.project !== p) { /* the project moved on; the next render redraws */ }
-      for (const r of parkingLayout(p.commercial).rows) for (const s of r.slots) { path(s.poly); ctx.fillStyle = s.kind === 'bay' ? 'rgba(90,100,110,.55)' : 'rgba(59,130,246,.75)'; ctx.fill(); }
+      const { buildingParking } = await import('./catalogue/bays.js');
+      for (const r of [...parkingLayout(p.commercial).rows, ...buildingParking(p.commercial).rows]) for (const s of r.slots) { path(s.poly); ctx.fillStyle = s.kind === 'bay' ? 'rgba(90,100,110,.55)' : 'rgba(59,130,246,.75)'; ctx.fill(); }
     } catch { /* bays are decoration here */ }
     const fill = CLADDING.find((c) => c.id === finishesOf(p).cladding)?.hex || '#cfc9bd';
+    for (const b of buildingsOf(p.commercial)) {
+      for (const e of b.extras) { path(e.polygon); ctx.fillStyle = e.kind === 'canopy' || e.kind === 'fuel-canopy' ? 'rgba(120,130,140,.45)' : 'rgba(90,100,110,.35)'; ctx.fill(); }
+      path(b.outline);
+      ctx.fillStyle = fill;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(40,44,50,.8)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
     for (const u of layoutUnits(p.commercial)) {
       path(u.poly);
       ctx.fillStyle = fill;
@@ -526,7 +564,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     const v = getViewer();
     if (root.hidden) return;
     root.style.setProperty('--lc-card-h', `${Math.round(card.getBoundingClientRect().height)}px`);
-    const els = [card, rooms, pager, mini, head];
+    const els = [card, rooms, typeBar, pager, mini, head];
     const credit = host.querySelector('.ps-credit');
     if (credit) els.push(credit);
     if (v?.setInset) v.setInset(insetOver(viewerHost, els));

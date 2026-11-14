@@ -6,6 +6,7 @@ import { worldToScreen } from '../editor2d/math.js';
 import { analyse } from './analyse.js';
 import { rowFrame, rowLength, rowPoly } from './layout.js';
 import { bayOffsetMm } from './schema.js';
+import { drawBuildings, buildingExtents } from './catalogue/draw2d.js';
 
 const GOLD = '#c7a256';
 const BLUE = '#1b5fbf';
@@ -35,6 +36,7 @@ export function commercialExtents(project) {
   const pts = a ? a.parking.rows.flatMap((pr) => pr.slots.flatMap((sl) => sl.poly)) : [];
   if (c.waste) pts.push({ x: c.waste.x - 3000, y: c.waste.y - 3000 }, { x: c.waste.x + 3000, y: c.waste.y + 3000 });
   if (c.hydrant) pts.push({ x: c.hydrant.x, y: c.hydrant.y });
+  pts.push(...buildingExtents(project));
   return pts;
 }
 
@@ -186,4 +188,5 @@ export function drawCommercial(ctx, st) {
     }
   }
   ctx.restore();
+  drawBuildings(ctx, st);
 }

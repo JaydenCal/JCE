@@ -8,6 +8,9 @@ import { layoutUnits, rowPoly } from '../layout.js';
 import { rowHandle } from '../draw2d.js';
 import { regenerate, commercialEdit } from '../mode.js';
 import { deleteRow } from './row-ops.js';
+import { buildingsOf } from '../catalogue/buildings.js';
+import { buildingHandle } from '../catalogue/draw2d.js';
+import { deleteBuilding, moveBuilding } from '../catalogue/ops.js';
 
 const DRAG_START_PX = 3;
 const HANDLE_PX = 16;
@@ -48,12 +51,29 @@ export function snapRowOrigin(project, rowId, o) {
   return { x: Math.round(o.x / 100) * 100, y: Math.round(o.y / 100) * 100, snapped: false };
 }
 
+/** The catalogue building under a world point (its outline), or null. */
+export function buildingUnder(project, p) {
+  const c = project.commercial;
+  if (!c?.buildings?.length) return null;
+  return buildingsOf(c).find((b) => G.pointInPolygon(p, b.outline)) || null;
+}
+
 export function createCommercialTool(ed) {
   const { store } = ed;
   let drag = null;
   let over = null;
   const isOn = () => store.project.mode === 'commercial' && !!store.project.commercial;
-  const setSel = (id) => { store.setUI({ commercialRow: id }); ed.draw(); };
+  const setSel = (id) => { store.setUI({ commercialRow: id, commercialBuilding: null }); ed.draw(); };
+  const setBld = (id) => { store.setUI({ commercialBuilding: id, commercialRow: null }); ed.state.selectedRow = null; ed.draw(); };
+  const selectedBld = () => buildingsOf(store.project.commercial || {}).find((b) => b.id === store.ui.commercialBuilding) || null;
+  const bldRing = (ev) => {
+    const b = selectedBld();
+    if (!b) return null;
+    const h = buildingHandle(b);
+    const s = ed.toScreen(h.handle);
+    return Math.hypot(s.x - ev.screen.x, s.y - ev.screen.y) <= HANDLE_PX ? { ...h, b } : null;
+  };
+  const putBld = (p, id, place) => { const b = p.commercial.buildings.find((q) => q.id === id); if (b) { b.place = { ...b.place, ...place }; regenerate(p); } };
   const selected = () => store.project.commercial?.rows.find((r) => r.id === store.ui.commercialRow) || null;
   const ringHit = (ev) => {
     const row = selected();
@@ -73,15 +93,26 @@ export function createCommercialTool(ed) {
   const tool = {
     id: 'commercial',
     cursor: () => (drag?.moved ? 'grabbing' : over === 'ring' ? 'grab' : over === 'row' ? 'move' : 'default'),
-    hint: () => 'Drag a unit to slide its row, drag the gold ring to turn it, Shift for 15 degree steps. Arrow keys nudge 0.1 m (Shift 1 m), Q and E turn 1 degree, Delete removes the row.',
+    hint: () => 'Drag a building to slide it and its gold ring to turn it. Drag a unit to slide its row, drag the gold ring to turn it, Shift for 15 degree steps. Arrow keys nudge 0.1 m (Shift 1 m), Q and E turn 1 degree, Delete removes the row.',
     activate() { ed.state.selectedRow = store.ui.commercialRow || null; },
     deactivate() { drag = null; over = null; ed.clearPreview(); },
     pointerDown(ev) {
       if (!isOn()) { ed.startPan(ev); return; }
+      const bring = bldRing(ev);
+      if (bring) {
+        drag = { mode: 'bturn', id: bring.b.id, base: bring.b.place.rotationDeg || 0, centre: bring.centre, a0: angleAt(ev, bring.centre), total: 0, prev: null, deg: 0, moved: false, startScreen: ev.screen };
+        return;
+      }
       const ring = ringHit(ev);
       const row = selected();
       if (ring && row) {
         drag = { mode: 'turn', id: row.id, base: row.rotationDeg || 0, centre: ring.centre, a0: angleAt(ev, ring.centre), total: 0, prev: null, deg: 0, moved: false, startScreen: ev.screen };
+        return;
+      }
+      const bhit = buildingUnder(store.project, ev.world);
+      if (bhit) {
+        setBld(bhit.id);
+        drag = { mode: 'bmove', id: bhit.id, start: ev.world, ox: bhit.place.x, oy: bhit.place.y, x: bhit.place.x, y: bhit.place.y, moved: false, startScreen: ev.screen };
         return;
       }
       const hit = rowAt(store.project, ev.world);
@@ -98,7 +129,7 @@ export function createCommercialTool(ed) {
     pointerMove(ev) {
       if (!isOn()) return;
       if (!drag) {
-        const next = ringHit(ev) ? 'ring' : rowAt(ed.project(), ev.world) ? 'row' : null;
+        const next = ringHit(ev) || bldRing(ev) ? 'ring' : rowAt(ed.project(), ev.world) || buildingUnder(ed.project(), ev.world) ? 'row' : null;
         if (next !== over) { over = next; ed.canvas.style.cursor = tool.cursor(); }
         return;
       }
@@ -108,7 +139,22 @@ export function createCommercialTool(ed) {
         drag.moved = true;
         ed.canvas.style.cursor = 'grabbing';
       }
-      if (drag.mode === 'move') {
+      if (drag.mode === 'bmove') {
+        const x = Math.round((drag.ox + (ev.world.x - drag.start.x)) / 100) * 100;
+        const y = Math.round((drag.oy + (ev.world.y - drag.start.y)) / 100) * 100;
+        if (x === drag.x && y === drag.y) return;
+        drag.x = x; drag.y = y;
+        ed.previewFn((p) => putBld(p, drag.id, { x, y }));
+      } else if (drag.mode === 'bturn') {
+        let d = angleAt(ev, drag.centre) - drag.a0;
+        d = ((d + 540) % 360) - 180;
+        drag.total = drag.prev == null ? d : drag.total + (((d - drag.prev + 540) % 360) - 180);
+        drag.prev = d;
+        const deg = ev.shift ? turnAngle(drag.base + drag.total, true) - drag.base : turnAngle(drag.base + drag.total) - drag.base;
+        if (deg === drag.deg) return;
+        drag.deg = deg;
+        ed.previewFn((p) => putBld(p, drag.id, { rotationDeg: drag.base + deg }));
+      } else if (drag.mode === 'move') {
         const s = snapRowOrigin(store.project, drag.id, { x: drag.ox + (ev.world.x - drag.start.x), y: drag.oy + (ev.world.y - drag.start.y) });
         if (s.x === drag.x && s.y === drag.y) return;
         drag.x = s.x; drag.y = s.y;
@@ -130,7 +176,9 @@ export function createCommercialTool(ed) {
       drag = null;
       if (d.moved) {
         try {
-          if (d.mode === 'move' && (d.x !== d.ox || d.y !== d.oy)) ed.apply('Move row', (p) => moveRow(p, d.id, d.x, d.y));
+          if (d.mode === 'bmove' && (d.x !== d.ox || d.y !== d.oy)) ed.apply('Move building', (p) => putBld(p, d.id, { x: d.x, y: d.y }));
+          else if (d.mode === 'bturn' && d.deg) ed.apply('Rotate building', (p) => putBld(p, d.id, { rotationDeg: d.base + d.deg }));
+          else if (d.mode === 'move' && (d.x !== d.ox || d.y !== d.oy)) ed.apply('Move row', (p) => moveRow(p, d.id, d.x, d.y));
           else if (d.mode === 'turn' && d.deg) ed.apply('Rotate row', (p) => turnRow(p, d.id, d.deg, d.base));
         } finally { ed.clearPreview(); }
       }
@@ -140,6 +188,17 @@ export function createCommercialTool(ed) {
     cancel() { if (!drag) return false; drag = null; ed.clearPreview(); return true; },
     keyDown(e) {
       if (!isOn()) return false;
+      const bsel = selectedBld();
+      if (bsel) {
+        const kb = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+        if (kb === 'Delete' || kb === 'Backspace') { deleteBuilding(store, bsel.id); store.setUI({ commercialBuilding: null }); return true; }
+        if (kb === 'q' || kb === 'e') { moveBuilding(store, bsel.id, { rotationDeg: (bsel.place.rotationDeg || 0) + (kb === 'e' ? 1 : -1) }); return true; }
+        if (kb.startsWith('Arrow')) {
+          const step = e.shiftKey ? 1000 : 100;
+          moveBuilding(store, bsel.id, { x: bsel.place.x + (kb === 'ArrowLeft' ? -step : kb === 'ArrowRight' ? step : 0), y: bsel.place.y + (kb === 'ArrowUp' ? -step : kb === 'ArrowDown' ? step : 0) });
+          return true;
+        }
+      }
       const row = selected();
       if (!row) return false;
       const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;

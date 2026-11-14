@@ -17,6 +17,9 @@ import { ACCESSIBLE_BAY, defaultRulesFor } from '../../../commercial/rules.js';
 import { factsByStatus, facts, statusText } from '../../../commercial/dataset.js';
 import { zoneClass, effectiveClass } from '../../../commercial/zones.js';
 import { feasibility, summaryRows, costRows, money, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT } from '../../../commercial/feasibility.js';
+import { buildingsOf } from '../../../commercial/catalogue/buildings.js';
+import { buildingParking } from '../../../commercial/catalogue/bays.js';
+import { buildingPolys, buildingScheduleRows, dockLines, extraLabel } from '../../../commercial/catalogue/planset.js';
 import { scaleBar } from '../pdf.js';
 import { PEN, PHANTOM, clipSegment, hatch, hatchSegments, dimLine, haloText, alongLabel, LabelField, boxOfPts, clean, wrap, polygon } from '../eng/kit.js';
 import { AREA, fit } from './frame.js';
@@ -165,7 +168,7 @@ export function commercialModel(project, lot) {
   const c = project.commercial;
   const a = analyse(project);
   const wp = { ...project, site: { ...(project.site || {}), lot } };
-  const polys = [...a.units.map((u) => u.poly), ...pavedPolys(c, a)];
+  const polys = [...a.units.map((u) => u.poly), ...pavedPolys(c, a), ...buildingPolys(c)];
   if (c.waste) polys.push(wastePoly(c.waste));
   let osd = null;
   if (lot) {
@@ -186,6 +189,7 @@ export function layoutView(model) {
   const pts = [...lot.boundary];
   for (const u of units) pts.push(...u.poly);
   for (const pr of a.parking.rows) for (const sl of pr.slots) pts.push(...sl.poly);
+  pts.push(...buildingPolys(c).flat());
   if (c.waste) pts.push(...wastePoly(c.waste));
   const roads = roadModel(lot);
   for (const r of roads) pts.push(...r.lines.centreline.slice(1, -1));
@@ -209,7 +213,7 @@ function makeView(pts, vp, margin, roads = []) {
 
 /** The mezzanine plan scale: the building footprint only, in the same viewport. */
 export function mezzView(model) {
-  const pts = model.units.flatMap((u) => u.poly);
+  const pts = [...model.units.flatMap((u) => u.poly), ...buildingsOf(model.c).flatMap((b) => b.outline)];
   return makeView(pts, VP, [3500, 2500]);
 }
 
@@ -517,6 +521,86 @@ export function drawExisting(doc, project, lot, { aerial = null } = {}) {
   return { scale: r.scale, scaleLabel: r.scaleLabel, kv, notes, blocks: [existingLegend(over)] };
 }
 
+// Catalogue buildings on C101: extras (apron, canopy, dock recess), walls, roller doors, the plan label with the GFA, dock and canopy lines,
+// and the bay rows. The walls come from the materialised model so the sheet shows what the 3D model has.
+function drawBuildingShells(doc, model, view, field) {
+  const { c, project } = model;
+  if (!c.buildings?.length) return;
+  const { T, scale } = view;
+  const bs = buildingsOf(c);
+  for (const b of bs) {
+    for (const e of b.extras) {
+      const sp = e.polygon.map(T);
+      if (e.kind === 'canopy' || e.kind === 'fuel-canopy') {
+        doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.18); doc.setLineDashPattern([1.6, 0.9], 0);
+        polygon(doc, sp, 'S'); dashOff(doc);
+      } else {
+        doc.setFillColor(...(e.kind === 'dock-recess' ? [200, 203, 210] : e.kind === 'landscape' ? [222, 236, 218] : AISLE_FILL));
+        polygon(doc, sp, 'F');
+      }
+    }
+  }
+  for (const pr of buildingParking(c).rows) {
+    for (const sl of pr.slots) {
+      const sp = sl.poly.map(T);
+      if (sl.kind === 'accessible') { doc.setFillColor(196, 214, 244); doc.setDrawColor(...BLUE); doc.setLineWidth(0.3); polygon(doc, sp, 'FD'); }
+      else if (sl.kind === 'zone') { doc.setFillColor(232, 240, 252); doc.setDrawColor(...BLUE); doc.setLineWidth(0.2); polygon(doc, sp, 'FD'); hatch(doc, sp, 'proposed', { spacing: 1.1, width: 0.07, colour: BLUE }); }
+      else { doc.setDrawColor(...GREYLINE); doc.setLineWidth(0.15); polygon(doc, sp, 'S'); }
+      field.addRing(sp);
+      if (sl.kind === 'accessible') { const cc = T(sl.centre); if (c.parking.bayW / scale >= 2.2) haloText(doc, 'A', cc.x, cc.y + 0.9, { size: 6, bold: true, colour: BLUE, align: 'center', halo: 0.6 }); }
+    }
+  }
+  for (const b of bs) {
+    const sp = b.outline.map(T);
+    doc.setFillColor(250, 250, 248);
+    polygon(doc, sp, 'F');
+    field.addRing(sp, true);
+  }
+  // Walls and roller doors from the model.
+  const walls = (project.levels || []).flatMap((l) => l.walls || []).filter((w) => w.building);
+  const doors = (project.levels || []).flatMap((l) => l.openings || []).filter((o) => o.building && o.kind === 'roller_door');
+  doc.setDrawColor(...PEN.ink);
+  for (const w of walls) {
+    const a = T(w.a); const bb = T(w.b);
+    doc.setLineWidth(Math.max(0.2, Math.min(0.9, (w.thickness || 200) / scale)));
+    doc.line(a.x, a.y, bb.x, bb.y);
+  }
+  doc.setDrawColor(255, 255, 255);
+  for (const o of doors) {
+    const w = walls.find((x) => x.id === o.wallId);
+    if (!w) continue;
+    const len = Math.hypot(w.b.x - w.a.x, w.b.y - w.a.y) || 1;
+    const u = { x: (w.b.x - w.a.x) / len, y: (w.b.y - w.a.y) / len };
+    const p0 = T({ x: w.a.x + u.x * (o.offset - o.width / 2), y: w.a.y + u.y * (o.offset - o.width / 2) });
+    const p1 = T({ x: w.a.x + u.x * (o.offset + o.width / 2), y: w.a.y + u.y * (o.offset + o.width / 2) });
+    doc.setLineWidth(1.1); doc.line(p0.x, p0.y, p1.x, p1.y);
+    doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.2); doc.setLineDashPattern([1.2, 0.8], 0); doc.line(p0.x, p0.y, p1.x, p1.y); dashOff(doc);
+    doc.setDrawColor(255, 255, 255);
+  }
+  // Labels: plan label and GFA in the building, extras by their own label, dock and canopy lines at the front.
+  for (const b of bs) {
+    const xs = b.local.outline.map((q) => q.x); const ys = b.local.outline.map((q) => q.y);
+    const mid = T(b.frame ? { x: b.place.x + b.frame.u.x * (Math.min(...xs) + Math.max(...xs)) / 2 + b.frame.v.x * (Math.min(...ys) + Math.max(...ys)) / 2, y: b.place.y + b.frame.u.y * (Math.min(...xs) + Math.max(...xs)) / 2 + b.frame.v.y * (Math.min(...ys) + Math.max(...ys)) / 2 } : b.outline[0]);
+    const w = (Math.max(...xs) - Math.min(...xs)) / scale;
+    const size = Math.max(4.2, Math.min(7.5, w / 14));
+    haloText(doc, b.planLabel, mid.x, mid.y - 0.6, { size, bold: true, align: 'center', halo: 0.8 });
+    haloText(doc, `B${b.n}  ${Math.round(b.gfaM2).toLocaleString('en-AU')} m2 GFA`, mid.x, mid.y + size * 0.42 + 0.6, { size: Math.max(4, size - 1.4), align: 'center', halo: 0.8 });
+    const centreOf = (poly) => { const q = poly.map(T); return { x: q.reduce((s, p) => s + p.x, 0) / q.length, y: q.reduce((s, p) => s + p.y, 0) / q.length }; };
+    let k = 0;
+    const lines = dockLines(b);
+    for (const e of b.extras) {
+      const txt = extraLabel(e);
+      if (!txt) continue;
+      const cc = centreOf(e.polygon);
+      haloText(doc, txt, cc.x, cc.y + (k++ % 2) * 2.6, { size: 4.6, align: 'center', halo: 0.7, colour: [60, 64, 72] });
+    }
+    if (lines.length) {
+      const fa = b.extras.find((e) => e.kind === 'apron' || e.kind === 'canopy' || e.kind === 'fuel-canopy');
+      if (fa) { const cc = centreOf(fa.polygon); lines.forEach((t, i) => haloText(doc, t, cc.x, cc.y + 2.8 + 2.6 * (i + (k > 1 ? 1 : 0)), { size: 4.8, bold: i === 0, align: 'center', halo: 0.7 })); }
+    }
+  }
+}
+
 // C101 proposed layout -----------------------------------------------------------------------------------------------------
 function layoutLegend() {
   return legendBlock([
@@ -657,6 +741,7 @@ export function drawLayout(doc, model) {
     polygon(doc, mezzPoly(u, m).poly.map(T), 'S');
   }
   dashOff(doc);
+  drawBuildingShells(doc, model, view, field);
 
   // Bays.
   for (const pr of a.parking.rows) {
@@ -927,6 +1012,7 @@ export function drawLayout(doc, model) {
   const kv = [
     ['Lot area', `${m2f(stats.lotM2 ?? 0)} m²`],
     ['Units', `${stats.units} (${stats.mix.map((x) => `${x.count} x ${x.label}`).join(', ')})`],
+    ...(stats.buildingCount ? [['Buildings', `${stats.buildingCount} (${(stats.buildings || []).map((b) => b.label).join(', ')})`]] : []),
     ['GFA incl. mezzanine', `${m2f(stats.gfaM2)} m²`],
     ['Site coverage', stats.coveragePct != null ? `${stats.coveragePct} %` : 'n/a'],
     ['Landscaping (indicative)', model.land.pct != null ? `${model.land.pct} %` : 'n/a'],
@@ -1197,6 +1283,7 @@ export function drawFeasibility(doc, model, x, y, w) {
 export function drawYield(doc, model) {
   const { c, lot, stats, a, rules } = model;
   const rows = unitScheduleRows(model);
+  const bsch = buildingScheduleRows(c);
   const cap = 62;
   const shown = rows.slice(0, cap);
   const tot = rows.reduce((s, r) => ({ ground: s.ground + r.ground, mz: s.mz + r.mz, total: s.total + r.total, office: s.office + r.office }), { ground: 0, mz: 0, total: 0, office: 0 });
@@ -1208,7 +1295,18 @@ export function drawYield(doc, model) {
   const cols = [{ w: 30 }, { w: 9, align: 'right' }, { w: 22 }, { w: 18, align: 'right' }, { w: 17, align: 'right' }, { w: 17, align: 'right' }, { w: 17, align: 'right' }, { w: 32 }];
   const body = shown.map((r) => [`PROPOSED UNIT ${r.n}`, String(r.row), r.size, r.ground.toFixed(1), r.mz ? r.mz.toFixed(1) : '0.0', r.total.toFixed(1), r.office.toFixed(1), r.doors]);
   body.push([`TOTAL, ${rows.length} UNITS`, '', '', tot.ground.toFixed(1), tot.mz.toFixed(1), tot.total.toFixed(1), tot.office.toFixed(1), '']);
-  yL = table(doc, X0, yL, cols, ['UNIT', 'ROW', 'SIZE (m)', 'GROUND', 'MEZZ.', 'TOTAL', 'OFFICE', 'ROLLER DOOR (m)'], body, { rh, size: fs, boldLast: true });
+  if (rows.length) yL = table(doc, X0, yL, cols, ['UNIT', 'ROW', 'SIZE (m)', 'GROUND', 'MEZZ.', 'TOTAL', 'OFFICE', 'ROLLER DOOR (m)'], body, { rh, size: fs, boldLast: true });
+  else if (!bsch.rows.length) yL = sectionTitle(doc, 'NO UNITS OR BUILDINGS ON THIS LOT', X0, yL, 162);
+  if (bsch.rows.length) {
+    yL += 3;
+    yL = sectionTitle(doc, 'BUILDING SCHEDULE, GFA BY USE (AREAS IN m²)', X0, yL, 162);
+    const bcols = [{ w: 44 }, { w: 22 }, { w: 16, align: 'right' }, { w: 14, align: 'right' }, { w: 16, align: 'right' }, { w: 50 }];
+    const bbody = bsch.rows.map((r) => [r.name, r.size, r.ground.toFixed(1), r.upper ? r.upper.toFixed(1) : '0.0', r.total.toFixed(1), r.text || 'n/a']);
+    bbody.push([`TOTAL, ${bsch.rows.length} BUILDING${bsch.rows.length === 1 ? '' : 'S'}`, '', bsch.tot.ground.toFixed(1), bsch.tot.upper.toFixed(1), bsch.tot.total.toFixed(1), '']);
+    yL = table(doc, X0, yL, bcols, ['BUILDING', 'SIZE (m)', 'GROUND', 'UPPER', 'TOTAL', 'GFA BY USE'], bbody, { rh: 4.4, size: 6.6, boldLast: true });
+    const ex = bsch.rows.flatMap((r) => r.extras.map((t) => `B${r.n}: ${t}`));
+    if (ex.length) { setText(doc, 5.8, false, [90, 94, 102]); doc.text(ex.join('   '), X0, yL + 1); yL += 4; }
+  }
   if (rows.length > shown.length) { setText(doc, 6, false, [90, 94, 102]); doc.text(`and ${rows.length - shown.length} more units, same type as above`, X0, yL); yL += 4; }
   setText(doc, 5.8, false, [90, 94, 102]);
   doc.text('Ground area is to the outside of the walls. OFFICE is the ground floor office or amenity plus any mezzanine office.', X0, yL);
@@ -1230,6 +1328,7 @@ export function drawYield(doc, model) {
     ['Lot area', `${m2f(stats.lotM2 ?? 0)} m²`],
     ['Zone', `${zoneTxt}${lot.lga ? `, ${lot.lga}` : ''}`],
     ['Units', `${stats.units} (${stats.mix.map((x) => `${x.count} x ${x.label}`).join(', ')})`],
+    ...(stats.buildingCount ? [['Buildings', `${stats.buildingCount} (${(stats.buildings || []).map((b) => b.label).join(', ')})`]] : []),
     ['Ground floor area', `${m2f(stats.groundGfaM2)} m²`],
     ['Mezzanine area', `${m2f(stats.mezzGfaM2)} m²`],
     ['GFA (ground plus mezzanine)', `${m2f(stats.gfaM2)} m²`],

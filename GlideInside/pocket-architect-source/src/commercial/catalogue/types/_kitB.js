@@ -170,7 +170,7 @@ export function quantitiesOf(plan) {
   }
   const r1 = (v) => Math.round(v * 100) / 100;
   const perUse = Object.fromEntries(Object.entries(plan.uses).map(([k, v]) => [k, r1(v)]));
-  return { gfaM2: r1(groundM2 + upperM2), groundM2: r1(groundM2), upperM2: r1(upperM2), roofM2: r1(roofM2), wallM2: r1(wallM2), glazingM2: r1(glazingM2), doors, perUse };
+  return { gfaM2: r1(groundM2 + upperM2), groundM2: r1(groundM2), upperM2: r1(upperM2), roofM2: r1(roofM2), wallM2: r1(wallM2), glazingM2: r1(glazingM2 + (Number(plan.skylightM2) || 0)), doors, perUse };
 }
 
 /** Emit 3D items. ctx may carry { builder, addBox, addOrientedBox, addCylinder, place, slot(slot, colour) } from src/viewer3d/mesh-builder.js. */

@@ -406,3 +406,23 @@ test('commercial exports go through buildExport: pdf is the plan set, dxf still 
   const dxf = await buildExport('dxf', cproject, {});
   assert.ok(dxf.bytes.length > 1000);
 });
+
+test('commercial kind: catalogue buildings appear on C101 (plan label, docks, canopy) and C103 (schedule row per building, GFA by use)', async () => {
+  const { createStore } = await import('../src/model/store.js');
+  const { chooseBuilding } = await import('../src/commercial/catalogue/fit.js');
+  const { applyBuildingChoice, addBuilding } = await import('../src/commercial/catalogue/ops.js');
+  const s = createStore(commercialProject({ plain: false, width: 120000, depth: 120000 }), { autosaveKey: null });
+  applyBuildingChoice(s, chooseBuilding(s.project, 'warehouse'));
+  addBuilding(s, 'showroom');
+  const { Rec, texts } = recorder();
+  const r = await exportPlanSet({ project: s.project, kind: 'commercial', download: false, jsPDF: Rec, fetchSite: null, date: new Date(2026, 10, 13) });
+  const text = texts.join('\n');
+  assert.equal(r.pages, 5);
+  assert.match(text, /WAREHOUSE/);
+  assert.match(text, /SHOWROOM/);
+  assert.match(text, /\d DOCKS?/);
+  assert.match(text, /BUILDING SCHEDULE/);
+  assert.match(text, /PROPOSED WAREHOUSE B1/);
+  assert.match(text, /PROPOSED SHOWROOM B2/);
+  assert.match(text, /warehouse \d/);
+});

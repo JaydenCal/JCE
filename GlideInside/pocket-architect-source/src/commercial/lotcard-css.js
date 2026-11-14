@@ -28,6 +28,21 @@ export const COMMERCIAL_CARD_CSS = `
 .lc-embed:not(.is-compact).cc-root .lc-pager{left:calc(clamp(400px,calc(50% - 168px),600px) + 28px);right:auto;transform:none;width:auto;min-width:300px;max-width:calc(100% - clamp(400px,calc(50% - 168px),600px) - min(18%,200px) - 64px);justify-content:space-between}
 .cc-root.is-compact .lc-pager{height:46px;left:12px;right:auto;max-width:calc(100% - 24px);min-width:0}
 .cc-root.is-compact .cc-pgt b{font-size:11.5px}
+.cc-typebar{position:absolute;z-index:2;display:flex;align-items:center;height:46px;border-radius:23px;padding:0 6px 0 4px}
+.lc-embed:not(.is-compact).cc-root .cc-typebar{left:calc(clamp(400px,calc(50% - 168px),600px) + 28px);bottom:84px;min-width:300px}
+.cc-root.is-compact .cc-typebar{left:12px;bottom:calc(var(--lc-card-h, 100px) + 66px);height:42px}
+.cc-tyb{display:flex;align-items:center;gap:10px;width:100%;padding:0 10px;height:100%;border-radius:20px;text-align:left;cursor:pointer}
+.cc-tyb:hover{background:rgba(255,255,255,.1)}
+.cc-ty-i{display:flex;flex:none}
+.cc-ty-t{display:flex;flex-direction:column;flex:1;min-width:0}
+.cc-ty-t i{font:500 9.5px/1 var(--lc-sans);font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:var(--lc-t2)}
+.cc-ty-t b{font:500 12.5px/1.2 var(--lc-sans);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cc-types{position:absolute;bottom:54px;left:0;right:0;padding:6px;border-radius:14px;z-index:6;min-width:260px;max-height:min(60vh,420px);overflow:auto}
+.cc-types[hidden]{display:none}
+.lc-root[data-view="2d"] .cc-typebar,.lc-root[data-view="split"] .cc-typebar{display:none!important}
+.cc-root.is-phone:has(.lc-card.is-open) .cc-typebar,.cc-root.is-compact:has(.lc-card.is-open) .cc-typebar{display:none}
+.cc-types button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 12px!important;border-radius:9px;font:500 12.5px var(--lc-sans)}
+.cc-types button:hover,.cc-types button[aria-current=true]{background:rgba(255,255,255,.14)}
 .cc-list{position:absolute;bottom:60px;left:0;right:0;margin:0;padding:6px;list-style:none;border-radius:14px;z-index:6;min-width:260px}
 .cc-list[hidden]{display:none}
 .cc-list button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:9px 12px!important;border-radius:9px;font:500 12.5px var(--lc-sans)}

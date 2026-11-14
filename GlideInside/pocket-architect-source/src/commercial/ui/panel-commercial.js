@@ -6,6 +6,11 @@ import { DOOR_PRESETS, FRONT_WINDOWS, REAR_WINDOWS, unitSpec, defaultUnit } from
 import { commercialEdit, isCommercial } from '../mode.js';
 import { addRow, mirrorRow, deleteRow } from './row-ops.js';
 import { analyse } from '../analyse.js';
+import { buildingsOf } from '../catalogue/buildings.js';
+import { typesForPicker, typeById, typeIconName, STRATA_ID } from '../catalogue/types/index.js';
+import { optionList } from '../catalogue/params.js';
+import { addBuilding, moveBuilding, setBuildingParam, deleteBuilding } from '../catalogue/ops.js';
+import { icon } from '../../ui/icons.js';
 import { effectiveClass, zoneClass, ZONE_CLASS_LABEL } from '../zones.js';
 import { rowLength } from '../layout.js';
 import { facts, NCC_CLASSES, PARKING_M2_PER_SPACE } from '../dataset.js';
@@ -35,10 +40,47 @@ export function createCommercialPanel({ store, host, editor }) {
   let scope = 'all';
   let raf = 0;
   let wasOn = false;
-  let open = { Doors: true, Unit: true };
+  let open = { Doors: true, Unit: true, Buildings: true };
   // At phone width the dock is a bottom sheet: collapsed to its title bar so the plan is visible, opened with the toggle. Wide screens ignore it.
   let sheetOpen = !(typeof matchMedia === 'function' && matchMedia('(max-width: 899.98px)').matches);
   const rowOf = () => { const c = store.project.commercial; return c?.rows.find((r) => r.id === store.ui.commercialRow) || c?.rows[0] || null; };
+
+  let addType = null;
+  const bldOf = () => { const bs = buildingsOf(store.project.commercial || {}); return bs.find((b) => b.id === store.ui.commercialBuilding) || null; };
+
+  /** The Buildings section: the list, Add building with the type list, and a param form generated from the type's params[]. */
+  function buildingsSection(c) {
+    const bs = buildingsOf(c);
+    const sel = bldOf();
+    const types = typesForPicker().filter((t) => t.id !== STRATA_ID);
+    const typeSel = h('select', { 'aria-label': 'Building type', dataset: { ps: 'add-building-type' }, onchange: () => { addType = typeSel.value; } },
+      ...types.map((t) => h('option', { value: t.id }, t.label)));
+    typeSel.value = addType && types.some((t) => t.id === addType) ? addType : types[0]?.id;
+    const list = h('div', { class: 'cm-rows', role: 'tablist', 'aria-label': 'Buildings', dataset: { ps: 'building-list' } },
+      ...bs.map((b) => h('button', { type: 'button', role: 'tab', class: 'cm-chip', 'aria-selected': String(b.id === sel?.id), dataset: { building: b.id }, onclick: () => store.setUI({ commercialBuilding: b.id, commercialRow: null }) }, icon(typeIconName(b.def), { size: 16 }), `B${b.n} ${b.label}`, h('i', null, `${Math.round(b.gfaM2).toLocaleString('en-AU')} m²`))));
+    const add = h('div', { class: 'cm-actions' }, typeSel,
+      h('button', { type: 'button', class: 'cm-btn', dataset: { action: 'add-building' }, onclick: () => { try { const id = addBuilding(store, typeSel.value); store.setUI({ commercialBuilding: id, commercialRow: null }); } catch (e) { console.warn(e); } } }, 'Add building'),
+      h('button', { type: 'button', class: 'cm-btn cm-danger', dataset: { action: 'delete-building' }, disabled: !sel, onclick: () => { deleteBuilding(store, sel.id); store.setUI({ commercialBuilding: null }); } }, 'Delete building'));
+    const kids = [list, add];
+    if (sel) {
+      const def = sel.def;
+      const control = (p) => {
+        const v = sel.params[p.key];
+        if (p.type === 'bool') return h('input', { type: 'checkbox', checked: !!v, dataset: { param: p.key }, onchange: (e) => setBuildingParam(store, sel.id, p.key, e.currentTarget.checked) });
+        if (p.type === 'select') {
+          const el = h('select', { dataset: { param: p.key }, onchange: () => setBuildingParam(store, sel.id, p.key, el.value) }, ...optionList(p).map((o) => h('option', { value: String(o.value) }, o.label)));
+          el.value = String(v);
+          return el;
+        }
+        const inp = h('input', { type: 'number', min: p.min, max: p.max, step: p.step || 1, value: v, dataset: { param: p.key }, onchange: () => setBuildingParam(store, sel.id, p.key, Number(inp.value)) });
+        return h('span', { class: 'cm-in' }, inp, p.unit ? h('em', null, p.unit) : null);
+      };
+      kids.push(...def.params.map((p) => field(p.label, control(p))));
+      const pos = (label, key, step) => { const inp = h('input', { type: 'number', step, value: Math.round((sel.place[key] || 0) * 100) / 100, dataset: { place: key }, onchange: () => moveBuilding(store, sel.id, { [key]: Number(inp.value) || 0 }) }); return field(label, h('span', { class: 'cm-in' }, inp, h('em', null, key === 'rotationDeg' ? 'deg' : 'mm'))); };
+      kids.push(pos('Position x', 'x', 100), pos('Position y', 'y', 100), pos('Turn', 'rotationDeg', 1));
+    }
+    return section('Buildings', ...kids);
+  }
 
   // Field builders ------------------------------------------------------------------------------------------------------
   const field = (label, control, hint) => h('label', { class: 'cm-field' }, h('span', { class: 'cm-l' }, label), control, hint ? h('span', { class: 'cm-hint' }, hint) : null);
@@ -205,6 +247,7 @@ export function createCommercialPanel({ store, host, editor }) {
         h('button', { type: 'button', class: 'cm-sheet-toggle', dataset: { action: 'sheet-toggle' }, 'aria-expanded': String(sheetOpen), 'aria-label': sheetOpen ? 'Collapse the layout panel' : 'Open the layout panel', onclick: () => { sheetOpen = !sheetOpen; schedule(); } }, sheetOpen ? 'Hide' : 'Edit')),
       h('div', { class: 'cm-sub' }, lot ? `${lot.lotLabel || 'Lot'}${lot.zoning ? ` · ${lot.zoning.code || ''} ${lot.zoning.name || ''}` : ' · zone not looked up'}` : 'Find an address to place units on a lot'),
       h('label', { class: 'cm-field cm-stack' }, h('span', { class: 'cm-l' }, 'Zone class'), zoneSel)));
+    dock.append(buildingsSection(c));
     // Rows
     const rowsBox = h('div', { class: 'cm-rows', role: 'tablist', 'aria-label': 'Rows' });
     c.rows.forEach((r, i) => {

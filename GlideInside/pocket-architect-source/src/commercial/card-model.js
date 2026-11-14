@@ -11,6 +11,9 @@ import { zoneClass } from './zones.js';
 import { feasibility, money, pct1 } from './feasibility.js';
 import { unitGfas } from './feasibility.js';
 import { parkingLayout } from './parking.js';
+import { buildingsOf } from './catalogue/buildings.js';
+import { buildingParking } from './catalogue/bays.js';
+import { toWorld } from './catalogue/frame.js';
 
 const fmt = (n) => Number(n).toLocaleString('en-AU');
 const fmt1 = (n) => Number(n).toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
@@ -24,6 +27,7 @@ export function commercialCardStats(project) {
     { key: 'gfa', label: 'GFA m²', value: fmt(Math.round(s.gfaM2)) },
     { key: 'parking', label: 'Parking bays', value: `${s.parking.provided} / ${s.parking.required}` },
   ];
+  if (s.buildingCount) out.splice(s.units ? 1 : 0, s.units ? 0 : 1, { key: 'buildings', label: s.buildingCount === 1 ? 'Building' : 'Buildings', value: String(s.buildingCount) });
   if (s.coveragePct != null) out.push({ key: 'coverage', label: 'Site coverage', value: `${fmt1(s.coveragePct)}%` });
   return out;
 }
@@ -40,7 +44,7 @@ export function unitList(project) {
   const c = project.commercial;
   const gf = unitGfas(c);
   const rowNo = new Map(c.rows.map((r, i) => [r.id, i + 1]));
-  return layoutUnits(c).map((u, i) => ({
+  const units = layoutUnits(c).map((u, i) => ({
     n: u.n,
     size: `${Math.round(u.w / 100) / 10} x ${Math.round(u.d / 100) / 10} m`,
     ground: Math.round(gf[i].ground * 10) / 10,
@@ -48,6 +52,14 @@ export function unitList(project) {
     gfa: Math.round(gf[i].gfa * 10) / 10,
     row: rowNo.get(u.rowId) || 1,
   }));
+  // Catalogue buildings follow the strata units: n is B1, B2 ... and the size is the footprint.
+  const bs = buildingsOf(c).map((b) => {
+    const xs = b.local.outline.map((q) => q.x);
+    const ys = b.local.outline.map((q) => q.y);
+    const upper = Number(b.q.upperM2) || 0;
+    return { n: `B${b.n}`, label: b.label, size: `${Math.round((Math.max(...xs) - Math.min(...xs)) / 100) / 10} x ${Math.round((Math.max(...ys) - Math.min(...ys)) / 100) / 10} m`, ground: Math.round(b.groundM2 * 10) / 10, mezz: Math.round(upper * 10) / 10, gfa: Math.round(b.gfaM2 * 10) / 10, row: 0, building: true };
+  });
+  return [...units, ...bs];
 }
 
 /**
@@ -64,16 +76,17 @@ export function commercialStatus(project) {
   const got = s.parking.provided;
   const acc = s.parking.accessible;
   let parking;
-  if (!s.units) parking = { state: 'none', text: '' };
+  if (!s.units && !s.buildingCount) parking = { state: 'none', text: '' };
   else if (got < need) parking = { state: 'check', text: `Parking short: ${got} bays shown, ${need} indicated, check with council` };
   else if (acc.provided < acc.required) parking = { state: 'check', text: `Accessible bays short: ${acc.provided} of ${acc.required}, check with council` };
   else parking = { state: 'inside', text: `Parking: ${got} bays shown, ${need} indicated` };
   // The parking row must lie inside the lot.
   const lot = lotOf(project);
-  if (lot && s.units) {
+  if (lot && (s.units || s.buildingCount)) {
     const park = parkingLayout(project.commercial);
+    const bpark = buildingParking(project.commercial);
     const inside = (q) => pointInside(q, lot.boundary);
-    if (park.rows.some((r) => r.slots.some((sl) => sl.poly.some((q) => !inside(q))))) parking = { state: 'outside', text: 'Parking extends outside the lot, check the layout' };
+    if ([...park.rows, ...bpark.rows].some((r) => r.slots.some((sl) => sl.poly.some((q) => !inside(q))))) parking = { state: 'outside', text: 'Parking extends outside the lot, check the layout' };
   }
   return { setback, parking };
 }
@@ -100,7 +113,7 @@ function pointInside(p, poly) {
 
 /** The feasibility headline (values only, the margin stays in the details panel): { value, rent, text } or null when it cannot be worked out. Indicative, ex GST. */
 export function feasibilityHeadline(project) {
-  if (!isCommercial(project) || !project.commercial.rows.length) return null;
+  if (!isCommercial(project) || !(project.commercial.rows.length || project.commercial.buildings?.length)) return null;
   let f = null;
   try { f = feasibility(project.commercial, project.site?.lot); } catch { f = null; }
   if (!f || !(f.gfa > 0)) return null;
@@ -110,7 +123,7 @@ export function feasibilityHeadline(project) {
 
 // Camera poses ---------------------------------------------------------------------------------------------------------------------
 // Metres in world space: X = plan x / 1000, Z = plan y / 1000, Y up. Same convention as src/viewer3d/room-logic.js.
-const unitPoints = (project) => layoutUnits(project.commercial).flatMap((u) => u.poly);
+const unitPoints = (project) => [...layoutUnits(project.commercial).flatMap((u) => u.poly), ...buildingsOf(project.commercial).flatMap((b) => b.outline)];
 
 function streetFrame(lot) {
   const bd = lot?.boundary;
@@ -153,8 +166,22 @@ export function exteriorPose(project, kind = '3d') {
 export function unitWalkPose(project, n = 1) {
   if (!isCommercial(project)) return null;
   const units = layoutUnits(project.commercial);
-  const u = units.find((x) => x.n === n) || units[0];
-  if (!u) return null;
+  const isB = typeof n === 'string' && /^B\d+$/.test(n);
+  const u = isB ? null : (units.find((x) => x.n === n) || units[0]);
+  if (!u) {
+    // A catalogue building: in from the front edge at the middle of the frontage, looking toward the rear.
+    const bl = buildingsOf(project.commercial);
+    const b = (isB && bl.find((x) => x.n === Number(n.slice(1)))) || bl[0];
+    if (!b) return null;
+    const xs = b.local.outline.map((q) => q.x);
+    const ys = b.local.outline.map((q) => q.y);
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+    const y0 = Math.min(...ys);
+    const depth = Math.max(...ys) - y0;
+    const standAt = toWorld(b.place, { x: cx, y: y0 + depth * 0.25 });
+    const look = toWorld(b.place, { x: cx, y: y0 + depth * 0.8 });
+    return { position: { x: standAt.x / 1000, y: 1.6, z: standAt.y / 1000 }, target: { x: look.x / 1000, y: 1.5, z: look.y / 1000 }, fov: 70, levelId: null };
+  }
   const fr = u.frame;
   const fl = facadeLayout(u.spec);
   const along = u.x0 + (fl.doors[0] ? fl.doors[0].offset : u.w / 2);

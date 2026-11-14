@@ -636,6 +636,7 @@ export function applyLayout(store, choice) {
     if (!isCommercial(p)) throw new Error('This design is not in commercial mode.');
     const lot = lotOf(p);
     p.commercial.rows = choice.rows;
+    p.commercial.buildings = []; // a strata layout replaces any catalogue building the card put on the lot
     p.commercial.parking = { ...p.commercial.parking, extra: choice.extra || [] };
     p.commercial.layout = { id: choice.id, label: choice.label, tooBig: !!choice.tooBig, envKey: lot ? envKeyOf(lot) : null, sig: rowsSignature(choice.rows) };
     p.commercial = normaliseCommercial(p.commercial);
@@ -648,7 +649,7 @@ export function applyLayout(store, choice) {
 /** True when the rows are still the ones the layout choice put there (nothing was moved or edited since). */
 export function layoutUntouched(project) {
   const l = project?.commercial?.layout;
-  return !!l && l.sig === rowsSignature(project.commercial.rows);
+  return !!l && !l.typeId && l.sig === rowsSignature(project.commercial.rows);
 }
 
 /** True when the council setbacks have changed since the layout was placed, so the choice should be made again. */

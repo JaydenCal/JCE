@@ -104,8 +104,59 @@ test('ops: add, move, set param, delete are single undoable steps', () => {
   assert.equal(s.project.commercial.buildings.length, 0);
 });
 
-test('3D: a project with buildings builds a model', () => {
+test('3D: every type builds a model with its own meshes (roofs, extras) and warehouse docks add geometry', () => {
+  const count = (m) => { let n = 0; m.traverse?.((o) => { if (o.isMesh) n += 1; }); return n; };
+  const base = storeOf(lotProject({ width: 200000, depth: 200000 }));
+  const bid = addBuilding(base, 'warehouse');
+  deleteBuilding(base, bid);
+  base.apply('No rows', (p) => { p.commercial.rows = []; materialise(p); });
+  const empty = count(buildModel(base.project));
+  for (const t of typed) {
+    const s = storeOf(lotProject({ width: 200000, depth: 200000 }));
+    applyBuildingChoice(s, chooseBuilding(s.project, t.id));
+    const m = buildModel(s.project);
+    assert.ok(m, t.id);
+    assert.ok(count(m) > empty, `${t.id} adds meshes`);
+  }
+  const few = storeOf(lotProject({ width: 200000, depth: 200000 }));
+  const id = addBuilding(few, 'warehouse', { params: { docks: 1 } });
+  const n1 = count(buildModel(few.project));
+  setBuildingParam(few, id, 'docks', 4);
+  assert.ok(count(buildModel(few.project)) > n1);
+});
+
+test('wording lint over the framework files: no em or en dashes, never "compliant", no brand names', async () => {
+  const { readFileSync, readdirSync } = await import('node:fs');
+  const dir = new URL('../src/commercial/catalogue/', import.meta.url);
+  const files = readdirSync(dir).filter((f) => f.endsWith('.js') || f.endsWith('.json')).map((f) => new URL(f, dir));
+  files.push(new URL('../src/commercial/lotcard.js', import.meta.url), new URL('../src/commercial/ui/panel-commercial.js', import.meta.url));
+  for (const f of files) {
+    const t = readFileSync(f, 'utf8');
+    assert.ok(!/[–—]/.test(t), `dash in ${f.pathname}`);
+    assert.ok(!/compliant/i.test(t), `compliant in ${f.pathname}`);
+    assert.ok(!/\b(shell|caltex|ampol|mcdonald|kfc|woolworths|coles|bunnings)\b/i.test(t), `brand in ${f.pathname}`);
+  }
+});
+
+test('picker: strata units first, every type has an icon and label, switcher lists follow the type', async () => {
+  const { typeChoices, switcherList, activeTypeId } = await import('../src/commercial/catalogue/picker.js');
+  const p = lotProject({ width: 120000, depth: 120000 });
+  const ch = typeChoices(p);
+  assert.equal(ch[0].id, STRATA_ID);
+  assert.ok(ch.every((c) => c.label && c.icon));
+  assert.equal(activeTypeId(p), STRATA_ID);
+  assert.equal(switcherList(STRATA_ID)[0].label, 'Best fit');
+  assert.equal(switcherList('warehouse')[0].label, 'Best fit');
+  assert.ok(switcherList('warehouse').length >= 2);
+});
+
+test('strata layout after a type clears the building; a type after strata clears the rows', async () => {
+  const { chooseLayout, applyLayout } = await import('../src/commercial/layouts.js');
   const s = storeOf(lotProject({ width: 120000, depth: 120000 }));
-  applyBuildingChoice(s, chooseBuilding(s.project, 'showroom'));
-  assert.ok(buildModel);
+  applyBuildingChoice(s, chooseBuilding(s.project, 'warehouse'));
+  assert.equal(s.project.commercial.rows.length, 0);
+  applyLayout(s, chooseLayout(s.project, 'best'));
+  assert.equal(s.project.commercial.buildings.length, 0);
+  assert.ok(s.project.commercial.rows.length > 0);
+  assert.equal(s.project.commercial.layout.typeId, undefined);
 });

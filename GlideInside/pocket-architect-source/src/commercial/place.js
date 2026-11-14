@@ -47,7 +47,7 @@ export function watchRefit(store, { isBusy = () => false } = {}) {
     const id = `${lot.origin?.e}|${lot.origin?.n}|${lot.lotLabel}`;
     if (id !== key) { key = id; refits = 0; since = Date.now(); }
     if (refits >= 2 || Date.now() - since > 40000) return;
-    if (!layoutUntouched(p) || !setbacksMoved(p)) return;
+    if (p.commercial.layout?.typeId || !layoutUntouched(p) || !setbacksMoved(p)) return;
     refits += 1;
     const choice = chooseLayout(p, p.commercial.layout?.id || BEST_ID);
     if (choice) applyLayout(store, choice);
