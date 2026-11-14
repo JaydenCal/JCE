@@ -37,7 +37,7 @@ export function parkingLayout(commercial) {
     const fr = rowFrame(row, rows);
     const L = rowLength(row, rows);
     const d = units.find((u) => u.rowId === row.id)?.d || 0;
-    const n = Math.floor(L / bayW);
+    const n = row.bays === false ? 0 : Math.floor(L / bayW); // an inner row (its front faces another row across a shared apron) has no bays of its own
     const slots = [];
     for (let i = 0; i < n; i++) {
       const a = i * bayW;
@@ -48,6 +48,23 @@ export function parkingLayout(commercial) {
     slotsTotal += n;
     out.push({ rowId: row.id, frame: fr, length: L, depth: d, slots });
   }
+  // Extra bay strips (spare areas and boundaries): { x, y, rotationDeg, count } with the bays running along u from the origin and
+  // extending bayL along f; the car aisle lies on the other side, so the strip carries its own offset (off = aisle, depth = -aisle).
+  const aisle = Number(commercial.parking.aisleMm) || 0;
+  (commercial.parking.extra || []).forEach((e, k) => {
+    const a = ((Number(e.rotationDeg) || 0) * Math.PI) / 180;
+    const u = { x: Math.cos(a), y: Math.sin(a) };
+    const f = { x: -Math.sin(a), y: Math.cos(a) };
+    const fr = { o: { x: Number(e.x) || 0, y: Number(e.y) || 0 }, u, v: f, f, src: null, mirrored: false };
+    const cnt = Math.max(0, Math.round(Number(e.count) || 0));
+    const slots = [];
+    for (let i = 0; i < cnt; i++) {
+      const a0 = i * bayW;
+      slots.push({ index: i, kind: 'bay', poly: [rowPoint(fr, a0, 0), rowPoint(fr, a0 + bayW, 0), rowPoint(fr, a0 + bayW, bayL), rowPoint(fr, a0, bayL)], centre: rowPoint(fr, a0 + bayW / 2, bayL / 2), aisleEnd: rowPoint(fr, a0 + bayW / 2, 0) });
+    }
+    slotsTotal += cnt;
+    out.push({ rowId: `extra-${k + 1}`, frame: fr, length: cnt * bayW, depth: -aisle, off: aisle, extra: true, slots });
+  });
   // Required accessible bays: fixpoint, because the shared zones take slots that are not bays.
   const table = commercial.buildingClass || 'class_8';
   const override = Number.isInteger(commercial.parking.accessibleOverride) ? commercial.parking.accessibleOverride : null;
@@ -63,7 +80,7 @@ export function parkingLayout(commercial) {
   // Place the groups [bay][zone][bay] and [bay][zone] on the entry row, nearest the entry.
   let provided = 0;
   let path = null;
-  const home = out.find((r) => r.rowId === entry?.rowId) || out[0];
+  const home = out.find((r) => r.rowId === entry?.rowId && r.slots.length >= 3) || out.find((r) => !r.extra && r.slots.length >= 3) || out.find((r) => r.slots.length) || out[0];
   if (home && want > 0) {
     const pairs = Math.floor(want / 2);
     const single = want % 2;

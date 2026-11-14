@@ -339,7 +339,12 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     if (!hl) { panel.replaceChildren(x(), h('h3', null, 'Indicative yield and value'), h('p', { class: 'cc-sub' }, 'Place a layout on a lot to see the figures.')); return; }
     const f = hl.f;
     const keys = [['saleRate', 'Sale rate', '$/m²'], ['rentRate', 'Rent per year', '$/m²'], ['yieldPct', 'Net yield', '%'], ['landRate', 'Land rate', '$/m²'], ['buildRate', 'Build rate (GFA)', '$/m²']];
-    panel.replaceChildren(x(), h('h3', null, 'Indicative yield and value'),
+    const priceInput = h('input', { type: 'number', min: 0, step: 10000, value: f.inputs.landPrice.value ?? '', placeholder: 'Auto', dataset: { ps: 'cc-land-price' }, onchange: () => {
+      const raw = priceInput.value;
+      store.apply('Set land price', (q) => { if (!q.commercial) return; q.commercial.feasibility ??= { area: null, v: {} }; q.commercial.feasibility.v ??= {}; if (raw === '' || Number(raw) <= 0) delete q.commercial.feasibility.v.landPrice; else q.commercial.feasibility.v.landPrice = Number(raw); });
+    } });
+    const landRow = h('label', { class: 'cc-land' }, h('span', null, 'Land price, ex GST (leave blank to use the area rate)'), priceInput);
+    panel.replaceChildren(x(), h('h3', null, 'Indicative yield and value'), landRow,
       h('p', { class: 'cc-sub' }, `${f.areaLabel}. Portal and market data as at ${DATA_DATE}. ${CAVEAT}`),
       ...summaryRows(f).map(([k, v, b]) => h('div', { class: 'cc-line', dataset: { fz: k } }, h('span', null, k, b ? h('i', null, `Low to high: ${b}`) : null), h('b', null, v))),
       h('h4', null, 'Rates used'),
@@ -378,7 +383,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     stats.replaceChildren(...commercialCardStats(p).map((c) => h('div', { dataset: { stat: c.key } }, h('b', null, c.value), h('i', null, c.label))));
     const hl = feasibilityHeadline(p);
     feas.hidden = !hl;
-    if (hl) feasT.replaceChildren(h('b', null, hl.value), h('span', null, 'indicative gross realisation'), h('i', null, ` · margin ${hl.margin}`));
+    if (hl) feasT.replaceChildren(h('div', null, h('b', null, hl.value), h('span', null, 'indicative gross realisation')), h('div', null, h('b', null, hl.rent), h('span', null, 'indicative gross rent per year')));
     const fin = finishesOf(p);
     for (const b of cladChips.children) b.setAttribute('aria-pressed', String(b.dataset.finish === fin.cladding));
     for (const b of doorChips.children) b.setAttribute('aria-pressed', String(b.dataset.finish === fin.door));

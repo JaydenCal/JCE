@@ -64,7 +64,7 @@ export function developedAreaM2(commercial, lot) {
   for (const pr of park.rows) {
     if (!pr.slots.length) continue;
     const fr = pr.frame;
-    const far = pr.depth + off + commercial.parking.bayL;
+    const far = pr.depth + (pr.off ?? off) + commercial.parking.bayL;
     polys.push([rowPoint(fr, 0, pr.depth), rowPoint(fr, pr.length, pr.depth), rowPoint(fr, pr.length, far), rowPoint(fr, 0, far)]);
   }
   const w = commercial.waste;

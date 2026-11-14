@@ -98,14 +98,14 @@ function pointInside(p, poly) {
   return false;
 }
 
-/** The feasibility headline: { value, margin, text } or null when it cannot be worked out. Indicative, ex GST. */
+/** The feasibility headline (values only, the margin stays in the details panel): { value, rent, text } or null when it cannot be worked out. Indicative, ex GST. */
 export function feasibilityHeadline(project) {
   if (!isCommercial(project) || !project.commercial.rows.length) return null;
   let f = null;
   try { f = feasibility(project.commercial, project.site?.lot); } catch { f = null; }
   if (!f || !(f.gfa > 0)) return null;
   const m = f.mid;
-  return { value: money(m.realisation), margin: `${pct1(m.marginSalePct)} on cost`, marginPct: m.marginSalePct, text: `Indicative gross realisation ${money(m.realisation)}, margin ${pct1(m.marginSalePct)} on cost`, f };
+  return { value: money(m.realisation), rent: money(m.grossRent), text: `Indicative gross realisation ${money(m.realisation)}, indicative gross rent ${money(m.grossRent)} per year`, f };
 }
 
 // Camera poses ---------------------------------------------------------------------------------------------------------------------

@@ -100,7 +100,8 @@ test('card model: stats, zone line, units list and the feasibility headline', ()
   assert.equal(us.length, Number(st.units));
   assert.ok(us.every((u) => u.gfa > 0 && /x/.test(u.size)));
   const hl = feasibilityHeadline(q);
-  assert.match(hl.text, /^Indicative gross realisation \$[\d,]+, margin -?[\d.]+% on cost$/);
+  assert.match(hl.text, /^Indicative gross realisation \$[\d,]+, indicative gross rent \$[\d,]+ per year$/);
+  assert.doesNotMatch(hl.text, /margin/i, 'the card headline carries values only');
 });
 
 test('finishes: swatches have generic names, apply to the 3D model and are kept when the layout changes', () => {
@@ -157,4 +158,42 @@ test('wording lint: the new card files and the commercial page have no dashes, c
   // Visible dates are DD/MM/YYYY.
   const lc = readFileSync(files[3], 'utf8');
   assert.doesNotMatch(lc, /\b20\d\d-\d\d-\d\d\b/);
+});
+
+test('best fit v2: multi row stacks use the lot, park by the required rate, keep coverage near 35 to 45% and the frontage strip clear', async () => {
+  const { yardOf } = await import('../src/commercial/layouts.js');
+  const { commercialChecks } = await import('../src/commercial/checks.js');
+  const lots = [[90000, 100000], [60000, 100000], [40000, 70000]];
+  for (const [w, d] of lots) {
+    const p = lotProject({ width: w, depth: d });
+    const t0 = Date.now();
+    const c = chooseLayout(p, BEST_ID);
+    assert.ok(Date.now() - t0 < 1500, `runtime ${Date.now() - t0} ms`);
+    const s = storeOf(p);
+    applyLayout(s, c);
+    const q = s.project;
+    const st = commercialStats(q);
+    assert.ok(st.parking.provided >= st.parking.required, `${w}x${d} parking`);
+    assert.ok(st.coveragePct <= 45.01, `${w}x${d} coverage ${st.coveragePct}`);
+    assert.ok(st.coveragePct >= 25, `${w}x${d} uses the lot, coverage ${st.coveragePct}`);
+    assert.equal(commercialStatus(q).setback.state, 'inside');
+    const warn = commercialChecks(q).filter((x) => x.kind === 'warn');
+    assert.deepEqual(warn, [], `${w}x${d} checks: ${JSON.stringify(warn)}`);
+    const yard = yardOf(q.site.lot);
+    const pk = parkingLayout(q.commercial);
+    const { insideYard } = await import('./helpers/yard.mjs');
+    assert.ok(pk.rows.every((r) => r.slots.every((sl) => insideYard(sl.poly, yard))), 'every bay is inside the yard (3 m frontage strip kept)');
+  }
+  const big = chooseLayout(lotProject({ width: 90000, depth: 100000 }), BEST_ID);
+  assert.ok(big.gfa > 3000 && big.rowCount >= 2, `90 x 100 m uses several rows: ${big.label} ${big.gfa}`);
+});
+
+test('best fit v2: the stub lot (74 x 112 m, E4) parks and fits', () => {
+  const p = lotProject({ width: 74000, depth: 112000 });
+  const c = chooseLayout(p, BEST_ID);
+  const s = storeOf(p);
+  applyLayout(s, c);
+  const st = commercialStats(s.project);
+  assert.ok(st.parking.provided >= st.parking.required);
+  assert.ok(st.units >= 12);
 });

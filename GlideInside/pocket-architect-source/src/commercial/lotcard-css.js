@@ -6,6 +6,9 @@ export const COMMERCIAL_CARD_CSS = `
 .cc-feas{margin:4px 0 8px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid var(--lc-line);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .cc-feas-t{flex:1 1 220px;min-width:0;font:500 12.5px/1.35 var(--lc-sans);color:var(--lc-t1)}
 .cc-feas-t b{font:400 19px/1.1 var(--lc-serif);margin-right:6px;white-space:nowrap}
+.cc-feas-t div{display:flex;align-items:baseline;flex-wrap:wrap;margin:1px 0}
+.cc-land{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 6px;font:500 12.5px var(--lc-sans)}
+.cc-land input{width:130px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:inherit;padding:0 10px;font:500 13px var(--lc-sans)}
 .cc-feas-t i{font-style:normal;color:var(--lc-t2)}
 .cc-feas .lc-btn{height:32px;font-size:12px;padding:0 14px!important}
 .cc-feas[hidden]{display:none}

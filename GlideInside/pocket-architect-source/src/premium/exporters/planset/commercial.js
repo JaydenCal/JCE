@@ -98,7 +98,7 @@ function pavedPolys(c, a) {
   const off = bayOffsetMm(c.parking);
   return a.parking.rows.filter((pr) => pr.slots.length).map((pr) => {
     const fr = pr.frame;
-    const far = pr.depth + off + c.parking.bayL;
+    const far = pr.depth + (pr.off ?? off) + c.parking.bayL;
     return [rowPoint(fr, 0, pr.depth), rowPoint(fr, pr.length, pr.depth), rowPoint(fr, pr.length, far), rowPoint(fr, 0, far)];
   });
 }
@@ -607,13 +607,14 @@ export function drawLayout(doc, model) {
   }
 
   // Paving: truck apron, car aisle, then the bays.
-  const off = model.off;
+  const offAll = model.off;
   const { aisleMm, bayW, bayL } = c.parking;
   for (const pr of a.parking.rows) {
     if (!pr.slots.length) continue;
     const fr = pr.frame;
     const L = pr.length;
     const pt = (x, d) => T(rowPoint(fr, x, d));
+    const off = pr.off ?? offAll;
     const apron = Math.max(0, off - aisleMm);
     doc.setFillColor(...PAVE_FILL);
     if (apron > 0) polygon(doc, [pt(0, pr.depth), pt(L, pr.depth), pt(L, pr.depth + apron), pt(0, pr.depth + apron)], 'F');
@@ -763,6 +764,7 @@ export function drawLayout(doc, model) {
   for (const pr of a.parking.rows) {
     if (!pr.slots.length || bayRowsDone.size >= 2) continue;
     bayRowsDone.add(pr.rowId);
+    const off = pr.off ?? offAll;
     const fr = pr.frame;
     const L = pr.length;
     const along = Math.max(bayW, Math.min(L - bayW, L * 0.18));

@@ -95,10 +95,11 @@ export function bollardsFor(commercial) {
   for (const pr of park.rows) {
     if (!pr.slots.length) continue;
     const fr = pr.frame;
-    const mid = pr.depth + bayOffsetMm(commercial.parking) + commercial.parking.bayL / 2;
+    const offR = pr.off ?? bayOffsetMm(commercial.parking);
+    const mid = pr.depth + offR + commercial.parking.bayL / 2;
     for (const [along, s] of [[0, -1], [pr.slots.length * commercial.parking.bayW, 1]]) {
       const p = rowPoint(fr, along + s * 300, mid);
-      const nearEdge = rowPoint(fr, along, pr.depth + bayOffsetMm(commercial.parking)); // the end of the row at the aisle side
+      const nearEdge = rowPoint(fr, along, pr.depth + offR); // the end of the row at the aisle side
       if (units.some((u) => distToPoly(nearEdge, u.poly) < NEAR_BUILDING_MM)) push(p, 'parkingEnd');
     }
     for (const sl of pr.slots) if (sl.kind === 'zone') push(sl.aisleEnd, 'accessible');

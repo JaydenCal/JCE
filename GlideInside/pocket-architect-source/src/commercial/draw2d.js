@@ -50,12 +50,13 @@ export function drawCommercial(ctx, st) {
   // Pavement: the aisle between each facade and its bay row, then the bay row itself, so the parking reads as a paved area with an
   // aisle and marked bays (2.4 x 5.4 m by default) and not as loose rectangles. The aisle carries its width and a centre line.
   const { aisleMm, bayW, bayL } = c.parking;
-  const off = bayOffsetMm(c.parking); // facade to the near edge of the bays: the truck apron, or the car aisle when that is wider
-  const apron = Math.max(0, off - aisleMm); // the part of the apron in front of the car aisle
+  const offAll = bayOffsetMm(c.parking); // facade to the near edge of the bays: the truck apron, or the car aisle when that is wider
   const lw = Math.max(1.2, Math.min(3, st.view.scale * 100)); // a 100 mm marking line, never under 1.2 px
   const labels = [];
   for (const pr of a.parking.rows) {
     if (!pr.slots.length) continue;
+    const off = pr.off ?? offAll;
+    const apron = Math.max(0, off - aisleMm); // the part of the apron in front of the car aisle
     const fr = pr.frame;
     const L = pr.length;
     const B = pr.slots.length * bayW;
