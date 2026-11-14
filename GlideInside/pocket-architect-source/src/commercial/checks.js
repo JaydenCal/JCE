@@ -12,6 +12,8 @@ import { defaultRulesFor } from './rules.js';
 import { bollardsFor, pointInPoly, BOLLARD_NOTE } from './bollards.js';
 import { ACCESSIBLE_BAY } from './rules.js';
 import { facts } from './dataset.js';
+import { buildingsOf } from './catalogue/buildings.js';
+import { buildingParking } from './catalogue/bays.js';
 
 const m = (mm) => (mm / 1000).toFixed(2);
 const ACCESS_FACT = { class_5: 'accessibleClass5', class_6: 'accessibleClass6', class_7: 'accessibleClass7', class_8: 'accessibleClass8' };
@@ -33,6 +35,7 @@ export function commercialChecks(project) {
   if (!c) return out;
   const lot = lotOf(project);
   const units = layoutUnits(c);
+  const bsAll = buildingsOf(c);
 
   // Zone
   const z = zoneClass(project.site?.lot);
@@ -42,7 +45,7 @@ export function commercialChecks(project) {
   else if (cls) info('zone', `${defaultRulesFor(cls).label} zone class. Setbacks and rates are indicative, check with council`);
 
   // Setbacks and boundary, same checker as the housing mode (the generated rooms and walls are the footprint).
-  if (lot && units.length) {
+  if (lot && (units.length || bsAll.length)) {
     const lc = lotChecks(project);
     for (const msg of lc.messages) warn(`lot-${msg.kind}-${msg.edge}`, msg.text.replace(/^House /, 'Building '));
   }
@@ -57,6 +60,21 @@ export function commercialChecks(project) {
       if (units[i].rowId === units[j].rowId) continue;
       if (G.convexOverlap(units[i].poly, units[j].poly, 100)) { warn(`overlap-${units[i].n}-${units[j].n}`, `Unit ${units[i].n} overlaps unit ${units[j].n}, move one of the rows`); break; }
     }
+  }
+
+  // Catalogue buildings: overlaps with each other and with the rows, extras (apron, canopy) over the boundary, and the checks of each type.
+  const bName = (b) => `${b.label} ${b.n}`;
+  for (let i = 0; i < bsAll.length; i++) {
+    const b = bsAll[i];
+    for (let j = i + 1; j < bsAll.length; j++) if (G.convexOverlap(b.outline, bsAll[j].outline, 100)) warn(`boverlap-${b.n}-${bsAll[j].n}`, `${bName(b)} overlaps ${bName(bsAll[j])}, move one of them`);
+    for (const u of units) if (G.convexOverlap(b.outline, u.poly, 100)) { warn(`boverlap-${b.n}-u${u.n}`, `${bName(b)} overlaps unit ${u.n}, move one of them`); break; }
+    if (lot) for (const e of b.extras) {
+      if (!['apron', 'canopy', 'fuel-canopy', 'yard'].includes(e.kind)) continue;
+      if (e.polygon.some((q) => !pointInPoly(q, lot.boundary))) { warn(`bextra-${b.n}-${e.kind}`, `${bName(b)}: the ${(e.label || e.kind).toString().toLowerCase().replace('-', ' ')} extends outside the lot boundary, check the layout`); }
+    }
+    let tc = [];
+    try { tc = b.def.checks ? b.def.checks(b.params) || [] : []; } catch { tc = []; }
+    for (const t of tc) (t.kind === 'info' ? info : warn)(`b${b.n}-${t.id}`, `${bName(b)}: ${t.text}`);
   }
 
   // Per unit design checks
@@ -100,15 +118,21 @@ export function commercialChecks(project) {
 
   // Parking
   const park = parkingLayout(c);
-  if (c.parking?.enabled !== false && units.length) {
-    const need = park.accessible.required;
-    if (park.accessible.provided < need) warn('accessible', `${ACCESS_CHECK} (${park.accessible.provided} of ${need})`, ACCESS_FACT[c.buildingClass] || 'accessibleClass8');
-    else if (need > 0) info('accessible', `Accessible bays: ${park.accessible.provided} provided against ${need} indicative. Each has a ${m(ACCESSIBLE_BAY.sharedZoneMm)} m shared zone and needs ${m(ACCESSIBLE_BAY.headroomMm)} m headroom, check AS 2890.6 and an access consultant`, 'bay');
+  const bpark = buildingParking(c);
+  if (c.parking?.enabled !== false && (units.length || bsAll.length)) {
+    const acc = stats.parking.accessible;
+    const need = acc.required;
+    if (acc.provided < need) warn('accessible', `${ACCESS_CHECK} (${acc.provided} of ${need})`, ACCESS_FACT[c.buildingClass] || 'accessibleClass8');
+    else if (need > 0) info('accessible', `Accessible bays: ${acc.provided} provided against ${need} indicative. Each has a ${m(ACCESSIBLE_BAY.sharedZoneMm)} m shared zone and needs ${m(ACCESSIBLE_BAY.headroomMm)} m headroom, check AS 2890.6 and an access consultant`, 'bay');
     if (stats.parking.provided < stats.parking.required) warn('parking', `Bays shown (${stats.parking.provided}) are fewer than the ${stats.parking.required} indicated at the rate in use, check with council`, 'parkingUnits');
     for (const pr of park.rows) {
       const bad = pr.slots.some((sl) => sl.poly.some((q) => lot && !pointInPoly(q, lot.boundary)));
       if (bad) warn(`park-lot-${pr.rowId}`, 'A parking row extends outside the lot boundary, check the layout');
       if (pr.slots.some((sl) => units.some((u) => G.convexOverlap(sl.poly, u.poly, 100)))) warn(`park-unit-${pr.rowId}`, 'A parking row overlaps a unit, increase the aisle or move the row');
+    }
+    for (const pr of bpark.rows) {
+      if (lot && pr.slots.some((sl) => sl.poly.some((q) => !pointInPoly(q, lot.boundary)))) warn(`park-lot-${pr.rowId}`, 'A parking row extends outside the lot boundary, check the layout');
+      if (pr.slots.some((sl) => bsAll.some((b) => G.convexOverlap(sl.poly, b.outline, 100)) || units.some((u) => G.convexOverlap(sl.poly, u.poly, 100)))) warn(`park-bldg-${pr.rowId}`, 'A parking row overlaps a building, move the building or the row');
     }
   }
   if (units.some((u) => mezzanineOf(u.spec).enabled)) info('barrier', 'Barrier height at the mezzanine edge is 1000 mm and at the stair 865 mm, check the NCC', 'barrier');

@@ -3,6 +3,9 @@
 import { layoutUnits, mezzanineOf, officeOf } from './layout.js';
 import { parkingLayout } from './parking.js';
 import { DEFAULT_PARKING_RATE, DEFAULT_OFFICE_RATE } from './rules.js';
+import { buildingTotals } from './catalogue/buildings.js';
+import { buildingParking } from './catalogue/bays.js';
+import { bboxOf } from './catalogue/frame.js';
 
 const r1 = (v) => Math.round(v * 10) / 10;
 
@@ -34,6 +37,17 @@ export function commercialStats(project) {
     const m = mezzanineOf(u.spec);
     if (m.enabled) { mezz += m.areaM2; if (m.use === 'office') { office += m.areaM2; officeMezz += m.areaM2; } }
   }
+  const rowsGfa = ground + mezz;
+  // Catalogue buildings (project.commercial.buildings) add their own floor area, parking and mix on top of the rows.
+  const bt = buildingTotals(c);
+  const bp = buildingParking(c);
+  for (const b of bt.buildings) {
+    const bb = bboxOf(b.local.outline);
+    mix.set(`${b.label} ${((bb.maxX - bb.minX) / 1000).toFixed(1)} x ${((bb.maxY - bb.minY) / 1000).toFixed(1)} m`, (mix.get(`${b.label} ${((bb.maxX - bb.minX) / 1000).toFixed(1)} x ${((bb.maxY - bb.minY) / 1000).toFixed(1)} m`) || 0) + 1);
+  }
+  ground += bt.groundM2;
+  mezz += bt.upperM2;
+  office += bt.perUse.office || 0;
   const gfa = ground + mezz;
   const lotM2 = lotAreaM2(project.site?.lot);
   const rate = Number.isFinite(c?.rates?.parkingPerM2Gfa) ? c.rates.parkingPerM2Gfa : DEFAULT_PARKING_RATE;
@@ -42,11 +56,16 @@ export function commercialStats(project) {
   const split = office > 0 && c?.rates?.officeSeparate !== false;
   // Fractions round up once, on the total (Tamworth DCP, Step 3 Industrial Parking: fractions round up to the next whole space).
   // The office area is the ground office/amenity plus the mezzanine offices; the rest of the GFA is at the general rate.
-  const otherRaw = (split ? gfa - office : gfa) * rate;
-  const officeRaw = split ? office * officeRate : 0;
-  const required = Math.ceil(otherRaw + officeRaw - 1e-9);
+  const rowsOffice = office - (bt.perUse.office || 0);
+  const otherRaw = (split ? rowsGfa - rowsOffice : rowsGfa) * rate;
+  const officeRaw = split ? rowsOffice * officeRate : 0;
+  const rowsRequired = Math.ceil(otherRaw + officeRaw - 1e-9);
+  const required = rowsRequired + bp.required;
   return {
     units: units.length,
+    buildings: bt.buildings.map((b) => ({ n: b.n, id: b.id, type: b.type, label: b.label, planLabel: b.planLabel, gfaM2: r1(b.gfaM2), groundM2: r1(b.groundM2), perUse: Object.fromEntries(Object.entries(b.q.perUse || {}).map(([k, v]) => [k, r1(v)])) })),
+    buildingCount: bt.count,
+    perUse: Object.fromEntries(Object.entries(bt.perUse).map(([k, v]) => [k, r1(v)])),
     mix: [...mix].map(([label, count]) => ({ label, count })),
     groundGfaM2: r1(ground),
     mezzGfaM2: r1(mezz),
@@ -56,6 +75,6 @@ export function commercialStats(project) {
     officeMezzM2: r1(officeMezz),
     lotM2: lotM2 == null ? null : Math.round(lotM2),
     coveragePct: lotM2 ? r1((ground / lotM2) * 100) : null,
-    parking: { ratePerM2: rate, officeRatePerM2: officeRate, officeSplit: split, split: { officeM2: r1(split ? office : 0), otherM2: r1(split ? gfa - office : gfa), officeSpaces: Math.round(officeRaw * 100) / 100, otherSpaces: Math.round(otherRaw * 100) / 100 }, required, provided: park.totalBays, accessible: park.accessible },
+    parking: { ratePerM2: rate, officeRatePerM2: officeRate, officeSplit: split, split: { officeM2: r1(split ? rowsOffice : 0), otherM2: r1(split ? rowsGfa - rowsOffice : rowsGfa), officeSpaces: Math.round(officeRaw * 100) / 100, otherSpaces: Math.round(otherRaw * 100) / 100 }, required, buildingRequired: bp.required, provided: park.totalBays + bp.totalBays, accessible: { ...park.accessible, required: park.accessible.required + bp.accessible.required, provided: park.accessible.provided + bp.accessible.provided } },
   };
 }

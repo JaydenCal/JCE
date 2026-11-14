@@ -136,7 +136,7 @@ export class Plan {
     for (const w of this.walls) { w.a = f(w.a); w.b = f(w.b); }
     for (const r of this.rooms) r.polygon = r.polygon.map(f);
     for (const r of this.roofs) r.polygon = r.polygon.map(f);
-    return { walls: this.walls, openings: this.openings, rooms: this.rooms, levels: this.levels.map(({ name, elevationMm }) => ({ name, elevationMm })), roofs: this.roofs };
+    return { walls: this.walls, openings: this.openings, rooms: this.rooms, levels: this.levels.map(({ name, elevationMm, heightMm }) => ({ name, elevationMm, heightMm })), roofs: this.roofs };
   }
 }
 

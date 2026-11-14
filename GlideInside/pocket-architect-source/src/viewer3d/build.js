@@ -17,6 +17,7 @@ import { makeMesh, modelBounds } from './model-util.js';
 import { addSiteTerrain } from './terrain.js';
 import { siteReady } from './site-geom.js';
 import { rotateHouse } from '../model/placement.js';
+import { addCatalogue3D } from '../commercial/catalogue/three.js';
 import { addFloorPoly, addGround, addDeck, addRoomBalustrade, addStair, addTank, addFurniture, shade } from './site.js';
 
 export { disposeModel, modelBounds } from './model-util.js';
@@ -341,10 +342,9 @@ export function buildModel(project, opts = {}) {
     // ceilings in walk mode only
     if (walk || (showRoof && levelFilter === 'all')) {
       const b = new GeoBuilder();
-      const y = elev + level.height / 1000;
       for (const room of rooms) {
         if (room.outdoor) continue;
-        addFloorPoly(b, 'ceil', room.polygon, y, false);
+        addFloorPoly(b, 'ceil', room.polygon, elev + (room.ceilingMm ?? level.height) / 1000, false);
       }
       const mesh = makeMesh(b.build(), { ceil: lib.plain('#f4f2ee', { rough: 0.95 }) }, { decor: true, levelId: level.id }, { cast: false, name: 'ceiling' });
       if (mesh) group.add(mesh);
@@ -364,7 +364,9 @@ export function buildModel(project, opts = {}) {
       if (!levelShown(li)) return;
       if (levelFilter !== 'all' && filterIdx >= 0 && li >= filterIdx) return; // cutaway: no roof on the cut level or above
       if (level.roof?.enabled === false) return;
-      const fp = fpOf(level);
+      // Catalogue buildings (bldg) are roofed by the catalogue 3D module, with their own heights and roof forms.
+      const hasCat = level.walls.some((w) => w.bldg) || level.rooms.some((r) => r.bldg);
+      const fp = hasCat ? F.rasteriseLevel(grid, { ...(frameLevels.get(level.id) || level), walls: (frameLevels.get(level.id) || level).walls.filter((w) => !w.bldg), rooms: (frameLevels.get(level.id) || level).rooms.filter((r) => !r.bldg) }, vis) : fpOf(level);
       if (!fp.any) return;
       const upper = levels[li + 1] || null;
       const upperFp = upper ? fpOf(upper) : null;
@@ -386,6 +388,9 @@ export function buildModel(project, opts = {}) {
       if (mesh) root.add(unframe(mesh));
     });
   }
+
+  // catalogue buildings: roofs and the extras each type draws (dock levellers, canopies, skylights)
+  if (showRoof || project.commercial?.buildings?.length) { try { addCatalogue3D(ctx, root, project); } catch (e) { console.warn('[catalogue 3D]', e?.message); } }
 
   // ground last so it can size itself to the model
   const bounds = modelBounds(root);

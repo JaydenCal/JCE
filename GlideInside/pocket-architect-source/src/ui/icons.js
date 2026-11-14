@@ -1,6 +1,16 @@
 // Line icons drawn for Plan Studio. 24 px grid, 1.6 px stroke, currentColor.
 
 const PATHS = {
+  'bt-strata': '<path d="M3 19.5h18M4 19.5V9h5v10.5M9.5 19.5V9h5v10.5M15 19.5V9h5v10.5"/><path d="M4 9l2.5-2.5L9 9M9.5 9L12 6.5 14.5 9M15 9l2.5-2.5L20 9"/>',
+  'bt-warehouse': '<path d="M3 19.5h18M4 19.5V9l8-4.5L20 9v10.5"/><rect x="8" y="12" width="8" height="7.5"/><path d="M8 14.5h8M8 17h8"/>',
+  'bt-storage': '<rect x="3.5" y="6" width="17" height="13.5" rx="0.6"/><path d="M3.5 12.5h17M9.2 6v13.5M14.8 6v13.5"/>',
+  'bt-retail': '<path d="M4 9.5l1.5-4.5h13L20 9.5z"/><path d="M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0M5.5 12v7.5h13V12"/><path d="M10 19.5v-4.5h4v4.5"/>',
+  'bt-office': '<rect x="6" y="3.5" width="12" height="16" rx="0.6"/><path d="M9.5 7.5h1.5M13 7.5h1.5M9.5 11h1.5M13 11h1.5M9.5 14.5h1.5M13 14.5h1.5M11 19.5v-2.5h2v2.5"/>',
+  'bt-auto': '<path d="M4 15.5v-3l2-4.5h12l2 4.5v3z"/><circle cx="8" cy="16.5" r="1.8"/><circle cx="16" cy="16.5" r="1.8"/><path d="M6.5 12h11"/>',
+  'bt-community': '<path d="M3.5 19.5h17M5 19.5V11l7-5.5 7 5.5v8.5"/><path d="M12 3.5v2M10.5 19.5v-5h3v5"/>',
+  'bt-fuel': '<path d="M3 8h18M5 8v-2.5h14V8M7 8v11.5M17 8v11.5"/><rect x="10" y="12" width="4" height="7.5"/>',
+  'bt-cold': '<path d="M12 3.5v17M5 7.5l14 9M5 16.5l14-9"/><path d="M10 5l2 1.5L14 5M10 19l2-1.5 2 1.5"/>',
+  'bt-drive': '<rect x="4" y="8" width="11" height="11.5" rx="0.6"/><path d="M15 12h5M18 10l2 2-2 2M7.5 13h4"/>',
   movehouse: '<path d="M12 3l3 3.2h-2v4.3h4.3v-2L20.5 12l-3.2 3v-2h-4.3v4.3h2L12 20.5 8.8 17.3h2V13H6.7v2L3.5 12l3.2-3v2H11V6.2H9z"/>',
   select: '<path d="M6 3.5v15.2l4.2-3.9 3 5.7 2.4-1.2-3-5.6 5.6-.5z"/>',
   room: '<rect x="3.5" y="5" width="17" height="14" rx="0.6"/><path d="M3.5 11.5H10v7.5M14 5v4"/>',

@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "asAt": "15/11/2026",
+  "note": "Build rates by building type, AUD ex GST, excluding fees and site works. All rows are ESTIMATE: analyst ranges anchored to the build cost block of src/commercial/data/market.json (referenceIndustrialWarehousesAustralia_2025 1,300 to 2,800 per m2, referenceMetalCladLargeShedSydney_Q4_2025 1,060 to 1,340, referencePrecastLargeSydney_Q4_2025 1,160 to 1,740, referenceWarehouseNational_May2026 1,150, and constructionPerM2GFA_regionalNSW_strataWorkshopWithMezzanineOffice 1,500 to 2,400). Not a quantity survey, check with a quantity surveyor.",
+  "rates": {
+    "warehouse": {
+      "label": "Warehouse with docks",
+      "low": 1100,
+      "high": 1600,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost, large shed and industrial warehouse references",
+      "note": "Metal clad portal frame warehouse with docks and a small office pod, regional loading."
+    },
+    "showroom": {
+      "label": "Bulky goods showroom",
+      "low": 1800,
+      "high": 2600,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost, industrial warehouse range pushed up for glazed frontage and fit out shell",
+      "note": "Showroom shell with glazed frontage and awning, offices and a rear warehouse."
+    },
+    "office": {
+      "label": "Office building",
+      "low": 2600,
+      "high": 3800,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost (general commercial range, no direct regional source found)",
+      "note": "Low rise commercial office."
+    },
+    "self-storage": {
+      "label": "Self storage",
+      "low": 900,
+      "high": 1400,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost, metal clad large shed references",
+      "note": "Single storey drive up units, roller doors, no services beyond lighting."
+    },
+    "retail": {
+      "label": "Retail",
+      "low": 2000,
+      "high": 3000,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost (general commercial range, no direct regional source found)",
+      "note": "Retail shell with shopfront glazing."
+    },
+    "cold-store": {
+      "label": "Cold store",
+      "low": 2400,
+      "high": 3500,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost, industrial warehouse range pushed up for insulated panel and refrigeration plant",
+      "note": "Insulated panel envelope, refrigeration plant not itemised."
+    },
+    "service-station-canopy": {
+      "label": "Fuel canopy",
+      "low": 250000,
+      "high": 450000,
+      "lumpSum": true,
+      "status": "ESTIMATE",
+      "source": "Analyst judgement, no published regional source found",
+      "note": "Canopy structure only, excludes tanks, dispensers and plant."
+    },
+    "service-station-kiosk": {
+      "label": "Service station kiosk",
+      "low": 3500,
+      "high": 5000,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "Analyst judgement, no published regional source found",
+      "note": "Kiosk shell and fit out allowance per m2 of GFA."
+    },
+    "strata-units": {
+      "label": "Strata units",
+      "low": 1500,
+      "high": 2400,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost.constructionPerM2GFA_regionalNSW_strataWorkshopWithMezzanineOffice",
+      "note": "Reference only: strata rows use the build rate input of the feasibility panel."
+    },
+    "workshop": {
+      "label": "Vehicle workshop",
+      "low": 1500,
+      "high": 2200,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost (industrial warehouse and general commercial ranges), analyst adjustment",
+      "note": "Workshop shell with hoists, bays and a small office, services not itemised."
+    },
+    "shed": {
+      "label": "Portal shed",
+      "low": 900,
+      "high": 1400,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost (industrial warehouse and general commercial ranges), analyst adjustment",
+      "note": "Metal clad portal frame shed, slab and roller doors only."
+    },
+    "depot": {
+      "label": "Transport depot",
+      "low": 1100,
+      "high": 1700,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost (industrial warehouse and general commercial ranges), analyst adjustment",
+      "note": "Depot sheds with an office, hardstand priced in site works."
+    },
+    "dealership": {
+      "label": "Machinery dealership",
+      "low": 1800,
+      "high": 2800,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost (industrial warehouse and general commercial ranges), analyst adjustment",
+      "note": "Showroom, workshop and parts store shell."
+    },
+    "drive-through": {
+      "label": "Drive through",
+      "low": 3500,
+      "high": 5500,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost (industrial warehouse and general commercial ranges), analyst adjustment",
+      "note": "Small building with drive through lane fit out allowance."
+    },
+    "community": {
+      "label": "Community centre",
+      "low": 2800,
+      "high": 4200,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "market.json buildCost (industrial warehouse and general commercial ranges), analyst adjustment",
+      "note": "Community hall shell with amenities."
+    },
+    "service-station": {
+      "label": "Service station kiosk",
+      "low": 3500,
+      "high": 5000,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "Analyst judgement, no published regional source found",
+      "note": "Kiosk shell and fit out allowance per m2 of GFA, the fuel canopy is added as a lump sum."
+    }
+  }
+}

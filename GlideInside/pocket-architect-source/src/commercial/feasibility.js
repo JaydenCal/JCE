@@ -10,6 +10,9 @@ import { parkingLayout } from './parking.js';
 import { rowPoint } from './layout.js';
 import { bayOffsetMm } from './schema.js';
 import * as G from '../model/geometry.js';
+import { buildingsOf } from './catalogue/buildings.js';
+import { buildingParking } from './catalogue/bays.js';
+import { buildingCost } from './catalogue/rates.js';
 
 export const DATA_DATE = '13/11/2026';
 export const MIN_N = 4; // portal medians from fewer listings than this are weak evidence and are not used
@@ -67,6 +70,13 @@ export function developedAreaM2(commercial, lot) {
     const far = pr.depth + (pr.off ?? off) + commercial.parking.bayL;
     polys.push([rowPoint(fr, 0, pr.depth), rowPoint(fr, pr.length, pr.depth), rowPoint(fr, pr.length, far), rowPoint(fr, 0, far)]);
   }
+  // Catalogue buildings: footprint, paved extras (truck apron, yard) and the bay rows.
+  const bsAll = buildingsOf(commercial);
+  for (const b of bsAll) {
+    polys.push(b.outline);
+    for (const e of b.extras) if (['apron', 'yard', 'dock-recess', 'fuel-canopy', 'canopy'].includes(e.kind)) polys.push(e.polygon);
+  }
+  for (const r of buildingParking(commercial).rows) for (const sl of r.slots) polys.push(sl.poly);
   const w = commercial.waste;
   if (w) {
     const a = ((w.rotationDeg || 0) * Math.PI) / 180;
@@ -207,7 +217,7 @@ export function effectiveInputs(defaults, overrides = {}) {
 const r0 = (v) => Math.round(v);
 
 /** One scenario. side: 'mid' (the values in use), 'low' (low revenue, high cost) or 'high' (high revenue, low cost). */
-function scenario(inp, { gfa, devM2, restM2, lotM2 }, side) {
+function scenario(inp, { gfa, rowsGfa = gfa, buildings = [], devM2, restM2, lotM2 }, side) {
   const pick = (k, revenue) => {
     const x = inp[k];
     if (side === 'mid') return x.value;
@@ -221,7 +231,12 @@ function scenario(inp, { gfa, devM2, restM2, lotM2 }, side) {
   const yieldPct = side === 'mid' ? inp.yieldPct.value : (side === 'high' ? Math.min(inp.yieldPct.low ?? inp.yieldPct.value, inp.yieldPct.value) : Math.max(inp.yieldPct.high ?? inp.yieldPct.value, inp.yieldPct.value));
   const landFixed = inp.landPrice.value;
   const land = landFixed != null ? landFixed : (lotM2 || 0) * pick('landRate', false);
-  const build = gfa * pick('buildRate', false);
+  const buildRows = rowsGfa * pick('buildRate', false);
+  // Catalogue buildings use the ESTIMATE rate of their type (low revenue scenario takes the dear end).
+  const costSide = side === 'mid' ? 'mid' : side === 'low' ? 'high' : 'low';
+  const bCosts = buildings.map((b) => ({ b, ...buildingCost(b, costSide) }));
+  const buildBuildings = bCosts.reduce((a, x) => a + x.total, 0);
+  const build = buildRows + buildBuildings;
   const siteDev = devM2 * pick('siteRate', false);
   const siteRest = restM2 * pick('landscapeRate', false);
   const site = siteDev + siteRest;
@@ -235,7 +250,7 @@ function scenario(inp, { gfa, devM2, restM2, lotM2 }, side) {
   const marginSale = realisation - cost;
   const marginHold = endValue - cost;
   return {
-    saleRate: sale, rentRate: rent, yieldPct, land, build, siteWorks: site, siteDev, siteRest, fees, contingency, cost,
+    saleRate: sale, rentRate: rent, yieldPct, land, build, buildRows, buildBuildings, buildingCosts: bCosts.map((x) => ({ id: x.b.id, n: x.b.n, label: x.b.label, gfa: x.b.gfaM2, total: x.total, lines: x.lines })), siteWorks: site, siteDev, siteRest, fees, contingency, cost,
     realisation, grossRent, endValue, marginSale, marginHold,
     marginSalePct: cost > 0 ? (marginSale / cost) * 100 : 0,
     marginHoldPct: cost > 0 ? (marginHold / cost) * 100 : 0,
@@ -252,18 +267,21 @@ export function feasibility(commercial, lot, opts = {}) {
   const detected = areaKeyFor(lot);
   const areaKey = opts.areaKey || fz.area || detected;
   const units = unitGfas(commercial);
-  const gfa = units.reduce((s, u) => s + u.gfa, 0);
+  const rowsGfa = units.reduce((s, u) => s + u.gfa, 0);
+  const buildings = buildingsOf(commercial);
+  const gfa = rowsGfa + buildings.reduce((s, b) => s + b.gfaM2, 0);
   const lotM2 = lotAreaM2(lot) || 0;
-  const defaults = areaDefaults(areaKey, { avgUnitGfaM2: units.length ? gfa / units.length : 0 });
+  const count = units.length + buildings.length;
+  const defaults = areaDefaults(areaKey, { avgUnitGfaM2: count ? gfa / count : 0 });
   const inputs = effectiveInputs(defaults, opts.overrides || fz.v || {});
   const devM2 = developedAreaM2(commercial, lot);
   const restM2 = Math.max(0, lotM2 - devM2);
-  const ctx = { gfa, devM2, restM2, lotM2 };
+  const ctx = { gfa, rowsGfa, buildings, devM2, restM2, lotM2 };
   const mid_ = scenario(inputs, ctx, 'mid');
   const low = scenario(inputs, ctx, 'low');
   const high = scenario(inputs, ctx, 'high');
-  const perUnit = units.map((u) => ({ n: u.n, gfa: u.gfa, price: u.gfa * mid_.saleRate, rent: u.gfa * mid_.rentRate }));
-  return { areaKey, detectedKey: detected, areaLabel: defaults.label, confidence: defaults.confidence, units, perUnit, gfa, lotM2, devM2, restM2, inputs, defaults, mid: mid_, low, high, landFromPrice: inputs.landPrice.value != null, dataDate: DATA_DATE };
+  const perUnit = [...units.map((u) => ({ n: u.n, gfa: u.gfa, price: u.gfa * mid_.saleRate, rent: u.gfa * mid_.rentRate })), ...buildings.map((b) => ({ n: `B${b.n}`, label: b.label, gfa: b.gfaM2, price: b.gfaM2 * mid_.saleRate, rent: b.gfaM2 * mid_.rentRate }))];
+  return { areaKey, detectedKey: detected, areaLabel: defaults.label, confidence: defaults.confidence, units, buildings, rowsGfa, perUnit, gfa, lotM2, devM2, restM2, inputs, defaults, mid: mid_, low, high, landFromPrice: inputs.landPrice.value != null, dataDate: DATA_DATE };
 }
 
 // Formatting, shared by the panel and the C103 section --------------------------------------------------------------------------
@@ -292,7 +310,8 @@ export function costRows(f) {
   const m = f.mid;
   return [
     [f.landFromPrice ? 'Land (listing or purchase price)' : `Land (${money(f.inputs.landRate.value)} per m² x ${Math.round(f.lotM2).toLocaleString('en-AU')} m²)`, money(m.land)],
-    [`Building (${money(f.inputs.buildRate.value)} per m² x ${m2(f.gfa)} m² GFA)`, money(m.build)],
+    ...(f.rowsGfa > 0 || !f.buildings?.length ? [[`Building (${money(f.inputs.buildRate.value)} per m² x ${m2(f.rowsGfa ?? f.gfa)} m² GFA)`, money(m.buildRows ?? m.build)]] : []),
+    ...(m.buildingCosts || []).flatMap((bc) => bc.lines.map((l) => [`Building ${bc.n}, ${l.label} (${l.perM2 ? `${money(l.rate)} per m² x ${m2(bc.gfa)} m² GFA` : 'lump sum'}, ${l.status})`, money(l.amount)])),
     [`Site works, developed area (${money(f.inputs.siteRate.value)} per m² x ${m2(f.devM2)} m² of footprint and hardstand)`, money(m.siteDev)],
     [`Clearing and landscaping, rest of lot (${money(f.inputs.landscapeRate.value)} per m² x ${m2(f.restM2)} m²)`, money(m.siteRest)],
     [`Fees (${f.inputs.feesPct.value}% of building and site works)`, money(m.fees)],

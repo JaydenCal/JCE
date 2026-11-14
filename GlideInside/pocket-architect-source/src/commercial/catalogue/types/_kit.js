@@ -147,7 +147,7 @@ export function defineType(def) {
       }
       const rooms = (s.rooms || []).map((r) => ({ name: r.name, polygon: r.poly.map(T), level: levels[r.level ?? 0].name, outdoor: !!r.outdoor, generated: GEN }));
       const roofs = (s.roofs || [{ type: 'flat', pitchDeg: 2 }]).map((r) => ({ polygon: (r.poly || rect(0, 0, s.W, s.D)).map(T), type: r.type, pitchDeg: r.pitchDeg }));
-      return { walls, openings, rooms, levels: levels.map((l) => ({ ...l })), roofs, generated: GEN };
+      return { walls, openings, rooms, levels: levels.map((l) => ({ heightMm: s.wallH, ...l })), roofs, generated: GEN };
     },
 
     site(params) {

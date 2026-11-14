@@ -5,6 +5,7 @@
 import * as S from '../model/schema.js';
 import { layoutUnits, facadeLayout, rearWindow, mezzanineOf, officeOf, onFacade, rowFrame, rowLength, PARTY_WALL_MM } from './layout.js';
 import { SLAB_MM } from './schema.js';
+import { materialiseBuildings } from './catalogue/materialise.js';
 
 export const GEN = 'commercial';
 export const MEZZ_LEVEL_ID = 'lvl_commercial_mezz';
@@ -26,7 +27,7 @@ function wall(a, b, { kind, outside, thickness }) {
 
 /** Remove every generated entity (and the generated mezzanine level) from the project. */
 export function clearGenerated(p) {
-  p.levels = p.levels.filter((l) => l.id !== MEZZ_LEVEL_ID);
+  p.levels = p.levels.filter((l) => l.id !== MEZZ_LEVEL_ID && !(l.catalogue && isGen(l)));
   for (const l of p.levels) {
     l.walls = l.walls.filter((w) => !isGen(w));
     const ids = new Set(l.walls.map((w) => w.id));
@@ -39,12 +40,12 @@ export function clearGenerated(p) {
 /** Rebuild the generated model from p.commercial. Returns a summary { units, walls, openings, rooms, mezzanines }. */
 export function materialise(p) {
   clearGenerated(p);
-  if (p.mode !== 'commercial' || !p.commercial) return { units: 0, walls: 0, openings: 0, rooms: 0, mezzanines: 0 };
+  if (p.mode !== 'commercial' || !p.commercial) return { units: 0, walls: 0, openings: 0, rooms: 0, mezzanines: 0, buildings: 0 };
   const c = p.commercial;
   const level = p.levels[0];
   const units = layoutUnits(c);
   const rows = c.rows;
-  const summary = { units: units.length, walls: 0, openings: 0, rooms: 0, mezzanines: 0 };
+  const summary = { units: units.length, walls: 0, openings: 0, rooms: 0, mezzanines: 0, buildings: 0 };
   const maxH = units.reduce((m, u) => Math.max(m, u.spec.heightMm), 0);
   if (maxH) level.height = maxH;
   const addWall = (w) => { level.walls.push(w); summary.walls += 1; return w; };
@@ -167,6 +168,12 @@ export function materialise(p) {
     }
     p.levels.push(lvl);
   }
+  // Catalogue buildings (project.commercial.buildings): walls, rooms, levels and stairs merged beside the rows.
+  const cat = materialiseBuildings(p, maxH);
+  summary.buildings = cat.buildings;
+  summary.walls += cat.walls;
+  summary.openings += cat.openings;
+  summary.rooms += cat.rooms;
   return summary;
 }
 
