@@ -225,6 +225,17 @@ textarea.psp-input { resize: vertical; min-height: 64px; }
 .psp-changes .psp-icon { margin-top: 2px; color: var(--psp-ok); }
 .psp-changes--fail .psp-icon { color: var(--psp-warn); }
 .psp-changes-title { margin: 8px 0 0 !important; font: 600 11.5px/1.2 var(--psp-label); letter-spacing: 0.08em; text-transform: uppercase; color: var(--psp-muted); }
+.psp-options { margin-top: 6px; }
+.psp-option { margin: 6px 0; padding: 8px; border: 1px solid var(--psp-border); border-radius: var(--psp-radius); background: var(--psp-bg); display: grid; gap: 6px; }
+.psp-option.is-applied { border-color: var(--psp-ok); background: color-mix(in srgb, var(--psp-ok) 8%, var(--psp-bg)); }
+.psp-option-title { font-weight: 600; }
+.psp-option-grid { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; font-size: 12px; }
+.psp-option-grid dt { color: var(--psp-muted); }
+.psp-option-grid dd { margin: 0; }
+.psp-brief { margin-top: 8px; border: 1px solid var(--psp-border); border-radius: var(--psp-radius); background: var(--psp-bg); }
+.psp-brief summary { cursor: pointer; padding: 6px 8px; font: 600 12px/1.2 var(--psp-label); }
+.psp-brief-text { margin: 0; padding: 8px; max-height: 260px; overflow: auto; white-space: pre-wrap; font: 12px/1.45 var(--psp-body, inherit); border-top: 1px solid var(--psp-border); }
+.psp-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .psp-msg-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
 .psp-muted { color: var(--psp-muted); font-size: 12px; }
 .psp-dots { display: inline-flex; gap: 4px; align-items: center; height: 18px; }

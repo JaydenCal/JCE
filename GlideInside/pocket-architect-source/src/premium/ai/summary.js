@@ -144,6 +144,32 @@ export function describeOp(op, a = {}, project, names = nameResolver(null)) {
       return 'Checked the design against the setbacks';
     case 'suggest_site_position':
       return a.apply === true ? 'Moved the house to a position inside the setbacks' : 'Suggested a site position';
+    case 'set_layout':
+      return `Layout changed to ${a.layout === 'best' || a.layout === 'best_fit' ? 'the best fit' : humanise(a.layout)}`;
+    case 'add_building':
+      return `Added a ${lower(humanise(a.type))}`;
+    case 'update_building':
+      return 'Updated a building';
+    case 'move_building':
+      return 'Moved a building';
+    case 'remove_building':
+      return 'Removed a building';
+    case 'set_unit_options':
+      return `Unit options changed${a.target && a.target !== 'all' ? ' on one row' : ''}`;
+    case 'set_finishes':
+      return 'Finishes changed';
+    case 'set_feasibility_inputs':
+      return 'Feasibility inputs changed';
+    case 'run_best_fit':
+      return `Best fit for ${({ max_gfa: 'the most floor area', max_units: 'the most units', max_margin: 'the best margin', min_cost: 'the lowest cost' })[a.goal] || 'the goal'}`;
+    case 'compare_options':
+      return 'Compared layout options';
+    case 'explain_checks':
+      return 'Explained the checks';
+    case 'draft_brief':
+      return 'Wrote a development brief';
+    case 'apply_option':
+      return `Applied option ${a.optionId || ''}`.trim();
     case 'set_project':
       return a.name ? `Renamed the project to ${a.name}` : 'Updated the project details';
     default:

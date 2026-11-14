@@ -6,6 +6,7 @@ import * as S from './schema.js';
 import * as G from './geometry.js';
 import * as SITE from './placement.js';
 import { fitHouse } from '../site/fit-house.js';
+import { COMMERCIAL_OPS, commercialToolSchemas } from '../premium/ai/commercial-schemas.js';
 
 export class OpError extends Error {
   constructor(message) {
@@ -959,7 +960,7 @@ export const OPS = {
 };
 
 export function applyOp(project, name, args = {}, ctx = {}) {
-  const op = OPS[name];
+  const op = OPS[name] || COMMERCIAL_OPS[name];
   if (!op) fail(`Unknown operation ${name}`);
   const res = op.run(project, args || {}, ctx) ?? {};
   project.updatedAt = new Date().toISOString();
@@ -968,7 +969,8 @@ export function applyOp(project, name, args = {}, ctx = {}) {
 
 // Anthropic tool definitions generated from the registry.
 // enums: { furniture: [...ids], materials: [...ids], colours: [...ids] } are injected when given.
-export function toolSchemas(enums = {}) {
+export function toolSchemas(enums = {}, mode = null) {
+  if (mode === 'commercial') return commercialToolSchemas();
   return Object.entries(OPS).map(([name, op]) => {
     const properties = structuredClone(op.params);
     if (enums.furniture && properties.item) properties.item.enum = enums.furniture;
