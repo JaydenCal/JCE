@@ -211,6 +211,28 @@ export async function loadAddress(store, catalogue, address, { onStep, viewer = 
   return { lot, warnings, pick };
 }
 
+/** Commercial: look the address up, load the lot, accept the frontage, convert and place the Best fit layout (src/commercial/place.js). */
+export async function loadAddressCommercial(store, address, { onStep } = {}) {
+  const q = String(address || '').trim();
+  if (q.length < 3) throw new Error('Type a street address first.');
+  const results = await searchAddresses(q, { onRetry: () => onStep?.('busy') });
+  const pick = results[0];
+  if (!pick) throw new Error('No matching address found. Check the spelling, or try the street name and suburb.');
+  const { lot, warnings } = await applySiteLookup(store, pick, { onStep });
+  confirmFrontage(store, true);
+  const { placeCommercial } = await import('../commercial/place.js');
+  await placeCommercial(store);
+  return { lot, warnings, pick };
+}
+
+/** Commercial demo: a sample E4 lot with the Best fit layout placed. */
+export async function loadDemoCommercial(store) {
+  await applySiteLookup(store, { label: '' }, { prefetched: demoSite({ commercial: true }) });
+  confirmFrontage(store, true);
+  const { placeCommercial } = await import('../commercial/place.js');
+  return placeCommercial(store, { wait: 1500 });
+}
+
 /** The demo lot with a Glide design placed: what the home page frame shows first. */
 export async function loadDemo(store, catalogue, { after = null } = {}) {
   await applySiteLookup(store, { label: '' }, { prefetched: demoSite() });
@@ -222,7 +244,7 @@ export async function loadDemo(store, catalogue, { after = null } = {}) {
  * Wire the viewer mode. `ctx`: { store, catalogue, shell, viewerMode }. Returns { run(address), dispose }.
  * In viewer mode the view is pinned to 3D and walk, and the page may send gi:find-address.
  */
-export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer = () => null }) {
+export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer = () => null, commercial = false }) {
   let busy = false;
   let pending = null;
   let pendingNotify = false;
@@ -253,7 +275,7 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
     shell.dataset.embedBusy = '1';
     postToParent({ type: 'gi:status', state: 'loading', address });
     try {
-      const r = await loadAddress(store, catalogue, address, { viewer: viewerMode, after: viewerMode ? settleAerial : null });
+      const r = commercial ? await loadAddressCommercial(store, address, { onStep: null }) : await loadAddress(store, catalogue, address, { viewer: viewerMode, after: viewerMode ? settleAerial : null });
       if (viewerMode) { store.setUI({ view: '3d' }); await aerial(); }
       postToParent({ type: 'gi:status', state: 'done', address: r.lot?.address || address });
       return true;
@@ -272,7 +294,7 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
     busy = true;
     shell.dataset.embedBusy = '1';
     try {
-      await loadDemo(store, catalogue, { after: settleAerial });
+      if (commercial) await loadDemoCommercial(store); else await loadDemo(store, catalogue, { after: settleAerial });
       store.setUI({ view: '3d' });
       await aerial();
     } catch (e) {
@@ -294,7 +316,10 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
   // Late setbacks (the council rules, or heights that changed): while the lot is new and the person has not touched it, a house that ends up
   // outside them is fitted again, at most twice per lot.
   let refitOff = null;
-  if (viewerMode) {
+  if (viewerMode && commercial) {
+    refitOff = null;
+    import('../commercial/place.js').then((m) => { refitOff = m.watchRefit(store, { isBusy: () => busy }); });
+  } else if (viewerMode) {
     let refitLot = null;
     let refits = 0;
     let since = 0;
@@ -361,7 +386,7 @@ export function openFullEditor(project) {
   try {
     if (project?.site?.lot && project.levels?.length) {
       localStorage.setItem(HANDOFF_KEY, JSON.stringify({ at: Date.now(), project }));
-      url = FULL_EDITOR_PATH;
+      url = project.mode === 'commercial' ? `${FULL_EDITOR_PATH}?mode=commercial` : FULL_EDITOR_PATH;
     }
   } catch { /* storage blocked: the address link still brings the lot */ }
   try {

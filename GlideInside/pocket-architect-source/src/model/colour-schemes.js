@@ -26,6 +26,7 @@ export const schemeLine = (s) => (!s || s.id === DEFAULT_SCHEME_ID ? 'Standard c
 
 /** The saved choice if it names a real scheme, else Standard colours when a lot is on the design, else null (design as drawn). */
 export function effectiveSchemeId(project) {
+  if (project?.mode === 'commercial') return null; // a commercial layout has its own cladding and door colours (src/commercial/finishes.js)
   const saved = project?.colourScheme;
   if (saved && schemeById(saved)) return saved;
   return project?.site?.lot ? DEFAULT_SCHEME_ID : null;

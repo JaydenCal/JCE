@@ -18,9 +18,12 @@ const info = (n, r) => ({
   polygons: [{ outer: r, holes: [] }],
 });
 
-export function demoLotResponse() {
-  const W = DEMO_LOT_W;
-  const D = DEMO_LOT_D;
+export const DEMO_COMMERCIAL_W = 70;
+export const DEMO_COMMERCIAL_D = 110;
+
+export function demoLotResponse({ commercial = false } = {}) {
+  const W = commercial ? DEMO_COMMERCIAL_W : DEMO_LOT_W;
+  const D = commercial ? DEMO_COMMERCIAL_D : DEMO_LOT_D;
   const y0 = -D / 2;
   const y1 = D / 2;
   const subject = ring(-W / 2, y0, W / 2, y1);
@@ -52,7 +55,7 @@ export function demoLotResponse() {
     neighbours: nb,
     roads: [{ name: 'Sample Street', points: [[-6 * W, y0 - ROAD / 2], [6 * W, y0 - ROAD / 2]] }],
     lga: 'TAMWORTH REGIONAL',
-    zoning: { code: 'R1', name: 'General Residential', instrument: 'Tamworth Regional Local Environmental Plan 2010' },
+    zoning: commercial ? { code: 'E4', name: 'General Industrial', instrument: 'Tamworth Regional Local Environmental Plan 2010' } : { code: 'R1', name: 'General Residential', instrument: 'Tamworth Regional Local Environmental Plan 2010' },
     zoneNote: null,
     attribution: 'Sample lot for illustration only.',
     retrieved: null,
@@ -60,4 +63,4 @@ export function demoLotResponse() {
 }
 
 /** The prefetched result applySiteLookup takes in place of a network lookup: a lot with no aerial and no ground levels. */
-export const demoSite = () => ({ lot: demoLotResponse(), aerial: null, contours: null, warnings: [] });
+export const demoSite = (opts = {}) => ({ lot: demoLotResponse(opts), aerial: null, contours: null, warnings: [] });

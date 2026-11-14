@@ -12,7 +12,7 @@
 <meta name="theme-color" content="#12231c">
 <link rel="icon" href="../assets/Glideinside_Favicon_v4.svg">
 <link rel="stylesheet" href="../framework.css?v=20261113a">
-<script src="../site.config.js?v=20261113a"></script><script src="../framework.js?v=20261113a" defer></script><script src="../analytics.js" defer></script>
+<script src="../site.config.js?v=20261113a"></script><script src="../framework.js?v=20261115a" defer></script><script src="../analytics.js" defer></script>
 <style>
 .cm-land{padding-block:clamp(48px,7vw,96px)}
 .cm-land .eyebrow{margin-top:18px}
@@ -56,11 +56,28 @@
 <p class="eyebrow">Pocket Architect, regional NSW and Queensland</p>
 <h1>Commercial and industrial layouts<span class="beta">Beta</span></h1>
 <p class="lead">Enter the address of an industrial or commercial lot and lay out rows of units on it. Set the unit size, roller doors, mezzanines and parking, and see the unit count, floor area and site coverage as you go.</p>
-<form class="cm-form" action="../plan-studio/app/" method="get" data-cm-form>
-  <input type="hidden" name="mode" value="commercial">
-  <label><span class="visually-hidden">Lot address</span><input type="text" name="address" required maxlength="120" autocomplete="street-address" placeholder="Search your address in NSW or QLD" aria-label="Lot address"></label>
-  <button class="btn" type="submit">Lay out units</button>
-</form>
+<div class="live-wrap as-wrap" style="padding:0;margin:28px 0 0">
+  <form class="as" data-addr-search data-max="6" role="search" autocomplete="off" onsubmit="return false">
+    <div class="as-field">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input class="as-input" data-addr-input id="as-input" type="text" role="combobox" aria-label="Search the lot address in NSW or QLD" aria-autocomplete="list" aria-expanded="false" aria-controls="as-list" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="120" placeholder="Search the lot address in NSW or QLD">
+      <button class="as-go" type="submit">Show my lot</button>
+    </div>
+    <ul class="as-list" id="as-list" role="listbox" aria-label="Address suggestions" hidden></ul>
+    <p class="as-status" data-addr-status role="status" aria-live="polite"></p>
+  </form>
+</div>
+<div class="live-wrap" style="margin-top:clamp(14px,1.6vw,22px)">
+  <div class="live-hero" id="live-tool" data-auto data-mode="commercial" style="--poster:linear-gradient(160deg,#1d3a2e,#0d1627)">
+    <div class="lh-bar"><i></i><i></i><i></i><span>glideinside.com.au/plan-studio</span><button class="lh-fs" type="button" data-fs aria-label="Full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg><span>Full screen</span></button><a class="lh-edit" href="../plan-studio/app/?mode=commercial">Open full editor</a></div>
+    <div class="lh-stage">
+      <iframe title="Pocket Architect, commercial layout viewer" data-src="plan-studio/app/?embed=1&amp;mode=commercial" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-pointer-lock allow-top-navigation-by-user-activation" allow="fullscreen; pointer-lock; clipboard-write" tabindex="-1"></iframe>
+      <button class="lh-exit" type="button" data-fs-exit>Exit full screen</button>
+      <div class="lh-poster"><div><button class="btn" type="button" data-live-open>Tap to open the live viewer</button><p>Loading the live tool. Concept layouts, not construction drawings.</p></div></div>
+    </div>
+  </div>
+  <p class="stage-cap">The live commercial layout viewer. Search a lot above, step through ready-made layouts, pick colours and open the plan set. Concept layouts only.</p>
+</div>
 <p class="fineprint">Concept layouts only. Setbacks, parking rates and other controls are indicative and must be checked with council.</p>
 <ul class="cm-points">
   <li>Back to back rows of units that share a party wall, with the unit count and size mix updating as you change the layout.</li>

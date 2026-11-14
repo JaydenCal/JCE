@@ -29,7 +29,8 @@
   });
   // home live tool: lazy-loads the framed viewer near the viewport (desktop); on a phone the frame is a poster that opens the viewer full screen
   var APP = "/plan-studio/app/";
-  var appUrl = function (address) { return APP + "?embed=1" + (address ? "&address=" + encodeURIComponent(address) : ""); };
+  var liveMode = (document.querySelector(".live-hero[data-mode]") || {}).dataset ? document.querySelector(".live-hero[data-mode]").dataset.mode : "";
+  var appUrl = function (address) { return APP + "?embed=1" + (liveMode ? "&mode=" + encodeURIComponent(liveMode) : "") + (address ? "&address=" + encodeURIComponent(address) : ""); };
   var phoneMq = matchMedia("(max-width: 760px)");
   var live = { box: null, frame: null, stage: null, start: function () {}, ready: false, pending: null, last: "" };
   var searches = [];
@@ -88,6 +89,7 @@
   function syncEdit() {
     document.querySelectorAll(".lh-edit").forEach(function (a) {
       var u = new URL(APP, location.href);
+      if (liveMode) u.searchParams.set("mode", liveMode);
       if (live.last) u.searchParams.set("address", live.last);
       a.setAttribute("href", u.pathname + u.search);
     });

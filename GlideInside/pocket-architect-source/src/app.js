@@ -37,6 +37,7 @@ import { backTarget, backLabel } from './ui/back-target.js';
 import { startView, readLastView } from './ui/view-mode.js';
 import { portalUrl } from './portal/links.js';
 import { createLotCard } from './lotcard/lot-card.js';
+import { createCommercialCard } from './commercial/lotcard.js';
 import { createCommercialPanel } from './commercial/ui/panel-commercial.js';
 import { enterCommercial, offerCommercial, commercialUi } from './commercial/mode.js';
 import { effectiveClass } from './commercial/zones.js';
@@ -45,6 +46,7 @@ import { viewerEmbedRequested, addressFromSearch, openFullEditor, initEmbedViewe
 const demoMode = () => CONFIG.embedMode === 'demo';
 // ?embed=1 or ?view=viewer: the cinematic single lot 3D view only (the home page frame). See src/ui/embed-viewer.js.
 const VIEWER = viewerEmbedRequested();
+const COMMERCIAL_VIEWER = VIEWER && new URLSearchParams(location.search).get('mode') === 'commercial';
 
 async function loadCatalogue() {
   try {
@@ -424,7 +426,9 @@ async function main() {
   track('ps_open', { embedMode: CONFIG.embedMode });
 
   const openFull = () => openFullEditor(store.project);
-  const lotCard = createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openFull, onFullEditor: openFull, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
+  const lotCard = COMMERCIAL_VIEWER
+    ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openFull, onFullEditor: openFull, onFind: (a) => api.embedViewer?.run(a) })
+    : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openFull, onFullEditor: openFull, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
   api.lotCard = lotCard;
   if (!VIEWER && !demoMode()) api.commercial = createCommercialPanel({ store, host: refs.stage, editor });
   createMapCredit(refs.stage, store);
@@ -448,7 +452,7 @@ async function main() {
     mountViewerChrome(refs.stage, store);
     // Signed in? The first placement waits for this (src/ui/embed-viewer.js designPool), so the viewer opens on the person's own first design.
     if (!demoMode() && CONFIG.portalEnabled) api.portalReady = import('./portal/viewer-mode.js').then((m) => m.initPortalViewer(api)).catch((e) => { console.warn('[portal] viewer mode not available', e); return null; });
-    const ev = initEmbedViewer({ store, catalogue, shell: refs.shell, viewerMode: true, getViewer });
+    const ev = initEmbedViewer({ store, catalogue, shell: refs.shell, viewerMode: true, getViewer, commercial: COMMERCIAL_VIEWER });
     api.embedViewer = ev;
     if (addressParam) ev.run(addressParam);
     else ev.startDemo();

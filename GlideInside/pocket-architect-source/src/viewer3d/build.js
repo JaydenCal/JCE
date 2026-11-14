@@ -297,7 +297,9 @@ export function buildModel(project, opts = {}) {
         // lifted tone of the fascia so its panel lines read, with matt paint and no metal sheen to mirror a dark sky.
         const lum = (h) => { const c = new THREE.Color(h); return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b; };
         const leafHex = lum(frameHex) < 0.2 ? '#7a5233' : frameHex;
-        const garageHex = lum(fasciaHex) < 0.35 ? shade(fasciaHex, 0.35 / Math.max(0.05, lum(fasciaHex))) : fasciaHex;
+        // A commercial layout names its roller door colour (finishes.rollerDoor); otherwise the door follows the fascia.
+        const doorBase = o.kind === 'roller_door' && project.finishes?.rollerDoor?.colour ? hex(project.finishes.rollerDoor.colour) : fasciaHex;
+        const garageHex = lum(doorBase) < 0.35 ? shade(doorBase, 0.35 / Math.max(0.05, lum(doorBase))) : doorBase;
         const mats = {
           frame: o.kind === 'garage_door' || o.kind === 'roller_door' ? lib.plain(garageHex, { tint: ot, rough: 0.55, metal: 0 }) : lib.frame(frameHex, { tint: ot }),
           glass: lib.glass({ tint: ot }),
