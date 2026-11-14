@@ -15,6 +15,7 @@ import * as THREE from 'three';
 import { terrainAt, floorRLOf } from '../site/model.js';
 import * as S from './site-geom.js';
 import { addSiteExtras } from './site-extras.js';
+import { addCommercialPavements } from '../commercial/catalogue/pavements/view3d.js';
 
 export { PAD_MARGIN_M } from './site-geom.js';
 
@@ -262,6 +263,11 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
     extras = addSiteExtras(ctx, root, project, surf, { extent: ext, tm });
   } catch (e) {
     console.warn('[viewer3d] site extras skipped', e);
+  }
+  try {
+    if (project.mode === 'commercial') addCommercialPavements(root, project, surf); // pavements, kerbs and markings of a commercial layout
+  } catch (e) {
+    console.warn('[viewer3d] commercial pavements skipped', e);
   }
   const ow = wide ? wide.extent.x1 - wide.extent.x0 : aw;
   const oh = wide ? wide.extent.y1 - wide.extent.y0 : ah;
