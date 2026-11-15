@@ -16,6 +16,9 @@ import { terrainAt, floorRLOf } from '../site/model.js';
 import * as S from './site-geom.js';
 import { addSiteExtras } from './site-extras.js';
 import { LAWN_COLOUR } from './site.js';
+import { planGrading, earthworks } from './grading.js';
+import { deriveDriveway } from '../site/lotplan.js';
+import { pavementModel } from '../commercial/catalogue/pavements/logic.js';
 import { addCommercialPavements } from '../commercial/catalogue/pavements/view3d.js';
 import { addCommercialEntourage, addForecourtSlabs } from '../commercial/catalogue/entourage3d.js';
 
@@ -59,12 +62,35 @@ export function terrainModel(project) {
     const rl = S.terrainAtClamped(lot.terrain, x, y);
     return rl == null ? padY : rl - floorRL + base;
   };
+  // Auto grading: paving and driveways sit on gently graded design planes and the mesh is flattened under them (only with a terrain grid).
+  let grading = null;
+  if (lot.terrain) {
+    try {
+      const paving = project.mode === 'commercial' && project.commercial ? pavementModel(project.commercial, lot).areas.map((a) => a.polygon) : [];
+      const driveways = [];
+      if (project.mode !== 'commercial' && fp) {
+        const dw = deriveDriveway(project);
+        if (dw?.ok && dw.polygon?.length >= 3 && dw.centre?.length >= 2) {
+          const o = dw.centre[0]; const e = dw.centre[dw.centre.length - 1];
+          const l = Math.hypot(e.x - o.x, e.y - o.y) || 1;
+          // the house end is the centre end nearer the footprint
+          const dA = S.distToBox(fp, o.x, o.y); const dB = S.distToBox(fp, e.x, e.y);
+          const [h, st] = dA <= dB ? [o, e] : [e, o];
+          driveways.push({ polys: [dw.polygon, ...(dw.crossover?.polygon?.length > 3 ? [dw.crossover.polygon] : [])], dir: { o: h, u: { x: (st.x - h.x) / l, y: (st.y - h.y) / l } } });
+        }
+      }
+      grading = planGrading({ rawAt: rawY, padY, fp, paving, driveways });
+    } catch (e) {
+      console.warn('[viewer3d] auto grading skipped', e);
+    }
+  }
   const heightAt = (x, y) => {
     const raw = rawY(x, y);
+    if (grading) return grading.heightAt(x, y, raw);
     if (!fp) return raw;
     return S.padHeight(raw, padY, S.distToBox(fp, x, y));
   };
-  return { heightAt, floorRL, base, padY };
+  return { heightAt, rawAt: rawY, grading, floorRL, base, padY };
 }
 
 // Average colour of the border of an image-like source, as a hex string, or null. Browser only.
@@ -424,7 +450,9 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   }
   const ow = wide ? wide.extent.x1 - wide.extent.x0 : aw;
   const oh = wide ? wide.extent.y1 - wide.extent.y0 : ah;
-  return { extras, edgeY, extent: ext, wideExtent: wide ? wide.extent : null, grid, outerR: S.RING_OFFSETS_M[S.RING_OFFSETS_M.length - 1] + Math.max(ow, oh) / 2000 };
+  let works = null;
+  if (tm.grading) { try { works = earthworks(grid, tm.rawAt, (dims.dx / 1000) * (dims.dy / 1000)); } catch { works = null; } }
+  return { extras, earthworks: works, edgeY, extent: ext, wideExtent: wide ? wide.extent : null, grid, outerR: S.RING_OFFSETS_M[S.RING_OFFSETS_M.length - 1] + Math.max(ow, oh) / 2000 };
 }
 
 // The wide tile as a frame of ground around the inner extent (cells wholly inside it are left out). Sits just below the inner mesh with a
