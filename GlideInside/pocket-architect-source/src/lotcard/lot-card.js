@@ -70,21 +70,9 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const fit = E('lc-fit', 'div', { role: 'status', 'aria-live': 'polite', dataset: { ps: 'lc-fit' } });
   const zoneNote = E('lc-zone', 'div', { role: 'note', hidden: true, dataset: { ps: 'lc-zone-note' } });
   const more = h('button', { class: 'lc-more', type: 'button', 'aria-expanded': 'false', onclick: () => { card.classList.toggle('is-open'); more.setAttribute('aria-expanded', String(card.classList.contains('is-open'))); sizeInset(); } }, 'Details');
-  const MINKEY = 'gi.lotcard.min';
-  const readMin = () => { try { return localStorage.getItem(MINKEY) === '1'; } catch { return false; } };
-  const minBtn = h('button', { class: 'lc-min', type: 'button', 'aria-expanded': 'true', dataset: { ps: 'lc-minimise' }, onclick: () => setMin(!card.classList.contains('is-min')) }, 'Minimise');
-  function setMin(on) {
-    card.classList.toggle('is-min', on);
-    minBtn.textContent = on ? 'Expand' : 'Minimise';
-    minBtn.setAttribute('aria-expanded', String(!on));
-    minBtn.setAttribute('aria-label', on ? 'Expand the design card' : 'Minimise the design card to a small chip');
-    try { localStorage.setItem(MINKEY, on ? '1' : '0'); } catch { /* not remembered */ }
-    sizeInset();
-  }
   const tabsEl = E('lc-tabs', 'div', { role: 'tablist', 'aria-label': 'Rooms', dataset: { ps: 'lc-tabs' } });
   const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-sp lc-sp-rooms', 'div', null, E('lc-k', 'span', null, 'Rooms'), tabsEl), E('lc-acts', 'div', null, bWalk, bEdit, E('lc-links', 'span', null, bPdf, E('lc-dotsep', 'span', { 'aria-hidden': 'true' }, '\u00b7'), bPdfH)), sendRow, fit, zoneNote);
-  const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more, minBtn), body);
-  if (!embed && readMin()) { card.classList.add('is-min'); minBtn.textContent = 'Expand'; minBtn.setAttribute('aria-expanded', 'false'); }
+  const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more), body);
 
   const pgP = h('button', { type: 'button', 'aria-label': 'Previous design', onclick: () => step(-1) }, '‹');
   const pgN = h('button', { type: 'button', 'aria-label': 'Next design', onclick: () => step(1) }, '›');
