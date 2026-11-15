@@ -13,6 +13,7 @@ import { el, clear, track, clamp } from './util.js';
 import { icon } from './icons.js';
 import { loadPdfjs } from './pdf-import.js';
 import { loadJsPDF, coverImage, exportPayload } from './export-client.js';
+import { termsForExport } from '../legal/terms-gate.js';
 
 export const PREVIEW_DPI = 70;
 export const WATERMARK_TEXT = 'PREVIEW, Plan Pack required to download';
@@ -249,7 +250,7 @@ export function openPdfPreview({ layer, project, store = null, config = {}, cata
         : await (async () => {
             const jsPDF = await loadJsPDF();
             const { buildPdfBytes } = await import('./exporters/index.js');
-            return buildPdfBytes(payload, { jsPDF, image, config, catalogue });
+            return buildPdfBytes(payload, { jsPDF, image, config, catalogue, terms: termsForExport() });
           })();
       const layout = bytes.layout;
       setupNote.textContent = layout?.note || '';

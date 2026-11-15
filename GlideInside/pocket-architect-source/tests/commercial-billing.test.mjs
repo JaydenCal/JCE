@@ -45,7 +45,7 @@ function makeWorld(env = {}) {
     throw new Error(`unexpected fetch ${url}`);
   };
   const full = { SITE_URL: 'https://site.test', ENTITLEMENT_SECRET: 'unit-secret', STRIPE_SECRET_KEY: 'sk_test_1', STRIPE_WEBHOOK_SECRET: 'whsec_unit', ANTHROPIC_API_KEY: 'sk-ant', ADMIN_TOKEN: ADMIN,
-    COMMERCIAL_SUB_PRICE_ID: 'price_sub', COMMERCIAL_AI_TOPUP_PRICE_ID: 'price_topup', AI_RATE_PER_MIN: '1000', AI_RATE_PER_DAY: '1000', ...env };
+    COMMERCIAL_SUB_PRICE_ID: 'price_sub', COMMERCIAL_AI_TOPUP_PRICE_ID: 'price_topup', AI_RATE_PER_MIN: '1000', AI_RATE_PER_DAY: '1000', TERMS_REQUIRED: '0', ...env };
   w.app = createApp({ store: w.store, env: full, fetchImpl, now: () => clock.t, loadJsPDF: async () => (await import('jspdf')).jsPDF });
   w.call = async (method, path, { token, body, headers = {} } = {}) => {
     const init = { method, headers: { ...headers } };

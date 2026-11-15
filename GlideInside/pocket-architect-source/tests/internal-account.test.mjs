@@ -1,6 +1,7 @@
 // Internal test account (owner only): an org flagged internal is never charged, never invoiced, has no trial or pause, gets the commercial
 // assistant on its own generous AI pool, carries "INTERNAL TEST" on PDFs, and its logins browse every builder's designs read only.
 // Strict isolation the other way: ordinary builders never see another org's designs. Memory stores, fake Stripe that must stay untouched.
+import { sheetNote } from '../src/legal/plan-terms.js';
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
@@ -56,7 +57,7 @@ function world({ d1 = false } = {}) {
   w.restoreConsole = () => Object.assign(console, orig);
   w.app = createApp({
     store, portalStore: pstore, fetchImpl, now: () => clock.t, catalogue, loadJsPDF: async () => (await import('jspdf')).jsPDF,
-    env: { SITE_URL: SITE, ENTITLEMENT_SECRET: 'unit-test-secret', PORTAL_ENABLED: "1", ADMIN_TOKEN: ADMIN, STRIPE_SECRET_KEY: 'sk_test_abc', STRIPE_WEBHOOK_SECRET: 'whsec_x', ANTHROPIC_API_KEY: 'sk-ant', AI_RATE_PER_MIN: '1000', AI_RATE_PER_DAY: '1000', TRIAL_NOTIFY: '0' },
+    env: { SITE_URL: SITE, ENTITLEMENT_SECRET: 'unit-test-secret', PORTAL_ENABLED: "1", ADMIN_TOKEN: ADMIN, STRIPE_SECRET_KEY: 'sk_test_abc', STRIPE_WEBHOOK_SECRET: 'whsec_x', ANTHROPIC_API_KEY: 'sk-ant', AI_RATE_PER_MIN: '1000', AI_RATE_PER_DAY: '1000', TRIAL_NOTIFY: '0', TERMS_REQUIRED: '0' },
   });
   w.browser = () => {
     const jar = { cookie: null };
@@ -292,7 +293,8 @@ test('PDFs carry a small INTERNAL TEST footer, no TRIAL watermark, and never ano
     const sent = structuredClone(rivalProject);
     const r = await i.b.call('POST', '/portal/export/pdf', { project: sent });
     assert.equal(r.status, 200);
-    const text = (await pdfText(new Uint8Array(await r.res.arrayBuffer()))).join(' ');
+    // every plan set carries the plan terms note (src/legal), which says "NOT FOR CONSTRUCTION OR APPROVAL": take it out before looking for the old stamps
+    const text = (await pdfText(new Uint8Array(await r.res.arrayBuffer()))).join(' ').split(sheetNote).join('');
     assert.match(text, /INTERNAL TEST/);
     assert.doesNotMatch(text, /TRIAL|NOT FOR CONSTRUCTION/);
     assert.doesNotMatch(text, /Rival Homes|Rex Rival/);

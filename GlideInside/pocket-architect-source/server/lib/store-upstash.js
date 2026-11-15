@@ -63,6 +63,8 @@ function parseHash(flat) {
   return ent;
 }
 
+const parseFlat = (arr) => { const o = {}; for (let i = 0; i + 1 < (arr || []).length; i += 2) o[arr[i]] = arr[i + 1]; return o; };
+
 export function createUpstashStore({ url, token, fetchImpl } = {}) {
   if (!url || !token) throw new Error('Upstash needs UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN');
   const base = String(url).replace(/\/+$/, '');
@@ -184,6 +186,27 @@ export function createUpstashStore({ url, token, fetchImpl } = {}) {
     },
     async getEnquiryPdf(reference) {
       return (await cmd('GET', `ps:enqpdf:${reference}`)) || null;
+    },
+    // Plan set terms acceptance: a hash per version (field = subject), first acceptance kept.
+    async recordTermsAcceptance(r) {
+      const rec = { id: r.id, subjectId: r.subjectId, subjectKind: r.subjectKind, version: r.version, context: r.context ?? null, acceptedAt: r.acceptedAt, ipHash: r.ipHash ?? null, userAgent: r.userAgent ?? null };
+      await cmd('SADD', 'ps:terms:versions', r.version);
+      await cmd('HSETNX', `ps:terms:${r.version}`, r.subjectId, JSON.stringify(rec));
+      return JSON.parse(await cmd('HGET', `ps:terms:${r.version}`, r.subjectId));
+    },
+    async getTermsAcceptance(subjectId, version) {
+      const v = await cmd('HGET', `ps:terms:${version}`, subjectId);
+      return v ? JSON.parse(v) : null;
+    },
+    async termsAcceptanceCounts() {
+      const out = [];
+      for (const version of (await cmd('SMEMBERS', 'ps:terms:versions')) || []) {
+        const rows = Object.values(parseFlat(await cmd('HGETALL', `ps:terms:${version}`))).map((x) => JSON.parse(x));
+        if (!rows.length) continue;
+        const at = rows.map((x) => x.acceptedAt).sort();
+        out.push({ version, count: rows.length, firstAt: at[0], lastAt: at.at(-1) });
+      }
+      return out.sort((a, b) => (a.lastAt < b.lastAt ? 1 : -1));
     },
     async logEvent({ id, type, detail, createdAt }) {
       const first = (await cmd('SET', `ps:evt:${id}`, '1', 'NX', 'EX', 90 * DAY)) === 'OK';

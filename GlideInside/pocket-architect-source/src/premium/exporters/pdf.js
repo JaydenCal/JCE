@@ -13,6 +13,7 @@ import {
 } from './drawing.js';
 import { creditsOneLine, INDICATIVE as SITE_INDICATIVE } from '../../site/credits.js';
 import { furnitureStrokes, placeLabel, placeBeside, boxOf } from './symbols.js';
+import { termsLines } from '../../legal/sheet-note.js';
 
 export { ddmmyyyy, AREA };
 export const SHEET_W = 420; // the A3 design sheet; A1 is the same layout multiplied by 2
@@ -307,6 +308,15 @@ function frame(doc, ctx, { title, scaleLabel, sheet }) {
   cell(doc, x4 + c3, y0 + hA + hB, c3, hB, 'SHEET', `${sheet} OF ${total}`, { size: 8 });
   cell(doc, x4 + 2 * c3, y0 + hA + hB, c3, hB, 'SIZE', v.paper, { size: 8 });
 
+  // Terms of use: the sheet note and the version accepted (src/legal), small type above the title block (wrapped, never cut).
+  {
+    const [tnote, tstamp] = termsLines(ctx.terms);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(3.5);
+    ink(doc, INK);
+    const rows = doc.splitTextToSize(ascii(`${tnote} ${tstamp}.`), SHEET_W - 2 * M - 4);
+    rows.forEach((l, i) => doc.text(l, x0 + 2, TB_TOP - 0.7 - (rows.length - 1 - i) * 1.3));
+  }
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(5.5);
   ink(doc, GREY);
@@ -840,7 +850,7 @@ export function toPDF(project, options = {}) {
   });
   const doc = scaledDoc(raw, p.k);
   const total = plan.pages.length;
-  const ctx = { brand: imageInfo(LOGO_PNG), logo: getLogo(options), project, config, scale: plan.scale, dscale: plan.scale * p.k, note: plan.note, paper: p.name, date, total, catalogue };
+  const ctx = { brand: imageInfo(LOGO_PNG), logo: getLogo(options), project, config, scale: plan.scale, dscale: plan.scale * p.k, note: plan.note, paper: p.name, date, total, catalogue, terms: options.terms || null };
   plan.pages.forEach((page, i) => {
     if (i > 0) raw.addPage(p.format, 'landscape');
     doc.setLineDashPattern([], 0);

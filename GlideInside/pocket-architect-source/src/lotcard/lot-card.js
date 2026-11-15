@@ -11,6 +11,7 @@ import { zoneDwellingNote } from '../site/default-setbacks.js';
 import { h, debounce } from '../ui/dom.js';
 import { searchAddresses } from '../site/client.js';
 import { downloadBlob } from '../premium/exporters/download.js';
+import { requirePlanTerms, planTermsLinkText, PLAN_TERMS_URL } from '../legal/terms-gate.js';
 import { toast } from '../ui/toast.js';
 import { lotOf, translateHouse, rotateHouse } from '../model/placement.js';
 import * as G from '../model/geometry.js';
@@ -118,6 +119,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     ['Site plan PDF', () => planSetPdf('site')],
     ['House plan PDF', () => planSetPdf('house')],
     [SEND_LABEL, () => engineer.open()],
+    [planTermsLinkText(), () => window.open(PLAN_TERMS_URL, '_blank', 'noopener')],
     ['Upload boundary', () => runUpload(store, { viewer: true, catalogue })],
     ['Site rules', () => import('../site/upload/rules-panel.js').then((m) => m.openRulesPanel(store))],
     ['Enlarge top view', () => toggle2d()],
@@ -276,16 +278,19 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     pdfBusy = true;
     const btn = kind === 'house' ? bPdfH : bPdf;
     const label = btn.textContent;
-    btn.textContent = 'Preparing PDF';
-    btn.disabled = true;
     try {
+      // The plan terms come first, for every plan PDF including the free preview version (src/legal/terms-gate.js).
+      const terms = await requirePlanTerms({ context: kind === 'house' ? 'lot-card-house-pdf' : 'lot-card-site-pdf' });
+      if (!terms) return;
+      btn.textContent = 'Preparing PDF';
+      btn.disabled = true;
       const { exportPlanSet } = await import('../premium/exporters/planset/index.js');
       const lot = lotOf(store.project);
       // To scale only with a Plan Pack, a builder or client login (internal accounts are builder logins) or a commercial subscription.
       // Everyone else, including the free embed viewer, gets the stamped "PREVIEW, NOT TO SCALE" version.
       const a = app();
       const full = !!(a.premium?.isEntitled?.() || a.builder);
-      const out = await exportPlanSet({ project: store.project, lot, kind, builderName: builderName() || '', download: false, preview: !full });
+      const out = await exportPlanSet({ project: store.project, lot, kind, builderName: builderName() || '', download: false, preview: !full, terms });
       if (!full) toast('This is a preview, not to scale. A Plan Pack gives you the to-scale plan set.', { kind: 'info' });
       const bytes = out?.bytes || out?.blob || out?.data || out;
       if (bytes instanceof Blob || bytes instanceof Uint8Array || bytes instanceof ArrayBuffer) {

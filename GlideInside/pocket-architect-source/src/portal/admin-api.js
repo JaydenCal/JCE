@@ -39,6 +39,8 @@ export function createAdminApi({ token, base = CONFIG.apiBase, fetchImpl = null 
     saveCommercialTrial: ({ username, password, expiresAt }) => call('PUT', '/trial', { username, password, expiresAt: expiresAt || null }, '/commercial/admin'),
     commercialTrialSettings: (patch) => call('POST', '/trial/settings', patch, '/commercial/admin'),
     commercialUsage: () => call('GET', '/usage', undefined, '/commercial/admin'),
+    /** Plan set terms: { currentVersion, versions: [{ version, count, firstAt, lastAt }] } (acceptances per version). */
+    termsCounts: () => call('GET', '/admin/counts', undefined, '/terms'),
     /** Owner only: the internal test account. The owner types the username and password; the password is hashed on the server and never returned. */
     createInternal: ({ orgName, username, password }) => call('POST', '/internal-orgs', { orgName, username, password }),
     setInternal: (id, internal) => call('POST', `/orgs/${encodeURIComponent(id)}/internal`, { internal }),

@@ -34,7 +34,7 @@ function world() {
   const app = createApp({
     store, portalStore: pstore, fetchImpl, now: () => clock.t, catalogue,
     loadJsPDF: async () => (await import('jspdf')).jsPDF,
-    env: { SITE_URL: SITE, ENTITLEMENT_SECRET: 'unit-test-secret', PORTAL_ENABLED: '1', ADMIN_TOKEN, TRIAL_NOTIFY: '0', STRIPE_WEBHOOK_SECRET: 'whsec_x' },
+    env: { SITE_URL: SITE, ENTITLEMENT_SECRET: 'unit-test-secret', PORTAL_ENABLED: '1', ADMIN_TOKEN, TRIAL_NOTIFY: '0', STRIPE_WEBHOOK_SECRET: 'whsec_x', TERMS_REQUIRED: '0' },
   });
   const w = { clock, store, pstore, app };
   w.browser = () => {

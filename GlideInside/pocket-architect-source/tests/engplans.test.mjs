@@ -336,7 +336,8 @@ test('footer text is dark grey and at least 6.5 pt', async () => {
       const text = this.text.bind(this);
       this.text = (t, ...r) => {
         const s = Array.isArray(t) ? t.join(' ') : String(t);
-        if (/^CONCEPT ONLY|^Cadastre, imagery/.test(s)) calls.push([s, this.getFontSize(), this.getTextColor()]);
+        // the plan terms note (src/legal) is deliberately small type above the title block, so it is left out of this footer check
+        if ((/^CONCEPT ONLY|^Cadastre, imagery/.test(s)) && !s.startsWith('CONCEPT ONLY. NOT FOR CONSTRUCTION OR APPROVAL')) calls.push([s, this.getFontSize(), this.getTextColor()]);
         return text(t, ...r);
       };
     }

@@ -237,6 +237,23 @@ export function createD1Store(db) {
       const rows = await all('SELECT chunk FROM jce_enquiry_pdfs WHERE reference = ?1 ORDER BY seq', reference);
       return rows.length ? rows.map((r) => r.chunk).join('') : null;
     },
+    // Plan set terms acceptance (migration 0015). One row per (subject, version): the first acceptance is kept.
+    async recordTermsAcceptance(r) {
+      await run(
+        'INSERT OR IGNORE INTO terms_acceptance (id, subject_id, subject_kind, version, context, accepted_at, ip_hash, user_agent) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)',
+        r.id, r.subjectId, r.subjectKind, r.version, r.context ?? null, r.acceptedAt, r.ipHash ?? null, r.userAgent ?? null,
+      );
+      return this.getTermsAcceptance(r.subjectId, r.version);
+    },
+    async getTermsAcceptance(subjectId, version) {
+      const r = await first('SELECT * FROM terms_acceptance WHERE subject_id = ?1 AND version = ?2', subjectId, version);
+      return r ? { id: r.id, subjectId: r.subject_id, subjectKind: r.subject_kind, version: r.version, context: r.context, acceptedAt: r.accepted_at, ipHash: r.ip_hash, userAgent: r.user_agent } : null;
+    },
+    /** [{ version, count, firstAt, lastAt }], newest version first. */
+    async termsAcceptanceCounts() {
+      return (await all('SELECT version, COUNT(*) AS n, MIN(accepted_at) AS first_at, MAX(accepted_at) AS last_at FROM terms_acceptance GROUP BY version ORDER BY MAX(accepted_at) DESC, version DESC'))
+        .map((r) => ({ version: r.version, count: Number(r.n), firstAt: r.first_at, lastAt: r.last_at }));
+    },
     async logEvent({ id, type, detail, createdAt }) {
       return changed(await run('INSERT OR IGNORE INTO events (id, type, detail, created_at) VALUES (?1, ?2, ?3, ?4)', id, type, detail ? JSON.stringify(detail) : null, createdAt));
     },
@@ -259,6 +276,7 @@ export function createMemoryStore() {
   const shared = new Map();
   const siteCache = new Map();
   const events = new Map();
+  const terms = new Map();
   const copy = (o) => (o ? { ...o } : null);
   const byEmail = (e, email) => e.email && email && e.email.toLowerCase() === String(email).toLowerCase();
 
@@ -275,6 +293,7 @@ export function createMemoryStore() {
         hooks: Object.fromEntries(hooks),
         rates: Object.fromEntries(rates),
         events: [...events.values()],
+        terms: [...terms.values()],
         shared: [...shared.values()],
       };
     },
@@ -291,6 +310,8 @@ export function createMemoryStore() {
       for (const [k, v] of Object.entries(data.rates || {})) rates.set(k, v);
       events.clear();
       for (const e of data.events || []) events.set(e.id, e);
+      terms.clear();
+      for (const t of data.terms || []) terms.set(`${t.subjectId}|${t.version}`, t);
       shared.clear();
       for (const p of data.shared || []) shared.set(p.id, p);
     },
@@ -461,6 +482,25 @@ export function createMemoryStore() {
     },
     async getEnquiryPdf(reference) {
       return enquiryPdfs.get(reference) ?? null;
+    },
+    async recordTermsAcceptance(r) {
+      const k = `${r.subjectId}|${r.version}`;
+      if (!terms.has(k)) terms.set(k, { id: r.id, subjectId: r.subjectId, subjectKind: r.subjectKind, version: r.version, context: r.context ?? null, acceptedAt: r.acceptedAt, ipHash: r.ipHash ?? null, userAgent: r.userAgent ?? null });
+      return copy(terms.get(k));
+    },
+    async getTermsAcceptance(subjectId, version) {
+      return copy(terms.get(`${subjectId}|${version}`));
+    },
+    async termsAcceptanceCounts() {
+      const by = new Map();
+      for (const t of terms.values()) {
+        const c = by.get(t.version) || { version: t.version, count: 0, firstAt: t.acceptedAt, lastAt: t.acceptedAt };
+        c.count += 1;
+        if (t.acceptedAt < c.firstAt) c.firstAt = t.acceptedAt;
+        if (t.acceptedAt > c.lastAt) c.lastAt = t.acceptedAt;
+        by.set(t.version, c);
+      }
+      return [...by.values()].sort((a, b) => (a.lastAt < b.lastAt ? 1 : a.lastAt > b.lastAt ? -1 : 0));
     },
     async logEvent({ id, type, detail, createdAt }) {
       if (events.has(id)) return false;

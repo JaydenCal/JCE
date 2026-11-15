@@ -27,6 +27,7 @@ import { openEnquiry, lotPrefill } from './ui/enquiry.js';
 import { createCommercialBilling } from './ui/commercial-billing.js';
 import { createGraceBanner } from './ui/grace-banner.js';
 import { storage } from './util.js';
+import { planTermsGate, termsForExport } from '../legal/terms-gate.js';
 
 export function createPremium(store, options = {}) {
   const {
@@ -83,6 +84,29 @@ export function createPremium(store, options = {}) {
   const csubOn = () => !!state.csub?.token && commercialNow();
   // The token the server should see: the commercial login in commercial mode, otherwise the Plan Pack or portal token.
   const bearer = () => (csubOn() ? state.csub.token : state.token || state.portal?.token || null);
+  // Plan set terms (src/legal): who is accepting, and where a signed in acceptance is recorded. A bearer token (Plan Pack, commercial login)
+  // or a portal session is recorded on the server (POST /api/terms/accept); an anonymous visitor is remembered in this browser only.
+  const tokenSubject = (t) => {
+    try {
+      const p = JSON.parse(atob(String(t).split('.')[0].replace(/-/g, '+').replace(/_/g, '/')));
+      return p.eid || p.tid || null;
+    } catch {
+      return null;
+    }
+  };
+  function termsIdentity() {
+    if (csubOn()) return { subject: `csub:${tokenSubject(state.csub.token) || state.csub.kind}`, record: live() };
+    if (state.token) return { subject: `pack:${tokenSubject(state.token) || 'token'}`, record: live() };
+    if (portalOn()) {
+      const u = (typeof window !== 'undefined' && window.__ps?.portal?.me?.user) || {};
+      return { subject: `portal:${u.id || state.portal.orgName || 'login'}`, record: !cfg.portalMock };
+    }
+    return { subject: 'anon', record: false };
+  }
+  planTermsGate.configure({
+    getIdentity: termsIdentity,
+    record: (version, context) => api.acceptTerms({ version, context }, { token: csubOn() ? state.csub.token : state.token || null }),
+  });
   let disposed = false;
   let topbar = null;
   let graceBanner = null;
@@ -231,10 +255,23 @@ export function createPremium(store, options = {}) {
       return null;
     }
     if (state.exporting) return null;
+    // Plan PDFs and DXF files: the terms come first (src/legal). Nothing is generated until they are accepted for the current version.
+    const planFile = type === 'pdf' || type === 'dxf';
+    if (planFile && !(await planTermsGate.require({ context: `export-${type}` }))) return null;
     state.exporting = type;
     topbar?.setBusy(type, `Preparing ${exportLabel(type)}`);
     try {
-      const out = await runExport(type, store.project, { api, token: bearer(), devUnlock: dev() || (portalOn() && !!state.portal.clientExports), portalServer: portalOn() && !!state.portal.serverExport, watermark: portalOn() && !!state.portal.watermark, config: cfg, catalogue, getViewer, save: saveFile });
+      const go = () => runExport(type, store.project, { api, token: bearer(), devUnlock: dev() || (portalOn() && !!state.portal.clientExports), portalServer: portalOn() && !!state.portal.serverExport, watermark: portalOn() && !!state.portal.watermark, config: cfg, catalogue, getViewer, save: saveFile, terms: planFile ? termsForExport() : null });
+      let out;
+      try {
+        out = await go();
+      } catch (e) {
+        // The server has no acceptance on record for this account (accepted on another device, or the record failed): ask and record again, once.
+        if (!(planFile && e?.code === 'TERMS_REQUIRED')) throw e;
+        planTermsGate.forget();
+        if (!(await planTermsGate.require({ context: `export-${type}` }))) return null;
+        out = await go();
+      }
       track('ps_export', { type });
       layer.notify(`${exportLabel(type)} downloaded as ${out.filename}.`, 'ok');
       topbar?.announce(`${exportLabel(type)} downloaded`);
@@ -256,7 +293,9 @@ export function createPremium(store, options = {}) {
   // Send to JCE ---------------------------------------------------------------------------------------------------------------
   async function pdfBase64() {
     let blob = null;
-    await runExport('pdf', store.project, { api, token: bearer(), devUnlock: dev() || (portalOn() && !!state.portal.clientExports), portalServer: portalOn() && !!state.portal.serverExport, watermark: portalOn() && !!state.portal.watermark, config: cfg, catalogue, getViewer, save: (b) => { blob = b; } });
+    // The PDF attached to a "Send to JCE" request is a plan PDF too: the terms come first. Declined, it goes without the PDF.
+    if (!(await planTermsGate.require({ context: 'send-to-jce' }))) return null;
+    await runExport('pdf', store.project, { api, token: bearer(), devUnlock: dev() || (portalOn() && !!state.portal.clientExports), portalServer: portalOn() && !!state.portal.serverExport, watermark: portalOn() && !!state.portal.watermark, config: cfg, catalogue, getViewer, save: (b) => { blob = b; }, terms: termsForExport() });
     if (!blob) return null;
     const bytes = new Uint8Array(await blob.arrayBuffer());
     let bin = '';
@@ -287,6 +326,10 @@ export function createPremium(store, options = {}) {
   function previewPdf(hooks = {}) {
     if (previewing && !previewing.el.isConnected) previewing = null;
     if (previewing) return previewing;
+    // The free preview builds a plan PDF in this browser too, so it is behind the terms (remembered after the first time).
+    if (!planTermsGate.isAccepted()) {
+      return planTermsGate.require({ context: 'pdf-preview' }).then((ok) => (ok ? previewPdf(hooks) : null));
+    }
     const entitled = isEntitled();
     previewing = openPdfPreview({
       layer, project: store.project, store, config: cfg, catalogue, getViewer, entitled, hooks,
