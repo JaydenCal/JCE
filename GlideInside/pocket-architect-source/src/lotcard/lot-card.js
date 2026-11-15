@@ -60,7 +60,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const sub = E('lc-sub');
   const stats = E('lc-stats');
   const chips = E('lc-strip', 'div', { role: 'group', 'aria-label': 'Colour schemes' });
-  const bWalk = h('button', { class: 'lc-btn lc-pri', type: 'button', dataset: { ps: 'lc-walk' }, onclick: () => store.setUI({ view: 'walk' }) }, 'Walk inside');
+  const bWalk = h('button', { class: 'lc-btn lc-pri', type: 'button', dataset: { ps: 'lc-walk' }, onclick: () => walkInside() }, 'Walk inside');
   const bEdit = h('button', { class: 'lc-btn', type: 'button', dataset: { ps: 'lc-edit' }, onclick: () => (onEdit ? onEdit() : store.setUI({ view: '2d' })) }, embed ? 'Choose and place a home' : 'Edit floor plan');
   const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf' }, onclick: () => planSetPdf('site') }, 'Site plan PDF');
   const bPdfH = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf-house' }, onclick: () => planSetPdf('house') }, 'House plan PDF');
@@ -323,6 +323,19 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   let selTab = 'aerial';
   let bedI = 0;
   const bedTabs = () => listRoomTabs(store.project, null).filter((t) => t.bedN > 0);
+  // Walk inside starts in the clearest spot of the main living room (rooms.js standing point), not on the street.
+  async function walkInside() {
+    store.setUI({ view: 'walk' });
+    if (store.project.mode === 'commercial') return;
+    try {
+      const v = (await viewerNow());
+      if (!v) return;
+      for (let i = 0; i < 40 && !(v.mode === 'walk' && v.walk?.active); i++) await new Promise((r) => setTimeout(r, 100));
+      const tabs = v.roomTabs?.() || [];
+      const tab = tabs.find((t) => t.id === 'living' && t.roomIds?.length) || tabs.find((t) => t.roomIds?.length);
+      if (tab) await v.snapToRoom(tab.id, { duration: 0 });
+    } catch { /* the walk keeps its own start */ }
+  }
   const viewerNow = async () => getViewer() || (await getViewer.ensure?.().catch(() => null)) || null;
   const targetTab = () => (selTab === 'bedrooms' ? bedTabs()[bedI] : tabs.find((t) => t.id === selTab));
   async function go(id) {
