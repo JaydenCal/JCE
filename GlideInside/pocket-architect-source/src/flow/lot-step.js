@@ -8,6 +8,7 @@ import { demoSite } from '../site/demo-lot.js';
 import { runUpload } from '../site/upload/flow.js';
 import { confirmFrontage, waitForEnvelope } from '../ui/embed-viewer.js';
 import { lotOf } from '../model/placement.js';
+import { ensureFlowAerial } from './flow-aerial.js';
 import { lotMapSvg, frontageM, aerialOf, setbacksText } from './lot-map.js';
 
 const fmt = (n, d = 0) => (n == null || !Number.isFinite(n) ? 'n/a' : n.toLocaleString('en-AU', { maximumFractionDigits: d, minimumFractionDigits: d }));
@@ -102,11 +103,21 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
 
   let aerialFor = null;
   let aerial = null;
+  let loadStart = 0;
+  let slowT = 0;
   async function paintConfirm() {
     const lot = lotOf(store.project);
     if (!lot) { confirm.replaceChildren(h('div', { class: 'gf-card gf-empty', dataset: { ps: 'flow-lot-empty' } }, 'Your lot will appear here, with its boundary, area, street frontage and setbacks.')); return; }
-    const key = lot.aerial?.key || null;
-    if (key && aerialFor !== key) { aerialFor = key; aerial = null; aerialOf(lot).then((a) => { if (a && !disposed && aerialFor === key) { aerial = a; paintConfirm(); } }); }
+    // The lot aerial under the boundary: the stored one, else fetched the same way steps 3 and 4 do. A failure leaves the plain background.
+    const key = `${lot.aerial?.key || 'none'}:${lot.origin?.e},${lot.origin?.n}`;
+    if (aerialFor !== key) {
+      aerialFor = key; aerial = null;
+      (async () => {
+        let a = lot.aerial?.key ? await aerialOf(lot) : null;
+        if (!a) { await ensureFlowAerial(store); a = await aerialOf(lotOf(store.project)); }
+        if (a && !disposed) { aerial = a; aerialFor = `${lotOf(store.project)?.aerial?.key || 'none'}:${lotOf(store.project)?.origin?.e},${lotOf(store.project)?.origin?.n}`; paintConfirm(); }
+      })().catch(() => {});
+    }
     const map = h('div', { class: 'gf-map-wrap', html: lotMapSvg(store.project, { aerial }) });
     const fr = frontageM(lot);
     const sb = setbacksText(lot);
@@ -129,7 +140,16 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     findBtn.disabled = loading;
     upload.hidden = !notFound;
     sample.textContent = notFound ? 'Try a sample lot' : 'No address? Try a sample lot';
-    status.textContent = loading ? 'Finding your lot' : error;
+    if (loading) {
+      if (!loadStart) { loadStart = Date.now(); slowT = setTimeout(() => { if (loading && !disposed) paint(); }, 8000); }
+      const long = Date.now() - loadStart >= 8000;
+      status.replaceChildren(h('span', { class: 'gf-spin', 'aria-hidden': 'true', dataset: { ps: 'flow-spinner' } }), h('span', { dataset: { ps: 'flow-loading-text' } }, long ? 'Still looking. Council and state map services can be slow.' : 'Finding your lot. This can take a little while for some addresses.'));
+    } else {
+      loadStart = 0; clearTimeout(slowT);
+      status.textContent = error;
+    }
+    confirm.classList.toggle('gf-dim', loading);
+    confirm.setAttribute('aria-busy', String(!!loading));
     if (slow && error && !loading) status.append(' ', h('button', { class: 'gf-skip', type: 'button', style: { padding: '0 0 0 6px', fontWeight: '700' }, dataset: { ps: 'flow-retry' }, onclick: () => find() }, 'Try again'));
     status.className = `gf-note${error && !loading ? ' gf-note--bad' : ''}`;
     paintConfirm();
@@ -151,6 +171,6 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     el,
     canNext: () => !!lotOf(store.project) && !loading,
     nextLabel: 'This is my lot',
-    dispose() { disposed = true; clearTimeout(timer); off?.(); },
+    dispose() { disposed = true; clearTimeout(timer); clearTimeout(slowT); off?.(); },
   };
 }

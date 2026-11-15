@@ -45,6 +45,11 @@ export const FLOW_CSS = `
 .gf-suggest li:hover,.gf-suggest li[aria-selected="true"]{background:var(--gf-acc-soft)}
 .gf-note{margin:8px 0 0;color:var(--gf-muted);font-size:13px}
 .gf-note--bad{color:var(--gf-bad)}
+.gf-spin{display:inline-block;width:16px;height:16px;margin-right:8px;vertical-align:-3px;border:2px solid var(--gf-muted,#8a8f98);border-top-color:var(--gf-accent,#1b4fd1);border-radius:50%;animation:gf-spin .8s linear infinite}
+@keyframes gf-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.gf-spin{animation:none;border-top-color:var(--gf-muted,#8a8f98);border-style:dotted}}
+.gf-dim{opacity:.35;pointer-events:none;transition:opacity .2s}
+@media (prefers-reduced-motion:reduce){.gf-dim{transition:none}}
 .gf-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:12px 0 0}
 .gf-stat{border:1px solid var(--gf-border);border-radius:10px;padding:10px 12px}
 .gf-stat b{display:block;font-size:20px;line-height:1.2}
