@@ -444,12 +444,13 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
       body.append(h('div', { class: 'ps-prof-count' },
         h('span', null, `${data.count} of ${data.limit} designs${full ? '. Delete one to save another.' : ''}`),
         h('button', { class: 'ps-btn ps-btn--sm', type: 'button', dataset: { action: 'save-now' }, onclick: async (e) => {
-          e.currentTarget.disabled = true;
+          const btn = e.currentTarget; // currentTarget is null once the handler has awaited
+          btn.disabled = true;
           const r = await controller.saveNow();
           if (r.ok) await load();
           else {
             toast(controller.state.message || 'Not saved.', { kind: 'warn', timeout: 7000 });
-            e.currentTarget.disabled = false;
+            btn.disabled = false;
           }
         } }, 'Save this design now')));
       if (!data.designs.length) body.append(h('p', { class: 'ps-hint' }, 'Nothing saved yet. Your designs are saved here as you work, or press Save this design now.'));
@@ -531,7 +532,8 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
         h('button', { class: 'ps-btn ps-btn--danger', type: 'button', dataset: { action: 'confirm-delete-account' }, onclick: async (e) => {
           err.hidden = true;
           if (!pw.value) { err.textContent = 'Enter your password.'; err.hidden = false; return; }
-          e.currentTarget.disabled = true;
+          const btn = e.currentTarget; // currentTarget is null once the handler has awaited
+          btn.disabled = true;
           try {
             await controller.deleteAccount(pw.value);
             pw.value = '';
@@ -541,7 +543,7 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
           } catch (ex) {
             err.textContent = profileErrorText(ex);
             err.hidden = false;
-            e.currentTarget.disabled = false;
+            btn.disabled = false;
           }
         } }, 'Delete account')],
     });
