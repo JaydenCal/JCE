@@ -116,8 +116,14 @@ const ABBREV = { ST: 'STREET', RD: 'ROAD', AVE: 'AVENUE', AV: 'AVENUE', DR: 'DRI
 
 /** Search words: upper case, state names and a trailing postcode dropped, street type abbreviations expanded ("St" stays when it starts the address or follows a number, as in "5 St Johns Rd"). */
 export function searchWords(tokens, state) {
-  const drop = new Set(['AUSTRALIA', state === 'QLD' ? 'QUEENSLAND' : 'NEW', state === 'QLD' ? 'QLD' : 'NSW', ...(state ? [] : ['QLD', 'NSW', 'QUEENSLAND'])]);
-  let t = tokens.filter((x) => !drop.has(x));
+  // State names and codes never belong in the upstream where clause: "756 Quia Road Gunnedah NSW" must query exactly like "756 Quia Road Gunnedah".
+  let t = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const x = tokens[i];
+    if (x === 'NEW' && tokens[i + 1] === 'SOUTH' && tokens[i + 2] === 'WALES') { i += 2; continue; }
+    if (x === 'AUSTRALIA' || x === 'NSW' || x === 'QLD' || x === 'QUEENSLAND') continue;
+    t.push(x);
+  }
   if (t.length >= 3 && /^\d{4}$/.test(t[t.length - 1])) t = t.slice(0, -1);
   return t.map((x, i) => (ABBREV[x] && !(x === 'ST' && (i === 0 || /^\d/.test(t[i - 1]))) ? ABBREV[x] : x)).filter(Boolean);
 }
