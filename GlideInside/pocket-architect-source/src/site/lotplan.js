@@ -327,7 +327,18 @@ export function deriveDriveway(project, opts = {}) {
     const score = G.dot(door.normal, r.outward) + (r.kind === 'front' ? 0.001 : 0);
     if (!best || score > best.score) best = { r, score };
   }
-  if (best.score < 0.2) return { ok: false, reason: 'door_faces_away', door };
+  // The door faces a street: the driveway runs straight or on a smooth curve. When it faces away, the driveway is routed round the house
+  // to the nearest street frontage (opts.route false keeps the old answer: no driveway).
+  const facing = best.score >= 0.2;
+  if (!facing && opts.route === false) return { ok: false, reason: 'door_faces_away', door };
+  if (!facing) {
+    let near = null;
+    for (const rr of reserves) {
+      const d = G.projectToSegment(door.mid, rr.lines.property[0], rr.lines.property[1]).d - (rr.kind === 'front' ? 1 : 0);
+      if (!near || d < near.d) near = { r: rr, d };
+    }
+    best = { r: near.r, score: best.score };
+  }
   const r = best.r;
   const wd = Math.min(6500, Math.max(3000, opts.widthMm || storedDriveway(project)?.widthMm || door.widthMm || 3000));
   const edgeA = lot.boundary[r.edge];
@@ -355,12 +366,34 @@ export function deriveDriveway(project, opts = {}) {
   const stored = storedDriveway(project);
   let usedStored = false;
   let kerbEnd = P3;
+  const rings = buildingRings(project);
+  const clear = (pts) => drivewayClear(pts, { lot, rings, door, r, wd });
+  let storedInvalid = false;
+  let routed = false;
   if (stored && !opts.ignoreStored) {
     const end = drivewayEndOnKerb(lot, r, stored.endOffsetMm, wd, onKerb);
-    kerbEnd = end;
     const pts = filletPath([P0, G.add(P0, G.mul(door.normal, Math.max(1500, wd * 0.6))), ...stored.pis.map((q) => ({ x: q.x, y: q.y })), G.add(end, G.mul(r.outward, -1500)), end], (stored.radiusM || 6) * 1000);
-    centre = pts.map((c, i) => c);
-    usedStored = true;
+    // An edit made for another position of the house (it now runs through the house, or the door has turned away from it) is not used.
+    if (opts.keepStored || (facing ? clear(pts) : clear(pts) && stored.pis.length > 0)) {
+      kerbEnd = end;
+      centre = pts.map((c) => c);
+      usedStored = true;
+    } else storedInvalid = true;
+  }
+  if (!usedStored) {
+    const direct = [];
+    if (facing) for (let i = 0; i <= N; i++) direct.push(bez(P, i / N));
+    if (!facing || !clear(direct)) {
+      const path = opts.route === false ? null : routeDriveway({ lot, rings, door, r, wd, onKerb, edgeLen, along, lo, hi, clear });
+      if (path) {
+        kerbEnd = path.end;
+        centre = filletPath(path.pts, 5000);
+        if (!clear(centre)) centre = filletPath(path.pts, 2500);
+        if (!clear(centre)) centre = path.pts.slice();
+        usedStored = true; // same strip maths as an edited path (constant width along a polyline)
+        routed = true;
+      } else if (!facing) return { ok: false, reason: 'door_faces_away', door, storedInvalid };
+    }
   }
   if (usedStored) {
     for (let i = 0; i < centre.length; i++) {
@@ -403,9 +436,110 @@ export function deriveDriveway(project, opts = {}) {
   return {
     ok: true, widthMm: wd, centre, left, right, polygon, lengthMm: length, minRadiusM: Number.isFinite(rmin) ? rmin / 1000 : null,
     doorMid: P0, kerbPoint: kerbEnd, edge: r.edge, crossover, door, straight: Math.abs(G.dist(P0, kerbEnd) - length) < 5,
-    edited: usedStored, edgeStart: edgeA, edgeU: u, edgeLenMm: edgeLen, endOffsetMm: G.dot(G.sub(kerbEnd, edgeA), u), pis: usedStored ? stored.pis : [], radiusM: stored?.radiusM || 6,
+    edited: usedStored && !routed, routed, storedInvalid, edgeStart: edgeA, edgeU: u, edgeLenMm: edgeLen, endOffsetMm: G.dot(G.sub(kerbEnd, edgeA), u), pis: usedStored && !routed ? stored.pis : [], radiusM: stored?.radiusM || 6,
     insideLot: centre.every((c) => side(c) >= 0 || G.pointInPolygon(c, lot.boundary)),
   };
+}
+
+// Driveway routing -------------------------------------------------------------------------------------------------------
+const inAnyRing = (p, rings) => rings.some((ring) => ring.length >= 3 && G.pointInPolygon(p, ring));
+const ringGap = (p, rings) => { let d = Infinity; for (const ring of rings) for (let i = 0; i < ring.length; i++) d = Math.min(d, G.projectToSegment(p, ring[i], ring[(i + 1) % ring.length]).d); return d; };
+
+/** True when a driveway centreline keeps off the house (past the first metre and a half at the door) and stays inside the lot up to the street. */
+function drivewayClear(pts, { lot, rings, door, r, wd }) {
+  const prop = r.lines.property;
+  const past = (p) => G.dot(G.sub(p, prop[0]), r.outward) >= -50; // over the property line, on the verge
+  const keep = Math.min(1200, wd / 2 - 300);
+  const check = (p) => {
+    if (G.dist(p, door.mid) < wd / 2 + 900) return true;
+    if (inAnyRing(p, rings) || ringGap(p, rings) < keep) return false;
+    return past(p) || G.pointInPolygon(p, lot.boundary);
+  };
+  for (let i = 0; i < pts.length; i++) {
+    if (!check(pts[i])) return false;
+    if (i) {
+      const n = Math.ceil(G.dist(pts[i - 1], pts[i]) / 600);
+      for (let k = 1; k < n; k++) if (!check(G.lerp(pts[i - 1], pts[i], k / n))) return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * A driveway round the house: from the door, past the corners of the house (kept half a width and a little clear), to the street frontage.
+ * The shortest clear path over the door point, the corners of the widened house outline, the inside corners of the lot and a few points
+ * on the frontage. Returns { pts, end } or null when there is no room (a house hard against both side boundaries).
+ */
+function routeDriveway({ lot, rings, door, r, wd, onKerb, edgeLen, along, lo, hi, clear }) {
+  const hull = (() => { const pts = rings.flat(); return pts.length >= 3 ? hullOf(pts) : []; })();
+  if (hull.length < 3) return null;
+  const c = G.polygonCentroid(hull);
+  const start = G.add(door.mid, G.mul(door.normal, Math.max(1500, wd * 0.6)));
+  for (const gap of [wd / 2 + 700, wd / 2 + 350]) {
+    // Corners of the house outline pushed out by the gap (each corner along the bisector of its two edge normals).
+    const nodes = [];
+    for (let i = 0; i < hull.length; i++) {
+      const a = hull[(i + hull.length - 1) % hull.length];
+      const b = hull[i];
+      const d = hull[(i + 1) % hull.length];
+      const out = (p, q) => { const t = G.norm(G.sub(q, p)); let n = { x: t.y, y: -t.x }; if (G.dot(n, G.sub(G.lerp(p, q, 0.5), c)) < 0) n = { x: -n.x, y: -n.y }; return n; };
+      const n1 = out(a, b);
+      const n2 = out(b, d);
+      const bis = G.norm(G.add(n1, n2));
+      const k = Math.max(0.35, G.dot(bis, n1));
+      nodes.push(G.add(b, G.mul(bis, Math.min(gap / k, gap * 2))));
+    }
+    // Inside corners of the lot (a battle axe handle, a kinked side boundary), stepped into the lot.
+    const lb = lot.boundary;
+    for (let i = 0; i < lb.length; i++) {
+      const n1 = inwardNormalOf(lot, (i + lb.length - 1) % lb.length);
+      const n2 = inwardNormalOf(lot, i);
+      nodes.push(G.add(lb[i], G.mul(G.norm(G.add(n1, n2)), wd / 2 + 600)));
+    }
+    const usable = nodes.filter((p) => G.pointInPolygon(p, lot.boundary) && !inAnyRing(p, rings) && ringGap(p, rings) >= Math.min(1200, wd / 2 - 300));
+    // Ends on the frontage: opposite each node and the door, and the two ends of the usable frontage.
+    const offs = [...new Set([along, lo, hi, (lo + hi) / 2, ...usable.map((p) => G.dot(G.sub(p, lb[r.edge]), r.u))].map((v) => Math.round(G.clamp(v, lo, hi) / 250) * 250))];
+    const ends = offs.map((s) => { const end = onKerb(s); return { end, inner: G.add(end, G.mul(r.outward, -(r.vergeM * 1000 + 1500))) }; });
+    const pts = [start, ...usable, ...ends.map((e) => e.inner)];
+    const first = 1 + usable.length;
+    const n = pts.length;
+    const seg = new Map();
+    const open = (i, j) => { const key = i < j ? i * n + j : j * n + i; if (!seg.has(key)) seg.set(key, clear([pts[i], pts[j]])); return seg.get(key); };
+    const dist = new Array(n).fill(Infinity);
+    const prev = new Array(n).fill(-1);
+    const done = new Array(n).fill(false);
+    dist[0] = 0;
+    for (;;) {
+      let u = -1;
+      for (let i = 0; i < n; i++) if (!done[i] && (u < 0 || dist[i] < dist[u])) u = i;
+      if (u < 0 || dist[u] === Infinity) break;
+      done[u] = true;
+      if (u >= first) continue; // a frontage point is an end, never a way through
+      for (let v = 1; v < n; v++) {
+        if (done[v]) continue;
+        const d = dist[u] + G.dist(pts[u], pts[v]) + 800; // a small cost per bend keeps the path simple
+        if (d < dist[v] && open(u, v)) { dist[v] = d; prev[v] = u; }
+      }
+    }
+    let bestEnd = -1;
+    for (let i = first; i < n; i++) if (dist[i] < Infinity && (bestEnd < 0 || dist[i] < dist[bestEnd])) bestEnd = i;
+    if (bestEnd < 0) continue;
+    const chain = [];
+    for (let i = bestEnd; i >= 0; i = prev[i]) chain.unshift(pts[i]);
+    const e = ends[bestEnd - first];
+    return { pts: [door.mid, ...chain, e.end], end: e.end };
+  }
+  return null;
+}
+
+function hullOf(pts) {
+  const p = [...pts].sort((a, b) => a.x - b.x || a.y - b.y);
+  const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+  const lower = [];
+  for (const q of p) { while (lower.length >= 2 && cross(lower.at(-2), lower.at(-1), q) <= 0) lower.pop(); lower.push(q); }
+  const upper = [];
+  for (const q of [...p].reverse()) { while (upper.length >= 2 && cross(upper.at(-2), upper.at(-1), q) <= 0) upper.pop(); upper.push(q); }
+  return lower.slice(0, -1).concat(upper.slice(0, -1));
 }
 
 // Clearances ---------------------------------------------------------------------------------------------------------------

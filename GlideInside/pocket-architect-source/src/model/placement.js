@@ -420,8 +420,25 @@ export function checkSetbacks(project) {
 // Moving and rotating the house ---------------------------------------------------------------------------------------
 const houseThings = (level) => [...level.furniture, ...level.stairs];
 
-/** Move walls, rooms, furniture and stairs on every level. Tanks and other site items stay where they are. */
+/** A tank within this distance of the house (edge to wall) belongs to it and moves with it. */
+export const ATTACH_REACH_MM = 3500;
+
+/** The rainwater tanks that stand beside the house (or in it): they follow the house when it moves. Others stay where they are. */
+export function attachedTanks(project) {
+  const tanks = project?.site?.tanks;
+  if (!Array.isArray(tanks) || !tanks.length) return [];
+  const fp = footprint(project);
+  if (!fp) return [];
+  const rings = fp.solids.length ? fp.solids : [fp.points];
+  return tanks.filter((t) => {
+    const reach = ATTACH_REACH_MM + (Number(t.diameter) || 2000) / 2;
+    return rings.some((ring) => ring.length >= 3 && (G.pointInPolygon(t, ring) || edgeDist(t, ring) <= reach));
+  });
+}
+
+/** Move walls, rooms, furniture and stairs on every level, and the tanks beside the house. Other site items stay where they are. */
 export function translateHouse(project, dx, dy) {
+  const tanks = attachedTanks(project);
   for (const l of project.levels) {
     for (const w of l.walls) {
       w.a = { x: roundMm(w.a.x + dx), y: roundMm(w.a.y + dy) };
@@ -433,14 +450,16 @@ export function translateHouse(project, dx, dy) {
       it.y = roundMm(it.y + dy);
     }
   }
+  for (const t of tanks) { t.x = roundMm(t.x + dx); t.y = roundMm(t.y + dy); }
 }
 
-/** Rotate the house clockwise on screen by deg about (cx, cy). */
+/** Rotate the house clockwise on screen by deg about (cx, cy). The tanks beside it turn with it. */
 export function rotateHouse(project, deg, c) {
   const rot = (p) => {
     const q = G.rotatePoint(p, c, deg);
     return { x: roundMm(q.x), y: roundMm(q.y) };
   };
+  const tanks = attachedTanks(project);
   for (const l of project.levels) {
     for (const w of l.walls) {
       w.a = rot(w.a);
@@ -454,6 +473,7 @@ export function rotateHouse(project, deg, c) {
       it.rotation = (((Number(it.rotation) || 0) + deg) % 360 + 360) % 360;
     }
   }
+  for (const t of tanks) { const q = rot(t); t.x = q.x; t.y = q.y; }
 }
 
 export function houseCentre(project) {

@@ -9,6 +9,7 @@
 // never mirror the lot (a fault seen in an earlier builder lot planner).
 
 import { rotateHouse, translateHouse, lotOf } from '../model/placement.js';
+import { settleSiteItems } from '../site/site-items.js';
 import { mirrorPlan } from '../model/ops.js';
 import { buildingHull, orientedBox, clearances, faceGarageAngle } from '../site/lotplan.js';
 import * as G from '../model/geometry.js';
@@ -37,6 +38,7 @@ export function arrangeApply(project, pose) {
   if (pose.rotation) rotateHouse(project, pose.rotation, c);
   const c1 = houseBoxCentre(project);
   translateHouse(project, Math.round(pose.x - c1.x), Math.round(pose.y - c1.y));
+  settleSiteItems(project, { quiet: true });
   return { pose: { ...pose } };
 }
 

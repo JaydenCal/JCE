@@ -6,6 +6,7 @@ import * as S from './schema.js';
 import * as G from './geometry.js';
 import * as SITE from './placement.js';
 import { fitHouse } from '../site/fit-house.js';
+import { settleSiteItems } from '../site/site-items.js';
 import { COMMERCIAL_OPS, commercialToolSchemas } from '../premium/ai/commercial-schemas.js';
 
 export class OpError extends Error {
@@ -858,7 +859,7 @@ export const OPS = {
   },
   move_house: {
     label: 'Move house',
-    description: 'Move the whole house (walls, rooms, furniture and stairs on every level) on the lot by dx east and dy south, in mm. Tanks stay put. Needs a lot on the site. Use check_setbacks afterwards when setbacks matter.',
+    description: 'Move the whole house (walls, rooms, furniture and stairs on every level) on the lot by dx east and dy south, in mm. Tanks beside the house move with it. Needs a lot on the site. Use check_setbacks afterwards when setbacks matter.',
     params: { dx: { ...P.num('mm east (+x), west is negative'), minimum: -100000, maximum: 100000 }, dy: { ...P.num('mm south (+y), north is negative'), minimum: -100000, maximum: 100000 } },
     required: ['dx', 'dy'],
     run(p, a) {
@@ -866,6 +867,7 @@ export const OPS = {
       const dx = num(a.dx, 'dx', { min: -100000, max: 100000 });
       const dy = num(a.dy, 'dy', { min: -100000, max: 100000 });
       SITE.translateHouse(p, dx, dy);
+      settleSiteItems(p);
       return { dx, dy };
     },
   },
@@ -878,6 +880,7 @@ export const OPS = {
       if (!SITE.lotOf(p)) fail('No lot is loaded for this design, so the house cannot be positioned on a lot.');
       const deg = num(a.degrees, 'degrees', { min: -360, max: 360 });
       SITE.rotateHouse(p, deg, SITE.houseCentre(p));
+      settleSiteItems(p);
       return { degrees: deg };
     },
   },
@@ -924,6 +927,7 @@ export const OPS = {
       if (s.fits) {
         if (a.apply === true) {
           SITE.translateHouse(p, s.dx, s.dy);
+          settleSiteItems(p);
           return { fits: true, dx: s.dx, dy: s.dy, report: `Moved the house ${move} so it sits inside the setbacks.` };
         }
         return { changed: false, fits: true, dx: s.dx, dy: s.dy, report: `Moving the house ${move} puts it inside the setbacks.` };
@@ -934,6 +938,7 @@ export const OPS = {
         if (a.apply === true) {
           if (f.rotateDeg) SITE.rotateHouse(p, f.rotateDeg, SITE.houseCentre(p));
           SITE.translateHouse(p, f.dx, f.dy);
+          settleSiteItems(p);
           return { fits: true, dx: f.dx, dy: f.dy, rotateDeg: f.rotateDeg, report: f.message };
         }
         return { changed: false, fits: true, report: f.message.replace(/^Moved/, 'Moving') };

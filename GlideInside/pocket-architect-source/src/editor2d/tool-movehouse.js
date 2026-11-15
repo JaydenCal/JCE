@@ -7,6 +7,7 @@ import { lotChecks } from '../site/lot-checks.js';
 import { confirmBreach, statusFromMessages } from '../flow/breach.js';
 import * as G from '../model/geometry.js';
 import { translateHouse, rotateHouse, houseCentre, lotOf, footprint } from '../model/placement.js';
+import { moveHouseBy, turnHouseBy } from '../site/site-items.js';
 import { ringOf } from './draw-lotplan.js';
 
 const DRAG_START_PX = 3;
@@ -95,9 +96,9 @@ export function createMoveHouseTool(ed) {
   }
 
   function commit(d) {
-    if (d.mode === 'move' && (d.dx || d.dy)) ed.apply('Move house', (p) => translateHouse(p, d.dx, d.dy));
+    if (d.mode === 'move' && (d.dx || d.dy)) ed.apply('Move house', (p) => { moveHouseBy(p, d.dx, d.dy); });
     else if (d.mode === 'turn' && d.deg) {
-      ed.apply('Rotate house', (p) => rotateHouse(p, d.deg, d.centre));
+      ed.apply('Rotate house', (p) => { turnHouseBy(p, d.deg, d.centre); });
       rot = (((rot + d.deg) % 360) + 360) % 360;
       setOverlay(rot);
     }
@@ -177,7 +178,7 @@ export function createMoveHouseTool(ed) {
       const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
       if (k === 'q' || k === 'e') {
         const deg = k === 'e' ? 1 : -1;
-        ed.apply('Rotate house', (p) => rotateHouse(p, deg, houseCentre(p)));
+        ed.apply('Rotate house', (p) => { turnHouseBy(p, deg, houseCentre(p)); });
         rot = (((rot + deg) % 360) + 360) % 360;
         setOverlay(rot);
         return true;
@@ -186,7 +187,7 @@ export function createMoveHouseTool(ed) {
         const step = e.shiftKey ? 1000 : 100;
         const dx = k === 'ArrowLeft' ? -step : k === 'ArrowRight' ? step : 0;
         const dy = k === 'ArrowUp' ? -step : k === 'ArrowDown' ? step : 0;
-        ed.apply('Move house', (p) => translateHouse(p, dx, dy));
+        ed.apply('Move house', (p) => { moveHouseBy(p, dx, dy); });
         return true;
       }
       return false;

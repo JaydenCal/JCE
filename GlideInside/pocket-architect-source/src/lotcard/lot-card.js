@@ -14,7 +14,7 @@ import { smartSearch } from '../site/address-search.js';
 import { downloadBlob } from '../premium/exporters/download.js';
 import { requirePlanTerms, planTermsLinkText, PLAN_TERMS_URL } from '../legal/terms-gate.js';
 import { toast } from '../ui/toast.js';
-import { lotOf, translateHouse, rotateHouse } from '../model/placement.js';
+import { lotOf } from '../model/placement.js';
 import * as G from '../model/geometry.js';
 import { canMoveHouse, onHouse, turnAngle } from '../editor2d/tool-movehouse.js';
 import { ringOf } from '../editor2d/draw-lotplan.js';
@@ -33,6 +33,7 @@ import { runUpload, creditText, FOOT_BASE } from '../site/upload/flow.js';
 import { createTopView, expandButton, housingScene } from './topview.js';
 import { createTips } from './tips.js';
 import { createAerialToggle } from '../ui/aerial-toggle.js';
+import { moveHouseBy, turnHouseBy } from '../site/site-items.js';
 import { aerialOn } from '../site/aerial-pref.js';
 import { injectUploadCss } from '../site/upload/css.js';
 
@@ -114,7 +115,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const miniX = expandButton(() => topView.open());
   const mini = h('div', { class: 'lc-mini', role: 'group', title: 'Top view. Click to enlarge', 'aria-label': 'Top view of the lot', dataset: { ps: 'lc-mini' }, onclick: (e) => { if (e.target.closest?.('.lc-mini-x')) return; if (suppressClick) { suppressClick = false; return; } if (mv?.consumeClick()) return; if (embed) topView.open(); else toggle2d(); } }, cv, h('span', { class: 'lc-mini-t' }, 'TOP VIEW'), north, northLabel, h('span', { class: 'lc-mini-hint', 'aria-hidden': 'true' }, 'Drag the house to move it, drag the map to pan, scroll to zoom, right-drag to rotate. Click to enlarge'), miniX);
   const aerialT = createAerialToggle({ store, className: 'lc-aerial lc-glass' });
-  const topView = createTopView({ root: () => root, getScene: () => housingScene(store.project), store, trigger: miniX, onChange: () => paintMenu(), movers: { can: (p) => canMoveHouse(p), move: (id, dx, dy) => store.apply('Move house', (q) => translateHouse(q, dx, dy)), turn: (id, deg, c) => store.apply('Rotate house', (q) => rotateHouse(q, deg, c)) } });
+  const topView = createTopView({ root: () => root, getScene: () => housingScene(store.project), store, trigger: miniX, onChange: () => paintMenu(), movers: { can: (p) => canMoveHouse(p), move: (id, dx, dy) => store.apply('Move house', (q) => { moveHouseBy(q, dx, dy); }), turn: (id, deg, c) => store.apply('Rotate house', (q) => { turnHouseBy(q, deg, c); }) } });
   let suppressClick = false;
 
   // The search pill. In the embedded viewer it is the real address search (NSW and QLD, /api/site/search) as an input with suggestions; in the
@@ -610,8 +611,8 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     if (md.applied) store.undo();
     md.applied = false;
     if (md.mode === 'move' ? (!md.dx && !md.dy) : !md.deg) return;
-    if (md.mode === 'move') store.apply('Move house', (q) => translateHouse(q, md.dx, md.dy));
-    else store.apply('Rotate house', (q) => rotateHouse(q, md.deg, md.centre));
+    if (md.mode === 'move') store.apply('Move house', (q) => { moveHouseBy(q, md.dx, md.dy, { quiet: !final }); });
+    else store.apply('Rotate house', (q) => { turnHouseBy(q, md.deg, md.centre, { quiet: !final }); });
     md.applied = true;
   }
   function endDrag() {

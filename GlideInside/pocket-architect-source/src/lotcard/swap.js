@@ -5,6 +5,7 @@
 import { placeHouse, defaultPose } from '../portal/place-house.js';
 import { autoPose } from '../portal/auto-place.js';
 import { lotOf } from '../model/placement.js';
+import { settleSiteItems } from '../site/site-items.js';
 
 /** The pose a design would take on this project's lot (same rules as autoPose, with defaultPose when there is no lot). */
 export function poseFor(project, house) {
@@ -30,6 +31,7 @@ export function swapHouse(store, house, { id = null, name = '' } = {}) {
     p.levels = [];
     p.site.tanks = [];
     placeHouse(p, h, pose);
+    settleSiteItems(p);
     p.placedHouse = tooBig ? { id, name: h.name, tooBig: true } : { id, name: h.name };
   });
   const first = [...store.project.levels].sort((a, b) => a.elevation - b.elevation)[0];

@@ -151,7 +151,7 @@ test('top view move wiring: mode switch, handle, 90 degree buttons, warnings, on
   assert.match(src, /topview-warning/);
   assert.match(src, /turn-handle/);
   assert.match(src, /if \(drag\.applied\) store\.undo\(\)/);
-  assert.match(read('../src/lotcard/lot-card.js'), /movers: \{ can: \(p\) => canMoveHouse\(p\)[^]*translateHouse[^]*rotateHouse/);
+  assert.match(read('../src/lotcard/lot-card.js'), /movers: \{ can: \(p\) => canMoveHouse\(p\)[^]*moveHouseBy[^]*turnHouseBy/);
   assert.match(read('../src/commercial/lotcard.js'), /movers: \{ can: cm\.can/);
   assert.ok(!/[–—]/.test(src + read('../src/lotcard/topview-move.js') + read('../src/lotcard/mini-view.js')), 'no en or em dashes');
 });
