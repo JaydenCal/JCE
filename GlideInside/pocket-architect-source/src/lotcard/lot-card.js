@@ -31,6 +31,7 @@ import { roomsPlanModel } from './rooms-plan.js';
 import { createSendToEngineer, SEND_LABEL } from './send-engineer.js';
 import { runUpload, creditText, FOOT_BASE } from '../site/upload/flow.js';
 import { createTopView, expandButton, housingScene } from './topview.js';
+import { createTips } from './tips.js';
 import { createAerialToggle } from '../ui/aerial-toggle.js';
 import { aerialOn } from '../site/aerial-pref.js';
 import { injectUploadCss } from '../site/upload/css.js';
@@ -151,7 +152,11 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   function paintMenu() { const it = menuList?.lastElementChild; if (it) it.textContent = topView.isOpen() ? 'Close top view' : 'Enlarge top view'; }
   const foot = embed ? E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, FOOT_BASE) : null;
   const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, ...(compass ? [compass] : []), findPill, ...(uploadBtn ? [uploadBtn] : []), ...(menuBtn ? [menuBtn, menuList] : []), card, rooms, pager, ...(embed ? [aerialT.el] : []), mini, ...(foot ? [foot] : []));
-  if (embed) root.classList.add('lc-embed');
+  if (embed) {
+    root.classList.add('lc-embed');
+    const tips = createTips();
+    root.append(tips.el, tips.q);
+  }
   host.append(root);
 
   // Address search (embedded viewer) ----------------------------------------------------------------------------------------------
