@@ -80,6 +80,8 @@ export const LOT_CARD_CSS = `
 .lc-root.is-compact .lc-mini-t{font-size:7.5px;padding:2px 5px;left:5px;top:5px}
 .lc-root.is-compact .lc-north{width:22px;height:22px;right:4px;top:4px}
 .ps-stage:has(.lc-root.is-compact:not([hidden])) .ps-credit{bottom:14px}
+/* In the editor (not the embedded viewer) the card's pager and top view fill the bottom right, so the Map data chip moves to the top right, under the Edit switch. */
+.ps-stage:has(.lc-root:not(.lc-embed):not([hidden])) .ps-credit{bottom:auto;top:62px}
 .ps-stage:has(.lc-root.is-phone:not([hidden])) .ps-credit{bottom:112px}
 .lc-root[data-view="2d"] .lc-find,.lc-root[data-view="split"] .lc-find,.lc-root[data-view="2d"] .lc-head,.lc-root[data-view="2d"] .lc-rooms,.lc-root[data-view="2d"] .lc-mini,.lc-root[data-view="split"] .lc-head,.lc-root[data-view="split"] .lc-rooms,.lc-root[data-view="split"] .lc-mini,.lc-root[data-view="split"] .lc-pager{display:none!important}
 .lc-root[data-view="2d"] .lc-card,.lc-root[data-view="split"] .lc-card{width:min(440px,calc(100% - 24px));padding:12px 16px 0}
