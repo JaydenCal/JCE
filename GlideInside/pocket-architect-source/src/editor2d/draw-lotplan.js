@@ -190,7 +190,7 @@ export function drawDriveway(ctx, st) {
   const lot = lotOf(st.project);
   if (!lot || !layerOn(lot, 'driveway')) return;
   const d = deriveDriveway(st.project);
-  if (!d?.ok) return;
+  if (!d?.ok || d.manual) return; // a driveway drawn with the Driveway and road tool is painted by draw-pave.js
   ctx.save();
   polyPath(ctx, st, d.polygon);
   ctx.fillStyle = 'rgba(205,205,205,0.9)';

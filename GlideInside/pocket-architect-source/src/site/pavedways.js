@@ -614,3 +614,15 @@ export function extraPavedInLotM2(project) {
   if (drive) m2 += wayGeometry(project, getWay(project, drive.wayId)).headM2;
   return m2;
 }
+
+/** The area of a way's pavement that lies over the building (m2). Under about 1.5 m2 is just the end of a drive meeting the garage door. */
+export function overBuildingM2(project, geom) {
+  const rings = buildingRings(project).map((r) => cleanRing(r)).filter((r) => r.length >= 3);
+  if (!rings.length) return 0;
+  let m2 = 0;
+  for (const pc of geom.pieces) {
+    if (pc.role === 'crossover') continue;
+    for (const br of rings) for (const rg of boolean([pc.ring], [br], 'inter')) m2 += ringArea(rg);
+  }
+  return m2;
+}

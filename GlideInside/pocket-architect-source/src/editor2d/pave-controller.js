@@ -66,7 +66,9 @@ export function createPaveController({ store, scale, toast = () => {}, redraw = 
     const parts = [`${d.text}`];
     if (replaced) parts.push('It replaces the automatic driveway.');
     if (way.kind === 'driveway' && way.kerbEdge == null) parts.push('It does not start at the kerb, so there is no crossover. Drag the first point to the street to add one.');
-    say(parts.join(' '), way.kind === 'driveway' && way.kerbEdge == null ? 'warn' : 'ok');
+    const over = P.overBuildingM2(project(), d.g);
+    if (over > 1.5) parts.push(`It crosses the building by ${fmtA(over)}. It is not blocked, check the route.`);
+    say(parts.join(' '), (way.kind === 'driveway' && way.kerbEdge == null) || over > 1.5 ? 'warn' : 'ok');
     const j = P.joinCandidate(project(), way.id);
     if (j) say('It touches the end of another driveway or road.', 'info', { action: { label: 'Join them', onClick: () => joinWith(way.id, j.other) }, timeout: 9000 });
     redraw();
@@ -360,6 +362,8 @@ export function createPaveController({ store, scale, toast = () => {}, redraw = 
     if (out.draft && out.geom) {
       out.readout = `${P.MATERIALS[out.draft.material].label} ${fmtM1(out.draft.widthMm / 1000)} wide, ${fmtM1(out.geom.lengthMm / 1000)} long, ${fmtA(out.geom.areaM2)}`;
       out.labels = segLabels(out.draft.pts);
+      const over = P.overBuildingM2(project(), out.geom);
+      if (over > 1.5) out.warn.push(`Crosses the building by ${fmtA(over)}. It is not blocked, check the route.`);
       if (out.geom.minRadiusM != null && out.geom.minRadiusM < 4 && out.draft.radiusMm > 0 && out.draft.kind === 'driveway') out.warn.push(`Tight bend, ${fmtM1(out.geom.minRadiusM)} radius. Cars need about 4 m or more.`);
     } else if (paveState.mode === 'draw' && pts.length === 1 && rubber) {
       out.readout = fmtM(dist(pts[0], rubber) / 1000);
