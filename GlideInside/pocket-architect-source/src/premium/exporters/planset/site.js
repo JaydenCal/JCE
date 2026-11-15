@@ -213,7 +213,7 @@ export function legendBlock({ contours = false, paved = null } = {}) {
     ['Walls', (doc, a, b) => { doc.setLineWidth(0.8); doc.setDrawColor(...PEN.ink); doc.line(a, b, a + 12, b); }],
     ['Roof line (eaves)', (doc, a, b) => { doc.setLineWidth(0.25); doc.setDrawColor(...PEN.ink); doc.setLineDashPattern([3, 1.2], 0); doc.line(a, b, a + 12, b); doc.setLineDashPattern([], 0); }],
     ['Kerb and gutter', (doc, a, b) => { doc.setLineWidth(0.25); doc.setDrawColor(...PEN.ink); doc.line(a, b - 0.5, a + 12, b - 0.5); doc.line(a, b + 0.5, a + 12, b + 0.5); }],
-    ...((paved && paved.length ? paved : ['concrete']).map((mat) => [mat === 'concrete' && !(paved && paved.length) ? 'Concrete driveway' : `${PAVE_MATERIALS[mat].label} driveway or road`, (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.rect(a, b - 1.4, 12, 2.8, 'S'); hatch(doc, [{ x: a, y: b - 1.4 }, { x: a + 12, y: b - 1.4 }, { x: a + 12, y: b + 1.4 }, { x: a, y: b + 1.4 }], HATCH_KIND[mat]); }])),
+    ...((paved && paved.length ? paved : [{ material: 'concrete' }]).map((e) => [paved && paved.length ? `${PAVE_MATERIALS[e.material].label} paving, ${Math.round(e.areaM2)} m2` : 'Concrete driveway', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.rect(a, b - 1.4, 12, 2.8, 'S'); hatch(doc, [{ x: a, y: b - 1.4 }, { x: a + 12, y: b - 1.4 }, { x: a + 12, y: b + 1.4 }, { x: a, y: b + 1.4 }], HATCH_KIND[e.material]); }])),
     ...(contours ? [['Contour (minor, major)', (doc, a, b) => { doc.setLineDashPattern([], 0); doc.setLineWidth(0.12); doc.setDrawColor(...PEN.contourMinor); doc.line(a, b - 0.7, a + 5.5, b - 0.7); doc.setLineWidth(0.26); doc.setDrawColor(...PEN.contourMajor); doc.line(a + 6.5, b + 0.7, a + 12, b + 0.7); }]] : []),
     ['Setback encroachment', (doc, a, b) => { doc.setLineWidth(0.3); doc.setDrawColor(...RED); doc.line(a, b, a + 12, b); }],
   ];
@@ -717,10 +717,7 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
     ['Setback check', cl.status === 'ok' ? 'Inside setbacks (indicative)' : cl.status === 'breach' ? 'Outside setbacks (indicative)' : 'Setbacks not loaded'],
   ].filter(Boolean);
   const pavedSum = pavedSummary(project);
-  // Drawn driveways and roads, by material (crossover included), so the paved area can be read off the plan set.
-  for (const e of pavedSum.byMaterial) kv.push([`${e.label} paving (drawn)`, `${e.areaM2.toFixed(1)} m2`]);
-  if (pavedSum.byMaterial.length > 1) kv.push(['Total drawn paving', `${pavedSum.totalM2.toFixed(1)} m2`]);
-  const blocks = [legendBlock({ contours: ground0, paved: pavedSum.byMaterial.map((e) => e.material) })];
+  const blocks = [legendBlock({ contours: ground0, paved: pavedSum.byMaterial })];
   if (schedule.length) blocks.push(scheduleBlock(schedule));
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines and dimensions are indicative.', 'Driveway and road reserve are typical values.'];
   notes.push(ground0 ? `Levels are indicative only, from the ${lot.state === 'QLD' ? 'Queensland' : 'NSW'} 5 m DEM, not survey. Contours at 1.0 m intervals. A registered survey is required.` : 'No ground levels for this lot.');
