@@ -667,3 +667,12 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 .as-opt.as-searching:hover{background:none}
 
 .site-nav a,.head-end a{white-space:nowrap}
+/* Compact header between the mobile menu and wide screens (Residential and Commercial tabs, 15/11/2026) */
+@media(min-width:1121px) and (max-width:1420px){
+  .site-header .shell{gap:14px}
+  .site-nav{gap:2px}
+  .site-nav a{padding:8px 9px;font-size:14px}
+  .head-end{gap:2px}
+  .head-end .login{padding:8px 7px;font-size:13.5px}
+  .head-end .login[data-bp-link]{display:none}
+}
