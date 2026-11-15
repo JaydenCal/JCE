@@ -8,6 +8,7 @@
 //   GET    /api/profile/me                                                           -> { profile } or { profile: null }
 //   POST   /api/profile/password          { current, next }                          -> { ok }
 //   PUT    /api/profile/preferences       { marketing }                              -> { profile }   email preferences
+//   GET|POST /api/profile/unsubscribe?t=<signed token>                                -> HTML page   one click unsubscribe, no sign in (every promo email must link here)
 //   DELETE /api/profile                   { password }                               -> { ok }        delete the account and its designs
 //   GET    /api/profile/designs                                                      -> { designs, limit, count }
 //   POST   /api/profile/designs           { project, thumbnail? }                    -> 201 { design } (the same project id is updated, not duplicated)
@@ -27,6 +28,7 @@
 // The password is hashed with PBKDF2 (lib/password.js) and is never logged, returned or kept in clear.
 
 import { HttpError, json, readJson, readText, bearerToken, clientIp } from './http.js';
+import { hmacSha256, toB64u, fromB64u, safeEqual } from './entitlement.js';
 import { hashPassword, verifyPassword, dummyVerify, newSessionToken, sha256Hex, secretEqual } from './password.js';
 import { passwordProblem } from '../../src/portal/credentials.js';
 import { TERMS_VERSION, MARKETING_TEXTS, MARKETING_TEXT_VERSION, ROLE_IDS, DESIGN_KINDS } from '../../src/profile/wording.js';
@@ -255,6 +257,39 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     await pstore.updateProfile(profile.id, patch);
     await pstore.addConsentEvent({ id: rid('cons'), profileId: profile.id, at, consent: b.marketing, textVersion: b.marketing ? MARKETING_TEXT_VERSION : null, text: b.marketing ? MARKETING_TEXTS[MARKETING_TEXT_VERSION] : null, source: 'preferences' });
     return json({ profile: await view({ ...profile, ...patch }) });
+  }
+
+  // One click unsubscribe (Spam Act 2003): a signed token carries the profile id, so no sign in is needed. Every future promotional email must
+  // carry unsubscribeUrl(profile) (returned below). Clears marketing consent exactly like turning the preference off and records the event.
+  const unsubSecret = () => config.entitlementSecret || config.ipHashSalt || '';
+  async function unsubscribeToken(profileId) {
+    const secret = unsubSecret();
+    if (!secret) return null;
+    const body = toB64u(new TextEncoder().encode(`u1.${profileId}`));
+    return `${body}.${toB64u(await hmacSha256(secret, `unsub1.${body}`))}`;
+  }
+  async function profileFromUnsubToken(t) {
+    const secret = unsubSecret();
+    const [body, sig] = String(t || '').split('.');
+    if (!secret || !body || !sig) return null;
+    try {
+      if (!safeEqual(await hmacSha256(secret, `unsub1.${body}`), fromB64u(sig))) return null;
+      const text = new TextDecoder().decode(fromB64u(body));
+      if (!text.startsWith('u1.')) return null;
+      return (await pstore.getProfile(text.slice(3))) || null;
+    } catch { return null; }
+  }
+  const page = (title, text, status = 200) => new Response(`<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${title}</title><style>body{font:16px/1.5 system-ui,sans-serif;background:#f3f5f2;color:#16211d;margin:0;display:grid;min-height:100vh;place-items:center}main{background:#fff;max-width:460px;margin:16px;padding:28px 24px;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.08)}h1{font-size:22px;margin:0 0 10px}a{color:#8a5a00}</style></head><body><main><h1>${title}</h1><p>${text}</p><p><a href="/">Back to Glide Inside</a></p></main></body></html>`, { status, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex', 'referrer-policy': 'no-referrer' } });
+  async function unsubscribeLink(r) {
+    const t = r.url.searchParams.get('t') || '';
+    const profile = await profileFromUnsubToken(t);
+    if (!profile) return page('That link did not work', 'The unsubscribe link is not valid. You can also sign in and turn off news and offers on your account page.', 400);
+    if (profile.marketingConsent || !profile.unsubscribed) {
+      const at = iso();
+      await pstore.updateProfile(profile.id, { marketingConsent: false, unsubscribed: true, unsubscribedAt: at, updatedAt: at });
+      await pstore.addConsentEvent({ id: rid('cons'), profileId: profile.id, at, consent: false, textVersion: null, text: null, source: 'unsubscribe-link' });
+    }
+    return page('You are unsubscribed', 'You will not get news and offers from Glide Inside. Your account and designs are not affected, and you will still get messages about your account.');
   }
 
   async function deleteAccount(r) {
@@ -513,6 +548,7 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     ['GET', '/designs', listDesigns, {}], ['POST', '/designs', createDesign, {}],
     ['GET', `/designs/${ID}`, getDesign, {}], ['PUT', `/designs/${ID}`, updateDesign, {}], ['PATCH', `/designs/${ID}`, renameDesign, {}], ['DELETE', `/designs/${ID}`, deleteDesign, {}],
     ['POST', `/designs/${ID}/duplicate`, duplicateDesign, {}],
+    ['GET', '/unsubscribe', unsubscribeLink, { token: true }], ['POST', '/unsubscribe', unsubscribeLink, { token: true }],
     ['POST', '/packs', (r) => linkPack(r, packDeps), {}],
     ['GET', '/admin/contacts', adminContacts, { token: true }], ['GET', '/admin/contacts.csv', adminCsv, { token: true }],
     ['POST', `/admin/contacts/${ID}/unsubscribe`, adminUnsubscribe, { token: true }],
@@ -541,6 +577,11 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
       }
       if (matchedPath) throw new HttpError('BAD_REQUEST', 'That method is not allowed for this endpoint.', {}, 405);
       throw new HttpError('NOT_FOUND', 'No such endpoint.');
+    },
+    /** Signed one click unsubscribe URL for a profile (null when no signing secret is configured). Put it in every promotional email. */
+    async unsubscribeUrl(profile, origin = config.siteOrigin || '') {
+      const t = await unsubscribeToken(profile.id);
+      return t ? `${String(origin).replace(/\/+$/, '')}/api/profile/unsubscribe?t=${t}` : null;
     },
     DESIGN_KINDS,
   };
