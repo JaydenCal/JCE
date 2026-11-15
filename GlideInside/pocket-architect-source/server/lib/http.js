@@ -33,6 +33,7 @@ export const ERROR_STATUS = {
   FORBIDDEN: 403,
   TOPUPS_DISABLED: 403,
   CONFLICT: 409,
+  BILLING_DETAILS_REQUIRED: 409,
   PORTAL_NOT_CONFIGURED: 503,
   BILLING_UNAVAILABLE: 502,
   // Save and share (carried over from the live Worker, same codes and statuses).

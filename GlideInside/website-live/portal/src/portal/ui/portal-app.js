@@ -91,7 +91,7 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
       h('p', { class: 'pp-lead' }, `${me.org.branding.displayName} has set you up with Pocket Architect. Find your block, place one of their house designs on it and produce plans, with no charge to you.`),
       h('p', null, h('a', { class: 'pp-btn pp-btn--primary pp-btn--lg', href: appLink({ signin: 1 }) }, 'Open Pocket Architect')),
       h('section', { class: 'pp-card' }, h('h2', null, 'My projects'), list),
-      h('section', { class: 'pp-card' }, h('h2', null, 'AI helper'), h('p', null, `${ai.remaining} credits left this month (${ai.used} of ${ai.monthlyCap} used${ai.topUpBalance ? `, plus ${ai.topUpBalance} top-up` : ''}).`))));
+      h('section', { class: 'pp-card' }, h('h2', null, 'AI design assistant'), h('p', null, `${ai.remaining} credits left this month (${ai.used} of ${ai.monthlyCap} used${ai.topUpBalance ? `, plus ${ai.topUpBalance} top-up` : ''}).`))));
   }
 
   function dashboard() {

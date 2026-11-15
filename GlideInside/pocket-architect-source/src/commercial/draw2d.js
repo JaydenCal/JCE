@@ -6,6 +6,8 @@ import { worldToScreen } from '../editor2d/math.js';
 import { analyse } from './analyse.js';
 import { rowFrame, rowLength, rowPoly } from './layout.js';
 import { bayOffsetMm } from './schema.js';
+import { doorStrips } from './parking.js';
+import { siteAccess } from './access.js';
 import { drawBuildings, buildingExtents } from './catalogue/draw2d.js';
 
 const GOLD = '#c7a256';
@@ -55,6 +57,27 @@ export function drawCommercial(ctx, st) {
   const offAll = bayOffsetMm(c.parking); // facade to the near edge of the bays: the truck apron, or the car aisle when that is wider
   const lw = Math.max(1.2, Math.min(3, st.view.scale * 100)); // a 100 mm marking line, never under 1.2 px
   const labels = [];
+  const acc = siteAccess(c, p.site?.lot);
+  if (acc) {
+    for (const [poly, alpha] of [[acc.driveway, 0.2], [acc.crossover, 0.3]]) {
+      if (!poly) continue;
+      ctx.beginPath();
+      tracePoly(ctx, st, poly);
+      ctx.fillStyle = `rgba(96,102,112,${alpha})`;
+      ctx.fill();
+    }
+    labels.push({ a: S(st, acc.crossover[3]), b: S(st, acc.crossover[2]), text: 'SITE ACCESS AND CROSSOVER (INDICATIVE)', off: 0, t: 0.5 });
+  }
+  for (const s of doorStrips(c, a.parking)) {
+    // A row with no bays of its own still has its truck apron in front of the roller doors (never landscaping).
+    const fr = s.frame;
+    const pt = (x, d) => ({ x: fr.o.x + fr.u.x * x + fr.f.x * d, y: fr.o.y + fr.u.y * x + fr.f.y * d });
+    ctx.beginPath();
+    tracePoly(ctx, st, s.poly);
+    ctx.fillStyle = 'rgba(96,102,112,0.13)';
+    ctx.fill();
+    labels.push({ a: S(st, pt(0, s.depth + s.off / 2)), b: S(st, pt(s.length, s.depth + s.off / 2)), text: `TRUCK APRON ${(s.off / 1000).toFixed(1)} m FROM THE ROLLER DOORS`, off: 0, t: 0.5 });
+  }
   for (const pr of a.parking.rows) {
     if (!pr.slots.length) continue;
     const off = pr.off ?? offAll;

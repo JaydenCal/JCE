@@ -281,12 +281,17 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     try {
       const { exportPlanSet } = await import('../premium/exporters/planset/index.js');
       const lot = lotOf(store.project);
-      const out = await exportPlanSet({ project: store.project, lot, kind, builderName: builderName() || '', download: false });
+      // To scale only with a Plan Pack, a builder or client login (internal accounts are builder logins) or a commercial subscription.
+      // Everyone else, including the free embed viewer, gets the stamped "PREVIEW, NOT TO SCALE" version.
+      const a = app();
+      const full = !!(a.premium?.isEntitled?.() || a.builder);
+      const out = await exportPlanSet({ project: store.project, lot, kind, builderName: builderName() || '', download: false, preview: !full });
+      if (!full) toast('This is a preview, not to scale. A Plan Pack gives you the to-scale plan set.', { kind: 'info' });
       const bytes = out?.bytes || out?.blob || out?.data || out;
       if (bytes instanceof Blob || bytes instanceof Uint8Array || bytes instanceof ArrayBuffer) {
         const slug = String(store.project.placedHouse?.name || store.project.name || 'Design').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'Design';
         downloadBlob(bytes instanceof Blob ? bytes : new Blob([bytes], { type: 'application/pdf' }), out?.filename || `${kind === 'house' ? 'House_Plan' : 'Site_Plan'}_${slug}.pdf`);
-        engineer.offerAfterExport(kind);
+        if (full) engineer.offerAfterExport(kind);
       }
     } catch (e) {
       toast(e?.message || 'The PDF could not be made.', { kind: 'error' });

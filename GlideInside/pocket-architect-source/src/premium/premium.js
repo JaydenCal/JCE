@@ -59,7 +59,7 @@ export function createPremium(store, options = {}) {
   const mock = !apiOverride && mockOn ? createMockApi({ getProject: () => store.project, session: effSession }) : null;
   const api = apiOverride || (mock ? { ...realApi, health: mock.health, credits: mock.credits, estimate: mock.estimate, edit: mock.edit, topUp: mock.topUp, setClientTopUps: mock.setClientTopUps } : realApi);
   // The assistant token: a login's own token, or a placeholder in mock mode. Plan Pack tokens stay in state.token.
-  const aiToken = () => (mockOn ? 'mock.token' : orgSession ? session.token || null : null) || (csubOn() ? state.csub.token : null) || state.token;
+  const aiToken = () => (mockOn ? 'mock.token' : orgSession ? session.token || null : null) || (portalOn() ? state.portal.aiToken || null : null) || (csubOn() ? state.csub.token : null) || state.token;
   const layer = createLayer(mounts.modalRoot);
   // Developer unlock is honoured on localhost only, whatever the host configuration says (docs/SCOPE.md 4.3).
   const dev = () => !!cfg.devUnlock && isLocalHost();
@@ -78,7 +78,7 @@ export function createPremium(store, options = {}) {
       return null;
     }
   };
-  const state = { projectId: store.project.id, token: null, credits: null, creditsError: false, notice: null, exporting: null, portal: null, csub: readCsub() };
+  const state = { portalPending: !!cfg.portalEnabled && !cfg.portalMock, projectId: store.project.id, token: null, credits: null, creditsError: false, notice: null, exporting: null, portal: null, csub: readCsub() };
   const commercialNow = () => store.project?.mode === 'commercial';
   const csubOn = () => !!state.csub?.token && commercialNow();
   // The token the server should see: the commercial login in commercial mode, otherwise the Plan Pack or portal token.
@@ -88,7 +88,7 @@ export function createPremium(store, options = {}) {
   let graceBanner = null;
   let assistant = null;
 
-  // A builder or client login (src/portal) includes the plans and the AI helper: the builder pays, so there is no A$30 step.
+  // A builder or client login (src/portal) includes the plans and the AI design assistant: the builder pays, so there is no A$30 step.
   // state.portal = { entitled, token (null in the mock), clientExports (mock: build files in this browser), orgName, credits }.
   const portalOn = () => !!state.portal?.entitled;
   // Which downloads this person may have. Public Plan Pack and builder staff: all. Client logins: the builder's choice (PDF only by default).
@@ -99,7 +99,7 @@ export function createPremium(store, options = {}) {
   // client login whose builder has turned sending off (allowClientEnquiries).
   const canSendPlans = () => (portalOn() ? state.portal.enquiry !== false : true);
   const isEntitled = () => dev() || !!state.token || portalOn() || csubOn();
-  const view = () => ({ entitled: isEntitled(), token: bearer(), csub: csubOn() ? { kind: state.csub.kind } : null, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire(), commercial: store.project?.mode === 'commercial' });
+  const view = () => ({ entitled: isEntitled(), token: bearer(), csub: csubOn() ? { kind: state.csub.kind } : null, devUnlock: dev(), portalPending: !!state.portalPending, credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire(), commercial: store.project?.mode === 'commercial' });
   // Builder and client logins have the AI included; mock mode lets the owner review it for any session.
   const aiEntitled = () => isEntitled() || orgSession || mockOn;
   const aiView = () => ({ ...view(), entitled: aiEntitled(), token: aiToken(), session: effSession });
@@ -324,7 +324,7 @@ export function createPremium(store, options = {}) {
       getState: view,
       actions: {
         unlock: (source) => openUpgrade({ source }),
-        details: () => (csubOn() ? commercialUi.openAccount() : portalOn() ? layer.notify(`Plans and the AI helper are included with your login${state.portal.orgName ? ` by ${state.portal.orgName}` : ''}.`, 'info', 6000) : flows.openDetails()),
+        details: () => (csubOn() ? commercialUi.openAccount() : portalOn() ? layer.notify(`Plans and the AI design assistant are included with your login${state.portal.orgName ? ` by ${state.portal.orgName}` : ''}.`, 'info', 6000) : flows.openDetails()),
         restore: () => openRestore(),
         exportAs,
         previewPdf: () => previewPdf(),
@@ -476,7 +476,10 @@ export function createPremium(store, options = {}) {
    * helper entitlement with the login's credits. credits: { total, used, remaining } for the month plus any top-up.
    * Pass null to remove it (sign out). The AI panel is wired by its own module; it reads this through premium.state.
    */
+  /** True until the sign-in check finishes, so a signed-in builder client never sees the A$30 button flash. */
+  function setPortalPending(v) { state.portalPending = !!v; publish(); }
   function setPortalEntitlement(ent) {
+    state.portalPending = false;
     state.portal = ent && ent.entitled ? { ...ent } : null;
     if (state.portal?.credits) state.credits = normaliseCredits(state.portal.credits);
     else if (!state.portal) state.credits = null;
@@ -486,6 +489,7 @@ export function createPremium(store, options = {}) {
   const self = {
     isEntitled,
     setPortalEntitlement,
+    setPortalPending,
     openUpgrade: () => openUpgrade({ source: 'api' }),
     openExports() {
       if (topbar) topbar.open();

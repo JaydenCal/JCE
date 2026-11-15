@@ -175,6 +175,16 @@ const ADDRESS = '12 Industrial Drive, Westdale NSW';
     await page.fill('input[name=token]', ADMIN);
     await page.click('button[type=submit]');
     await page.waitForSelector('text=Commercial trial login', { timeout: 15000 }).catch((e) => log.push('admin: ' + e.message));
+    // The owner creates the internal test account (he types the password; this script only uses a throwaway one against the local test server).
+    await fetch(`${ORIGIN}/api/portal/admin/internal-orgs`, { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${ADMIN}` }, body: JSON.stringify({ username: 'internal.test', password: 'Shot-only-Pass-2026-q' }) }).catch(() => {});
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('text=INTERNAL', { timeout: 15000 }).catch((e) => log.push('admin internal: ' + e.message));
+    await page.locator('text=Builder accounts').first().scrollIntoViewIfNeeded().catch(() => {});
+    await shot('07c-admin-internal-account-badge');
+    await page.click('#create-internal').catch(() => {});
+    await page.waitForSelector('input[name=orgName]', { timeout: 5000 }).catch(() => {});
+    await shot('07d-admin-create-internal-form');
+    await page.keyboard.press('Escape');
     await page.locator('text=Commercial trial login').first().scrollIntoViewIfNeeded().catch(() => {});
     await shot('07-admin-commercial-trial-login');
     const sec = page.locator('text=Commercial AI cost').first();

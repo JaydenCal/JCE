@@ -83,11 +83,21 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   // The PDF plan set leads with the builder's name and logo and credits Glide Inside in small print.
   app.builder = { name: brand.displayName || me.org.name, logo: brand.logoDataUrl || null };
   document.querySelector('.ps-welcome')?.remove();
+  let aiTok = null; // the login's AI token (see refreshAiToken)
   const entitlement = () => ({
-    entitled: true, token: null, clientExports: true, role: me.user.role, orgName: brand.displayName || me.org.name, credits: toCredits(credits),
+    entitled: true, token: null, aiToken: aiTok, clientExports: true, role: me.user.role, orgName: brand.displayName || me.org.name, credits: toCredits(credits),
     exports: me.exports, enquiry: me.enquiry, watermark: me.exportWatermark === true, serverExport: me.exportWatermark === true, sendEnquiry: (body) => api.enquiryJce(body),
   });
   premium?.setPortalEntitlement?.(entitlement());
+  // The AI assistant needs the login's own token (builder, client, subscriber and internal logins alike). Fetch it now and renew it before it expires (8 hours).
+  async function refreshAiToken() {
+    try {
+      const r = await api.aiToken({});
+      aiTok = r?.token || null;
+      premium?.setPortalEntitlement?.(entitlement());
+    } catch { /* the assistant then says it could not be verified; the rest of the app is unaffected */ }
+  }
+  if (!CONFIG.portalMock) { refreshAiToken(); setInterval(refreshAiToken, 6 * 3600 * 1000); }
   function toCredits(b) { return b ? { total: b.total, used: b.total - b.remaining, remaining: b.remaining } : null; }
 
   async function refreshEnvelope() {
@@ -321,7 +331,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
 
   // AI credits ----------------------------------------------------------------------------------------------------------------------
   function aiDialog() {
-    const note = h('p', null, `${credits.monthlyRemaining} of ${credits.monthlyCap} monthly credits left, plus ${credits.topUpBalance} top-up credits. Monthly credits reset on the 1st; the AI helper stops at zero.`);
+    const note = h('p', null, `${credits.monthlyRemaining} of ${credits.monthlyCap} monthly credits left, plus ${credits.topUpBalance} top-up credits. Monthly credits reset on the 1st; the AI design assistant stops at zero.`);
     const actions = me.canTopUp ? [{ label: 'Top up 300 credits, A$10 incl. GST', primary: true, keep: true, fn: async (close) => { try { await api.aiTopUp(); await refreshCredits(); toast(`Added 300 credits. ${isClient ? 'Charged to your builder.' : 'Charged on your end of month invoice.'}`, { kind: 'ok' }); close(); } catch (e) { toast(e.message, { kind: 'error' }); } } }] : [];
     modal('AI credits', h('div', null, note, me.canTopUp ? h('p', null, 'Top-ups are added at once and billed on the builder end of month invoice.') : h('p', null, 'Your builder has turned off top-ups.')), actions);
   }

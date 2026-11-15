@@ -450,6 +450,10 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   async function issueClient(r) {
     const { org, state } = await auth(r, { need: 'clients.write' });
     if (!state.canIssueClients) throw trialNoClients();
+    // A paying builder can only be invoiced with a legal name, ABN and billing email (or a card on file): ask before the first login, not at month end.
+    if (org.internal !== true && state.status === 'active' && !contactComplete(org) && !state.cardOnFile) {
+      throw new HttpError('BILLING_DETAILS_REQUIRED', 'Add your legal business name, ABN and billing email under Billing (or add a card) before you generate client logins. They are needed to invoice you.');
+    }
     const b = await readJson(r.request, 8192);
     const access = await cleanAccess(org.id, b.houseAccess);
     const { user, credentials } = await createAccount(org, { firstName: b.firstName, email: b.email, role: 'client', lotAddress: b.lotAddress, houseAccess: access });
@@ -886,7 +890,8 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       id: org.id, internal: org.internal === true, name: org.name, slug: org.slug || null, shortCode: org.shortCode, legalName: org.legalName || '', abn: org.abn || '', createdAt: org.createdAt, requestId: org.requestId || null,
       account: accountView(org, nowMs), trialExtendedDays: org.trialExtendedDays || 0, convertedAt: org.convertedAt || null, convertedHow: org.convertedHow || null,
       admin: admin ? { id: admin.id, name: admin.name, username: admin.username, email: admin.email || '', mustChangePassword: !!admin.mustChangePassword, lastSignInAt: admin.lastSignInAt || null } : null,
-      billingContact: billingContact(org), staffCount: staff.length,
+      billingContact: billingContact(org), billingReady: org.internal === true || contactComplete(org) || !!org.paymentMethodId,
+      billingSkipRisk: org.internal !== true && accountView(org, nowMs).status === 'active' && !contactComplete(org) && clients.length > 0, staffCount: staff.length,
       clientLogins: { generated: clients.length, issued: issues.length, firstSignedIn: clients.filter((c) => c.firstSignInAt).length },
       loginPricing: { month, ...loginRateInfo(issues.filter((i) => i.month === month).length, org), over50Flag: issues.filter((i) => i.month === month).length > LOGIN_TIER_2_MAX && !(Number.isInteger(org.customLoginCents) && org.customLoginCents > 0) ? 'over 50 this month, set custom rate' : null },
       // An internal test account is left out of usage, revenue and trial reporting: no usage figures, no invoices.

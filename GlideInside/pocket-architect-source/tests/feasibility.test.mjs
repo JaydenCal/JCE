@@ -72,7 +72,7 @@ test('fallback: portal medians from fewer than 4 listings are not used', () => {
   assert.equal(areaDefaults('tamworth', { avgUnitGfaM2: 600 }).inputs.saleRate.value, 1580);
   // yields, land and costs always come from market.json ranges
   const t = areaDefaults('tamworth').inputs;
-  assert.deepEqual([t.yieldPct.value, t.landRate.value, t.buildRate.value, t.siteRate.value, t.feesPct.value, t.contPct.value], [7.25, 100, 1950, 185, 10, 8.75]);
+  assert.deepEqual([t.yieldPct.value, t.landRate.value, t.buildRate.value, t.siteRate.value, t.feesPct.value, t.contPct.value], [7.25, 100, 1500, 185, 10, 8.75]);
   assert.ok(Object.values(t).every((x) => x.status === 'PORTAL' || x.status === 'ESTIMATE'));
   // sanity on the data files
   assert.equal(portal.asAt, '13/11/2026');
@@ -85,13 +85,17 @@ test('totals: golden numbers for the commercial fixture in Tamworth', () => {
   near(f.gfa, 1627.2, 0.01); // 16 units, 90.0 m2 ground plus 11.7 m2 mezzanine
   assert.equal(f.lotM2, 9000);
   const m = f.mid;
-  near(m.realisation, 1627.2 * 2422, 0.5); // 3,941,078
-  near(m.grossRent, 1627.2 * 115, 0.5); // 187,128
-  near(m.endValue, (1627.2 * 115) / 0.0725, 0.5); // 2,581,076
+  // the mezzanine (16 x 11.7 m2 = 187.2 m2) is valued at half the ground floor rate (an input), and the capitalised value uses NET rent
+  const revenueGfa = 1627.2 - 187.2 * 0.5;
+  near(m.revenueGfa, revenueGfa, 0.01);
+  near(m.realisation, revenueGfa * 2422, 0.5);
+  near(m.grossRent, revenueGfa * 115, 0.5);
+  near(m.netRent, revenueGfa * 115 * 0.9, 0.5); // outgoings 10 percent of gross rent (assumption)
+  near(m.endValue, (revenueGfa * 115 * 0.9) / 0.0725, 0.5);
   near(m.land, 900000, 0.01);
-  near(m.build, 1627.2 * 1950, 0.5); // 3,173,040
+  near(m.build, 1627.2 * 1500, 0.5); // 2,440,800: the low end of the analyst range (see the buildRate note)
   // site works on the developed area only: footprint 1,440 m2 plus the paved block of each parking row (truck apron, aisle, bays)
-  near(f.devM2, 3108, 1);
+  near(f.devM2, 3165, 1); // 3108 plus the site access driveway (siteAccess, 6 m wide to the front boundary)
   near(f.restM2, 9000 - f.devM2, 0.001);
   assert.ok(f.devM2 > 1440 && f.devM2 < f.lotM2);
   near(m.siteDev, f.devM2 * 185, 0.01);
@@ -101,19 +105,20 @@ test('totals: golden numbers for the commercial fixture in Tamworth', () => {
   near(m.fees, construction * 0.1, 0.5);
   near(m.contingency, construction * 0.0875, 0.5);
   near(m.cost, m.land + construction + m.fees + m.contingency, 0.5);
-  near(m.cost, 5455725, 5); // golden
+  near(m.cost, 4597697, 1); // golden, set after the net rent, mezzanine and build rate changes
   near(m.marginSale, m.realisation - m.cost, 0.01);
   near(m.marginSalePct, (m.marginSale / m.cost) * 100, 1e-6);
   near(m.grossYieldOnCostPct, (m.grossRent / m.cost) * 100, 1e-6);
   // per unit rows use each unit's own GFA and add up to the whole
   assert.equal(f.perUnit.length, 16);
   near(f.perUnit[0].gfa, 101.7, 0.01);
-  near(f.perUnit[0].price, 101.7 * 2422, 0.5);
+  near(f.perUnit[0].price, (90 + 11.7 * 0.5) * 2422, 0.5);
   near(f.perUnit.reduce((s, u) => s + u.price, 0), m.realisation, 0.5);
   near(f.perUnit.reduce((s, u) => s + u.rent, 0), m.grossRent, 0.5);
-  assert.equal(summaryRows(f)[1][1], '$3,941,078');
+  assert.equal(summaryRows(f)[1][1], `$${Math.round(m.realisation).toLocaleString('en-AU')}`);
+  assert.match(summaryRows(f).map((r) => r[0]).join('|'), /Net rent per year \(after 10% outgoings\).*End value by capitalisation \(net rent \/ net yield\)/);
   assert.equal(feasibility({ ...p.commercial, feasibility: { area: null, v: { landscapeRate: 30 } } }, p.site.lot).mid.siteRest, f.restM2 * 30);
-  assert.equal(costRows(f).at(-1)[1], '$5,455,725');
+  assert.equal(costRows(f).at(-1)[1], `$${Math.round(m.cost).toLocaleString('en-AU')}`);
   assert.equal(costRows(f).length, 7, 'land, building, site works, landscaping, fees, contingency, total');
   assert.match(costRows(f)[3][0], /Clearing and landscaping, rest of lot \(\$15 per m²/);
   assert.equal(f.inputs.landscapeRate.status, 'ESTIMATE');

@@ -20,6 +20,21 @@ export function accessibleEntry(units) {
 }
 
 /**
+ * Hardstand in front of the roller doors of a row that has no bays of its own (an inner row facing another across a shared apron, or a row
+ * with no room for bays): facade to `bayOffsetMm`, the whole row length. Every roller door face fronts an apron or aisle, so a gap between
+ * rows is never landscaping. Returns [{ rowId, frame, length, depth, off, poly }].
+ */
+export function doorStrips(commercial, layout = null) {
+  if (!commercial || commercial.parking?.enabled === false) return [];
+  const off = bayOffsetMm(commercial.parking);
+  if (!(off > 0)) return [];
+  return (layout || parkingLayout(commercial)).rows.filter((r) => !r.extra && !r.slots.length && r.length > 0).map((r) => ({
+    rowId: r.rowId, frame: r.frame, length: r.length, depth: r.depth, off,
+    poly: [rowPoint(r.frame, 0, r.depth), rowPoint(r.frame, r.length, r.depth), rowPoint(r.frame, r.length, r.depth + off), rowPoint(r.frame, 0, r.depth + off)],
+  }));
+}
+
+/**
  * parkingLayout(commercial) -> { rows: [{ rowId, frame, slots:[{ index, kind: 'bay'|'accessible'|'zone', poly, centre }] }], totalBays,
  * accessible: { required, provided, override }, path: [pt, pt] | null, entry }.
  */

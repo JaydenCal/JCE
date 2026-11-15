@@ -656,6 +656,8 @@ for (const [label, d1] of stores) {
     const me = (await b.get('/portal/me')).data;
     assert.equal(me.account.status, 'active');
     assert.equal(me.account.trialEndsAt, null);
+    assert.equal((await b.post('/portal/clients', { firstName: 'Sarah' })).status, 409, 'billing details first');
+    assert.equal((await b.put('/portal/billing/contact', { name: 'Olga', email: 'a@old.example', phone: '', legalName: 'Old Builders Pty Ltd', abn: '51824753556' })).status, 200);
     assert.equal((await b.post('/portal/clients', { firstName: 'Sarah' })).status, 201);
     // Years later it is still active: there is no trial to expire.
     w.clock.t += 20 * DAY;

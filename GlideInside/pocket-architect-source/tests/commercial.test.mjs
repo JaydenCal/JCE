@@ -87,8 +87,15 @@ test('zones: a residential zone with a commercial project says so', () => {
   const out = [];
   offerCommercial(store(p), { toast: (m, o) => { out.push([m, o.kind]); } });
   assert.deepEqual(out, [[RESIDENTIAL_NOTE, 'warn']]);
-  assert.equal(RESIDENTIAL_NOTE, 'This zone may not permit commercial use, check with council');
+  assert.equal(RESIDENTIAL_NOTE, 'This zone may not permit industrial or commercial use, check with council');
   assert.ok(warnTexts(p).includes(RESIDENTIAL_NOTE));
+  // choosing a zone class does not hide the warning: the looked up zone is still residential
+  p.commercial.zoneClass = 'industrial';
+  assert.ok(warnTexts(p).includes(RESIDENTIAL_NOTE), 'still warned with a chosen class');
+  p.site.lot.zoning = { code: 'C3', name: 'Environmental Management' };
+  assert.ok(warnTexts(p).includes(RESIDENTIAL_NOTE), 'environmental zones warn too');
+  p.site.lot.customRules = { on: true };
+  assert.ok(!warnTexts(p).includes(RESIDENTIAL_NOTE), 'custom rules (an uploaded lot) own the rules');
 });
 
 // Rules and setbacks -----------------------------------------------------------------------------------------------------------

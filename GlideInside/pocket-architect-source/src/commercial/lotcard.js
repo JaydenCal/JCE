@@ -434,7 +434,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
       el.replaceChildren(h('span', { class: 'lc-dot', style: { background: DOT[line.state] || 'transparent' } }), line.text);
     }
     const warnZone = z.cls === 'residential' || z.cls === 'other' || z.cls === 'unknown';
-    zoneNote.hidden = !warnZone || !!p.commercial.zoneClass;
+    zoneNote.hidden = !warnZone || (z.cls !== 'unknown' && !!lot.customRules?.on) || (z.cls === 'unknown' && !!p.commercial.zoneClass);
     zoneNote.textContent = z.cls === 'unknown' ? 'Zone not known for this lot, check with council' : RESIDENTIAL_NOTE;
 
     const mkTab = (v) => h('button', { class: 'lc-tab', type: 'button', role: 'tab', title: v.caption, 'aria-selected': String(v.id === (panelKind === 'units' ? 'units' : selView)), dataset: { tab: v.id }, onclick: () => pickView(v.id) }, v.label);

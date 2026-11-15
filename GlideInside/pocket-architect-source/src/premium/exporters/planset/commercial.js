@@ -12,11 +12,13 @@ import { classifyEdges, requiredFor } from '../../../model/placement.js';
 import { inwardNormalOf, clearances } from '../../../site/lotplan.js';
 import { analyse } from '../../../commercial/analyse.js';
 import { mezzanineOf, officeOf, facadeLayout, onFacade, rowFrame, rowPoint } from '../../../commercial/layout.js';
+import { doorStrips } from '../../../commercial/parking.js';
+import { siteAccess } from '../../../commercial/access.js';
 import { bayOffsetMm, doorSize } from '../../../commercial/schema.js';
 import { ACCESSIBLE_BAY, defaultRulesFor } from '../../../commercial/rules.js';
 import { effectiveRules } from '../../../site/custom-rules.js';
 import { factsByStatus, facts, statusText } from '../../../commercial/dataset.js';
-import { zoneClass, effectiveClass } from '../../../commercial/zones.js';
+import { zoneClass, effectiveClass, zoneMismatch, RESIDENTIAL_NOTE } from '../../../commercial/zones.js';
 import { feasibility, summaryRows, costRows, money, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT } from '../../../commercial/feasibility.js';
 import { buildingsOf } from '../../../commercial/catalogue/buildings.js';
 import { buildingParking } from '../../../commercial/catalogue/bays.js';
@@ -100,11 +102,12 @@ const rectAt = (c, ax, ay, w, h) => {
 /** The paved block of each parking row: facade to the back of the bays, the whole row length. */
 function pavedPolys(c, a) {
   const off = bayOffsetMm(c.parking);
-  return a.parking.rows.filter((pr) => pr.slots.length).map((pr) => {
+  const bayed = a.parking.rows.filter((pr) => pr.slots.length).map((pr) => {
     const fr = pr.frame;
     const far = pr.depth + (pr.off ?? off) + c.parking.bayL;
     return [rowPoint(fr, 0, pr.depth), rowPoint(fr, pr.length, pr.depth), rowPoint(fr, pr.length, far), rowPoint(fr, 0, far)];
   });
+  return [...bayed, ...doorStrips(c, a.parking).map((s) => s.poly)];
 }
 
 const wastePoly = (w) => {
@@ -694,6 +697,21 @@ export function drawLayout(doc, model) {
   // Paving: truck apron, car aisle, then the bays.
   const offAll = model.off;
   const { aisleMm, bayW, bayL } = c.parking;
+  for (const s of doorStrips(c, a.parking)) { doc.setFillColor(...PAVE_FILL); polygon(doc, s.poly.map(T), 'F'); } // bayless rows: apron in front of the roller doors
+  const access = siteAccess(c, model.lot);
+  if (access) {
+    // Site access: the driveway from the boundary to the paving, and the crossover pad across the verge (always drawn).
+    doc.setFillColor(...AISLE_FILL);
+    if (access.driveway) polygon(doc, access.driveway.map(T), 'F');
+    doc.setFillColor(...PAVE_FILL);
+    polygon(doc, access.crossover.map(T), 'F');
+    const ca = T(access.crossover[3]);
+    const cb = T(access.crossover[2]);
+    const mid = { x: (ca.x + cb.x) / 2, y: (ca.y + cb.y) / 2 };
+    setText(doc, 5.4, true);
+    doc.setTextColor(70, 74, 82);
+    doc.text('SITE ACCESS AND CROSSOVER (INDICATIVE)', mid.x, mid.y + 2.4, { align: 'center' });
+  }
   for (const pr of a.parking.rows) {
     if (!pr.slots.length) continue;
     const fr = pr.frame;
@@ -1022,7 +1040,7 @@ export function drawLayout(doc, model) {
   const notes = [
     'Layout, parking and setbacks are indicative, check with council.',
     'Blue dimensions are the clearance from the buildings to the lot boundary.',
-    'Site access and crossover to the road are not shown at this stage.',
+    'Site access and crossover are indicative and to be confirmed with council.',
   ];
   return { scale, kv, notes, blocks: [layoutLegend()] };
 }
@@ -1337,7 +1355,7 @@ export function drawYield(doc, model) {
     ['Parking required', stats.buildingCount ? `${par.required} bays: ${stats.units ? `${par.required - par.buildingRequired} for the strata units plus ` : ''}${par.buildingRequired} for the ${stats.buildingCount === 1 ? 'building' : 'buildings'} at the rates per use shown on the building schedule, each rounded up once, check with council` : par.officeSplit
       ? `${par.required} bays: workshop and other ${m2f(par.split.otherM2)} m² at 1 per ${Math.round(1 / par.ratePerM2)} m² (${par.split.otherSpaces.toFixed(2)}) plus office ${m2f(par.split.officeM2)} m² at 1 per ${Math.round(1 / par.officeRatePerM2)} m² (${par.split.officeSpaces.toFixed(2)}), rounded up once`
       : `${par.required} bays at 1 per ${Math.round(1 / par.ratePerM2)} m² of GFA, rounded up`],
-    ['Rate source and status', `${rateSource}. Status: ${statusText(rateStatus)}`],
+    ['Rate source', `${rateSource}. Indicative, check with council.`],
     ['Bays provided', `${par.provided} (${par.accessible.provided} accessible), ${par.provided >= par.required ? 'at or above' : 'below'} the ${par.required} indicated`],
     ['Accessible bays', `${par.accessible.required} indicated for ${accCls} (NCC D4D6), ${par.accessible.provided} provided, each with a ${m1(ACCESSIBLE_BAY.sharedZoneMm)} m shared zone and a central bollard`],
     ['Truck apron and car aisle', stats.buildingCount && !stats.units ? bsch.rows.map((r) => `B${r.n} ${m1(buildingsOf(c)[r.n - 1].site?.vehicles?.apronDepthMm || 0)} m`).join(', ') + ` apron from the front edge, car aisle ${m1(c.parking.aisleMm)} m` : `${m1(model.off)} m clear from the roller doors to the bays, car aisle ${m1(c.parking.aisleMm)} m`],
@@ -1367,32 +1385,25 @@ export function drawYield(doc, model) {
   yR = table(doc, XR, yR, [{ w: WR - 20 }, { w: 20, align: 'right' }], ['KIND', 'COUNT'], bs, { rh: 4, size: 6.4, boldLast: true });
   yR += 2;
 
-  // Notes and the value status list: left column under the unit table when it has room, else right.
+  // Notes: one customer facing line. The value status detail (unverified and secondary source values) is shown in the details panel on screen,
+  // never on the plan set.
   const notes = [
-    'Indicative, check with council. Every figure here is a concept value and not an approval or a design.',
+    ...(zoneMismatch(lot) ? [RESIDENTIAL_NOTE] : []),
+    'Indicative only. Rates and controls to be confirmed with council and a suitably qualified engineer.',
+    'Every figure here is a concept value and not an approval or a design.',
     'Bollard locations are indicative and to be confirmed in design.',
     'Landscaping is the lot area that is neither built nor paved. The OSD basin is a placeholder at the assumed low point and carries no size.',
-    'Site access, crossover, swept paths, stormwater design and services are not part of this set.',
+    'The site access and crossover are indicative. Swept paths, stormwater design and services are not part of this set.',
   ];
-  const st = factsByStatus();
-  const unv = st.unverified.map((r) => `${r.label}${r.clause ? ` (${r.clause})` : ''}`);
-  unv.push(`Car aisle ${m1(c.parking.aisleMm)} m and truck apron ${m1(c.parking.apronMm)} m are editable owner values, verify against AS/NZS 2890.1 and AS 2890.2`);
-  if (!hasGround(lot)) unv.push('Ground levels: none for this lot, the OSD location assumes the low point');
-  const sec = st.secondary.map((r) => r.label).join('; ');
-  const blockH = (items, w, size = 6.2, lead = 2.85) => { setText(doc, size, false); return items.reduce((s, t) => s + wrap(doc, t, w - 3).length * lead + 0.7, 0) + 10; };
-  const need = blockH(notes, 162) + blockH(unv, 162) + blockH([`Read from a secondary source, verify against the standard: ${sec}`], 162) + 8;
+  const blockH = (items, w, size = 6.2, lead = 2.85) => { setText(doc, size, false); return items.reduce((s2, t) => s2 + wrap(doc, t, w - 3).length * lead + 0.7, 0) + 10; };
   const leftRoom = 280 - yL;
   const rightRoom = 280 - yR;
-  const useLeft = leftRoom >= need || leftRoom >= rightRoom;
-  let x = useLeft ? X0 : XR;
+  const useLeft = leftRoom >= blockH(notes, 162) || leftRoom >= rightRoom;
+  const x = useLeft ? X0 : XR;
   let y = useLeft ? yL : yR;
   const w = useLeft ? 162 : WR;
-  const guard = (h) => y + h < 281;
-  if (guard(blockH(notes, w))) { y = sectionTitle(doc, 'NOTES', x, y, w); y = paragraphs(doc, x, y, w, notes); y += 1; }
-  if (guard(blockH(unv, w))) { y = sectionTitle(doc, 'VALUES NOT VERIFIED (DO NOT RELY ON THESE)', x, y, w); y = paragraphs(doc, x, y, w, unv); y += 1; }
-  const secTxt = [`Read from a secondary source, verify against the standard: ${sec}.`];
-  if (guard(blockH(secTxt, w))) { y = sectionTitle(doc, 'TO VERIFY AGAINST THE STANDARD', x, y, w); y = paragraphs(doc, x, y, w, secTxt); }
-  void x;
+  if (y + blockH(notes, w) < 281) { y = sectionTitle(doc, 'NOTES', x, y, w); y = paragraphs(doc, x, y, w, notes); y += 1; }
+  void y;
   void zoneClass;
 
   const kv = [
@@ -1402,7 +1413,7 @@ export function drawYield(doc, model) {
     ['Landscaping', model.land.pct != null ? `${model.land.pct} %` : 'n/a'],
     ['Bays, shown / required', `${par.provided} / ${par.required}`],
   ];
-  return { scale: 'NTS', kv, notes: ['Indicative, check with council.', 'Unverified values are listed on this sheet.'], blocks: [] };
+  return { scale: 'NTS', kv, notes: ['Indicative only. Rates and controls to be confirmed with council and a suitably qualified engineer.'], blocks: [] };
 }
 
 // C000 cover pieces ---------------------------------------------------------------------------------------------------------

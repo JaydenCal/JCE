@@ -781,7 +781,7 @@ test('UI, commercial mode gate: Commercial Developer, A$50 per month, unlimited 
   assert.match(r.body, /A\$15 for 100 more/);
   assert.ok(r.foot.includes('Coming soon'), 'the mock server has no Stripe price, so Subscribe reads Coming soon');
   assert.ok(!r.paths.includes('/checkout'), 'the residential A$30 checkout is not used');
-  assert.ok(r.aiButtons.some((b) => /Commercial Developer, A\$50 per month/.test(b)));
+  assert.ok(r.aiButtons.some((b) => /Subscribe, A\$50 per month/.test(b)));
   assert.doesNotMatch(r.body, /Plan Pack/);
 });
 

@@ -72,12 +72,13 @@ function world({ d1 = false } = {}) {
     return { call, get: (p) => call('GET', p), post: (p, b) => call('POST', p, b ?? {}), patch: (p, b) => call('PATCH', p, b) };
   };
   w.admin = (method, path, body, token = ADMIN) => w.app.fetch(new Request(`${SITE}/api${path}`, { method, headers: { ...(token ? { authorization: `Bearer ${token}` } : {}), 'content-type': 'application/json' }, body: method === 'GET' ? undefined : JSON.stringify(body ?? {}) })).then(async (r) => ({ status: r.status, data: await r.json().catch(() => null) }));
-  w.builder = async (name, first) => {
+  w.builder = async (name, first, { noBilling = false } = {}) => {
     const r = await w.admin('POST', '/portal/admin/orgs', { name, adminFirstName: first, adminEmail: `${first.toLowerCase()}@${name.split(' ')[0].toLowerCase()}.example` });
     assert.equal(r.status, 201, JSON.stringify(r.data));
     const b = w.browser();
     assert.equal((await b.post('/portal/session', { identifier: r.data.credentials.username, password: r.data.credentials.password })).status, 200);
     assert.equal((await b.post('/portal/password', { currentPassword: r.data.credentials.password, newPassword: 'Correct-Horse-Battery-9' })).status, 200);
+    if (!noBilling) assert.equal((await b.call('PUT', '/portal/billing/contact', { name: first, email: `accounts@${name.split(' ')[0].toLowerCase()}.example`, phone: '', legalName: name, abn: '51824753556' })).status, 200);
     return { orgId: r.data.org.id, b };
   };
   w.internal = async (extra = {}) => {
@@ -397,5 +398,60 @@ test('on D1 (SQLite shim): the internal flag persists, designs are isolated, cop
     assert.deepEqual(w.stripe, []);
     assert.equal((await w.admin('POST', `/portal/admin/orgs/${i.orgId}/internal`, { internal: false })).data.internal, false);
     assert.equal((await w.pstore.getOrg(i.orgId)).internal, false);
+  } finally { w.restoreConsole(); }
+});
+
+test('H6: builder, client and internal logins each get an AI token the credits endpoint accepts; no token without a session', async () => {
+  const w = world();
+  try {
+    const org = await w.builder('Coastal Homes Pty Ltd', 'Jo');
+    const bTok = (await org.b.post('/portal/ai/token')).data;
+    assert.equal(bTok.role, 'builder');
+    const call = (t) => w.app.fetch(new Request(`${SITE}/api/credits`, { headers: { authorization: `Bearer ${t}` } }));
+    assert.equal((await call(bTok.token)).status, 200);
+    assert.equal((await org.b.call('POST', '/portal/ai/token', undefined)).status, 200);
+    const anon = w.browser();
+    assert.ok([401, 403].includes((await anon.post('/portal/ai/token')).status), 'no session, no token');
+    assert.equal((await call('not-a-token')).status >= 400, true);
+    const i = await w.internal();
+    assert.equal((await call((await i.b.post('/portal/ai/token')).data.token)).status, 200);
+  } finally { w.restoreConsole(); }
+});
+
+test('H6: the assistant never shows a Dev badge or Plan Pack wording to a signed-in login (source guard)', () => {
+  const a = fs.readFileSync(new URL('../src/premium/ui/assistant.js', import.meta.url), 'utf8');
+  assert.match(a, /st\.token \|\| !st\.devUnlock\) \? null/, 'the Dev badge needs devUnlock and no token');
+  assert.match(a, /Sign in again to use the AI design assistant/);
+  const p = fs.readFileSync(new URL('../src/premium/premium.js', import.meta.url), 'utf8');
+  assert.match(p, /const dev = \(\) => !!cfg\.devUnlock && isLocalHost\(\)/);
+  const c = fs.readFileSync(new URL('../src/portal/client-mode.js', import.meta.url), 'utf8');
+  assert.match(c, /api\.aiToken/);
+});
+
+test('H7: an active builder needs billing details or a card before issuing client logins; internal is exempt; admin sees who month end will skip', async () => {
+  const w = world();
+  try {
+    const org = await w.builder('Nobill Homes Pty Ltd', 'Ned', { noBilling: true });
+    const refused = await org.b.post('/portal/clients', { firstName: 'Sarah' });
+    assert.equal(refused.status, 409);
+    assert.equal(refused.data.error?.code || refused.data.code, 'BILLING_DETAILS_REQUIRED');
+    assert.match(JSON.stringify(refused.data), /legal business name, ABN and billing email/);
+    assert.equal((await w.pstore.listUsers(org.orgId, false)).length, 0, 'no login was created');
+    // a card on file also unlocks it
+    await w.pstore.updateOrg(org.orgId, { paymentMethodId: 'pm_test' });
+    assert.equal((await org.b.post('/portal/clients', { firstName: 'Sarah' })).status, 201);
+    await w.pstore.updateOrg(org.orgId, { paymentMethodId: null });
+    const view = (await w.admin('GET', '/portal/admin/orgs')).data.find((o) => o.id === org.orgId);
+    assert.equal(view.billingSkipRisk, true, 'issued a login this month with no contact details');
+    assert.equal(view.billingReady, false);
+    // saving the details clears it
+    assert.equal((await org.b.call('PUT', '/portal/billing/contact', { name: 'Ned', email: 'n@nobill.example', phone: '', legalName: 'Nobill Homes Pty Ltd', abn: '51824753556' })).status, 200);
+    const after = (await w.admin('GET', '/portal/admin/orgs')).data.find((o) => o.id === org.orgId);
+    assert.equal(after.billingSkipRisk, false);
+    assert.equal(after.billingReady, true);
+    // internal accounts never need billing details
+    const i = await w.internal();
+    assert.equal((await i.b.post('/portal/clients', { firstName: 'Tess' })).status, 201);
+    assert.equal((await w.admin('GET', '/portal/admin/orgs')).data.find((o) => o.id === i.orgId).billingSkipRisk, false);
   } finally { w.restoreConsole(); }
 });

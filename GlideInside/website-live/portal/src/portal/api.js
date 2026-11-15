@@ -12,7 +12,7 @@ export const CALLS = [
   'listClients', 'issueClientLogin', 'updateClient', 'resetClientPassword', 'disableClient', 'enableClient', 'deleteClient', 'exportClientProjects',
   'listProjects', 'openProject', 'saveProject',
   'monthUsage', 'listInvoices', 'getInvoice', 'getBillingContact', 'setBillingContact', 'startBillingSetup', 'confirmBillingSetup',
-  'aiBalance', 'aiTopUp',
+  'aiBalance', 'aiTopUp', 'aiToken',
   'listTeam', 'inviteStaff', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff',
   'setBranding', 'setOrgSettings', 'enquiryJce', 'getBrand',
 ];
@@ -52,6 +52,7 @@ const ROUTES = {
   confirmBillingSetup: ['POST', '/portal/billing/setup/confirm'],
   aiBalance: ['GET', '/portal/ai'],
   aiTopUp: ['POST', '/portal/ai/top-up'],
+  aiToken: ['POST', '/portal/ai/token'],
   listTeam: ['GET', '/portal/team'],
   inviteStaff: ['POST', '/portal/team'],
   updateStaff: ['PATCH', '/portal/team/:id'],

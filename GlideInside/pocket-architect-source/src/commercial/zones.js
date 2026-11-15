@@ -39,4 +39,11 @@ export function effectiveClass(project) {
   return z.employment ? z.cls : null;
 }
 
-export const RESIDENTIAL_NOTE = 'This zone may not permit commercial use, check with council';
+export const RESIDENTIAL_NOTE = 'This zone may not permit industrial or commercial use, check with council';
+
+/** True when the looked up zone is residential or environmental (or another non employment zone): warned whatever zone class was chosen. */
+export const zoneMismatch = (lot) => {
+  if (!lot || lot.customRules?.on) return false;
+  const z = zoneClass(lot);
+  return z.cls === 'residential' || z.cls === 'other';
+};

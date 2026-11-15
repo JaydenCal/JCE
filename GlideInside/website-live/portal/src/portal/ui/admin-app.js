@@ -209,7 +209,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
     const last = o.invoices[0];
     const owed = o.invoices.filter((i) => i.status !== 'paid' && i.status !== 'void').reduce((s, i) => s + i.totalCents, 0);
     return h('tr', { dataset: { id: o.id } },
-      td('Builder', h('strong', null, o.name), o.internal ? chip('INTERNAL', 'warn') : null, h('div', { class: 'pp-sub' }, o.legalName ? `${o.legalName}${o.abn ? `, ABN ${o.abn}` : ''}` : ''), o.admin ? h('div', { class: 'pp-sub' }, `${o.admin.name} (${o.admin.username})${o.admin.mustChangePassword ? ', has not signed in' : ''}`) : null),
+      td('Builder', h('strong', null, o.name), o.internal ? chip('INTERNAL', 'warn') : null, o.billingSkipRisk ? chip('Month end will skip: billing details missing', 'warn') : null, h('div', { class: 'pp-sub' }, o.legalName ? `${o.legalName}${o.abn ? `, ABN ${o.abn}` : ''}` : ''), o.admin ? h('div', { class: 'pp-sub' }, `${o.admin.name} (${o.admin.username})${o.admin.mustChangePassword ? ', has not signed in' : ''}`) : null),
       td('Status', chip(label, kind), o.account.status === 'trial' ? h('div', { class: 'pp-sub' }, `${o.account.daysLeft} ${o.account.daysLeft === 1 ? 'day' : 'days'} left, ends ${o.account.lastTrialDay}`) : null,
         o.account.status === 'trial_ended' ? h('div', { class: 'pp-sub' }, `Ended ${when(o.account.trialEndsAt)}. Data kept until ${when(o.account.dataKeptUntil)}`) : null,
         o.account.card ? h('div', { class: 'pp-sub' }, `Card: ${o.account.card.brand} ending ${o.account.card.last4}`) : o.convertedHow === 'manual' ? h('div', { class: 'pp-sub' }, 'Converted manually') : null,
@@ -311,6 +311,8 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
     const count = (s) => requests.filter((r) => r.status === s).length;
     const shown = requests.filter((r) => r.status === filter);
     const tabs = h('div', { class: 'pp-tabs', role: 'tablist', 'aria-label': 'Trial requests' }, ...['pending', 'approved', 'declined'].map((s) => h('button', { class: 'pp-tab', role: 'tab', type: 'button', 'aria-selected': String(filter === s), dataset: { tab: s }, onclick: () => { filter = s; paint(); } }, `${s.charAt(0).toUpperCase()}${s.slice(1)} (${count(s)})`)));
+    const skipped = orgs.filter((o) => o.billingSkipRisk);
+    const skipNote = skipped.length ? h('p', { class: 'pp-notice pp-adm-skip', role: 'status' }, icon('info', 18), `Month end will skip ${skipped.length === 1 ? 'this builder' : 'these builders'} until legal name, ABN and billing email are saved: ${skipped.map((o) => o.name).join(', ')}.`) : null;
     const orgTable = orgs.length
       ? h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table pp-table--stack' }, h('thead', null, h('tr', null, ...['Builder', 'Status', 'Client logins issued', 'AI use', 'Invoices', 'Actions'].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', null, ...orgs.map(orgRow))))
       : h('p', { class: 'pp-empty' }, 'No builder accounts yet.');
@@ -320,7 +322,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
         tabs,
         h('div', { class: 'pp-adm-list' }, ...(shown.length ? shown.map(requestCard) : [h('p', { class: 'pp-empty' }, `No ${filter} requests.`)])),
         h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Builder accounts'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Trial, trial ended, active and read only.'))),
-        orgTable,
+        skipNote, orgTable,
         h('div', { class: 'pp-actions pp-actions--tight', style: { marginTop: '12px' } }, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', id: 'create-internal', onclick: openInternalForm }, 'Create internal test account')),
         trialSection(),
         usageSection()));

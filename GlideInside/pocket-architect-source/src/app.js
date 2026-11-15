@@ -471,7 +471,8 @@ async function main() {
 
   // Plan Pack (optional). Loaded after the first frame; the tool works without it.
   if (!demoMode()) await mountPremium();
-  if (!demoMode() && !VIEWER && CONFIG.portalEnabled) await import('./portal/client-mode.js').then((m) => m.initPortalMode(window.__ps)).catch((e) => console.warn('[portal] client mode not available', e));
+  if (!demoMode() && !VIEWER && CONFIG.portalEnabled) await import('./portal/client-mode.js').then((m) => m.initPortalMode(window.__ps)).catch((e) => console.warn('[portal] client mode not available', e)).finally(() => window.__ps?.premium?.setPortalPending?.(false));
+  else window.__ps?.premium?.setPortalPending?.(false);
   if (!VIEWER) import('./ui/onboarding/index.js').then((m) => m.initOnboarding?.(window.__ps)).catch(() => {});
   return api;
 }

@@ -7,7 +7,8 @@ import market from './data/market.json' with { type: 'json' };
 import portal from './data/market-portal.json' with { type: 'json' };
 import { layoutUnits, mezzanineOf } from './layout.js';
 import { lotAreaM2 } from './stats.js';
-import { parkingLayout } from './parking.js';
+import { parkingLayout, doorStrips } from './parking.js';
+import { siteAccess } from './access.js';
 import { rowPoint } from './layout.js';
 import { bayOffsetMm } from './schema.js';
 import * as G from '../model/geometry.js';
@@ -20,7 +21,7 @@ export const MIN_N = 4; // portal medians from fewer listings than this are weak
 export const SMALL_UNIT_M2 = 400; // the ranges target 100 to 400 m2 strata units
 export const CAVEAT = 'Indicative only, not a valuation. Figures from portal listings and published reports, check with a registered valuer and quantity surveyor.';
 export const GST_NOTE = 'All figures are ex GST.';
-export const RENT_NOTE = 'Rent is treated as net of recoverable outgoings and is capitalised at the net yield. Stamp duty, finance, holding costs and infrastructure contributions are not included.';
+export const RENT_NOTE = 'Gross rent less outgoings gives net rent, which is capitalised at the net yield. Mezzanine floor area is valued at a fraction of the ground floor rate. Stamp duty, finance, holding costs and infrastructure contributions are not included.';
 export const SOURCES_TEXT = `Sale and rent rates: commercialrealestate.com.au Factory, Warehouse and Industrial listings and sold statistics, read ${DATA_DATE}. Yields, land values and build costs: published ranges from cost guides and industry reports, mostly analyst estimates, ${DATA_DATE}.`;
 
 /** The areas: key (the portal key), label, the market.json name and the council names (upper case, as the cadastre gives them) that map to it. */
@@ -54,6 +55,8 @@ export const AREAS = Object.freeze([
 ]);
 const AREA_BY_KEY = new Map(AREAS.map((a) => [a.key, a]));
 export const DEFAULT_AREA = 'default';
+export const OUTGOINGS_PCT = Object.freeze({ low: 5, high: 15, value: 10 }); // assumption, % of gross rent
+export const MEZZ_FACTOR = Object.freeze({ low: 0.4, high: 0.7, value: 0.5 }); // assumption, fraction of the ground floor rate
 export const LANDSCAPE_RATE = Object.freeze({ low: 10, high: 25, value: 15 }); // owner allowance 13/11/2026, $/m2 of the lot outside the developed area
 
 /**
@@ -71,6 +74,9 @@ export function developedAreaM2(commercial, lot) {
     const far = pr.depth + (pr.off ?? off) + commercial.parking.bayL;
     polys.push([rowPoint(fr, 0, pr.depth), rowPoint(fr, pr.length, pr.depth), rowPoint(fr, pr.length, far), rowPoint(fr, 0, far)]);
   }
+  for (const s of doorStrips(commercial, park)) polys.push(s.poly);
+  const access = siteAccess(commercial, lot);
+  if (access?.driveway) polys.push(access.driveway);
   // Catalogue buildings: footprint, paved extras (truck apron, yard) and the bay rows.
   const bsAll = buildingsOf(commercial);
   for (const b of bsAll) {
@@ -180,7 +186,11 @@ export function areaDefaults(areaKey, { avgUnitGfaM2 = 0 } = {}) {
     rentRate,
     yieldPct: { value: Math.round(((yr.low + yr.high) / 2) * 100) / 100, ...yr, status: 'ESTIMATE', chip: `Estimate, published range ${yr.low} to ${yr.high}`, note: 'No regional NSW net yield was published, the range is an assumption.' },
     landRate: est(lr, 5, 'Serviced industrial land prices are not published for most areas.'),
-    buildRate: est(bR, 50, 'Secondary cost guides, not a quantity survey. Excludes fees and site works.'),
+    // Basis: the analyst range sits above the verified references (large metal clad shed Sydney 1,060 to 1,340, precast 1,160 to 1,740, national
+    // warehouse 1,150, industrial warehouses 1,300 to 2,800). The default starts at the low end of the range, not the middle.
+    buildRate: { ...est(bR, 50, 'Secondary cost guides, not a quantity survey, excludes fees and site works. The default is the low end of the analyst range; the verified references (large metal clad shed 1,060 to 1,340, precast 1,160 to 1,740, national warehouse 1,150, industrial warehouses 1,300 to 2,800) sit below its middle. Set your own after a quantity survey.'), value: bR.low, chip: `Estimate, low end of the range ${fmtN(bR.low)} to ${fmtN(bR.high)}` },
+    outgoingsPct: { value: OUTGOINGS_PCT.value, low: OUTGOINGS_PCT.low, high: OUTGOINGS_PCT.high, status: 'ESTIMATE', chip: `Estimate, assumption ${OUTGOINGS_PCT.low} to ${OUTGOINGS_PCT.high}`, note: 'Percent of gross rent taken by outgoings (rates, insurance, repairs and management). An assumption, no regional figure was published. Set your own or use 0 for a net lease.' },
+    mezzFactor: { value: MEZZ_FACTOR.value, low: MEZZ_FACTOR.low, high: MEZZ_FACTOR.high, status: 'ESTIMATE', chip: `Estimate, assumption ${MEZZ_FACTOR.low} to ${MEZZ_FACTOR.high}`, note: 'Mezzanine floor area is valued at this fraction of the ground floor sale and rent rate. An assumption, set your own.' },
     siteRate: est(sw, 5, 'Pavements, drainage, services and detention, per m² of the developed area (building footprint plus hardstand).'),
     landscapeRate: { value: LANDSCAPE_RATE.value, low: LANDSCAPE_RATE.low, high: LANDSCAPE_RATE.high, status: 'ESTIMATE', chip: `Estimate, allowance ${LANDSCAPE_RATE.low} to ${LANDSCAPE_RATE.high}`, note: 'Clearing and landscaping, per m² of the rest of the lot.' },
     feesPct: { value: Math.round(((fe.low + fe.high) / 2) * 100) / 100, ...fe, status: 'ESTIMATE', chip: `Estimate, published range ${fe.low} to ${fe.high}`, note: 'Percent of construction cost (build plus site works).' },
@@ -199,7 +209,7 @@ export function unitGfas(commercial) {
   });
 }
 
-const INPUT_KEYS = ['saleRate', 'rentRate', 'yieldPct', 'landRate', 'buildRate', 'siteRate', 'landscapeRate', 'feesPct', 'contPct'];
+const INPUT_KEYS = ['saleRate', 'rentRate', 'yieldPct', 'landRate', 'buildRate', 'siteRate', 'landscapeRate', 'feesPct', 'contPct', 'outgoingsPct', 'mezzFactor'];
 
 /** The effective values: the person's overrides (project.commercial.feasibility.v) on top of the defaults. */
 export function effectiveInputs(defaults, overrides = {}) {
@@ -218,7 +228,7 @@ export function effectiveInputs(defaults, overrides = {}) {
 const r0 = (v) => Math.round(v);
 
 /** One scenario. side: 'mid' (the values in use), 'low' (low revenue, high cost) or 'high' (high revenue, low cost). */
-function scenario(inp, { gfa, rowsGfa = gfa, buildings = [], devM2, restM2, lotM2 }, side) {
+function scenario(inp, { gfa, rowsGfa = gfa, mezzM2 = 0, buildings = [], devM2, restM2, lotM2 }, side) {
   const pick = (k, revenue) => {
     const x = inp[k];
     if (side === 'mid') return x.value;
@@ -245,14 +255,19 @@ function scenario(inp, { gfa, rowsGfa = gfa, buildings = [], devM2, restM2, lotM
   const fees = (construction * pick('feesPct', false)) / 100;
   const contingency = (construction * pick('contPct', false)) / 100;
   const cost = land + construction + fees + contingency;
-  const realisation = gfa * sale;
-  const grossRent = gfa * rent;
-  const endValue = yieldPct > 0 ? grossRent / (yieldPct / 100) : 0;
+  // Mezzanine floor area earns a fraction of the ground floor rate; the capitalised value uses NET rent (gross less outgoings).
+  const mezzFactor = Math.min(1, pick('mezzFactor', true));
+  const outgoingsPct = Math.min(100, pick('outgoingsPct', false));
+  const revenueGfa = gfa - mezzM2 * (1 - mezzFactor);
+  const realisation = revenueGfa * sale;
+  const grossRent = revenueGfa * rent;
+  const netRent = grossRent * (1 - outgoingsPct / 100);
+  const endValue = yieldPct > 0 ? netRent / (yieldPct / 100) : 0;
   const marginSale = realisation - cost;
   const marginHold = endValue - cost;
   return {
     saleRate: sale, rentRate: rent, yieldPct, land, build, buildRows, buildBuildings, buildingCosts: bCosts.map((x) => ({ id: x.b.id, n: x.b.n, label: x.b.label, gfa: x.b.gfaM2, total: x.total, lines: x.lines })), siteWorks: site, siteDev, siteRest, fees, contingency, cost,
-    realisation, grossRent, endValue, marginSale, marginHold,
+    realisation, grossRent, netRent, outgoingsPct, mezzFactor, revenueGfa, endValue, marginSale, marginHold,
     marginSalePct: cost > 0 ? (marginSale / cost) * 100 : 0,
     marginHoldPct: cost > 0 ? (marginHold / cost) * 100 : 0,
     grossYieldOnCostPct: cost > 0 ? (grossRent / cost) * 100 : 0,
@@ -278,11 +293,12 @@ export function feasibility(commercial, lot, opts = {}) {
   const inputs = effectiveInputs(defaults, opts.overrides || fz.v || {});
   const devM2 = developedAreaM2(commercial, lot);
   const restM2 = Math.max(0, lotM2 - devM2);
-  const ctx = { gfa, rowsGfa, buildings, devM2, restM2, lotM2 };
+  const mezzM2 = units.reduce((s, u) => s + u.mezz, 0);
+  const ctx = { gfa, rowsGfa, mezzM2, buildings, devM2, restM2, lotM2 };
   const mid_ = scenario(inputs, ctx, 'mid');
   const low = scenario(inputs, ctx, 'low');
   const high = scenario(inputs, ctx, 'high');
-  const perUnit = [...units.map((u) => ({ n: u.n, gfa: u.gfa, price: u.gfa * mid_.saleRate, rent: u.gfa * mid_.rentRate })), ...buildings.map((b) => ({ n: `B${b.n}`, label: b.label, gfa: b.gfaM2, price: b.gfaM2 * mid_.saleRate, rent: b.gfaM2 * mid_.rentRate }))];
+  const perUnit = [...units.map((u) => ({ n: u.n, gfa: u.gfa, price: (u.ground + u.mezz * mid_.mezzFactor) * mid_.saleRate, rent: (u.ground + u.mezz * mid_.mezzFactor) * mid_.rentRate })), ...buildings.map((b) => ({ n: `B${b.n}`, label: b.label, gfa: b.gfaM2, price: b.gfaM2 * mid_.saleRate, rent: b.gfaM2 * mid_.rentRate }))];
   return { areaKey, detectedKey: detected, areaLabel: defaults.label, confidence: defaults.confidence, units, buildings, rowsGfa, perUnit, gfa, lotM2, devM2, restM2, inputs, defaults, mid: mid_, low, high, landFromPrice: inputs.landPrice.value != null, dataDate: DATA_DATE };
 }
 
@@ -299,7 +315,8 @@ export function summaryRows(f) {
     ['GFA incl. mezzanine', `${m2(f.gfa)} m²`, ''],
     ['Gross realisation (GFA x sale rate)', money(m.realisation), band(l.realisation, h.realisation)],
     ['Gross rent per year', money(m.grossRent), band(l.grossRent, h.grossRent)],
-    ['End value by capitalisation (net rent / yield)', money(m.endValue), band(l.endValue, h.endValue)],
+    [`Net rent per year (after ${Math.round(m.outgoingsPct * 10) / 10}% outgoings)`, money(m.netRent), band(l.netRent, h.netRent)],
+    ['End value by capitalisation (net rent / net yield)', money(m.endValue), band(l.endValue, h.endValue)],
     ['Total development cost', money(m.cost), band(h.cost, l.cost)],
     ['Gross yield on cost', pct1(m.grossYieldOnCostPct), band(l.grossYieldOnCostPct, h.grossYieldOnCostPct, pct1)],
     ['Indicative margin, sell the units', `${money(m.marginSale)} (${pct1(m.marginSalePct)} on cost)`, `${band(l.marginSale, h.marginSale)} (${band(l.marginSalePct, h.marginSalePct, pct1)})`],

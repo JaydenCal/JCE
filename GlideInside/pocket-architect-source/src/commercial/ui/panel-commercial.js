@@ -200,6 +200,8 @@ export function createCommercialPanel({ store, host, editor }) {
       inRow('buildRate', 'Build rate (GFA)', '$/m²', 50),
       inRow('siteRate', 'Site works (developed)', '$/m²', 5),
       inRow('landscapeRate', 'Clearing, landscaping (rest)', '$/m²', 1),
+      inRow('outgoingsPct', 'Outgoings, share of gross rent', '%', 1),
+      inRow('mezzFactor', 'Mezzanine value, fraction of ground rate', 'x', 0.05),
       inRow('feesPct', 'Fees', '%', 0.5),
       inRow('contPct', 'Contingency', '%', 0.5),
       h('p', { class: 'cm-hint' }, `${GST_NOTE} ${RENT_NOTE} Developed area ${Math.round(f.devM2).toLocaleString('en-AU')} m² (building footprint plus hardstand), rest of lot ${Math.round(f.restM2).toLocaleString('en-AU')} m².`),

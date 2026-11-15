@@ -118,7 +118,7 @@ export function offerCommercial(store, { toast = realToast, available = commerci
   try { if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('mode') === 'commercial') return null; } catch { /* no location */ }
   const z = zoneClass(lotOf(p) ? p.site.lot : null);
   if (isCommercial(p)) {
-    if ((z.cls === 'residential' || z.cls === 'other') && !p.commercial.zoneClass) return toast(RESIDENTIAL_NOTE, { kind: 'warn', timeout: 9000 });
+    if ((z.cls === 'residential' || z.cls === 'other') && !lotOf(p)?.customRules?.on) return toast(RESIDENTIAL_NOTE, { kind: 'warn', timeout: 9000 });
     return null;
   }
   if (!z.employment) return null;

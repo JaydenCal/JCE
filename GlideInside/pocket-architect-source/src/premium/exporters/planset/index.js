@@ -9,6 +9,7 @@
 // `project` is a Pocket Architect project (schema 2). `lot` is the lot the viewer holds: see the PlanSetLot typedef in ./lot.js (the schema 2
 // site.lot in plan millimetres, or a plain metre lot). Omit `lot` to use project.site.lot. Text is vector text (standard PDF fonts).
 
+import { trialJsPDF } from '../watermark.js';
 import { schemeColours } from '../../../model/colour-schemes.js';
 import { slugify, ascii } from '../shared.js';
 import { projectCode, projectTitle } from '../eng/brand.js';
@@ -23,10 +24,14 @@ import { syncCurrency } from '../../../site/custom-rules.js';
 import { sheetNotes } from '../../../site/upload/sheet-text.js';
 import { drawSite, siteView } from './site.js';
 import { drawHouseSheet, houseSheets } from './house.js';
+import { zoneMismatch, RESIDENTIAL_NOTE } from '../../../commercial/zones.js';
 import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, drawLayout, drawMezzanine, drawYield, coverThumbnail, COMMERCIAL_NOTES } from './commercial.js';
 import { lotOf } from '../../../model/placement.js';
 
 void schemeColours;
+
+export const PREVIEW_TITLE = 'PREVIEW, NOT TO SCALE';
+export const PREVIEW_FOOTER = 'Preview only, not to scale. A Plan Pack gives you the to-scale plan set.';
 
 async function loadJsPDF(given) {
   if (typeof given === 'function') return given;
@@ -60,6 +65,20 @@ export function planSetSheets({ project, lot, kind, catalogue = null }) {
   return sheets;
 }
 
+/** Preview only: any printed scale ratio ("1:200 @ A3") becomes "NOT TO SCALE", so the free set never states a scale. */
+const noScaleText = (t) => (typeof t === 'string' ? t.replace(/Scale 1:\d+ @ A3\.?/g, 'Not to scale.').replace(/Outline at 1:\d+ @ A3/g, 'Outline, not to scale').replace(/1:\d+ @ A3/g, 'NOT TO SCALE') : t);
+function withoutScales(JsPDF) {
+  function PreviewPDF(...args) {
+    const doc = new JsPDF(...args);
+    const text = doc.text.bind(doc);
+    doc.text = (t, ...r) => text(Array.isArray(t) ? t.map(noScaleText) : noScaleText(t), ...r);
+    return doc;
+  }
+  Object.assign(PreviewPDF, JsPDF);
+  PreviewPDF.prototype = JsPDF.prototype;
+  return PreviewPDF;
+}
+
 /**
  * @param {Object} o
  * @param {Object} o.project  Pocket Architect project (schema 2), the house design.
@@ -77,7 +96,7 @@ export function planSetSheets({ project, lot, kind, catalogue = null }) {
  * @param {Date} [o.date]
  * @returns {Promise<{ blob: Blob, filename: string, sheets: Array, pages: number }>}
  */
-export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null } = {}) {
+export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, preview = false, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null } = {}) {
   syncCurrency(project);
   if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Pocket Architect project');
   if (kind !== 'site' && kind !== 'house' && kind !== 'commercial') throw new Error("exportPlanSet kind must be 'site', 'house' or 'commercial'");
@@ -89,7 +108,10 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
   const wp = prep.project;
   if (commercial) wp.site = { ...(wp.site || {}), lot: prep.lot };
   const siteLot = prep.lot; // the house plan also quotes the lot when there is one
-  const JsPDF = await loadJsPDF(jsPDF);
+  // The free preview: every page is stamped "PREVIEW, NOT TO SCALE" and the scale labels say so. The to-scale set needs a Plan Pack, a builder
+  // or client login, a commercial subscription or an internal account (the caller decides, see src/lotcard/lot-card.js).
+  const baseJsPDF = await loadJsPDF(jsPDF);
+  const JsPDF = preview ? trialJsPDF(withoutScales(baseJsPDF), PREVIEW_TITLE, PREVIEW_FOOTER) : baseJsPDF;
   const builder = clean(builderName);
   const dateStr = clean(project.titleBlock?.date) || ddmmyyyy(date);
   const sheets = planSetSheets({ project: wp, lot: kind === 'site' || commercial ? siteLot : null, kind, catalogue });
@@ -97,7 +119,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
   const id = projectCode(wp);
   const title = commercial ? commercialTitle(wp) : projectTitle(wp);
   const cmodel = commercial ? commercialModel(wp, siteLot) : null;
-  sheets.forEach((s, i) => { s.n = i + 1; s.no = `GI-${id}-${s.code}`; });
+  sheets.forEach((s, i) => { s.n = i + 1; s.no = `GI-${id}-${s.code}`; if (preview) s.scale = 'NOT TO SCALE'; });
 
   const raw = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3', compress: true });
   raw.setProperties({ title: `${ascii(title)} concept plan set`, subject: 'Concept design plans, to be checked by a suitably qualified person', author: ENTITY, creator: commercial ? 'Glide Inside commercial layout' : 'Glide Inside lot viewer' });
@@ -117,7 +139,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
       let r = null;
       if (s.id === 'cover') {
         const z = siteLot.zoning ? [siteLot.zoning.code && `Zone ${siteLot.zoning.code}`, siteLot.zoning.name].filter(Boolean).join(' ') : '';
-        drawCover(doc, { project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes(COMMERCIAL_NOTES, siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
+        drawCover(doc, { project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes([...(zoneMismatch(siteLot) ? [`${RESIDENTIAL_NOTE}.`] : []), ...COMMERCIAL_NOTES], siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
         strip = { ...strip, subtitle: 'Commercial unit layout', kvTitle: 'SITE DATA', kv: [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`], ['Units', String(cmodel.stats.units)]], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
       } else {
         if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null });
@@ -144,7 +166,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
 
   const bytes = new Uint8Array(raw.output('arraybuffer'));
   const blob = new Blob([bytes], { type: 'application/pdf' });
-  const filename = `Glide-Inside-${slugify(title, 'concept')}-${commercial ? 'commercial-plan-set' : kind === 'site' ? 'site-plan-set' : 'house-plan-set'}.pdf`;
+  const filename = `Glide-Inside-${slugify(title, 'concept')}-${commercial ? 'commercial-plan-set' : kind === 'site' ? 'site-plan-set' : 'house-plan-set'}${preview ? '-preview' : ''}.pdf`;
   if (download && typeof document !== 'undefined') {
     const { downloadBlob } = await import('../download.js');
     downloadBlob(blob, filename);

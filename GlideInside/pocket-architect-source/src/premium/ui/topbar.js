@@ -87,6 +87,8 @@ export function createTopbarUI({ root, config, getState, actions }) {
       const left = st.credits && Number.isFinite(st.credits.remaining) ? ` ${st.credits.remaining} of ${st.credits.total} AI credits left.` : '';
       slot.append(el('button', { class: 'psp-chip', type: 'button', title: st.csub ? 'Your commercial account' : `Plan Pack active.${left}`, onclick: () => actions.details() },
         icon('check', 14), st.csub ? (st.csub.kind === 'trial' ? 'Commercial trial' : 'Commercial Developer') : st.portal ? 'Plans included' : st.token ? 'Plan Pack' : 'Dev unlock'));
+    } else if (st.portalPending) {
+      // The sign-in check is still running: show nothing rather than a paywall that a builder's client would not see.
     } else if (isOn() || st.commercial) {
       // Commercial mode always offers the subscription (the gate says Coming soon until a Stripe price is set), never the A$30 Plan Pack.
       slot.append(el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => actions.unlock('topbar') },

@@ -118,7 +118,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     const st = getState();
     els = {};
     els.banners = el('div', { class: 'psp-banners' });
-    els.history = el('div', { class: 'psp-history', role: 'log', 'aria-live': 'polite', 'aria-label': 'Assistant conversation' });
+    els.history = el('div', { class: 'psp-history', role: 'log', 'aria-live': 'polite', 'aria-label': 'AI design assistant conversation' });
     els.prompts = el('div', { class: 'psp-prompts' });
     els.lead = el('p', { class: 'psp-ai-lead' }, isCommercial(store.project)
       ? 'Ask the assistant to plan the lot. It places units and buildings, compares layouts and writes a development brief, and you can undo any change in one click. Every figure is indicative, so check with council.'
@@ -138,7 +138,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     const out = [
       el('div', { class: 'psp-ai-head' },
         el('h3', { class: 'psp-ai-title' }, icon('spark', 16), 'AI design assistant'),
-        st.token ? null : el('span', { class: 'psp-badge', title: 'Developer unlock on localhost' }, 'Dev')),
+        (st.token || !st.devUnlock) ? null : el('span', { class: 'psp-badge', title: 'Developer unlock on localhost' }, 'Dev')),
       meterView(),
       els.banners,
       els.lead,
@@ -476,7 +476,9 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     if (!st.token) {
       add({ role: 'system', error: true, text: dev()
         ? 'Developer unlock builds the exports in this browser, but the assistant needs the Plan Studio server running and a Plan Pack for this design. See server/README.md to start the server, then make a test purchase or restore one.'
-        : 'Your Plan Pack could not be verified. Restore your purchase to use the assistant.' });
+        : st.session && (st.session.kind === 'builder' || st.session.kind === 'client') || st.portal
+          ? 'Your sign-in could not be verified. Sign in again to use the AI design assistant.'
+          : 'Your Plan Pack could not be verified. Restore your purchase to use the assistant.' });
       return;
     }
     const pid = store.project.id;

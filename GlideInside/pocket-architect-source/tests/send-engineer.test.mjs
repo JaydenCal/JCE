@@ -183,7 +183,7 @@ test('lot card wiring: the button sits under the PDF links, the menu offers it, 
   assert.match(src, /bPdfH\)\), sendRow, fit, zoneNote\)/, 'the send row follows the PDF links in the card body');
   assert.match(src, /dataset: \{ ps: 'lc-send-engineer' \}/);
   assert.match(src, /\[SEND_LABEL, \(\) => engineer\.open\(\)\]/, 'the phone and desktop menu');
-  assert.match(src, /downloadBlob\([^\n]*\n\s*engineer\.offerAfterExport\(kind\)/, 'the prompt follows the download, for the site and the house PDF');
+  assert.match(src, /downloadBlob\([^\n]*\n\s*(?:if \(full\) )?engineer\.offerAfterExport\(kind\)/, 'the prompt follows the download, for the site and the house PDF');
   assert.match(src, /bSend\.hidden = !canSend/);
   const css = fs.readFileSync(new URL('../src/lotcard/lot-card-css.js', import.meta.url), 'utf8');
   assert.match(css, /\.lc-root\.is-phone \.lc-sendbtn/, 'a phone layout');

@@ -5,7 +5,7 @@ import { lotChecks } from '../site/lot-checks.js';
 import { lotOf } from '../model/placement.js';
 import * as G from '../model/geometry.js';
 import { layoutUnits, facadeLayout, mezzanineOf, officeOf, OFFICE_MIN_WIDTH_MM } from './layout.js';
-import { parkingLayout } from './parking.js';
+import { parkingLayout, doorStrips } from './parking.js';
 import { commercialStats } from './stats.js';
 import { zoneClass, effectiveClass, RESIDENTIAL_NOTE } from './zones.js';
 import { defaultRulesFor } from './rules.js';
@@ -41,7 +41,7 @@ export function commercialChecks(project) {
   // Zone
   const z = zoneClass(project.site?.lot);
   const cls = effectiveClass(project);
-  if (lot && (z.cls === 'residential' || z.cls === 'other') && !c.zoneClass) warn('zone', RESIDENTIAL_NOTE);
+  if (lot && (z.cls === 'residential' || z.cls === 'other') && !lot.customRules?.on) warn('zone', RESIDENTIAL_NOTE);
   else if (lot && z.cls === 'unknown' && !c.zoneClass) warn('zone', 'Zone not known for this lot, choose the zone class and check with council');
   else if (lot?.customRules?.on) info('zone', 'Custom rules in use. Setbacks and rates are the values you entered, check them against the local rule');
   else if (cls) info('zone', `${defaultRulesFor(cls).label} zone class. Setbacks and rates are indicative, check with council`);
@@ -131,6 +131,12 @@ export function commercialChecks(project) {
       const bad = pr.slots.some((sl) => sl.poly.some((q) => lot && !pointInPoly(q, lot.boundary)));
       if (bad) warn(`park-lot-${pr.rowId}`, 'A parking row extends outside the lot boundary, check the layout');
       if (pr.slots.some((sl) => units.some((u) => G.convexOverlap(sl.poly, u.poly, 100)))) warn(`park-unit-${pr.rowId}`, 'A parking row overlaps a unit, increase the aisle or move the row');
+    }
+    // Roller doors always face an apron: the strip in front of each bayless row must stay clear of other buildings and inside the lot.
+    for (const s of doorStrips(c, park)) {
+      const hitsBuilding = units.some((u) => u.rowId !== s.rowId && G.convexOverlap(s.poly, u.poly, 100)) || bsAll.some((b) => G.convexOverlap(s.poly, b.outline, 100));
+      const outside = lot && s.poly.some((q) => !pointInPoly(q, lot.boundary));
+      if (hitsBuilding || outside) warn(`door-apron-${s.rowId}`, `The roller doors of one row have less than the ${m(s.off)} m truck apron in front of them${hitsBuilding ? ' (a building is in the way)' : ' (the lot boundary is in the way)'}, move the row or the building`);
     }
     for (const pr of bpark.rows) {
       if (lot && pr.slots.some((sl) => sl.poly.some((q) => !pointInPoly(q, lot.boundary)))) warn(`park-lot-${pr.rowId}`, 'A parking row extends outside the lot boundary, check the layout');

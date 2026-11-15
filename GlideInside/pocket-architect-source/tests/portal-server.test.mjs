@@ -102,7 +102,7 @@ function makeWorld({ d1 = false, env = {} } = {}) {
     app.fetch(new Request(`${SITE}/api${path}`, { method, headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify(body ?? {}) })).then(async (r) => ({ status: r.status, data: await r.json().catch(() => null) }));
 
   /** Creates an org through the admin endpoint and signs the admin in, past the forced password change. */
-  world.makeOrg = async (name = 'Sample Homes Pty Ltd', adminFirst = 'Priya', extra = {}) => {
+  world.makeOrg = async (name = 'Sample Homes Pty Ltd', adminFirst = 'Priya', { noBilling = false, ...extra } = {}) => {
     const r = await world.admin('POST', '/portal/admin/orgs', { name, adminFirstName: adminFirst, adminEmail: `${adminFirst.toLowerCase()}@${name.split(' ')[0].toLowerCase()}.example`, ...extra });
     assert.equal(r.status, 201, JSON.stringify(r.data));
     const b = world.browser();
@@ -110,6 +110,8 @@ function makeWorld({ d1 = false, env = {} } = {}) {
     assert.equal(me.status, 200, JSON.stringify(me.data));
     const ch = await b.post('/portal/password', { currentPassword: r.data.credentials.password, newPassword: 'Correct-Horse-Battery-9' });
     assert.equal(ch.status, 200, JSON.stringify(ch.data));
+    // Active builders must have billing details before they can issue logins (Fable H7); most tests want that done.
+    if (!noBilling) assert.equal((await b.put('/portal/billing/contact', { name: adminFirst, email: `accounts@${name.split(' ')[0].toLowerCase()}.example`, phone: '', legalName: name, abn: '51824753556' })).status, 200);
     const out = { orgId: r.data.org.id, admin: b, adminUser: r.data.admin, adminPassword: 'Correct-Horse-Battery-9', shortCode: r.data.org.shortCode };
     out.relogin = async () => {
       out.admin = world.browser();
@@ -955,7 +957,7 @@ for (const [label, d1] of stores) {
 
   t('billing contact needs the legal name and a valid ABN; branding and settings validate input', async () => {
     const w = makeWorld({ d1 });
-    const org = await w.makeOrg();
+    const org = await w.makeOrg('Sample Homes Pty Ltd', 'Priya', { noBilling: true });
     const b = org.admin;
     assert.deepEqual((await b.get('/portal/billing/contact')).data, { name: '', email: '', phone: '', legalName: '', abn: '' });
     const good = { name: 'Accounts', email: 'Accounts@Sample.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51824753556' };
@@ -1031,6 +1033,7 @@ for (const [label, d1] of stores) {
     await c1.browser.post('/portal/ai/top-up');
     const b = await w.makeOrg('Bravo Homes', 'Bob');
     await w.makeClient(b, 'Nobody', {}, { signIn: false });
+    await w.pstore.updateOrg(b.orgId, { legalName: null, abn: null, billingEmail: null }); // details later removed: month end skips it
     // November: one more sign in that must NOT be on the October invoice.
     w.clock.t = Date.UTC(2026, 10, 11, 1, 0);
     await a.relogin();

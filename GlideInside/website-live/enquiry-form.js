@@ -26,6 +26,10 @@
       if (!/[0-9]{6,}/.test(g("phone").replace(/[\s()+-]/g, ""))) return show("Enter a valid phone number.");
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g("email"))) return show("Enter a valid email address.");
       if (kind === "demo" && !g("day")) return show("Choose a preferred day.");
+      if (kind === "demo") {
+        var now = new Date(), today = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+        if (g("day") < today) return show("Choose a day from today onwards.");
+      }
       if (kind === "demo" && !form.querySelector("input[name=time]:checked")) return show("Choose morning or afternoon.");
       if (kind === "general" && !g("message")) return show("Enter your message.");
       if (!f.consent.checked) return show("Tick the box so we can contact you.");

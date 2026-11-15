@@ -365,9 +365,9 @@ test('commercial kind: C000 to C103 sheets, one page each', async () => {
 test('commercial kind: PROPOSED UNIT n labels, areas, schedule and title block', async () => {
   const { text } = await crun({ builderName: '' });
   for (let n = 1; n <= 16; n++) assert.ok(text.includes(`PROPOSED UNIT ${n}`), `unit ${n} named`);
-  for (const want of ['UNIT SCHEDULE', 'SITE SUMMARY', 'ROLLER DOOR SCHEDULE', 'BOLLARD SCHEDULE', 'VALUES NOT VERIFIED', 'MEZZANINE OFFICE', 'LEGEND', '13/11/2026', 'ABN 29 699 165 663', 'Rate source and status', 'Parking required', 'Accessible bays', 'LANDSCAPING', 'OSD BASIN PLACEHOLDER']) assert.ok(text.includes(want), `missing ${want}`);
+  for (const want of ['UNIT SCHEDULE', 'SITE SUMMARY', 'ROLLER DOOR SCHEDULE', 'BOLLARD SCHEDULE', 'Indicative only. Rates and controls to be confirmed with council and a suitably qualified engineer', 'MEZZANINE OFFICE', 'LEGEND', '13/11/2026', 'ABN 29 699 165 663', 'Rate source', 'Parking required', 'Accessible bays', 'LANDSCAPING', 'OSD BASIN PLACEHOLDER']) assert.ok(text.includes(want), `missing ${want}`);
   assert.ok(text.includes('Concept only. Setbacks and planning controls shown are indicative'));
-  assert.ok(text.includes('Medium rigid vehicle turning radius'), 'an UNVERIFIED value is listed');
+  assert.ok(!/VALUES NOT VERIFIED|TO VERIFY AGAINST|DO NOT RELY|Medium rigid vehicle turning radius/.test(text), 'no internal verification notes on a customer plan set');
   assert.ok(!/\d{4}-\d{2}-\d{2}/.test(text));
 });
 
@@ -385,7 +385,7 @@ test('commercial kind: no forbidden words, dashes or builder brands; watermark o
 
 test('commercial kind: C103 carries the indicative yield and value section with the caveat, data date and sources', async () => {
   const { text } = await crun({ builderName: '' });
-  for (const want of ['INDICATIVE YIELD AND VALUE', 'Indicative only, not a valuation. Figures from portal listings and published reports, check with a registered valuer and quantity surveyor.', 'Data as at 13/11/2026', 'All figures are ex GST', 'Gross realisation (GFA x sale rate)', 'End value by capitalisation (net rent / yield)', 'Total development cost', 'Indicative margin, sell the units', '$3,941,078', 'commercialrealestate.com.au', 'building footprint plus hardstand', 'clearing and landscaping']) assert.ok(text.includes(want), `missing ${want}`);
+  for (const want of ['INDICATIVE YIELD AND VALUE', 'Indicative only, not a valuation. Figures from portal listings and published reports, check with a registered valuer and quantity surveyor.', 'Data as at 13/11/2026', 'All figures are ex GST', 'Gross realisation (GFA x sale rate)', 'End value by capitalisation (net rent / net yield)', 'Net rent per year', 'Total development cost', 'Indicative margin, sell the units', '$3,714,379', 'commercialrealestate.com.au', 'building footprint plus hardstand', 'clearing and landscaping']) assert.ok(text.includes(want), `missing ${want}`);
 });
 
 test('commercial kind: needs commercial mode and the lot; the caller project is not changed', async () => {

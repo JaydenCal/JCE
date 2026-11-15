@@ -464,9 +464,9 @@ svg { display: block; }
 .ps-panel-head { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--ps-border); }
 .ps-tabs { display: flex; gap: 2px; flex: 1; }
 .ps-tab {
-  height: 30px; padding: 0 12px;
+  height: 30px; padding: 0 8px; white-space: nowrap;
   background: transparent; border: 0; border-bottom: 2px solid transparent;
-  font-family: var(--ps-font-label); font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  font-family: var(--ps-font-label); font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
   color: var(--ps-muted);
 }
 .ps-tab:hover { color: var(--ps-text); }

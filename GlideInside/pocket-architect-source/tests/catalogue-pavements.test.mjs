@@ -315,7 +315,7 @@ test('siteWorksCost: the export feasibility can call, built up from quantities, 
   assert.ok(s.perM2 > 120 && s.perM2 < 250, String(s.perM2));
   // feasibility's developed area is the footprint plus the aisle and bays; the footpath behind the bays is extra hardstand here
   const dev = developedAreaM2(p.commercial, p.site.lot);
-  assert.ok(dev > 1350 && dev < 1400, String(dev)); // 720 footprint + 643 aisle and bays, the footpath is extra
+  assert.ok(dev > 1350 && dev < 1400 + 280, String(dev)); // 720 footprint + 643 aisle and bays, plus the site access driveway to the front boundary; the footpath is extra
   assert.equal(siteWorksCost({ ...p.commercial, rows: [], waste: null }, p.site.lot).available, false);
   assert.equal(siteWorksCost(null).available, false);
 });
