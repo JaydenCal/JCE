@@ -6,6 +6,7 @@ import { drawTag, fmtDim } from './draw-annot.js';
 import { OUTDOOR_TYPES, ROOM_TYPES, ROOM_LABELS } from '../model/schema.js';
 import { suggestRoomName } from '../ui/schedules.js';
 import { h } from '../ui/dom.js';
+import { localAxis, snapToRotatedGrid, rotatedRect } from './local-axes.js';
 
 function rectPath(ctx, ed, rect) {
   const a = ed.toScreen({ x: rect.x, y: rect.y });
@@ -43,6 +44,8 @@ function rectTool(ed, id, hooks) {
     ed.draw();
   };
   const snapAt = (ev) => ed.snap(ev.world, { alt: ev.alt });
+  let axis = { deg: 0, source: 'screen' };
+  const turned = () => hooks.rotated && Math.abs(axis.deg) > 0.05;
   return {
     id,
     cursor: () => 'crosshair',
@@ -52,14 +55,16 @@ function rectTool(ed, id, hooks) {
       if (pending) return;
       a = snapAt(ev);
       b = a;
+      axis = hooks.rotated ? localAxis(ed.store.project, ed.store.level(), a, { alt: ev.alt }) : { deg: 0, source: 'screen' };
     },
     pointerMove(ev) {
       if (!a || pending) return;
       b = snapAt(ev);
+      if (turned()) b = snapToRotatedGrid(a, b, axis.deg);
     },
     pointerUp() {
       if (!a || pending) return;
-      const rect = M.dragRect(a, b);
+      const rect = turned() ? { x: a.x, y: a.y, w: rotatedRect(a, b, axis.deg).w, h: rotatedRect(a, b, axis.deg).h } : M.dragRect(a, b);
       if (rect.w < 300 && rect.h < 300) {
         const at = a;
         a = b = null;
@@ -67,7 +72,7 @@ function rectTool(ed, id, hooks) {
         ed.draw();
         return;
       }
-      pending = !!hooks.onRect(rect, a, b, { keep: () => { pending = true; }, done: reset });
+      pending = !!hooks.onRect(rect, a, b, { keep: () => { pending = true; }, done: reset, turned: turned() ? rotatedRect(a, b, axis.deg) : null });
       if (!pending) reset();
     },
     cancel() {
@@ -83,6 +88,28 @@ function rectTool(ed, id, hooks) {
     },
     draw(ctx, st) {
       if (!a) return;
+      if (turned()) {
+        const rr = rotatedRect(a, b, axis.deg);
+        if (rr.w < 1 && rr.h < 1) return;
+        const pts = rr.points.map((q) => ed.toScreen(q));
+        ctx.save();
+        ctx.beginPath();
+        pts.forEach((q, i) => (i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y)));
+        ctx.closePath();
+        ctx.fillStyle = st.theme.c.accentSoft;
+        ctx.globalAlpha = 0.35;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = st.theme.c.accent;
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+        ctx.restore();
+        const cx = pts.reduce((t, q) => t + q.x, 0) / 4;
+        const cy = pts.reduce((t, q) => t + q.y, 0) / 4;
+        drawTag(ctx, st, `${fmtDim(rr.w)} × ${fmtDim(rr.h)} at ${axis.deg.toFixed(1)}° (${axis.source === 'house' ? 'house' : 'frontage'}, Alt for square)`, cx, cy);
+        return;
+      }
       const rect = M.dragRect(a, b);
       if (rect.w < 1 && rect.h < 1) return;
       drawRectPreview(ctx, st, ed, rect, hooks.label?.(rect, a, b));
@@ -96,6 +123,7 @@ export function createDrawTools(ed) {
 
   // Room -------------------------------------------------------------------------------------------------
   const room = rectTool(ed, 'room', {
+    rotated: true,
     hint: () => 'Drag a rectangle to draw a room. Shared walls merge. Esc cancels.',
     label: (r) => `${(r.w * r.h / 1e6).toFixed(2)} m²`,
     onRect(rect, a, b, ctl) {
@@ -117,7 +145,7 @@ export function createDrawTools(ed) {
         if (!touched) nameIn.value = suggestRoomName(level, type);
       });
       const create = () => {
-        const res = ed.run('add_room', { type, name: nameIn.value.trim() || undefined, x: rect.x, y: rect.y, width: rect.w, depth: rect.h });
+        const res = ctl.turned ? ed.run('add_room_polygon', { type, name: nameIn.value.trim() || undefined, points: ctl.turned.points }) : ed.run('add_room', { type, name: nameIn.value.trim() || undefined, x: rect.x, y: rect.y, width: rect.w, depth: rect.h });
         if (res) {
           lastRoomType = type;
           pop.close();
@@ -175,17 +203,19 @@ export function createDrawTools(ed) {
   // Deck or patio -----------------------------------------------------------------------------------------------
   const deckType = () => (OUTDOOR_TYPES.includes(store.ui.toolArg) ? store.ui.toolArg : 'deck');
   const deck = rectTool(ed, 'deck', {
+    rotated: true,
     hint: () => `Drag a rectangle for a ${ROOM_LABELS[deckType()].toLowerCase()}. It has no walls. Change the type in the panel.`,
     label: (r) => `${(r.w * r.h / 1e6).toFixed(2)} m²`,
     onClick(p) {
       ed.run('add_room', { type: deckType(), name: suggestRoomName(store.level(), deckType()), x: p.x - 1500, y: p.y - 1500, width: 3000, depth: 3000 });
     },
-    onRect(rect) {
+    onRect(rect, a, b, ctl) {
       if (rect.w < 600 || rect.h < 600) {
         ed.toast('Drag a larger rectangle. An outdoor area is at least 0.6 m each way.', { kind: 'warn' });
         return false;
       }
-      ed.run('add_room', { type: deckType(), name: suggestRoomName(store.level(), deckType()), x: rect.x, y: rect.y, width: rect.w, depth: rect.h });
+      if (ctl?.turned) ed.run('add_room_polygon', { type: deckType(), name: suggestRoomName(store.level(), deckType()), points: ctl.turned.points, walls: false });
+      else ed.run('add_room', { type: deckType(), name: suggestRoomName(store.level(), deckType()), x: rect.x, y: rect.y, width: rect.w, depth: rect.h });
       return false;
     },
   });
