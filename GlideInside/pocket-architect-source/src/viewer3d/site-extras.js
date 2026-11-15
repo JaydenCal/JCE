@@ -133,7 +133,9 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   // Strip between two lines of plan points sampled at the same parameter: quads draped on the surface.
   const strip = (b, slot, A, B, lift, uvAlong = 3, uvAcross = 1, liftB = lift) => {
     let run = 0;
-    for (let i = 0; i + 1 < A.length; i++) {
+    const n = Math.min(A?.length || 0, B?.length || 0); // edge lines can be clipped to different counts; never read past the shorter one
+    for (let i = 0; i + 1 < n; i++) {
+      if (!A[i] || !A[i + 1] || !B[i] || !B[i + 1]) continue;
       const a0 = [A[i].x / 1000, 0, A[i].y / 1000];
       const a1 = [A[i + 1].x / 1000, 0, A[i + 1].y / 1000];
       const b0 = [B[i].x / 1000, 0, B[i].y / 1000];
