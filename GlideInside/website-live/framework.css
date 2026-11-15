@@ -676,3 +676,28 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
   .head-end .login{padding:8px 7px;font-size:13.5px}
   .head-end .login[data-bp-link]{display:none}
 }
+
+/* site actions 15/11/2026: shared pieces */
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.price-card .amount small,.tier .amt small{margin-left:2px}
+.cmp th,.cmp td{font-size:14.5px;padding:14px 16px}.cmp tbody th{width:15%}
+.cmp .btn-sm{white-space:nowrap}
+@media(max-width:1000px){.cmp th,.cmp td{padding:12px 10px;font-size:13.5px}.cmp .btn-sm{padding:10px 12px;font-size:13.5px}}
+@media(max-width:720px){.cmp td[data-label]::before{content:attr(data-label) ": ";font-weight:700;color:var(--ink)}.cmp td{padding-top:6px}.cmp tbody th{padding-top:14px}}
+.calc{margin-top:28px;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(20px,3vw,32px);max-width:640px}
+.calc h3{margin:0 0 14px}
+.calc-row{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:14px 0 6px;font-weight:600}
+.calc input[type=range]{width:100%;accent-color:var(--accent)}
+.calc input[type=number]{width:90px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font:inherit}
+.calc-total{font:420 clamp(34px,5vw,48px)/1.1 var(--display);margin:18px 0 6px}
+.calc-line{margin:0 0 8px;font-size:15px}
+.calc-note{margin:0;font-size:13px;color:var(--muted)}
+.band .calc p{color:var(--ink)}.band .calc .calc-note{color:var(--muted)}
+.concept-banner{background:var(--survey-soft);color:#10283a;border-bottom:1px solid #b7cfdb;font-size:14px;line-height:1.5}
+.concept-banner .shell{padding-block:9px}
+.concept-banner a{color:inherit;font-weight:700}
+.trust-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media(max-width:760px){.trust-strip{grid-template-columns:1fr}}
+.trust-strip a.tcard{display:block;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;text-decoration:none;color:var(--ink)}
+.trust-strip a.tcard h3{margin:0 0 8px}.trust-strip a.tcard p{margin:0;color:var(--muted);font-size:15px}
+.trust-strip a.tcard:hover{border-color:var(--accent)}

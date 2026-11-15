@@ -253,12 +253,29 @@
         var what = f && r ? "fly-through and renders" : f ? "fly-through" : "renders";
         var base = cfg.orderUrl || ("mailto:" + (cfg.email || ""));
         pay.href = base.split("?")[0] + "?subject=" + encodeURIComponent("Plan add-on order: " + what);
-        pay.setAttribute("aria-disabled", "false"); pay.textContent = "Email us to order"; note.textContent = "We reply with a secure payment link.";
+        pay.setAttribute("aria-disabled", "false"); pay.textContent = "Order by email"; note.textContent = "Email " + (cfg.email || "us") + ". We reply with a secure payment link.";
       }
-      else { pay.removeAttribute("href"); pay.setAttribute("aria-disabled", "true"); pay.textContent = "Pay with Stripe"; note.textContent = "Choose an add-on."; }
+      else { pay.removeAttribute("href"); pay.setAttribute("aria-disabled", "true"); pay.textContent = "Order by email"; note.textContent = "Choose an add-on, then order by email."; }
       if (url) pay.textContent = "Pay with Stripe";
     }
     root.addEventListener("change", upd); upd();
+  });
+  // builder login cost calculator: [data-login-calc] with [data-calc-range], [data-calc-topups], [data-calc-n], [data-calc-total], [data-calc-line]
+  document.querySelectorAll("[data-login-calc]").forEach(function (root) {
+    var range = root.querySelector("[data-calc-range]"), tops = root.querySelector("[data-calc-topups]"), nOut = root.querySelector("[data-calc-n]"), total = root.querySelector("[data-calc-total]"), line = root.querySelector("[data-calc-line]");
+    function cost(n) { return n <= 15 ? n * 30 : 15 * 30 + (Math.min(n, 50) - 15) * 25; }
+    function upd() {
+      var n = Math.max(0, Math.min(60, parseInt(range.value, 10) || 0)), t = Math.max(0, Math.min(50, parseInt(tops.value, 10) || 0));
+      var billed = Math.min(n, 50), sum = cost(n) + t * 10, parts = [];
+      if (nOut) nOut.textContent = n;
+      if (billed > 0) { parts.push(billed <= 15 ? billed + " logins at A$30" : "15 logins at A$30 and " + (billed - 15) + " at A$25"); }
+      if (t > 0) parts.push(t + (t === 1 ? " top up" : " top ups") + " at A$10");
+      total.textContent = "A$" + sum.toLocaleString("en-AU");
+      var msg = parts.length ? parts.join(", ") + ". A$" + sum.toLocaleString("en-AU") + " in total." : "No client logins, nothing to pay.";
+      if (n > 50) { total.textContent = "A$" + sum.toLocaleString("en-AU") + " for the first 50"; msg = "Above 50 logins in a month the price is custom, so the figure covers the first 50 only. " + msg; }
+      line.textContent = msg;
+    }
+    range.addEventListener("input", upd); tops.addEventListener("input", upd); upd();
   });
   // reveal on scroll
   if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
