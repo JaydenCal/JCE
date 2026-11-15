@@ -1,16 +1,16 @@
 {
   "schema": 1,
   "asAt": "15/11/2026",
-  "note": "Build rates by building type, AUD ex GST, excluding fees and site works. All rows are ESTIMATE: analyst ranges anchored to the build cost block of src/commercial/data/market.json (referenceIndustrialWarehousesAustralia_2025 1,300 to 2,800 per m2, referenceMetalCladLargeShedSydney_Q4_2025 1,060 to 1,340, referencePrecastLargeSydney_Q4_2025 1,160 to 1,740, referenceWarehouseNational_May2026 1,150, and constructionPerM2GFA_regionalNSW_strataWorkshopWithMezzanineOffice 1,500 to 2,400). Not a quantity survey, check with a quantity surveyor.",
+  "note": "Build rates by building type, AUD ex GST, excluding fees and site works, regional NSW basis (the regional cost factor of the feasibility panel scales them for other areas, see market.json regionalCostFactors). All rows are ESTIMATE: analyst ranges anchored to the build cost blocks of src/commercial/data/market.json (buildCost.nsw and buildCost.qld from the 15/11/2026 cost research: RLB Q4 2025 rates as reproduced by Feasly, Matrix Estimating via BSG, Cushman and Wakefield). Warehouse and portal shed were updated on 15/11/2026 to the regional NSW rows (metal clad 1,000 to 1,410, tilt-up or precast proxy 1,100 to 1,830); the other rows were reconfirmed or carried over unchanged. Not a quantity survey, check with a quantity surveyor.",
   "rates": {
     "warehouse": {
       "label": "Warehouse with docks",
-      "low": 1100,
-      "high": 1600,
+      "low": 1000,
+      "high": 1830,
       "perM2": true,
       "status": "ESTIMATE",
-      "source": "market.json buildCost, large shed and industrial warehouse references",
-      "note": "Metal clad portal frame warehouse with docks and a small office pod, regional loading."
+      "source": "market.json buildCost.nsw: metalCladWarehouse_regionalNSW 1,000 to 1,410 and tiltUpWarehouse_regionalNSW 1,100 to 1,830 (precast proxy), RLB Q4 2025 via Feasly times a planning regional factor of 0.95 to 1.05",
+      "note": "Metal clad or tilt-up portal frame warehouse with docks and a small office pod, regional NSW. Updated 15/11/2026 (was 1,100 to 1,600)."
     },
     "showroom": {
       "label": "Bulky goods showroom",
@@ -95,12 +95,12 @@
     },
     "shed": {
       "label": "Portal shed",
-      "low": 900,
-      "high": 1400,
+      "low": 1000,
+      "high": 1410,
       "perM2": true,
       "status": "ESTIMATE",
-      "source": "market.json buildCost (industrial warehouse and general commercial ranges), analyst adjustment",
-      "note": "Metal clad portal frame shed, slab and roller doors only."
+      "source": "market.json buildCost.nsw: metalCladWarehouse_regionalNSW 1,000 to 1,410",
+      "note": "Single span metal clad portal shed, regional NSW. Updated 15/11/2026 (was 900 to 1,400)."
     },
     "depot": {
       "label": "Transport depot",
