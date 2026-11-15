@@ -17,8 +17,8 @@ const STYLE = `
 .ps-prof-btn[data-state="in"] .ps-prof-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ps-ok);margin-left:2px}
 .ps-prof-save-text{display:none}
 @media (min-width:1700px){.ps-shell .ps-topbar .ps-prof-save .ps-prof-save-text{display:inline}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}}
-.gf-open .ps-prof-prompt{position:fixed;z-index:950;bottom:92px}
-.ps-prof-prompt{position:absolute;right:16px;bottom:44px;z-index:40;width:min(360px,calc(100% - 32px));padding:14px 14px 12px;background:var(--ps-panel);color:var(--ps-text);border:1px solid var(--ps-border-strong);border-left:4px solid var(--ps-accent);border-radius:var(--ps-radius-lg);box-shadow:var(--ps-shadow,0 6px 24px rgba(0,0,0,.2));animation:ps-toast-in .18s ease-out}
+.gf-open .ps-prof-prompt{position:fixed;z-index:950;top:64px;bottom:auto}
+.ps-prof-prompt{position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:40;width:min(380px,calc(100% - 32px));padding:14px 14px 12px;background:var(--ps-panel);color:var(--ps-text);border:1px solid var(--ps-border-strong);border-left:4px solid var(--ps-accent);border-radius:var(--ps-radius-lg);box-shadow:var(--ps-shadow,0 6px 24px rgba(0,0,0,.2));animation:ps-toast-in .18s ease-out}
 .ps-prof-prompt h2{margin:0 0 4px;font-size:16px;font-weight:600}
 .ps-prof-prompt p{margin:0 0 10px;font-size:14px;color:var(--ps-muted)}
 .ps-prof-prompt .ps-prof-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -58,7 +58,7 @@ const STYLE = `
 .ps-prof-status{display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
 .ps-prof-status[data-state="error"],.ps-prof-status[data-state="limit"]{color:var(--ps-danger)}
 .ps-prof-status button{border:0;background:transparent;color:inherit;text-decoration:underline;padding:0;font:inherit}
-@media (max-width:599.98px){.ps-prof-prompt{right:8px;left:8px;width:auto;bottom:40px}}
+@media (max-width:599.98px){.ps-prof-prompt{right:8px;left:8px;width:auto;transform:none;top:56px}}
 `;
 
 function ensureStyle() {
@@ -240,11 +240,13 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   }
 
   // Create profile and sign in ---------------------------------------------------------------------------------------------------
+  let authClosed = null;
+  let accountWait = null;
   function openAuth(initial = 'create') {
     if (modal) modal.close('replace');
     let tab = initial;
     const body = h('div');
-    const handle = openModal({ title: initial === 'signin' ? 'Sign in' : 'Create your free profile', size: 'sm', body, onClose: () => { modal = null; } });
+    const handle = openModal({ title: initial === 'signin' ? 'Sign in' : 'Create your free profile', size: 'sm', body, onClose: () => { modal = null; authClosed?.(); } });
     modal = handle;
     const title = handle.el.querySelector('.ps-modal-head h2');
 
@@ -500,7 +502,13 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
     const body = h('div', null,
       h('div', { class: 'ps-prof-sec' }, h('h3', null, p.name), h('p', { class: 'ps-prof-note' }, p.email), h('p', { class: 'ps-prof-note' }, `${p.designCount} of ${p.designLimit} designs saved`)),
       h('div', { class: 'ps-prof-sec' }, h('h3', null, 'Email preferences'),
-        h('label', { class: 'ps-prof-check', for: 'ps-prof-prefs-mk' }, mk, h('span', null, MARKETING_TEXT)), status),
+        h('label', { class: 'ps-prof-check', for: 'ps-prof-prefs-mk' }, mk, h('span', null, MARKETING_TEXT)),
+        h('button', { class: 'ps-btn', type: 'button', style: { marginTop: '8px' }, dataset: { action: 'unsubscribe' }, onclick: async (e) => {
+          const b = e.currentTarget;
+          b.disabled = true;
+          try { await controller.setMarketing(false); mk.checked = false; status.textContent = 'You are unsubscribed from news and offers. We will not send you marketing.'; } catch (er) { status.textContent = profileErrorText(er); }
+          b.disabled = false;
+        } }, 'Unsubscribe from news and offers'), status),
       h('div', { class: 'ps-prof-sec' }, h('h3', null, 'Change password'),
         h('div', { class: 'ps-prof-form' },
           h('div', null, h('label', { class: 'ps-prof-lab', for: 'ps-prof-cur' }, 'Current password'), cur),
@@ -549,8 +557,32 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
     });
   }
 
+  /**
+   * Account before PDF: resolves true when a free profile is signed in (opening the sign up / sign in dialog if not), false when the
+   * person closes the dialog without signing in. Sign up signs in straight away, so the caller carries on to the terms and the PDF.
+   */
+  function requireAccount({ reason = 'pdf' } = {}) {
+    const st = () => controller.state.status;
+    if (st() === 'in') return Promise.resolve(true);
+    return new Promise((resolve) => {
+      let done = false;
+      let off = null;
+      let timer = 0;
+      const finish = (ok) => { if (done) return; done = true; off?.(); clearTimeout(timer); resolve(ok); };
+      const show = () => {
+        if (st() === 'in') { finish(true); return; }
+        closePrompt();
+        const handle = openAuth('create');
+        accountWait = { reason };
+        off = controller.subscribe(() => { if (st() === 'in') { try { handle.close('signed-in'); } catch { /* closed */ } finish(true); } });
+        authClosed = () => { if (st() === 'in') finish(true); else finish(false); authClosed = null; };
+      };
+      if (st() === 'loading') { off = controller.subscribe(() => { if (st() !== 'loading') { off?.(); off = null; clearTimeout(timer); show(); } }); timer = setTimeout(() => { off?.(); off = null; show(); }, 3000); } else show();
+    });
+  }
+
   return {
-    showPrompt, closePrompt, openAuth, openDesigns, openAccount, refresh, buttons: { saveBtn, designsBtn, accountBtn },
+    requireAccount, showPrompt, closePrompt, openAuth, openDesigns, openAccount, refresh, buttons: { saveBtn, designsBtn, accountBtn },
     dispose() {
       offState();
       offUi?.();

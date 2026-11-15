@@ -104,7 +104,16 @@ export function createPremium(store, options = {}) {
     }
     return { subject: 'anon', record: false };
   }
+  // Account before PDF: anyone without a free Glide Inside profile is asked to create one (or sign in) first. A Plan Pack, a builder or
+  // client login and a trial are already identified, so they are not asked again. Where the page has no profile service nothing is asked.
+  const profilesUi = () => (typeof window !== 'undefined' ? window.__ps?.profiles : null);
   planTermsGate.configure({
+    accountMissing: () => {
+      const pr = profilesUi();
+      if (!pr?.ui?.requireAccount || termsIdentity().subject !== 'anon') return false;
+      return pr.controller?.state?.status !== 'in' && pr.controller?.state?.status !== 'unavailable';
+    },
+    ensureAccount: ({ context }) => profilesUi().ui.requireAccount({ reason: context }),
     getIdentity: termsIdentity,
     record: (version, context) => api.acceptTerms({ version, context }, { token: csubOn() ? state.csub.token : state.token || null }),
   });
@@ -332,7 +341,7 @@ export function createPremium(store, options = {}) {
     if (previewing && !previewing.el.isConnected) previewing = null;
     if (previewing) return previewing;
     // The free preview builds a plan PDF in this browser too, so it is behind the terms (remembered after the first time).
-    if (!planTermsGate.isAccepted()) {
+    if (!planTermsGate.isAccepted() || planTermsGate.needsAccount()) {
       return planTermsGate.require({ context: 'pdf-preview' }).then((ok) => (ok ? previewPdf(hooks) : null));
     }
     const entitled = isEntitled();

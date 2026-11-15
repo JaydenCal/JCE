@@ -45,6 +45,7 @@ export function createAcceptanceMemory({ storage = null } = {}) {
 export function createTermsGate(host = {}) {
   const cfg = { terms: PLAN_TERMS, memory: createAcceptanceMemory(), getIdentity: () => ({ subject: 'anon', record: false }), record: null, openDialog: null, now: () => new Date(), ...host };
   let pending = null; // two exports started at once share one dialog
+  const needsAccount = () => (typeof cfg.accountMissing === 'function' ? !!cfg.accountMissing() : false);
   return {
     configure(next = {}) { Object.assign(cfg, next); },
     get terms() { return cfg.terms; },
@@ -55,7 +56,14 @@ export function createTermsGate(host = {}) {
     /** Forget the local acceptance (used after the server answers TERMS_REQUIRED, so the person is asked and recorded again). */
     forget() { const { subject } = cfg.getIdentity(); cfg.memory.clear(subject); },
     /** Resolves { version, acceptedAt } or null when the person cancelled. */
+    /** True when a free profile is needed first (a PDF is requested by someone with no profile, no Plan Pack, no builder or trial login). */
+    needsAccount,
     async require({ context = 'export' } = {}) {
+      // Account before PDF: the sign up / sign in dialog comes first, then straight on to the terms and the file.
+      if (typeof cfg.ensureAccount === 'function' && needsAccount()) {
+        const ok = await cfg.ensureAccount({ context });
+        if (!ok) return null;
+      }
       const id = cfg.getIdentity();
       const have = cfg.memory.get(id.subject, cfg.terms.version);
       if (have) return have;
