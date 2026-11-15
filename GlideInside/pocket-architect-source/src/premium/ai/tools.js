@@ -2,6 +2,7 @@
 // The same list is sent by the server to the model, and used to check what comes back.
 
 import { toolSchemas, OPS } from '../../model/ops.js';
+import { COMMERCIAL_OPS } from './commercial-schemas.js';
 import { lotOf, NOT_LOADED } from '../../model/placement.js';
 
 // Collect every `id` from an array, a palette object ({ steel: [{ id }], ... }) or nested mixes of both.
@@ -33,9 +34,12 @@ export function catalogueEnums(catalogue) {
 }
 
 /** Anthropic tool list: one tool per registry operation. */
-export function buildTools(catalogue) {
-  return toolSchemas(catalogueEnums(catalogue));
+export function buildTools(catalogue, mode = null) {
+  return toolSchemas(catalogueEnums(catalogue), mode);
 }
+
+/** True for the plan context of a commercial design (the PROJECT line carries mode=commercial). The server uses it to pick the tools and the prompt. */
+export const isCommercialContext = (context) => /^PROJECT [^\n]* mode=commercial\b/.test(String(context ?? '').slice(0, 400));
 
 export const OP_NAMES = Object.keys(OPS);
 
@@ -62,6 +66,8 @@ const typeOk = (schema, v) => {
       return typeof v === 'string';
     case 'boolean':
       return typeof v === 'boolean';
+    case 'object':
+      return !!v && typeof v === 'object' && !Array.isArray(v);
     case 'array':
       return Array.isArray(v) && (schema.items?.type !== 'string' || v.every((x) => typeof x === 'string'));
     default:
@@ -74,7 +80,7 @@ const typeOk = (schema, v) => {
  * removed from args. Numbers sent as numeric strings are accepted.
  */
 export function checkToolCall(name, input, tools = null) {
-  const op = OPS[name];
+  const op = OPS[name] || COMMERCIAL_OPS[name];
   if (!op) return { ok: false, error: `Unknown operation ${name}` };
   if (!input || typeof input !== 'object' || Array.isArray(input)) return { ok: false, error: `${name} needs an object of arguments` };
   const props = tools?.find((t) => t.name === name)?.input_schema?.properties || op.params;

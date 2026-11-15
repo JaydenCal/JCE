@@ -33,3 +33,21 @@ export function promptsFor(project) {
   if (hasSetbacks && prompts.length < 5) prompts.push(BASE_PROMPTS[0]);
   return { prompts, note: hasSetbacks ? null : 'Council setbacks are not loaded for this lot, so the assistant cannot check or position the house against them.' };
 }
+
+/** Chips for a commercial design. */
+export const COMMERCIAL_PROMPTS = [
+  'Fit the most units',
+  'Mix workshops and a warehouse',
+  'Best layout for my budget',
+  'Explain the parking',
+  'Compare three options',
+  'Write a development brief',
+];
+
+/** Chips and note for the open design: the commercial chips in commercial mode (the note says when building types are not offered yet), else promptsFor. */
+export function chipsFor(project, { hasCatalogue = false } = {}) {
+  if (project?.mode === 'commercial' && project.commercial) {
+    return { prompts: COMMERCIAL_PROMPTS, note: hasCatalogue ? null : 'Building types such as workshops and warehouses are not available yet, so mixes use strata units only.' };
+  }
+  return promptsFor(project);
+}

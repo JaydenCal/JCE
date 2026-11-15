@@ -9,13 +9,26 @@ import { describeOp, summariseOps, nameResolver } from '../ai/summary.js';
 import { siteCallProblem } from '../ai/tools.js';
 import { friendlyError, isAuthLoss } from '../messages.js';
 import { normaliseCredits, meterText, resetText, leftFraction, meterLevel, isExhausted, warningText, exhaustedText, claimWarning, canTopUp, topUpLabel, availableCredits } from '../credits.js';
-import { promptsFor, BASE_PROMPTS } from '../ai/suggestions.js';
+import { promptsFor, chipsFor, BASE_PROMPTS } from '../ai/suggestions.js';
+import { hasCatalogue } from '../ai/commercial-catalogue.js';
+import { isCommercial } from '../../commercial/schema.js';
 
 export const EXAMPLE_PROMPTS = BASE_PROMPTS;
 
 const MAX_MESSAGE = 2000;
 const opLabel = (op) => OPS[op]?.label || humanise(op);
 const HISTORY_MESSAGES = 8; // the last four exchanges
+
+// Commercial mode loads its tool functions and the building catalogue on first use, so housing designs never pay for them.
+let commercialLoad = null;
+const loadCommercial = () => {
+  commercialLoad ||= Promise.all([import('../ai/commercial-ops.js'), import('../ai/commercial-context.js'), import('../ai/commercial-core.js'), import('../ai/commercial-catalogue.js')])
+    .then(async ([ops, ctx, core, cat]) => {
+      await cat.loadCommercialTypes();
+      return { ops, ctx, core };
+    });
+  return commercialLoad;
+};
 
 /**
  * createAssistant({ root, store, api, config, catalogue, layer, getState, actions })
@@ -107,8 +120,10 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     els.banners = el('div', { class: 'psp-banners' });
     els.history = el('div', { class: 'psp-history', role: 'log', 'aria-live': 'polite', 'aria-label': 'Assistant conversation' });
     els.prompts = el('div', { class: 'psp-prompts' });
-    els.lead = el('p', { class: 'psp-ai-lead' }, 'Tell the assistant what to change. It edits your plan and you can undo the whole change in one click. It does not check your design against building codes or planning rules.');
-    els.input = el('textarea', { class: 'psp-input', rows: 3, maxlength: MAX_MESSAGE, 'aria-label': 'Message to the assistant', placeholder: 'Describe a change, for example: make the deck 1 m deeper' });
+    els.lead = el('p', { class: 'psp-ai-lead' }, isCommercial(store.project)
+      ? 'Ask the assistant to plan the lot. It places units and buildings, compares layouts and writes a development brief, and you can undo any change in one click. Every figure is indicative, so check with council.'
+      : 'Tell the assistant what to change. It edits your plan and you can undo the whole change in one click. It does not check your design against building codes or planning rules.');
+    els.input = el('textarea', { class: 'psp-input', rows: 3, maxlength: MAX_MESSAGE, 'aria-label': 'Message to the assistant', placeholder: composePlaceholder() });
     els.send = el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => submit() }, icon('send', 14), 'Send');
     els.hint = el('span', { class: 'psp-muted' }, 'Enter to send. Shift and Enter for a new line.');
     els.input.addEventListener('keydown', (e) => {
@@ -134,11 +149,13 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     return out;
   }
 
-  // Chips follow the design: site questions when a real lot is loaded, the usual examples otherwise.
+  const composePlaceholder = () => (isCommercial(store.project) ? 'Describe what to plan, for example: fit the most units' : 'Describe a change, for example: make the deck 1 m deeper');
+
+  // Chips follow the design: the commercial chips in commercial mode, site questions when a real lot is loaded, the usual examples otherwise.
   function renderPrompts() {
     if (!els.prompts) return;
     clear(els.prompts);
-    const { prompts, note } = promptsFor(store.project);
+    const { prompts, note } = chipsFor(store.project, { hasCatalogue: hasCatalogue() });
     if (els.siteNote) els.siteNote.remove();
     for (const text of prompts) {
       els.prompts.append(el('button', {
@@ -215,7 +232,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     if (!els.input) return;
     const locked = readOnly();
     els.input.disabled = locked;
-    els.input.placeholder = locked ? (getState().session?.kind && getState().session.kind !== 'public' ? 'The assistant is read-only until the monthly credits reset' : 'The assistant is read-only because all credits are used') : 'Describe a change, for example: make the deck 1 m deeper';
+    els.input.placeholder = locked ? (getState().session?.kind && getState().session.kind !== 'public' ? 'The assistant is read-only until the monthly credits reset' : 'The assistant is read-only because all credits are used') : composePlaceholder();
     els.send.disabled = locked || busy || !els.input.value.trim();
     els.send.replaceChildren(busy ? el('span', { class: 'psp-spin', 'aria-hidden': 'true' }) : icon('send', 14), busy ? 'Working' : 'Send');
     els.send.setAttribute('aria-busy', busy ? 'true' : 'false');
@@ -238,8 +255,10 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     if (m.role === 'system') return el('div', { class: `psp-msg psp-msg--system${m.error ? ' psp-msg--error' : ''}` }, m.text);
     const kids = [el('p', null, m.text)];
     if (m.applied?.length) kids.push(el('p', { class: 'psp-changes-title' }, 'Changes made'), changeList(m.applied, false));
-    if (m.notes?.length) kids.push(el('p', { class: 'psp-changes-title' }, 'Site check'), changeList(m.notes, false));
+    if (m.notes?.length) kids.push(el('p', { class: 'psp-changes-title' }, m.commercial ? 'Plan notes' : 'Site check'), changeList(m.notes, false));
     if (m.failed?.length) kids.push(el('p', { class: 'psp-changes-title' }, 'Could not apply'), changeList(m.failed, true));
+    if (m.table) kids.push(optionsView(m));
+    if (m.brief) kids.push(briefView(m.brief));
     const actionsRow = [];
     if (m.undo?.available) {
       actionsRow.push(el('button', { class: 'psp-btn psp-btn--sm', type: 'button', onclick: () => undoMessage(m) }, icon('undo', 14), 'Undo'));
@@ -249,6 +268,63 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     if (m.credits != null) actionsRow.push(el('span', { class: 'psp-muted' }, `${m.credits} ${m.credits === 1 ? 'credit' : 'credits'} used`));
     if (actionsRow.length) kids.push(el('div', { class: 'psp-msg-actions' }, actionsRow));
     return el('div', { class: `psp-msg${m.error ? ' psp-msg--error' : ''}` }, kids);
+  }
+
+  // The comparison table from compare_options: one row per option with an Apply button. Applying is one undo step.
+  function optionsView(m) {
+    const t = m.table;
+    const cards = t.rows.map((r) => {
+      const applied = m.optionApplied?.id === r.id;
+      const [title, ...rest] = r.cells;
+      return el('div', { class: `psp-option${applied ? ' is-applied' : ''}`, 'data-option': r.id },
+        el('div', { class: 'psp-option-title' }, title),
+        el('dl', { class: 'psp-option-grid' }, ...rest.flatMap((c, i) => [el('dt', null, t.columns[i + 1]), el('dd', null, c)])),
+        applied
+          ? (m.optionApplied.available ? el('button', { class: 'psp-btn psp-btn--sm', type: 'button', onclick: () => undoOption(m) }, icon('undo', 14), 'Undo') : el('span', { class: 'psp-muted' }, 'Applied'))
+          : el('button', { class: 'psp-btn psp-btn--sm psp-btn--primary', type: 'button', disabled: busy, onclick: () => applyOption(m, r.id) }, 'Apply this option'));
+    });
+    return el('div', { class: 'psp-options', 'data-ps': 'ai-options', role: 'group', 'aria-label': 'Layout options' },
+      el('p', { class: 'psp-changes-title' }, 'Options'),
+      ...cards,
+      t.note ? el('p', { class: 'psp-muted' }, t.note) : null);
+  }
+
+  // The development brief: kept with the plan set, shown here to read and copy.
+  function briefView(b) {
+    const copy = el('button', { class: 'psp-btn psp-btn--sm', type: 'button', onclick: async () => {
+      try {
+        await navigator.clipboard.writeText(b.text);
+        layer.notify('Brief copied.', 'ok');
+      } catch {
+        layer.notify('Copy is not available in this browser. Select the text instead.', 'warn');
+      }
+    } }, 'Copy brief');
+    return el('details', { class: 'psp-brief', open: true },
+      el('summary', null, 'Development brief'),
+      el('pre', { class: 'psp-brief-text', 'data-ps': 'ai-brief' }, b.text),
+      el('div', { class: 'psp-msg-actions' }, copy, el('span', { class: 'psp-muted' }, 'Kept with the plan set')));
+  }
+
+  async function applyOption(m, id) {
+    const opt = (m.options || []).find((o) => o.id === id);
+    if (!opt || busy) return;
+    const { core } = await loadCommercial();
+    const label = `AI: Applied option ${id}`;
+    try {
+      store.apply(label, (p) => core.applyScheme(p, opt.scheme));
+      m.optionApplied = { id, label, available: true };
+      track('ps_ai_option_applied', { option: id });
+    } catch (e) {
+      layer.notify(friendlyError(e, { area: 'ai', dev: dev() }), 'error', 8000);
+    }
+    renderHistory();
+  }
+
+  function undoOption(m) {
+    if (!m.optionApplied?.available) return;
+    m.optionApplied.available = false;
+    if (store.undoLabel() === m.optionApplied.label) store.undo();
+    renderHistory();
   }
 
   function renderHistory() {
@@ -303,6 +379,8 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       } else {
         results.forEach((r, i) => {
           if (r.ok && typeof r.result?.report === 'string') notes.push(r.result.report);
+          if (r.ok && r.result?.table) { msg.table = r.result.table; msg.options = r.result.options || []; }
+          if (r.ok && r.result?.brief) msg.brief = r.result.brief;
           if (r.ok && r.result?.changed === false) return; // a report or a suggestion: nothing to list or undo
           if (r.ok) applied.push(phrases[i]);
           else {
@@ -321,9 +399,10 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       failed.push(`${opLabel(r.op)}: ${r.error || 'it was not valid.'}`);
     }
     msg.pending = false;
+    msg.commercial = isCommercial(store.project);
     msg.text = honest || (res.reply || '').trim() || (applied.length || notes.length ? 'Done.' : 'I could not work out a change from that. Try describing it a different way.');
     msg.applied = applied;
-    msg.notes = notes;
+    msg.notes = msg.brief || msg.table ? notes.filter((n) => !/^(Development brief written|\d options? worked out)/.test(n)) : notes;
     msg.failed = honest ? [] : failed;
     if (honest) msg.notes = [];
     msg.credits = Number.isFinite(res.credits?.charged) ? res.credits.charged : null;
@@ -401,8 +480,12 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     syncCompose();
     track('ps_ai_request', { length: text.length });
     try {
-      const context = buildContext(store.project, { activeLevelId }).text;
-      const base = { message: text, context, history, activeLevelId };
+      let context;
+      if (isCommercial(store.project)) {
+        const { ctx } = await loadCommercial();
+        context = ctx.buildCommercialContext(store.project).text;
+      } else context = buildContext(store.project, { activeLevelId }).text;
+      const base = { message: text, context, history, activeLevelId, ...(isCommercial(store.project) ? { mode: 'commercial' } : {}) };
       const est = await api.estimate(st.token, base);
       patchRemaining(est.remaining);
       let confirmLarge = false;
@@ -432,6 +515,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       if (store.project.id !== pid) return; // the person opened another design while this ran
       userMsg.ok = true;
       pending.ok = true;
+      if (isCommercial(store.project)) await loadCommercial(); // the tool functions must be attached before the reply is applied
       applyReply(res, pending);
       const credits = normaliseCredits(res.credits);
       if (credits) actions.setCredits(credits);
@@ -489,11 +573,16 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     const label = String(info.label || '');
     let changed = false;
     for (const m of messages) {
+      if (m.optionApplied?.available && label !== m.optionApplied.label) {
+        m.optionApplied.available = false;
+        changed = true;
+      }
       if (!m.undo?.available) continue;
       m.undo.available = false;
       if (label === `Undo ${m.undo.label}`) m.undo.done = true;
       changed = true;
     }
+    if (els.input) els.input.placeholder = composePlaceholder();
     if (changed) renderHistory();
   });
 

@@ -3,8 +3,8 @@
 
 import { HttpError } from './http.js';
 import { ANTHROPIC_VERSION } from './config.js';
-import { SYSTEM_PROMPT } from '../../src/premium/ai/prompt.js';
-import { checkToolCall } from '../../src/premium/ai/tools.js';
+import { systemPromptFor } from '../../src/premium/ai/prompt.js';
+import { checkToolCall, isCommercialContext } from '../../src/premium/ai/tools.js';
 
 const MAX_HISTORY_MESSAGES = 8;
 const MAX_HISTORY_CHARS = 1500;
@@ -34,13 +34,13 @@ export function cleanHistory(history) {
 }
 
 /** Request body for the Messages API. `tools` is the list from buildTools(). */
-export function buildRequest({ config, tools, history, context, message, activeLevelId }) {
+export function buildRequest({ config, tools, history, context, message, activeLevelId, mode = isCommercialContext(context) ? 'commercial' : null }) {
   const toolList = tools.map((t, i) => (i === tools.length - 1 ? { ...t, cache_control: { type: 'ephemeral' } } : t));
   const turn = `${activeLevelId ? `Active level: ${activeLevelId}\n\n` : ''}${context}\n\nRequest: ${message}`;
   return {
     model: config.anthropicModel,
     max_tokens: config.maxOutputTokens,
-    system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+    system: [{ type: 'text', text: systemPromptFor(mode), cache_control: { type: 'ephemeral' } }],
     tools: toolList,
     tool_choice: { type: 'auto' },
     messages: [...cleanHistory(history), { role: 'user', content: turn }],

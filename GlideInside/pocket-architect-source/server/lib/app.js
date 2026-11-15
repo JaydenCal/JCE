@@ -5,9 +5,9 @@
 
 import { CONFIG as SITE_CONFIG } from '../../src/config.js';
 import { migrate, validate } from '../../src/model/schema.js';
-import { SYSTEM_PROMPT } from '../../src/premium/ai/prompt.js';
+import { systemPromptFor } from '../../src/premium/ai/prompt.js';
 import { estimateTokens } from '../../src/premium/ai/context.js';
-import { buildTools } from '../../src/premium/ai/tools.js';
+import { buildTools, isCommercialContext } from '../../src/premium/ai/tools.js';
 import { readConfig } from './config.js';
 import { HttpError, json, errorResponse, corsHeaders, readJson, readText, clientIp } from './http.js';
 import { authenticate, issueToken, coversProject, readOrgToken as readOrgTokenRaw } from './entitlement.js';
@@ -51,12 +51,16 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
     return catalogueCache || null;
   };
-  const getTools = async () => {
-    if (!toolsCache) {
-      const tools = buildTools(await getCatalogue());
-      toolsCache = { tools, systemTokens: estimateTokens(SYSTEM_PROMPT + JSON.stringify(tools)) };
+  // One tool list and prompt per mode: housing (the default) and commercial, chosen from the plan context.
+  const getTools = async (context = '') => {
+    const mode = isCommercialContext(context) ? 'commercial' : null;
+    const key = mode || 'housing';
+    toolsCache ??= {};
+    if (!toolsCache[key]) {
+      const tools = buildTools(await getCatalogue(), mode);
+      toolsCache[key] = { tools, mode, systemTokens: estimateTokens(systemPromptFor(mode) + JSON.stringify(tools)) };
     }
-    return toolsCache;
+    return toolsCache[key];
   };
   const exporters = loadExporters || (() => import('../../src/premium/exporters/index.js'));
 
@@ -324,7 +328,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     needAi();
     const acct = await accountFor(request);
     const { message, context, body } = await aiBody(request);
-    const { systemTokens } = await getTools();
+    const { systemTokens } = await getTools(context);
     const est = credits.estimateRequest({ config, context, message, history: anthropic.cleanHistory(body.history), systemTokens });
     // `total` is in the live Worker's estimate body, which an older cached app reads.
     return json({ estimatedCredits: est.credits, remaining: await acct.available(), total: (await acct.snapshot()).total, requiresConfirm: est.credits > config.largeRequestCredits });
@@ -361,7 +365,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       throw new HttpError('RATE_LIMITED', limited.window === 'minute' ? 'You are sending requests quickly. Wait a moment and try again.' : 'The daily limit for AI requests on this project has been reached.', { retryAfter: limited.retryAfter });
     }
 
-    const { tools, systemTokens } = await getTools();
+    const { tools, systemTokens, mode } = await getTools(context);
     const est = credits.estimateRequest({ config, context, message, history, systemTokens });
     const remaining = await acct.available();
     const what = acct.kind === 'org' ? 'AI credits for this month' : 'AI credits in this Plan Pack';
@@ -376,7 +380,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       throw new HttpError('INSUFFICIENT_CREDITS', 'Your remaining credits are reserved by another request. Try again in a moment.');
     }
 
-    const reqBody = anthropic.buildRequest({ config, tools, history, context, message, activeLevelId });
+    const reqBody = anthropic.buildRequest({ config, tools, history, context, message, activeLevelId, mode });
     let data;
     try {
       data = await anthropic.callAnthropic({ config, fetchImpl: doFetch, body: reqBody });

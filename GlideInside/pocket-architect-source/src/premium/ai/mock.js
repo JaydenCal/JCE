@@ -6,6 +6,7 @@ import { ApiError } from '../api.js';
 import { checkToolCall } from './tools.js';
 import { lotOf, fallAcross, checkSetbacks, NOT_LOADED } from '../../model/placement.js';
 import { fitHouse } from '../../site/fit-house.js';
+import { commercialTypes } from './commercial-catalogue.js';
 
 export const MOCK_TOPUP = { credits: 300, amountCents: 1000 };
 const THRESHOLDS = [0.5, 0.8, 0.95];
@@ -18,9 +19,42 @@ const nextMonthFirst = (nowMs) => {
   return `${y}-${String(m).padStart(2, '0')}-01`;
 };
 
+const parseMoney = (t) => {
+  const m = /\$?\s?(\d[\d,]*(?:\.\d+)?)\s*(k|m|million|thousand)?\b/.exec(t);
+  if (!m) return null;
+  const n = Number(m[1].replace(/,/g, ''));
+  const mult = /^(m|million)$/.test(m[2] || '') ? 1e6 : /^(k|thousand)$/.test(m[2] || '') ? 1e3 : 1;
+  const v = n * mult;
+  return v >= 50000 ? v : null;
+};
+
+/** Canned answer for a commercial design: the same requests as the suggestion chips. */
+export function commercialMockReply(t) {
+  const types = commercialTypes();
+  if (/compare|options|alternatives/.test(t)) return { reply: 'Here are three different ways to use the lot. The table below shows the numbers, and nothing changes until you choose one.', ops: [{ op: 'compare_options', args: { n: 3 } }] };
+  if (/brief/.test(t)) return { reply: 'I have written a development brief from the plan and kept it with the plan set. It lists each control with its source and status, and the next steps.', ops: [{ op: 'draft_brief', args: {} }] };
+  if (/parking|explain|check|bays/.test(t)) return { reply: 'This is how the bay count is worked out, and what the checks are flagging. Everything is indicative, so check with council.', ops: [{ op: 'explain_checks', args: {} }] };
+  if (/budget/.test(t)) {
+    const v = parseMoney(t);
+    if (!v) return { free: true, reply: 'What is your total budget for the build and site works, excluding GST?', ops: [] };
+    return { reply: `I have put the layout with the most floor area that stays within about $${Math.round(v).toLocaleString('en-AU')} indicative cost on the lot. Check the figures with a quantity surveyor.`, ops: [{ op: 'run_best_fit', args: { goal: 'max_gfa', constraints: { budgetAud: v } } }] };
+  }
+  if (/workshop|warehouse|mix|building/.test(t)) {
+    const pick = (re) => types.find((x) => re.test(`${x.id} ${x.label}`.toLowerCase()));
+    const mix = [];
+    if (/workshop/.test(t) && pick(/workshop/)) mix.push({ type: pick(/workshop/).id, count: 2 });
+    if (/warehouse/.test(t) && pick(/warehouse/)) mix.push({ type: pick(/warehouse/).id, count: 1 });
+    if (!mix.length) return { free: true, reply: 'Building types such as workshops and warehouses are not available yet, so I can only plan strata units. I can fit the most units or compare unit layouts if you like.', ops: [] };
+    return { reply: 'I have put the units and the buildings on the lot, positioned inside the setbacks with the truck aprons kept clear.', ops: [{ op: 'run_best_fit', args: { goal: 'max_gfa', constraints: { mix } } }] };
+  }
+  if (/most units|more units|fit/.test(t)) return { reply: 'I have put the layout with the most units on the lot that stays inside the indicative setbacks and has the bays needed.', ops: [{ op: 'run_best_fit', args: { goal: 'max_units' } }] };
+  return { free: true, reply: 'This is a mock assistant, so it only knows the suggested requests: fit the most units, mix workshops and a warehouse, best layout for a budget, explain the parking, compare three options, or write a development brief.', ops: [] };
+}
+
 /** Canned answer for a message: { reply, ops }. Only returns operations the registry accepts for this design. */
 export function mockReply(message, project) {
   const t = String(message || '').toLowerCase();
+  if (project?.mode === 'commercial' && project.commercial) return commercialMockReply(t);
   const lot = lotOf(project);
   const siteIntent = /garage|fit|inside|setback|envelope|position|check|front/.test(t);
   const noLot = { reply: 'No lot is loaded for this design yet. Load a lot first and I can position the house on it.', ops: [], free: true };
