@@ -116,7 +116,19 @@ function sources(project) {
   return { bs, units, solids, obstacles, reserved };
 }
 
-const OUTSIDE_TOL_MM = 100;
+const OUTSIDE_SHARE = 0.05; // a building with more than 5 percent of its footprint over the boundary does not fit the lot (a small overhang is left to the setback check)
+/** The share of a building's footprint (sampled on a grid) that lies outside the lot, 0 to 1. */
+function shareOutside(outline, lot) {
+  const bb = G.bbox(outline);
+  let n = 0; let out = 0;
+  for (let i = 0; i < 24; i++) for (let j = 0; j < 24; j++) {
+    const q = { x: bb.minX + ((i + 0.5) / 24) * (bb.maxX - bb.minX), y: bb.minY + ((j + 0.5) / 24) * (bb.maxY - bb.minY) };
+    if (!G.pointInPolygon(q, outline)) continue;
+    n++;
+    if (!G.pointInPolygon(q, lot.boundary)) out++;
+  }
+  return n ? out / n : 0;
+}
 const edgeDist = (q, poly) => Math.min(...poly.map((a, i) => distSeg(q, a, poly[(i + 1) % poly.length])));
 /** Keep the part of a paving polygon that lies inside the lot (the largest piece). { polygon, clipped, lost } */
 function fitToLot(polygon, lot) {
@@ -266,7 +278,7 @@ export function generateSiteWorks(project, opts = {}) {
   const f = frameOfLot(lot);
   if (!src.bs.length) return rowsOnlyWorks(c, lot, f);
   // A building that is wider or deeper than the lot does not fit: say so and lay out no car park around it.
-  const spill = src.bs.filter((b) => b.outline.some((q) => !G.pointInPolygon(q, lot.boundary) && edgeDist(q, lot.boundary) > OUTSIDE_TOL_MM));
+  const spill = src.bs.filter((b) => shareOutside(b.outline, lot) > OUTSIDE_SHARE);
   if (spill.length) {
     const names = spill.map((b) => b.type.replace(/-/g, ' ')).join(', ');
     return { ...rowsOnlyWorks(c, lot, f), kind: 'does-not-fit', landscape: [], notFit: true, warnings: [`The ${names} does not fit inside the lot boundary, so no car park is laid out. Use a smaller building or a larger lot.`] };
