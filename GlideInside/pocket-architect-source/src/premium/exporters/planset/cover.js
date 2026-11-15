@@ -4,6 +4,7 @@ import { sheetNotes, isMapboxAerial, MAPBOX_CREDIT } from '../../../site/upload/
 import * as G from '../../../model/geometry.js';
 import { clean, PEN, ink, wrap, haloText } from '../eng/kit.js';
 import { planGeometry } from '../pdf.js';
+import { termsLines } from '../../../legal/sheet-note.js';
 import { wallShapes } from '../shared.js';
 import { groundLevel, areaTotals } from './lot.js';
 import { levelContent } from '../drawing.js';
@@ -409,6 +410,8 @@ export function drawCover(doc, ctx) {
     'Driveway, kerb and road reserve widths are typical values and not the council standard for the street.',
     `${ENTITY}, ${ABN}, ${EMAIL}.`,
   ], ctx.lot, { aerialShown: !!ctx.locality?.aerial, aerial: ctx.locality?.aerial });
+  // The plan set terms note (src/legal) closes the general notes, with the version and the acceptance date.
+  notes.push(termsLines(ctx.terms).join(' '));
   let yy = ny + 6;
   notes.forEach((n, i) => {
     wrap(doc, `${i + 1}. ${n}`, 185).forEach((l, j) => { doc.text(j ? `   ${l}` : l, X, yy); yy += 3.6; });

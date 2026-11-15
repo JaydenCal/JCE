@@ -1,6 +1,7 @@
 // ASCII DXF R12 (AC1009) export. Pure function, Node compatible. See docs/SCOPE.md 8.2 and Appendix B.
 // Units millimetres. DXF Y = minus plan y so the plan reads the same way up. Levels sit side by side.
 
+import { termsLines } from '../../legal/sheet-note.js';
 import { furnitureStrokes } from './symbols.js';
 import { dxfTrialEntities, TRIAL_DXF_LAYER } from './watermark.js';
 import * as G from '../../model/geometry.js';
@@ -292,7 +293,8 @@ export function toDXF(project, options = {}) {
     noteY = Math.max(noteY, box.bottom + 600);
     cursor = ext.maxX + dx + LEVEL_GAP_MM;
   });
-  const noteLines = ['Units: millimetres', 'Concept design only. Not for construction.', ...notes.map(ascii)].filter(Boolean);
+  // The plan terms: the sheet note and the version accepted, as text notes on the annotation layer (src/legal).
+  const noteLines = ['Units: millimetres', 'Concept design only. Not for construction.', ...notes.map(ascii), ...termsLines(options.terms).map(ascii)].filter(Boolean);
   noteLines.forEach((line, i) => body.text('PS-ANNO', { x: noteX, y: noteY + i * 300 }, 200, line));
   if (trial) dxfTrialEntities(body, { ...body.ext }, { x: noteX, y: noteY + noteLines.length * 300 + 400 }, trialText);
 

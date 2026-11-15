@@ -91,6 +91,9 @@ export function readConfig(env = {}) {
     // Carried over from the live Pocket Architect API (Worker "pocket-architect-api", 15/10/2026).
     // Save and share (lib/projects.js): designs live in R2 under projects/<id>.json, a small row in D1 holds the lookup.
     ipHashSalt: str(env.IP_HASH_SALT),
+    // Plan set terms (lib/terms.js): paid PDF and DXF exports are refused with 409 TERMS_REQUIRED until the account has accepted the current version.
+    // On unless TERMS_REQUIRED is 0, false, off or no (only the legacy export tests turn it off).
+    termsRequired: !['0', 'false', 'off', 'no'].includes(str(env.TERMS_REQUIRED, '1').toLowerCase()),
     projectMaxBytes: num(env.PROJECT_MAX_BYTES, 0) > 0 ? Math.round(num(env.PROJECT_MAX_BYTES, 0)) : 2000000,
     projectTtlDays: num(env.PROJECT_TTL_DAYS, 0) > 0 ? num(env.PROJECT_TTL_DAYS, 0) : 365,
     projectSaveRateMax: num(env.PROJECT_SAVE_RATE_MAX, 0) > 0 ? Math.round(num(env.PROJECT_SAVE_RATE_MAX, 0)) : 20,

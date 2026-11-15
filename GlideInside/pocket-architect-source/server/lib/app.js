@@ -9,8 +9,8 @@ import { systemPromptFor } from '../../src/premium/ai/prompt.js';
 import { estimateTokens } from '../../src/premium/ai/context.js';
 import { buildTools, isCommercialContext } from '../../src/premium/ai/tools.js';
 import { readConfig } from './config.js';
-import { HttpError, json, errorResponse, corsHeaders, readJson, readText, clientIp } from './http.js';
-import { authenticate, issueToken, coversProject, readOrgToken as readOrgTokenRaw } from './entitlement.js';
+import { HttpError, json, errorResponse, corsHeaders, readJson, readText, clientIp, bearerToken } from './http.js';
+import { authenticate, issueToken, coversProject, readOrgToken as readOrgTokenRaw, verifyToken } from './entitlement.js';
 import * as stripe from './stripe.js';
 import * as credits from './credits.js';
 import * as anthropic from './anthropic.js';
@@ -20,6 +20,7 @@ import { createPortal } from './portal.js';
 import { createProjects } from './projects.js';
 import { createMemoryPortalStore } from './portal-store.js';
 import { createCommercial, COMMERCIAL_EXPORT_TYPES } from './commercial.js';
+import { createTerms } from './terms.js';
 
 const EXPORT_TYPES = ['pdf', 'dxf', 'glb', 'obj', 'html'];
 const WEBHOOK_MAX_BYTES = 1_000_000;
@@ -42,6 +43,32 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
 
   // Commercial Developer subscription and the shared commercial trial login (lib/commercial.js). The trial login needs the portal store.
   const commercial = createCommercial({ store, pstore, config, fetchImpl: doFetch, now });
+
+  // Plan set terms acceptance (lib/terms.js). The subject is the account or entitlement behind the request: a commercial login, a Plan Pack
+  // token or a portal session; null for an anonymous caller (the free preview, which is recorded in the browser only).
+  const terms = createTerms({
+    store, config, now,
+    resolveSubject: async (request, url) => {
+      const c = await commercial.account(request);
+      if (c) return { id: `commercial:${c.id}`, kind: 'commercial' };
+      if (bearerToken(request)) {
+        const p = await verifyToken(bearerToken(request), config.entitlementSecret, Math.floor(now() / 1000));
+        if (p && !p.oid) {
+          const ent = await authenticate(request, { store, config, now, missing: 'NOT_ENTITLED' });
+          return { id: `pack:${ent.id}`, kind: 'pack' };
+        }
+      }
+      if (portal && config.portalEnabled) {
+        try {
+          const { user } = await portal.identity(request, url);
+          return { id: `portal:${user.id}`, kind: 'portal' };
+        } catch (e) {
+          if (!(e instanceof HttpError) || e.code !== 'UNAUTHORISED') throw e;
+        }
+      }
+      return null;
+    },
+  });
 
   let toolsCache = null;
   let catalogueCache = null;
@@ -509,10 +536,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     const commercialAcct = await commercial.account(request);
     if (commercialAcct) {
       if (!COMMERCIAL_EXPORT_TYPES.includes(type)) throw new HttpError('NOT_ENTITLED', 'Commercial layouts export the plan set PDF and the DXF.');
-      return exportCore(request, type, { ent: null, watermark: commercialAcct.watermark, commercial: commercialAcct });
+      return exportCore(request, type, { ent: null, watermark: commercialAcct.watermark, commercial: commercialAcct, subject: { id: `commercial:${commercialAcct.id}`, kind: 'commercial' } });
     }
     const ent = await authenticate(request, { store, config, now, missing: 'NOT_ENTITLED' });
-    return exportCore(request, type, { ent, watermark: false }); // a Plan Pack (homeowner) export is never watermarked
+    return exportCore(request, type, { ent, watermark: false, subject: { id: `pack:${ent.id}`, kind: 'pack' } }); // a Plan Pack (homeowner) export is never watermarked
   }
 
   // Builder staff and clients (signed in portal session). The free trial watermark is decided here, from the org account state.
@@ -521,10 +548,12 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (!portal) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not available on this server.');
     if (!config.portalEnabled) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not open yet.');
     const ctx = await portal.exportContext(request, url, type);
-    return exportCore(request, type, { ent: null, watermark: ctx.watermark, orgId: ctx.org.id, internalTest: ctx.internalTest === true });
+    return exportCore(request, type, { ent: null, watermark: ctx.watermark, orgId: ctx.org.id, internalTest: ctx.internalTest === true, subject: { id: `portal:${ctx.user.id}`, kind: 'portal' } });
   }
 
-  async function exportCore(request, type, { ent, watermark = false, orgId = null, internalTest = false, commercial: commercialAcct = null }) {
+  async function exportCore(request, type, { ent, watermark = false, orgId = null, internalTest = false, commercial: commercialAcct = null, subject = null }) {
+    // Plan PDFs and DXF files need the current plan set terms on record for this account (409 TERMS_REQUIRED otherwise).
+    const acceptedTerms = await terms.requireAccepted(subject, type);
     const body = await readJson(request, config.exportMaxProjectBytes + (type === 'pdf' ? 2_000_000 : 0));
     let project;
     try {
@@ -584,6 +613,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     try {
       file = await mod.buildExport(type, project, {
         image,
+        terms: acceptedTerms,
         watermark: watermark === true,
         ...(internalTest ? { internalTest: true } : {}),
         ...(commercialAcct?.sub === 'trial' && watermark === true ? { watermarkTitle: 'TRIAL, NOT FOR CONSTRUCTION' } : {}),
@@ -657,6 +687,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
     const sub = /^\/site(\/[a-z]+)$/.exec(path);
     if (sub) return site.handle(sub[1], request, url);
+    if (path.startsWith('/terms/')) {
+      const res = await terms.route(request, url, path);
+      if (res) return res;
+    }
     if (path === '/enquiry/jce') return allow('POST'), enquiryJce(request);
     const pexp = /^\/portal\/export\/([a-z0-9]+)$/.exec(path);
     if (pexp) return allow('POST'), portalExportFile(request, url, pexp[1]);

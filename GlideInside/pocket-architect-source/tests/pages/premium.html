@@ -152,6 +152,7 @@
       bodies.push({ path, body, auth: init.headers?.authorization || null });
       await sleep(60);
       if (path === '/health') return mode === 'soon' ? fail('NOT_FOUND', 'No such endpoint.', 404) : respond({ ok: true, aiPaused: false, ...(mode === 'devgrant' ? { devGrant: true } : {}) });
+      if (path === '/terms/accept') return respond({ recorded: true, version: JSON.parse(init.body || '{}').version });
       if (path === '/checkout') return respond({ url: 'https://checkout.stripe.com/c/pay/cs_test_mock' });
       if (path === '/entitlement') {
         if (u.searchParams.get('dev') === '1') return respond({ token: fakeToken(), credits: bal(), projectId: u.searchParams.get('project'), receipt: 'ent_dev0001', dev: true });

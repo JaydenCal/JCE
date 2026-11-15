@@ -12,6 +12,7 @@ import { icon } from '../ui/icons.js';
 import { toast } from '../ui/toast.js';
 import { searchAddresses } from '../site/client.js';
 import { downloadBlob } from '../premium/exporters/download.js';
+import { requirePlanTerms, planTermsLinkText, PLAN_TERMS_URL } from '../legal/terms-gate.js';
 import { lotOf } from '../model/placement.js';
 import { lotHeading, lotLine } from '../lotcard/stats.js';
 import { LOT_CARD_CSS } from '../lotcard/lot-card-css.js';
@@ -133,6 +134,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     ['Open full editor', () => (onFullEditor || onEdit)?.()],
     [PLAN_SET_LABEL, () => planSet()],
     [SEND_LABEL, () => engineer.open()],
+    [planTermsLinkText(), () => window.open(PLAN_TERMS_URL, '_blank', 'noopener')],
     ['Upload boundary', () => openUpload()],
     ['Site rules', () => import('../site/upload/rules-panel.js').then((m) => m.openRulesPanel(store))],
     ['Enlarge top view', () => toggleMini()],
@@ -326,11 +328,14 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     if (pdfBusy) return;
     pdfBusy = true;
     const label = bPlan.textContent;
-    bPlan.textContent = 'Preparing plan set';
-    bPlan.disabled = true;
     try {
+      // The plan terms come first (src/legal/terms-gate.js).
+      const terms = await requirePlanTerms({ context: 'commercial-plan-set' });
+      if (!terms) return;
+      bPlan.textContent = 'Preparing plan set';
+      bPlan.disabled = true;
       const { exportPlanSet } = await import('../premium/exporters/planset/index.js');
-      const out = await exportPlanSet({ project: store.project, lot: lotOf(store.project), kind: 'commercial', builderName: builderName() || '', download: false });
+      const out = await exportPlanSet({ project: store.project, lot: lotOf(store.project), kind: 'commercial', builderName: builderName() || '', download: false, terms });
       const bytes = out?.bytes || out?.blob || out?.data || out;
       if (bytes instanceof Blob || bytes instanceof Uint8Array || bytes instanceof ArrayBuffer) {
         downloadBlob(bytes instanceof Blob ? bytes : new Blob([bytes], { type: 'application/pdf' }), out?.filename || 'Commercial_Plan_Set.pdf');

@@ -23,6 +23,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
   let filter = 'pending';
   let trial = null; // the shared commercial trial login, or null
   let usage = null; // commercial AI usage and cost
+  let termsStats = null; // plan set terms acceptances per version
 
   function gate(message = '') {
     clear(root);
@@ -53,7 +54,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
   async function load() {
     [requests, orgs] = await Promise.all([api.listRequests(), api.listOrgs()]);
     // The commercial sections are extras: a failure there must not lock the owner out of trial requests.
-    [trial, usage] = await Promise.all([api.commercialTrial?.().catch(() => null) ?? null, api.commercialUsage?.().catch(() => null) ?? null]);
+    [trial, usage, termsStats] = await Promise.all([api.commercialTrial?.().catch(() => null) ?? null, api.commercialUsage?.().catch(() => null) ?? null, api.termsCounts?.().catch(() => null) ?? null]);
   }
   async function reload() {
     try {
@@ -306,6 +307,16 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
       h('thead', null, h('tr', null, ...['Month', 'Account', 'Messages', 'Input tokens', 'Cache read tokens', 'Output tokens', 'Cost'].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', null, ...rows))));
   }
 
+  // Plan set terms: how many accounts have accepted each version (signed in accounts only; free previews are recorded in the browser).
+  function termsSection() {
+    const head = h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Plan set terms acceptances'), h('p', { class: 'pp-lead pp-lead--sm' }, termsStats ? `Current version ${termsStats.currentVersion}. Counts are accounts that accepted each version (signed in accounts and Plan Packs; anonymous free previews are recorded in the browser only).` : 'Acceptances could not be loaded.')));
+    if (!termsStats || !termsStats.versions.length) return h('div', { dataset: { ps: 'terms-admin' } }, head, h('p', { class: 'pp-empty' }, 'No acceptances recorded yet.'));
+    const day = (iso) => (iso ? ddmmyyyy(iso) : '');
+    return h('div', { dataset: { ps: 'terms-admin' } }, head, h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table' },
+      h('thead', null, h('tr', null, ...['Version', 'Acceptances', 'First', 'Latest'].map((t) => h('th', { scope: 'col' }, t)))),
+      h('tbody', null, ...termsStats.versions.map((v) => h('tr', null, h('td', null, v.version === termsStats.currentVersion ? `${v.version} (current)` : v.version), h('td', null, String(v.count)), h('td', null, day(v.firstAt)), h('td', null, day(v.lastAt))))))));
+  }
+
   function paint() {
     clear(root);
     const count = (s) => requests.filter((r) => r.status === s).length;
@@ -325,7 +336,8 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
         skipNote, orgTable,
         h('div', { class: 'pp-actions pp-actions--tight', style: { marginTop: '12px' } }, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', id: 'create-internal', onclick: openInternalForm }, 'Create internal test account')),
         trialSection(),
-        usageSection()));
+        usageSection(),
+        termsSection()));
   }
 
   const saved = store.get();

@@ -149,6 +149,8 @@ export function createApi({ base = '/api', fetchImpl = null, timeoutMs = 45000 }
     trialProjectGet: (token, id) => json('GET', `/commercial/trial/projects/${encodeURIComponent(id)}`, { token, timeout: 30000 }),
     trialProjectSave: (token, body) => json('POST', '/commercial/trial/projects', { token, body, timeout: 45000 }),
     trialProjectDelete: (token, id) => json('DELETE', `/commercial/trial/projects/${encodeURIComponent(id)}`, { token, timeout: 20000 }),
+    /** Records that the signed in person (bearer token or portal session) accepted the plan set terms. Resolves { recorded, version, acceptedAt }. */
+    acceptTerms: ({ version, context }, { token } = {}) => json('POST', '/terms/accept', { token, body: { version, context }, headers: { 'x-gi-request': '1' }, timeout: 20000 }),
     /** Paid export. Resolves { blob, filename }. */
     async exportFile(token, type, body, fallbackName = `export.${type}`) {
       const res = await send('POST', `/export/${type}`, { token, body, timeout: 90000 });

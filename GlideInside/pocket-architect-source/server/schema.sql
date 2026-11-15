@@ -381,3 +381,18 @@ CREATE TABLE IF NOT EXISTS org_accounts (
   owner_note TEXT,
   internal INTEGER NOT NULL DEFAULT 0        -- 1 = owner's internal test account: no charges, no trial, not in reports (migration 0014)
 );
+
+-- ===== 15. Plan set terms acceptance (migration 0015_terms_acceptance.sql) =====
+-- One row per (account or entitlement, terms version). ip_hash = SHA-256 of IP_HASH_SALT + address; the raw address is never stored.
+CREATE TABLE IF NOT EXISTS terms_acceptance (
+  id TEXT PRIMARY KEY,
+  subject_id TEXT NOT NULL,
+  subject_kind TEXT NOT NULL,
+  version TEXT NOT NULL,
+  context TEXT,
+  accepted_at TEXT NOT NULL,
+  ip_hash TEXT,
+  user_agent TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_terms_subject_version ON terms_acceptance(subject_id, version);
+CREATE INDEX IF NOT EXISTS idx_terms_version ON terms_acceptance(version, accepted_at);
