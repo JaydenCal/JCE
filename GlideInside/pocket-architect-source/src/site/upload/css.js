@@ -44,7 +44,7 @@ export const UPLOAD_CSS = `
 .up-rules-grid .up-def { grid-column: 1 / -1; font-size: 11.5px; opacity: .7; margin-top: -4px; }
 .lc-upload{position:absolute;right:64px;top:62px;height:30px;padding:0 14px!important;border:1px solid rgba(255,255,255,.22)!important;background:rgba(10,10,12,.76)!important;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-radius:15px;font:500 12px var(--lc-sans,system-ui);color:var(--lc-t1,#fff);cursor:pointer;display:flex;align-items:center;z-index:2}
 .lc-upload:hover{background:rgba(40,40,46,.85)}
-.lc-embed.is-compact .lc-upload{right:62px;top:58px}
+.lc-embed.is-compact .lc-upload{right:12px;top:198px}
 .lc-root[data-view="2d"] .lc-upload,.lc-root[data-view="split"] .lc-upload{display:none!important}
 .up-tag { font-size: 11px; border-radius: 6px; padding: 1px 6px; background: rgba(255,200,61,.22); white-space: nowrap; }
 .up-tag.is-set { background: rgba(90,200,140,.22); }
