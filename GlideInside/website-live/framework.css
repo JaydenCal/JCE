@@ -713,3 +713,4 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 .hero-still img{width:100%;height:100%;object-fit:cover}
 @media(max-width:760px){.hero-still{aspect-ratio:4/5}}
 .calc,.calc p,.calc label,.calc h3,.calc output{color:var(--ink)}.calc .calc-note{color:var(--muted)}
+@media(max-width:720px){.cmp tbody th,.src tbody th{width:auto!important}}
