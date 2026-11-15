@@ -66,6 +66,13 @@ export function parseResponse(data, tools) {
   return { reply: scrubClaims(reply.join(' ').trim()), ops, rejected, usage: data?.usage || {}, stopReason: data?.stop_reason || null };
 }
 
+/** Anthropic answers an empty or unpaid account with 400 "Your credit balance is too low ..." (invalid_request_error), 402 or a billing_error. */
+export function isBillingError(status, data) {
+  const type = String(data?.error?.type || '');
+  const msg = String(data?.error?.message || '');
+  return status === 402 || type === 'billing_error' || /credit balance|billing|plans\s*&\s*billing|purchase credits|insufficient (?:credit|fund)/i.test(msg);
+}
+
 /** Call the API. Throws HttpError AI_TIMEOUT or AI_ERROR (nothing is charged for those). */
 export async function callAnthropic({ config, fetchImpl, body }) {
   if (!config.anthropicApiKey) throw new HttpError('AI_ERROR', 'The assistant is not configured yet.');
@@ -84,6 +91,9 @@ export async function callAnthropic({ config, fetchImpl, body }) {
   const data = await res.json().catch(() => null);
   if (!res.ok || !data) {
     console.warn(JSON.stringify({ event: 'anthropic_error', status: res.status, type: data?.error?.type }));
+    // CON-006: an empty Anthropic account is the owner's problem, not the customer's. It is shown as the paused state (503 AI_PAUSED,
+    // credits untouched), never as a generic failure.
+    if (isBillingError(res.status, data)) throw new HttpError('AI_PAUSED', 'The assistant is paused for now. Your credits are untouched. Try again later.');
     throw new HttpError('AI_ERROR', res.status === 429 || res.status === 529 ? 'The assistant is busy. Nothing was charged. Try again in a moment.' : 'The assistant had a problem. Nothing was charged. Try again.');
   }
   return data;

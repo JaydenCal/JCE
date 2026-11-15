@@ -9,7 +9,7 @@ import { schemeColours } from '../../../model/colour-schemes.js';
 import { rotateHouse } from '../../../model/placement.js';
 import { buildingHull, orientedBox } from '../../../site/lotplan.js';
 import { paperOf, levelContent, chooseScale } from '../drawing.js';
-import { levelsSorted, ascii, outlineBox } from '../shared.js';
+import { levelsSorted, ascii, outlineBox, compactPages } from '../shared.js';
 import { scaledDoc, drawLevel } from '../pdf.js';
 import { clean, viewTitle, cleanedDoc, withSuperscripts } from './kit.js';
 import { brandOf, drawingNo, projectTitle } from './brand.js';
@@ -130,7 +130,7 @@ export async function toEngineeringPDF(project0, options = {}) {
   const plan = engineeringSheets(project, { paper, scale, catalogue });
   const aligned = alignProject(project);
   const p = plan.paper;
-  const raw = new jsPDF({ orientation: 'landscape', unit: 'mm', format: p.format, compress: true });
+  const raw = new jsPDF({ orientation: 'landscape', unit: 'mm', format: p.format, compress: true, precision: 3 });
   const brand = brandOf(project, options);
   const tb = project.titleBlock || {};
   raw.setProperties({
@@ -241,6 +241,7 @@ export async function toEngineeringPDF(project0, options = {}) {
       if (tris.length) drawSection(doc, apr, tris, area); else emptySheet(doc, area, 'The section needs a building with walls.');
     } else if (s.kind === 'analysis') drawAnalysis(doc, ctx);
     else drawSchedules(doc, ctx, s, { roofM2, alignedProject: aligned.project });
+    compactPages(raw); // memory: one flat string per page instead of one small string per operator
   });
   const bytes = new Uint8Array(raw.output('arraybuffer'));
   Object.defineProperty(bytes, 'layout', {

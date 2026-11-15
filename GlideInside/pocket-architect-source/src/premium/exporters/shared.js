@@ -352,3 +352,23 @@ export function scheduleData(project) {
   const openings = [...openingMap.values()].sort((a, b) => a.type.localeCompare(b.type) || a.width - b.width);
   return { rooms, totals, openings };
 }
+
+/**
+ * Memory: jsPDF keeps each page as an array with one small string per drawing operator, and a drawing with many segments (elevations, site plans)
+ * runs to millions of them, each with its own object header (about 58 MB held for one residential set). Joining a page's operators into one flat
+ * string keeps the same bytes (jsPDF joins a page with a newline on output) and a fraction of the memory. Safe to call at any time; it does nothing
+ * if the document does not expose its pages. `doc` may be the jsPDF object or the scaled wrapper around it.
+ */
+export function compactPages(doc, { minOps = 200 } = {}) {
+  try {
+    const pdf = doc?.internal?.pages ? doc : doc?.raw?.internal?.pages ? doc.raw : null;
+    const pages = pdf?.internal?.pages;
+    if (!pages) return;
+    for (let i = 1; i < pages.length; i += 1) {
+      const p = pages[i];
+      if (Array.isArray(p) && p.length >= minOps) p.splice(0, p.length, p.join('\n')); // in place: jsPDF holds a reference to the array
+    }
+  } catch {
+    /* a memory saving only */
+  }
+}

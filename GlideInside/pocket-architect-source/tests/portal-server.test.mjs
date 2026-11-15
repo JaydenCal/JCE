@@ -110,6 +110,8 @@ function makeWorld({ d1 = false, env = {} } = {}) {
     assert.equal(me.status, 200, JSON.stringify(me.data));
     const ch = await b.post('/portal/password', { currentPassword: r.data.credentials.password, newPassword: 'Correct-Horse-Battery-9' });
     assert.equal(ch.status, 200, JSON.stringify(ch.data));
+    // New orgs have client top-ups OFF (security review Low); most tests exercise top-ups, so the builder switches them on here.
+    assert.equal((await b.patch('/portal/org/settings', { allowClientTopUps: true })).status, 200);
     // Active builders must have billing details before they can issue logins (Fable H7); most tests want that done.
     if (!noBilling) assert.equal((await b.put('/portal/billing/contact', { name: adminFirst, email: `accounts@${name.split(' ')[0].toLowerCase()}.example`, phone: '', legalName: name, abn: '51824753556' })).status, 200);
     const out = { orgId: r.data.org.id, admin: b, adminUser: r.data.admin, adminPassword: 'Correct-Horse-Battery-9', shortCode: r.data.org.shortCode };
@@ -203,7 +205,7 @@ test('issueOrgToken output is accepted by the AI branch contract: { oid, lid, ro
   await assert.rejects(authenticate(new Request('https://x/api/credits', { headers: { authorization: `Bearer ${token}` } }), { store: {}, config: cfg, now: () => T0 }), /Plan Pack/);
   const [body] = token.split('.');
   const payload = JSON.parse(Buffer.from(body.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString());
-  assert.deepEqual(Object.keys(payload).sort(), ['cap', 'exp', 'lid', 'oid', 'role']);
+  assert.deepEqual(Object.keys(payload).sort(), ['cap', 'exp', 'lid', 'oid', 'role', 'se']); // se: the session epoch (security review M2)
 });
 
 test('the browser API (src/portal/api.js) and the mock agree on the shape of me()', async () => {
@@ -230,7 +232,7 @@ for (const [label, d1] of stores) {
     const ok = await w.admin('POST', '/portal/admin/orgs', { name: 'Sample Homes Pty Ltd', adminFirstName: 'Priya', adminEmail: 'priya@sample.example' });
     assert.equal(ok.status, 201);
     assert.match(ok.data.credentials.username, /^priya-[2-9]{4}$/);
-    assert.match(ok.data.credentials.password, /^[a-z]+-[a-z]+-[2-9]{2}$/);
+    assert.match(ok.data.credentials.password, /^[2-9a-hjkmnp-z]{4}(-[2-9a-hjkmnp-z]{4}){3}$/);
     assert.equal(ok.data.org.shortCode, 'SAM');
     const again = await w.admin('POST', '/portal/admin/orgs', { name: 'Sample Other', adminFirstName: 'Q' });
     assert.equal(again.data.org.shortCode, 'SAM2', 'short codes are unique');
@@ -442,7 +444,7 @@ for (const [label, d1] of stores) {
     const issued = await org.admin.post('/portal/clients', { firstName: 'Sarah-Jane', email: 'Sarah.T@Example.com', lotAddress: 'Lot 14 Banksia Rise', houseAccess: 'all' });
     assert.equal(issued.status, 201);
     assert.match(issued.data.credentials.username, /^sarah-[2-9]{4}$/);
-    assert.match(issued.data.credentials.password, /^[a-z]+-[a-z]+-[2-9]{2}$/);
+    assert.match(issued.data.credentials.password, /^[2-9a-hjkmnp-z]{4}(-[2-9a-hjkmnp-z]{4}){3}$/);
     assert.deepEqual(issued.data.charge, { amountCents: 3000, trigger: 'first_sign_in', note: 'A$30 incl. GST is charged on your monthly invoice once your client first signs in.' });
     assert.equal(issued.data.client.billed, false);
     assert.equal(issued.data.client.mustChangePassword, true);
@@ -800,8 +802,12 @@ for (const [label, d1] of stores) {
     assert.equal((await org.admin.post('/portal/ai/top-up')).status, 200, 'staff may always top up');
     assert.equal((await org.admin.get('/portal/me')).data.canTopUp, true);
     await org.admin.patch('/portal/org/settings', { allowClientTopUps: true });
-    for (let i = 0; i < 9; i += 1) assert.equal((await cl.browser.post("/portal/ai/top-up")).status, 200);
-    assert.equal((await cl.browser.post('/portal/ai/top-up')).status, 429, 'more than 10 top-ups an hour');
+    // A client login may buy 3 top-ups a month (security review Low): the first was above, two more fit, the fourth is refused.
+    for (let i = 0; i < 2; i += 1) assert.equal((await cl.browser.post('/portal/ai/top-up')).status, 200);
+    assert.equal((await cl.browser.post('/portal/ai/top-up')).status, 429, 'more than 3 client top-ups a month');
+    // Staff are not on the monthly cap; the hourly limit (10) still applies to them: one top-up was made above.
+    for (let i = 0; i < 9; i += 1) assert.equal((await org.admin.post('/portal/ai/top-up')).status, 200);
+    assert.equal((await org.admin.post('/portal/ai/top-up')).status, 429, 'more than 10 top-ups an hour');
   });
 
   t('top-up credits carry over for 12 months, oldest first, then the unused part expires', async () => {
@@ -1010,7 +1016,7 @@ for (const [label, d1] of stores) {
     assert.equal((await org.admin.post('/portal/team', { firstName: 'Tom2', role: 'designer', email: 'tom@x.example' })).status, 409, 'email already used');
     const reset = await org.admin.post(`/portal/team/${des.user.id}/reset-password`);
     assert.equal(reset.status, 200);
-    assert.match(reset.data.credentials.password, /^[a-z]+-[a-z]+-[2-9]{2}$/);
+    assert.match(reset.data.credentials.password, /^[2-9a-hjkmnp-z]{4}(-[2-9a-hjkmnp-z]{4}){3}$/);
     assert.equal((await des.browser.get('/portal/me')).status, 401, 'their sessions ended');
     const back = w.browser();
     const s = await back.post('/portal/session', { identifier: des.user.username, password: reset.data.credentials.password });

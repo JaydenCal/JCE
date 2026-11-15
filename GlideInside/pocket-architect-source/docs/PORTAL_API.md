@@ -89,7 +89,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
 `src/portal/credentials.js` (crypto RNG, `crypto.getRandomValues` with rejection sampling).
 
 - Username: first name lower-cased, accents and punctuation removed (spaces and hyphens split the name; the first part is used), then `-` and four digits from `2-9` only (no 0, 1: they look like O, l, I). Example `sarah-4821`. Unique across the whole system (the sign in form takes only a username for clients), regenerated on a clash.
-- Password: two words from a built-in list of 508 short, common, simple words plus two digits `2-9`, for example `river-maple-47`. The list excludes offensive words and look-alikes (checked by substring and whole-word rules in the tests). About 508 x 507 x 64 = 16.5 million combinations: acceptable only because it is temporary, expires in 7 days, is forced to change on first sign in and sign in is rate limited.
+- Password: 16 random characters in four groups of four, for example `k7m2-x9qd-t4np-w6hc`, drawn from a 31 character alphabet that leaves out `0 1 i l o` (about 79 bits). It is temporary, expires in 7 days, is forced to change on first sign in, and sign in is counted before the password is checked (see section 6). The earlier two words plus two digits form (about 24 bits) was replaced after the 15/11/2026 security review.
 - Shown once with Copy and Copy both. The same generator is used for staff logins and for resets.
 
 ## 4. Billing rules

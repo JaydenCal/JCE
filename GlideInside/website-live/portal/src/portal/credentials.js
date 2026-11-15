@@ -1,10 +1,9 @@
 // Login generator for builder staff and client logins (docs/PORTAL_API.md 5).
 //   username: first name plus a short suffix that is easy to read out, e.g. "sarah-4827"
-//   password: two plain words and two digits, e.g. "river-maple-47"
-// Digits are 2 to 9 only, so 0, 1, O, I and l can never be confused. Randomness is crypto.getRandomValues unless a
+//   password: 16 random characters from a look-alike free alphabet in four groups, e.g. "k7m2-x9qd-t4np-w6hc" (about 79 bits)
+// Digits are 2 to 9 only and the password alphabet leaves out 0, 1, i, l and o, so nothing can be confused. Randomness is crypto.getRandomValues unless a
 // test supplies its own `randomInt(max)`.
 
-import { WORDS } from './wordlist.js';
 
 export const DIGITS = '23456789';
 export const USERNAME_SUFFIX_DIGITS = 4;
@@ -45,12 +44,23 @@ export function generateUsername(firstName, taken = [], { randomInt = cryptoInt 
   throw new Error('Could not generate a unique username');
 }
 
-/** Two different words from the list and two digits: "river-maple-47". */
-export function generatePassword({ randomInt = cryptoInt, words = WORDS } = {}) {
-  const a = words[randomInt(words.length)];
-  let b = words[randomInt(words.length)];
-  while (b === a) b = words[randomInt(words.length)];
-  return `${a}-${b}-${digits(2, randomInt)}`;
+/**
+ * Temporary password: 16 random characters in four groups of four ("k7m2-x9qd-t4np-w6hc"), about 79 bits.
+ * The alphabet leaves out 0, 1, i, l and o so a password read over the phone or off a screen cannot be mistaken (31 characters, about 4.95 bits each).
+ * A person replaces it at first sign in, and it expires after 7 days; it must still be too long to guess online.
+ */
+export const PASSWORD_ALPHABET = '23456789abcdefghjkmnpqrstuvwxyz';
+export const PASSWORD_GROUPS = 4;
+export const PASSWORD_GROUP_LENGTH = 4;
+export const PASSWORD_LENGTH = PASSWORD_GROUPS * PASSWORD_GROUP_LENGTH;
+export const passwordEntropyBits = () => Math.log2(PASSWORD_ALPHABET.length) * PASSWORD_LENGTH;
+
+export function generatePassword({ randomInt = cryptoInt } = {}) {
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    const groups = Array.from({ length: PASSWORD_GROUPS }, () => Array.from({ length: PASSWORD_GROUP_LENGTH }, () => PASSWORD_ALPHABET[randomInt(PASSWORD_ALPHABET.length)]).join(''));
+    if (!isBlockedWord(groups.join(''))) return groups.join('-'); // a draw that happens to spell something rude is dropped and redrawn
+  }
+  throw new Error('Could not generate a password');
 }
 
 export function generateCredentials(firstName, taken = [], opts = {}) {

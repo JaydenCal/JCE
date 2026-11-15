@@ -5,13 +5,13 @@
 //                                                 browser only.
 //   GET  /api/terms/admin/counts                  owner only (bearer ADMIN_TOKEN): acceptances per version.
 // The export endpoints call requireAccepted(subject, type) first: a PDF or DXF for an account that has not accepted the current version
-// is refused with 409 TERMS_REQUIRED (the page then asks and records, and retries once).
+// is refused with 409 TERMS_REQUIRED (the same for html, glb and obj) (the page then asks and records, and retries once).
 
 import { HttpError, json, readJson, clientIp, bearerToken } from './http.js';
 import { secretEqual } from './password.js';
 import { PLAN_TERMS } from '../../src/legal/plan-terms.js';
 
-export const TERMS_EXPORT_TYPES = ['pdf', 'dxf'];
+export const TERMS_EXPORT_TYPES = ['pdf', 'dxf', 'html', 'glb', 'obj']; // every export type (L5: html, glb and obj were not gated before)
 const enc = new TextEncoder();
 const sha = async (s) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(s)))].map((b) => b.toString(16).padStart(2, '0')).join('');
 const rid = () => `tac_${[...crypto.getRandomValues(new Uint8Array(10))].map((b) => b.toString(16).padStart(2, '0')).join('')}`;

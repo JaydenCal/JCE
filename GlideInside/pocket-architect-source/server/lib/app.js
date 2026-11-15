@@ -9,7 +9,7 @@ import { systemPromptFor } from '../../src/premium/ai/prompt.js';
 import { estimateTokens } from '../../src/premium/ai/context.js';
 import { buildTools, isCommercialContext } from '../../src/premium/ai/tools.js';
 import { readConfig } from './config.js';
-import { HttpError, json, errorResponse, corsHeaders, readJson, readText, clientIp, bearerToken } from './http.js';
+import { HttpError, json, errorResponse, corsHeaders, readJson, readText, clientIp, bearerToken, withSecurityHeaders, setTrustForwardedHeaders } from './http.js';
 import { authenticate, issueToken, coversProject, readOrgToken as readOrgTokenRaw, verifyToken } from './entitlement.js';
 import * as stripe from './stripe.js';
 import * as credits from './credits.js';
@@ -23,6 +23,7 @@ import { createMemoryProfileStore } from './profile-store.js';
 import { createMemoryPortalStore } from './portal-store.js';
 import { createCommercial, COMMERCIAL_EXPORT_TYPES } from './commercial.js';
 import { createTerms } from './terms.js';
+import { secretEqual } from './password.js';
 
 const EXPORT_TYPES = ['pdf', 'dxf', 'glb', 'obj', 'html'];
 const WEBHOOK_MAX_BYTES = 1_000_000;
@@ -33,6 +34,7 @@ const randomId = (prefix) => `${prefix}_${[...crypto.getRandomValues(new Uint8Ar
 export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), catalogue = null, loadExporters = null, loadJsPDF = null, devGrant = false, portalStore = undefined, profileStore = undefined, loadTemplates = undefined, files = null } = {}) {
   if (!store) throw new Error('createApp needs a store');
   const config = readConfig(env);
+  setTrustForwardedHeaders(config.trustForwardedHeaders);
   const doFetch = fetchImpl || ((...a) => globalThis.fetch(...a));
   const iso = (ms = now()) => new Date(ms).toISOString();
 
@@ -81,6 +83,20 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   });
 
   let toolsCache = null;
+  // Memory (EXPORTS.md): a Worker isolate has 128 MB shared by every request it is serving, and a residential plan set peaks at about 60 MB, so exports
+  // are built one at a time per isolate (EXPORT_CONCURRENCY, default 1). Waiting costs no CPU time; other requests are not held up by it.
+  let exportRunning = 0;
+  const exportWaiters = [];
+  async function exportSlot(fn) {
+    if (exportRunning >= config.exportConcurrency) await new Promise((resolve) => exportWaiters.push(resolve));
+    exportRunning += 1;
+    try {
+      return await fn();
+    } finally {
+      exportRunning -= 1;
+      exportWaiters.shift()?.();
+    }
+  }
   let catalogueCache = null;
   const getCatalogue = async () => {
     if (catalogueCache === null) {
@@ -218,7 +234,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     const byEmail = await store.hitRate(`restore:email:${email}`, 3600, nowMs);
     if (byIp > 8 || byEmail > 5) throw new HttpError('RATE_LIMITED', 'Too many attempts. Try again later.', { retryAfter: 600 });
     // Friends and testing code (live Worker behaviour): the same Restore box, any project.
-    if (config.testCodes.includes(ref) && store.grantTestCode) return restoreWithCode(email, ref, body.projectId, nowMs);
+    // L12: every configured code is compared in constant time (no early exit), so the time taken does not reveal how much of a guess matched.
+    let codeMatch = false;
+    for (const c of config.testCodes) if (await secretEqual(ref, c)) codeMatch = true;
+    if (codeMatch && store.grantTestCode) return restoreWithCode(email, ref, body.projectId, nowMs);
     const ent = await store.findForRestore(email, ref);
     if (!ent || ent.status !== 'active' || (ent.expiresAt && Date.parse(ent.expiresAt) <= nowMs)) {
       throw new HttpError('NOT_ENTITLED', 'We could not find a Plan Pack with those details.');
@@ -248,6 +267,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   const readOrgToken = async (request, deps) => {
     const payload = await readOrgTokenRaw(request, deps);
     if (payload && !config.portalEnabled) throw new HttpError('NOT_ENTITLED', 'Builder and client logins are not switched on yet.');
+    if (payload) {
+      if (!portal) throw new HttpError('UNAUTHORISED', 'Your sign in has ended. Sign in again to continue.');
+      const { org } = await portal.verifyOrgToken(payload); // M2: the login and org are checked on every call, and the token must carry the login's current session epoch
+      Object.defineProperty(payload, '_org', { value: org, enumerable: false });
+    }
     return payload;
   };
 
@@ -260,6 +284,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   async function topUpAllowed(payload, internal = false) {
     if (internal) return false; // an internal test account is never charged, so it has no top-ups
     if (payload.role === 'builder') return true;
+    // L2: a client may only top up when the builder has switched client top-ups ON for the org (off by default), and the older setting events agree.
+    if (payload._org?.allowClientTopUps !== true) return false;
     return credits.clientTopUpsEnabled(await store.listEvents('org_topup_setting'), payload.oid);
   }
 
@@ -386,6 +412,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   async function aiEstimate(request) {
     needAi();
     let acct = await accountFor(request);
+    // L11: the estimate costs no model call but does real work (it builds the tool list and counts tokens on a large body), so it is limited per account.
+    if ((await store.hitRate(`ai:est:${acct.rateKey || acct.id}`, 60, now())) > config.aiEstimateRatePerMin) throw new HttpError('RATE_LIMITED', 'Too many requests. Please wait a moment.', { retryAfter: 60 - (Math.floor(now() / 1000) % 60) });
     const { message, context, body } = await aiBody(request);
     acct = internalCommercial(acct, context, body);
     needCommercialBody(acct, body, context);
@@ -453,7 +481,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       data = await anthropic.callAnthropic({ config: aiConfig, fetchImpl: doFetch, body: reqBody });
     } catch (e) {
       await acct.release(reservation);
-      await store.logAiRequest({ ...logBase, latencyMs: now() - started, status: 'error' });
+      await store.logAiRequest({ ...logBase, latencyMs: now() - started, status: e?.code === 'AI_PAUSED' ? 'ai_paused' : 'error' });
       throw e;
     }
 
@@ -503,6 +531,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (!(await topUpAllowed(org))) throw new HttpError('TOPUP_DISABLED', 'Top-ups are turned off for your organisation. Ask your builder.');
     const nowMs = now();
     if ((await store.hitRate(`topup:${org.oid}:${org.lid}`, 3600, nowMs)) > 10) throw new HttpError('RATE_LIMITED', 'Too many top-ups in the last hour.', { retryAfter: 600 });
+    if (org.role === 'client') await credits.enforceClientTopUpCap({ store, config, orgId: org.oid, loginId: org.lid, nowMs, HttpError });
     const acct = await orgAccount(org, false);
     const month = credits.sydneyMonth(nowMs);
     const { topUpId } = credits.orgPoolIds(org.oid, org.lid, month.key);
@@ -621,7 +650,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     };
     let file;
     try {
-      file = await mod.buildExport(type, project, {
+      file = await exportSlot(async () => mod.buildExport(type, project, {
         image,
         terms: acceptedTerms,
         watermark: watermark === true,
@@ -634,7 +663,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
           if (!loadJsPDF) throw new Error('No jsPDF loader was given to createApp');
           return loadJsPDF();
         },
-      });
+      }));
     } catch (e) {
       console.error(JSON.stringify({ event: 'export_failed', type, message: e?.message }));
       await giveBack();
@@ -721,10 +750,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   async function handle(request) {
     const cors = corsHeaders(request, config);
     try {
-      if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
+      if (request.method === 'OPTIONS') return withSecurityHeaders(new Response(null, { status: 204, headers: cors }));
       const res = await route(request, new URL(request.url));
       for (const [k, v] of Object.entries(cors)) res.headers.set(k, v);
-      return res;
+      return withSecurityHeaders(res);
     } catch (e) {
       if (e instanceof HttpError) return errorResponse(e, cors);
       console.error(JSON.stringify({ event: 'unhandled_error', message: e?.message, stack: e?.stack?.split('\n').slice(0, 4) }));
@@ -732,7 +761,19 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
   }
 
+  // L7: housekeeping. rate_limits and auth_failures only ever grew; the cron (and a 1 in 100 chance on write, store.hitRate) removes expired rows.
+  // L6: anonymised consent records are kept CONSENT_ARCHIVE_YEARS after a profile is deleted, then removed.
+  async function housekeeping() {
+    const nowMs = now();
+    for (let i = 0; i < 20; i++) { // each purge is bounded (a batch per call); the cron clears a backlog by repeating
+      await store.purgeRateLimits?.(nowMs)?.catch?.(() => null);
+      await pstore?.purgeAuthFailures?.(nowMs)?.catch?.(() => null);
+    }
+    await profstore?.purgeConsentArchive?.(iso(nowMs - config.consentArchiveYears * 365.25 * 86400000))?.catch?.(() => null);
+  }
+
   return { fetch: handle, handle, config, portal, profiles, scheduled: async () => {
+      await housekeeping();
       await commercial.sweepProjects()?.catch?.(() => null); // trial saved projects older than the keep period
       return portal ? portal.scheduled() : null;
     },

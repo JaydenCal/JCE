@@ -22,6 +22,7 @@ const SPECS = {
       id: 'id', orgId: 'org_id', role: 'role', name: 'name', email: 'email', username: 'username', passwordHash: 'password_hash',
       mustChangePassword: 'must_change_password:b', tempPasswordExpiresAt: 'temp_password_expires_at', status: 'status', lotAddress: 'lot_address',
       houseAccess: 'house_access:j', firstSignInAt: 'first_sign_in_at', lastSignInAt: 'last_sign_in_at', createdAt: 'created_at',
+      sessionEpoch: 'session_epoch', // migration 0019: bumped on logout, password change, disable and delete; AI bearer tokens carry it
     },
   },
   houses: {
@@ -206,7 +207,7 @@ export function createD1PortalStore(db) {
       await run('DELETE FROM sessions WHERE user_id = ?1 AND id_hash <> ?2', userId, exceptHash);
     },
     async purgeSessions(nowIso) {
-      await run('DELETE FROM sessions WHERE expires_at <= ?1', nowIso);
+      await run('DELETE FROM sessions WHERE id_hash IN (SELECT id_hash FROM sessions WHERE expires_at <= ?1 LIMIT 200)', nowIso); // bounded: a backlog is cleared a batch per call
     },
     // Lockout counters. addFailure counts a failure in the current window and locks once `max` is reached.
     async getFailure(key) {
@@ -232,6 +233,39 @@ export function createD1PortalStore(db) {
     },
     async clearFailure(key) {
       await run('DELETE FROM auth_failures WHERE key = ?1', key);
+    },
+    /** Clear every counter whose key starts with `prefix` (a plain prefix match, no LIKE wildcards). */
+    async clearFailuresByPrefix(prefix) {
+      await run('DELETE FROM auth_failures WHERE substr(key, 1, length(?1)) = ?1', prefix);
+    },
+    /**
+     * Count one sign in attempt BEFORE the password is checked, in one atomic upsert (so parallel guesses cannot all slip past the limit).
+     * `allowed` is true for the first `max` attempts in the window. The window restarts when the max-th attempt is counted, so the lock lasts
+     * `windowMs` from the attempt that used the last allowance. A correct password gives the attempt back (releaseAttempt) or clears the key.
+     */
+    async attempt(key, nowMs, { windowMs, max }) {
+      const row = await first(
+        `INSERT INTO auth_failures (key, count, window_start, locked_until) VALUES (?1, 1, ?2, NULL)
+         ON CONFLICT(key) DO UPDATE SET
+           count = CASE WHEN ?2 - auth_failures.window_start >= ?3 THEN 1 ELSE auth_failures.count + 1 END,
+           window_start = CASE WHEN ?2 - auth_failures.window_start >= ?3 THEN ?2 WHEN auth_failures.count + 1 = ?4 THEN ?2 ELSE auth_failures.window_start END
+         RETURNING count, window_start`,
+        key, nowMs, windowMs, max,
+      );
+      const count = Number(row?.count ?? 1);
+      const windowStart = Number(row?.window_start ?? nowMs);
+      return { count, allowed: count <= max, retryAfter: Math.max(1, Math.ceil((windowStart + windowMs - nowMs) / 1000)) };
+    },
+    async releaseAttempt(key) {
+      await run('UPDATE auth_failures SET count = CASE WHEN count > 0 THEN count - 1 ELSE 0 END WHERE key = ?1', key);
+    },
+    /** Housekeeping: drop sign in counters whose window ended long ago (they only grow otherwise). */
+    async purgeAuthFailures(nowMs, olderThanMs = 86400000) {
+      await run('DELETE FROM auth_failures WHERE key IN (SELECT key FROM auth_failures WHERE window_start < ?1 AND (locked_until IS NULL OR locked_until < ?2) LIMIT 500)', nowMs - olderThanMs, nowMs);
+    },
+    /** Epoch for AI bearer tokens: every bump invalidates the tokens issued before it. */
+    async bumpSessionEpoch(userId) {
+      await run('UPDATE users SET session_epoch = session_epoch + 1 WHERE id = ?1', userId);
     },
     // Houses and projects
     saveHouse: async (h) => {
@@ -390,6 +424,28 @@ export function createMemoryPortalStore() {
       return { count, lockedUntil };
     },
     clearFailure: async (key) => void T.failures.delete(key),
+    async clearFailuresByPrefix(prefix) {
+      for (const k of [...T.failures.keys()]) if (k.startsWith(prefix)) T.failures.delete(k);
+    },
+    async attempt(key, nowMs, { windowMs, max }) {
+      let f = T.failures.get(key);
+      if (!f || nowMs - f.windowStart >= windowMs) f = { count: 0, windowStart: nowMs, lockedUntil: null };
+      f.count += 1;
+      if (f.count === max) f.windowStart = nowMs;
+      T.failures.set(key, f);
+      return { count: f.count, allowed: f.count <= max, retryAfter: Math.max(1, Math.ceil((f.windowStart + windowMs - nowMs) / 1000)) };
+    },
+    async releaseAttempt(key) {
+      const f = T.failures.get(key);
+      if (f) f.count = Math.max(0, f.count - 1);
+    },
+    async purgeAuthFailures(nowMs, olderThanMs = 86400000) {
+      for (const [k, f] of [...T.failures]) if (f.windowStart < nowMs - olderThanMs && !(f.lockedUntil && f.lockedUntil >= nowMs)) T.failures.delete(k);
+    },
+    async bumpSessionEpoch(userId) {
+      const u = T.users.get(userId);
+      if (u) u.sessionEpoch = (u.sessionEpoch || 0) + 1;
+    },
     async saveHouse(h) {
       const cur = T.houses.get(h.id);
       if (cur && cur.orgId !== h.orgId) return false;

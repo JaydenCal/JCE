@@ -7,6 +7,7 @@ import { terrainAt } from '../../../site/model.js';
 import { buildingHull, orientedBox } from '../../../site/lotplan.js';
 import { PEN, TXT, clean, ink, viewTitle, wrap, polygon, hatch, LabelField, haloText, alongLabel, vtext } from './kit.js';
 import { scaleBar } from '../pdf.js';
+import { compactPages } from '../shared.js';
 
 const KINDS = [['wall', 'wall'], ['opening', 'opening'], ['leaf', 'leaf'], ['roof', 'roof'], ['slab', 'slab'], ['floor', 'floor'], ['stair', 'stair']];
 const kindOf = (name) => {
@@ -198,7 +199,9 @@ export function renderView(doc, tris, { f, top = false, clip = null, sheet, cull
 
 /** Paint the sorted items through `T` (view mm to sheet). */
 export function paintView(doc, r, T, { cutPlane = null, colours = null } = {}) {
+  let drawn = 0;
   for (const it of r.items) {
+    if ((drawn += 1) % 400 === 0) compactPages(doc, { minOps: 1500 }); // memory: keep the page as a few flat strings, not millions of small ones
     const pts = it.q.map((p) => T(p.sx, p.sy));
     doc.setFillColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }, colours));
     doc.setDrawColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }, colours));
@@ -274,10 +277,11 @@ function elevationLayout(doc, project, tris, area, k) {
   const specs = elevationSpecs(project);
   const cw = (area.x1 - area.x0) / 2;
   const ch = (area.y1 - area.y0) / 2;
-  const views = specs.map((s) => ({ s, r: renderView(doc, tris, { f: s.f }) }));
+  // Memory: only the bounds of each view are kept here. The projected items of a view (polygons, edges) are large, so drawElevations renders one view at a time.
+  const views = specs.map((s) => ({ s, bounds: renderView(doc, tris, { f: s.f }).bounds }));
   let w = 0;
   let h = 0;
-  for (const v of views) { w = Math.max(w, v.r.bounds.x1 - v.r.bounds.x0); h = Math.max(h, v.r.bounds.y1 - v.r.bounds.y0); }
+  for (const v of views) { w = Math.max(w, v.bounds.x1 - v.bounds.x0); h = Math.max(h, v.bounds.y1 - v.bounds.y0); }
   const n = fitScale(w, h + 900, cw - ELEV_MARGIN.l - ELEV_MARGIN.r - 2, ch - ELEV_MARGIN.top - ELEV_MARGIN.bottom, k);
   return { specs, views, cw, ch, n, ds: n * k };
 }
@@ -294,9 +298,10 @@ export function drawElevations(doc, ctx, tris, area) {
   const floor = lot?.floorRL;
   const levels = [...project.levels].sort((a, b) => a.elevation - b.elevation);
   views.forEach((v, i) => {
+    const r = renderView(doc, tris, { f: v.s.f });
     const cx0 = area.x0 + (i % 2) * cw;
     const cy0 = area.y0 + Math.floor(i / 2) * ch;
-    const midX = (v.r.bounds.x0 + v.r.bounds.x1) / 2;
+    const midX = (v.bounds.x0 + v.bounds.x1) / 2;
     const baseY = cy0 + ch - ELEV_MARGIN.bottom; // sheet y of the ground floor level
     const T = (sx, sy) => ({ x: cx0 + cw / 2 + (sx - midX) / ds, y: baseY + sy / ds });
     const gx0 = cx0 + 3;
@@ -305,7 +310,7 @@ export function drawElevations(doc, ctx, tris, area) {
     doc.setLineWidth(0.2);
     doc.rect(cx0 + 1, cy0 + 1, cw - 2, ch - 2);
     // Natural surface (dashed), clamped to the cell
-    const prof = groundProfile(project, v.s, axes, v.r, ctx.unalign);
+    const prof = groundProfile(project, v.s, axes, r, ctx.unalign);
     doc.setDrawColor(...PEN.contourMajor);
     doc.setLineWidth(0.4);
     doc.setLineDashPattern([2.6, 1.4], 0);
@@ -313,10 +318,11 @@ export function drawElevations(doc, ctx, tris, area) {
     const cx = (x) => Math.min(gx1, Math.max(gx0, x));
     if (pts.length > 1) for (let a = 0; a + 1 < pts.length; a++) { const x1 = cx(pts[a].x); const x2 = cx(pts[a + 1].x); if (x2 > x1) doc.line(x1, pts[a].y, x2, pts[a + 1].y); }
     doc.setLineDashPattern([], 0);
-    paintView(doc, v.r, T, { colours: ctx.colours });
+    paintView(doc, r, T, { colours: ctx.colours });
+    compactPages(doc);
     // Ground floor line
-    const xl = T(v.r.bounds.x0, 0).x;
-    const xr = T(v.r.bounds.x1, 0).x;
+    const xl = T(v.bounds.x0, 0).x;
+    const xr = T(v.bounds.x1, 0).x;
     doc.setLineWidth(0.7);
     doc.setDrawColor(...PEN.ink);
     doc.line(Math.max(gx0, xl - 6), T(0, 150).y, Math.min(gx1, xr + 6), T(0, 150).y);
@@ -333,7 +339,7 @@ export function drawElevations(doc, ctx, tris, area) {
       haloText(doc, `FFL${rlText(floor, lv.elevation)}`.replace('RL ', ''), xl - 1.2, yy - 1.4, { size: TXT.small, colour: PEN.dim, align: 'right', halo: 1.2 });
     });
     // Overall height at the right
-    const topZ = hf.topZ || -v.r.bounds.y0;
+    const topZ = hf.topZ || -v.bounds.y0;
     const dx = Math.min(gx1 - 12, xr + 4);
     doc.setDrawColor(...PEN.dim);
     doc.setLineWidth(0.15);

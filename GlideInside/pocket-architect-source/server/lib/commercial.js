@@ -19,12 +19,12 @@ import { passwordProblem } from '../../src/portal/credentials.js';
 import { sydneyDayStartPlus } from '../../src/portal/billing.js';
 import { HttpError, json, readJson, clientIp, bearerToken } from './http.js';
 import { signToken, verifyToken } from './entitlement.js';
+import { countLoginAttempt, clearLoginCounters } from './login-guard.js';
 import { hashPassword, verifyPassword, dummyVerify, secretEqual, randomBytes, hex } from './password.js';
 import * as credits from './credits.js';
 import * as stripe from './stripe.js';
 
 const DAY = 86400000;
-const LOCKOUT_MS = 15 * 60000;
 export const SUB_PREFIX = 'csub_';
 const GRACE_PREFIX = 'cgrace:';
 export const TRIAL_ROLE = 'commercial_trial';
@@ -367,38 +367,53 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     if (rec.disabled) throw new HttpError('TRIAL_DISABLED', 'This trial login has been switched off.');
     if (trialExpired(rec)) throw new HttpError('TRIAL_EXPIRED', 'This trial login has expired.');
     const total = config.commercialTrialAiTotal;
-    const aiState = (r) => {
-      const used = Math.min(total, r.aiUsed || 0);
-      return { total, used, remaining: Math.max(0, total - used) };
+    // L1 (pre-launch load test F1): the allowance lives in an entitlement row and is taken with the same guarded reservation as the
+    // subscription pool (reserveCredits: used + reserved + n <= total, one statement), so parallel requests can never overspend it.
+    const poolId = `ctai:${rec.id}`;
+    const ensurePool = async () => {
+      const made = await store.createEntitlement({ id: poolId, projectId: 'ctrialai', email: null, stripeSessionId: `ctai-s:${poolId}`, amountCents: 0, currency: 'aud', status: 'active', createdAt: iso(), creditsTotal: total, expiresAt: null });
+      if (made.created) {
+        if (rec.aiUsed > 0) await store.settleCredits(poolId, 0, Math.min(total, rec.aiUsed)); // carry over what the old JSON counter had used
+      } else if (made.entitlement && made.entitlement.creditsTotal !== total) {
+        await store.addCredits(poolId, total - made.entitlement.creditsTotal); // the owner changed COMMERCIAL_TRIAL_AI_TOTAL
+      }
+      return store.getEntitlement(poolId);
     };
+    const stateOf = (e) => {
+      const used = Math.min(total, e?.creditsUsed || 0);
+      return { total, used, remaining: Math.max(0, total - used - (e?.creditsReserved || 0)), reserved: e?.creditsReserved || 0 };
+    };
+    await ensurePool();
+    const poolNow = async () => stateOf(await store.getEntitlement(poolId));
     const snapshot = async () => {
-      const r = (await loadTrial()) || rec;
-      const a = aiState(r);
-      return { kind: 'commercial', commercial: true, trial: true, unit: 'messages', ...a, reserved: 0, warnLevel: credits.warnLevel(a.used, a.total, WARN), topUpRemaining: 0, available: a.remaining, commercialTopUp: null };
+      const a = await poolNow();
+      return { kind: 'commercial', commercial: true, trial: true, unit: 'messages', total: a.total, used: a.used, remaining: a.remaining, reserved: a.reserved, warnLevel: credits.warnLevel(a.used, a.total, WARN), topUpRemaining: 0, available: a.remaining, commercialTopUp: null };
     };
     const ai = {
       kind: 'commercial', messageBased: true, id: `ctrial:${rec.id}`, logId: `ctrial:${rec.id}`, accountKind: 'trial', rateKey: `ctrial:${rec.id}`, snapshot,
-      available: async () => aiState((await loadTrial()) || rec).remaining,
-      async reserve(n) {
-        return aiState((await loadTrial()) || rec).remaining >= n ? { m: n, t: 0 } : null;
+      available: async () => (await poolNow()).remaining,
+      async reserve(n, nowIso) {
+        return (await store.reserveCredits(poolId, n, nowIso)) ? { m: n, t: 0 } : null;
       },
       async settle(res, charged) {
+        await store.settleCredits(poolId, res.m, charged);
         const fresh = (await loadTrial()) || rec;
-        fresh.aiUsed = (fresh.aiUsed || 0) + charged;
-        bump(fresh, 'ai');
+        bump(fresh, 'ai'); // usage statistics only; the allowance itself is the pool row above
         await saveTrial(fresh);
         return { monthly: charged, topUp: 0 };
       },
-      async release() {},
+      async release(res) {
+        if (res?.m) await store.releaseCredits(poolId, res.m);
+      },
       async crossed(res, charged) {
-        const a = aiState((await loadTrial()) || rec);
+        const a = await poolNow();
         return credits.crossedThreshold(Math.max(0, a.used - charged), a.used, a.total, WARN);
       },
       exhaustedDetails: async () => ({ commercialTopUp: null, trial: true }),
     };
     return {
       kind: 'commercial', sub: 'trial', id: `ctrial:${rec.id}`, rateKey: `ctrial:${rec.id}`, watermark: config.commercialTrialWatermark, ai,
-      view: () => ({ ...trialView(rec), ai: aiState(rec) }),
+      view: async () => ({ ...trialView(rec), ai: await poolNow() }),
       async beforeExport(type) {
         const cap = config.commercialTrialDailyPdfs;
         if (type === 'pdf' && cap > 0 && todayOf((await loadTrial()) || rec).pdf >= cap) throw new HttpError('TRIAL_LIMIT', `The trial allows ${cap} plan set PDFs per day. Try again tomorrow.`);
@@ -467,24 +482,12 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     if (!username || !password || password.length > 512) throw bad();
     const nowMs = now();
     const ps = needPstore();
-    const userKey = `ct:u:${username}`;
-    const ipKey = `ct:ip:${clientIp(request)}`;
-    for (const [key, code] of [[userKey, 'ACCOUNT_LOCKED'], [ipKey, 'RATE_LIMITED']]) {
-      const f = await ps.getFailure(key);
-      if (f?.lockedUntil && f.lockedUntil > nowMs) {
-        const retryAfter = Math.ceil((f.lockedUntil - nowMs) / 1000);
-        throw new HttpError(code, code === 'ACCOUNT_LOCKED' ? `Too many failed attempts. Try again in ${Math.ceil(retryAfter / 60)} minutes.` : 'Too many attempts. Try again later.', { retryAfter });
-      }
-    }
+    // M1 and M4: the attempt is counted before the password is checked (atomic), per username AND address, with a higher per username ceiling.
+    const attempt = await countLoginAttempt(ps, { scope: 'ct:', subject: username, request, nowMs, config });
     const rec = await loadTrial();
     const ok = rec && rec.username === username ? (await verifyPassword(password, rec.passwordHash)).ok : (await dummyVerify(password), false);
-    if (!ok) {
-      const u = await ps.addFailure(userKey, nowMs, { windowMs: LOCKOUT_MS, max: config.loginMaxFailures, lockMs: LOCKOUT_MS });
-      await ps.addFailure(ipKey, nowMs, { windowMs: LOCKOUT_MS, max: config.loginIpMaxFailures, lockMs: LOCKOUT_MS });
-      if (u.lockedUntil) throw new HttpError('ACCOUNT_LOCKED', `Too many failed attempts. Try again in ${Math.ceil(LOCKOUT_MS / 60000)} minutes.`, { retryAfter: Math.ceil(LOCKOUT_MS / 1000) });
-      throw bad();
-    }
-    await ps.clearFailure(userKey);
+    if (!ok) throw attempt.failed();
+    await attempt.succeeded();
     if (rec.disabled) throw new HttpError('TRIAL_DISABLED', 'This trial login has been switched off.');
     if (trialExpired(rec)) throw new HttpError('TRIAL_EXPIRED', 'This trial login has expired.');
     bump(rec, 'logins');
@@ -497,7 +500,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
   async function accountGet(request) {
     const acct = await account(request);
     if (!acct) throw new HttpError('UNAUTHORISED', 'Sign in to see your account.');
-    return json({ account: acct.view() });
+    return json({ account: await acct.view() });
   }
 
   // Trial saved projects (only this one login can reach them; cleared after COMMERCIAL_TRIAL_KEEP_DAYS) ------------------------------
@@ -578,6 +581,18 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     if (!given || !(await secretEqual(given, config.adminToken))) throw new HttpError('UNAUTHORISED', 'Not authorised.');
   }
 
+  const trialPoolOf = (rec) => store.getEntitlement(`ctai:${rec.id}`);
+  async function trialPoolView(rec) {
+    const total = config.commercialTrialAiTotal;
+    const e = await trialPoolOf(rec);
+    const used = e ? Math.min(total, e.creditsUsed || 0) : Math.min(total, rec.aiUsed || 0); // no pool row yet: the old counter, if any
+    return { total, used, remaining: Math.max(0, total - used) };
+  }
+  async function resetTrialPool(rec) {
+    rec.aiUsed = 0;
+    const e = await trialPoolOf(rec);
+    if (e) await store.settleCredits(e.id, 0, -(e.creditsUsed || 0));
+  }
   async function adminView(rec) {
     if (!rec) return { exists: false, caps: { dailyPdfs: config.commercialTrialDailyPdfs || null, aiTotal: config.commercialTrialAiTotal }, watermark: config.commercialTrialWatermark, keepDays: config.commercialTrialKeepDays };
     const u = { ...emptyUsage(), ...(rec.usage || {}) };
@@ -585,7 +600,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
       exists: true, username: rec.username, disabled: !!rec.disabled, expiresAt: rec.expiresAt || null, expired: trialExpired(rec),
       createdAt: rec.createdAt, updatedAt: rec.updatedAt, lastLoginAt: rec.lastLoginAt || null, lastUsedAt: rec.lastUsedAt || null,
       usage: { pdf: u.pdf, dxf: u.dxf, ai: u.ai, logins: u.logins }, today: todayOf(rec),
-      ai: { total: config.commercialTrialAiTotal, used: Math.min(config.commercialTrialAiTotal, rec.aiUsed || 0), remaining: Math.max(0, config.commercialTrialAiTotal - (rec.aiUsed || 0)) },
+      ai: await trialPoolView(rec),
       caps: { dailyPdfs: config.commercialTrialDailyPdfs || null, aiTotal: config.commercialTrialAiTotal }, watermark: config.commercialTrialWatermark,
       keepDays: config.commercialTrialKeepDays, projectCount: (await loadIndex()).length,
     };
@@ -617,7 +632,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
         createdAt: old?.createdAt || iso(), updatedAt: iso(), lastLoginAt: old?.lastLoginAt || null, lastUsedAt: old?.lastUsedAt || null, usage: old?.usage || emptyUsage(), aiUsed: old?.aiUsed || 0,
       };
       await saveTrial(rec); // epoch + 1 signs out every device that held the previous login
-      await needPstore().clearFailure(`ct:u:${username}`);
+      await clearLoginCounters(needPstore(), { scope: 'ct:', subject: username });
       return json(await adminView(rec));
     }
     if (sub === '/settings' && method === 'POST') {
@@ -629,7 +644,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
         rec.disabled = body.disabled; // checked on every request, so it takes effect at once
       }
       if (body.expiresAt !== undefined) rec.expiresAt = parseExpiry(body.expiresAt);
-      if (body.resetAi === true) rec.aiUsed = 0; // gives the trial a fresh allowance of messages
+      if (body.resetAi === true) await resetTrialPool(rec); // gives the trial a fresh allowance of messages
       rec.updatedAt = iso();
       await saveTrial(rec);
       return json(await adminView(rec));

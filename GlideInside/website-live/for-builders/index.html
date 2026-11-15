@@ -329,14 +329,12 @@
     if (!g("name")) return show("Enter your name.");
     if (!g("company")) return show("Enter your company name.");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g("email"))) return show("Enter a valid email address.");
-    if (!/[0-9]{6,}/.test(g("phone").replace(/[\s()+-]/g, ""))) return show("Enter a valid phone number.");
+    if (!/^\d{8,15}$/.test(g("phone").replace(/[\s()+-]/g, ""))) return show("Enter a valid phone number.");
     if (!f.consent.checked) return show("Tick the box to agree to the trial terms.");
     if (f.website.value) { form.hidden = true; done.hidden = false; return; }
-    // Posts to the existing enquiry endpoint (no server change); the owner reviews each request and collects ABN and billing details in the portal before the first client login.
-    var notes = ["BUILDER FREE TRIAL REQUEST", "Company: " + g("company"), "Agreed to the trial terms and the Plan set terms of use (v1.1)"].join("\n");
-    var body = { name: g("name"), phone: g("phone"), email: g("email"), need: "engineering", notes: notes, consent: true, lot: {}, source: "public", orgName: g("company"), projectName: "Builder free trial request" };
+    var body = { name: g("name"), company: g("company"), email: g("email"), phone: g("phone"), consent: true, website: g("website") };
     btn.disabled = true;
-    fetch(((window.GI_CONFIG && window.GI_CONFIG.apiBase) || "/api") + "/enquiry/jce", { method: "POST", headers: { "content-type": "application/json", "x-gi-request": "1" }, body: JSON.stringify(body) })
+    fetch(((window.GI_CONFIG && window.GI_CONFIG.apiBase) || "/api") + "/portal/trial-request", { method: "POST", headers: { "content-type": "application/json", "x-gi-request": "1" }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d || {} }; }); })
       .then(function (x) {
         var saved = x.ok || x.d.saved || (x.d.error && x.d.error.saved);

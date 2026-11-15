@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { monthKey, monthStartMs, sydneyParts, ddmmyyyy, loginsInMonth, summariseMonth, formatAud, gstOfTotal, NEW_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, TOPUP_FEE_CENTS, TOPUP_CREDITS } from '../src/portal/billing.js';
 import { WORDS } from '../src/portal/wordlist.js';
-import { generateUsername, generatePassword, generateCredentials, usernameBase, passwordProblem, isBlockedWord, BLOCKED_PARTS, DIGITS } from '../src/portal/credentials.js';
+import { generateUsername, generatePassword, generateCredentials, usernameBase, passwordProblem, isBlockedWord, BLOCKED_PARTS, DIGITS, passwordEntropyBits } from '../src/portal/credentials.js';
 import { createMockApi, memoryStorage, DEMO_LOGINS } from '../src/portal/mock-api.js';
 import { houseStats } from '../src/portal/house-stats.js';
 import { projectToSvg } from '../src/portal/thumbnail.js';
@@ -78,15 +78,13 @@ test('word list: about 500 plain, short, unique, inoffensive words', () => {
   assert.ok(isBlockedWord('hell') && isBlockedWord('shitty') && !isBlockedWord('shell'));
 });
 
-test('password is two different words and two digits, e.g. river-maple-47', () => {
+test('password is 16 random characters in four groups from a look-alike free alphabet (about 79 bits)', () => {
+  assert.ok(passwordEntropyBits() >= 72);
   for (let i = 0; i < 500; i += 1) {
     const pw = generatePassword();
-    const m = /^([a-z]+)-([a-z]+)-([2-9]{2})$/.exec(pw);
-    assert.ok(m, pw);
-    assert.ok(WORDS.includes(m[1]) && WORDS.includes(m[2]));
-    assert.notEqual(m[1], m[2]);
+    assert.match(pw, /^[2-9a-hj-km-np-z]{4}(-[2-9a-hj-km-np-z]{4}){3}$/, pw);
   }
-  assert.equal(generatePassword({ randomInt: seq(0, 1, 0, 0) }), `${WORDS[0]}-${WORDS[1]}-${DIGITS[0]}${DIGITS[0]}`);
+  assert.equal(generatePassword({ randomInt: seq(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15) }), '2345-6789-abcd-efgh');
 });
 
 test('username is the first name plus a four digit suffix without 0 or 1, easy to read out', () => {
@@ -110,7 +108,7 @@ test('generated usernames are unique within the organisation, even when most are
   }
   assert.equal(taken.size, 2001);
   const c = generateCredentials('Lee', ['lee-4444']);
-  assert.ok(c.username.startsWith('lee-') && c.password.split('-').length === 3);
+  assert.ok(c.username.startsWith('lee-') && c.password.split('-').length === 4);
 });
 
 test('no confusable characters or offensive output in generated suffixes and passwords', () => {
@@ -173,7 +171,7 @@ test('Generate account: only the first name is needed, credentials shown once, A
   const before = (await api.monthUsage()).totals;
   const r = await api.issueClientLogin({ firstName: 'Priscilla' });
   assert.match(r.credentials.username, /^priscilla-[2-9]{4}$/);
-  assert.match(r.credentials.password, /^[a-z]+-[a-z]+-[2-9]{2}$/);
+  assert.match(r.credentials.password, /^[2-9a-hjkmnp-z]{4}(-[2-9a-hjkmnp-z]{4}){3}$/);
   assert.equal(r.charge.amountCents, 3000);
   assert.equal(r.charge.trigger, 'first_sign_in');
   assert.equal(r.client.status, 'active');

@@ -168,8 +168,8 @@ for (const d1 of [false, true]) {
     // a different pack has not accepted
     const t2 = await pack(w, 'ent_t2', 'p_t2');
     assert.equal((await w.call('/export/dxf', { token: t2, body: { project: proj('p_t2') } })).status, 409);
-    // GLB is not a plan: not gated
-    assert.equal((await w.call('/export/glb', { token: t2, body: { project: proj('p_t2') } })).status, 200);
+    // HTML, GLB and OBJ are gated too (security review Low): the terms apply to every export, not only the plan set formats
+    for (const type of ['glb', 'html', 'obj']) assert.equal((await w.call(`/export/${type}`, { token: t2, body: { project: proj('p_t2') } })).status, 409, type);
     // anonymous accept: not recorded
     const anon = await w.call('/terms/accept', { body: { version } });
     assert.deepEqual(await anon.json(), { recorded: false, reason: 'anonymous', version });

@@ -81,8 +81,9 @@ export function readConfig(env = {}) {
     sellerAbn: str(env.SELLER_ABN, '29 699 165 663'),
     portalProjectMaxBytes: Math.round(num(env.PORTAL_PROJECT_MAX_BYTES, 1800000)), // D1 rows are limited to 2 MB
     portalLogoMaxBytes: Math.round(num(env.PORTAL_LOGO_MAX_BYTES, 400000)),
-    loginMaxFailures: Math.round(num(env.LOGIN_MAX_FAILURES, 5)), // per username, then locked for 15 minutes
-    loginIpMaxFailures: Math.round(num(env.LOGIN_IP_MAX_FAILURES, 20)), // per IP address
+    loginMaxFailures: Math.round(num(env.LOGIN_MAX_FAILURES, 5)), // attempts per username AND address per 15 minutes (counted before the password is checked), then locked
+    loginIpMaxFailures: Math.round(num(env.LOGIN_IP_MAX_FAILURES, 20)), // attempts per address (all usernames)
+    loginUserGlobalMax: Math.round(num(env.LOGIN_USER_GLOBAL_MAX, 40)), // attempts per username from ALL addresses per 15 minutes: slows distributed guessing (a higher ceiling than the per address limit)
     sessionDays: num(env.SESSION_DAYS, 30), // sliding
     stripeLiveBillingApproved: str(env.STRIPE_LIVE_BILLING_APPROVED).toLowerCase() === 'owner-written-go-ahead',
     stripeGstTaxRateId: str(env.STRIPE_GST_TAX_RATE_ID),
@@ -97,6 +98,7 @@ export function readConfig(env = {}) {
     projectMaxBytes: num(env.PROJECT_MAX_BYTES, 0) > 0 ? Math.round(num(env.PROJECT_MAX_BYTES, 0)) : 2000000,
     projectTtlDays: num(env.PROJECT_TTL_DAYS, 0) > 0 ? num(env.PROJECT_TTL_DAYS, 0) : 365,
     projectSaveRateMax: num(env.PROJECT_SAVE_RATE_MAX, 0) > 0 ? Math.round(num(env.PROJECT_SAVE_RATE_MAX, 0)) : 20,
+    projectDailyBytesPerIp: num(env.PROJECT_DAILY_BYTES_PER_IP, 0) > 0 ? Math.round(num(env.PROJECT_DAILY_BYTES_PER_IP, 0)) : 40000000, // anonymous share storage written per visitor address per day (L8)
     projectReadRateMax: num(env.PROJECT_READ_RATE_MAX, 0) > 0 ? Math.round(num(env.PROJECT_READ_RATE_MAX, 0)) : 600,
     // Friends and testing codes (comma separated), accepted by /entitlement/restore exactly as on the live Worker.
     testCodes: str(env.TEST_CODES).split(',').map((c) => c.trim()).filter(Boolean),
@@ -125,6 +127,7 @@ export function readConfig(env = {}) {
     commercialGraceDays: Math.max(0, num(env.COMMERCIAL_GRACE_DAYS, 3)), // days of access kept after the first failed subscription invoice (Stripe past_due), then it locks
     commercialExportRatePerHour: Math.max(1, Math.round(num(env.COMMERCIAL_EXPORT_RATE_PER_HOUR, 120))), // anti-abuse only, per account
     commercialTrialDailyPdfs: Math.max(0, Math.round(num(env.COMMERCIAL_TRIAL_DAILY_PDFS, 0))), // 0 = off (plan set PDFs are unlimited)
+    exportConcurrency: Math.max(1, Math.round(num(env.EXPORT_CONCURRENCY, 1))), // exports built at the same time in one Worker isolate (128 MB shared)
     commercialTrialAiTotal: Math.max(0, Math.round(num(env.COMMERCIAL_TRIAL_AI_TOTAL, 50))), // assistant messages for the whole trial login, owner can reset
     commercialTrialWatermark: !['0', 'false', 'off', 'no'].includes(str(env.COMMERCIAL_TRIAL_WATERMARK, '1').toLowerCase()), // on by default
     commercialTrialKeepDays: Math.max(1, num(env.COMMERCIAL_TRIAL_KEEP_DAYS, 30)), // trial saved projects are cleared after this
@@ -132,8 +135,13 @@ export function readConfig(env = {}) {
     freeProfileMaxDesigns: Math.max(1, Math.round(num(env.FREE_PROFILE_MAX_DESIGNS, 10))), // saved designs per free profile
     profileSignupRateMax: Math.max(1, Math.round(num(env.PROFILE_SIGNUP_RATE_MAX, 5))), // sign ups per IP address per hour
     profileSigninIpMax: Math.max(1, Math.round(num(env.PROFILE_SIGNIN_IP_MAX, 30))), // sign in attempts per IP address per 10 minutes
-    profileSigninEmailMax: Math.max(1, Math.round(num(env.PROFILE_SIGNIN_EMAIL_MAX, 8))), // sign in attempts per email per 15 minutes
+    profileSigninEmailMax: Math.max(1, Math.round(num(env.PROFILE_SIGNIN_EMAIL_MAX, 8))), // sign in attempts per email AND address per 15 minutes (M4: a stranger cannot throttle the owner on another address)
+    profileSigninEmailGlobalMax: Math.max(1, Math.round(num(env.PROFILE_SIGNIN_EMAIL_GLOBAL_MAX, 40))), // sign in attempts per email from all addresses per 15 minutes: slows guessing spread over many addresses
     profileSaveRateMax: Math.max(1, Math.round(num(env.PROFILE_SAVE_RATE_MAX, 1200))), // design saves per profile per hour (autosave is debounced in the browser)
+    aiEstimateRatePerMin: Math.max(1, Math.round(num(env.AI_ESTIMATE_RATE_PER_MIN, 20))), // /ai/estimate calls per account per minute (L11)
+    clientTopUpMonthlyMax: Math.max(0, Math.round(num(env.CLIENT_TOPUP_MONTHLY_MAX, 3))), // top-ups one CLIENT login may buy per Sydney month, billed to the builder (L2); 0 = none
+    consentArchiveYears: Math.max(1, num(env.CONSENT_ARCHIVE_YEARS, 3)), // anonymised consent records kept after a profile is deleted (L6)
+    trustForwardedHeaders: ['1', 'true', 'yes', 'on'].includes(str(env.TRUST_FORWARDED_HEADERS).toLowerCase()), // L13: only for a host that is NOT behind Cloudflare
     commercialTrialSessionHours: Math.max(1, num(env.COMMERCIAL_TRIAL_SESSION_HOURS, 168)),
   };
 }

@@ -28,6 +28,8 @@ export function topUpExpiry(createdAt) {
 export async function ensurePools({ store, config, org, user, nowMs }) {
   const key = monthKey(nowMs);
   const { monthlyId, topUpId } = orgPoolIds(org.id, user.id, key);
+  // F7: reading is cheaper than the INSERT OR IGNORE and writes nothing, so a pool that already exists costs two reads and no write.
+  if ((await store.getEntitlement(monthlyId)) && (await store.getEntitlement(topUpId))) return { key, monthlyId, topUpId };
   const createdAt = new Date(nowMs).toISOString();
   const base = { projectId: org.id, email: null, amountCents: 0, currency: 'aud', status: 'active', createdAt };
   await store.createEntitlement({ ...base, id: monthlyId, stripeSessionId: `org-m:${monthlyId}`, creditsTotal: monthlyCap(org, config), expiresAt: new Date(monthStartMs(nextMonthKey(key))).toISOString() });
@@ -66,10 +68,16 @@ export async function reconcileTopUps({ store, org, user, nowMs }) {
 
 /** The shape the screens use (mock-api aiBalance): monthly allowance and top-up balance. */
 export async function aiSnapshot({ store, config, org, user, nowMs, reconcile = true }) {
-  const { key, monthlyId, topUpId } = await ensurePools({ store, config, org, user, nowMs });
-  if (reconcile) await reconcileTopUps({ store, org, user, nowMs });
-  const m = await store.getEntitlement(monthlyId);
-  const t = await store.getEntitlement(topUpId);
+  const key = monthKey(nowMs);
+  const { monthlyId, topUpId } = orgPoolIds(org.id, user.id, key);
+  let m = await store.getEntitlement(monthlyId);
+  let t = await store.getEntitlement(topUpId);
+  if (!m || !t) { // first look this month: create the pools (the only writes this function makes)
+    await ensurePools({ store, config, org, user, nowMs });
+    m = await store.getEntitlement(monthlyId);
+    t = await store.getEntitlement(topUpId);
+  }
+  if (reconcile && t && t.creditsTotal > 0 && (await reconcileTopUps({ store, org, user, nowMs }))) t = await store.getEntitlement(topUpId);
   const cap = m?.creditsTotal ?? monthlyCap(org, config);
   const used = m ? m.creditsUsed + (m.creditsReserved || 0) : 0;
   const monthlyRemaining = Math.max(0, cap - used);
@@ -92,6 +100,6 @@ export async function addTopUp({ store, config, org, user, nowMs, randomId }) {
 export async function aiToken({ config, org, user, nowMs }) {
   if (!config.entitlementSecret) throw new HttpError('SERVER_NOT_CONFIGURED', 'ENTITLEMENT_SECRET is not set.');
   const ttlSeconds = 8 * 3600;
-  const token = await issueOrgToken({ orgId: org.id, loginId: user.id, role: aiRole(user), cap: monthlyCap(org, config), ttlSeconds }, config, nowMs);
+  const token = await issueOrgToken({ orgId: org.id, loginId: user.id, role: aiRole(user), cap: monthlyCap(org, config), epoch: user.sessionEpoch || 0, ttlSeconds }, config, nowMs);
   return { token, role: aiRole(user), expiresAt: new Date(nowMs + ttlSeconds * 1000).toISOString() };
 }

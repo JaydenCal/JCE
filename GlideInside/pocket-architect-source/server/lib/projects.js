@@ -24,6 +24,10 @@ const same = (a, b) => {
   return d === 0;
 };
 const r2key = (id) => `projects/${id}.json`;
+// F5: an update writes the new body under a key of its own (the version is the row's updated_at) and only then moves the row to it, so the row and
+// the body can never come from two different writers. A row that has never been updated (updated = created) and rows written by earlier builds
+// keep the plain key.
+const r2keyFor = (id, row) => (row && row.updatedAt && row.updatedAt !== row.createdAt ? `projects/${id}/${row.updatedAt}.json` : r2key(id));
 
 export function createProjects({ store, files, config, now = () => Date.now() }) {
   const iso = (ms = now()) => new Date(ms).toISOString();
@@ -38,6 +42,16 @@ export function createProjects({ store, files, config, now = () => Date.now() })
     if ((await store.hitRate(key, windowSec, now())) > max) {
       const retryAfter = Math.max(1, windowSec - (Math.floor(now() / 1000) % windowSec));
       throw new HttpError('RATE_LIMITED', 'Too many attempts. Please wait a while and try again.', { retryAfter });
+    }
+  }
+
+  // L8: how much one visitor address may store per day. The body size is only known after reading it, so this is counted after readBody
+  // (an atomic add of `bytes` to a per address, per day counter). A refused save writes nothing.
+  async function limitBytes(request, bytes) {
+    const ip = clientIp(request);
+    const key = `projbytes:${await sha(config.ipHashSalt + ip)}`;
+    if ((await store.hitRate(key, 86400, now(), bytes)) > config.projectDailyBytesPerIp) {
+      throw new HttpError('RATE_LIMITED', 'Too much has been saved from this connection today. Please try again tomorrow.', { retryAfter: Math.max(1, 86400 - (Math.floor(now() / 1000) % 86400)) });
     }
   }
 
@@ -77,6 +91,8 @@ export function createProjects({ store, files, config, now = () => Date.now() })
 
   async function drop(id) {
     try {
+      const row = await store.getSharedProject(id).catch(() => null);
+      if (row && r2keyFor(id, row) !== r2key(id)) await files.delete(r2keyFor(id, row));
       await files.delete(r2key(id));
     } catch {
       /* the row is the source of truth; an orphan file is harmless */
@@ -96,6 +112,7 @@ export function createProjects({ store, files, config, now = () => Date.now() })
   async function create(request) {
     await limit(request, 'projsave', config.projectSaveRateMax, 3600);
     const b = await readBody(request);
+    await limitBytes(request, b.size);
     const id = rand(15);
     const editKey = rand(24);
     const ip = clientIp(request);
@@ -127,7 +144,7 @@ export function createProjects({ store, files, config, now = () => Date.now() })
       await drop(id).catch(() => null);
       throw new HttpError('EXPIRED', 'That shared link has expired.');
     }
-    const obj = await files.get(r2key(id));
+    const obj = (await files.get(r2keyFor(id, row))) || (await files.get(r2key(id))); // the second read covers rows updated by an earlier build
     if (!obj) throw new HttpError('NOT_FOUND', 'That shared design was not found.');
     const text = typeof obj.text === 'function' ? await obj.text() : String(obj.body ?? '');
     return json({ id, project: JSON.parse(text), name: row.name, createdAt: row.createdAt, updatedAt: row.updatedAt, expiresAt: row.expiresAt });
@@ -144,11 +161,27 @@ export function createProjects({ store, files, config, now = () => Date.now() })
       throw new HttpError('EXPIRED', 'That shared link has expired. Save again to make a new link.');
     }
     const b = await readBody(request);
-    await files.put(r2key(id), b.text, { httpMetadata: { contentType: 'application/json' } });
-    const at = iso();
-    const exp = expiryFrom();
-    await store.updateSharedProject(id, { name: b.name, bytes: b.size, updatedAt: at, expiresAt: exp, email: b.email });
-    return json({ id, url: shareUrl(id), updatedAt: at, expiresAt: exp, bytes: b.size });
+    await limitBytes(request, b.size);
+    let current = row;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const at = iso(Math.max(now(), Date.parse(current.updatedAt) + 1)); // strictly after the version being replaced, so it is never equal to the created time either
+      const exp = expiryFrom();
+      const key = `projects/${id}/${at}.json`;
+      await files.put(key, b.text, { httpMetadata: { contentType: 'application/json' } });
+      if (await store.updateSharedProject(id, { name: b.name, bytes: b.size, updatedAt: at, expiresAt: exp, email: b.email }, current.updatedAt)) {
+        for (const old of new Set([r2keyFor(id, current), r2key(id)])) if (old !== key) await files.delete(old).catch(() => null); // the previous body is no longer referenced
+        return json({ id, url: shareUrl(id), updatedAt: at, expiresAt: exp, bytes: b.size });
+      }
+      // Another writer moved the row first: keep our body only if it is the one the row now points at, then try again against the new version.
+      const fresh = await store.getSharedProject(id);
+      if (!fresh) {
+        await files.delete(key).catch(() => null);
+        throw new HttpError('NOT_FOUND', 'That shared design was not found.');
+      }
+      if (fresh.updatedAt !== at) await files.delete(key).catch(() => null);
+      current = fresh;
+    }
+    throw new HttpError('CONFLICT', 'That design is being saved from another place. Try again in a moment.');
   }
 
   return {

@@ -46,8 +46,8 @@ if not r then return 0 end
 redis.call('HSET', KEYS[1], 'creditsReserved', math.max(0, (tonumber(r) or 0) - tonumber(ARGV[1])))
 return 1`,
   rate: `
-local c = redis.call('INCR', KEYS[1])
-if c == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end
+local c = redis.call('INCRBY', KEYS[1], ARGV[2] or 1)
+if c == tonumber(ARGV[2] or 1) then redis.call('EXPIRE', KEYS[1], ARGV[1]) end
 return c`,
 };
 
@@ -163,9 +163,9 @@ export function createUpstashStore({ url, token, fetchImpl } = {}) {
       await cmd('DEL', `ps:wh:${id}`);
     },
     // Fixed window counter: the count in the current window, including this hit.
-    async hitRate(key, windowSec, nowMs) {
+    async hitRate(key, windowSec, nowMs, amount = 1) {
       const start = Math.floor(nowMs / (windowSec * 1000)) * windowSec * 1000;
-      return Number(await evalLua(LUA.rate, [`ps:rate:${key}:${start}`], [windowSec + 5]));
+      return Number(await evalLua(LUA.rate, [`ps:rate:${key}:${start}`], [windowSec + 5, amount])); // keys expire by themselves here: no purge needed
     },
     async saveEnquiry(e) {
       await cmd('SET', `ps:enq:${e.reference}`, JSON.stringify(e));

@@ -78,6 +78,10 @@ const LIMITS = { search: [60, 60], lot: [20, 60], aerial: [20, 60], contours: [1
 // per IP daily cap (counted for upstream bound searches only) apply as before.
 export const SEARCH_BURST = [30, 10]; // [hits, window seconds] per IP
 const DAY_LIMIT = 800;
+// H1 (final pre-launch report): the council and zone lookups are extras to the lot, so they get a short timeout and no retry (they used 25 s and a
+// retry, which made a new address take 25 to 50 s). A lookup that failed is never stored, so a later request tries again.
+const ENRICH_TIMEOUT_MS = 5000;
+const NEIGHBOUR_TIMEOUT_MS = 9000;
 export const SEARCH_MEM_MAX = 300; // per isolate LRU entries
 const NEIGHBOUR_M = 60;
 const NEIGHBOUR_MAX_M = 400;
@@ -258,7 +262,8 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         last = e;
       }
     }
-    console.warn(`[site] upstream failed ${url}${params && !post ? `?${new URLSearchParams(params)}` : ''}: ${String(last?.message || last).slice(0, 300)}`);
+    // L17: log the host and path only. The query string carries the visitor's address search text, which is personal data and stays out of the logs.
+    console.warn(`[site] upstream failed ${(() => { try { const u = new URL(url); return `${u.host}${u.pathname}`; } catch { return 'upstream'; } })()}: ${String(last?.message || last).slice(0, 120).replace(/https?:\/\/\S+/g, '[url]')}`);
     throw new HttpError('SITE_UPSTREAM', 'A government map service did not answer. Try again soon, or keep drawing without a lot.', { detail: String(last?.message || last).slice(0, 200) });
   }
 
@@ -503,8 +508,9 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
   const toRel = (ring, o) => ring.map(([e, n]) => [round(e - o.e, 3), round(n - o.n, 3)]);
   const polysRel = (polys, o) => polys.map((p) => ({ outer: toRel(p.outer, o), holes: p.holes.map((h) => toRel(h, o)) }));
 
-  async function lot(request, url) {
-    await rateLimit(request, 'lot');
+  const lotInflight = new Map(); // key -> Promise<{ value, cached }>: identical lookups in flight at once share one set of upstream calls (per isolate)
+
+  function parseLotParams(url) {
     const lon = num(url.searchParams.get('lon'), 'lon');
     const lat = num(url.searchParams.get('lat'), 'lat');
     let zone;
@@ -524,8 +530,48 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     const neighbourParam = nbRaw !== null && nbRaw !== '' ? nbRaw : radiusClamped;
     if (nbRaw !== null && nbRaw !== '' && !Number.isFinite(Number(nbRaw))) throw new HttpError('BAD_REQUEST', 'neighbourM must be a number of metres.');
     const nbKey = neighbourParam === null || neighbourParam === '' ? 'auto' : String(Math.min(NEIGHBOUR_MAX_M, Math.max(0, Math.round(Number(neighbourParam)))));
-    const { value } = await jsonCached(`lot3:${wanted || 'auto'}:${round(lon, 5)}:${round(lat, 5)}:${nbKey}`, TTL.lot, async () => {
-      const order = wanted ? [wanted] : lat < -29 ? ['NSW', 'QLD'] : ['QLD', 'NSW'];
+    return { lon, lat, zone, wanted, srid, neighbourParam, nbKey };
+  }
+
+  async function lot(request, url) {
+    // Parameter errors still count against the IP limit (they cost nothing upstream but are cheap to spam).
+    let P;
+    try {
+      P = parseLotParams(url);
+    } catch (e) {
+      await rateLimit(request, 'lot');
+      throw e;
+    }
+    const { lon, lat, zone, wanted, srid, neighbourParam, nbKey } = P;
+    const lotKey = `lot3:${wanted || 'auto'}:${round(lon, 5)}:${round(lat, 5)}:${nbKey}`;
+    // F4 (load test): a lookup already stored costs the upstream nothing, so it is answered before the per IP limit is charged.
+    if (store?.getSiteCache) {
+      try {
+        const hit = await store.getSiteCache(lotKey, now());
+        if (hit) return lotResponse(JSON.parse(hit));
+      } catch {
+        /* a cache failure never fails the request */
+      }
+    }
+    await rateLimit(request, 'lot');
+    let flight = lotInflight.get(lotKey);
+    if (!flight) {
+      flight = runLot(lotKey, { lon, lat, zone, wanted, srid, neighbourParam }).finally(() => lotInflight.delete(lotKey));
+      lotInflight.set(lotKey, flight);
+    }
+    const { value } = await flight;
+    return lotResponse(value);
+  }
+
+  // A result with a missing part (neighbours, zoning or council failed) is never stored and never cached by the browser or edge, so the next lookup retries it.
+  const isPartialLot = (v) => (v.notes || []).some((n) => /Neighbouring lots could not be loaded|Zoning could not be looked up|Council not found/.test(n)) || v.zoningPending === true || v.councilPending === true;
+  const lotResponse = (value) => {
+    const partial = isPartialLot(value);
+    return json(value, 200, { 'cache-control': partial ? 'no-store' : 'public, max-age=3600' });
+  };
+
+  function runLot(lotKey, { lon, lat, zone, wanted, srid, neighbourParam }) {
+    return jsonCached(lotKey, TTL.lot, async () => {      const order = wanted ? [wanted] : lat < -29 ? ['NSW', 'QLD'] : ['QLD', 'NSW'];
       let state = null;
       let parcel = null;
       for (const s of order) {
@@ -550,10 +596,10 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
       const layer = state === 'NSW' ? SERVICES.nswLot : SERVICES.qldLot;
       const fields = state === 'NSW' ? 'lotnumber,sectionnumber,planlabel,planlotarea,lotidstring,stratumlevel,hasstratum' : 'lot,plan,lotplan,lot_area,tenure,parcel_typ,locality,shire_name';
       const lgaCall = state === 'NSW'
-        ? upstream(`${SERVICES.nswLga}/query`, { f: 'json', ...point(lon, lat), outFields: 'lganame', returnGeometry: 'false' }).then((b) => b.features?.[0]?.attributes?.lganame || '')
-        : upstream(`${SERVICES.qldLga}/query`, { f: 'json', ...point(lon, lat), outFields: 'lga', returnGeometry: 'false' }).then((b) => b.features?.[0]?.attributes?.lga || '');
+        ? upstream(`${SERVICES.nswLga}/query`, { f: 'json', ...point(lon, lat), outFields: 'lganame', returnGeometry: 'false' }, { timeoutMs: ENRICH_TIMEOUT_MS, retries: 0 }).then((b) => b.features?.[0]?.attributes?.lganame || '')
+        : upstream(`${SERVICES.qldLga}/query`, { f: 'json', ...point(lon, lat), outFields: 'lga', returnGeometry: 'false' }, { timeoutMs: ENRICH_TIMEOUT_MS, retries: 0 }).then((b) => b.features?.[0]?.attributes?.lga || '');
       const zoneCall = state === 'NSW'
-        ? upstream(`${SERVICES.nswZoning}/query`, { f: 'json', ...point(lon, lat), outFields: 'SYM_CODE,LAY_CLASS,EPI_NAME,LGA_NAME', returnGeometry: 'false' }).then((b) => {
+        ? upstream(`${SERVICES.nswZoning}/query`, { f: 'json', ...point(lon, lat), outFields: 'SYM_CODE,LAY_CLASS,EPI_NAME,LGA_NAME', returnGeometry: 'false' }, { timeoutMs: ENRICH_TIMEOUT_MS, retries: 0 }).then((b) => {
           const a = b.features?.[0]?.attributes;
           return a ? { code: a.SYM_CODE || '', name: a.LAY_CLASS || '', instrument: a.EPI_NAME || '' } : null;
         })
@@ -565,11 +611,12 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
       // (rural) get simplified geometry so the response stays small; a failed GET is retried once as a form POST.
       const bigLot = Math.max(lotBox.maxE - lotBox.minE + 2 * nbM, lotBox.maxN - lotBox.minN + 2 * nbM) > 600;
       const nbParams = { f: 'json', ...envelope(around, srid), outFields: fields, returnGeometry: 'true', outSR: String(srid), ...(bigLot ? { maxAllowableOffset: nbM > 150 ? '2' : '1', geometryPrecision: '1' } : {}), ...(state === 'QLD' ? { resultRecordCount: '300' } : {}) };
-      const nbCall = upstream(`${layer}/query`, nbParams, { retries: 0 }).catch(() => upstream(`${layer}/query`, nbParams, { post: true, retries: 0 }));
+      const nbCall = upstream(`${layer}/query`, nbParams, { retries: 0, timeoutMs: NEIGHBOUR_TIMEOUT_MS }).catch(() => upstream(`${layer}/query`, nbParams, { post: true, retries: 0, timeoutMs: NEIGHBOUR_TIMEOUT_MS }));
       const notes = [];
+      const pending = { lga: false, zoning: false };
       const [lga, zoning, roadsBody, nbBody] = await Promise.all([
-        lgaCall.catch(() => { notes.push('Council not found.'); return ''; }),
-        zoneCall.catch(() => { notes.push('Zoning could not be looked up.'); return null; }),
+        lgaCall.catch(() => { notes.push('Council not found.'); pending.lga = true; return ''; }),
+        zoneCall.catch(() => { notes.push('Zoning could not be looked up.'); pending.zoning = true; return null; }),
         roadsCall.catch(() => ({ features: [] })),
         nbCall.catch(() => { notes.push('Neighbouring lots could not be loaded.'); return { features: [] }; }),
       ]);
@@ -616,12 +663,11 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
           ? 'Queensland planning schemes are made by each council, so the zone is not looked up here. Check the zoning with the local council.'
           : zoning ? null : 'No land zone was found for this lot.',
         notes,
+        ...(pending.zoning || pending.lga ? { zoningPending: pending.zoning, councilPending: pending.lga } : {}),
         attribution: state === 'QLD' ? QLD_CADASTRE_ATTR : NSW_CADASTRE_ATTR,
         retrieved: iso(),
       };
-    }, { ttlFor: (v, ttl) => ((v.notes || []).some((n) => /Neighbouring lots could not be loaded/.test(n)) ? 0 : ttl) }); // a partial result (neighbours failed) is never stored, so the next lookup retries
-    const partial = (value.notes || []).some((n) => /Neighbouring lots could not be loaded/.test(n));
-    return json(value, 200, { 'cache-control': partial ? 'no-store' : 'public, max-age=3600' });
+    }, { ttlFor: (v, ttl) => (isPartialLot(v) ? 0 : ttl) }); // a partial result (neighbours failed) is never stored, so the next lookup retries
   }
 
   // Aerial -------------------------------------------------------------------------------------------------------------------------
@@ -917,6 +963,16 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         return { id, url, required, ok: false, ms: now() - t0, error: e?.extra?.detail || e?.message || 'failed' };
       }
     }));
+    // H1: the service description answering says nothing about whether a zoning QUERY works (the live service described itself fine while queries timed out),
+    // so run one real zoning query at a fixed point in Sydney and report it as its own, required check.
+    const zt0 = Date.now();
+    try {
+      const zb = await upstream(`${SERVICES.nswZoning}/query`, { f: 'json', ...point(151.2093, -33.8688), outFields: 'SYM_CODE', returnGeometry: 'false' }, { timeoutMs: ENRICH_TIMEOUT_MS, retries: 0 });
+      const ok = Array.isArray(zb?.features) && zb.features.length > 0;
+      checks.push({ id: 'nsw-zoning-query', url: `${SERVICES.nswZoning}/query`, required: true, ok, ms: now() - zt0, error: ok ? null : 'the query returned no zone' });
+    } catch (e) {
+      checks.push({ id: 'nsw-zoning-query', url: `${SERVICES.nswZoning}/query`, required: true, ok: false, ms: now() - zt0, error: e?.extra?.detail || e?.message || 'failed' });
+    }
     const body = { ok: checks.filter((c) => c.required).every((c) => c.ok), allOk: checks.every((c) => c.ok), checkedAt: iso(), upstreams: checks };
     healthMemo = { until: now() + TTL.health * 1000, body };
     return json(body, 200, { 'cache-control': 'no-store' });

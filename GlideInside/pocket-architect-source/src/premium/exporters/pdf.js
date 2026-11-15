@@ -840,7 +840,7 @@ export function toPDF(project, options = {}) {
   if (typeof jsPDF !== 'function') throw new Error('toPDF needs the jsPDF class (options.jsPDF)');
   const plan = planSheets(project, { image, scale, paper, catalogue });
   const p = paperOf(plan.paper);
-  const raw = new jsPDF({ orientation: 'landscape', unit: 'mm', format: p.format, compress: false });
+  const raw = new jsPDF({ orientation: 'landscape', unit: 'mm', format: p.format, compress: false, precision: 3 });
   const tb = project.titleBlock || {};
   raw.setProperties({
     title: `${ascii(tb.projectName || project.name) || 'Design'} plan set`,
