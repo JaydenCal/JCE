@@ -57,7 +57,7 @@
     }
     live.start = go;
     if (phoneMq.matches) {
-      if (note) note.textContent = "Concept plans, not construction drawings.";
+      if (note) note.textContent = "Opens the live viewer full screen.";
       if (btn) btn.addEventListener("click", function () { location.assign(appUrl(live.last)); });
     }
     else if ("IntersectionObserver" in window) { new IntersectionObserver(function (es, o) { if (es[0].isIntersecting) { o.disconnect(); go(); } }, { rootMargin: "300px 0px" }).observe(box); }
