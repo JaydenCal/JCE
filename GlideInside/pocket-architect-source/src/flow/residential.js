@@ -14,6 +14,7 @@ import { loadHomes, filterRows, placeBest, nudgeHouse, turnHouse, mirrorHouse, p
 import { mount3dPreview } from './preview3d.js';
 import { mountBuilderFinder } from './builder-finder.js';
 import { ensureFlowAerial, NO_AERIAL } from './flow-aerial.js';
+import { createAerialSourceButton } from '../ui/aerial-source.js';
 
 export const RESIDENTIAL_BRAND = 'Glide Inside Residential';
 
@@ -106,11 +107,12 @@ function mountPlaceStep(ctx, { getHomes }) {
   stage.append(svg);
   const zbtn = (label, text, fn, ps, cls = '') => h('button', { class: `gf-zb ${cls}`, type: 'button', 'aria-label': label, title: label, dataset: { ps }, onclick: (e) => { e.stopPropagation(); fn(); } }, text);
   const aerialBtn = zbtn('Show or hide the aerial photo', 'Aerial: On', () => { aerialOn = !aerialOn; try { localStorage.setItem('gi.flow.aerial', aerialOn ? '1' : '0'); } catch { /* not remembered */ } draw(liveProject || store.project); }, 'flow-aerial-toggle', 'gf-zb--wide');
+  const srcBtn = createAerialSourceButton({ store, className: 'gf-zb gf-zb--wide', dataPs: 'flow-aerial-source' });
   const zoomBar = h('div', { class: 'gf-zoom', role: 'group', 'aria-label': 'Zoom the plan' },
     zbtn('Zoom in', '+', () => zoomBy(1 / 1.5), 'flow-zoom-in'), zbtn('Zoom out', '\u2212', () => zoomBy(1.5), 'flow-zoom-out'),
     zbtn('Fit the whole lot', 'Fit lot', () => { view = null; draw(liveProject || store.project); }, 'flow-fit-lot', 'gf-zb--wide'),
     zbtn('Zoom to the building', 'Zoom to building', () => zoomHome(3000), 'flow-zoom-home', 'gf-zb--wide'),
-    zbtn('Zoom to the whole development: buildings and driveway', 'Zoom to development', () => zoomDev(), 'flow-zoom-dev', 'gf-zb--wide'), aerialBtn);
+    zbtn('Zoom to the whole development: buildings and driveway', 'Zoom to development', () => zoomDev(), 'flow-zoom-dev', 'gf-zb--wide'), aerialBtn, srcBtn.el);
   stage.append(zoomBar);
   const busyEl = h('div', { class: 'gf-empty', style: { position: 'absolute', inset: '0', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,.6)' }, dataset: { ps: 'flow-placing' }, role: 'status' }, 'Placing your home');
 
@@ -455,8 +457,12 @@ function mountPlaceStep(ctx, { getHomes }) {
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => { if (!drag) draw(); }) : null;
   ro?.observe(stage);
 
+  let aerialKey = lotNow()?.aerial?.key || null;
   const off = store.on('project', (e) => {
     if (disposed || drag) return;
+    // The aerial source changed (a picture of the person's own, or back to standard): load the new image.
+    const k = lotNow()?.aerial?.key || null;
+    if (k !== aerialKey) { aerialKey = k; aerial = null; aerialOf(lotNow()).then((a) => { if (!disposed) { aerial = a; draw(); } }); }
     draw();
     // Late setbacks (the design's own storeys and heights change the council envelope): a home the person has not touched is fitted again.
     if (e?.label === 'setbacks' && !touched && refits < 2 && !busy && placementStatus(store.project).state === 'outside') { refits += 1; bestFit(); }
@@ -492,7 +498,7 @@ function mountPlaceStep(ctx, { getHomes }) {
       } catch { /* the whole lot stays in view */ }
       ctx.refresh();
     },
-    dispose() { disposed = true; off?.(); ro?.disconnect(); },
+    dispose() { disposed = true; off?.(); ro?.disconnect(); srcBtn.dispose(); },
   };
 }
 

@@ -15,6 +15,7 @@ export const AERIAL_CSS = `
 .lc-embed.is-compact .lc-aerial{right:12px;top:234px}
 .lc-root[data-view="2d"] .lc-aerial,.lc-root[data-view="split"] .lc-aerial{display:none!important}
 .ps-aerial-fab{position:absolute;left:12px;bottom:44px;z-index:15}
+.ps-aerial-fab.ps-aerial-own{bottom:84px}
 .ps-stage:has(.lc-root:not([hidden])) .ps-aerial-fab{display:none}
 .tv-bar .ps-aerial{height:40px;border-radius:20px;padding:0 14px 0 12px!important}
 `;
