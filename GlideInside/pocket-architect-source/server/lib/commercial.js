@@ -619,7 +619,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     }
     const out = [...months.values()].sort((x, y) => y.month.localeCompare(x.month));
     for (const m of out) m.accounts.sort((x, y) => y.costUsd - x.costUsd);
-    return json({ model: config.commercialAiModel, priceUsdPerMtok: { input: config.commercialAiPriceInPerMtok, output: config.commercialAiPriceOutPerMtok }, months: out });
+    return json({ model: config.commercialAiModel, priceUsdPerMtok: { input: config.commercialAiPriceInPerMtok, cacheWrite: config.commercialAiPriceCacheWritePerMtok, cacheRead: config.commercialAiPriceCacheReadPerMtok, output: config.commercialAiPriceOutPerMtok }, months: out });
   }
 
   // Router (the part of the path after /api) ------------------------------------------------------------------------------------

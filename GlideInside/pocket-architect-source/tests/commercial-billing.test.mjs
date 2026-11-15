@@ -15,7 +15,7 @@ const DAY = 86400000;
 const hex = (b) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
 const jsonRes = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 const ROOF = { type: 'tool_use', id: 'toolu_1', name: 'set_finish', input: { target: 'roof', colour: 'steel-charcoal' } };
-const USAGE = { input_tokens: 5200, output_tokens: 180, cache_creation_input_tokens: 0, cache_read_input_tokens: 5800 };
+const USAGE = { input_tokens: 5200, output_tokens: 180, cache_creation_input_tokens: 1000, cache_read_input_tokens: 5800 };
 const ADMIN = 'admin-token-for-tests-0123456789';
 const TRIAL_PW = 'Gum-tree-Wattle-7731';
 
@@ -302,7 +302,14 @@ test('trial login: username sign in, watermarked unlimited PDFs, no billing, no 
     assert.equal(r.status, 200, JSON.stringify(r.json));
     const text = await pdfText(r);
     assert.ok(text.includes('TRIAL, NOT FOR CONSTRUCTION'), 'watermark title');
+    assert.ok(!text.includes('Watermark removed'), 'no removal line for the commercial trial');
+    assert.ok(!text.includes('LODGEMENT'), 'one consistent wording');
   }
+  const dxf = await w.call('POST', '/api/export/dxf', { token, body: { project: commercialProject({ plain: false }) } });
+  assert.equal(dxf.status, 200);
+  const dxfText = Buffer.from(await dxf.res.arrayBuffer()).toString('utf8');
+  assert.ok(dxfText.includes('TRIAL, NOT FOR CONSTRUCTION'), 'DXF watermark text');
+  assert.ok(!dxfText.includes('LODGEMENT') && !dxfText.includes('Watermark removed'), 'DXF has the one consistent wording');
   assert.equal((await w.pdf(token, createProject({ id: 'p_h', name: 'H' }))).status, 403);
   assert.equal((await w.call('POST', '/api/commercial/billing-portal', { token })).status, 403);
   assert.equal((await w.call('POST', '/api/commercial/ai-topup', { token })).status, 403);
@@ -497,9 +504,10 @@ test('per-message token usage is recorded per account and shown to the owner wit
   assert.equal(m.month, '2026-11');
   const subRow = m.accounts.find((a) => a.kind === 'subscription');
   assert.equal(subRow.messages, 2);
+  assert.equal(subRow.cacheWrite, 2000);
   assert.deepEqual([subRow.input, subRow.cacheRead, subRow.output], [10400, 11600, 360]);
-  // 2 x (5200 in x $3 + 5800 cache read x 0.1 x $3 + 180 out x $15) per million tokens
-  const one = (5200 * 3 + 5800 * 0.3 + 180 * 15) / 1e6;
+  // 2 x (5200 in x $2 + 5800 cache read x $0.10 + 180 out x $10) per million tokens, cache write at $2.50
+  const one = (5200 * 2 + 1000 * 2.5 + 5800 * 0.1 + 180 * 10) / 1e6;
   assert.ok(Math.abs(subRow.costUsd - 2 * one) < 1e-6, String(subRow.costUsd));
   assert.equal(subRow.email, 'dev@example.com');
   assert.equal(m.accounts.find((a) => a.kind === 'trial').messages, 1);

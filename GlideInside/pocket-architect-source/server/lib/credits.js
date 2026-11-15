@@ -15,7 +15,10 @@ export function costMicros(usage = {}, config) {
   const O = Number(usage.output_tokens) || 0;
   const W = Number(usage.cache_creation_input_tokens) || 0;
   const R = Number(usage.cache_read_input_tokens) || 0;
-  return I * pin + O * pout + W * CACHE_WRITE_MULT * pin + R * CACHE_READ_MULT * pin;
+  // Explicit cache prices (commercial model) win over the multiplier defaults used by the residential model.
+  const pw = Number.isFinite(config.priceCacheWritePerMtok) ? config.priceCacheWritePerMtok : CACHE_WRITE_MULT * pin;
+  const pr = Number.isFinite(config.priceCacheReadPerMtok) ? config.priceCacheReadPerMtok : CACHE_READ_MULT * pin;
+  return I * pin + O * pout + W * pw + R * pr;
 }
 
 /** credits = max(1, ceil(cost / CREDIT_USD)). The small epsilon stops float noise adding a credit. */

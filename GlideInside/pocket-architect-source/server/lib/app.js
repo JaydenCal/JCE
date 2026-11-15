@@ -356,7 +356,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     // The commercial assistant (subscription or trial login, commercial mode only) runs on COMMERCIAL_AI_MODEL with its own price table for the
     // cost record. Every other account keeps ANTHROPIC_MODEL. acct.messageBased is only true for a commercial account, and needCommercialBody
     // has already refused a commercial account that did not say commercial, so a residential Plan Pack can never select the commercial model.
-    const aiConfig = acct.messageBased ? { ...config, anthropicModel: config.commercialAiModel, priceInPerMtok: config.commercialAiPriceInPerMtok, priceOutPerMtok: config.commercialAiPriceOutPerMtok } : config;
+    const aiConfig = acct.messageBased ? { ...config, anthropicModel: config.commercialAiModel, priceInPerMtok: config.commercialAiPriceInPerMtok, priceOutPerMtok: config.commercialAiPriceOutPerMtok, priceCacheWritePerMtok: config.commercialAiPriceCacheWritePerMtok, priceCacheReadPerMtok: config.commercialAiPriceCacheReadPerMtok } : config;
     const logBase = { id: randomId('req'), entitlementId: acct.logId || acct.id, createdAt: iso(started), model: aiConfig.anthropicModel };
 
     // Organisation budgets come first so one busy builder cannot use up the AI for public buyers.

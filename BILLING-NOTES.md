@@ -41,8 +41,10 @@ New:
 | `COMMERCIAL_AI_TOPUP_QTY` | 100 | Messages credited per pack. |
 | `COMMERCIAL_AI_TOPUP_PRICE_AUD` | 15 | Display only: must match the Stripe price. |
 | `COMMERCIAL_AI_MODEL` | `claude-sonnet-5-5` | Model for commercial accounts in commercial mode only. Residential keeps `ANTHROPIC_MODEL`. |
-| `COMMERCIAL_AI_PRICE_IN_PER_MTOK_USD` | 3 | USD per million input tokens, used only for the cost report (cache reads count at a tenth). Please check against Anthropic pricing. |
-| `COMMERCIAL_AI_PRICE_OUT_PER_MTOK_USD` | 15 | USD per million output tokens, cost report only. |
+| `COMMERCIAL_AI_PRICE_IN_PER_MTOK_USD` | 2 | USD per million input tokens for claude-sonnet-5-5 (verified pricing), cost report only. |
+| `COMMERCIAL_AI_PRICE_OUT_PER_MTOK_USD` | 10 | USD per million output tokens, cost report only. |
+| `COMMERCIAL_AI_PRICE_CACHE_WRITE_PER_MTOK_USD` | 2.5 | USD per million 5 minute cache write tokens, cost report only. |
+| `COMMERCIAL_AI_PRICE_CACHE_READ_PER_MTOK_USD` | 0.1 | USD per million cache read tokens, cost report only. |
 | `COMMERCIAL_TRIAL_AI_TOTAL` | 50 | AI messages for the whole trial login (reset in the admin screen). |
 | `COMMERCIAL_TRIAL_WATERMARK` | on | Set to `0` to remove the "TRIAL, NOT FOR CONSTRUCTION" watermark from trial plan sets. |
 | `COMMERCIAL_TRIAL_DAILY_PDFS` | 0 (off) | Optional daily cap on trial plan set PDFs. Off means unlimited. |
@@ -81,8 +83,8 @@ In the admin screen (`/portal/admin/`, the ADMIN_TOKEN you already use)
 
 * Terms: new section 10 "Commercial Developer subscription" in `website-live/terms.html` (monthly renewal, cancel anytime, access to the end of the paid period, no part month refund beyond Australian Consumer Law, GST inclusive, failed payment pauses access). Please have it reviewed.
 * A failed payment (`past_due`) blocks commercial access at once. Stripe retries the card for a few days, so you may prefer a grace period.
-* The A$15 and 100 message figures and the AI cost table prices are config values. The cost report prices are my assumption (US$3 in, US$15 out per million tokens).
-* The DXF watermark text still reads "TRIAL NOT FOR CONSTRUCTION OR LODGEMENT" and the PDF footer line reads "Free trial export from Glide Inside. Watermark removed once the account is active." (the existing builder trial wording). Only the PDF title is "TRIAL, NOT FOR CONSTRUCTION".
+* The A$15 and 100 message figures and the AI cost table prices are config values. The cost report prices are the verified Sonnet 5.5 rates (US$2 in, 2.50 cache write, 0.10 cache read, 10 out per million tokens).
+* For the commercial trial login, the PDF title, PDF footer and DXF text all read "TRIAL, NOT FOR CONSTRUCTION" and the "Watermark removed once the account is active" line is dropped. Builder trials keep their existing wording.
 * The trial account is stored without a new database role: the brief's "commercial_trial role" is the token and account role name (`commercial_trial`), not a row in the `users` table, which has a CHECK constraint that would need a table rebuild migration.
 * Subscription restore on another browser needs the checkout email and the receipt reference (`csub_...`) shown on the account page, because this server sends no email.
 * A cancelled but still paid subscription keeps access to the period end; the account page shows "Renews on" for active ones and "Access ends on" otherwise. It does not yet say "cancels at the end of the period" (that flag is not stored).

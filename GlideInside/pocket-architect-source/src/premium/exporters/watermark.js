@@ -16,7 +16,7 @@ const ENG_SH = 297;
 const ENG_TB_TOP = 238;
 
 /** Draw the mark on every page of a jsPDF document (diagonal title, small footer line), at about 22 percent opacity. */
-export function stampPdf(doc, title = TRIAL_TITLE) {
+export function stampPdf(doc, title = TRIAL_TITLE, footer = TRIAL_FOOTER) {
   const pages = doc.internal.getNumberOfPages();
   for (let n = 1; n <= pages; n++) {
     doc.setPage(n);
@@ -48,20 +48,20 @@ export function stampPdf(doc, title = TRIAL_TITLE) {
     doc.setFontSize(eng ? 8 * k : 7);
     doc.setTextColor(64, 64, 64);
     if (eng) {
-      const tw = doc.getTextWidth(TRIAL_FOOTER) + 3 * k;
+      const tw = doc.getTextWidth(footer) + 3 * k;
       const by = (ENG_TB_TOP - 1.3) * k;
       doc.setFillColor(255, 255, 255);
       doc.rect(w / 2 - tw / 2, by - 3.4 * k, tw, 4.6 * k, 'F');
-      doc.text(TRIAL_FOOTER, w / 2, by, { align: 'center' });
+      doc.text(footer, w / 2, by, { align: 'center' });
     } else {
-      doc.text(TRIAL_FOOTER, w / 2, h - 2.2, { align: 'center' });
+      doc.text(footer, w / 2, h - 2.2, { align: 'center' });
     }
   }
   doc.setPage(1);
 }
 
 /** A jsPDF class whose documents are stamped when they are finalised (output). The builders only ever see a normal jsPDF. */
-export function trialJsPDF(JsPDF, title = TRIAL_TITLE) {
+export function trialJsPDF(JsPDF, title = TRIAL_TITLE, footer = TRIAL_FOOTER) {
   function TrialPDF(...args) {
     const doc = new JsPDF(...args);
     const output = doc.output.bind(doc);
@@ -69,7 +69,7 @@ export function trialJsPDF(JsPDF, title = TRIAL_TITLE) {
     doc.output = (...a) => {
       if (!stamped) {
         stamped = true;
-        stampPdf(doc, title);
+        stampPdf(doc, title, footer);
         try { doc.setProperties({ keywords: TRIAL_NOTE }); } catch { /* optional */ }
       }
       return output(...a);
@@ -98,13 +98,15 @@ export function markTrialGroup(THREE, group) {
 }
 
 /** DXF: text on the watermark layer across the drawing extents (diagonal) and a line in the title area. */
-export function dxfTrialEntities(writer, ext, titleAt) {
+/** `plain` (commercial trial login): the one line "TRIAL, NOT FOR CONSTRUCTION" for the diagonal text and the title area, no removal note. */
+export function dxfTrialEntities(writer, ext, titleAt, plain = null) {
+  const dxfText = plain || TRIAL_DXF_TEXT;
   const e = Number.isFinite(ext.minX) ? ext : { minX: 0, minY: 0, maxX: 10000, maxY: 10000 };
   const w = e.maxX - e.minX;
   const h = e.maxY - e.minY;
   const ang = (Math.atan2(h, w) * 180) / Math.PI;
   const height = Math.max(300, Math.hypot(w, h) / 22);
-  const len = TRIAL_DXF_TEXT.length * height * 0.62;
+  const len = dxfText.length * height * 0.62;
   const theta = Math.atan2(h, w);
   const cx = (e.minX + e.maxX) / 2;
   const cy = (e.minY + e.maxY) / 2;
@@ -113,13 +115,13 @@ export function dxfTrialEntities(writer, ext, titleAt) {
   writer.begin('TEXT', TRIAL_DXF_LAYER);
   writer.point(10, start);
   writer.pair(40, height);
-  writer.pair(1, TRIAL_DXF_TEXT);
+  writer.pair(1, dxfText);
   writer.pair(50, ang);
   writer.grow(e.minX, e.minY);
   writer.grow(e.maxX, e.maxY);
   const at = titleAt || { x: e.minX, y: e.maxY + 800 };
-  writer.text(TRIAL_DXF_LAYER, at, 220, `TRIAL: ${TRIAL_FOOTER}`);
-  writer.text(TRIAL_DXF_LAYER, { x: at.x, y: at.y + 320 }, 300, TRIAL_DXF_TEXT);
+  if (!plain) writer.text(TRIAL_DXF_LAYER, at, 220, `TRIAL: ${TRIAL_FOOTER}`);
+  writer.text(TRIAL_DXF_LAYER, plain ? at : { x: at.x, y: at.y + 320 }, 300, dxfText);
 }
 
 /** HTML viewer: fixed corner badge and a faint diagonal overlay. Text only, no web links, so the file stays offline. */
