@@ -26,10 +26,10 @@ const SUN_PRESETS = {
   day: { dir: new THREE.Vector3(0.5, 0.72, -0.5).normalize(), color: '#fff6ea', intensity: 3.0, hemi: 1.05, exposure: 1.0, sky: '#eef3fb', ground: '#a39d8e' },
   // The default, and the look of the homepage hero render: a warm afternoon sun about 34 degrees up, long soft shadows from the trees,
   // houses and fences, and a gentle warm sky light. No fog and no haze.
-  warm: { dir: new THREE.Vector3(-0.66, 0.56, -0.5).normalize(), color: '#ffe2b8', intensity: 3.0, hemi: 1.3, exposure: 1.02, sky: '#f4ecdc', ground: '#b3a57c' },
+  warm: { dir: new THREE.Vector3(-0.66, 0.56, -0.5).normalize(), color: '#ffe2b8', intensity: 2.9, hemi: 1.25, exposure: 0.95, sky: '#f4ecdc', ground: '#b3a57c' },
 };
 // Without a lot there is no north: the same warm afternoon light from the front left.
-const NO_LOT_SUN = { dir: new THREE.Vector3(-0.56, 0.56, 0.61).normalize(), color: '#ffe2b8', intensity: 3.0, hemi: 1.3, exposure: 1.02, sky: '#f4ecdc', ground: '#b3a57c' };
+const NO_LOT_SUN = { dir: new THREE.Vector3(-0.56, 0.56, 0.61).normalize(), color: '#ffe2b8', intensity: 2.9, hemi: 1.25, exposure: 0.95, sky: '#f4ecdc', ground: '#b3a57c' };
 // Sky and ground are tuned for the white app theme: the horizon is a clear blue grey rather than near white,
 // so the edge of the view reads against a white page and white overlay chips stand out on it.
 const SKY = { top: '#3d7fd9', horizon: '#cfe3f7', ground: '#9aa28f' };

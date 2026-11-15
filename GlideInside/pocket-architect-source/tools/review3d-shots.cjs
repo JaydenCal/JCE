@@ -165,9 +165,14 @@ const ADDRESS = '12 Industrial Drive, Westdale NSW';
     await pd.goto(`${ORIGIN}/plan-studio/app/`, { waitUntil: 'domcontentloaded' });
     await pd.waitForFunction(() => window.__ps?.catalogue?.templates?.length > 0, null, { timeout: 60000 });
     await pd.waitForTimeout(3000);
+    // the guided start flow opens first: leave it for the editor
+    await pd.evaluate(() => { [...document.querySelectorAll('a,button')].find((e) => /Skip to editor/.test(e.textContent || ''))?.click(); });
+    await pd.waitForTimeout(3000);
     const f3 = pd.mainFrame();
     console.log('double', await f3.evaluate(() => { const ps = window.__ps; const ok = ps.loadTemplate(ps.catalogue.templates.find((t) => t.id === 'house_double')); ps.store.setUI({ view: '3d' }); return String(ok); }));
     await pd.waitForTimeout(7000);
+    for (let i = 0; i < 3; i++) { await pd.evaluate(() => { [...document.querySelectorAll('a,button')].find((e) => /Skip to editor/.test(e.textContent || '') && e.offsetParent)?.click(); }); await pd.waitForTimeout(1500); }
+    await f3.evaluate(() => window.__ps.store.setUI({ view: '3d' })); await pd.waitForTimeout(4000);
     await f3.evaluate(() => document.querySelector('[data-ps="view3d-aerial"]')?.click()); await pd.waitForTimeout(3500); await shot(pd, `${PRE}-double-aerial`);
     await f3.evaluate(() => document.querySelector('[data-ps="view3d-hero"]')?.click()); await pd.waitForTimeout(3500); await shot(pd, `${PRE}-double-3d`);
     await f3.evaluate(() => document.querySelector('[data-ps="view3d-front"]')?.click()); await pd.waitForTimeout(3500); await shot(pd, `${PRE}-double-street`);
