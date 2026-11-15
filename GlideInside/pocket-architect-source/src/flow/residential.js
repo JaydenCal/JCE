@@ -275,8 +275,38 @@ function mountPlaceStep(ctx, { getHomes }) {
   };
 
   // Pointer: drag the house, or the handle to turn it
+  // Pinch to zoom (two pointers): both fingers zoom about their midpoint and moving the midpoint pans. A drag in progress is abandoned
+  // (the home is not moved) the moment the second finger lands.
+  const ptrs = new Map();
+  let pinch = null;
+  const pinchDist = () => { const [a, b] = [...ptrs.values()]; return Math.hypot(a.x - b.x, a.y - b.y); };
+  const pinchMid = () => { const [a, b] = [...ptrs.values()]; return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; };
+  stage.addEventListener('pointerdown', (ev) => {
+    if (ev.target.closest?.('.gf-zoom')) return;
+    if (ev.isPrimary) { ptrs.clear(); pinch = null; } // a new gesture starts with the primary pointer: a lost pointerup never leaves a stale finger
+    ptrs.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (ptrs.size === 2) {
+      if (drag) { drag = null; draw(store.project); }
+      pinch = { d: pinchDist(), mid: pinchMid() };
+    }
+  }, true);
+  function doPinch() {
+    if (!box || ptrs.size < 2 || !pinch) return;
+    const d = pinchDist();
+    const mid = pinchMid();
+    if (d > 0 && pinch.d > 0) zoomBy(pinch.d / d, toMm({ clientX: mid.x, clientY: mid.y }));
+    const m = svg.getScreenCTM();
+    const sc = m ? m.a : 1;
+    if (view && (mid.x !== pinch.mid.x || mid.y !== pinch.mid.y)) {
+      view = clampView({ ...view, x: view.x - (mid.x - pinch.mid.x) / sc, y: view.y - (mid.y - pinch.mid.y) / sc });
+      draw(liveProject || store.project);
+    }
+    pinch = { d, mid };
+  }
+  const endPointer = (ev) => { ptrs.delete(ev.pointerId); if (ptrs.size < 2) pinch = null; };
   const onDown = (ev) => {
     if (ev.button != null && ev.button !== 0) return;
+    if (ptrs.size > 1) return; // a pinch, not a drag
     const onHandle = ev.target.closest?.('[data-ps="flow-handle"]');
     const onHouse = ev.target.closest?.('[data-ps="flow-house"]');
     if (!onHandle && !onHouse) {
@@ -327,9 +357,13 @@ function mountPlaceStep(ctx, { getHomes }) {
   };
   svg.addEventListener('pointerdown', onDown);
   stage.addEventListener('wheel', (e) => { e.preventDefault(); zoomBy(Math.exp(e.deltaY * (e.ctrlKey ? 0.01 : 0.0016)), toMm(e)); }, { passive: false });
-  stage.addEventListener('pointermove', onMove);
-  stage.addEventListener('pointerup', onUp);
-  stage.addEventListener('pointercancel', onUp);
+  stage.addEventListener('pointermove', (ev) => {
+    if (ptrs.has(ev.pointerId)) ptrs.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (pinch) { ev.preventDefault(); doPinch(); return; }
+    onMove(ev);
+  });
+  stage.addEventListener('pointerup', (ev) => { endPointer(ev); onUp(); });
+  stage.addEventListener('pointercancel', (ev) => { endPointer(ev); onUp(); });
   stage.addEventListener('keydown', (e) => {
     const step = e.shiftKey ? 1000 : nudgeMm;
     const k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
