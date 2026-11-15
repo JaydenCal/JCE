@@ -171,7 +171,7 @@ export function briefSections(p) {
       const x = f.inputs[k];
       if (x) fz.push(`- ${label}: ${money(x.value)}. Status: ${statusLabel(x.status)}`);
     }
-    if (buildingsOf(p).length) fz.push('Buildings are priced at the unit sale and build rates, so treat their figures as a rough guide only.');
+    if (buildingsOf(p).length) fz.push('Buildings are costed at the build rate of their type (status ESTIMATE) and valued at the unit sale and rent rates, so treat their figures as a rough guide only.');
     fz.push(`${CAVEAT} ${GST_NOTE} ${RENT_NOTE} Data as at ${DATA_DATE}.`);
   } else fz.push('Feasibility could not be worked out for this layout.');
   sections.push({ title: 'Indicative feasibility', lines: fz });

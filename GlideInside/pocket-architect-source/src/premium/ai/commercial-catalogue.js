@@ -1,28 +1,24 @@
-// The building type catalogue as the assistant sees it. The catalogue is built on another branch (src/commercial/catalogue/types/index.js,
-// see INTERFACE.md there). Until it exists, or when a type misbehaves, the assistant offers strata units only. Every call into a type
-// module is guarded, so a broken type never breaks the assistant.
+// The building type catalogue as the assistant sees it: the real registry in src/commercial/catalogue/types (INTERFACE.md there), minus the
+// strata unit type, which the assistant plans with its own row tools. The assistant works on the same types, building records, placement
+// and bays as the catalogue, so a building it adds is drawn by the catalogue's materialise, plan symbols and 3D. Tests may override the
+// list with setCommercialTypes. Every call into a type module is guarded, so a broken type never breaks the assistant.
 
-let TYPES = null;
+import { TYPES as REGISTRY, STRATA_ID } from '../../commercial/catalogue/types/index.js';
+
+let OVERRIDE = null;
 
 const isType = (t) => t && typeof t === 'object' && typeof t.id === 'string' && typeof t.label === 'string' && Array.isArray(t.params);
 
-/** Register the catalogue types (the app does this after the catalogue loads; tests pass fixtures). */
+/** Override the types (tests pass fixtures; null goes back to the real catalogue). */
 export function setCommercialTypes(list) {
-  TYPES = Array.isArray(list) ? list.filter(isType) : null;
+  OVERRIDE = Array.isArray(list) ? list.filter(isType) : null;
   return commercialTypes();
 }
-export const commercialTypes = () => TYPES || [];
+export const commercialTypes = () => OVERRIDE || REGISTRY.filter((t) => isType(t) && t.id !== STRATA_ID);
 export const hasCatalogue = () => commercialTypes().length > 0;
 
-/** Try to load the catalogue module. Never throws; resolves to the list (empty when it is not there). */
+/** Kept for the panel: the registry is imported with this module, so this resolves at once. */
 export async function loadCommercialTypes() {
-  if (TYPES && TYPES.length) return TYPES;
-  try {
-    const mod = await import('../../commercial/catalogue/types/index.js');
-    setCommercialTypes(mod.TYPES || mod.default || []);
-  } catch {
-    if (!TYPES) TYPES = [];
-  }
   return commercialTypes();
 }
 

@@ -5,7 +5,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createStore } from '../src/model/store.js';
 import { commercialProject } from './helpers/commercial-fixture.mjs';
-import { FAKE_TYPES } from './helpers/fake-catalogue.mjs';
+import { buildingParking } from '../src/commercial/catalogue/bays.js';
+import { buildingsOf as catalogueBuildings } from '../src/commercial/catalogue/buildings.js';
+import { frontRotation } from '../src/commercial/catalogue/fit.js';
+import { materialise } from '../src/commercial/materialise.js';
+import { commercialStats } from '../src/commercial/stats.js';
+import { feasibility } from '../src/commercial/feasibility.js';
 import { setCommercialTypes, commercialTypes, typeById } from '../src/premium/ai/commercial-catalogue.js';
 import { COMMERCIAL_SCHEMAS, COMMERCIAL_OP_NAMES, commercialToolSchemas } from '../src/premium/ai/commercial-schemas.js';
 import '../src/premium/ai/commercial-ops.js';
@@ -29,9 +34,10 @@ const run = (store, op, args) => {
   const [r] = store.runBatch(`AI: ${op}`, [{ op, args }]);
   return r;
 };
+// The assistant works on the real catalogue (src/commercial/catalogue/types), so there is nothing to install for a test.
 const withCatalogue = (fn) => async () => {
-  setCommercialTypes(FAKE_TYPES);
-  try { await fn(); } finally { setCommercialTypes(null); }
+  setCommercialTypes(null);
+  await fn();
 };
 const BRANDS = /colou?rbond|zincalume|lysaght|stramit|bluescope|boral|hanson|bobcat|caterpillar|toyota|hino/i;
 const lint = (text, what = 'text') => {
@@ -85,29 +91,30 @@ test('set_layout: a named layout and best fit replace the rows in one undo step'
 test('add, update, move and remove building: each is one undo step and the building stays inside the setbacks', withCatalogue(() => {
   const s = storeOf(fixture());
   const base = signature(s.project);
-  const add = run(s, 'add_building', { type: 'workshop' });
+  const add = run(s, 'add_building', { type: 'vehicle-workshop' });
   assert.ok(add.ok, add.error);
   let b = buildingsOf(s.project);
   assert.equal(b.length, 1);
-  assert.equal(b[0].type, 'workshop');
-  assert.equal(b[0].params.widthMm, 15000, 'defaults fill the parameters');
+  assert.equal(b[0].type, 'vehicle-workshop');
+  assert.equal(b[0].params.bays, 6, 'defaults fill the parameters');
   assert.deepEqual(Object.keys(b[0].place).sort(), ['rotationDeg', 'x', 'y']);
   const ms = measure(s.project);
   assert.ok(!ms.issues.some((i) => /outside|overlap/.test(i)), ms.issues.join('; '));
-  assert.ok(s.project.commercial.parking.extra.some((e) => e.forBuilding === b[0].id), 'a bay strip follows the building');
+  assert.ok(!(s.project.commercial.parking.extra || []).some((e) => e.forBuilding), 'the catalogue draws the building bays, not assistant strips');
+  assert.ok(buildingParking(s.project.commercial).totalBays > 0, 'the catalogue puts bays in front of the building');
   assert.ok(ms.byUse.workshop > 0 && ms.gfaM2 > ms.strataGfaM2);
   s.undo();
   assert.equal(signature(s.project), base);
   s.redo();
   const id = buildingsOf(s.project)[0].id;
-  const up = run(s, 'update_building', { id, params: { widthMm: 12000, docks: 3 } });
+  const up = run(s, 'update_building', { id, params: { bays: 4, hoistBays: 1 } });
   assert.ok(up.ok, up.error);
-  assert.equal(buildingsOf(s.project)[0].params.widthMm, 12000);
-  assert.equal(buildingsOf(s.project)[0].params.depthMm, 20000, 'other parameters stay');
-  const bad = run(s, 'update_building', { id, params: { widthMm: 500 } });
+  assert.equal(buildingsOf(s.project)[0].params.bays, 4);
+  assert.equal(buildingsOf(s.project)[0].params.bayDepthM, 9, 'other parameters stay');
+  const bad = run(s, 'update_building', { id, params: { bays: 500 } });
   assert.equal(bad.ok, false);
-  assert.match(bad.error, /between 8000 and 60000/);
-  const wide = run(s, 'add_building', { type: 'warehouse' });
+  assert.match(bad.error, /between 3 and 12/);
+  const wide = run(s, 'add_building', { type: 'warehouse', params: { spanMm: 60000, depthMm: 120000 } });
   assert.equal(wide.ok, false, 'a building that has no room is refused with a reason');
   assert.match(wide.error, /no room for Warehouse/);
   const bad2 = run(s, 'update_building', { id, params: { colour: 'red' } });
@@ -125,18 +132,18 @@ test('add, update, move and remove building: each is one undo step and the build
   const rm = run(s, 'remove_building', { id });
   assert.ok(rm.ok);
   assert.equal(buildingsOf(s.project).length, 0);
-  assert.ok(!s.project.commercial.parking.extra.some((e) => e.forBuilding), 'its bays go with it');
+  assert.ok(!(s.project.commercial.parking.extra || []).some((e) => e.forBuilding), 'its bays go with it');
   s.undo();
   assert.equal(buildingsOf(s.project).length, 1);
   const unknown = run(s, 'add_building', { type: 'castle' });
   assert.equal(unknown.ok, false);
-  assert.match(unknown.error, /warehouse, workshop/);
+  assert.match(unknown.error, /Types available: .*warehouse/);
   const nope = run(s, 'move_building', { id: 'bld_nope', place: { x: 1 } });
   assert.equal(nope.ok, false);
 }));
 
 test('add_building: with no catalogue the assistant offers strata units only', () => {
-  setCommercialTypes(null);
+  setCommercialTypes([]);
   const s = storeOf(fixture());
   const r = run(s, 'add_building', { type: 'warehouse' });
   assert.equal(r.ok, false);
@@ -145,18 +152,19 @@ test('add_building: with no catalogue the assistant offers strata units only', (
   const ctx = buildCommercialContext(s.project).text;
   assert.match(ctx, /TYPES none/);
   assert.match(chipsFor(s.project, { hasCatalogue: false }).note, /strata units only/);
+  setCommercialTypes(null);
 });
 
 test('add_building: auto placement keeps clear of units and bays, an explicit place is used as given', withCatalogue(() => {
   const s = storeOf(fixture());
-  const first = run(s, 'add_building', { type: 'workshop' });
-  const second = run(s, 'add_building', { type: 'workshop', params: { widthMm: 12000 } });
+  const first = run(s, 'add_building', { type: 'vehicle-workshop' });
+  const second = run(s, 'add_building', { type: 'vehicle-workshop', params: { bays: 4 } });
   assert.ok(first.ok && second.ok);
   const [a, b] = buildingsOf(s.project);
   assert.notDeepEqual(a.place, b.place);
   const ms = measure(s.project);
   assert.ok(!ms.issues.some((i) => /overlap|outside/.test(i)), ms.issues.join('; '));
-  const exact = run(s, 'add_building', { type: 'workshop', place: { x: 40000, y: 20000, rotationDeg: 0 } });
+  const exact = run(s, 'add_building', { type: 'vehicle-workshop', place: { x: 40000, y: 20000, rotationDeg: 0 } });
   assert.ok(exact.ok);
   assert.deepEqual(buildingsOf(s.project).at(-1).place, { x: 40000, y: 20000, rotationDeg: 0 });
 }));
@@ -260,10 +268,10 @@ test('run_best_fit: unit size, bay and budget limits are respected', () => {
 
 test('run_best_fit with building types: must include and mix place the buildings inside the setbacks', withCatalogue(() => {
   const s = storeOf(fixture());
-  const r = run(s, 'run_best_fit', { goal: 'max_gfa', constraints: { mustInclude: ['warehouse'], mix: [{ type: 'workshop', count: 2 }] } });
+  const r = run(s, 'run_best_fit', { goal: 'max_gfa', constraints: { mustInclude: ['warehouse'], mix: [{ type: 'vehicle-workshop', count: 2 }] } });
   assert.ok(r.ok, r.error);
   const types = buildingsOf(s.project).map((b) => b.type).sort();
-  assert.deepEqual(types, ['warehouse', 'workshop', 'workshop']);
+  assert.deepEqual(types, ['vehicle-workshop', 'vehicle-workshop', 'warehouse']);
   const m = measure(s.project);
   assert.ok(m.valid, m.issues.join('; '));
   assert.ok(m.byUse.warehouse > 0 && m.byUse.workshop > 0);
@@ -356,7 +364,7 @@ test('explain_checks: parking working and the checks in plain words, nothing cha
 
 test('draft_brief: required sections, sources and status on controls, dates DD/MM/YYYY, wording lint, kept with the plan set', withCatalogue(() => {
   const s = storeOf(fixture());
-  run(s, 'run_best_fit', { goal: 'max_gfa', constraints: { mix: [{ type: 'workshop' }] } });
+  run(s, 'run_best_fit', { goal: 'max_gfa', constraints: { mix: [{ type: 'vehicle-workshop' }] } });
   const r = run(s, 'draft_brief', {});
   assert.ok(r.ok, r.error);
   const { text, sections } = r.result.brief;
@@ -369,7 +377,7 @@ test('draft_brief: required sections, sources and status on controls, dates DD/M
   assert.match(text, /Indicative gross realisation \$[\d,]+/);
   assert.match(text, /Not an approval|not an approval/i);
   assert.match(text, /\b\d{2}\/\d{2}\/\d{4}\b/);
-  assert.match(text, /Workshop/);
+  assert.match(text, /Vehicle repair/);
   lint(text, 'brief');
   assert.equal(s.project.commercial.brief.text, text, 'stored with the project for the plan set');
   s.undo();
@@ -393,21 +401,21 @@ test('cleanWording removes dashes and the forbidden word', () => {
 
 test('context: lot, controls with sources, rows, buildings, stats, checks, feasibility and the catalogue, under a sensible budget', withCatalogue(() => {
   const s = storeOf(fixture({ rows: 'pair' }));
-  assert.ok(run(s, 'add_building', { type: 'workshop' }).ok);
+  assert.ok(run(s, 'add_building', { type: 'vehicle-workshop' }).ok);
   const { text, tokens, trimmed } = buildCommercialContext(s.project);
   assert.match(text.split('\n')[0], /^PROJECT ".*" type=commercial mode=commercial units=mm/);
   assert.ok(isCommercialContext(text));
   assert.match(text, /\nLOT NSW "27 Conadilly Street Gunnedah NSW" .*zone="IN1 General Industrial" class=industrial area=9000m2 frontage=90m depth=100m/);
   assert.match(text, /\nSETBACKS front=10m\[default table\] side=3m\[default table\] rear=3m\[default table\] .*status=indicative_check_with_council/);
   assert.match(text, /\nROW row_\S+ .* unit=6x15m /);
-  assert.match(text, /\nBUILDING bld_\S+ type=workshop params=\{.*"widthMm":15000/);
+  assert.match(text, /\nBUILDING bld_\S+ type=vehicle-workshop params=\{.*"bays":6/);
   assert.match(text, /\nSTATS units=16 gfa=\d+m2 by_use=.*workshop:\d+m2/);
   assert.match(text, /\nPARKING required=\d+ provided=\d+ accessible_required=\d+ accessible_provided=\d+ rate=1_per_75m2/);
   assert.match(text, /\nCHECK info \[VERIFIED_/);
   assert.match(text, /\nFEASIBILITY area="Tamworth".*\[PORTAL\].*\[ESTIMATE\]/);
   assert.match(text, /\nFEASIBILITY_OUT realisation=\$[\d,]+ cost=\$[\d,]+ margin=/);
-  assert.match(text, /\nTYPE warehouse "Warehouse with loading docks" industrial zones=E4\/IN1 params: widthMm\(8000\.\.60000 mm\)=24000/);
-  assert.match(text, /\nTYPE workshop /);
+  assert.match(text, /\nTYPE warehouse "Warehouse with loading docks" industrial zones=E4\/E5\/IN1\/IN2 params: spanMm\(15000\.\.60000 mm\)=30000/);
+  assert.match(text, /\nTYPE vehicle-workshop /);
   assert.ok(!/\nROOM |\nWALL /.test(text), 'the generated walls and rooms are not sent');
   assert.ok(tokens < 4000, `context ${tokens} tokens`);
   assert.equal(trimmed, false);
@@ -417,7 +425,7 @@ test('context: lot, controls with sources, rows, buildings, stats, checks, feasi
 
 test('context: a busy design stays under the budget and trims the checks before the lot lines', withCatalogue(() => {
   const s = storeOf(fixture({ rows: 'pair' }));
-  for (let i = 0; i < 4; i++) run(s, 'add_building', { type: 'workshop', params: { widthMm: 10000 + i * 500 } });
+  for (let i = 0; i < 4; i++) run(s, 'add_building', { type: 'vehicle-workshop', params: { bays: 3 + (i % 2) } });
   const full = buildCommercialContext(s.project);
   assert.ok(full.tokens < 4500, `${full.tokens}`);
   const tight = buildCommercialContext(s.project, { maxTokens: 700 });
@@ -476,10 +484,12 @@ test('mock: each chip gets a reply whose operations the tool check accepts and t
 }));
 
 test('mock: without the catalogue a mix request is answered honestly with no change', () => {
-  setCommercialTypes(null);
+  setCommercialTypes([]);
+  try {
   const r = mockReply('Mix workshops and a warehouse', fixture());
   assert.equal(r.ops.length, 0);
   assert.match(r.reply, /not available yet/);
+  } finally { setCommercialTypes(null); }
 });
 
 test('mock api: credits and gating are the existing model, a commercial reply costs credits and a question is free', async () => {
@@ -577,4 +587,42 @@ test('zone offer does not show when the page opens in commercial mode', async ()
   globalThis.location = { search: '?mode=commercial' };
   try { assert.equal(offerCommercial(s, { toast: () => { shown++; return {}; }, available: true }), null); } finally { delete globalThis.location; }
   assert.equal(shown, 0);
+});
+
+test('catalogue alignment: the assistant adds the catalogue building record, facing the street, drawn by the catalogue', () => {
+  const s = storeOf(fixture());
+  const r = run(s, 'add_building', { type: 'warehouse', params: { spanMm: 20000, depthMm: 25000 } });
+  assert.ok(r.ok, r.error);
+  const rec = buildingsOf(s.project)[0];
+  for (const k of ['id', 'type', 'params', 'place']) assert.ok(k in rec, `the record has ${k}, as the catalogue shape does`);
+  assert.ok(catalogueBuildings(s.project.commercial).length === 1, 'the catalogue resolves the building');
+  // Front orientation: the catalogue front (local y = 0, street toward -y) points at the street edge, so the building is turned to frontRotation or a quarter turn.
+  const lot = s.project.site.lot;
+  const rotations = [0, 90, 180, 270].map((k) => Math.round((((frontRotation(lot) + k) % 360) + 360) % 360));
+  assert.ok(rotations.includes(Math.round(((rec.place.rotationDeg % 360) + 360) % 360)), `rotation ${rec.place.rotationDeg}`);
+  const placed = catalogueBuildings(s.project.commercial)[0];
+  assert.equal(Math.round(((rec.place.rotationDeg % 360) + 360) % 360), Math.round(((frontRotation(lot) % 360) + 360) % 360), 'the first choice faces the street');
+  // Drawn by the catalogue: materialise holds walls and a PROPOSED room for it, stats count it, the parking uses the {use, per, m2} rate shape.
+  const sum = materialise(s.project);
+  assert.equal(sum.buildings, 1, 'materialise reports the building');
+  assert.ok(s.project.rooms.some((x) => /PROPOSED WAREHOUSE/.test(x.name)), 'a PROPOSED WAREHOUSE room exists');
+  const st = commercialStats(s.project);
+  assert.equal(st.buildingCount, 1);
+  const rows = placed.site.parking.ratePerM2;
+  assert.ok(rows.every((x) => 'use' in x && 'per' in x && 'm2' in x), 'rate rows are {use, per, m2}');
+  const m = measure(s.project);
+  assert.equal(m.parking.required, st.parking.required, 'the assistant measure reads the catalogue parking, no second count');
+  assert.equal(m.parking.provided, st.parking.provided);
+  assert.equal(m.gfaM2, st.gfaM2, 'building floor area is counted once');
+  assert.equal(m.groundM2, st.footprintM2);
+});
+
+test('catalogue alignment: the options and the feasibility price the buildings once', () => {
+  const s = storeOf(fixture());
+  const before = measure(s.project, { value: true }).value;
+  run(s, 'add_building', { type: 'warehouse', params: { spanMm: 20000, depthMm: 25000 } });
+  const after = measure(s.project, { value: true }).value;
+  const f = feasibility(s.project.commercial, s.project.site.lot);
+  assert.equal(Math.round(after.cost), Math.round(f.mid.cost), 'the cost is the catalogue feasibility cost, with no second building charge');
+  assert.ok(after.cost > before.cost);
 });

@@ -40,7 +40,7 @@ export function commercialMockReply(t) {
     return { reply: `I have put the layout with the most floor area that stays within about $${Math.round(v).toLocaleString('en-AU')} indicative cost on the lot. Check the figures with a quantity surveyor.`, ops: [{ op: 'run_best_fit', args: { goal: 'max_gfa', constraints: { budgetAud: v } } }] };
   }
   if (/workshop|warehouse|mix|building/.test(t)) {
-    const pick = (re) => types.find((x) => re.test(`${x.id} ${x.label}`.toLowerCase()));
+    const pick = (re) => types.find((x) => re.test(x.id)) || types.find((x) => re.test(`${x.id} ${x.label}`.toLowerCase()));
     const mix = [];
     if (/workshop/.test(t) && pick(/workshop/)) mix.push({ type: pick(/workshop/).id, count: 2 });
     if (/warehouse/.test(t) && pick(/warehouse/)) mix.push({ type: pick(/warehouse/).id, count: 1 });

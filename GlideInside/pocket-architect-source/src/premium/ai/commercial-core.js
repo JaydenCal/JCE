@@ -15,6 +15,9 @@ import { commercialStats, lotAreaM2 } from '../../commercial/stats.js';
 import { chooseLayout, naturalAngle, TEMPLATES, BEST_ID, rowsSignature } from '../../commercial/layouts.js';
 import { feasibility, unitGfas } from '../../commercial/feasibility.js';
 import { typeById, defaultsOf, resolveParams, typeFacts, commercialTypes } from './commercial-catalogue.js';
+import { buildingsOf as catalogueBuildings, buildingTotals, newBuilding } from '../../commercial/catalogue/buildings.js';
+import { bayDemand, buildingParking } from '../../commercial/catalogue/bays.js';
+import { placeBuilding, polysOverlap } from '../../commercial/catalogue/fit.js';
 
 export class CommercialError extends Error {
   constructor(message) {
@@ -34,49 +37,25 @@ export const MAX_OPTIONS = 3;
 // Buildings ----------------------------------------------------------------------------------------------------------------------
 export const buildingsOf = (p) => (Array.isArray(p?.commercial?.buildings) ? p.commercial.buildings : []);
 
-const rot = (pt, deg) => {
-  const a = (deg * Math.PI) / 180;
-  return { x: pt.x * Math.cos(a) - pt.y * Math.sin(a), y: pt.x * Math.sin(a) + pt.y * Math.cos(a) };
-};
-const toWorld = (pts, place) => pts.map((q) => { const r = rot(q, place.rotationDeg || 0); return { x: r.x + place.x, y: r.y + place.y }; });
-const rectOf = (bb, y0, y1) => [{ x: bb.minX, y: y0 }, { x: bb.maxX, y: y0 }, { x: bb.maxX, y: y1 }, { x: bb.minX, y: y1 }];
-
-/** Distance in front of the building kept clear: the truck apron (or the car aisle), plus a row of bays when the type needs parking. */
-export function clearDepthMm(facts, parking) {
-  const aisle = Number(parking?.aisleMm) || 0;
-  const apron = Number(facts.site?.vehicles?.apronDepthMm) || 0;
-  const off = Math.max(aisle, apron);
-  return { offset: off, depth: off + (needSpaces(facts) > 0 ? Number(parking?.bayL) || 5400 : 0) };
-}
-
-/** Parking spaces a building needs: floor area of each use divided by the area per space, fractions rounded up once on the total. */
-export function needSpaces(facts) {
-  const rows = facts?.site?.parking?.ratePerM2;
-  if (!Array.isArray(rows)) return 0;
-  const raw = rows.reduce((s, r) => s + (Number(r.per) > 0 ? (Number(r.m2) || 0) / Number(r.per) : 0), 0);
-  return Math.ceil(raw - 1e-9);
-}
-
-/** Everything the assistant needs about one building record, or null when its type is not in the catalogue. */
-export function buildingGeom(b, parking = null) {
-  const type = typeById(b?.type);
-  if (!type) return null;
-  const facts = typeFacts(type, b.params || {});
-  if (!facts.outline) return null;
-  const place = { x: Number(b.place?.x) || 0, y: Number(b.place?.y) || 0, rotationDeg: Number(b.place?.rotationDeg) || 0 };
-  const bb = G.bbox(facts.outline);
-  const clear = clearDepthMm(facts, parking);
-  const q = facts.quantities || {};
-  const ground = Number.isFinite(q.groundM2) ? q.groundM2 : G.polygonArea(facts.outline) / 1e6;
+/**
+ * Everything the assistant needs about one building record, or null when its type is not in the catalogue. The geometry is the catalogue's
+ * own (catalogue/buildings.js buildingsOf and bays.js buildingParking): the outline and the extras in world mm, front edge on local y = 0
+ * facing the street, bays in front of it. `loose` is every paved or roofed extra and bay that must stay on the lot.
+ */
+export function buildingGeom(b, c = null) {
+  const spec = { ...(c || {}), buildings: [b] };
+  const [cb] = catalogueBuildings(spec);
+  if (!cb) return null;
+  const bays = buildingParking(spec).rows.flatMap((r) => r.slots.map((s) => s.poly));
+  const extras = cb.extras.map((e) => e.polygon);
   return {
-    b, type, facts, place, bb, clear,
-    poly: toWorld(facts.outline, place),
-    rect: toWorld(rectOf(bb, bb.minY, bb.maxY), place),
-    zone: toWorld(rectOf(bb, bb.minY - clear.depth, bb.minY), place), // the apron and bay row in front of the building (local y below the front edge)
-    gfaM2: Number.isFinite(q.gfaM2) ? q.gfaM2 : ground,
-    groundM2: ground,
-    perUse: q.perUse && typeof q.perUse === 'object' ? q.perUse : { [type.category || 'building']: Number.isFinite(q.gfaM2) ? q.gfaM2 : ground },
-    spaces: needSpaces(facts),
+    b, type: cb.def, cb,
+    poly: cb.outline,
+    loose: [...extras, ...bays],
+    gfaM2: cb.gfaM2,
+    groundM2: cb.groundM2,
+    perUse: cb.q.perUse && typeof cb.q.perUse === 'object' ? cb.q.perUse : { [cb.def.category || 'building']: cb.gfaM2 },
+    spaces: Math.ceil(bayDemand(cb).raw - 1e-9),
   };
 }
 
@@ -88,25 +67,10 @@ export const newBuildingId = (list) => {
   return id;
 };
 
-/** Bay strips (parking.extra entries marked forBuilding) for the buildings that need parking: one strip across the building front. */
-export function buildingBayStrips(c) {
-  const out = [];
-  for (const b of c.buildings || []) {
-    const g = buildingGeom(b, c.parking);
-    if (!g || !g.spaces) continue;
-    const bayW = Number(c.parking?.bayW) || 2400;
-    const count = Math.min(g.spaces, Math.floor(g.bb.w / bayW));
-    if (count < 1) continue;
-    const o = toWorld([{ x: g.bb.maxX, y: g.bb.minY - g.clear.offset }], g.place)[0];
-    out.push({ x: Math.round(o.x), y: Math.round(o.y), rotationDeg: Math.round((((g.place.rotationDeg + 180) % 360) + 360) % 360 * 1000) / 1000, count, forBuilding: b.id });
-  }
-  return out;
-}
-
-/** Replace the building bay strips on c (the other extra strips stay). */
+/** The catalogue draws a building's bays itself (catalogue/bays.js), so there are no assistant bay strips. This removes any left by an older version. */
 export function syncBuildingBays(c) {
-  const keep = (c.parking?.extra || []).filter((e) => !e.forBuilding);
-  c.parking = { ...c.parking, extra: [...keep, ...buildingBayStrips(c)] };
+  const extra = (c.parking?.extra || []).filter((e) => !e.forBuilding);
+  if (extra.length !== (c.parking?.extra || []).length) c.parking = { ...c.parking, extra };
 }
 
 // Geometry helpers ---------------------------------------------------------------------------------------------------------------
@@ -140,7 +104,7 @@ export function measure(p, { value = false } = {}) {
   const env = envelopeOf(lot);
   const st = commercialStats({ commercial: c, site: p.site });
   const park = parkingLayout(c);
-  const geoms = (c.buildings || []).map((b) => buildingGeom(b, c.parking));
+  const geoms = (c.buildings || []).map((b) => buildingGeom(b, c));
   const issues = [];
   const unitList = layoutUnits(c);
   const units = unitList.map((u) => ({ ...shape(u.poly), rowId: u.rowId, n: u.n }));
@@ -157,59 +121,53 @@ export function measure(p, { value = false } = {}) {
   if (units.some((u) => bays.some((s) => !apart(u.bb, s.bb) && G.convexOverlap(s.poly, u.poly, OVERLAP_TOL)))) issues.push('Bays overlap units');
   geoms.forEach((g, i) => {
     if (!g) { issues.push(`Building ${c.buildings[i].id} has a type that is not in the catalogue`); return; }
-    const r = { ...shape(g.rect) };
     if (lot && env && g.poly.some((q) => !insidePoly(q, env))) issues.push(`${g.type.label} extends outside the indicative setbacks`);
-    if (lot && g.zone.some((q) => !insidePoly(q, lot.boundary))) issues.push(`${g.type.label}: the apron and bays in front extend outside the lot`);
-    if (units.some((u) => !apart(u.bb, r.bb) && G.convexOverlap(u.poly, r.poly, OVERLAP_TOL))) issues.push(`${g.type.label} overlaps a unit`);
-    if (bays.some((s) => !apart(s.bb, r.bb) && G.convexOverlap(s.poly, r.poly, OVERLAP_TOL))) issues.push(`${g.type.label} overlaps bays`);
-    geoms.forEach((h, j) => { if (j > i && h && !apart(aabb(g.rect), aabb(h.rect)) && G.convexOverlap(g.rect, h.rect, OVERLAP_TOL)) issues.push(`${g.type.label} overlaps ${h.type.label}`); });
+    if (lot && g.loose.some((poly) => poly.some((q) => !insidePoly(q, lot.boundary)))) issues.push(`${g.type.label}: the apron and bays in front extend outside the lot`);
+    if (units.some((u) => polysOverlap(g.poly, u.poly))) issues.push(`${g.type.label} overlaps a unit`);
+    if (bays.some((s) => polysOverlap(g.poly, s.poly))) issues.push(`${g.type.label} overlaps bays`);
+    geoms.forEach((h, j) => { if (j > i && h && (polysOverlap(g.poly, h.poly) || h.loose.some((q) => polysOverlap(g.poly, q)) || g.loose.some((q) => polysOverlap(h.poly, q)))) issues.push(`${g.type.label} overlaps ${h.type.label}`); });
   });
   const live = geoms.filter(Boolean);
-  const bGfa = live.reduce((s, g) => s + g.gfaM2, 0);
-  const bGround = live.reduce((s, g) => s + g.groundM2, 0);
+  const bt = buildingTotals(c);
+  const bGfa = bt.gfaM2 ?? live.reduce((s, g) => s + g.gfaM2, 0);
+  const strataGfa = Math.max(0, st.gfaM2 - bGfa);
+  const strataOffice = Math.max(0, st.officeM2 - (bt.perUse?.office || 0));
   const byUse = {};
   const add = (k, v) => { if (v > 0) byUse[k] = r1((byUse[k] || 0) + v); };
-  add('strata units', st.gfaM2 - st.officeM2);
-  add('office', st.officeM2);
+  add('strata units', strataGfa - strataOffice);
+  add('office', strataOffice);
   for (const g of live) for (const [k, v] of Object.entries(g.perUse)) add(k, Number(v) || 0);
   const lotM2 = lotAreaM2(lot) || st.lotM2 || null;
-  const ground = st.footprintM2 + bGround;
-  const required = st.parking.required + live.reduce((s, g) => s + g.spaces, 0);
+  // The catalogue stats already hold the buildings: floor area, ground area, bays required and provided, accessible bays.
+  const ground = st.footprintM2;
+  const required = st.parking.required;
   const provided = st.parking.provided;
-  const acc = park.accessible;
-  const parking = { required, provided, unitsRequired: st.parking.required, accessible: { required: acc.required, provided: acc.provided }, ratePerM2: st.parking.ratePerM2 };
+  const acc = st.parking.accessible;
+  const parking = { required, provided, unitsRequired: required - (st.parking.buildingRequired || 0), accessible: { required: acc.required, provided: acc.provided }, ratePerM2: st.parking.ratePerM2 };
   const needBays = Number(p.__parkingMin) || 0;
   if (units.length + live.length && provided < required) issues.push(`Bays shown (${provided}) are fewer than the ${required} indicated`);
   if (provided < needBays) issues.push(`Bays shown (${provided}) are fewer than the ${needBays} asked for`);
   if (acc.required > 0 && acc.provided < acc.required) issues.push(`Accessible bays ${acc.provided} of ${acc.required}`);
   const out = {
     valid: issues.length === 0, issues,
-    units: st.units, unitMix: st.mix, strataGfaM2: st.gfaM2, gfaM2: r1(st.gfaM2 + bGfa), byUse, groundM2: r1(ground),
+    units: st.units, unitMix: st.mix, strataGfaM2: r1(strataGfa), gfaM2: r1(st.gfaM2), byUse, groundM2: r1(ground),
     coveragePct: lotM2 ? r1((ground / lotM2) * 100) : null, lotM2, parking,
     buildings: live.map((g) => ({ id: g.b.id, type: g.type.id, label: g.type.label, gfaM2: r1(g.gfaM2), groundM2: r1(g.groundM2), spaces: g.spaces })),
     unitAreas: unitGfas(c).map((u) => r1(u.gfa)),
     value: null,
   };
-  if (value) out.value = indicative(p, bGfa);
+  if (value) out.value = indicative(p);
   return out;
 }
 
-/** Indicative realisation, cost and margin (ex GST). Buildings are priced at the unit sale and build rates, so treat them as a rough guide. */
-export function indicative(p, buildingGfa = null) {
+/** Indicative realisation, cost and margin (ex GST). The catalogue feasibility already prices the buildings at their own type rates. */
+export function indicative(p) {
   let f;
   try { f = feasibility(p.commercial, p.site?.lot); } catch { return null; }
   if (!f) return null;
-  const bg = buildingGfa ?? (p.commercial.buildings || []).reduce((s, b) => s + (buildingGeom(b, p.commercial.parking)?.gfaM2 || 0), 0);
   const m = f.mid;
-  const buildRate = f.inputs.buildRate.value;
-  const extraBuild = bg * buildRate;
-  const extra = extraBuild * (1 + (f.inputs.feesPct.value + f.inputs.contPct.value) / 100);
-  const realisation = m.realisation + bg * m.saleRate;
-  const cost = m.cost + extra;
-  const grossRent = m.grossRent + bg * m.rentRate;
-  const endValue = m.yieldPct > 0 ? grossRent / (m.yieldPct / 100) : m.endValue;
   return {
-    realisation, cost, grossRent, endValue, margin: realisation - cost, marginPct: cost > 0 ? ((realisation - cost) / cost) * 100 : 0,
+    realisation: m.realisation, cost: m.cost, grossRent: m.grossRent, endValue: m.endValue, margin: m.realisation - m.cost, marginPct: m.cost > 0 ? ((m.realisation - m.cost) / m.cost) * 100 : 0,
     areaLabel: f.areaLabel, confidence: f.confidence, f,
   };
 }
@@ -254,59 +212,13 @@ export function regen(p) {
 
 // Automatic placement ------------------------------------------------------------------------------------------------------------
 /**
- * Where a building goes: the first position, working from the rear toward the street and from the middle outward, where the building
- * stays inside the setbacks and its apron and bays stay inside the lot, clear of the units, bays and other buildings. Turned to face the
- * street. Returns { x, y, rotationDeg } or null when there is no room.
+ * Where a building goes: the catalogue's own placement (catalogue/fit.js placeBuilding), turned to face the street, inside the setbacks, with
+ * its apron, extras and bays on the lot and clear of the units, bays and other buildings. Returns { x, y, rotationDeg } or null when there is no room.
  */
-export function autoPlace(p, type, params, { step = 1000 } = {}) {
-  const c = p.commercial;
+export function autoPlace(p, type, params) {
   const lot = lotOf(p);
   if (!lot || !(lot.frontEdges || []).length) return null;
-  const env = envelopeOf(lot);
-  const facts = typeFacts(type, params);
-  if (!facts.outline) return null;
-  const bb = G.bbox(facts.outline);
-  const clear = clearDepthMm(facts, c.parking);
-  const nat = naturalAngle(lot);
-  const a = (nat * Math.PI) / 180;
-  const u = { x: Math.cos(a), y: Math.sin(a) };
-  const f = { x: -Math.sin(a), y: Math.cos(a) };
-  const R = Math.round((((nat + 180) % 360) + 360) % 360 * 1000) / 1000;
-  const ext = (pts, ax) => { const v = pts.map((q) => q.x * ax.x + q.y * ax.y); return [Math.min(...v), Math.max(...v)]; };
-  const [eu0, eu1] = ext(env, u);
-  const [ef0, ef1] = ext(env, f);
-  // The building turned 180 degrees from the row frame: local (x, y) -> T - x u - y f.
-  const uLo = eu0 + bb.maxX;
-  const uHi = eu1 + bb.minX;
-  const fLo = ef0 + bb.maxY;
-  const fHi = ef1 + bb.minY;
-  if (uLo > uHi || fLo > fHi) return null;
-  const { units, bays } = obstaclesOf(c);
-  const others = (c.buildings || []).map((b) => buildingGeom(b, c.parking)).filter(Boolean).flatMap((g) => [shape(g.rect), shape(g.zone)]);
-  const blockers = [...units, ...bays, ...others];
-  const lotPoly = lot.boundary;
-  const mid = (uLo + uHi) / 2;
-  const nu = Math.floor((uHi - uLo) / step);
-  const uOrder = [];
-  for (let k = 0; k <= nu; k++) uOrder.push(uLo + k * step);
-  uOrder.sort((x, y) => Math.abs(x - mid) - Math.abs(y - mid));
-  for (let tf = fLo; tf <= fHi + 1; tf += step) {
-    for (const tu of uOrder) {
-      const T = { x: tu * u.x + tf * f.x, y: tu * u.y + tf * f.y };
-      const place = { x: T.x, y: T.y, rotationDeg: R };
-      const body = shape(toWorld(rectOf(bb, bb.minY, bb.maxY), place));
-      const zone = shape(toWorld(rectOf(bb, bb.minY - clear.depth, bb.minY), place));
-      if (!toWorld(facts.outline, place).every((q) => insidePoly(q, env))) continue;
-      if (!zone.poly.every((q) => insidePoly(q, lotPoly))) continue;
-      let ok = true;
-      for (const o of blockers) {
-        if (!apart(o.bb, body.bb) && G.convexOverlap(o.poly, body.poly, OVERLAP_TOL)) { ok = false; break; }
-        if (!apart(o.bb, zone.bb) && G.convexOverlap(o.poly, zone.poly, OVERLAP_TOL)) { ok = false; break; }
-      }
-      if (ok) return { x: Math.round(T.x), y: Math.round(T.y), rotationDeg: R };
-    }
-  }
-  return null;
+  try { return placeBuilding(p, newBuilding(type.id, { params })); } catch { return null; }
 }
 
 // Best fit search ----------------------------------------------------------------------------------------------------------------
@@ -349,7 +261,7 @@ const labelOf = (scheme, m) => {
     const counts = new Map();
     for (const b of scheme.buildings) counts.set(b.type, (counts.get(b.type) || 0) + 1);
     const names = [...counts].map(([id, n]) => `${n > 1 ? `${n} x ` : ''}${typeById(id)?.label || id}`);
-    return `${units} and ${names.join(', ')}`;
+    return m.units ? `${units} and ${names.join(', ')}` : names.join(', ');
   }
   return `${FAMILY(scheme.layout?.id, scheme.rows.length)}, ${units}`;
 };
@@ -374,13 +286,13 @@ export function wantedBuildings(constraints = {}, lot = null) {
 /** Add the wanted buildings to a strata scheme by automatic placement. Returns the new scheme, or null when one does not fit. */
 function withBuildings(p, scheme, want) {
   const s = { ...scheme, buildings: [] };
-  for (const w of want) {
-    for (let i = 0; i < w.count; i++) {
-      const probe = standIn(p, s);
-      const place = autoPlace(probe, w.type, w.params);
-      if (!place) return null;
-      s.buildings.push({ id: newBuildingId(s.buildings), type: w.type.id, params: structuredClone(w.params), place });
-    }
+  // The biggest buildings are placed first: they are the hardest to fit.
+  const list = want.flatMap((w) => Array.from({ length: w.count }, () => w)).sort((a, b) => (typeFacts(b.type, b.params).quantities?.groundM2 || 0) - (typeFacts(a.type, a.params).quantities?.groundM2 || 0));
+  for (const w of list) {
+    const probe = standIn(p, s);
+    const place = autoPlace(probe, w.type, w.params);
+    if (!place) return null;
+    s.buildings.push({ id: newBuildingId(s.buildings), type: w.type.id, params: structuredClone(w.params), place });
   }
   return s;
 }
@@ -404,11 +316,27 @@ export function searchSchemes(p, constraints = {}) {
   const keep = unitFilter(constraints);
   let pool = strataCandidates(p, parkingMin).filter((x) => keep(x.m));
   if (want.length) {
-    const spaced = [...pool].sort((a, b) => b.m.gfaM2 - a.m.gfaM2).filter((_, i) => i % 2 === 0).slice(0, 24);
+    // Buildings are larger than a row of units, so each candidate is tried as it is and then with fewer units until the buildings fit.
+    // Candidates are spread over the whole range of floor areas, and a buildings only scheme closes the list.
+    const sorted = [...pool].sort((a, b) => a.m.gfaM2 - b.m.gfaM2);
+    const stride = Math.max(1, Math.floor(sorted.length / 24));
+    const spaced = sorted.filter((_, i) => i % stride === 0).slice(0, 24);
+    const bare = { rows: [], extra: [], buildings: [], layout: { id: 'buildings', label: 'Buildings only' }, label: 'Buildings only', envKey: spaced[0]?.scheme.envKey ?? null };
+    const starts = [...spaced.reverse().map((x) => x.scheme), bare];
     const mixed = [];
-    for (const x of spaced.reverse()) {
-      const s = withBuildings(p, x.scheme, want);
+    const seen = new Set();
+    for (const base of starts) {
+      let s = null;
+      for (let drop = 0; drop <= 12 && !s; drop += 2) {
+        const rows = structuredClone(base.rows);
+        for (const r of rows) r.count = Math.max(1, r.count - drop);
+        s = withBuildings(p, { ...base, rows, extra: structuredClone(base.extra || []) }, want);
+        if (!rows.length || rows.every((r) => r.count === 1)) break;
+      }
       if (!s) continue;
+      const sig = schemeSignature(s);
+      if (seen.has(sig)) continue;
+      seen.add(sig);
       const m = measure(standIn(p, s, parkingMin));
       if (m.valid && keep(m)) mixed.push({ scheme: s, m });
     }
@@ -463,9 +391,12 @@ export function compareOptions(p, n = MAX_OPTIONS) {
     let third = null;
     const types = commercialTypes();
     if (types.length) {
-      const t = types.find((x) => x.category === 'industrial') || types[0];
-      const mixed = searchSchemes(p, { mix: [{ type: t.id, count: 1 }] });
-      third = pickBest(mixed, 'max_gfa', seen);
+      // The warehouse first, then the other industrial types, then the rest, until one of them fits the lot with units.
+      const order = [...types].sort((a, b) => (b.id === 'warehouse') - (a.id === 'warehouse') || (b.category === 'industrial') - (a.category === 'industrial'));
+      for (const t of order.slice(0, 5)) {
+        third = pickBest(searchSchemes(p, { mix: [{ type: t.id, count: 1 }] }), 'max_gfa', seen);
+        if (third) break;
+      }
     }
     if (!third) {
       // Large units: the layout with the largest average unit that has not been picked yet.
