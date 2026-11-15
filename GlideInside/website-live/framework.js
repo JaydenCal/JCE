@@ -118,7 +118,15 @@
       var link = tag.parentNode && tag.parentNode.querySelector(".lh-edit");
       if (!link) return;
       link.addEventListener("mouseenter", still); link.addEventListener("focus", still); tag.addEventListener("mouseenter", still);
-      link.addEventListener("click", function () { still(); try { localStorage.setItem(KEY, "1"); } catch (e) {} });
+      link.addEventListener("click", function (e) {
+        still(); try { localStorage.setItem(KEY, "1"); } catch (er) {}
+        // With a lot loaded in the viewer, the viewer hands its whole state over and opens the editor itself (no empty start).
+        if (live.frame && live.ready && !e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
+          e.preventDefault();
+          try { live.frame.contentWindow.postMessage({ type: "gi:open-editor" }, location.origin); } catch (er2) { location.assign(link.getAttribute("href")); return; }
+          setTimeout(function () { location.assign(link.getAttribute("href")); }, 2500);
+        }
+      });
     });
   })();
   function openAddress(address, pick) {

@@ -496,6 +496,13 @@ async function main() {
     ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a) })
     : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
   api.lotCard = lotCard;
+  // The home page's "Open full editor" link asks the embedded viewer to hand over everything (lot, address, house, placement, colours) and open the editor itself.
+  if (VIEWER) {
+    window.addEventListener('message', (ev) => {
+      if (ev.origin !== location.origin || ev.source !== window.parent) return;
+      if (ev.data && typeof ev.data === 'object' && ev.data.type === 'gi:open-editor') openEditorDirect();
+    });
+  }
   if (COMMERCIAL_TOOL) api.commercial = createCommercialPanel({ store, host: refs.stage, editor }); // the residential tool has no commercial panel
   createMapCredit(refs.stage, store);
   { const fab = createAerialToggle({ store, className: 'ps-aerial-fab', dataPs: 'aerial-toggle-stage' }); refs.stage.append(fab.el); } // Aerial on/off over the 2D plan and the 3D view (hidden while the lot card shows its own)
