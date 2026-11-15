@@ -203,15 +203,17 @@ function bestPose(cand, lot, env, natural, verify = null) {
 }
 
 /** The same test the card's setback line makes (walls included), so a layout is never placed where the card would read "Outside the setbacks". */
-const verifier = (project) => (cand, pose) => {
+const verifier = (project) => {
+  const t = structuredClone(project); // one working copy for the whole search: each candidate only sets the rows, then the generated model is rebuilt over it
+  return (cand, pose) => {
   try {
-    const t = structuredClone(project);
     t.commercial.rows = transformRows(cand.rows, pose.deg, pose.T);
     t.commercial.parking = { ...t.commercial.parking, extra: [] };
     t.commercial = normaliseCommercial(t.commercial);
     materialise(t, { site: false });
     return setbackStatusLine(t).state !== 'outside';
   } catch { return true; }
+  };
 };
 
 /** Where a block that does not fit stands: the natural turn, centred on the envelope, so the card can show it red. */
@@ -245,7 +247,9 @@ const BF_WIDTHS = [6000, 7500, 9000, 12000];
 const BF_DEPTHS = [12000, 15000, 18000, 20000];
 const FRONT_STRIP = 3000;
 const COVER_CAP = 45;
-const BF_BUDGET_MS = 1300;
+// The search is bounded by work (BF_MAX_EVALS candidates) first, so the layout it returns does not depend on how fast or busy the machine is.
+// The clock is only a safety stop for a very slow device, set well above what the work cap needs (about 0.3 s of CPU for a typical lot).
+const BF_BUDGET_MS = 8000;
 const BF_MAX_EVALS = 140;
 
 const toLocal = (p, deg) => { const a = (deg * Math.PI) / 180; return { x: p.x * Math.cos(a) + p.y * Math.sin(a), y: -p.x * Math.sin(a) + p.y * Math.cos(a) }; };
@@ -348,6 +352,32 @@ function spanAt(poly, y) {
   return xs.length >= 2 ? [Math.min(...xs), Math.max(...xs)] : null;
 }
 
+
+// The scan lines of findExtras that depend only on the yard, the turn and the bay size (not on what is already placed): each y0 where a bay row
+// and its aisle fit between the yard's edges, with the free stretch [lo, hi] there. Worked out once per yard and turn.
+const SCAN_CACHE = new WeakMap();
+function scanLines(yard, phi, total, bayW) {
+  let byKey = SCAN_CACHE.get(yard);
+  if (!byKey) { byKey = new Map(); SCAN_CACHE.set(yard, byKey); }
+  const key = `${phi}|${total}|${bayW}`;
+  let lines = byKey.get(key);
+  if (lines) return lines;
+  lines = [];
+  const Y = yard.map((q) => toLocal(q, phi));
+  let ymin = Infinity; let ymax = -Infinity;
+  for (const q of Y) { if (q.y < ymin) ymin = q.y; if (q.y > ymax) ymax = q.y; }
+  for (let y0 = Math.ceil(ymin / 600) * 600; y0 + total <= ymax; y0 += 600) {
+    const sp = [spanAt(Y, y0 + 1), spanAt(Y, y0 + total / 2), spanAt(Y, y0 + total - 1)];
+    if (sp.some((q) => !q)) continue;
+    const lo = Math.max(sp[0][0], sp[1][0], sp[2][0]);
+    const hi = Math.min(sp[0][1], sp[1][1], sp[2][1]);
+    if (hi - lo < bayW) continue;
+    lines.push({ y0, lo, hi });
+  }
+  byKey.set(key, lines);
+  return lines;
+}
+
 /**
  * Bay strips in spare areas: scan both orientations (rows' own axes and a quarter turn), every 600 mm across the lot, for the longest
  * stretch where a row of bays and its 5.8 m aisle fit inside the yard and clear of units, aprons and other bays. Returns [{ x, y, rotationDeg, count }]
@@ -363,21 +393,15 @@ function findExtras(need, ctx) {
     let best = null;
     for (const phi of [deg, deg + 90]) {
       const frame = (poly) => poly.map((q) => toLocal(q, phi));
-      const Y = frame(yard);
-      const box = (poly) => { const l = frame(poly); return { x0: Math.min(...l.map((q) => q.x)), x1: Math.max(...l.map((q) => q.x)), y0: Math.min(...l.map((q) => q.y)), y1: Math.max(...l.map((q) => q.y)) }; };
+      const box = (poly) => { const l = frame(poly); let x0 = Infinity; let x1 = -Infinity; let y0 = Infinity; let y1 = -Infinity; for (const q of l) { if (q.x < x0) x0 = q.x; if (q.x > x1) x1 = q.x; if (q.y < y0) y0 = q.y; if (q.y > y1) y1 = q.y; } return { x0, x1, y0, y1 }; };
       const H = hard.map(box);
       const AP = aprons.map(box);
       const BR = bays.map(box);
       const AI = aisles.map(box);
-      const ymin = Math.min(...Y.map((q) => q.y));
-      const ymax = Math.max(...Y.map((q) => q.y));
+      const HB = [...H, ...BR]; // obstacle boxes, joined once per turn rather than for every scan line
+      const APAI = [...AP, ...AI];
       const total = bayL + aisle;
-      for (let y0 = Math.ceil(ymin / 600) * 600; y0 + total <= ymax; y0 += 600) {
-        const sp = [spanAt(Y, y0 + 1), spanAt(Y, y0 + total / 2), spanAt(Y, y0 + total - 1)];
-        if (sp.some((q) => !q)) continue;
-        const lo = Math.max(...sp.map((q) => q[0]));
-        const hi = Math.min(...sp.map((q) => q[1]));
-        if (hi - lo < bayW) continue;
+      for (const { y0, lo, hi } of scanLines(yard, phi, total, bayW)) {
         for (const s of [1, -1]) {
           const by0 = s === 1 ? y0 : y0 + aisle;
           const by1 = by0 + bayL;
@@ -385,8 +409,8 @@ function findExtras(need, ctx) {
           const ay1 = ay0 + aisle;
           const cuts = [];
           const hit = (r, a0, a1) => r.y0 < a1 && r.y1 > a0;
-          for (const r of [...H, ...BR]) { if (hit(r, by0, by1) || hit(r, ay0, ay1)) cuts.push([r.x0, r.x1]); }
-          for (const r of [...AP, ...AI]) { if (hit(r, by0, by1)) cuts.push([r.x0, r.x1]); }
+          for (const r of HB) { if (hit(r, by0, by1) || hit(r, ay0, ay1)) cuts.push([r.x0, r.x1]); }
+          for (const r of APAI) { if (hit(r, by0, by1)) cuts.push([r.x0, r.x1]); }
           cuts.sort((a, b) => a[0] - b[0]);
           let cur = lo;
           const free = [];
