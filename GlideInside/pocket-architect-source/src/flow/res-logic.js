@@ -138,7 +138,7 @@ export function checkSummary(project) {
   if (door) {
     const roads = roadReserve(lot);
     const r = roads.find((x) => x.edge === (streetEdge ?? frontIdx)) || roads[0];
-    garage = { has: true, facesStreet: !!(dw?.ok) && !dw.routed, distanceM: r ? Math.round(G.dot(G.sub(door.mid, r.lines.property[0]), { x: -r.outward.x, y: -r.outward.y })) / 1000 : null };
+    garage = { has: true, facesStreet: !!(dw?.ok) && dw.facing !== false, distanceM: r ? Math.round(G.dot(G.sub(door.mid, r.lines.property[0]), { x: -r.outward.x, y: -r.outward.y })) / 1000 : null };
   }
   const driveway = !door ? { state: 'none' } : dw?.ok ? { state: 'ok', lengthM: Math.round(dw.lengthMm / 100) / 10, widthM: Math.round(dw.widthMm / 100) / 10 } : { state: 'blocked', reason: dw?.reason || 'no_street' };
   const drivewayArea = dw?.ok ? G.polygonArea(dw.polygon) / 1e6 : 0;
@@ -150,7 +150,7 @@ export function checkSummary(project) {
   else lines.push(st.text);
   lines.push(`The home covers about ${Math.round(cover)} m2 of the ${Math.round(lotArea)} m2 lot (${lotArea ? Math.round((cover / lotArea) * 100) : 0} percent).`);
   if (open != null) lines.push(`About ${Math.round(open)} m2 of open space is left (${Math.round((open / lotArea) * 100)} percent), after the home and the driveway.`);
-  if (garage.has) lines.push(dw?.ok && dw.routed ? 'The garage faces away from the street, so the driveway runs round the house to the frontage.' : garage.facesStreet ? `The garage faces the street${garage.distanceM != null ? `, about ${garage.distanceM.toFixed(1)} m back from the boundary` : ''}.` : 'The garage door does not face the street, so there is no driveway to the frontage yet.');
+  if (garage.has) lines.push(dw?.ok && dw.facing === false ? 'The garage faces away from the street, so the driveway runs round the house to the frontage.' : garage.facesStreet ? `The garage faces the street${garage.distanceM != null ? `, about ${garage.distanceM.toFixed(1)} m back from the boundary` : ''}.` : 'The garage door does not face the street, so there is no driveway to the frontage yet.');
   if (driveway.state === 'ok') lines.push(`The driveway runs about ${driveway.lengthM.toFixed(1)} m to the street.`);
   if (lot.setbacksDefault) lines.push('Council setbacks could not be loaded for this lot, so a standard indicative envelope was used.');
   lines.push(INDICATIVE);

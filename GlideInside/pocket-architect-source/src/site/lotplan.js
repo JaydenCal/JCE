@@ -442,7 +442,7 @@ export function deriveDriveway(project, opts = {}) {
   return {
     ok: true, widthMm: wd, centre, left, right, polygon, lengthMm: length, minRadiusM: Number.isFinite(rmin) ? rmin / 1000 : null,
     doorMid: P0, kerbPoint: kerbEnd, edge: r.edge, crossover, door, straight: Math.abs(G.dist(P0, kerbEnd) - length) < 5,
-    edited: usedStored && !routed, routed, storedInvalid, edgeStart: edgeA, edgeU: u, edgeLenMm: edgeLen, endOffsetMm: G.dot(G.sub(kerbEnd, edgeA), u), pis: usedStored && !routed ? stored.pis : [], radiusM: stored?.radiusM || 6,
+    edited: usedStored && !routed, routed, facing, storedInvalid, edgeStart: edgeA, edgeU: u, edgeLenMm: edgeLen, endOffsetMm: G.dot(G.sub(kerbEnd, edgeA), u), pis: usedStored && !routed ? stored.pis : [], radiusM: stored?.radiusM || 6,
     insideLot: centre.every((c) => side(c) >= 0 || G.pointInPolygon(c, lot.boundary)),
   };
 }

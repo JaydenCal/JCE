@@ -89,6 +89,7 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
     if (mine !== seq) { try { step?.dispose?.(); } catch { /* superseded */ } return; }
     live = step || { el: h('div') };
     content.replaceChildren(live.el);
+    try { body.scrollTop = 0; } catch { /* a new step starts at its top, not where the last one was scrolled to */ }
     refresh();
     try { await live.onEnter?.(); } catch (e) { console.warn('[flow] step enter failed', e); }
     if (mine === seq) refresh();

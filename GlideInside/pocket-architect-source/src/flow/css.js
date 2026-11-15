@@ -91,7 +91,7 @@ export const FLOW_CSS = `
 .gf-place--fit>.gf-stage{grid-area:stage}
 .gf-place--fit>.gf-fitwrap{grid-area:fit;display:flex;flex-direction:column;gap:10px;min-width:0}
 .gf-place--fit>.gf-side{grid-area:side}
-.gf-coachrow:empty,.gf-coachrow:not(:has(.fitcoach:not([hidden]))){display:none}
+.gf-coachrow.gf-wait,.gf-coachrow:empty,.gf-coachrow:not(:has(.fitcoach:not([hidden]))){display:none}
 @keyframes gf-breach{0%,100%{stroke-opacity:1}50%{stroke-opacity:.35}}
 .gf-breach{animation:gf-breach 1.4s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){.gf-breach{animation:none}}

@@ -170,7 +170,12 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
   const statusCard = h('div', { class: 'gf-card' }, nameEl, h('div', { style: { height: '8px' } }), statusEl);
   const fitWrap = h('div', { class: 'gf-fitwrap' }, statusCard, fitCard.el);
   // The fit card says what is wrong better than the one line status, so the status steps aside while the card is up.
-  function syncStatus() { statusEl.hidden = !fitCard.el.hidden && !['fits', 'tight'].includes(fitCard.el.dataset.verdict) && !fitCard.el.classList.contains('is-min'); }
+  function syncStatus() {
+    statusEl.hidden = !fitCard.el.hidden && !['fits', 'tight'].includes(fitCard.el.dataset.verdict) && !fitCard.el.classList.contains('is-min');
+    // On a phone the card sits above the plan: one thing at a time, so the plan stays in view.
+    statusCard.hidden = narrow() && statusEl.hidden;
+    coachRow.classList.toggle('gf-wait', narrow() && statusEl.hidden);
+  }
   const side = h('div', { class: 'gf-side' },
     h('div', { class: 'gf-card' },
       h('div', { class: 'gf-ctl' },

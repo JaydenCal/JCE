@@ -299,7 +299,7 @@ export function fitCardModel(project, { withPlan = true, canDesigns = true, canN
   const none = { show: false, tone: 'ok', title: '', lines: [], sides: [], actions: [], verdict: 'fits', slope, driveway: null };
   if (!facts) return none;
   const dw = (() => { try { return deriveDriveway(project); } catch { return null; } })();
-  const driveway = dw && !dw.ok && garageDoor(project) ? { blocked: true, text: 'There is no room for a driveway to the garage from here. Turn the house so the garage faces the street.' } : dw?.ok && dw.routed ? { routed: true, text: 'The garage faces away from the street, so the driveway runs round the house.' } : null;
+  const driveway = dw && !dw.ok && garageDoor(project) ? { blocked: true, text: 'There is no room for a driveway to the garage from here. Turn the house so the garage faces the street.' } : dw?.ok && dw.routed && dw.facing === false ? { routed: true, text: 'The garage faces away from the street, so the driveway runs round the house.' } : null;
   if (facts.state === 'fits' || facts.state === 'unchecked') {
     // A tight fit: it meets the setbacks with next to nothing to spare, and moving it does not find more room.
     if (!driveway?.blocked && withPlan && facts.state === 'fits') {
