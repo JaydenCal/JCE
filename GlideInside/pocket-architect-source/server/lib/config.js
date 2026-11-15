@@ -107,8 +107,12 @@ export function readConfig(env = {}) {
     // UNLIMITED for plan set PDFs. The AI assistant is limited (monthly allowance, trial total, top-up packs); optional caps are OFF at 0.
     commercialSubPriceId: str(env.COMMERCIAL_SUB_PRICE_ID), // the A$50 per month recurring price the owner creates in Stripe; empty = "Coming soon"
     commercialSubPriceAud: num(env.COMMERCIAL_SUB_PRICE_AUD, 50), // display only
-    commercialAiMonthly: Math.max(0, Math.round(num(env.COMMERCIAL_AI_MONTHLY, 100))), // assistant messages per billing period for a subscriber
+    commercialAiMonthly: Math.max(0, Math.round(num(env.COMMERCIAL_AI_MONTHLY, 150))), // assistant messages per billing period for a subscriber
     commercialAiTopupPriceId: str(env.COMMERCIAL_AI_TOPUP_PRICE_ID), // one-off Stripe price for one top-up pack; empty = "Coming soon"
+    commercialAiTopupPriceAud: num(env.COMMERCIAL_AI_TOPUP_PRICE_AUD, 15), // display only: must match the one-off price the owner creates in Stripe
+    commercialAiModel: str(env.COMMERCIAL_AI_MODEL) || 'claude-sonnet-5-5', // the commercial assistant (commercial mode only); residential keeps ANTHROPIC_MODEL
+    commercialAiPriceInPerMtok: num(env.COMMERCIAL_AI_PRICE_IN_PER_MTOK_USD, 3), // USD per million input tokens, for the owner's cost view (verify against Anthropic pricing)
+    commercialAiPriceOutPerMtok: num(env.COMMERCIAL_AI_PRICE_OUT_PER_MTOK_USD, 15),
     commercialAiTopupQty: Math.max(1, Math.round(num(env.COMMERCIAL_AI_TOPUP_QTY, 100))), // messages in one top-up pack
     commercialExportRatePerHour: Math.max(1, Math.round(num(env.COMMERCIAL_EXPORT_RATE_PER_HOUR, 120))), // anti-abuse only, per account
     commercialTrialDailyPdfs: Math.max(0, Math.round(num(env.COMMERCIAL_TRIAL_DAILY_PDFS, 0))), // 0 = off (plan set PDFs are unlimited)

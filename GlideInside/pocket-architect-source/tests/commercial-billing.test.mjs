@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import zlib from 'node:zlib';
 import { createApp } from '../server/lib/app.js';
 import { createMemoryStore } from '../server/lib/store.js';
-import { hmacSha256 } from '../server/lib/entitlement.js';
+import { hmacSha256, signToken } from '../server/lib/entitlement.js';
 import { verifyPassword } from '../server/lib/password.js';
 import { commercialProject } from './helpers/commercial-fixture.mjs';
 import { createProject } from '../src/model/schema.js';
@@ -21,7 +21,7 @@ const TRIAL_PW = 'Gum-tree-Wattle-7731';
 
 function makeWorld(env = {}) {
   const clock = { t: T0 };
-  const w = { clock, stripe: [], sessions: new Map(), subs: new Map(), store: createMemoryStore() };
+  const w = { clock, stripe: [], sessions: new Map(), subs: new Map(), store: createMemoryStore(), anthropicBodies: [] };
   let n = 0;
   const fetchImpl = async (url, init = {}) => {
     const u = new URL(String(url));
@@ -40,6 +40,7 @@ function makeWorld(env = {}) {
         return jsonRes({ url: 'https://billing.stripe.com/p/session/test_1' });
       }
     }
+    if (u.href === 'https://api.anthropic.com/v1/messages') w.anthropicBodies.push(JSON.parse(init.body));
     if (u.href === 'https://api.anthropic.com/v1/messages') return jsonRes({ id: 'm', type: 'message', role: 'assistant', model: 'x', content: [{ type: 'text', text: 'Done.' }, ROOF], stop_reason: 'tool_use', usage: USAGE });
     throw new Error(`unexpected fetch ${url}`);
   };
@@ -100,13 +101,13 @@ const pdfText = async (r) => {
 // Subscription -----------------------------------------------------------------------------------------------------------------
 test('subscribe: Coming soon without a price id, subscription mode Checkout with one', async () => {
   const off = makeWorld({ COMMERCIAL_SUB_PRICE_ID: '' });
-  assert.equal((await off.call('GET', '/api/health')).json.commercialSubscribable, false);
+  assert.equal((await off.call('GET', '/api/commercial/status')).json.subscribable, false);
   const r = await off.call('POST', '/api/commercial/subscribe', { body: {} });
   assert.equal(r.status, 503);
   assert.equal(r.json.error.code, 'SUBSCRIPTION_COMING_SOON');
   assert.equal(off.stripe.length, 0);
   const w = makeWorld();
-  assert.equal((await w.call('GET', '/api/health')).json.commercialSubscribable, true);
+  assert.equal((await w.call('GET', '/api/commercial/status')).json.subscribable, true);
   const ok = await w.call('POST', '/api/commercial/subscribe', { body: { email: 'dev@example.com' } });
   assert.equal(ok.status, 200);
   assert.match(ok.json.url, /^https:\/\/checkout\.stripe\.com\//);
@@ -251,7 +252,7 @@ test('AI allowance resets on renewal, and top-up messages roll over', async () =
 test('top-up checkout: Coming soon without a price id, payment Checkout with one, subscribers only', async () => {
   const off = makeWorld({ COMMERCIAL_AI_TOPUP_PRICE_ID: '' });
   const t0 = await off.subscribe();
-  assert.equal((await off.call('GET', '/api/health')).json.commercialTopUp, false);
+  assert.equal((await off.call('GET', '/api/commercial/status')).json.topUp, false);
   const r0 = await off.call('POST', '/api/commercial/ai-topup', { token: t0 });
   assert.equal(r0.status, 503);
   assert.equal(r0.json.error.code, 'SUBSCRIPTION_COMING_SOON');
@@ -445,4 +446,62 @@ test('the stored trial record holds a PBKDF2 hash, not the password', async () =
   assert.match(rec.passwordHash, /^pbkdf2-sha256\$/);
   assert.equal((await verifyPassword(TRIAL_PW, rec.passwordHash)).ok, true);
   assert.equal((await verifyPassword('wrong', rec.passwordHash)).ok, false);
+});
+
+test('defaults: 150 messages a month, A$15 for 100 more, commercial model is Sonnet 5.5', async () => {
+  const w = makeWorld();
+  assert.equal(w.app.config.commercialAiMonthly, 150);
+  assert.equal(w.app.config.commercialAiTopupQty, 100);
+  assert.equal(w.app.config.commercialAiTopupPriceAud, 15);
+  assert.equal(w.app.config.commercialAiModel, 'claude-sonnet-5-5');
+  assert.equal(w.app.config.commercialTrialAiTotal, 50);
+  const token = await w.subscribe();
+  const c = (await w.call('GET', '/api/credits', { token })).json;
+  assert.deepEqual([c.total, c.commercialTopUp.messages, c.commercialTopUp.priceAud], [150, 100, 15]);
+});
+
+test('commercial model is used only for commercial accounts in commercial mode; residential keeps the Haiku model', async () => {
+  const w = makeWorld({ ANTHROPIC_MODEL: 'claude-haiku-5-5' });
+  const sub = await w.subscribe();
+  await w.createTrial();
+  const trial = (await w.trialLogin()).json.token;
+  assert.equal((await w.ai(sub)).status, 200);
+  assert.equal((await w.ai(trial)).status, 200);
+  assert.deepEqual(w.anthropicBodies.map((b) => b.model), ['claude-sonnet-5-5', 'claude-sonnet-5-5']);
+  // a commercial account that does not say commercial is refused, not silently run on another model
+  assert.equal((await w.ai(sub, { commercial: false })).status, 403);
+  assert.equal(w.anthropicBodies.length, 2);
+  // a residential Plan Pack that claims commercial still runs on the residential model
+  await w.store.createEntitlement({ id: 'ent_pack1', projectId: 'p_house1', email: 'h@example.com', stripeSessionId: 'cs_pack_000001', amountCents: 3000, currency: 'aud', creditsTotal: 50, status: 'active', createdAt: new Date(T0).toISOString(), expiresAt: new Date(T0 + 300 * DAY).toISOString() });
+  const pack = await signToken({ eid: 'ent_pack1', pid: 'p_house1', exp: Math.floor((T0 + 300 * DAY) / 1000) }, 'unit-secret');
+  assert.equal((await w.ai(pack)).status, 200);
+  assert.equal(w.anthropicBodies.at(-1).model, 'claude-haiku-5-5');
+  // a token for no account gets nothing
+  assert.equal((await w.ai('not.a-token')).status, 401);
+});
+
+test('per-message token usage is recorded per account and shown to the owner with its cost', async () => {
+  const w = makeWorld();
+  const sub = await w.subscribe();
+  await w.createTrial();
+  const trial = (await w.trialLogin()).json.token;
+  await w.ai(sub);
+  await w.ai(sub);
+  await w.ai(trial);
+  assert.equal((await w.call('GET', '/api/commercial/admin/usage')).status, 401);
+  assert.equal((await w.call('GET', '/api/commercial/admin/usage', { token: sub })).status, 401);
+  const r = await w.call('GET', '/api/commercial/admin/usage', { token: ADMIN });
+  assert.equal(r.status, 200);
+  assert.equal(r.json.model, 'claude-sonnet-5-5');
+  const [m] = r.json.months;
+  assert.equal(m.month, '2026-11');
+  const subRow = m.accounts.find((a) => a.kind === 'subscription');
+  assert.equal(subRow.messages, 2);
+  assert.deepEqual([subRow.input, subRow.cacheRead, subRow.output], [10400, 11600, 360]);
+  // 2 x (5200 in x $3 + 5800 cache read x 0.1 x $3 + 180 out x $15) per million tokens
+  const one = (5200 * 3 + 5800 * 0.3 + 180 * 15) / 1e6;
+  assert.ok(Math.abs(subRow.costUsd - 2 * one) < 1e-6, String(subRow.costUsd));
+  assert.equal(subRow.email, 'dev@example.com');
+  assert.equal(m.accounts.find((a) => a.kind === 'trial').messages, 1);
+  assert.equal(m.totals.messages, 3);
 });

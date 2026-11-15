@@ -58,6 +58,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
   };
 
   // Subscription ----------------------------------------------------------------------------------------------------------------
+  const topUpAvailable = () => !!(config.stripeSecretKey && config.commercialAiTopupPriceId && config.entitlementSecret);
   const subscribable = () => !!(config.stripeSecretKey && config.commercialSubPriceId && config.entitlementSecret);
 
   async function subToken(ent) {
@@ -233,7 +234,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
   const WARN = [0.8]; // the assistant panel warns at 80 percent of the allowance
 
   /** The snapshot the assistant panel reads (see src/premium/credits.js): messages left, 80 percent warning, and the top-up offer. */
-  const topUpOffer = (allowed) => ({ allowed, available: !!config.commercialAiTopupPriceId, messages: config.commercialAiTopupQty });
+  const topUpOffer = (allowed) => ({ allowed, available: !!config.commercialAiTopupPriceId, messages: config.commercialAiTopupQty, priceAud: config.commercialAiTopupPriceAud });
 
   async function subAccount(payload) {
     const nowMs = now();
@@ -267,7 +268,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
       };
     };
     const ai = {
-      kind: 'commercial', messageBased: true, id: monthlyId, rateKey: `csub:${ent.id}`, snapshot,
+      kind: 'commercial', messageBased: true, id: monthlyId, logId: ent.id, accountKind: 'subscription', email: ent.email, rateKey: `csub:${ent.id}`, snapshot,
       async available() {
         const { m, t } = await pools();
         return credits.orgBalance(m, t).available;
@@ -325,7 +326,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
       return { kind: 'commercial', commercial: true, trial: true, unit: 'messages', ...a, reserved: 0, warnLevel: credits.warnLevel(a.used, a.total, WARN), topUpRemaining: 0, available: a.remaining, commercialTopUp: null };
     };
     const ai = {
-      kind: 'commercial', messageBased: true, id: `ctrial:${rec.id}`, rateKey: `ctrial:${rec.id}`, snapshot,
+      kind: 'commercial', messageBased: true, id: `ctrial:${rec.id}`, logId: `ctrial:${rec.id}`, accountKind: 'trial', rateKey: `ctrial:${rec.id}`, snapshot,
       available: async () => aiState((await loadTrial()) || rec).remaining,
       async reserve(n) {
         return aiState((await loadTrial()) || rec).remaining >= n ? { m: n, t: 0 } : null;
@@ -585,12 +586,49 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     throw new HttpError('NOT_FOUND', 'No such endpoint.');
   }
 
+  /**
+   * Owner only: actual assistant token usage and cost per account and month, from the per-message records (event type commercial_ai_use).
+   * Costs use COMMERCIAL_AI_PRICE_*_PER_MTOK_USD. Returns { months: [{ month, accounts: [{ account, kind, email, messages, input, cacheRead, cacheWrite, output, costUsd }] , totals }] }.
+   */
+  async function adminUsage(request) {
+    await adminAuth(request);
+    const rows = await store.listEvents('commercial_ai_use');
+    const by = new Map();
+    for (const e of rows) {
+      const d = e.detail || {};
+      const month = sydneyMonthKey(Date.parse(e.createdAt));
+      const key = `${month}|${d.account}`;
+      const a = by.get(key) || { month, account: d.account, kind: d.kind, email: d.email || null, messages: 0, input: 0, cacheRead: 0, cacheWrite: 0, output: 0, costMicros: 0 };
+      a.messages += d.messages || 1;
+      a.input += d.inputTokens || 0;
+      a.cacheRead += d.cacheReadTokens || 0;
+      a.cacheWrite += d.cacheWriteTokens || 0;
+      a.output += d.outputTokens || 0;
+      a.costMicros += d.costUsdMicros || 0;
+      by.set(key, a);
+    }
+    const months = new Map();
+    for (const a of by.values()) {
+      const m = months.get(a.month) || { month: a.month, accounts: [], totals: { messages: 0, input: 0, cacheRead: 0, cacheWrite: 0, output: 0, costUsd: 0 } };
+      const { costMicros, ...rest } = a;
+      const costUsd = Math.round(costMicros) / 1e6;
+      m.accounts.push({ ...rest, costUsd });
+      for (const k of ['messages', 'input', 'cacheRead', 'cacheWrite', 'output']) m.totals[k] += a[k];
+      m.totals.costUsd += costUsd;
+      months.set(a.month, m);
+    }
+    const out = [...months.values()].sort((x, y) => y.month.localeCompare(x.month));
+    for (const m of out) m.accounts.sort((x, y) => y.costUsd - x.costUsd);
+    return json({ model: config.commercialAiModel, priceUsdPerMtok: { input: config.commercialAiPriceInPerMtok, output: config.commercialAiPriceOutPerMtok }, months: out });
+  }
+
   // Router (the part of the path after /api) ------------------------------------------------------------------------------------
   async function route(request, url, path) {
     const method = request.method;
     const allow = (...m) => {
       if (!m.includes(method)) throw new HttpError('BAD_REQUEST', `Use ${m.join(' or ')} for this endpoint.`, {}, 405);
     };
+    if (path === '/commercial/status') return allow('GET'), json({ subscribable: subscribable(), topUp: topUpAvailable(), trialLogin: !!pstore, priceAud: config.commercialSubPriceAud, aiMonthly: config.commercialAiMonthly, topUpMessages: config.commercialAiTopupQty, topUpPriceAud: config.commercialAiTopupPriceAud });
     if (path === '/commercial/subscribe') return allow('POST'), subscribe(request);
     if (path === '/commercial/subscription') return allow('GET'), subscriptionGet(url);
     if (path === '/commercial/subscription/restore') return allow('POST'), subscriptionRestore(request);
@@ -600,10 +638,11 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     if (path === '/commercial/trial/login') return allow('POST'), trialLogin(request);
     const proj = /^\/commercial\/trial\/projects(?:\/([\w-]{1,80}))?$/.exec(path);
     if (proj) return trialProjects(request, proj[1] || null);
+    if (path === '/commercial/admin/usage') return allow('GET'), adminUsage(request);
     const admin = /^\/commercial\/admin\/trial(\/settings)?$/.exec(path);
     if (admin) return adminTrial(request, admin[1] || null);
     return null;
   }
 
-  return { route, handleEvent, account, subscribable, topUpAvailable: () => !!(config.stripeSecretKey && config.commercialAiTopupPriceId && config.entitlementSecret), sweepProjects: () => (pstore ? sweepProjects() : null), subToken, subView };
+  return { route, handleEvent, account, subscribable, topUpAvailable, sweepProjects: () => (pstore ? sweepProjects() : null), subToken, subView };
 }

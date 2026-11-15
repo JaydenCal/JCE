@@ -42,11 +42,11 @@ export function friendlyError(e, { area = 'general', dev = false } = {}) {
       return 'That export is not available right now. Try again, or try a different format.';
     case 'UNAUTHORISED':
     case 'NOT_ENTITLED':
-      return area === 'restore' ? 'We could not find a Plan Pack with those details. Check the email used at checkout and the reference.' : fallback;
+      return area === 'restore' && !/subscription/i.test(fallback) ? 'We could not find a Plan Pack with those details. Check the email used at checkout and the reference.' : fallback;
     default:
       return fallback;
   }
 }
 
 /** True when the failure means this browser's token is no longer good and should be forgotten. */
-export const isAuthLoss = (e) => e?.code === 'UNAUTHORISED' || e?.code === 'NOT_ENTITLED';
+export const isAuthLoss = (e) => e?.code === 'UNAUTHORISED' || e?.code === 'NOT_ENTITLED' || e?.code === 'TRIAL_DISABLED' || e?.code === 'TRIAL_EXPIRED';

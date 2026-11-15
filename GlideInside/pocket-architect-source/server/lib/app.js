@@ -82,8 +82,6 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       sharing: projects.available(),
       aiPaused: !config.anthropicApiKey || !!(await credits.globalPause(store, config, now())),
       paymentsConfigured: !!(config.stripeSecretKey && config.stripeWebhookSecret && config.entitlementSecret),
-      commercialSubscribable: commercial.subscribable(), // false: the Subscribe button reads "Coming soon"
-      commercialTopUp: commercial.topUpAvailable(),
       ...(devGrant ? { devGrant: true } : {}),
     });
   }
@@ -355,7 +353,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     needCommercialBody(acct, body);
     const activeLevelId = typeof body.activeLevelId === 'string' ? body.activeLevelId.slice(0, 64) : '';
     const history = anthropic.cleanHistory(body.history);
-    const logBase = { id: randomId('req'), entitlementId: acct.id, createdAt: iso(started), model: config.anthropicModel };
+    // The commercial assistant (subscription or trial login, commercial mode only) runs on COMMERCIAL_AI_MODEL with its own price table for the
+    // cost record. Every other account keeps ANTHROPIC_MODEL. acct.messageBased is only true for a commercial account, and needCommercialBody
+    // has already refused a commercial account that did not say commercial, so a residential Plan Pack can never select the commercial model.
+    const aiConfig = acct.messageBased ? { ...config, anthropicModel: config.commercialAiModel, priceInPerMtok: config.commercialAiPriceInPerMtok, priceOutPerMtok: config.commercialAiPriceOutPerMtok } : config;
+    const logBase = { id: randomId('req'), entitlementId: acct.logId || acct.id, createdAt: iso(started), model: aiConfig.anthropicModel };
 
     // Organisation budgets come first so one busy builder cannot use up the AI for public buyers.
     if (acct.kind === 'org') {
@@ -394,10 +396,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       throw new HttpError('INSUFFICIENT_CREDITS', 'Your remaining credits are reserved by another request. Try again in a moment.');
     }
 
-    const reqBody = anthropic.buildRequest({ config, tools, history, context, message, activeLevelId });
+    const reqBody = anthropic.buildRequest({ config: aiConfig, tools, history, context, message, activeLevelId });
     let data;
     try {
-      data = await anthropic.callAnthropic({ config, fetchImpl: doFetch, body: reqBody });
+      data = await anthropic.callAnthropic({ config: aiConfig, fetchImpl: doFetch, body: reqBody });
     } catch (e) {
       await acct.release(reservation);
       await store.logAiRequest({ ...logBase, latencyMs: now() - started, status: 'error' });
@@ -405,7 +407,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
 
     const parsed = anthropic.parseResponse(data, tools);
-    const cost = credits.costMicros(parsed.usage, config);
+    const cost = credits.costMicros(parsed.usage, aiConfig);
     // A reply with no operations (a refusal or an "I can only do..." answer) is free, as in the mock. The real model cost still counts towards the spend caps.
     // Commercial accounts are charged one message per request that reached the model (no free refusals).
     const charged = acct.messageBased ? 1 : parsed.ops.length ? credits.creditsForCost(cost, config) : 0;
@@ -422,6 +424,14 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       cacheWriteTokens: parsed.usage.cache_creation_input_tokens, cacheReadTokens: parsed.usage.cache_read_input_tokens,
       costUsdMicros: cost, credits: charged, opsCount: parsed.ops.length, latencyMs: now() - started, status: 'ok',
     });
+    if (acct.messageBased) {
+      // Actual token usage per message against the account, for the owner's cost view (GET /api/commercial/admin/usage).
+      await store.logEvent({ id: `cai_${logBase.id}`, type: 'commercial_ai_use', createdAt: iso(started), detail: {
+        account: acct.logId, kind: acct.accountKind, email: acct.email || null, model: aiConfig.anthropicModel,
+        inputTokens: parsed.usage.input_tokens || 0, cacheReadTokens: parsed.usage.cache_read_input_tokens || 0, cacheWriteTokens: parsed.usage.cache_creation_input_tokens || 0,
+        outputTokens: parsed.usage.output_tokens || 0, costUsdMicros: cost, messages: charged,
+      } });
+    }
     const crossed = await acct.crossed(reservation, charged);
     const snap = await acct.snapshot();
     return json({

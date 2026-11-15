@@ -759,7 +759,30 @@ test('UI, commercial mode: Exports menu and the buttons are back, no "coming soo
   assert.equal(r.exportsShown, true);
   assert.deepEqual(r.items, ['Commercial plan set (PDF)', 'DXF drawing']);
   assert.equal(r.soon, false);
-  assert.equal(r.unlock, 'Unlock plans, A$30');
+  assert.equal(r.unlock, 'Subscribe, A$50 per month');
+});
+
+test('UI, commercial mode gate: Commercial Developer, A$50 per month, unlimited plan sets, with Subscribe (Coming soon until Stripe is set up)', { skip: skipUi }, () => {
+  const r = browser('?state=locked', String.raw`
+    S.apply('Switch to commercial layout', (p) => { p.mode = 'commercial'; });
+    await sleep(120);
+    out.aiButtons = $$('.psp-ai .psp-btn').map((b) => b.textContent.trim());
+    out.aiText = text($('.psp-ai'));
+    $('#tp-topbar .psp-btn--primary').click();
+    await sleep(250);
+    const modal = $('.psp-modal');
+    out.title = text(modal.querySelector('h2'));
+    out.body = modal.textContent;
+    out.foot = $$('.psp-modal-foot .psp-btn').map((b) => text(b));
+    out.paths = T.requests.map((q) => q.path);
+  `);
+  assert.equal(r.title, 'Commercial Developer');
+  assert.match(r.body, /Commercial Developer, A\$50 per month, unlimited plan sets/);
+  assert.match(r.body, /A\$15 for 100 more/);
+  assert.ok(r.foot.includes('Coming soon'), 'the mock server has no Stripe price, so Subscribe reads Coming soon');
+  assert.ok(!r.paths.includes('/checkout'), 'the residential A$30 checkout is not used');
+  assert.ok(r.aiButtons.some((b) => /Commercial Developer, A\$50 per month/.test(b)));
+  assert.doesNotMatch(r.body, /Plan Pack/);
 });
 
 test('UI, locked by default: Unlock button, locked Exports menu, locked assistant, upgrade modal, checkout, no browser dialogs', { skip: skipUi }, () => {
