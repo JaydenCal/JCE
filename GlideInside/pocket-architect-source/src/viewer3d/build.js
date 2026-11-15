@@ -46,7 +46,7 @@ function panelMaterials(lib, hex, fin, spec, int, tintId) {
     edge: lib.plain(shade(faceHex, 0.74), { rough: 0.95, tint: tintId }),
     cap: lib.plain(shade(faceHex, 0.9), { rough: 0.95, tint: tintId }),
     joint: lib.plain('#2d3034', { rough: 0.98, tint: tintId }),
-    sign: lib.plain('#30353b', { rough: 0.8, tint: tintId }),
+    sign: lib.plain('#8a8f94', { rough: 0.8, tint: tintId }),
   };
 }
 

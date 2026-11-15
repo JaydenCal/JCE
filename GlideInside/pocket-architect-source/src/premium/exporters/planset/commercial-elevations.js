@@ -142,9 +142,11 @@ function drawFacade(doc, f, g, project, cellBox, scale, projectRgb) {
   const wallRgb = spec.colour && spec.colour !== 'project' && spec.system !== 'metal_clad' ? hexRgb(hexOfCladding(spec.colour)) : projectRgb;
   const sys = systemById(spec.system);
   const X0 = cellBox.x0 + 6;
-  const groundY = cellBox.y1 - 12;
-  const Y = (mm) => groundY - mm / scale;
   const totalW = g.runs.reduce((s, r) => s + r.span.length, 0);
+  const tallest = Math.max(...g.runs.map((r) => r.H)) + (spec.parapetMm || 0);
+  // The drawing sits under its title (not at the foot of the cell), with room above for a roof seen over the wall.
+  const groundY = Math.min(cellBox.y1 - 12, cellBox.y0 + 16 + (tallest + 2200) / scale);
+  const Y = (mm) => groundY - mm / scale;
   const xAt = (run, x) => X0 + (g.runs.slice(0, g.runs.indexOf(run)).reduce((s, r) => s + r.span.length, 0) + x) / scale;
   const H = Math.max(...g.runs.map((r) => r.H));
   const parapet = spec.parapetMm || 0;
@@ -155,9 +157,10 @@ function drawFacade(doc, f, g, project, cellBox, scale, projectRgb) {
 
   // Ground line
   doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.5);
-  doc.line(X0 - px(MARGIN_MM), groundY, X0 + px(totalW + MARGIN_MM), groundY);
+  const gx1 = X0 + px(totalW) + 1.2; // stops short of the level marks at the right
+  doc.line(X0 - px(MARGIN_MM), groundY, gx1, groundY);
   doc.setLineWidth(0.12);
-  for (let x = X0 - px(MARGIN_MM); x < X0 + px(totalW + MARGIN_MM); x += 1.6) doc.line(x, groundY, x - 0.9, groundY + 1);
+  for (let x = X0 - px(MARGIN_MM); x < gx1; x += 1.6) doc.line(x, groundY, x - 0.9, groundY + 1);
 
   for (const run of g.runs) {
     const L = run.span.length;
@@ -269,7 +272,7 @@ function drawFacade(doc, f, g, project, cellBox, scale, projectRgb) {
   const dy = groundY + 6;
   doc.line(X0, dy, X0 + px(totalW), dy); doc.line(X0, dy - 1, X0, dy + 1); doc.line(X0 + px(totalW), dy - 1, X0 + px(totalW), dy + 1);
   haloText(doc, `${(totalW / 1000).toFixed(1)} m`, X0 + px(totalW) / 2, dy + 3.6, { size: 5.6, colour: PEN.dim, align: 'center', halo: 0 });
-  haloText(doc, 'Levels are indicative on an assumed datum, no survey level is in the model', cellBox.x0 + 6, cellBox.y1 - 0.6, { size: 4.8, colour: GREY, halo: 0 });
+  haloText(doc, 'Levels are indicative on an assumed datum, no survey level is in the model', cellBox.x0 + 6, Math.min(cellBox.y1 - 0.6, dy + 9), { size: 4.8, colour: GREY, halo: 0 });
   void sys;
 }
 
@@ -296,7 +299,7 @@ export function drawElevations(doc, model) {
     ['Elevations', String(facades.length)],
     ['Scale', `1:${lay.scale} @ A3`],
     ['Datum', `RL ${DATUM_RL.toFixed(2)} FFL, assumed`],
-    ...(panelFacades.length ? [['Concrete panels (street facades)', String(panelFacades.reduce((s, x) => s + x.g.runs.reduce((a, r) => a + (r.pl ? layoutStats(r.pl.layout).panels : 0), 0), 0))]] : []),
+    ...(panelFacades.length ? [['Panels, street sides', String(panelFacades.reduce((s, x) => s + x.g.runs.reduce((a, r) => a + (r.pl ? layoutStats(r.pl.layout).panels : 0), 0), 0))]] : []),
   ];
   const notes = [
     'Concept only. Elevations are indicative and not for construction.',
