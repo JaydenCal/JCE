@@ -2,15 +2,15 @@
 
 Prepared 15/11/2026. make-upload-zip skips `website-live/subdivision/`, so these are exact find and replace pairs to apply to the live copy of `subdivision/index.html`. The pairs were written against the repository copy of that page, so check each "Find" string exists in the live copy first. Keep every other part of the page as it is. No em or en dashes, no "compliant", no builder names.
 
-Also upload the shared files that changed (`framework.css`, `framework.js`, `site.config.js`, the new `sample-plan-set/` and `how-accurate-is-it/` pages and `assets/sample-sheets/`) in the normal upload zip first, because the banner and footer below use the new `.concept-banner` style and the new page URLs. Bump the `?v=` on the `framework.css` and `framework.js` links to match the other pages (`20261115c`).
+Also upload the shared files that changed (`framework.css`, `framework.js`, `site.config.js`, the new `sample-plan-set/` and `how-accurate-is-it/` pages and `assets/sample-sheets/`) in the normal upload zip first, because the banner and footer below use the new `.concept-banner` style and the new page URLs. Bump the `?v=` on the `framework.css` and `framework.js` links to match the other pages (`20261115d`).
 
 ## 1. Cache version (head)
 
 Find: `<link rel="stylesheet" href="../framework.css?v=20261112">`
-Replace with: `<link rel="stylesheet" href="../framework.css?v=20261115c">`
+Replace with: `<link rel="stylesheet" href="../framework.css?v=20261115d">`
 
 Find: `<script src="../site.config.js?v=20261112"></script><script src="../framework.js?v=20261112" defer></script>`
-Replace with: `<script src="../site.config.js?v=20261115c"></script><script src="../framework.js?v=20261115c" defer></script>`
+Replace with: `<script src="../site.config.js?v=20261115d"></script><script src="../framework.js?v=20261115d" defer></script>`
 
 ## 2. Header buttons (Pocket Architect renamed, one label per intent)
 
