@@ -14,7 +14,8 @@ import { handleEnquiry, parseEnquiry } from './enquiry.js'; // CALLBACK: the def
 
 const flag = (v) => ['1', 'true', 'yes', 'on'].includes(String(v ?? '').toLowerCase());
 const num = (v, d) => (v === undefined || v === null || v === '' || !Number.isFinite(Number(v)) ? d : Number(v));
-const ephemeralSecret = toB64u(crypto.getRandomValues(new Uint8Array(32))); // per process fallback; only ever used in mock mode
+let ephemeral = ''; // per isolate fallback, made on first use (Workers forbid random values in global scope); only ever used in mock mode
+const ephemeralSecret = () => (ephemeral ||= toB64u(crypto.getRandomValues(new Uint8Array(32))));
 const sha256Hex = async (s) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map((b) => b.toString(16).padStart(2, '0')).join('');
 const err = (code, msg, extra = {}, status) => new HttpError(code, msg, extra, status);
 
@@ -62,7 +63,7 @@ export function createConcierge({ store, env = {}, baseConfig = {}, fetchImpl, n
   const providerOk = cfg.provider === 'calcom' ? !!env.CALCOM_API_KEY : mockOk;
   const provider = injected || (providerOk ? createProvider({ env: { ...env, BOOKING_PROVIDER: cfg.provider }, fetchImpl: doFetch, nowMs: now }) : null);
   const bstore = injectedStore || (env.DB ? createD1BookingStore(env.DB) : createMemoryBookingStore());
-  const secret = cfg.signingSecret || (cfg.allowMock ? ephemeralSecret : '');
+  const secret = cfg.signingSecret || (cfg.allowMock ? ephemeralSecret() : '');
   // Default flow is "Request a call back" (owner decision 15/11/2026). Slots and booking exist only behind BOOKING_PROVIDER=calcom (or the mock in tests).
   const mode = !cfg.enabled ? 'off' : !providerOk ? 'callback' : cfg.provider === 'mock' ? 'test' : cfg.bookingLive ? 'live' : 'readonly';
   const callbackAvailable = cfg.enabled && !!secret;
