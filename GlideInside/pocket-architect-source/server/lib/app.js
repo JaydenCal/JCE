@@ -19,6 +19,7 @@ import { handleEnquiry } from './enquiry.js';
 import { createPortal } from './portal.js';
 import { createProjects } from './projects.js';
 import { createMemoryPortalStore } from './portal-store.js';
+import { createCommercial, COMMERCIAL_EXPORT_TYPES } from './commercial.js';
 
 const EXPORT_TYPES = ['pdf', 'dxf', 'glb', 'obj', 'html'];
 const WEBHOOK_MAX_BYTES = 1_000_000;
@@ -38,6 +39,9 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   // and local development. Other stores (Upstash) cannot hold it, so those hosts answer 503 PORTAL_NOT_CONFIGURED.
   const pstore = portalStore !== undefined ? portalStore : ['memory', 'file'].includes(store.kind) ? createMemoryPortalStore() : null;
   const portal = pstore ? createPortal({ store, pstore, config, fetchImpl: doFetch, env, now, ...(loadTemplates ? { loadTemplates } : {}) }) : null;
+
+  // Commercial Developer subscription and the shared commercial trial login (lib/commercial.js). The trial login needs the portal store.
+  const commercial = createCommercial({ store, pstore, config, fetchImpl: doFetch, now });
 
   let toolsCache = null;
   let catalogueCache = null;
@@ -117,7 +121,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     try {
       // A card saved through Checkout in setup mode belongs to the builder portal, not to a Plan Pack.
       const setup = event.type === 'checkout.session.completed' && event.data?.object?.mode === 'setup';
-      const outcome = setup ? (portal ? await portal.completeCardSetup(event.data.object) : 'ignored: portal not configured') : await stripe.handleStripeEvent({ event, store, config, now });
+      const mine = setup ? null : await commercial.handleEvent(event); // Commercial Developer subscription and AI top-up events
+      const outcome = setup ? (portal ? await portal.completeCardSetup(event.data.object) : 'ignored: portal not configured') : mine ?? (await stripe.handleStripeEvent({ event, store, config, now }));
       console.log(JSON.stringify({ event: 'stripe_webhook', id: event.id, type: event.type, outcome }));
       return json({ received: true });
     } catch (e) {
@@ -294,6 +299,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   }
 
   async function accountFor(request) {
+    const commercialAcct = await commercial.account(request); // subscription or trial login token
+    if (commercialAcct) return commercialAcct.ai;
     const org = await readOrgToken(request, { config, now });
     if (org) {
       await portal?.gate(org.oid, 'ai'); // a read only account (trial over, no card) cannot use the AI helper
@@ -303,6 +310,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   }
 
   async function creditsGet(request, url) {
+    const commercialAcct = await commercial.account(request);
+    if (commercialAcct) return json(await commercialAcct.ai.snapshot());
     const org = await readOrgToken(request, { config, now });
     if (org) return json(await (await orgAccount(org)).snapshot());
     const ent = await authenticate(request, { store, config, now });
@@ -320,6 +329,13 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     return { body, message, context };
   };
 
+  // The commercial subscription and the trial login cover commercial layouts only; the client says so and the server holds it to that.
+  // The client says so with commercial: true (and mode: 'commercial'); the plan context must also be a commercial layout, so the commercial
+  // model and message allowance are never spent on a housing design.
+  const needCommercialBody = (acct, body, context = '') => {
+    if (acct.messageBased && !((body.commercial === true || body.mode === 'commercial') && isCommercialContext(context))) throw new HttpError('NOT_ENTITLED', 'The Commercial Developer subscription covers the assistant in commercial mode only.');
+  };
+
   const needAi = () => {
     if (!config.anthropicApiKey) throw new HttpError('AI_NOT_CONFIGURED', env.STAGING === '1' ? 'The AI assistant is not available on the staging site.' : 'AI not configured');
   };
@@ -328,8 +344,9 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     needAi();
     const acct = await accountFor(request);
     const { message, context, body } = await aiBody(request);
+    needCommercialBody(acct, body, context);
     const { systemTokens } = await getTools(context);
-    const est = credits.estimateRequest({ config, context, message, history: anthropic.cleanHistory(body.history), systemTokens });
+    const est = acct.messageBased ? { credits: 1 } : credits.estimateRequest({ config, context, message, history: anthropic.cleanHistory(body.history), systemTokens });
     // `total` is in the live Worker's estimate body, which an older cached app reads.
     return json({ estimatedCredits: est.credits, remaining: await acct.available(), total: (await acct.snapshot()).total, requiresConfirm: est.credits > config.largeRequestCredits });
   }
@@ -339,9 +356,14 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     const started = now();
     const acct = await accountFor(request);
     const { message, context, body } = await aiBody(request);
+    needCommercialBody(acct, body, context);
     const activeLevelId = typeof body.activeLevelId === 'string' ? body.activeLevelId.slice(0, 64) : '';
     const history = anthropic.cleanHistory(body.history);
-    const logBase = { id: randomId('req'), entitlementId: acct.id, createdAt: iso(started), model: config.anthropicModel };
+    // The commercial assistant (subscription or trial login, commercial mode only) runs on COMMERCIAL_AI_MODEL with its own price table for the
+    // cost record. Every other account keeps ANTHROPIC_MODEL. acct.messageBased is only true for a commercial account, and needCommercialBody
+    // has already refused a commercial account that did not say commercial, so a residential Plan Pack can never select the commercial model.
+    const aiConfig = acct.messageBased ? { ...config, anthropicModel: config.commercialAiModel, priceInPerMtok: config.commercialAiPriceInPerMtok, priceOutPerMtok: config.commercialAiPriceOutPerMtok, priceCacheWritePerMtok: config.commercialAiPriceCacheWritePerMtok, priceCacheReadPerMtok: config.commercialAiPriceCacheReadPerMtok } : config;
+    const logBase = { id: randomId('req'), entitlementId: acct.logId || acct.id, createdAt: iso(started), model: aiConfig.anthropicModel };
 
     // Organisation budgets come first so one busy builder cannot use up the AI for public buyers.
     if (acct.kind === 'org') {
@@ -366,9 +388,9 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
 
     const { tools, systemTokens, mode } = await getTools(context);
-    const est = credits.estimateRequest({ config, context, message, history, systemTokens });
+    const est = acct.messageBased ? { credits: 1 } : credits.estimateRequest({ config, context, message, history, systemTokens });
     const remaining = await acct.available();
-    const what = acct.kind === 'org' ? 'AI credits for this month' : 'AI credits in this Plan Pack';
+    const what = acct.kind === 'org' ? 'AI credits for this month' : acct.messageBased ? 'AI messages' : 'AI credits in this Plan Pack';
     if (remaining < est.credits) {
       throw new HttpError('CREDITS_EXHAUSTED', remaining <= 0 ? `All ${what} have been used.` : `Only ${remaining} AI ${remaining === 1 ? 'credit remains' : 'credits remain'}, which is not enough for another request.`, { remaining, estimatedCredits: est.credits, ...(await acct.exhaustedDetails()) });
     }
@@ -380,10 +402,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       throw new HttpError('INSUFFICIENT_CREDITS', 'Your remaining credits are reserved by another request. Try again in a moment.');
     }
 
-    const reqBody = anthropic.buildRequest({ config, tools, history, context, message, activeLevelId, mode });
+    const reqBody = anthropic.buildRequest({ config: aiConfig, tools, history, context, message, activeLevelId, mode });
     let data;
     try {
-      data = await anthropic.callAnthropic({ config, fetchImpl: doFetch, body: reqBody });
+      data = await anthropic.callAnthropic({ config: aiConfig, fetchImpl: doFetch, body: reqBody });
     } catch (e) {
       await acct.release(reservation);
       await store.logAiRequest({ ...logBase, latencyMs: now() - started, status: 'error' });
@@ -391,9 +413,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
 
     const parsed = anthropic.parseResponse(data, tools);
-    const cost = credits.costMicros(parsed.usage, config);
+    const cost = credits.costMicros(parsed.usage, aiConfig);
     // A reply with no operations (a refusal or an "I can only do..." answer) is free, as in the mock. The real model cost still counts towards the spend caps.
-    const charged = parsed.ops.length ? credits.creditsForCost(cost, config) : 0;
+    // Commercial accounts are charged one message per request that reached the model (no free refusals).
+    const charged = acct.messageBased ? 1 : parsed.ops.length ? credits.creditsForCost(cost, config) : 0;
     await acct.settle(reservation, charged);
     if (acct.kind === 'org') await credits.addOrgSpend(store, acct.payload.oid, cost, started);
     else {
@@ -407,6 +430,14 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       cacheWriteTokens: parsed.usage.cache_creation_input_tokens, cacheReadTokens: parsed.usage.cache_read_input_tokens,
       costUsdMicros: cost, credits: charged, opsCount: parsed.ops.length, latencyMs: now() - started, status: 'ok',
     });
+    if (acct.messageBased) {
+      // Actual token usage per message against the account, for the owner's cost view (GET /api/commercial/admin/usage).
+      await store.logEvent({ id: `cai_${logBase.id}`, type: 'commercial_ai_use', createdAt: iso(started), detail: {
+        account: acct.logId, kind: acct.accountKind, email: acct.email || null, model: aiConfig.anthropicModel,
+        inputTokens: parsed.usage.input_tokens || 0, cacheReadTokens: parsed.usage.cache_read_input_tokens || 0, cacheWriteTokens: parsed.usage.cache_creation_input_tokens || 0,
+        outputTokens: parsed.usage.output_tokens || 0, costUsdMicros: cost, messages: charged,
+      } });
+    }
     const crossed = await acct.crossed(reservation, charged);
     const snap = await acct.snapshot();
     return json({
@@ -467,6 +498,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
 
   async function exportFile(request, type) {
     if (!EXPORT_TYPES.includes(type)) throw new HttpError('BAD_REQUEST', `Unknown export type. Use one of: ${EXPORT_TYPES.join(', ')}.`);
+    const commercialAcct = await commercial.account(request);
+    if (commercialAcct) {
+      if (!COMMERCIAL_EXPORT_TYPES.includes(type)) throw new HttpError('NOT_ENTITLED', 'Commercial layouts export the plan set PDF and the DXF.');
+      return exportCore(request, type, { ent: null, watermark: commercialAcct.watermark, commercial: commercialAcct });
+    }
     const ent = await authenticate(request, { store, config, now, missing: 'NOT_ENTITLED' });
     return exportCore(request, type, { ent, watermark: false }); // a Plan Pack (homeowner) export is never watermarked
   }
@@ -480,7 +516,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     return exportCore(request, type, { ent: null, watermark: ctx.watermark, orgId: ctx.org.id });
   }
 
-  async function exportCore(request, type, { ent, watermark = false, orgId = null }) {
+  async function exportCore(request, type, { ent, watermark = false, orgId = null, commercial: commercialAcct = null }) {
     const body = await readJson(request, config.exportMaxProjectBytes + (type === 'pdf' ? 2_000_000 : 0));
     let project;
     try {
@@ -491,13 +527,16 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (JSON.stringify(body.project).length > config.exportMaxProjectBytes) throw new HttpError('PAYLOAD_TOO_LARGE', 'This project is too large to export.');
     const problems = validate(project);
     if (problems.length) throw new HttpError('BAD_REQUEST', 'The project has problems and cannot be exported.', { details: problems.slice(0, 5) });
+    if (commercialAcct && project.mode !== 'commercial') throw new HttpError('NOT_ENTITLED', 'The commercial access covers commercial layouts only.');
     if (ent && !coversProject(ent, project.id)) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
     const image = typeof body.image === 'string' && /^data:image\/png;base64,/.test(body.image) && body.image.length < 1_900_000 ? body.image : null;
 
     // A per Plan Pack hourly limit. The live rule of ONE PDF plan set per job (a repeat gets the same file back) is only applied when PDF_SET_LIMIT=1.
-    const rateKey = ent ? ent.id : `org:${orgId}`;
+    const rateKey = commercialAcct ? commercialAcct.rateKey : ent ? ent.id : `org:${orgId}`;
+    const hourlyLimit = commercialAcct ? config.commercialExportRatePerHour : config.exportRatePerHour;
     const exportCount = await store.hitRate(`export:${rateKey}`, 3600, now());
-    if (exportCount > config.exportRatePerHour) throw new HttpError('RATE_LIMITED', 'Too many exports in the last hour. Please wait a few minutes and try again.', { limitPerHour: config.exportRatePerHour, retryAfter: 300 });
+    if (exportCount > hourlyLimit) throw new HttpError('RATE_LIMITED', 'Too many exports in the last hour. Please wait a few minutes and try again.', { limitPerHour: hourlyLimit, retryAfter: 300 });
+    await commercialAcct?.beforeExport(type); // the trial's optional daily PDF cap
     const pdfGuard = !!ent && type === 'pdf' && config.pdfSetLimit && !!files && typeof store.claimPdfSet === 'function';
     if (pdfGuard) {
       const again = await redeliverPdf(ent.id);
@@ -533,6 +572,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       file = await mod.buildExport(type, project, {
         image,
         watermark: watermark === true,
+        ...(commercialAcct?.sub === 'trial' && watermark === true ? { watermarkTitle: 'TRIAL, NOT FOR CONSTRUCTION' } : {}),
         config: exportConfig,
         catalogue: await getCatalogue(),
         // The host supplies jsPDF (a literal import here would force every host bundle to include it).
@@ -557,7 +597,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
         throw new HttpError('EXPORT_FAILED', 'Could not store the PDF. You have not been charged a set.');
       }
     }
-    await store.logEvent({ id: randomId('export'), type: 'export', detail: { eid: ent ? ent.id : `org:${orgId}`, type, watermark: watermark === true }, createdAt: iso() });
+    await commercialAcct?.afterExport(type);
+    await store.logEvent({ id: randomId('export'), type: 'export', detail: { eid: commercialAcct ? commercialAcct.id : ent ? ent.id : `org:${orgId}`, type, watermark: watermark === true }, createdAt: iso() });
     return new Response(file.bytes, {
       status: 200,
       headers: {
@@ -596,6 +637,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (path === '/ai/edit') return allow('POST'), aiEdit(request);
     if (path === '/ai/topup') return allow('POST'), aiTopUp(request);
     if (path === '/ai/topup-setting') return allow('POST'), aiTopUpSetting(request);
+    if (path.startsWith('/commercial/')) {
+      const res = await commercial.route(request, url, path);
+      if (res) return res;
+    }
     const sub = /^\/site(\/[a-z]+)$/.exec(path);
     if (sub) return site.handle(sub[1], request, url);
     if (path === '/enquiry/jce') return allow('POST'), enquiryJce(request);
@@ -624,7 +669,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
   }
 
-  return { fetch: handle, handle, config, portal, scheduled: async () => (portal ? portal.scheduled() : null) };
+  return { fetch: handle, handle, config, portal, scheduled: async () => {
+      await commercial.sweepProjects()?.catch?.(() => null); // trial saved projects older than the keep period
+      return portal ? portal.scheduled() : null;
+    },
+  };
 }
 
 export default createApp;

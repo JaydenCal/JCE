@@ -24,6 +24,8 @@ import { icon } from './icons.js';
 import { importPdf as runImportPdf } from './pdf-import.js';
 import { openPdfPreview } from './pdf-preview.js';
 import { openEnquiry, lotPrefill } from './ui/enquiry.js';
+import { createCommercialBilling } from './ui/commercial-billing.js';
+import { storage } from './util.js';
 
 export function createPremium(store, options = {}) {
   const {
@@ -56,7 +58,7 @@ export function createPremium(store, options = {}) {
   const mock = !apiOverride && mockOn ? createMockApi({ getProject: () => store.project, session: effSession }) : null;
   const api = apiOverride || (mock ? { ...realApi, health: mock.health, credits: mock.credits, estimate: mock.estimate, edit: mock.edit, topUp: mock.topUp, setClientTopUps: mock.setClientTopUps } : realApi);
   // The assistant token: a login's own token, or a placeholder in mock mode. Plan Pack tokens stay in state.token.
-  const aiToken = () => (mockOn ? 'mock.token' : orgSession ? session.token || null : null) || state.token;
+  const aiToken = () => (mockOn ? 'mock.token' : orgSession ? session.token || null : null) || (csubOn() ? state.csub.token : null) || state.token;
   const layer = createLayer(mounts.modalRoot);
   // Developer unlock is honoured on localhost only, whatever the host configuration says (docs/SCOPE.md 4.3).
   const dev = () => !!cfg.devUnlock && isLocalHost();
@@ -64,7 +66,22 @@ export function createPremium(store, options = {}) {
   const live = () => !!cfg.premiumEnabled;
   const storedToken = (projectId) => (live() ? loadToken(projectId) : null);
 
-  const state = { projectId: store.project.id, token: null, credits: null, creditsError: false, notice: null, exporting: null, portal: null };
+  // csub: the Commercial Developer subscription or the commercial trial login, { token, kind: 'subscription' | 'trial' }, kept in this browser.
+  // It only applies while the open design is a commercial layout (the server holds it to that as well).
+  const CSUB_KEY = 'ps.cs.token';
+  const readCsub = () => {
+    try {
+      const v = JSON.parse(storage.get(CSUB_KEY) || 'null');
+      return v && typeof v.token === 'string' && ['subscription', 'trial'].includes(v.kind) ? { token: v.token, kind: v.kind } : null;
+    } catch {
+      return null;
+    }
+  };
+  const state = { projectId: store.project.id, token: null, credits: null, creditsError: false, notice: null, exporting: null, portal: null, csub: readCsub() };
+  const commercialNow = () => store.project?.mode === 'commercial';
+  const csubOn = () => !!state.csub?.token && commercialNow();
+  // The token the server should see: the commercial login in commercial mode, otherwise the Plan Pack or portal token.
+  const bearer = () => (csubOn() ? state.csub.token : state.token || state.portal?.token || null);
   let disposed = false;
   let topbar = null;
   let assistant = null;
@@ -79,8 +96,8 @@ export function createPremium(store, options = {}) {
   // "Send plans to a registered engineer" on the lot viewer card: open to anyone who can see the plan set PDFs (the PDFs are free), except a
   // client login whose builder has turned sending off (allowClientEnquiries).
   const canSendPlans = () => (portalOn() ? state.portal.enquiry !== false : true);
-  const isEntitled = () => dev() || !!state.token || portalOn();
-  const view = () => ({ entitled: isEntitled(), token: state.token || state.portal?.token || null, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire(), commercial: store.project?.mode === 'commercial' });
+  const isEntitled = () => dev() || !!state.token || portalOn() || csubOn();
+  const view = () => ({ entitled: isEntitled(), token: bearer(), csub: csubOn() ? { kind: state.csub.kind } : null, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire(), commercial: store.project?.mode === 'commercial' });
   // Builder and client logins have the AI included; mock mode lets the owner review it for any session.
   const aiEntitled = () => isEntitled() || orgSession || mockOn;
   const aiView = () => ({ ...view(), entitled: aiEntitled(), token: aiToken(), session: effSession });
@@ -143,7 +160,8 @@ export function createPremium(store, options = {}) {
   };
 
   function authLost(why) {
-    clearToken(state.projectId);
+    if (csubOn()) clearCsub();
+    else clearToken(state.projectId);
     state.token = null;
     state.credits = null;
     state.notice = typeof why === 'string' ? why : authText(why);
@@ -167,6 +185,30 @@ export function createPremium(store, options = {}) {
   // Flows and UI --------------------------------------------------------------------------------------------------------
   const flows = createFlows({ layer, store, config: cfg, api, accept, getState: view, navigate, timing });
 
+  // Commercial mode is priced differently (Commercial Developer, A$50 per month): its own gate, account page and sign in.
+  function setCsub(next) {
+    state.csub = next;
+    if (next) storage.set(CSUB_KEY, JSON.stringify(next));
+    else storage.remove(CSUB_KEY);
+    state.notice = null;
+    state.creditsError = false;
+    state.credits = null;
+    assistant?.reset?.();
+    publish();
+    if (aiToken()) refreshCredits();
+  }
+  function clearCsub() {
+    setCsub(null);
+  }
+  const commercialUi = createCommercialBilling({
+    layer, api, store, config: cfg, getCsub: () => state.csub, setCsub, clearCsub, getCredits: () => state.credits,
+    refreshCredits: () => refreshCredits(), navigate, timing,
+    onReplace: (project) => store.replace?.(project),
+  });
+  /** Every "unlock" entry point: the commercial gate in commercial mode, the A$30 Plan Pack otherwise. */
+  const openUpgrade = (o) => (commercialNow() ? commercialUi.openGate(o) : flows.openUpgrade(o));
+  const openRestore = (o) => (commercialNow() ? commercialUi.openRestore() : flows.openRestore(o));
+
   async function exportAs(type) {
     if (!EXPORT_ITEMS.some((i) => i.type === type)) return null;
     if (!allowedExports().includes(type)) {
@@ -174,14 +216,14 @@ export function createPremium(store, options = {}) {
       return null;
     }
     if (!isEntitled()) {
-      flows.openUpgrade({ source: `export-${type}` });
+      openUpgrade({ source: `export-${type}` });
       return null;
     }
     if (state.exporting) return null;
     state.exporting = type;
     topbar?.setBusy(type, `Preparing ${exportLabel(type)}`);
     try {
-      const out = await runExport(type, store.project, { api, token: state.token || state.portal?.token || null, devUnlock: dev() || (portalOn() && !!state.portal.clientExports), portalServer: portalOn() && !!state.portal.serverExport, watermark: portalOn() && !!state.portal.watermark, config: cfg, catalogue, getViewer, save: saveFile });
+      const out = await runExport(type, store.project, { api, token: bearer(), devUnlock: dev() || (portalOn() && !!state.portal.clientExports), portalServer: portalOn() && !!state.portal.serverExport, watermark: portalOn() && !!state.portal.watermark, config: cfg, catalogue, getViewer, save: saveFile });
       track('ps_export', { type });
       layer.notify(`${exportLabel(type)} downloaded as ${out.filename}.`, 'ok');
       topbar?.announce(`${exportLabel(type)} downloaded`);
@@ -203,7 +245,7 @@ export function createPremium(store, options = {}) {
   // Send to JCE ---------------------------------------------------------------------------------------------------------------
   async function pdfBase64() {
     let blob = null;
-    await runExport('pdf', store.project, { api, token: state.token || state.portal?.token || null, devUnlock: dev() || (portalOn() && !!state.portal.clientExports), portalServer: portalOn() && !!state.portal.serverExport, watermark: portalOn() && !!state.portal.watermark, config: cfg, catalogue, getViewer, save: (b) => { blob = b; } });
+    await runExport('pdf', store.project, { api, token: bearer(), devUnlock: dev() || (portalOn() && !!state.portal.clientExports), portalServer: portalOn() && !!state.portal.serverExport, watermark: portalOn() && !!state.portal.watermark, config: cfg, catalogue, getViewer, save: (b) => { blob = b; } });
     if (!blob) return null;
     const bytes = new Uint8Array(await blob.arrayBuffer());
     let bin = '';
@@ -237,7 +279,7 @@ export function createPremium(store, options = {}) {
     const entitled = isEntitled();
     previewing = openPdfPreview({
       layer, project: store.project, store, config: cfg, catalogue, getViewer, entitled, hooks,
-      onUnlock: () => flows.openUpgrade({ source: 'export-pdf-preview' }),
+      onUnlock: () => openUpgrade({ source: 'export-pdf-preview' }),
       onDownload: () => exportAs('pdf'),
     });
     track('ps_pdf_preview_open', { entitled });
@@ -256,7 +298,7 @@ export function createPremium(store, options = {}) {
           onclick: () => {
             close('pick');
             if (item.type === 'pdf') previewPdf();
-            else if (locked) flows.openUpgrade({ source: `export-${item.type}` });
+            else if (locked) openUpgrade({ source: `export-${item.type}` });
             else exportAs(item.type);
           },
         }, el('span', null, item.label), icon(locked ? 'lock' : 'download', 16), el('small', null, locked ? `${item.hint}. Locked.` : item.hint)))),
@@ -270,9 +312,9 @@ export function createPremium(store, options = {}) {
       config: cfg,
       getState: view,
       actions: {
-        unlock: (source) => flows.openUpgrade({ source }),
-        details: () => (portalOn() ? layer.notify(`Plans and the AI helper are included with your login${state.portal.orgName ? ` by ${state.portal.orgName}` : ''}.`, 'info', 6000) : flows.openDetails()),
-        restore: () => flows.openRestore(),
+        unlock: (source) => openUpgrade({ source }),
+        details: () => (csubOn() ? commercialUi.openAccount() : portalOn() ? layer.notify(`Plans and the AI helper are included with your login${state.portal.orgName ? ` by ${state.portal.orgName}` : ''}.`, 'info', 6000) : flows.openDetails()),
+        restore: () => openRestore(),
         exportAs,
         previewPdf: () => previewPdf(),
         enquiry: () => openEnquiryForm(),
@@ -289,8 +331,9 @@ export function createPremium(store, options = {}) {
       layer,
       getState: aiView,
       actions: {
-        unlock: (source) => flows.openUpgrade({ source }),
-        restore: () => flows.openRestore(),
+        unlock: (source) => openUpgrade({ source }),
+        restore: () => openRestore(),
+        buyMore: () => commercialUi.buyMore(),
         setCredits,
         authLost,
       },
@@ -302,7 +345,12 @@ export function createPremium(store, options = {}) {
   const offProject = store.on('project', () => {
     if (store.project.id !== state.projectId) loadProjectState();
     const comm = store.project?.mode === 'commercial';
-    if (comm !== wasCommercialMode) { wasCommercialMode = comm; topbar?.render(); assistant?.render?.(); } // Exports and Unlock plans change wording in commercial mode
+    if (comm !== wasCommercialMode) {
+      wasCommercialMode = comm;
+      state.credits = null;
+      if (aiToken()) refreshCredits();
+      publish();
+    } // Exports and Unlock plans change wording in commercial mode
   });
   const onStorage = (e) => {
     if (e.key === tokenKey(state.projectId)) loadProjectState();
@@ -327,12 +375,31 @@ export function createPremium(store, options = {}) {
     return { status, sessionId, projectId };
   }
 
+  // Commercial return: ?csub=success|topup|cancel&session_id=... (the commercial landing hand off keeps its own ?mode=commercial).
+  function readCsubReturn() {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('csub');
+    if (!['success', 'topup', 'cancel'].includes(status)) return null;
+    const sessionId = params.get('session_id');
+    params.delete('csub');
+    params.delete('session_id');
+    const qs = params.toString();
+    try {
+      window.history.replaceState(window.history.state, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`);
+    } catch {
+      /* the address bar is not essential */
+    }
+    return status === 'cancel' || sessionId ? { status, sessionId } : null;
+  }
+
   // Called once the back end is known to be there (premiumEnabled true from the start, or after the health check).
   function activate() {
     state.token = storedToken(state.projectId);
     publish();
     if (aiToken()) refreshCredits();
     if (checkoutReturn) {
+      const cs = readCsubReturn();
+      if (cs) commercialUi.handleReturn(cs);
       const back = readReturn();
       if (back?.status === 'success' && back.sessionId && back.projectId) return flows.handleReturn({ sessionId: back.sessionId, projectId: back.projectId });
       if (back?.status === 'cancel') layer.notify('Checkout cancelled. You have not been charged.', 'info');
@@ -408,7 +475,7 @@ export function createPremium(store, options = {}) {
   const self = {
     isEntitled,
     setPortalEntitlement,
-    openUpgrade: () => flows.openUpgrade({ source: 'api' }),
+    openUpgrade: () => openUpgrade({ source: 'api' }),
     openExports() {
       if (topbar) topbar.open();
       else openExportsFallback();
@@ -428,8 +495,9 @@ export function createPremium(store, options = {}) {
     openEnquiry: openEnquiryForm,
     canEnquire,
     canSendPlans,
-    importPdf: () => runImportPdf(psApp(), { isEntitled, openUpgrade: () => flows.openUpgrade({ source: 'pdf-import' }), layer, config: cfg }),
-    openRestore: (prefill) => flows.openRestore({ prefill }),
+    importPdf: () => runImportPdf(psApp(), { isEntitled, openUpgrade: () => openUpgrade({ source: 'pdf-import' }), layer, config: cfg }),
+    openRestore: (prefill) => openRestore({ prefill }),
+    commercial: commercialUi,
     refreshCredits,
     mockApi: mock,
     ready,

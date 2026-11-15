@@ -120,6 +120,35 @@ export function createApi({ base = '/api', fetchImpl = null, timeoutMs = 45000 }
       if (!res.ok) return failure(res);
       return { blob: await res.blob(), filename: filenameFrom(res, fallbackName) };
     },
+    // Commercial Developer subscription, AI top-ups and the shared trial login (server/lib/commercial.js).
+    /** { subscribable, topUp, trialLogin, ... }: whether the owner has finished the Stripe set up (otherwise the buttons read Coming soon). */
+    commercialStatus: () => json('GET', '/commercial/status', { timeout: 8000 }),
+    /** { url } for Stripe Checkout (subscription mode). 503 SUBSCRIPTION_COMING_SOON until the owner has set the Stripe price. */
+    commercialSubscribe: (email) => json('POST', '/commercial/subscribe', { body: email ? { email } : {}, timeout: 20000 }),
+    /** { pending: true } while Stripe has not confirmed, otherwise { token, subscription }. */
+    async commercialSubscription(sessionId) {
+      const res = await send('GET', '/commercial/subscription', { query: { session_id: sessionId }, timeout: 20000 });
+      if (res.ok) return res.json();
+      try {
+        return await failure(res);
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 404 && e.details.pending) return { pending: true };
+        throw e;
+      }
+    },
+    commercialRestore: ({ email, sessionOrReceipt }) => json('POST', '/commercial/subscription/restore', { body: { email, sessionOrReceipt }, timeout: 20000 }),
+    /** { account }: plan, status, renewal date (ISO) for a subscriber; username, watermark and the AI total for the trial login. */
+    commercialAccount: (token) => json('GET', '/commercial/account', { token, timeout: 15000 }),
+    /** { url } of the Stripe customer portal (cancel, card, invoices). Subscribers only. */
+    commercialPortal: (token) => json('POST', '/commercial/billing-portal', { token, body: {}, timeout: 20000 }),
+    /** { url } of a one-off Checkout for a pack of extra AI messages. Subscribers only. */
+    commercialAiTopup: (token) => json('POST', '/commercial/ai-topup', { token, body: {}, timeout: 20000 }),
+    commercialAiTopupConfirm: (token, sessionId) => json('GET', '/commercial/ai-topup', { token, query: { session_id: sessionId }, timeout: 20000 }),
+    commercialTrialLogin: ({ username, password }) => json('POST', '/commercial/trial/login', { body: { username, password }, timeout: 20000 }),
+    trialProjects: (token) => json('GET', '/commercial/trial/projects', { token, timeout: 20000 }),
+    trialProjectGet: (token, id) => json('GET', `/commercial/trial/projects/${encodeURIComponent(id)}`, { token, timeout: 30000 }),
+    trialProjectSave: (token, body) => json('POST', '/commercial/trial/projects', { token, body, timeout: 45000 }),
+    trialProjectDelete: (token, id) => json('DELETE', `/commercial/trial/projects/${encodeURIComponent(id)}`, { token, timeout: 20000 }),
     /** Paid export. Resolves { blob, filename }. */
     async exportFile(token, type, body, fallbackName = `export.${type}`) {
       const res = await send('POST', `/export/${type}`, { token, body, timeout: 90000 });

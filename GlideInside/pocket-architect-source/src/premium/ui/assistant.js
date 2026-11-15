@@ -8,7 +8,7 @@ import { buildContext } from '../ai/context.js';
 import { describeOp, summariseOps, nameResolver } from '../ai/summary.js';
 import { siteCallProblem } from '../ai/tools.js';
 import { friendlyError, isAuthLoss } from '../messages.js';
-import { normaliseCredits, meterText, resetText, leftFraction, meterLevel, isExhausted, warningText, exhaustedText, claimWarning, canTopUp, topUpLabel, availableCredits } from '../credits.js';
+import { canBuyMessages, buyMessagesLabel, topUpOfferText, normaliseCredits, meterText, resetText, leftFraction, meterLevel, isExhausted, warningText, exhaustedText, claimWarning, canTopUp, topUpLabel, availableCredits } from '../credits.js';
 import { promptsFor, chipsFor, BASE_PROMPTS } from '../ai/suggestions.js';
 import { hasCatalogue } from '../ai/commercial-catalogue.js';
 import { isCommercial } from '../../commercial/schema.js';
@@ -60,16 +60,16 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       el('div', { class: 'psp-ai-head' },
         el('h3', { class: 'psp-ai-title' }, icon('spark', 16), 'AI design assistant'),
         el('span', { class: 'psp-badge' }, 'Plan Pack')),
-      el('p', { class: 'psp-ai-lead' }, 'Describe a change in plain English and the assistant edits your plan, as one step you can undo. It is part of the Plan Pack.'),
+      el('p', { class: 'psp-ai-lead' }, st.commercial ? 'Describe a change in plain English and the assistant edits your layout, as one step you can undo. It comes with the Commercial Developer subscription.' : 'Describe a change in plain English and the assistant edits your plan, as one step you can undo. It is part of the Plan Pack.'),
       el('p', { class: 'psp-ai-label' }, 'Try asking'),
       el('div', { class: 'psp-prompts', role: 'list' },
         EXAMPLE_PROMPTS.map((text) => el('button', { class: 'psp-prompt', type: 'button', disabled: true, role: 'listitem', title: 'Unlock the Plan Pack to use the assistant' }, icon('lock', 12), text))),
       el('div', { class: 'psp-locked-box' },
-        el('p', { class: 'psp-muted' }, `${pack.credits ?? 500} AI credits per job, plus PDF, DXF and 3D model exports. Drawing, the 3D view and walking through your design stay free.`),
-        isOn()
-          ? el('button', { class: 'psp-btn psp-btn--primary psp-btn--block', type: 'button', onclick: () => actions.unlock('assistant') }, icon('lock', 14), `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`)
+        el('p', { class: 'psp-muted' }, st.commercial ? 'Commercial Developer, A$50 per month, unlimited plan sets, plus a monthly allowance of AI messages. Drawing and the 3D view stay free.' : `${pack.credits ?? 500} AI credits per job, plus PDF, DXF and 3D model exports. Drawing, the 3D view and walking through your design stay free.`),
+        isOn() || st.commercial
+          ? el('button', { class: 'psp-btn psp-btn--primary psp-btn--block', type: 'button', onclick: () => actions.unlock('assistant') }, icon('lock', 14), st.commercial ? 'Commercial Developer, A$50 per month, Subscribe' : `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`)
           : el('button', { class: 'psp-btn psp-btn--block', type: 'button', disabled: true }, icon('lock', 14), 'Plan Pack unavailable, try again'),
-        isOn() ? el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => actions.restore() }, 'Already bought? Restore purchase') : null),
+        isOn() || st.commercial ? el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => actions.restore() }, st.commercial ? 'Already subscribed? Restore subscription' : 'Already bought? Restore purchase') : null),
     ];
   }
 
@@ -211,10 +211,14 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     const c = getState().credits;
     const list = [...banners];
     if (isExhausted(c)) list.unshift({ id: 'exhausted', kind: 'danger', text: exhaustedText(c), sticky: true });
+    else if (c?.commercial && c.warnLevel >= 0.8) list.unshift({ id: 'commercial-warn', kind: 'info', text: warningText({ level: c.warnLevel, remaining: availableCredits(c), usedPercent: c.total ? (c.used / c.total) * 100 : 0 }, c), sticky: true });
     for (const b of list) {
       els.banners.append(el('div', { class: `psp-banner${b.kind === 'danger' ? ' psp-banner--danger' : b.kind === 'info' ? ' psp-banner--info' : ''}`, role: 'status' },
         icon(b.kind === 'info' ? 'info' : 'warning', 16),
-        el('span', null, b.text, b.id === 'exhausted' && canTopUp(c)
+        el('span', null, b.text, b.id === 'exhausted' && canBuyMessages(c)
+          ? el('span', null, ' ', el('button', { class: 'psp-btn psp-btn--primary psp-btn--sm psp-topup', type: 'button', disabled: !c.commercialTopUp.available, onclick: () => actions.buyMore?.() }, buyMessagesLabel(c)), ' ', el('small', null, topUpOfferText(c)))
+          : null,
+        b.id === 'exhausted' && canTopUp(c)
           ? el('button', { class: 'psp-btn psp-btn--primary psp-btn--sm psp-topup', type: 'button', disabled: toppingUp, onclick: () => topUp() }, topUpLabel(c, getState().session?.kind))
           : null),
         b.sticky ? null : el('button', {
@@ -420,7 +424,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
   // The estimate reports the live balance, so keep the meter honest before the request runs.
   function patchRemaining(remaining) {
     const c = getState().credits;
-    if (c?.kind === 'org') return; // the estimate counts top-up credits too, so it cannot be mapped onto the monthly meter
+    if (c?.kind === 'org' || c?.commercial) return; // the estimate counts top-up credits too, so it cannot be mapped onto the monthly meter
     if (c && Number.isFinite(remaining)) actions.setCredits({ ...c, remaining, used: Math.max(0, c.total - remaining) });
   }
 
@@ -437,7 +441,12 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     msg.pending = false;
     msg.error = true;
     const kind = getState().session?.kind;
-    if (kind && kind !== 'public' && (e?.code === 'UNAUTHORISED' || e?.code === 'NOT_ENTITLED')) {
+    if (e?.code === 'CREDITS_EXHAUSTED' && getState().credits?.commercial) {
+      const c = getState().credits;
+      actions.setCredits({ ...c, used: c.total, remaining: 0, topUpRemaining: 0, warnLevel: 1, commercialTopUp: e.details?.commercialTopUp === undefined ? c.commercialTopUp : e.details.commercialTopUp, renewsOn: e.details?.renewsOn || c.renewsOn });
+      msg.text = exhaustedText(getState().credits);
+      track('ps_ai_credits_exhausted', {});
+    } else if (kind && kind !== 'public' && (e?.code === 'UNAUTHORISED' || e?.code === 'NOT_ENTITLED')) {
       msg.text = 'Your login could not be verified. Sign in again to use the assistant.';
     } else if (e?.code === 'CREDITS_EXHAUSTED' && kind && kind !== 'public' && !(Number(e.details?.remaining) > 0)) {
       const c = getState().credits;
@@ -485,7 +494,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
         const { ctx } = await loadCommercial();
         context = ctx.buildCommercialContext(store.project).text;
       } else context = buildContext(store.project, { activeLevelId }).text;
-      const base = { message: text, context, history, activeLevelId, ...(isCommercial(store.project) ? { mode: 'commercial' } : {}) };
+      const base = { message: text, context, history, activeLevelId, ...(isCommercial(store.project) ? { mode: 'commercial', commercial: true } : {}) };
       const est = await api.estimate(st.token, base);
       patchRemaining(est.remaining);
       let confirmLarge = false;
@@ -520,7 +529,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       const credits = normaliseCredits(res.credits);
       if (credits) actions.setCredits(credits);
       const w = res.warning;
-      if (w && Number.isFinite(w.level) && claimWarning(getState().credits?.kind === 'org' ? `${pid}.${getState().credits.monthResetsOn || ''}` : pid, w.level)) {
+      if (w && Number.isFinite(w.level) && !getState().credits?.commercial && claimWarning(getState().credits?.kind === 'org' ? `${pid}.${getState().credits.monthResetsOn || ''}` : pid, w.level)) {
         banners.push({ id: `w${w.level}`, kind: w.level >= 0.95 ? 'danger' : 'warn', text: warningText(w, getState().credits) });
         track('ps_ai_credits_warning', { level: w.level });
       }

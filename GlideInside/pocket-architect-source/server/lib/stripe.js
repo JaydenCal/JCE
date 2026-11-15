@@ -183,3 +183,92 @@ export async function handleStripeEvent({ event, store, config, now }) {
       return `ignored: ${event?.type}`;
   }
 }
+
+// Commercial Developer subscription (lib/commercial.js) ---------------------------------------------------------------------
+export const COMMERCIAL_SUB_KIND = 'commercial_sub';
+
+async function stripeForm(config, fetchImpl, method, path, form) {
+  let res;
+  try {
+    res = await fetchImpl(`${API}${path}`, {
+      method,
+      headers: { authorization: `Bearer ${config.stripeSecretKey}`, ...(form ? { 'content-type': 'application/x-www-form-urlencoded' } : {}) },
+      ...(form ? { body: form.toString() } : {}),
+    });
+  } catch {
+    throw new HttpError('PAYMENTS_UNAVAILABLE', 'Could not reach the payment provider. Try again shortly.');
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    console.warn(JSON.stringify({ event: 'stripe_call_failed', path: path.replace(/\/[A-Za-z0-9_]{8,}/g, '/:id'), status: res.status, type: data?.error?.type, code: data?.error?.code }));
+    throw new HttpError('PAYMENTS_UNAVAILABLE', 'The payment provider could not complete that. Try again shortly.');
+  }
+  return data;
+}
+
+/** Hosted Checkout in subscription mode for the Commercial Developer plan. The price is the owner's recurring price (COMMERCIAL_SUB_PRICE_ID). */
+export async function createSubscriptionCheckout({ config, fetchImpl, email = null }) {
+  if (!config.stripeSecretKey) throw new HttpError('PAYMENTS_UNAVAILABLE', 'Payments not configured');
+  if (!config.commercialSubPriceId) throw new HttpError('SUBSCRIPTION_COMING_SOON', 'The Commercial Developer subscription is coming soon.');
+  const p = new URLSearchParams();
+  p.set('mode', 'subscription');
+  p.set('metadata[app]', STRIPE_APP_TAG);
+  p.set('metadata[kind]', COMMERCIAL_SUB_KIND);
+  p.set('subscription_data[metadata][app]', STRIPE_APP_TAG);
+  p.set('subscription_data[metadata][kind]', COMMERCIAL_SUB_KIND);
+  p.set('line_items[0][price]', config.commercialSubPriceId);
+  p.set('line_items[0][quantity]', '1');
+  if (typeof email === 'string' && email.length <= 254 && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) p.set('customer_email', email.trim());
+  p.set('success_url', withQuery(config.appUrl, 'csub=success&session_id={CHECKOUT_SESSION_ID}&mode=commercial'));
+  p.set('cancel_url', withQuery(config.appUrl, 'csub=cancel&mode=commercial'));
+  p.set('locale', 'en-AU');
+  const data = await stripeForm(config, fetchImpl, 'POST', '/checkout/sessions', p);
+  if (!data.url) throw new HttpError('PAYMENTS_UNAVAILABLE', 'The payment page could not be created. Try again shortly.');
+  return { id: data.id, url: data.url };
+}
+
+/** Stripe subscription object, or null on any failure (used when an event arrives before the checkout event, and for the portal customer). */
+export async function retrieveSubscription({ config, fetchImpl, subscriptionId }) {
+  if (!config.stripeSecretKey || !subscriptionId) return null;
+  try {
+    const res = await fetchImpl(`${API}/subscriptions/${encodeURIComponent(subscriptionId)}`, { headers: { authorization: `Bearer ${config.stripeSecretKey}` } });
+    return res.ok ? await res.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Stripe customer portal (cancel, update card, invoices). Returns { url }. The owner enables the portal in the Stripe dashboard. */
+export async function createPortalSession({ config, fetchImpl, customerId }) {
+  if (!config.stripeSecretKey) throw new HttpError('PAYMENTS_UNAVAILABLE', 'Payments not configured');
+  const p = new URLSearchParams();
+  p.set('customer', customerId);
+  p.set('return_url', config.appUrl);
+  const data = await stripeForm(config, fetchImpl, 'POST', '/billing_portal/sessions', p);
+  if (!data.url) throw new HttpError('PAYMENTS_UNAVAILABLE', 'The billing page could not be opened. Try again shortly.');
+  return { url: data.url };
+}
+
+export const COMMERCIAL_AI_TOPUP_KIND = 'commercial_ai_topup';
+
+/** One-off Checkout for a pack of extra AI messages for a subscriber (COMMERCIAL_AI_TOPUP_PRICE_ID, a one-time price). */
+export async function createAiTopUpCheckout({ config, fetchImpl, entId, email = null }) {
+  if (!config.stripeSecretKey) throw new HttpError('PAYMENTS_UNAVAILABLE', 'Payments not configured');
+  if (!config.commercialAiTopupPriceId) throw new HttpError('SUBSCRIPTION_COMING_SOON', 'Extra AI messages are coming soon.');
+  const p = new URLSearchParams();
+  p.set('mode', 'payment');
+  p.set('client_reference_id', entId);
+  p.set('metadata[app]', STRIPE_APP_TAG);
+  p.set('metadata[kind]', COMMERCIAL_AI_TOPUP_KIND);
+  p.set('metadata[entId]', entId);
+  p.set('metadata[messages]', String(config.commercialAiTopupQty));
+  p.set('line_items[0][price]', config.commercialAiTopupPriceId);
+  p.set('line_items[0][quantity]', '1');
+  if (typeof email === 'string' && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) p.set('customer_email', email.trim());
+  p.set('success_url', withQuery(config.appUrl, 'csub=topup&session_id={CHECKOUT_SESSION_ID}&mode=commercial'));
+  p.set('cancel_url', withQuery(config.appUrl, 'csub=cancel&mode=commercial'));
+  p.set('locale', 'en-AU');
+  const data = await stripeForm(config, fetchImpl, 'POST', '/checkout/sessions', p);
+  if (!data.url) throw new HttpError('PAYMENTS_UNAVAILABLE', 'The payment page could not be created. Try again shortly.');
+  return { id: data.id, url: data.url };
+}

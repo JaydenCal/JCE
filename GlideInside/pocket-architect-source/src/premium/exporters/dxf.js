@@ -270,7 +270,7 @@ function emitLevel(w, project, level, dx, { catalogue, withSite, sheet }) {
  * options: { layerMap, catalogue, notes: [string] }
  */
 export function toDXF(project, options = {}) {
-  const { layerMap = {}, catalogue = null, notes = [], trial = false } = options;
+  const { layerMap = {}, catalogue = null, notes = [], trial = false, trialText = null } = options;
   const levels = levelsSorted(project);
   const body = new Writer(layerMap);
   const plan = planSheets(project, { catalogue });
@@ -294,7 +294,7 @@ export function toDXF(project, options = {}) {
   });
   const noteLines = ['Units: millimetres', 'Concept design only. Not for construction.', ...notes.map(ascii)].filter(Boolean);
   noteLines.forEach((line, i) => body.text('PS-ANNO', { x: noteX, y: noteY + i * 300 }, 200, line));
-  if (trial) dxfTrialEntities(body, { ...body.ext }, { x: noteX, y: noteY + noteLines.length * 300 + 400 });
+  if (trial) dxfTrialEntities(body, { ...body.ext }, { x: noteX, y: noteY + noteLines.length * 300 + 400 }, trialText);
 
   const head = new Writer(layerMap);
   const e = Number.isFinite(body.ext.minX) ? body.ext : { minX: 0, minY: 0, maxX: 0, maxY: 0 };

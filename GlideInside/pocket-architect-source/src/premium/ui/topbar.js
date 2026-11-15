@@ -34,7 +34,7 @@ export function createTopbarUI({ root, config, getState, actions }) {
     const locked = !st.entitled;
     clear(menu);
     itemButtons.clear();
-    menu.append(el('div', { class: 'psp-menu-head' }, locked ? 'Part of the Plan Pack' : 'Download for this design'));
+    menu.append(el('div', { class: 'psp-menu-head' }, locked ? (st.commercial ? 'Part of the Commercial Developer subscription' : 'Part of the Plan Pack') : 'Download for this design'));
     const allowed = st.portal?.exports || null; // client logins: the builder's choice, PDF only by default
     for (const base of EXPORT_ITEMS) {
       if (allowed && !allowed.includes(base.type)) continue;
@@ -66,7 +66,8 @@ export function createTopbarUI({ root, config, getState, actions }) {
     const info = tokenInfo(st.token);
     menu.append(el('div', { class: 'psp-menu-foot' },
       locked
-        ? el('span', null, `Exports come with the Plan Pack, ${formatAud(pack.priceAud ?? 30)} per job. `, el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { closeMenu(false); actions.restore(); } }, 'Restore purchase'))
+        ? el('span', null, st.commercial ? `Commercial Developer, ${formatAud(50)} per month, unlimited plan sets. ` : `Exports come with the Plan Pack, ${formatAud(pack.priceAud ?? 30)} per job. `, el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { closeMenu(false); actions.restore(); } }, 'Restore purchase'))
+        : st.csub ? el('span', null, st.csub.kind === 'trial' ? 'Trial login: unlimited plan sets, watermarked.' : 'Unlimited plan sets while your subscription is active.')
         : el('span', null, st.devUnlock && !st.token ? 'Developer unlock: files are built in this browser.' : info?.exp ? `Re-export as often as you like until ${ddmmyyyy(info.exp * 1000)}.` : 'Re-export as often as you like.')));
   }
 
@@ -84,11 +85,11 @@ export function createTopbarUI({ root, config, getState, actions }) {
     if (st.portal?.watermark) slot.append(el('span', { class: 'psp-trial-badge', title: 'Exports are watermarked during your free trial' }, 'Trial'));
     if (st.entitled) {
       const left = st.credits && Number.isFinite(st.credits.remaining) ? ` ${st.credits.remaining} of ${st.credits.total} AI credits left.` : '';
-      slot.append(el('button', { class: 'psp-chip', type: 'button', title: `Plan Pack active.${left}`, onclick: () => actions.details() },
-        icon('check', 14), st.portal ? 'Plans included' : st.token ? 'Plan Pack' : 'Dev unlock'));
+      slot.append(el('button', { class: 'psp-chip', type: 'button', title: st.csub ? 'Your commercial account' : `Plan Pack active.${left}`, onclick: () => actions.details() },
+        icon('check', 14), st.csub ? (st.csub.kind === 'trial' ? 'Commercial trial' : 'Commercial Developer') : st.portal ? 'Plans included' : st.token ? 'Plan Pack' : 'Dev unlock'));
     } else if (isOn()) {
       slot.append(el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => actions.unlock('topbar') },
-        icon('lock', 14), `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`));
+        icon('lock', 14), st.commercial ? `Subscribe, ${formatAud(50)} per month` : `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`));
     } else {
       slot.append(el('button', { class: 'psp-btn', type: 'button', disabled: true, title: 'The Plan Pack (AI assistant and exports) is unavailable right now. Try again shortly.' }, icon('lock', 14), 'Plan Pack unavailable, try again'));
     }
