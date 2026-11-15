@@ -287,7 +287,14 @@ async function main() {
   });
   const backFacts = () => ({ here: location.href, referrer: document.referrer, back: new URLSearchParams(location.search).get('back'), portalUrl: portalUrl(), homeUrl: CONFIG.homeUrl });
   const backBtn = refs.topbar.querySelector('[data-action="back"]');
-  if (backBtn) backBtn.title = backLabel(backTarget(backFacts()).kind);
+  if (backBtn) {
+    const bt = backTarget(backFacts());
+    backBtn.title = backLabel(bt.kind);
+    const bl = bt.kind === 'home' ? 'Main page' : bt.kind === 'portal' ? 'Dashboard' : 'Back';
+    backBtn.setAttribute('aria-label', bl);
+    const tx = backBtn.querySelector('.ps-btn-text');
+    if (tx) { tx.textContent = bl; tx.style.display = 'inline'; }
+  }
   // Back keeps the work (autosave) and returns to the page that launched the app. A signed in builder or client with no launching page
   // goes to the portal dashboard, anyone else to the Glide Inside home page.
   async function goBack() {

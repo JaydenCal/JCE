@@ -150,8 +150,19 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
 
   // Top bar -------------------------------------------------------------------------------------------------------------------
   const anchor = refs.topbar?.querySelector('[data-action="share"]') || refs.topbar?.querySelector('[data-action="save"]');
-  const saveBtn = h('button', { class: 'ps-btn ps-prof-btn ps-prof-save', type: 'button', title: 'Save this design to a free profile', 'aria-label': 'Save to a free profile', dataset: { action: 'profile-save' }, onclick: () => policy.openFromButton() },
-    glyph(GLYPH.saveProfile), h('span', { class: 'ps-btn-text ps-prof-save-text' }, 'Save to profile'));
+  const saveBtn = h('button', { class: 'ps-btn ps-prof-btn ps-prof-save', type: 'button', title: 'Save this design to your free profile', 'aria-label': 'Save design', dataset: { action: 'profile-save' }, onclick: () => onSaveClick() },
+    glyph(GLYPH.saveProfile), h('span', { class: 'ps-btn-text ps-prof-save-text' }, 'Save design'));
+  const saveText = saveBtn.querySelector('.ps-prof-save-text');
+  let savedTimer = null;
+  async function onSaveClick() {
+    if (controller.state.status !== 'in') { policy.openFromButton(); return; }
+    saveText.textContent = 'Saving';
+    let r = null;
+    try { r = await controller.saveNow(); } catch { r = null; }
+    saveText.textContent = r && r.ok === false ? 'Not saved' : 'Saved';
+    clearTimeout(savedTimer);
+    savedTimer = setTimeout(() => { saveText.textContent = 'Save design'; }, 2500);
+  }
   const designsBtn = h('button', { class: 'ps-btn ps-prof-btn', type: 'button', title: 'My designs', 'aria-label': 'My designs', dataset: { action: 'my-designs' }, onclick: () => openDesigns() }, glyph(GLYPH.designs), h('span', { class: 'ps-btn-text' }, 'My designs'));
   const accountBtn = h('button', { class: 'ps-btn ps-prof-btn', type: 'button', title: 'Your profile', 'aria-label': 'Your profile', dataset: { action: 'profile-account', state: 'in' }, onclick: () => openAccount() }, glyph(GLYPH.person), h('i', { class: 'ps-prof-dot' }));
   if (anchor) anchor.after(saveBtn, designsBtn, accountBtn);
@@ -181,7 +192,7 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   function refresh() {
     const s = controller.state;
     const off = s.status === 'unavailable' || s.status === 'loading' || otherAccount();
-    saveBtn.hidden = off || s.status === 'in';
+    saveBtn.hidden = off;
     designsBtn.hidden = off || s.status !== 'in';
     accountBtn.hidden = off || s.status !== 'in';
     if (off) {
