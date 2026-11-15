@@ -22,10 +22,10 @@
     "whyNotDerived": "The 15/11/2026 research derived net yields from asking sale price against asking rent (3 to 5 per cent in most areas, 1.8 to 3.3 per cent at Tweed Heads). Small strata units are asked at owner occupier prices and asking rents are often gross, so the ratio understates what an investor would accept. A sold Tamworth strata unit (Y9) is an example: about 4.8 per cent net on the suburb rent. The derived figures are kept in each area as derivedNetYieldPct. For small strata units the sell result is the better test of value; the hold result uses an investor yield and will read lower.",
     "tiers": {
       "T1": {
-        "low": 5.5,
-        "high": 6.5,
+        "low": 5.75,
+        "high": 6.75,
         "label": "metro fringe and South East Queensland",
-        "evidence": "Y4,Y7"
+        "evidence": "Y4,Y7,Y10"
       },
       "T2": {
         "low": 5.8,
@@ -154,6 +154,16 @@
         "url": "https://commercialpropertyguide.com.au/property/443413/sold/8-10-curtiss-close/tamworth-nsw-2340/industrial",
         "status": "VERIFIED_LISTING",
         "asAt": "15/11/2026"
+      },
+      {
+        "id": "Y10",
+        "publisher": "Knight Frank, Brisbane Industrial Precinct Update Q2 2026",
+        "location": "Brisbane precincts (South, South West, South East, Trade Coast, North and Greater North)",
+        "figure": "Prime yields 5.78 to 6.13 per cent, secondary 6.25 to 6.58 per cent; Brisbane-wide super prime 5.58, prime 6.02, secondary 6.50 per cent. Mid size and large assets, not small strata units",
+        "sourceDate": "Q2 2026",
+        "url": "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf",
+        "status": "VERIFIED_REPORT",
+        "asAt": "15/11/2026"
       }
     ],
     "asAt": "15/11/2026",
@@ -164,7 +174,8 @@
       "https://opteonsolutions.com/au/insights/industrial-yields-hold-firm",
       "https://www.collings.com.au/?p=27106",
       "https://commercialrealestate.com.au/news/from-coonabarabran-to-wagga-investors-go-bush-for-commercial-property-2-1330898",
-      "https://commercialpropertyguide.com.au/property/443413/sold/8-10-curtiss-close/tamworth-nsw-2340/industrial"
+      "https://commercialpropertyguide.com.au/property/443413/sold/8-10-curtiss-close/tamworth-nsw-2340/industrial",
+      "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
     ]
   },
   "areas": {
@@ -269,9 +280,10 @@
         }
       ],
       "saleCompNotes": [
-        "All four comps are under 100 m2 units or a whole building; small units price higher per m2 than 150 to 400 m2 units, so the Tamworth range is set below these.",
+        "Listed comps (see saleComps), several under 100 m2 or whole buildings; small units price higher per m2 than 150 to 400 m2 units. The range is the minimum to maximum of the comps.",
         "Curtiss Close sold records (units 117 to 497 m2 complex): unit prices $460,000, $515,000, $905,000 but unit sizes and sale dates not shown. Not usable for $/m2. Sources: https://realcommercial.com.au/sold/property-6-10-curtiss-close-tamworth-nsw-2340-504658756 ; https://realcommercial.com.au/sold/property-5-10-curtiss-close-tamworth-nsw-2340-504424456 ; https://realcommercial.com.au/sold/property-8-10-curtiss-close-tamworth-nsw-2340-504563692",
-        "Units 1-15/33 Goddard Lane (off the plan, 173 to 356 m2): priced from $580,000 plus GST, last updated 12/07/2024. Unit to price mapping not stated; if the from price is the smallest unit it is about $3,353/m2 (derived, unverified). https://realcommercial.com.au/for-sale/property-units-1-15-33-goddard-lane-tamworth-nsw-2340-504638024"
+        "Units 1-15/33 Goddard Lane (off the plan, 173 to 356 m2): priced from $580,000 plus GST, last updated 12/07/2024. Unit to price mapping not stated; if the from price is the smallest unit it is about $3,353/m2 (derived, unverified). https://realcommercial.com.au/for-sale/property-units-1-15-33-goddard-lane-tamworth-nsw-2340-504638024",
+        "Some Tamworth comps were read on a Gunnedah search page, which lists nearby listings; the comp address is the Tamworth one."
       ],
       "grossRentPerM2PerYr": {
         "low": 89.3,
@@ -1817,6 +1829,12 @@
           "suburb": "Robin Hill",
           "address": "Corporation Heights Lot 1 (2,001 m2) and Lot 2 (3,334 m2)",
           "note": "$875,000 and $1,580,000 plus GST, 437 and 474/m2.",
+          "source": "https://www.commercialrealestate.com.au/for-sale/bathurst-nsw-2795/industrial-warehouse/"
+        },
+        {
+          "suburb": "Robin Hill",
+          "address": "Corporation Heights and 61 Sydney Road",
+          "note": "These are small lots, some on Sydney Road highway frontage, and may price above general industrial land elsewhere in Bathurst (raised in the 15/11/2026 review).",
           "source": "https://www.commercialrealestate.com.au/for-sale/bathurst-nsw-2795/industrial-warehouse/"
         }
       ],
@@ -4768,17 +4786,18 @@
       "rentComps": [],
       "rentCompNotes": [],
       "netYieldPct": {
-        "low": 5.5,
-        "high": 6.5,
+        "low": 5.75,
+        "high": 6.75,
         "unit": "percent net yield",
         "asAt": "15/11/2026",
         "sources": [
           "https://htw.com.au/wp-content/uploads/2025/04/HTW-Month-in-Review-Apr-2025-Industrial.pdf",
-          "https://www.collings.com.au/?p=27106"
+          "https://www.collings.com.au/?p=27106",
+          "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
         ],
         "status": "ESTIMATE",
         "tier": "T1",
-        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7 in yieldMethod.evidence. 5.5 to 6.5 per cent net. ESTIMATE, judgement anchored to the cited reports."
+        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7,Y10 in yieldMethod.evidence. 5.75 to 6.75 per cent net. ESTIMATE, judgement anchored to the cited reports."
       },
       "derivedNetYieldPct": {
         "low": 4.9,
@@ -4953,7 +4972,7 @@
           "https://www.commercialrealestate.com.au/for-lease/thuringowa+central-qld-4817/industrial-warehouse"
         ],
         "status": "ESTIMATE",
-        "note": "ESTIMATE set around the Garbutt and Charters Towers rents read (about 148 to 311 per m2 pa; median near 180)."
+        "note": "ESTIMATE set around the Garbutt, Ingham Road, Leyland Street and Charters Towers Road rents read (about 148 to 311 per m2 pa; median near 180)."
       },
       "rentComps": [
         {
@@ -5105,7 +5124,14 @@
         "status": "ESTIMATE",
         "note": "ESTIMATE, analyst judgement. No published lot price read for this area. Townsville land not found; the EDQ Stuart SDA page states no price."
       },
-      "landEvidence": [],
+      "landEvidence": [
+        {
+          "suburb": "Bohle",
+          "address": "Bohle Industrial Estate lots 4,335 m2 to 1.38 ha",
+          "note": "Listed \"priced from 60 per m2\", GST basis and listing date not stated (page created 2021). The 60 to 120 range was kept.",
+          "source": "https://www.developmentready.com.au/properties/lots-bohle-industrial-estate-bohle-qld-4818-42329"
+        }
+      ],
       "vacancyDemand": "Demand for small units is steady on the Garbutt and Mount Louisa search pages. Vacancy not stated. (qualitative, unverified)",
       "showroomRentPerM2PerYr": {
         "low": 150,
@@ -6052,17 +6078,24 @@
         "note": "Derived from asking sale prices and asking rents on listings (rent over sale, less an allowance for outgoings and vacancy). Kept for reference only and NOT used: asking prices for small strata units reflect owner occupier demand and asking rents are often gross, so this understates investor yields. Method: gross yield at midpoints = 4.67% (rent 145 to 210 over sale 3000 to 4600); net midpoint = gross less 0.5 points for non-recoverable costs and vacancy = 4.17%; range = midpoint plus or minus 0.75 points. Derived from this file, not a published yield."
       },
       "industrialLandPerM2": {
-        "low": 60,
-        "high": 120,
+        "low": 90,
+        "high": 160,
         "unit": "AUD per m2 serviced industrial land ex GST",
         "asAt": "15/11/2026",
         "sources": [
-          "Analyst judgement, no published source for this value (see note)"
+          "https://realcommercial.com.au/for-sale/property-lot-3-o-mara-road-subdivision-wellcamp-qld-4350-503879074"
         ],
         "status": "ESTIMATE",
-        "note": "ESTIMATE, analyst judgement. No published lot price read for this area. Wellcamp lots (147 O'Mara Road, 2.0 to 3.5 ha) listed with no price."
+        "note": "ESTIMATE anchored to a 2.01 ha Wellcamp lot (Medium Impact / General Industry) at 110 per m2 plus GST (listing updated 08/12/2024), with a premium for small lots. Replaces 60 to 120."
       },
-      "landEvidence": [],
+      "landEvidence": [
+        {
+          "suburb": "Wellcamp",
+          "address": "Lot 3 O Mara Road, about 2.01 ha",
+          "note": "110 per m2 plus GST, ex GST rate, last updated 08/12/2024.",
+          "source": "https://realcommercial.com.au/for-sale/property-lot-3-o-mara-road-subdivision-wellcamp-qld-4350-503879074"
+        }
+      ],
       "vacancyDemand": "86 industrial leases and 44 showroom/bulky listings on the search pages at the time of reading. Vacancy not stated. (qualitative, unverified)",
       "showroomRentPerM2PerYr": {
         "low": 140,
@@ -6316,17 +6349,18 @@
         "2B/29 Maud Street listed under industrial but described as a first-floor office; excluded. 1 and 2/67 National Park Road printed at $170 per m2 pa net plus outgoings and GST."
       ],
       "netYieldPct": {
-        "low": 5.5,
-        "high": 6.5,
+        "low": 5.75,
+        "high": 6.75,
         "unit": "percent net yield",
         "asAt": "15/11/2026",
         "sources": [
           "https://htw.com.au/wp-content/uploads/2025/04/HTW-Month-in-Review-Apr-2025-Industrial.pdf",
-          "https://www.collings.com.au/?p=27106"
+          "https://www.collings.com.au/?p=27106",
+          "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
         ],
         "status": "ESTIMATE",
         "tier": "T1",
-        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7 in yieldMethod.evidence. 5.5 to 6.5 per cent net. ESTIMATE, judgement anchored to the cited reports."
+        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7,Y10 in yieldMethod.evidence. 5.75 to 6.75 per cent net. ESTIMATE, judgement anchored to the cited reports."
       },
       "derivedNetYieldPct": {
         "low": 3.4,
@@ -6340,17 +6374,31 @@
         "note": "Derived from asking sale prices and asking rents on listings (rent over sale, less an allowance for outgoings and vacancy). Kept for reference only and NOT used: asking prices for small strata units reflect owner occupier demand and asking rents are often gross, so this understates investor yields. Method: gross yield at midpoints = 4.68% (rent 150 to 215 over sale 3000 to 4800); net midpoint = gross less 0.5 points for non-recoverable costs and vacancy = 4.18%; range = midpoint plus or minus 0.75 points. Derived from this file, not a published yield."
       },
       "industrialLandPerM2": {
-        "low": 150,
-        "high": 250,
+        "low": 250,
+        "high": 500,
         "unit": "AUD per m2 serviced industrial land ex GST",
         "asAt": "15/11/2026",
         "sources": [
-          "Analyst judgement, no published source for this value (see note)"
+          "https://sunshinecoast.qld.gov.au/news/market-reality-bites-into-industrial-land-prices",
+          "https://htw.com.au/wp-content/uploads/2025/01/HTW-Month-in-Review-Dec-2024-Industrial.pdf"
         ],
         "status": "ESTIMATE",
-        "note": "ESTIMATE, analyst judgement. No published lot price read for this area. Sunshine Coast land not read."
+        "note": "ESTIMATE between Sunshine Coast Industrial Park, Caloundra (council: 253 reduced to 226 per m2 ex GST for lots from 2,434 m2) and a 5,204 m2 Coolum Beach site at 480 to 500 per m2 (Herron Todd White December 2024). Small serviced lots near Kunda Park are likely dearer. Replaces 150 to 250."
       },
-      "landEvidence": [],
+      "landEvidence": [
+        {
+          "suburb": "Caloundra",
+          "address": "Sunshine Coast Industrial Park, northern sector from 2,434 m2",
+          "note": "253 reduced to 226 per m2 ex GST (council article, date not stated).",
+          "source": "https://sunshinecoast.qld.gov.au/news/market-reality-bites-into-industrial-land-prices"
+        },
+        {
+          "suburb": "Coolum Beach",
+          "address": "5,204 m2 vacant site",
+          "note": "480 per m2 (January 2024) and 500 (June 2024), Herron Todd White December 2024.",
+          "source": "https://htw.com.au/wp-content/uploads/2025/01/HTW-Month-in-Review-Dec-2024-Industrial.pdf"
+        }
+      ],
       "vacancyDemand": "21 industrial sale listings and 52 lease listings on the Maroochydore search at the time of reading. Vacancy not stated. (qualitative, unverified)"
     },
     "Gold Coast": {
@@ -6412,17 +6460,18 @@
         "Rent per m2 not printed on any Gold Coast lease listing read (213 results on the search)."
       ],
       "netYieldPct": {
-        "low": 5.5,
-        "high": 6.5,
+        "low": 5.75,
+        "high": 6.75,
         "unit": "percent net yield",
         "asAt": "15/11/2026",
         "sources": [
           "https://htw.com.au/wp-content/uploads/2025/04/HTW-Month-in-Review-Apr-2025-Industrial.pdf",
-          "https://www.collings.com.au/?p=27106"
+          "https://www.collings.com.au/?p=27106",
+          "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
         ],
         "status": "ESTIMATE",
         "tier": "T1",
-        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7 in yieldMethod.evidence. 5.5 to 6.5 per cent net. ESTIMATE, judgement anchored to the cited reports. HTW gives Yatala 5.25 to 6.25 per cent on larger assets (Y4) and Molendinar 5.24 (Y5). The T1 band is used for small strata units."
+        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7,Y10 in yieldMethod.evidence. 5.75 to 6.75 per cent net. ESTIMATE, judgement anchored to the cited reports. HTW gives Yatala 5.25 to 6.25 per cent on larger assets (Y4) and Molendinar 5.24 (Y5). The T1 band is used for small strata units."
       },
       "derivedNetYieldPct": {
         "low": 3.5,
@@ -6436,17 +6485,25 @@
         "note": "Derived from asking sale prices and asking rents on listings (rent over sale, less an allowance for outgoings and vacancy). Kept for reference only and NOT used: asking prices for small strata units reflect owner occupier demand and asking rents are often gross, so this understates investor yields. Method: gross yield at midpoints = 4.75% (rent 170 to 210 over sale 3400 to 4600); net midpoint = gross less 0.5 points for non-recoverable costs and vacancy = 4.25%; range = midpoint plus or minus 0.75 points. Derived from this file, not a published yield. Rent anchored to Brisbane south."
       },
       "industrialLandPerM2": {
-        "low": 200,
-        "high": 350,
+        "low": 600,
+        "high": 900,
         "unit": "AUD per m2 serviced industrial land ex GST",
         "asAt": "15/11/2026",
         "sources": [
-          "Analyst judgement, no published source for this value (see note)"
+          "https://htw.com.au/wp-content/uploads/2025/04/HTW-Month-in-Review-Apr-2025-Industrial.pdf",
+          "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
         ],
         "status": "ESTIMATE",
-        "note": "ESTIMATE, analyst judgement. No published lot price read for this area. Gold Coast land not read. 7-9 Eden Court, Nerang (26,437 m2) is EOI with no price."
+        "note": "ESTIMATE anchored to Herron Todd White April 2025: Yatala and Burleigh Heads industrial land \"north of 800 per m2\". Replaces 200 to 350."
       },
-      "landEvidence": [],
+      "landEvidence": [
+        {
+          "suburb": "Yatala and Burleigh Heads",
+          "address": "industrial land",
+          "note": "Land north of 800 per m2 (Herron Todd White Month in Review April 2025).",
+          "source": "https://htw.com.au/wp-content/uploads/2025/04/HTW-Month-in-Review-Apr-2025-Industrial.pdf"
+        }
+      ],
       "vacancyDemand": "62 industrial sale listings and 213 lease listings at the time of reading (Arundel, Molendinar, Southport). Vacancy not stated. (qualitative, unverified)"
     },
     "Ipswich": {
@@ -6521,15 +6578,15 @@
         "note": "Derived from asking sale prices and asking rents on listings (rent over sale, less an allowance for outgoings and vacancy). Kept for reference only and NOT used: asking prices for small strata units reflect owner occupier demand and asking rents are often gross, so this understates investor yields. Method: gross yield at midpoints = 5.47% (rent 150 to 200 over sale 2800 to 3600); net midpoint = gross less 0.5 points for non-recoverable costs and vacancy = 4.97%; range = midpoint plus or minus 0.75 points. Derived from this file, not a published yield."
       },
       "industrialLandPerM2": {
-        "low": 150,
-        "high": 250,
+        "low": 400,
+        "high": 650,
         "unit": "AUD per m2 serviced industrial land ex GST",
         "asAt": "15/11/2026",
         "sources": [
-          "Analyst judgement, no published source for this value (see note)"
+          "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
         ],
         "status": "ESTIMATE",
-        "note": "ESTIMATE, analyst judgement. No published lot price read for this area. No Ipswich lot price read."
+        "note": "ESTIMATE scaled from the Brisbane South West precinct (Knight Frank Q2 2026: 690 for 1 to 5 ha, 850 under 5,000 m2) with a discount for Ipswich; Ipswich is not a Knight Frank precinct. Replaces 150 to 250."
       },
       "landEvidence": [],
       "vacancyDemand": "9 sale and 10 lease listings at the time of reading. Vacancy not stated. (qualitative, unverified)"
@@ -6640,17 +6697,18 @@
         "2/20 Tolmer Place (110,000, period not stated) not used."
       ],
       "netYieldPct": {
-        "low": 5.5,
-        "high": 6.5,
+        "low": 5.75,
+        "high": 6.75,
         "unit": "percent net yield",
         "asAt": "15/11/2026",
         "sources": [
           "https://htw.com.au/wp-content/uploads/2025/04/HTW-Month-in-Review-Apr-2025-Industrial.pdf",
-          "https://www.collings.com.au/?p=27106"
+          "https://www.collings.com.au/?p=27106",
+          "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
         ],
         "status": "ESTIMATE",
         "tier": "T1",
-        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7 in yieldMethod.evidence. 5.5 to 6.5 per cent net. ESTIMATE, judgement anchored to the cited reports."
+        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7,Y10 in yieldMethod.evidence. 5.75 to 6.75 per cent net. ESTIMATE, judgement anchored to the cited reports."
       },
       "derivedNetYieldPct": {
         "low": 3.3,
@@ -6664,15 +6722,15 @@
         "note": "Derived from asking sale prices and asking rents on listings (rent over sale, less an allowance for outgoings and vacancy). Kept for reference only and NOT used: asking prices for small strata units reflect owner occupier demand and asking rents are often gross, so this understates investor yields. Method: gross yield at midpoints = 4.52% (rent 165 to 210 over sale 3800 to 4500); net midpoint = gross less 0.5 points for non-recoverable costs and vacancy = 4.02%; range = midpoint plus or minus 0.75 points. Derived from this file, not a published yield."
       },
       "industrialLandPerM2": {
-        "low": 200,
-        "high": 320,
+        "low": 500,
+        "high": 800,
         "unit": "AUD per m2 serviced industrial land ex GST",
         "asAt": "15/11/2026",
         "sources": [
-          "Analyst judgement, no published source for this value (see note)"
+          "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
         ],
         "status": "ESTIMATE",
-        "note": "ESTIMATE, analyst judgement. No published lot price read for this area. Logan land not read. 2 Collene Grove is an office and excluded."
+        "note": "ESTIMATE scaled from the Brisbane South and South East precincts (Knight Frank Q2 2026: 665 to 1,130); Logan is not a Knight Frank precinct. Replaces 200 to 320."
       },
       "landEvidence": [],
       "vacancyDemand": "44 lease and 12 sale listings at the time of reading. Vacancy not stated. (qualitative, unverified)"
@@ -6725,17 +6783,18 @@
         "No rent figure printed on any Geebung lease listing read (122 results on the search)."
       ],
       "netYieldPct": {
-        "low": 5.5,
-        "high": 6.5,
+        "low": 5.75,
+        "high": 6.75,
         "unit": "percent net yield",
         "asAt": "15/11/2026",
         "sources": [
           "https://htw.com.au/wp-content/uploads/2025/04/HTW-Month-in-Review-Apr-2025-Industrial.pdf",
-          "https://www.collings.com.au/?p=27106"
+          "https://www.collings.com.au/?p=27106",
+          "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
         ],
         "status": "ESTIMATE",
         "tier": "T1",
-        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7 in yieldMethod.evidence. 5.5 to 6.5 per cent net. ESTIMATE, judgement anchored to the cited reports."
+        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7,Y10 in yieldMethod.evidence. 5.75 to 6.75 per cent net. ESTIMATE, judgement anchored to the cited reports."
       },
       "derivedNetYieldPct": {
         "low": 3.0,
@@ -6749,17 +6808,24 @@
         "note": "Derived from asking sale prices and asking rents on listings (rent over sale, less an allowance for outgoings and vacancy). Kept for reference only and NOT used: asking prices for small strata units reflect owner occupier demand and asking rents are often gross, so this understates investor yields. Method: gross yield at midpoints = 4.20% (rent 180 to 240 over sale 4500 to 5500); net midpoint = gross less 0.5 points for non-recoverable costs and vacancy = 3.70%; range = midpoint plus or minus 0.75 points. Derived from this file, not a published yield. Low reliability; no northern rent figure read."
       },
       "industrialLandPerM2": {
-        "low": 300,
-        "high": 450,
+        "low": 735,
+        "high": 1075,
         "unit": "AUD per m2 serviced industrial land ex GST",
         "asAt": "15/11/2026",
         "sources": [
-          "Analyst judgement, no published source for this value (see note)"
+          "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
         ],
-        "status": "ESTIMATE",
-        "note": "ESTIMATE, analyst judgement. No published lot price read for this area. No northern Brisbane lot price read."
+        "status": "VERIFIED_REPORT",
+        "note": "Knight Frank Brisbane Industrial Precinct Update Q2 2026 land values per m2 of site: North and Greater North 1,075 (sites under 5,000 m2) and 735 (1 to 5 ha). Range is the 1 to 5 ha value to the small site value. Replaces the 13/11/2026 estimate of 300 to 450, which the report shows to be about half."
       },
-      "landEvidence": [],
+      "landEvidence": [
+        {
+          "suburb": "Brisbane North",
+          "address": "North and Greater North precinct",
+          "note": "Land 1,075 per m2 (under 5,000 m2), 735 (1 to 5 ha), Q2 2026.",
+          "source": "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
+        }
+      ],
       "vacancyDemand": "122 lease and 30 sale listings at the time of reading (Geebung, Zillmere, Virginia, Banyo, Nundah). Vacancy not stated. (qualitative, unverified)"
     },
     "Brisbane South industrial fringe": {
@@ -6866,17 +6932,18 @@
         "Only 3 of 21 page-1 lease listings printed a rent. 43 Dulacca St is a whole-building scale comp."
       ],
       "netYieldPct": {
-        "low": 5.5,
-        "high": 6.5,
+        "low": 5.75,
+        "high": 6.75,
         "unit": "percent net yield",
         "asAt": "15/11/2026",
         "sources": [
           "https://htw.com.au/wp-content/uploads/2025/04/HTW-Month-in-Review-Apr-2025-Industrial.pdf",
-          "https://www.collings.com.au/?p=27106"
+          "https://www.collings.com.au/?p=27106",
+          "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
         ],
         "status": "ESTIMATE",
         "tier": "T1",
-        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7 in yieldMethod.evidence. 5.5 to 6.5 per cent net. ESTIMATE, judgement anchored to the cited reports."
+        "note": "Set from the evidence, not from asking prices: tier T1 (metro fringe and South East Queensland), evidence Y4,Y7,Y10 in yieldMethod.evidence. 5.75 to 6.75 per cent net. ESTIMATE, judgement anchored to the cited reports."
       },
       "derivedNetYieldPct": {
         "low": 3.0,
@@ -6890,17 +6957,24 @@
         "note": "Derived from asking sale prices and asking rents on listings (rent over sale, less an allowance for outgoings and vacancy). Kept for reference only and NOT used: asking prices for small strata units reflect owner occupier demand and asking rents are often gross, so this understates investor yields. Method: gross yield at midpoints = 4.22% (rent 170 to 210 over sale 3800 to 5200); net midpoint = gross less 0.5 points for non-recoverable costs and vacancy = 3.72%; range = midpoint plus or minus 0.75 points. Derived from this file, not a published yield."
       },
       "industrialLandPerM2": {
-        "low": 300,
-        "high": 450,
+        "low": 665,
+        "high": 875,
         "unit": "AUD per m2 serviced industrial land ex GST",
         "asAt": "15/11/2026",
         "sources": [
-          "Analyst judgement, no published source for this value (see note)"
+          "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
         ],
-        "status": "ESTIMATE",
-        "note": "ESTIMATE, analyst judgement. No published lot price read for this area. No Acacia Ridge lot price read. 9,256 m2 Bradman St lot listed with no price."
+        "status": "VERIFIED_REPORT",
+        "note": "Knight Frank Brisbane Industrial Precinct Update Q2 2026 land values per m2 of site: South 875 (under 5,000 m2) and 665 (1 to 5 ha); South West 850 and 690; South East 1,130 and 875. Range is the South precinct. Replaces 300 to 450."
       },
-      "landEvidence": [],
+      "landEvidence": [
+        {
+          "suburb": "Brisbane South",
+          "address": "South, South West and South East precincts",
+          "note": "Land: South 875 / 665, South West 850 / 690, South East 1,130 / 875 per m2 (under 5,000 m2 / 1 to 5 ha), Q2 2026.",
+          "source": "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
+        }
+      ],
       "vacancyDemand": "59 sale and 206 lease listings in Acacia Ridge and surrounds at the time of reading. Vacancy not stated; lease volume high. (qualitative, unverified)"
     },
     "Hervey Bay": {
@@ -7187,6 +7261,7 @@
   },
   "regionalCostFactors": {
     "method": "Each factor is the midpoint of the lowest and the highest published multiplier (the sources conflict, so no single source is chosen). The base is the regional NSW strata workshop build rate, so regional NSW is 1.00. Published factors are relative to Sydney and no regional NSW factor was found (planning range 0.90 to 1.10, midpoint 1.00), so Sydney and regional NSW are treated as equal. The factor multiplies the build rate and the site works rate in the feasibility; it does not change the published ranges, so the low to high band is unchanged by it. All factors are editable in the panel.",
+    "statusNote": "The midpoint is a judgement, so each factor is an ESTIMATE; the published multipliers it comes from are VERIFIED_REPORT figures in secondary guides. The Brisbane RLB ratio alone is 1.18 to 1.32, so a Queensland factor above the midpoint is plausible; the review of 15/11/2026 suggested about 1.25.",
     "factors": {
       "regionalNSW": {
         "value": 1.0,
@@ -7211,7 +7286,7 @@
           "https://www.feasly.com.au/guides/construction-cost-per-square-metre-australia",
           "https://www.feasly.com.au/guides/quantity-surveyor-cost-estimation-guide-australia"
         ],
-        "status": "VERIFIED_REPORT",
+        "status": "ESTIMATE",
         "note": "Brisbane. Midpoint of the lowest and highest of three conflicting sources: BMT 0.92 to 1.05, Feasly QS guide 0.95 to 1.15, and RLB Q4 2025 midpoint ratios 1.18 to 1.32 (metal clad 1.32, precast 1.18, office 1.22). (0.92 + 1.32) / 2 = 1.12. Used for Brisbane, Logan, Ipswich, Gold Coast and Sunshine Coast (no separate Gold Coast or Sunshine Coast factor was found).",
         "components": [
           {
@@ -7241,7 +7316,7 @@
           "https://www.feasly.com.au/guides/construction-cost-per-square-metre-australia",
           "https://www.feasly.com.au/guides/quantity-surveyor-cost-estimation-guide-australia"
         ],
-        "status": "VERIFIED_REPORT",
+        "status": "ESTIMATE",
         "note": "Cairns factors conflict: BMT 0.90 to 1.10 and Feasly QS guide 1.10 to 1.30. (0.90 + 1.30) / 2 = 1.10. Townsville has no published factor, so Cairns is used as proxy. Also used for Mackay and Mount Isa (no factor found).",
         "components": [
           {
@@ -7284,7 +7359,7 @@
         "https://www.planningportal.nsw.gov.au/local-infrastructure-contributions/requesting-higher-7-12-rate",
         "https://shared-drupal-s3fs.s3-ap-southeast-2.amazonaws.com/master-test/fapub_pdf/DCP-CP/NEWCASTLE/Section+7.12+Newcastle+Local+Infrastructure+Contributions+Plan+2019_S-162.pdf"
       ],
-      "note": "EP&A Regulation 2021 s209(2) caps s7.12 at 1 per cent (VERIFIED_REPORT). The Newcastle 2019 plan is nil to 100,000, 0.5 per cent to 200,000 and 1.0 per cent above, with no industrial rate. Adopted Tamworth and Dubbo rates could not be read, so 1 per cent above 200,000 is an ESTIMATE of the upper bound. A council may instead levy s7.11 contributions or have no plan; confirm with the council. The cost of development base is not confirmed.",
+      "note": "EP&A Regulation 2021 s209(2) caps s7.12 at 1 per cent (VERIFIED_REPORT). The Newcastle 2019 plan is nil to 100,000, 0.5 per cent to 200,000 and 1.0 per cent above, with no industrial rate. Adopted Tamworth and Dubbo rates could not be read, so 1 per cent above 200,000 is an ESTIMATE of the upper bound. A council may instead levy s7.11 contributions or have no plan; confirm with the council. Water and sewer developer charges (s64) and any s7.11 contributions are not included. The cost of development base is not confirmed.",
       "councils": {
         "Newcastle": {
           "asAt": "15/11/2026",
@@ -8037,7 +8112,8 @@
     "https://opteonsolutions.com/au/insights/industrial-yields-hold-firm",
     "https://www.collings.com.au/?p=27106",
     "https://commercialrealestate.com.au/news/from-coonabarabran-to-wagga-investors-go-bush-for-commercial-property-2-1330898",
-    "https://commercialpropertyguide.com.au/property/443413/sold/8-10-curtiss-close/tamworth-nsw-2340/industrial"
+    "https://commercialpropertyguide.com.au/property/443413/sold/8-10-curtiss-close/tamworth-nsw-2340/industrial",
+    "https://content.knightfrank.com/research/2923/documents/en/brisbane-industrial-precincts-report-q2-2026-12989.pdf"
   ],
   "caveats": [
     "Every area range for sale, rent, yield and land is ESTIMATE unless its status says VERIFIED_LISTING (range is the minimum to maximum of at least three listed comps) or VERIFIED_REPORT; individual comps are asking prices and rents from listings.",
@@ -8056,9 +8132,11 @@
     "QLD pass: All sale and rent comps are asking prices from portal listings read 15/11/2026, not sold prices or achieved rents.",
     "QLD pass: Prices are shown as printed. 'GST not shown' prices may be inc GST; price_basis records the printed basis.",
     "QLD pass: Rent comps mix net, gross and plus-outgoings bases as printed. No outgoings adjustment is made to rent.",
-    "QLD pass: Net yields are derived from midpoints in this file (method in each netYieldPct note), not published yields. The NSW file uses Opteon-anchored ranges that are not directly comparable.",
     "QLD pass: Industrial land per m2 is ESTIMATE for every QLD area; no regional QLD lot price was published on the sources read.",
     "QLD pass: Showroom and office rates appear only where printed rents were read: Townsville office and showroom, Cairns showroom, Toowoomba showroom. None read for Mackay, Rockhampton, Gladstone or others.",
-    "QLD pass: Portal search pages sometimes returned national or other-suburb results; sources are the URLs confirmed to list the named area."
+    "QLD pass: Portal search pages sometimes returned national or other-suburb results; sources are the URLs confirmed to list the named area.",
+    "The NSW sale and rent defaults blend portal asking and sold medians of all industrial stock, while Queensland uses the middle of asking ranges, so the two states are on different bases.",
+    "Queensland rent comps are mostly quoted net of outgoings; the feasibility still takes an outgoings share off gross rent, which may understate Queensland hold values by about 10 per cent. Set outgoings to 0 for a net lease.",
+    "A building over 400 m2 with no sold evidence is valued at the low end of the area sale range (larger buildings sell for less per m2 than small strata units)."
   ]
 }

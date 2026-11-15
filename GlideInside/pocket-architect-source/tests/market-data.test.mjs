@@ -94,7 +94,7 @@ test('ranges are ordered and yields come from the evidence tiers, not from askin
     assert.ok(T[y.tier], `${name} tier`);
     assert.equal(y.status, 'ESTIMATE', name);
     assert.ok(y.sources.every((u) => /^https:\/\//.test(u)), `${name} yield sources are the evidence URLs`);
-    assert.ok(a.saleRatePerM2GFA.high <= 8000 && a.grossRentPerM2PerYr.high <= 400 && a.industrialLandPerM2.high <= 1000, name);
+    assert.ok(a.saleRatePerM2GFA.high <= 8000 && a.grossRentPerM2PerYr.high <= 400 && a.industrialLandPerM2.high <= 1200, name);
     for (const id of T[y.tier].evidence.split(',')) assert.ok(evIds.has(id), `${name} evidence ${id}`);
     if (a.derivedNetYieldPct) {
       assert.match(a.derivedNetYieldPct.note, /NOT used/, name);
