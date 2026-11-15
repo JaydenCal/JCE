@@ -61,6 +61,15 @@ test('analytics: attribution (UTM) is passed, nothing else is added, and a frame
 test('analytics: the UI code only ever calls giTrackBooking with enum values and no free text', () => {
   const ui = fs.readFileSync(new URL('../../website-live/assets/concierge/concierge.js', import.meta.url), 'utf8');
   const calls = [...ui.matchAll(/track\("([a-z_]+)"/g)].map((m) => m[1]);
-  for (const c of calls) assert.ok(NAMES.includes(c), c);
+  for (const c of calls) assert.ok([...NAMES, 'booking_agent_callback_requested'].includes(c), c);
   assert.ok(!/track\([^)]*(state\.name|state\.email|\.email|\.name|msg|text)\b/.test(ui.replace(/summary\.name/g, '')), 'no personal fields are passed to track()');
+});
+test('analytics: callback_requested (the default flow) is once per request, carries no personal data, and has its own schema', () => {
+  const b = browser();
+  for (let i = 0; i < 4; i++) b.win.giTrackBooking('booking_agent_callback_requested', { intent: 'builder', page_path: '/for-builders/', dedupe: 'gi_cb_GI-AAAAAA', name: 'Sam Test', phone: '0412345678', email: 'sam@example.com' });
+  assert.equal(b.events.length, 1);
+  assert.deepEqual(b.events[0].params, { intent: 'builder', page_path: '/for-builders/' });
+  assert.doesNotMatch(JSON.stringify(b.events), /sam|0412|example|GI-AAAAAA/i);
+  b.win.giTrackBooking('booking_agent_booking_failed', { booking_type: 'builder', reason: 'callback_error' });
+  assert.equal(b.events[1].params.reason, 'callback_error');
 });

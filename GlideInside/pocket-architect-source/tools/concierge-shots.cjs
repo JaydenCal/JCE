@@ -114,6 +114,56 @@ async function flow(browser, base, label, vp, mobile) {
   await ctx.close();
 }
 
+
+// Default flow: Request a call back. No calendar. Email to the owner is stubbed and read back from the dev server.
+async function callbackFlow(browser, base, label, vp, mobile) {
+  const L = label + '-cb';
+  const { ctx, page } = await newPage(browser, base, vp, mobile, L);
+  await page.goto(base + '/for-builders/?utm_campaign=spring_launch', { waitUntil: 'load' });
+  await page.locator('.gic-launcher').click(); await page.locator('.gic-intent').first().waitFor();
+  await pickText(page, '.gic-intent', 'Builder'); await pickText(page, '.gic-chip', 'Custom builder');
+  await page.locator('button', { hasText: 'Request a call back' }).first().waitFor();
+  check((await page.locator('button', { hasText: 'See available times' }).count()) === 0, `${L}: slot UI is hidden when no calendar is on`);
+  check(!/book(ing)? (a|an) (time|appointment)|appointment/i.test(await page.locator('.gic-log').innerText()), `${L}: no booking or appointment wording in the chat`);
+  await shot(page, `${label}-cb-01-offer`);
+  await page.fill('.gic-compose input', 'Do your plans include a loft?'); await page.keyboard.press('Enter');
+  await page.locator('.gic-msg.bot', { hasText: /not sure/ }).waitFor();
+  await page.locator('button', { hasText: 'Request a call back' }).first().click();
+  await page.locator('#gic-cb-name').waitFor();
+  check(!(await page.locator('#gic-cb-consent').isChecked()) && !(await page.locator('#gic-cb-mk').isChecked()), `${L}: consent and marketing boxes start unticked`);
+  check((await page.locator('#gic-cb-type').inputValue()) === 'builder', `${L}: customer type preselected from the chip`);
+  await shot(page, `${label}-cb-02-form`);
+  await page.click('button:has-text("Review request")');
+  check((await page.locator('.gic-err').innerText()).length > 0, `${L}: validation message shown`);
+  await page.fill('#gic-cb-name', 'Sam Tester'); await page.fill('#gic-cb-phone', '12'); await page.fill('#gic-cb-email', 'sam.tester@example.com');
+  await page.selectOption('#gic-cb-when', 'afternoon'); await page.fill('#gic-cb-note', 'after 2pm please'); await page.fill('#gic-cb-notes', 'Interested in the trial'); await page.check('#gic-cb-consent');
+  await page.click('button:has-text("Review request")');
+  check(/phone/i.test(await page.locator('.gic-err').innerText()), `${L}: a bad phone number is refused in the page`);
+  await page.fill('#gic-cb-phone', '0412 345 678');
+  await page.click('button:has-text("Review request")');
+  await page.locator('#gic-cb-send').waitFor();
+  const base0 = (await page.evaluate(() => fetch('/__dev/mail').then((r) => r.json()))).mail.length; // the preview server is shared by both viewports
+  check(base0 === (label === 'desktop' ? 0 : 1), `${L}: nothing is sent before the explicit button (already sent: ${base0})`);
+  await shot(page, `${label}-cb-03-review`);
+  await page.dblclick('#gic-cb-send');
+  await page.locator('[data-view=callback-done]').waitFor();
+  const txt = await page.locator('[data-view=callback-done]').innerText();
+  check(/Thanks, your request is with Jayden at Glide Inside\. He will call you, usually within one business day\./.test(txt), `${L}: success wording`);
+  check(!/booked|booking|appointment|confirmed/i.test(txt), `${L}: success never says a booking or appointment exists`);
+  await shot(page, `${label}-cb-04-success`);
+  const dev = await page.evaluate(() => fetch('/__dev/mail').then((r) => r.json()));
+  check(dev.mail.length === base0 + 1 && dev.saved.length === base0 + 1, `${L}: double click sent one request (saved ${dev.saved.length}, emailed ${dev.mail.length})`);
+  const m = dev.mail[dev.mail.length - 1] || { to: [], text: '' };
+  check(m.to.length === 1 && m.to[0] === 'owner@example.test' && m.reply_to === 'sam.tester@example.com', `${L}: email goes to the owner only, reply-to is the visitor`);
+  check(/Call back request \(Builder\)/.test(m.subject) && ['Sam Tester', '0412 345 678', 'sam.tester@example.com', 'Afternoon: after 2pm please', 'Interested in the trial', '/for-builders/', 'spring_launch', 'GI-'].every((x) => m.text.includes(x)), `${L}: email holds name, phone, email, type, best time, notes, page, campaign, reference`);
+  const evs = await page.evaluate(() => window.__ev);
+  check(evs.filter((e) => e.name === 'booking_agent_callback_requested').length === 1, `${L}: callback_requested fired once, after server success`);
+  check(!evs.some((e) => e.name === 'booking_agent_booking_confirmed'), `${L}: no booking_confirmed event in the default flow`);
+  check(!/sam|0412|example|GI-[A-Z0-9]{5}/i.test(JSON.stringify(evs.filter((e) => /^booking_agent/.test(e.name)).map((e) => e.params))), `${L}: no personal data or reference in GA4 parameters`);
+  EVENTS.push(...evs.map((e) => ({ label: L, ...e })));
+  await ctx.close();
+}
+
 async function conflictFlow(browser, base, label, vp, mobile) {
   const { ctx, page } = await newPage(browser, base, vp, mobile, label + '-conflict');
   await page.goto(base + '/book-a-demo/'); await openLauncher(page);
@@ -144,15 +194,16 @@ async function conflictFlow(browser, base, label, vp, mobile) {
 }
 
 (async () => {
-  await serve(8741); await serve(8743, { OFF: '1' }); await serve(8744, { TURNSTILE: '1' });
+  await serve(8741, { CALENDAR: '1' }); await serve(8745, {});
   const browser = await chromium.launch();
   const VPS = [['desktop', { width: 1440, height: 900 }, false], ['phone390', { width: 390, height: 844 }, true]];
   for (const [label, vp, mobile] of VPS) {
     
+    await callbackFlow(browser, 'http://127.0.0.1:8745', label, vp, mobile);
     await flow(browser, 'http://127.0.0.1:8741', label, vp, mobile);
     await conflictFlow(browser, 'http://127.0.0.1:8741', label, vp, mobile);
     // unknown outcome (timeout): checking screen, then reconciled
-    await withServer(8742, { SLOW: '1' }, async () => { const SLOW = 'http://127.0.0.1:8742'; const { ctx, page } = await newPage(browser, SLOW, vp, mobile, label + '-unknown');
+    await withServer(8742, { SLOW: '1', CALENDAR: '1' }, async () => { const SLOW = 'http://127.0.0.1:8742'; const { ctx, page } = await newPage(browser, SLOW, vp, mobile, label + '-unknown');
       await page.goto(SLOW + '/pricing/'); await openLauncher(page);
       await pickText(page, '.gic-intent', 'Homeowner'); await pickText(page, '.gic-chip', 'A new house');
       await page.locator('button', { hasText: 'See available times' }).click(); await page.locator('.gic-slot').first().click();

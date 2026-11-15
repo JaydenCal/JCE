@@ -77,7 +77,7 @@ test('flags: Cal.com without BOOKING_LIVE=1 never offers or makes a booking', as
 test('flags: the mock provider is refused unless explicitly allowed (cannot appear on the live site by accident)', async () => {
   const w = world({ CONCIERGE_ALLOW_MOCK: '' });
   const cfg = (await w.get('config')).body;
-  assert.equal(cfg.mode, 'no_provider');
+  assert.equal(cfg.mode, 'callback', 'without a provider the default call back flow is what runs');
   assert.equal(cfg.bookingAvailable, false);
 });
 
@@ -377,7 +377,7 @@ test('ai: the model is used only for free text the FAQ cannot answer, and the re
   assert.equal(req.model, 'claude-haiku-5-5');
   assert.match(req.system[0].text, /You are an AI, not a person/);
   assert.ok(req.max_tokens <= 300);
-  assert.deepEqual(req.tools.map((t) => t.name).sort(), ['get_slots', 'handoff', 'propose_booking']);
+  assert.deepEqual(req.tools.map((t) => t.name).sort(), ['get_slots', 'handoff', 'propose_booking', 'request_callback']);
 });
 test('ai: the model is configurable', async () => {
   const w = world({ CONCIERGE_MODEL: 'claude-sonnet-5-5' });

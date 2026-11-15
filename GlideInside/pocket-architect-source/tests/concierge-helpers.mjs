@@ -7,7 +7,7 @@ const jsonRes = (body, status = 200) => new Response(JSON.stringify(body), { sta
 export { jsonRes };
 
 export function world(envOverrides = {}, { model = null, clock = { t: T0 } } = {}) {
-  const calls = { anthropic: [], turnstile: [], other: [] };
+  const calls = { anthropic: [], turnstile: [], resend: [], other: [], resendStatus: 200 };
   const fetchImpl = async (url, init) => {
     const u = String(url);
     if (u.startsWith('https://api.anthropic.com/')) {
@@ -20,13 +20,17 @@ export function world(envOverrides = {}, { model = null, clock = { t: T0 } } = {
       calls.turnstile.push(b);
       return jsonRes({ success: b.response === 'good-token' });
     }
+    if (u === 'https://api.resend.com/emails') { // the existing enquiry pipeline's email; recorded, never sent
+      calls.resend.push(JSON.parse(init.body));
+      return jsonRes(calls.resendStatus === 200 ? { id: 'em_test_1' } : { message: 'refused' }, calls.resendStatus);
+    }
     calls.other.push(u);
     throw new Error(`unexpected fetch ${u}`);
   };
   const store = createMemoryStore();
   const env = {
     SITE_URL: 'https://site.test', ENTITLEMENT_SECRET: 'test-secret', ANTHROPIC_API_KEY: 'sk-test',
-    CONCIERGE_ENABLED: '1', CONCIERGE_ALLOW_MOCK: '1', CONCIERGE_APPROVED_TYPES: 'homeowner,builder,developer,agent', AI_MONTHLY_BUDGET_AUD: '5',
+    RESEND_API_KEY: 're_test', ENQUIRY_TO: 'owner@example.test', CONCIERGE_ENABLED: '1', CONCIERGE_ALLOW_MOCK: '1', CONCIERGE_APPROVED_TYPES: 'homeowner,builder,developer,agent', AI_MONTHLY_BUDGET_AUD: '5',
     ...envOverrides,
   };
   const app = createApp({ store, env, fetchImpl, now: () => clock.t });
