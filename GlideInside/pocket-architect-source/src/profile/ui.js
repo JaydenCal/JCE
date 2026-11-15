@@ -15,7 +15,7 @@ import { MARKETING_TEXT, MARKETING_TEXT_VERSION, ROLES, passwordStrength } from 
 const STYLE = `
 .ps-prof-btn .ps-prof-dot{display:none}
 .ps-prof-btn[data-state="in"] .ps-prof-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ps-ok);margin-left:2px}
-.ps-prof-save-text{display:none}
+.ps-prof-save-text{display:inline;font-weight:600}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}
 @media (min-width:1700px){.ps-shell .ps-topbar .ps-prof-save .ps-prof-save-text{display:inline}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}}
 .gf-open .ps-prof-prompt{position:fixed;z-index:950;top:64px;bottom:auto}
 .ps-prof-prompt{position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:40;width:min(380px,calc(100% - 32px));padding:14px 14px 12px;background:var(--ps-panel);color:var(--ps-text);border:1px solid var(--ps-border-strong);border-left:4px solid var(--ps-accent);border-radius:var(--ps-radius-lg);box-shadow:var(--ps-shadow,0 6px 24px rgba(0,0,0,.2));animation:ps-toast-in .18s ease-out}

@@ -55,6 +55,6 @@ test('the file route stays in the browser and is never uploaded', () => {
   assert.match(ui, /SOURCES\.map\(/);
   assert.match(ui, /never uploaded to our server/);
   assert.match(ui, /hold the rights to this imagery/);
-  assert.match(readFileSync(new URL('../src/flow/residential.js', import.meta.url), 'utf8'), /createAerialSourceButton/);
+  assert.match(readFileSync(new URL('../src/flow/residential.js', import.meta.url), 'utf8'), /aerial-source\.js/);
   assert.match(readFileSync(new URL('../src/app.js', import.meta.url), 'utf8'), /createAerialSourceButton/);
 });

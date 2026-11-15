@@ -19,15 +19,15 @@ export function writeTipsPref(value, storage = (typeof localStorage !== 'undefin
 }
 
 export const TIPS_CSS = `
-.lc-tips{position:absolute;z-index:6;left:14px;top:92px;width:260px;box-sizing:border-box;padding:10px 12px 10px;border-radius:12px;color:#fff;font:500 12px/1.35 var(--lc-sans,system-ui,sans-serif)}
+.lc-tips{position:absolute;z-index:6;left:14px;top:122px;width:260px;box-sizing:border-box;padding:10px 12px 10px;border-radius:12px;color:#fff;font:500 12px/1.35 var(--lc-sans,system-ui,sans-serif)}
 .lc-tips[hidden],.lc-tips-q[hidden]{display:none!important}
 .lc-tips ul{margin:6px 0 8px;padding:0 0 0 16px}.lc-tips li{margin:0 0 3px}
 .lc-tips-h{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700;letter-spacing:.04em}
 .lc-tips button{font:inherit;color:#fff;cursor:pointer}
 .lc-tips-x{width:28px;height:28px;border-radius:14px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08)}
 .lc-tips-off{padding:0;border:0;background:none;text-decoration:underline;font-size:11.5px;opacity:.9}
-.lc-tips-q{position:absolute;z-index:6;left:14px;top:92px;width:30px;height:30px;border-radius:15px;border:1px solid rgba(255,255,255,.28);padding:0;font:700 14px var(--lc-sans,system-ui,sans-serif);color:#fff;cursor:pointer}
-.lc-embed.is-compact .lc-tips{left:54px;top:104px;width:calc(100% - 66px);padding:6px 10px;min-height:34px}
+.lc-tips-q{position:absolute;z-index:6;left:14px;top:122px;width:30px;height:30px;border-radius:15px;border:1px solid rgba(255,255,255,.28);padding:0;font:700 14px var(--lc-sans,system-ui,sans-serif);color:#fff;cursor:pointer}
+.lc-embed.is-compact .lc-tips{left:54px;top:104px;width:calc(100% - 190px);padding:6px 10px;min-height:34px}
 .lc-embed.is-compact .lc-tips ul,.lc-embed.is-compact .lc-tips-off,.lc-embed.is-compact .lc-tips-h b{display:none}
 .lc-embed.is-compact .lc-tips-one{display:block}
 .lc-tips-one{display:none;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:calc(100% - 34px)}

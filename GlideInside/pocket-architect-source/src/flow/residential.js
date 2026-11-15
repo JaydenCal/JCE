@@ -14,7 +14,6 @@ import { loadHomes, filterRows, placeBest, nudgeHouse, turnHouse, mirrorHouse, p
 import { mount3dPreview } from './preview3d.js';
 import { mountBuilderFinder } from './builder-finder.js';
 import { ensureFlowAerial, NO_AERIAL } from './flow-aerial.js';
-import { createAerialSourceButton } from '../ui/aerial-source.js';
 
 export const RESIDENTIAL_BRAND = 'Glide Inside Residential';
 
@@ -107,7 +106,7 @@ function mountPlaceStep(ctx, { getHomes }) {
   stage.append(svg);
   const zbtn = (label, text, fn, ps, cls = '') => h('button', { class: `gf-zb ${cls}`, type: 'button', 'aria-label': label, title: label, dataset: { ps }, onclick: (e) => { e.stopPropagation(); fn(); } }, text);
   const aerialBtn = zbtn('Show or hide the aerial photo', 'Aerial: On', () => { aerialOn = !aerialOn; try { localStorage.setItem('gi.flow.aerial', aerialOn ? '1' : '0'); } catch { /* not remembered */ } draw(liveProject || store.project); }, 'flow-aerial-toggle', 'gf-zb--wide');
-  const srcBtn = createAerialSourceButton({ store, className: 'gf-zb gf-zb--wide', dataPs: 'flow-aerial-source' });
+  const srcBtn = { el: zbtn('Use my own aerial (image or GeoTIFF file). It stays in this browser.', 'Use my own aerial', () => { import('../ui/aerial-source.js').then((m) => m.openAerialSource({ store })); }, 'flow-aerial-source', 'gf-zb--wide'), dispose() {} };
   const zoomBar = h('div', { class: 'gf-zoom', role: 'group', 'aria-label': 'Zoom the plan' },
     zbtn('Zoom in', '+', () => zoomBy(1 / 1.5), 'flow-zoom-in'), zbtn('Zoom out', '\u2212', () => zoomBy(1.5), 'flow-zoom-out'),
     zbtn('Fit the whole lot', 'Fit lot', () => { view = null; draw(liveProject || store.project); }, 'flow-fit-lot', 'gf-zb--wide'),
