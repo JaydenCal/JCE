@@ -274,3 +274,49 @@ test('CON-006 Anthropic credit balance too low becomes the paused state (503 AI_
   w.state.ai.error = null;
   assert.equal((await ai()).status, 200);
 });
+
+// ---------------------------------------------------------------------------------------------------------------------------------
+test('exports are built one at a time per isolate (memory: a plan set peaks near 60 MB of a 128 MB isolate); EXPORT_CONCURRENCY raises it', async () => {
+  const run = async (env, expectMax) => {
+    let active = 0;
+    let max = 0;
+    const loadExporters = async () => ({
+      buildExport: async () => {
+        active += 1;
+        max = Math.max(max, active);
+        await new Promise((r) => setTimeout(r, 15));
+        active -= 1;
+        return { bytes: new Uint8Array([1, 2, 3]), mime: 'application/dxf', filename: 'x.dxf' };
+      },
+    });
+    const w = await world({ env: { EXPORT_RATE_PER_HOUR: '1000', ...env }, loadExporters });
+    const { token } = await w.packToken('proj_abc123', 500);
+    const { PLAN_TERMS } = await import('../src/legal/plan-terms.js');
+    assert.equal((await w.req('POST', '/terms/accept', { headers: { authorization: `Bearer ${token}` }, body: { version: PLAN_TERMS.version } })).status, 200);
+    const rs = await Promise.all(Array.from({ length: 6 }, () => w.req('POST', '/export/dxf', { headers: { authorization: `Bearer ${token}` }, body: { project: { schema: 1, id: 'proj_abc123', name: 'x', levels: [{ id: 'l1', walls: [] }] } } })));
+    assert.ok(rs.every((r) => r.status === 200), rs.map((r) => r.status + r.text.slice(0, 80)).join(' '));
+    assert.equal(max, expectMax);
+  };
+  await run({}, 1);
+  await run({ EXPORT_CONCURRENCY: '3' }, 3);
+});
+
+test('plan set PDF: pages are compacted in place and the output is unchanged (memory fix, load test F6)', async () => {
+  const { compactPages } = await import('../src/premium/exporters/shared.js');
+  const pages = [null, Array.from({ length: 500 }, (_, i) => `${i} l`), ['a', 'b']];
+  const keep = pages[1];
+  compactPages({ internal: { pages } });
+  assert.equal(pages[1], keep, 'the same array object is kept, because jsPDF holds a reference to it');
+  assert.equal(pages[1].length, 1);
+  assert.equal(pages[1][0], Array.from({ length: 500 }, (_, i) => `${i} l`).join('\n'));
+  assert.equal(pages[2].length, 2, 'small pages are left alone');
+  compactPages({ raw: { internal: { pages } } }); // the scaled wrapper
+  compactPages(null); // never throws
+});
+
+test('plan set PDF of a two storey house builds inside a 96 MB V8 heap (before the fix it needed more than 128 MB; load test F6 and final report C1)', async () => {
+  const { spawnSync } = await import('node:child_process');
+  const r = spawnSync(process.execPath, ['--expose-gc', '--disable-warning=ExperimentalWarning', '--max-old-space-size=96', new URL('../tools/export-memory/measure.mjs', import.meta.url).pathname], { env: { ...process.env, T: 'pdf', W: 'double' }, encoding: 'utf8', timeout: 170000 });
+  assert.equal(r.status, 0, `exit ${r.status} ${r.signal || ''} ${(r.stderr || '').split('\n').find((l) => /heap|memory/i.test(l)) || ''}`);
+  assert.match(r.stdout, /"bytes":\d{5,}/);
+});

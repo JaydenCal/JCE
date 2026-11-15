@@ -31,7 +31,7 @@ export function makeD1() {
 }
 const jr = (b, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { 'content-type': 'application/json' } });
 
-export async function world({ env = {}, files = false } = {}) {
+export async function world({ env = {}, files = false, loadExporters = undefined } = {}) {
   const clock = { t: T0 };
   const db = makeD1();
   const store = createD1Store(db), portalStore = createD1PortalStore(db), profileStore = createD1ProfileStore(db);
@@ -58,7 +58,7 @@ export async function world({ env = {}, files = false } = {}) {
   const putFiles = new Map();
   const R2 = files ? { async put(k, v) { putFiles.set(k, v); }, async get(k) { const v = putFiles.get(k); return v == null ? null : { text: async () => v, body: v }; }, async delete(k) { putFiles.delete(k); } } : null;
   const app = createApp({
-    store, portalStore, profileStore, fetchImpl, now: () => clock.t, files: R2,
+    store, portalStore, profileStore, fetchImpl, now: () => clock.t, files: R2, ...(loadExporters ? { loadExporters } : {}),
     catalogue: () => import(`${SRC}/src/catalogue/index.js`).then((m) => m.catalogue ?? m.default ?? m),
     loadJsPDF: () => import(`${SRC}/node_modules/jspdf/dist/jspdf.node.min.js`).then((m) => m.jsPDF || m.default?.jsPDF || m.default),
     env: { SITE_URL: SITE, ENTITLEMENT_SECRET: SECRET, PORTAL_ENABLED: '1', ADMIN_TOKEN: ADMIN, STRIPE_SECRET_KEY: 'sk_test_abc', STRIPE_WEBHOOK_SECRET: WH, ANTHROPIC_API_KEY: 'ak-test', IP_HASH_SALT: 'salt', ...env },

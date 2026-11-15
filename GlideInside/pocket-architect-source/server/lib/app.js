@@ -83,6 +83,20 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   });
 
   let toolsCache = null;
+  // Memory (EXPORTS.md): a Worker isolate has 128 MB shared by every request it is serving, and a residential plan set peaks at about 60 MB, so exports
+  // are built one at a time per isolate (EXPORT_CONCURRENCY, default 1). Waiting costs no CPU time; other requests are not held up by it.
+  let exportRunning = 0;
+  const exportWaiters = [];
+  async function exportSlot(fn) {
+    if (exportRunning >= config.exportConcurrency) await new Promise((resolve) => exportWaiters.push(resolve));
+    exportRunning += 1;
+    try {
+      return await fn();
+    } finally {
+      exportRunning -= 1;
+      exportWaiters.shift()?.();
+    }
+  }
   let catalogueCache = null;
   const getCatalogue = async () => {
     if (catalogueCache === null) {
@@ -636,7 +650,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     };
     let file;
     try {
-      file = await mod.buildExport(type, project, {
+      file = await exportSlot(async () => mod.buildExport(type, project, {
         image,
         terms: acceptedTerms,
         watermark: watermark === true,
@@ -649,7 +663,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
           if (!loadJsPDF) throw new Error('No jsPDF loader was given to createApp');
           return loadJsPDF();
         },
-      });
+      }));
     } catch (e) {
       console.error(JSON.stringify({ event: 'export_failed', type, message: e?.message }));
       await giveBack();

@@ -127,6 +127,7 @@ export function readConfig(env = {}) {
     commercialGraceDays: Math.max(0, num(env.COMMERCIAL_GRACE_DAYS, 3)), // days of access kept after the first failed subscription invoice (Stripe past_due), then it locks
     commercialExportRatePerHour: Math.max(1, Math.round(num(env.COMMERCIAL_EXPORT_RATE_PER_HOUR, 120))), // anti-abuse only, per account
     commercialTrialDailyPdfs: Math.max(0, Math.round(num(env.COMMERCIAL_TRIAL_DAILY_PDFS, 0))), // 0 = off (plan set PDFs are unlimited)
+    exportConcurrency: Math.max(1, Math.round(num(env.EXPORT_CONCURRENCY, 1))), // exports built at the same time in one Worker isolate (128 MB shared)
     commercialTrialAiTotal: Math.max(0, Math.round(num(env.COMMERCIAL_TRIAL_AI_TOTAL, 50))), // assistant messages for the whole trial login, owner can reset
     commercialTrialWatermark: !['0', 'false', 'off', 'no'].includes(str(env.COMMERCIAL_TRIAL_WATERMARK, '1').toLowerCase()), // on by default
     commercialTrialKeepDays: Math.max(1, num(env.COMMERCIAL_TRIAL_KEEP_DAYS, 30)), // trial saved projects are cleared after this
