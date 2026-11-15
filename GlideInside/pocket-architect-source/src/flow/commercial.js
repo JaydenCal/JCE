@@ -24,7 +24,7 @@ import { moveBuilding } from '../commercial/catalogue/ops.js';
 import { parkingLayout, doorStrips } from '../commercial/parking.js';
 import { siteAccess } from '../commercial/access.js';
 import { commercialStats } from '../commercial/stats.js';
-import { baysText } from './com-logic.js';
+import { baysText, offsetAlongFront, editAccessIn } from './com-logic.js';
 
 export const COMMERCIAL_BRAND = 'Glide Inside Commercial';
 const STATUS_COLOUR = { inside: '#17724a', outside: '#c77700', unknown: '#1b4fd1', none: '#1b4fd1' };
@@ -108,7 +108,13 @@ function mountPlaceStep(ctx) {
       h('div', { class: 'gf-row', style: { gap: '6px' } }, mk('Previous layout', () => layoutBy(-1), 'flow-layout-prev', 'gf-btn--sm'), pagerEl, mk('Next layout', () => layoutBy(1), 'flow-layout-next', 'gf-btn--sm')),
       h('div', { style: { height: '8px' } }),
       mk('Best fit', () => bestFit(), 'flow-bestfit', 'gf-btn--primary'),
-      h('p', { class: 'gf-note' }, 'Best fit lays out the buildings square to the street, inside the setbacks, with the driveway and car park.')),
+      h('p', { class: 'gf-note' }, 'Best fit lays out the buildings square to the street, inside the setbacks, with the driveway and car park.'),
+      h('div', { style: { height: '8px' } }),
+      h('div', { class: 'gf-note', style: { fontWeight: '600' } }, 'Entry and exit'),
+      h('div', { class: 'gf-row', style: { gap: '6px', flexWrap: 'wrap' } },
+        h('label', { class: 'gf-note' }, 'Width ', h('select', { dataset: { ps: 'flow-access-width' }, onchange: (e) => editAccessIn(store, { widthMm: Number(e.target.value) }) }, ...[4000, 6000, 8000, 10000].map((w) => h('option', { value: String(w) }, `${(w / 1000).toFixed(1)} m`)))),
+        mk('Reset entry and exit', () => editAccessIn(store, null, 'Reset entry and exit'), 'flow-access-reset', 'gf-btn--sm')),
+      h('p', { class: 'gf-note' }, 'Drag a white dot to slide the entry or exit along the street frontage.')),
     h('div', { class: 'gf-card' },
       h('div', { class: 'gf-ctl' }, mk('Add building', () => addBuilding(), 'flow-add-building', 'gf-btn--primary'), dupBtn, delBtn),
       h('div', { style: { height: '10px' } }),
@@ -158,6 +164,11 @@ function mountPlaceStep(ctx) {
         const m = centroid(x.polygon);
         svg.append(poly(x.polygon, { fill: '#6b6f76', stroke: 'none' }));
         svg.append(text({ x: m.x, y: m.y - 5 * px }, x.role === 'in' ? 'ENTRY' : x.role === 'out' ? 'EXIT' : 'ENTRY / EXIT', 10, { fill: '#1d2024', 'data-ps': 'flow-crossover' }));
+        // A draggable end: slides along the street frontage.
+        const knob = document.createElementNS(NS, 'circle');
+        const kp = drag?.mode === 'access' && drag.role === (x.role === 'both' ? 'in' : x.role) && drag.at ? drag.at : { x: x.x, y: x.y };
+        for (const [k, v] of Object.entries({ cx: Math.round(kp.x), cy: Math.round(kp.y), r: Math.round(9 * px), fill: '#fff', stroke: '#1b4fd1', 'stroke-width': Math.round(2 * px), 'data-ps': 'flow-access-handle', 'data-role': x.role === 'both' ? 'in' : x.role, style: 'cursor:grab' })) knob.setAttribute(k, v);
+        svg.append(knob);
       }
       for (const a of sw.aisles || []) svg.append(line(a.centre[0], a.centre[1], { stroke: 'rgba(255,255,255,.8)', 'stroke-width': Math.round(1.4 * px), 'stroke-dasharray': `${Math.round(8 * px)} ${Math.round(6 * px)}` }));
     }
@@ -232,6 +243,13 @@ function mountPlaceStep(ctx) {
   // Pointer: drag a building, or the handle to turn the selected one
   const onDown = (ev) => {
     if (ev.button != null && ev.button !== 0) return;
+    const ah = ev.target.closest?.('[data-ps="flow-access-handle"]');
+    if (ah) {
+      ev.preventDefault();
+      stage.setPointerCapture?.(ev.pointerId);
+      drag = { mode: 'access', role: ah.getAttribute('data-role'), off: null, at: null };
+      return;
+    }
     const onHandle = ev.target.closest?.('[data-ps="flow-handle"]');
     const g = ev.target.closest?.('[data-ps="flow-building"]');
     if (!onHandle && !g) return;
@@ -249,6 +267,17 @@ function mountPlaceStep(ctx) {
   const onMove = (ev) => {
     if (!drag) return;
     const p = toMm(ev);
+    if (drag.mode === 'access') {
+      const lot0 = lotOf(store.project);
+      const b0 = lot0.boundary; const e0 = (lot0.frontEdges || [])[0] ?? 0;
+      const a0 = b0[e0]; const c0 = b0[(e0 + 1) % b0.length];
+      const L0 = Math.hypot(c0.x - a0.x, c0.y - a0.y) || 1;
+      drag.off = offsetAlongFront(lot0, p);
+      const t = Math.max(0, Math.min(L0, drag.off));
+      drag.at = { x: a0.x + ((c0.x - a0.x) * t) / L0, y: a0.y + ((c0.y - a0.y) * t) / L0 };
+      draw();
+      return;
+    }
     if (drag.mode === 'move') { drag.dx = Math.round((p.x - drag.start.x) / 50) * 50; drag.dy = Math.round((p.y - drag.start.y) / 50) * 50; draw(store.project, { dx: drag.dx, dy: drag.dy }); }
     else {
       let d = ((Math.atan2(p.y - drag.centre.y, p.x - drag.centre.x) - drag.a0) * 180) / Math.PI;
@@ -259,6 +288,7 @@ function mountPlaceStep(ctx) {
   const onUp = () => {
     if (!drag) return;
     const d = drag; drag = null;
+    if (d.mode === 'access') { if (d.off != null) { notice = ''; editAccessIn(store, { role: d.role, offsetMm: d.off }); } else draw(); return; }
     if (d.mode === 'move' && (d.dx || d.dy)) { notice = ''; moveBy(store, d.sel, d.dx, d.dy); }
     else if (d.mode === 'turn' && d.deg) { const s = selectedItem(); if (s) turnBy(store, s, d.deg); }
     else draw();

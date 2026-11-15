@@ -17,7 +17,7 @@ import { accessibleRequired } from './rules.js';
 import { clipTo } from './catalogue/pavements/polybool.js';
 import { polyArea } from './catalogue/pavements/geom.js';
 
-export const SITEWORKS_VERSION = 1;
+export const SITEWORKS_VERSION = 2; // 2: entry and exit stay on the first frontage edge and clear of a corner road; project.commercial.accessEdit overrides them
 export const AISLE_MM = 6000;
 export const AISLE_TRUCK_MM = 7500;
 export const CROSSOVER_W = 6000;
@@ -288,7 +288,8 @@ export function generateSiteWorks(project, opts = {}) {
   const truck = wantsTruck(src.bs);
   const aisleW = truck ? AISLE_TRUCK_MM : Math.max(AISLE_MM, Number(c.parking?.aisleMm) || 0);
   const carW = Math.max(AISLE_MM, Number(c.parking?.aisleMm) || 0);
-  const xoverW = truck ? CROSSOVER_TRUCK_W : CROSSOVER_W;
+  const ae = c.accessEdit && typeof c.accessEdit === 'object' ? c.accessEdit : null;
+  const xoverW = Number.isFinite(ae?.widthMm) ? Math.min(12000, Math.max(3000, ae.widthMm)) : truck ? CROSSOVER_TRUCK_W : CROSSOVER_W;
   const bayW = Number(c.parking?.bayW) || 2400;
   const bayL = Number(c.parking?.bayL) || 5400;
   const frontLand = Math.min(3000, Math.max(1500, ...src.bs.map((b) => Number(b.site?.landscapeFrontMm) || 0)));
@@ -325,16 +326,25 @@ export function generateSiteWorks(project, opts = {}) {
   // Crossovers -------------------------------------------------------------------------------------------------------------------------
   const targets = entryTargets(project, src, g);
   const fpoly = g.fp;
-  const frontLen = Math.max(...fpoly.map((q) => q.s)) - Math.min(...fpoly.map((q) => q.s));
-  const sLo = Math.min(...fpoly.map((q) => q.s)); const sHi = Math.max(...fpoly.map((q) => q.s));
+  // The crossovers sit on the first frontage edge only: never beyond its ends (a corner lot's lot extent is longer than the edge), and a corner
+  // clear of the next street when the neighbouring edge is also a frontage.
+  const nB = lot.boundary.length;
+  const e0 = (lot.frontEdges || [])[0] ?? 0;
+  const edgeLen = Math.hypot(lot.boundary[(e0 + 1) % nB].x - lot.boundary[e0].x, lot.boundary[(e0 + 1) % nB].y - lot.boundary[e0].y);
+  const CORNER = 6000;
+  const sLo = Math.max(Math.min(...fpoly.map((q) => q.s)), 0) + (frontEdges.has((e0 - 1 + nB) % nB) ? CORNER : 0);
+  const sHi = Math.min(Math.max(...fpoly.map((q) => q.s)), edgeLen) - (frontEdges.has((e0 + 1) % nB) ? CORNER : 0);
+  const frontLen = sHi - sLo;
   const snap = (s) => g.s0 + (Math.floor((s - g.s0) / g.cell) + 0.5) * g.cell;
   const clampS = (s) => snap(Math.max(sLo + sideLand + xoverW / 2 + 500, Math.min(sHi - sideLand - xoverW / 2 - 500, s)));
   const mainT = targets.find((t) => t.main) || targets[0];
   const mainS = mainT ? toFrame(f, mainT.door).s : (sLo + sHi) / 2;
   const xs = [];
   if (station && frontLen > 2.4 * xoverW + 4000) {
-    xs.push({ s: clampS(sLo + frontLen * 0.18), role: 'in' }, { s: clampS(sLo + frontLen * 0.82), role: 'out' });
-  } else xs.push({ s: clampS(mainS), role: 'both' });
+    const sIn = Number.isFinite(ae?.in?.offsetMm) ? ae.in.offsetMm : sLo + frontLen * 0.18;
+    const sOut = Number.isFinite(ae?.out?.offsetMm) ? ae.out.offsetMm : sLo + frontLen * 0.82;
+    xs.push({ s: clampS(sIn), role: 'in' }, { s: clampS(sOut), role: 'out' });
+  } else xs.push({ s: clampS(Number.isFinite(ae?.in?.offsetMm) ? ae.in.offsetMm : mainS), role: 'both' });
   // A saved position (user dragged crossover) is kept when it still sits on the frontage.
   const keep = Array.isArray(c.siteWorks?.crossovers) && c.siteWorks.crossovers.every((x) => x.moved) ? c.siteWorks.crossovers : null;
   void keep;
@@ -750,6 +760,7 @@ export function siteKey(project) {
     (c.buildings || []).map((b) => [b.id, b.type, r(b.place?.x), r(b.place?.y), r(b.place?.rotationDeg), b.params]),
     (c.rows || []).map((rw) => [rw.id, r(rw.x), r(rw.y), r(rw.rotationDeg), rw.count]),
     c.parking?.bayW, c.parking?.bayL, c.parking?.aisleMm, c.parking?.enabled, c.buildingClass,
+    c.accessEdit ? [c.accessEdit.in?.offsetMm, c.accessEdit.out?.offsetMm, c.accessEdit.widthMm] : null,
   ]);
 }
 

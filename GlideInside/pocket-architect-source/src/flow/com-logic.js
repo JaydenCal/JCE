@@ -334,3 +334,32 @@ export function baysText(park) {
 }
 
 export { typeById, activeTypeId, switcherList };
+
+// Entry and exit (site access) edits: project.commercial.accessEdit = { in: { offsetMm }, out: { offsetMm }, widthMm }. Offsets run along the first
+// frontage edge from its start; the site layout clamps them to the edge, clear of a corner street, and regenerates the driveways and aisles.
+import { refreshSiteWorks as _refreshSiteWorks } from '../commercial/sitelayout.js';
+
+/** Distance (mm) along the first frontage edge, from its start, of the point's foot on that edge. */
+export function offsetAlongFront(lot, pt) {
+  const b = lot?.boundary;
+  if (!b?.length) return 0;
+  const e0 = (lot.frontEdges || [])[0] ?? 0;
+  const a = b[e0]; const c = b[(e0 + 1) % b.length];
+  const L = Math.hypot(c.x - a.x, c.y - a.y) || 1;
+  return ((pt.x - a.x) * (c.x - a.x) + (pt.y - a.y) * (c.y - a.y)) / L;
+}
+
+/** Apply an edit to the project (pure on the object): { role: 'in'|'out'|'both', offsetMm } or { widthMm } or null to reset. */
+export function editAccess(p, patch) {
+  if (!p?.commercial) return null;
+  if (!patch) delete p.commercial.accessEdit;
+  else {
+    const ae = { ...(p.commercial.accessEdit || {}) };
+    if (Number.isFinite(patch.offsetMm)) { const role = patch.role === 'out' ? 'out' : 'in'; ae[role] = { offsetMm: Math.round(patch.offsetMm) }; }
+    if (Number.isFinite(patch.widthMm)) ae.widthMm = Math.round(patch.widthMm);
+    p.commercial.accessEdit = ae;
+  }
+  _refreshSiteWorks(p, { force: true });
+  return p.commercial.accessEdit || null;
+}
+export function editAccessIn(store, patch, label = 'Edit entry and exit') { store.apply(label, (p) => { editAccess(p, patch); }); }
