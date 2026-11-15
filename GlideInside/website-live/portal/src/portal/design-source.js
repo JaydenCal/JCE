@@ -10,9 +10,12 @@ export function createDesignSource({ api, me, params = new URLSearchParams(), cl
   let cache = null;
   async function fetchAll() {
     const [mine, glide] = await Promise.all([api.listHouses(), (wantsGlide(me, params) ? api.listGlideLibrary().catch(() => []) : Promise.resolve([]))]);
+    // The owner's internal test account is sent every builder's designs, marked readOnly with the builder's name. They are grouped by builder
+    // ('other') and never offered on the lot card, which ranks the account's own library only.
     const full = async (list, getter, group) => Promise.all((list || []).map(async (x) => {
       const r = await getter(x.id);
-      return { id: x.id, name: x.name, group, project: r.project, meta: x, source: group === 'glide' ? 'glide' : 'house' };
+      const other = group === 'builder' && x.readOnly === true;
+      return { id: x.id, name: x.name, group: other ? 'other' : group, builderName: other ? x.builder?.name || 'Another builder' : null, project: r.project, meta: x, source: group === 'glide' ? 'glide' : 'house' };
     }));
     return [...(await full(mine, (id) => api.getHouse(id), 'builder')), ...(await full(glide, (id) => api.getGlideModel(id), 'glide'))];
   }

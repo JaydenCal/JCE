@@ -42,6 +42,7 @@ export function readConfig(env = {}) {
     // Builder and client logins are off until the public launch is done (PORTAL_ENABLED=1).
     portalEnabled: ['1', 'true', 'yes'].includes(str(env.PORTAL_ENABLED).toLowerCase()),
     orgMonthlyCredits: Math.round(num(env.ORG_MONTHLY_CREDITS, 300)),
+    internalAiMonthly: Math.max(0, Math.round(num(env.INTERNAL_AI_MONTHLY, 1000))), // monthly AI allowance of an internal test account (no top-up charges)
     topUpCredits: Math.round(num(env.TOPUP_CREDITS, 300)),
     topUpCents: Math.round(num(env.TOPUP_AMOUNT_CENTS, 1000)),
     largeRequestCredits: num(env.LARGE_REQUEST_CREDITS, 10),

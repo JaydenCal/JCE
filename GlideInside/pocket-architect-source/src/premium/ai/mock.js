@@ -45,7 +45,7 @@ export function commercialMockReply(t) {
     if (/workshop/.test(t) && pick(/workshop/)) mix.push({ type: pick(/workshop/).id, count: 2 });
     if (/warehouse/.test(t) && pick(/warehouse/)) mix.push({ type: pick(/warehouse/).id, count: 1 });
     if (!mix.length) return { free: true, reply: 'Building types such as workshops and warehouses are not available yet, so I can only plan strata units. I can fit the most units or compare unit layouts if you like.', ops: [] };
-    return { reply: 'I have put the units and the buildings on the lot, positioned inside the setbacks with the truck aprons kept clear.', ops: [{ op: 'run_best_fit', args: { goal: 'max_gfa', constraints: { mix } } }] };
+    return { reply: 'I have put the buildings on the lot with as many units as still fit, positioned inside the setbacks with the truck aprons kept clear.', ops: [{ op: 'run_best_fit', args: { goal: 'max_gfa', constraints: { mix } } }] };
   }
   if (/most units|more units|fit/.test(t)) return { reply: 'I have put the layout with the most units on the lot that stays inside the indicative setbacks and has the bays needed.', ops: [{ op: 'run_best_fit', args: { goal: 'max_units' } }] };
   return { free: true, reply: 'This is a mock assistant, so it only knows the suggested requests: fit the most units, mix workshops and a warehouse, best layout for a budget, explain the parking, compare three options, or write a development brief.', ops: [] };

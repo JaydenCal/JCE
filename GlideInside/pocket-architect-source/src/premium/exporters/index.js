@@ -3,7 +3,7 @@
 // only affects the 3D formats. Pure of DOM access, Node compatible.
 
 import { slugify } from './shared.js';
-import { trialJsPDF } from './watermark.js';
+import { trialJsPDF, internalJsPDF } from './watermark.js';
 
 export const EXPORT_TYPES = {
   pdf: { mime: 'application/pdf', label: 'PDF plans' },
@@ -77,7 +77,7 @@ export async function buildExport(type, project, options = {}) {
     bytes = new TextEncoder().encode(toDXF(project, { layerMap: options.layerMap, catalogue, notes: config.disclaimer ? [config.disclaimer] : [], trial, trialText: options.watermarkTitle || null }));
   } else if (type === 'pdf') {
     const baseJsPDF = options.jsPDF || (await options.loadJsPDF?.());
-    const jsPDF = trial && typeof baseJsPDF === 'function' ? trialJsPDF(baseJsPDF, options.watermarkTitle || undefined, options.watermarkTitle || undefined) : baseJsPDF;
+    const jsPDF = trial && typeof baseJsPDF === 'function' ? trialJsPDF(baseJsPDF, options.watermarkTitle || undefined, options.watermarkTitle || undefined) : options.internalTest === true && typeof baseJsPDF === 'function' ? internalJsPDF(baseJsPDF) : baseJsPDF;
     bytes = await buildPdfBytes(project, { jsPDF, image: options.image || null, config, catalogue, scale: options.scale || null, style: options.style, builder: options.builder, aerial: options.aerial || null });
   } else if (type === 'html') {
     const { toHTML } = await import('./html.js');

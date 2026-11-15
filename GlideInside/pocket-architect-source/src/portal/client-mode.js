@@ -63,7 +63,8 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   const designMode = isDesignMode(me.user.role, params);
   const clientLike = isClientLike(me.user.role, params);
   // A client login (or a builder using Design on a lot) is not offered the commercial switch: that is a JCE tool, not part of the builder's house design service.
-  if (clientLike) commercialUi.enabled = false;
+  // The owner's internal test account is the exception: its logins get the commercial features as if subscribed (server: org.internal).
+  if (clientLike && me.org?.internal !== true) commercialUi.enabled = false;
   let reviewOwner = null; // the client whose saved project staff opened as that client sees it
   const brand = me.org.branding || {};
   applyBrandTheme(brand.colours); // builder colour scheme over the app chrome; the 3D scene, aerial and setback states keep their own colours
@@ -233,12 +234,17 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
       return;
     }
     // The builder's own designs first, then the Glide Inside library; within each, best fit first.
-    const byGroup = (g) => (envelopeNow() ? rankDesigns(designs.filter((d) => d.group === g), envelopeNow()) : designs.filter((d) => d.group === g).map((d) => ({ ...d, fit: null })));
-    const ranked = [...byGroup('builder'), ...byGroup('glide')];
+    const rank = (list2) => (envelopeNow() ? rankDesigns(list2, envelopeNow()) : list2.map((d) => ({ ...d, fit: null })));
+    const byGroup = (g) => rank(designs.filter((d) => d.group === g));
+    // Internal test account: every other builder's designs, one group per builder (builder name as the header), read only.
+    const builderNames = [...new Set(designs.filter((d) => d.group === 'other').map((d) => d.builderName))].sort((a, b) => a.localeCompare(b));
+    const others = builderNames.flatMap((n) => rank(designs.filter((d) => d.group === 'other' && d.builderName === n)));
+    const ranked = [...byGroup('builder'), ...others, ...byGroup('glide')];
     clear(list);
     let lastGroup = null;
     for (const d of ranked) {
-      if (d.group !== lastGroup) { list.append(h('div', { class: 'pas-group' }, d.group === 'glide' ? 'Glide Inside library' : `${brand.displayName || me.org.name} designs`)); lastGroup = d.group; }
+      const key = d.group === 'other' ? `other:${d.builderName}` : d.group;
+      if (key !== lastGroup) { list.append(h('div', { class: 'pas-group' }, d.group === 'glide' ? 'Glide Inside library' : d.group === 'other' ? `${d.builderName} (read only)` : `${brand.displayName || me.org.name} designs`)); lastGroup = key; }
       const svg = (() => { try { return svgDataUri(projectToSvg(d.project)); } catch { return ''; } })();
       list.append(h('button', { class: 'pas-item', type: 'button', onclick: () => { m.close(); choose(d); } },
         svg ? h('img', { src: svg, alt: '' }) : null,

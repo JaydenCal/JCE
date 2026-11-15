@@ -37,9 +37,21 @@ export function renderHouses(host, { api, me, appLinkFor = appLink, designHref =
     const q = state.q.toLowerCase();
     const items = state.items.filter((x) => (state.archived || !x.archived) && (!q || x.name.toLowerCase().includes(q)) && (!state.beds || (state.beds === '5' ? x.bedrooms >= 5 : x.bedrooms === Number(state.beds))));
     count.textContent = `${items.length} of ${state.items.filter((x) => state.archived || !x.archived).length} designs`;
-    grid.replaceChildren(...(items.length ? items.map(card) : [h('p', { class: 'pp-empty' }, state.items.length ? 'No designs match. Clear the search or filters.' : 'No house designs yet. Add one with the buttons above.')]));
+    const rows = [];
+    let lastBuilder = null;
+    for (const x of [...items].sort((a, b) => (a.readOnly === true) - (b.readOnly === true) || (a.builder?.name || '').localeCompare(b.builder?.name || ''))) {
+      const key = x.readOnly === true ? x.builder?.name || '' : null;
+      if (key !== lastBuilder && key !== null) rows.push(h('h3', { class: 'pp-sub', style: { gridColumn: '1 / -1', margin: '12px 0 0' } }, `${key} (read only)`));
+      lastBuilder = key;
+      rows.push(card(x));
+    }
+    grid.replaceChildren(...(items.length ? rows : [h('p', { class: 'pp-empty' }, state.items.length ? 'No designs match. Clear the search or filters.' : 'No house designs yet. Add one with the buttons above.')]));
   }
   function card(hs) {
+    if (hs.readOnly === true) {
+      // Another builder's design, shown to the internal test account only: view and copy into the internal library, never edit or delete.
+      return houseCard(hs, [canWrite ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => busy(e.currentTarget, async () => { const c = await api.duplicateHouse(hs.id); toast(`Copied to the internal library as "${c.name}".`, { kind: 'ok' }); await load(); }) }, 'Duplicate to internal library') : null]);
+    }
     const rename = canWrite ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => renameDialog(hs) }, 'Rename') : null;
     return houseCard(hs, [
       h('a', { class: 'pp-btn pp-btn--sm pp-btn--primary', href: appLinkFor({ house: hs.id }), target: '_blank', rel: 'noopener' }, icon('open', 15), 'Edit in Pocket Architect'),

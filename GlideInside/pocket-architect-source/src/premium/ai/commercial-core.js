@@ -322,7 +322,7 @@ export function searchSchemes(p, constraints = {}) {
     const stride = Math.max(1, Math.floor(sorted.length / 24));
     const spaced = sorted.filter((_, i) => i % stride === 0).slice(0, 24);
     const bare = { rows: [], extra: [], buildings: [], layout: { id: 'buildings', label: 'Buildings only' }, label: 'Buildings only', envKey: spaced[0]?.scheme.envKey ?? null };
-    const starts = [...spaced.reverse().map((x) => x.scheme), bare];
+    const starts = spaced.reverse().map((x) => x.scheme);
     const mixed = [];
     const seen = new Set();
     for (const base of starts) {
@@ -339,6 +339,12 @@ export function searchSchemes(p, constraints = {}) {
       seen.add(sig);
       const m = measure(standIn(p, s, parkingMin));
       if (m.valid && keep(m)) mixed.push({ scheme: s, m });
+    }
+    // Buildings only is the fallback when no scheme keeps any units.
+    if (!mixed.length) {
+      const s = withBuildings(p, bare, want);
+      const m = s ? measure(standIn(p, s, parkingMin)) : null;
+      if (m && m.valid && keep(m)) mixed.push({ scheme: s, m });
     }
     pool = mixed;
   }

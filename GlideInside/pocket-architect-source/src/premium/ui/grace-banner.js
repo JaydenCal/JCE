@@ -10,7 +10,7 @@ import { graceText } from '../credits.js';
 export function createGraceBanner({ getState, manageBilling, host = typeof document !== 'undefined' ? document.body : null }) {
   const text = el('span', { class: 'psp-grace-text', dataset: { ps: 'grace-text' } });
   const link = el('button', { class: 'psp-btn psp-btn--link psp-grace-link', type: 'button', dataset: { ps: 'grace-billing' }, onclick: () => manageBilling() }, 'Manage billing');
-  const root = el('div', { class: 'psp-grace', role: 'alert', hidden: true, dataset: { ps: 'grace-banner' } }, icon('info', 16), text, link);
+  const root = el('div', { class: 'psp-scope psp-grace', role: 'alert', hidden: true, dataset: { ps: 'grace-banner' } }, icon('info', 16), text, link);
   host?.append(root);
   function render() {
     const st = getState();

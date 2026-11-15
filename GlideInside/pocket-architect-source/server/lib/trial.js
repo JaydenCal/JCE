@@ -44,6 +44,13 @@ export const readOnlyError = (state) => new HttpError('READ_ONLY', state?.status
  *   read_only    set by the owner
  */
 export function orgState(org, nowMs) {
+  // An internal test account is always active: no trial, no read only pause, no charges, and never any top-up purchase.
+  if (org.internal === true) {
+    return {
+      status: 'active', stored: 'active', isTrial: false, readOnly: false, canIssueClients: true, canTopUp: false, canExport: true, internal: true,
+      trialStartedAt: null, trialEndsAt: null, daysLeft: 0, lastTrialDay: null, dataKeptUntil: null, cardOnFile: false,
+    };
+  }
   const stored = org.status || 'active';
   const endsMs = org.trialEndsAt ? Date.parse(org.trialEndsAt) : null;
   let status = stored;
@@ -74,7 +81,7 @@ export function accountView(org, nowMs) {
   const s = orgState(org, nowMs);
   return {
     status: s.status, trialStartedAt: s.trialStartedAt, trialEndsAt: s.trialEndsAt, daysLeft: s.daysLeft, lastTrialDay: s.lastTrialDay,
-    readOnly: s.readOnly, canIssueClients: s.canIssueClients, canTopUp: s.canTopUp, cardOnFile: s.cardOnFile,
+    internal: s.internal === true, readOnly: s.readOnly, canIssueClients: s.canIssueClients, canTopUp: s.canTopUp, cardOnFile: s.cardOnFile,
     card: s.cardOnFile ? { brand: org.cardBrand || '', last4: org.cardLast4 || '' } : null, dataKeptUntil: s.dataKeptUntil,
   };
 }

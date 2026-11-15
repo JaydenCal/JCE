@@ -378,5 +378,6 @@ CREATE TABLE IF NOT EXISTS org_accounts (
   card_brand TEXT,
   card_last4 TEXT,
   card_added_at TEXT,
-  owner_note TEXT
+  owner_note TEXT,
+  internal INTEGER NOT NULL DEFAULT 0        -- 1 = owner's internal test account: no charges, no trial, not in reports (migration 0014)
 );

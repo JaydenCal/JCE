@@ -16,7 +16,7 @@ export { previousMonthKey };
 
 export const orgPoolIds = (orgId, loginId, monthKeyValue) => ({ monthlyId: `org:${orgId}:${loginId}:${monthKeyValue}`, topUpId: `orgtop:${orgId}:${loginId}` });
 export const aiRole = (user) => (user.role === 'client' ? 'client' : 'builder');
-export const monthlyCap = (org, config) => (Number.isFinite(org.aiMonthlyCap) && org.aiMonthlyCap >= 0 ? org.aiMonthlyCap : config.orgMonthlyCredits);
+export const monthlyCap = (org, config) => (org.internal === true ? config.internalAiMonthly : Number.isFinite(org.aiMonthlyCap) && org.aiMonthlyCap >= 0 ? org.aiMonthlyCap : config.orgMonthlyCredits);
 
 /** When a top-up bought at `createdAt` stops being usable (12 months later). */
 export function topUpExpiry(createdAt) {

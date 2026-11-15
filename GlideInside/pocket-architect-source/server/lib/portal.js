@@ -119,6 +119,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     id: o.id, name: o.name, shortCode: o.shortCode, branding: { displayName: o.displayName || o.name, logoDataUrl: o.logoDataUrl || null, colours: coloursOf(o) },
     allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true,
     showGlideLibrary: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap,
+    ...(o.internal === true ? { internal: true } : {}),
     ...(role === 'admin' ? { billingContact: billingContact(o) } : {}),
   });
   const billingContact = (o) => ({ name: o.billingName || '', email: o.billingEmail || '', phone: o.billingPhone || '', legalName: o.legalName || '', abn: o.abn || '' });
@@ -132,6 +133,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     createdAt: h.createdAt, updatedAt: h.updatedAt, createdBy: h.createdBy, archived: !!h.archived, ...(h.stats || {}), stats: h.stats || null, thumbnail: h.thumbnail || null,
     hasProject: !!h.project || h.hasProject === true,
   });
+  const INTERNAL_NOTE = 'Internal test, no charge.';
   const visibleHouse = (user, h) => !h.archived && (user.houseAccess === 'all' || (Array.isArray(user.houseAccess) && user.houseAccess.includes(h.id)));
   const projectView = (p, ownerName) => ({ id: p.id, orgId: p.orgId, ownerId: p.ownerId, name: p.name, lotAddress: p.lotAddress || '', houseNames: p.houseNames || [], createdAt: p.createdAt, updatedAt: p.updatedAt, ownerName: ownerName || '',
     editedByStaff: !!p.editedById, editedByName: p.editedById ? p.editedByName || '' : '', editedByStaffAt: p.editedById ? p.editedByStaffAt || null : null });
@@ -143,7 +145,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const { monthlyId, topUpId } = orgPoolIds(org.id, user.id, monthKey(nowMs));
     const m = await store.getEntitlement(monthlyId);
     const t = await store.getEntitlement(topUpId);
-    const cap = m?.creditsTotal ?? org.aiMonthlyCap ?? config.orgMonthlyCredits;
+    const cap = m?.creditsTotal ?? (org.internal === true ? config.internalAiMonthly : org.aiMonthlyCap ?? config.orgMonthlyCredits);
     const used = m ? m.creditsUsed + (m.creditsReserved || 0) : 0;
     const monthlyRemaining = Math.max(0, cap - used);
     const topUpBalance = t ? Math.max(0, t.creditsTotal - t.creditsUsed - (t.creditsReserved || 0)) : 0;
@@ -233,7 +235,8 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       const orgRow = await pstore.getOrg(user.orgId);
       const month = monthKey(nowMs);
       const nth = (await pstore.listLoginIssues(user.orgId)).filter((i) => i.month === month).length + 1;
-      await pstore.addLoginIssue({ loginId: user.id, id: rid('li'), orgId: user.orgId, clientName: user.name, issuedAt: iso(nowMs), month, amountCents: priceForNthLoginThisMonth(nth, orgRow) });
+      // An internal test account is never charged: the login issue is recorded at 0 cents (labelled in the usage list).
+      await pstore.addLoginIssue({ loginId: user.id, id: rid('li'), orgId: user.orgId, clientName: user.name, issuedAt: iso(nowMs), month, amountCents: orgRow?.internal === true ? 0 : priceForNthLoginThisMonth(nth, orgRow) });
     }
     await pstore.purgeSessions(iso(nowMs));
     await startSession(r, user);
@@ -317,17 +320,42 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   }
 
   async function listHouses(r) {
-    const { user } = await auth(r);
+    const { user, org } = await auth(r);
     const includeArchived = r.url.searchParams.get('includeArchived') === 'true';
     const list = await pstore.listHouses(user.orgId);
-    return json(list.filter((h) => (isStaff(user) ? includeArchived || !h.archived : visibleHouse(user, h))).map(houseView));
+    const mine = list.filter((h) => (isStaff(user) ? includeArchived || !h.archived : visibleHouse(user, h)));
+    if (org.internal !== true) return json(mine.map(houseView)); // an ordinary builder or client only ever sees its own org's designs
+    // The owner's internal test account browses every builder's designs, grouped by builder, read only.
+    const names = new Map((await pstore.listOrgs()).map((o) => [o.id, o.displayName || o.name]));
+    const others = (await pstore.listAllHouses()).filter((h) => h.orgId !== org.id && !h.archived && (isStaff(user) || user.houseAccess === 'all'));
+    return json([
+      ...mine.map((h) => ({ ...houseView(h), builder: { id: org.id, name: names.get(org.id) || org.name }, readOnly: false })),
+      ...others.map((h) => ({ ...houseView(h), builder: { id: h.orgId, name: names.get(h.orgId) || '' }, readOnly: true })),
+    ].sort((a, b) => a.builder.name.localeCompare(b.builder.name) || a.name.localeCompare(b.name)));
   }
+  /** A design from another builder, for the internal test account: no title block details, so a plan set never carries that builder's branding. */
+  const stripBranding = (project) => {
+    const tb = project?.titleBlock;
+    if (tb && typeof tb === 'object') for (const k of Object.keys(tb)) tb[k] = '';
+    return project;
+  };
   async function getHouse(r, id) {
-    const { user } = await auth(r);
-    const h = await pstore.getHouse(user.orgId, id);
-    if (!h || (!isStaff(user) && !visibleHouse(user, h))) throw new HttpError('NOT_FOUND', 'That house design was not found.');
+    const { user, org } = await auth(r);
+    let h = await pstore.getHouse(user.orgId, id);
+    let foreign = false;
+    if (!h && org.internal === true) {
+      h = await pstore.getHouseAny(id);
+      foreign = !!h && !h.archived && h.orgId !== org.id && (isStaff(user) || user.houseAccess === 'all');
+      if (!foreign) h = null;
+    }
+    if (!h || (!foreign && !isStaff(user) && !visibleHouse(user, h))) throw new HttpError('NOT_FOUND', 'That house design was not found.');
     const project = h.project ? clone(h.project) : await resolveGlideProject(h.sourceRef, h.name);
     project.name = h.name;
+    if (foreign) {
+      stripBranding(project);
+      const owner = await pstore.getOrg(h.orgId);
+      return json({ ...houseView(h), builder: { id: h.orgId, name: owner?.displayName || owner?.name || '' }, readOnly: true, project });
+    }
     return json({ ...houseView(h), project });
   }
   async function saveHouse(r) {
@@ -366,13 +394,21 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   }
   async function duplicateHouse(r, id) {
     const { user, org } = await auth(r, { need: 'houses.write' });
-    const h = await pstore.getHouse(org.id, id);
+    let h = await pstore.getHouse(org.id, id);
+    // The internal test account may duplicate another builder's design. The copy is made in the internal org only; the original is untouched.
+    if (!h && org.internal === true) {
+      const other = await pstore.getHouseAny(id);
+      if (other && !other.archived && other.orgId !== org.id) {
+        h = { ...other, project: other.project ? stripBranding(clone(other.project)) : null };
+        if (!h.project && h.sourceType !== 'glide') h = null;
+      }
+    }
     if (!h) throw new HttpError('NOT_FOUND', 'That house design was not found.');
     const names = new Set((await pstore.listHouses(org.id)).map((x) => x.name.toLowerCase()));
     let n = 2;
     let label = `${h.name} copy`;
     while (names.has(label.toLowerCase())) label = `${h.name} copy ${n++}`;
-    const copy = { ...clone(h), id: rid('h'), name: label.slice(0, 80), createdBy: user.id, createdAt: iso(), updatedAt: iso(), archived: false };
+    const copy = { ...clone(h), orgId: org.id, id: rid('h'), name: label.slice(0, 80), createdBy: user.id, createdAt: iso(), updatedAt: iso(), archived: false };
     await pstore.saveHouse(copy);
     return json(houseView(copy));
   }
@@ -418,7 +454,8 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const access = await cleanAccess(org.id, b.houseAccess);
     const { user, credentials } = await createAccount(org, { firstName: b.firstName, email: b.email, role: 'client', lotAddress: b.lotAddress, houseAccess: access });
     const monthNow = monthKey(now());
-    const rate = priceForNthLoginThisMonth((await pstore.listLoginIssues(org.id)).filter((i) => i.month === monthNow).length + 1, org);
+    const rate = org.internal === true ? 0 : priceForNthLoginThisMonth((await pstore.listLoginIssues(org.id)).filter((i) => i.month === monthNow).length + 1, org);
+    if (org.internal === true) return json({ client: await clientView(org, user, { billedIds: new Set() }), credentials, charge: { amountCents: 0, trigger: 'first_sign_in', note: INTERNAL_NOTE } }, 201);
     return json({ client: await clientView(org, user, { billedIds: new Set() }), credentials, charge: { amountCents: rate, trigger: 'first_sign_in', note: `${formatAud(rate)} incl. GST is charged on your monthly invoice once your client first signs in.` } }, 201);
   }
   async function updateClient(r, id) {
@@ -558,6 +595,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   }
   async function aiTopUp(r) {
     const { user, org, state } = await auth(r);
+    if (state.internal) throw new HttpError('NOT_ENTITLED', 'An internal test account has a generous monthly AI allowance and no top-ups.', {}, 403);
     if (state.isTrial) throw trialNoTopUps();
     if (!isStaff(user) && !org.allowClientTopUps) throw new HttpError('TOPUPS_DISABLED', 'Your builder has turned off AI credit top-ups.');
     if ((await store.hitRate(`topup:${org.id}:${user.id}`, 3600, now())) > 10) throw new HttpError('RATE_LIMITED', 'Too many top-ups in the last hour.', { retryAfter: 600 });
@@ -714,6 +752,41 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     return json({ org: publicOrg(org, 'admin'), admin: publicUser(user), credentials }, 201);
   }
 
+  /**
+   * POST /portal/admin/internal-orgs (bearer ADMIN_TOKEN): { orgName?, username, password }. The owner's internal test account: an org flagged
+   * internal with one builder admin. The owner types the username and password himself; the password is hashed here and is never generated,
+   * returned or logged. No billing contact, no trial, no Stripe customer.
+   */
+  async function adminCreateInternal(r) {
+    await adminAuth(r.request);
+    const b = await readJson(r.request, 4096);
+    const name = text(b.orgName, 'Organisation name', { max: 120 }) || 'Glide Inside Internal Test';
+    const username = text(b.username, 'Username', { required: true, max: 40 }).toLowerCase();
+    if (!/^[a-z0-9][a-z0-9._-]{2,39}$/.test(username)) throw new HttpError('BAD_REQUEST', 'The username needs 3 to 40 letters, numbers, dots, dashes or underscores.');
+    const password = typeof b.password === 'string' ? b.password : '';
+    if (password.length > 512) throw new HttpError('BAD_REQUEST', 'That password is too long.');
+    const problem = passwordProblem(password, { username });
+    if (problem) throw new HttpError('BAD_REQUEST', problem);
+    if (await pstore.usernameExists(username)) throw new HttpError('CONFLICT', 'That username is already taken.');
+    const org = await makeOrg({ name, shortCode: 'INT' });
+    await pstore.saveOrgAccount(org.id, { status: 'active', internal: true });
+    const user = {
+      id: rid('u'), orgId: org.id, role: 'admin', name: 'Internal Test', email: null, username, passwordHash: await hashPassword(password), mustChangePassword: false,
+      tempPasswordExpiresAt: null, status: 'active', lotAddress: '', houseAccess: 'all', firstSignInAt: null, lastSignInAt: null, createdAt: iso(),
+    };
+    if (!(await pstore.createUser(user))) throw new HttpError('CONFLICT', 'That username is already taken.');
+    return json({ org: await adminOrgView(await pstore.getOrg(org.id)), admin: publicUser(user), signInUrl: `${config.siteUrl || r.url.origin}/portal/` }, 201);
+  }
+  /** POST /portal/admin/orgs/:id/internal { internal: true|false }: mark an existing org as an internal test account, or back to an ordinary one. */
+  async function adminSetInternal(r, id) {
+    await adminAuth(r.request);
+    const org = await adminOrg(r, id);
+    const b = await readJson(r.request, 512).catch(() => ({}));
+    if (typeof b.internal !== 'boolean') throw new HttpError('BAD_REQUEST', 'internal must be true or false.');
+    await pstore.saveOrgAccount(org.id, { internal: b.internal });
+    return json(await adminOrgView(await pstore.getOrg(org.id)));
+  }
+
   // Free trial: the public request form and the owner's admin routes ----------------------------------------------------------
   const requestView = (q) => ({ id: q.id, createdAt: q.createdAt, status: q.status === 'deciding' ? 'pending' : q.status, companyLegalName: q.companyLegalName, abn: q.abn, tradingName: q.tradingName || '', firstName: q.firstName, lastName: q.lastName, email: q.email, mobile: q.mobile, region: q.region, homesPerYear: q.homesPerYear ?? null, howHeard: q.howHeard || '', consentAt: q.consentAt, termsVersion: q.termsVersion || '', notifyStatus: q.notifyStatus || '', decidedAt: q.decidedAt || null, decisionNote: q.decisionNote || '', orgId: q.orgId || null });
 
@@ -810,14 +883,15 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const topUps = (await topUpRows(store, org.id)).filter((t) => monthKey(t.createdAt) === month).length;
     const admin = staff.filter((u) => u.role === 'admin').sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0];
     return {
-      id: org.id, name: org.name, slug: org.slug || null, shortCode: org.shortCode, legalName: org.legalName || '', abn: org.abn || '', createdAt: org.createdAt, requestId: org.requestId || null,
+      id: org.id, internal: org.internal === true, name: org.name, slug: org.slug || null, shortCode: org.shortCode, legalName: org.legalName || '', abn: org.abn || '', createdAt: org.createdAt, requestId: org.requestId || null,
       account: accountView(org, nowMs), trialExtendedDays: org.trialExtendedDays || 0, convertedAt: org.convertedAt || null, convertedHow: org.convertedHow || null,
       admin: admin ? { id: admin.id, name: admin.name, username: admin.username, email: admin.email || '', mustChangePassword: !!admin.mustChangePassword, lastSignInAt: admin.lastSignInAt || null } : null,
       billingContact: billingContact(org), staffCount: staff.length,
       clientLogins: { generated: clients.length, issued: issues.length, firstSignedIn: clients.filter((c) => c.firstSignInAt).length },
       loginPricing: { month, ...loginRateInfo(issues.filter((i) => i.month === month).length, org), over50Flag: issues.filter((i) => i.month === month).length > LOGIN_TIER_2_MAX && !(Number.isInteger(org.customLoginCents) && org.customLoginCents > 0) ? 'over 50 this month, set custom rate' : null },
-      ai: { month, monthlyCap: org.aiMonthlyCap, creditsUsed: used, topUps },
-      invoices: (await pstore.listInvoices(org.id)).map((i) => ({ id: i.id, number: i.number, month: i.month, status: i.status, totalCents: i.totalCents, issuedAt: i.issuedAt, error: i.error || null })),
+      // An internal test account is left out of usage, revenue and trial reporting: no usage figures, no invoices.
+      ai: org.internal === true ? { month, monthlyCap: org.aiMonthlyCap, creditsUsed: 0, topUps: 0 } : { month, monthlyCap: org.aiMonthlyCap, creditsUsed: used, topUps },
+      invoices: org.internal === true ? [] : (await pstore.listInvoices(org.id)).map((i) => ({ id: i.id, number: i.number, month: i.month, status: i.status, totalCents: i.totalCents, issuedAt: i.issuedAt, error: i.error || null })),
     };
   }
   async function adminOrgs(r) {
@@ -878,6 +952,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   async function adminExtend(r, id) {
     await adminAuth(r.request);
     const org = await adminOrg(r, id);
+    if (org.internal === true) throw new HttpError('BAD_REQUEST', 'Trials do not apply to an internal test account.');
     if (org.status === 'active') throw new HttpError('CONFLICT', 'That organisation is already on a paid account, so there is no trial to extend.');
     const nowMs = now();
     const patch = { status: 'trial', trialEndsAt: extendedEnd(org, nowMs), trialExtendedDays: (org.trialExtendedDays || 0) + TRIAL_EXTENSION_DAYS, trialStartedAt: org.trialStartedAt || iso(nowMs) };
@@ -916,7 +991,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     await pstore.updateOrg(org.id, { customLoginCents: cents });
     // Reprice this month's logins in first sign in order: the custom rate for all of them, or the standard tiers when it is cleared.
     const rows = (await pstore.listLoginIssues(org.id)).filter((i) => i.month === month).sort((a, c) => a.issuedAt.localeCompare(c.issuedAt) || a.id.localeCompare(c.id));
-    for (let i = 0; i < rows.length; i += 1) {
+    for (let i = 0; i < rows.length && org.internal !== true; i += 1) {
       const price = priceForNthLoginThisMonth(i + 1, next);
       if (rows[i].amountCents !== price) await pstore.updateLoginIssue(rows[i].loginId, { amountCents: price });
     }
@@ -925,6 +1000,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   async function adminConvert(r, id) {
     await adminAuth(r.request);
     const org = await adminOrg(r, id);
+    if (org.internal === true) throw new HttpError('BAD_REQUEST', 'An internal test account is never converted to a paid account.');
     const b = await readJson(r.request, 2048).catch(() => ({}));
     const patch = { status: 'active', convertedAt: org.convertedAt || iso(), convertedHow: org.convertedHow || 'manual', ownerNote: text(b.note, 'Note', { max: 500 }) || org.ownerNote || null };
     await pstore.updateOrg(org.id, patch);
@@ -934,6 +1010,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   async function adminResetAdmin(r, id) {
     await adminAuth(r.request);
     const org = await adminOrg(r, id);
+    if (org.internal === true) throw new HttpError('BAD_REQUEST', 'Set the internal test login again with the Create internal test account form. No password is generated for it.');
     const admin = (await pstore.listUsers(org.id, true)).filter((u) => u.role === 'admin').sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0];
     if (!admin) throw new HttpError('NOT_FOUND', 'That organisation has no admin login.');
     return json({ admin: publicUser(admin), ...(await issueTemp(admin)) });
@@ -942,6 +1019,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   // Card details: Stripe Checkout in setup mode (TEST keys only until the owner approves live billing) -----------------------------
   async function billingSetup(r) {
     const { org } = await auth(r, { need: 'billing.write', allowReadOnly: true });
+    if (org.internal === true) throw new HttpError('BAD_REQUEST', 'An internal test account has no billing.'); // no Stripe customer or setup session, ever
     if (!contactComplete(org)) throw new HttpError('BAD_REQUEST', 'Save your legal business name, ABN and billing email first. They are needed on your tax invoices.');
     const customer = await ensureCustomer({ config, pstore, fetchImpl, org });
     const origin = config.siteOrigin || r.url.origin;
@@ -1005,6 +1083,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (!org) return;
     const st = orgState(org, now());
     if (st.readOnly) throw readOnlyError(st);
+    if (kind === 'topup' && st.internal) throw new HttpError('NOT_ENTITLED', 'An internal test account has a generous monthly AI allowance and no top-ups.', {}, 403);
     if (kind === 'topup' && st.isTrial) throw trialNoTopUps();
   }
 
@@ -1044,6 +1123,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     ['GET', '/admin/enquiries', adminEnquiries, { token: true }], ['GET', `/admin/enquiries/${ID}/pdf`, adminEnquiryPdf, { token: true }],
     ['GET', '/admin/orgs', adminOrgs, { token: true }], ['POST', `/admin/orgs/${ID}/extend-trial`, adminExtend, { token: true }], ['POST', `/admin/orgs/${ID}/convert`, adminConvert, { token: true }], ['POST', `/admin/orgs/${ID}/login-rate`, adminLoginRate, { token: true }], ['POST', `/admin/orgs/${ID}/brand-colours`, adminBrandColours, { token: true }], ['POST', `/admin/orgs/${ID}/reset-admin`, adminResetAdmin, { token: true }],
     ['POST', `/admin/orgs/${ID}/houses`, adminImportHouses, { token: true }],
+    ['POST', '/admin/internal-orgs', adminCreateInternal, { token: true }], ['POST', `/admin/orgs/${ID}/internal`, adminSetInternal, { token: true }],
   ].map(([method, p, handler, opts]) => ({ method, re: new RegExp(`^${p}$`), handler, opts: opts || {} }));
 
   /** Handles /portal/* (path is the part after /api). Returns null when the path is not a portal path. */
@@ -1090,8 +1170,9 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const allowed = exportsFor(user, org);
     if (state.readOnly) throw readOnlyError(state);
     if (!allowed.includes(type)) throw new HttpError('FORBIDDEN', 'Your builder has not turned that file type on for your login.', {}, 403);
-    return { user, org, allowed, watermark: state.isTrial };
+    return { user, org, allowed, watermark: state.isTrial, internalTest: org.internal === true };
   }
 
-  return { route, scheduled, exportContext, gate, completeCardSetup, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
+  const isInternal = async (orgId) => !!orgId && (await pstore.getOrg(orgId))?.internal === true;
+  return { route, scheduled, exportContext, gate, isInternal, completeCardSetup, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
 }

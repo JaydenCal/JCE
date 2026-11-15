@@ -35,7 +35,7 @@ export async function usageForMonth({ pstore, store, orgId, month, names }) {
     month, timezone: 'Australia/Sydney',
     loginPricing: loginRateInfo(s.totals.loginsCount, org),
     rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, volumeLoginCents: VOLUME_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS },
-    logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName || '', firstSignInAt: i.chargedAt, amountCents: i.amountCents })),
+    logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName || '', firstSignInAt: i.chargedAt, amountCents: i.amountCents, ...(org?.internal === true ? { label: 'internal test, no charge' } : {}) })),
     topUps: s.topUps.map((t) => ({ id: t.id, loginId: t.loginId, clientName: names.get(t.loginId) || '', credits: t.credits, amountCents: t.amountCents, createdAt: t.createdAt })),
     totals: { ...s.totals, gstCents: gstOfTotal(s.totals.totalCents) },
   };
@@ -106,6 +106,7 @@ async function gstTaxRate({ config, pstore, fetchImpl }) {
 }
 
 export async function ensureCustomer({ config, pstore, fetchImpl, org }) {
+  if (org.internal === true) throw new HttpError('BILLING_UNAVAILABLE', 'An internal test account has no billing.');
   if (org.stripeCustomerId) return org.stripeCustomerId;
   const form = { name: org.legalName, email: org.billingEmail, 'metadata[org_id]': org.id, 'metadata[abn]': org.abn, 'metadata[short_code]': org.shortCode || '' };
   if (org.billingPhone) form.phone = org.billingPhone;
@@ -118,6 +119,8 @@ export async function ensureCustomer({ config, pstore, fetchImpl, org }) {
 /** Create one org's invoice for a month. Safe to call again: one row per org and month, resumed if an earlier run stopped part way. */
 export async function invoiceOrgMonth({ pstore, store, config, fetchImpl, nowMs, org, month }) {
   const base = { orgId: org.id, month };
+  // An internal test account is never invoiced: no usage rows, no Stripe customer, no invoice.
+  if (org.internal === true) return { ...base, status: 'skipped', reason: 'internal' };
   let row = await pstore.getInvoiceByMonth(org.id, month);
   if (row && ['due', 'paid', 'void'].includes(row.status)) return { ...base, status: 'exists', invoiceId: row.id, number: row.number, totalCents: row.totalCents };
   if (row && row.status === 'pending' && nowMs - Date.parse(row.issuedAt) < 15 * 60000) return { ...base, status: 'in_progress', invoiceId: row.id };

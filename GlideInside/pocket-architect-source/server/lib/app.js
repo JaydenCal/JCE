@@ -220,16 +220,17 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   // interface so the AI handlers do not care which one they have.
   const TOPUP_OFFER = () => ({ credits: config.topUpCredits, amountCents: config.topUpCents, gstInclusive: true, currency: 'aud' });
 
-  async function topUpAllowed(payload) {
+  async function topUpAllowed(payload, internal = false) {
+    if (internal) return false; // an internal test account is never charged, so it has no top-ups
     if (payload.role === 'builder') return true;
     return credits.clientTopUpsEnabled(await store.listEvents('org_topup_setting'), payload.oid);
   }
 
-  async function orgAccount(payload) {
+  async function orgAccount(payload, internal = false) {
     const nowMs = now();
     const month = credits.sydneyMonth(nowMs);
     const { monthlyId, topUpId } = credits.orgPoolIds(payload.oid, payload.lid, month.key);
-    const cap = Number.isFinite(payload.cap) ? payload.cap : config.orgMonthlyCredits;
+    const cap = internal ? config.internalAiMonthly : Number.isFinite(payload.cap) ? payload.cap : config.orgMonthlyCredits;
     const base = { projectId: payload.oid, email: null, amountCents: 0, currency: 'aud', status: 'active', createdAt: iso(nowMs) };
     await store.createEntitlement({ ...base, id: monthlyId, stripeSessionId: `org-m:${monthlyId}`, creditsTotal: cap, expiresAt: iso(month.resetsAtMs) });
     await store.createEntitlement({ ...base, id: topUpId, stripeSessionId: `org-t:${topUpId}`, creditsTotal: 0, expiresAt: null });
@@ -241,11 +242,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
         kind: 'org', total: b.total, used: b.used, remaining: b.remaining, reserved: b.reserved,
         warnLevel: credits.warnLevel(b.used + b.reserved, b.total, config.warnThresholds),
         topUpRemaining: b.topUpRemaining, available: b.available, monthResetsOn: month.resetsOn,
-        topUp: { allowed: await topUpAllowed(payload), ...TOPUP_OFFER() },
+        topUp: { allowed: await topUpAllowed(payload, internal), ...TOPUP_OFFER() },
       };
     };
     return {
-      kind: 'org', payload, id: monthlyId, rateKey: `org:${payload.oid}:${payload.lid}`,
+      kind: 'org', internal, payload, id: monthlyId, rateKey: `org:${payload.oid}:${payload.lid}`,
       snapshot,
       async available() {
         const { m, t } = await pools();
@@ -279,7 +280,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
         const split = credits.splitCharge(charged, res.m, res.t);
         return credits.crossedThreshold(Math.max(0, m.creditsUsed - split.monthly), m.creditsUsed, m.creditsTotal, config.warnThresholds);
       },
-      exhaustedDetails: async () => ({ topUp: { allowed: await topUpAllowed(payload), ...TOPUP_OFFER() }, monthResetsOn: month.resetsOn }),
+      exhaustedDetails: async () => ({ topUp: { allowed: await topUpAllowed(payload, internal), ...TOPUP_OFFER() }, monthResetsOn: month.resetsOn }),
     };
   }
 
@@ -305,7 +306,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     const org = await readOrgToken(request, { config, now });
     if (org) {
       await portal?.gate(org.oid, 'ai'); // a read only account (trial over, no card) cannot use the AI helper
-      return orgAccount(org);
+      return orgAccount(org, await portal?.isInternal(org.oid));
     }
     return packAccount(await authenticate(request, { store, config, now }));
   }
@@ -314,7 +315,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     const commercialAcct = await commercial.account(request);
     if (commercialAcct) return json(await commercialAcct.ai.snapshot());
     const org = await readOrgToken(request, { config, now });
-    if (org) return json(await (await orgAccount(org)).snapshot());
+    if (org) return json(await (await orgAccount(org, await portal?.isInternal(org.oid))).snapshot());
     const ent = await authenticate(request, { store, config, now });
     const project = url.searchParams.get('project');
     if (project && !coversProject(ent, project)) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
@@ -337,14 +338,19 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (acct.messageBased && !((body.commercial === true || body.mode === 'commercial') && isCommercialContext(context))) throw new HttpError('NOT_ENTITLED', 'The Commercial Developer subscription covers the assistant in commercial mode only.');
   };
 
+  // An internal test account gets the commercial assistant (the commercial model, one message per request) without any subscription, on
+  // its own generous monthly pool. It is still an org account, so nothing is logged against the commercial usage report or billed.
+  const internalCommercial = (acct, context, body) => (acct.internal && (body.commercial === true || body.mode === 'commercial') && isCommercialContext(context) ? { ...acct, messageBased: true, accountKind: 'internal' } : acct);
+
   const needAi = () => {
     if (!config.anthropicApiKey) throw new HttpError('AI_NOT_CONFIGURED', env.STAGING === '1' ? 'The AI assistant is not available on the staging site.' : 'AI not configured');
   };
 
   async function aiEstimate(request) {
     needAi();
-    const acct = await accountFor(request);
+    let acct = await accountFor(request);
     const { message, context, body } = await aiBody(request);
+    acct = internalCommercial(acct, context, body);
     needCommercialBody(acct, body, context);
     const { systemTokens } = await getTools(context);
     const est = acct.messageBased ? { credits: 1 } : credits.estimateRequest({ config, context, message, history: anthropic.cleanHistory(body.history), systemTokens });
@@ -355,8 +361,9 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   async function aiEdit(request) {
     needAi();
     const started = now();
-    const acct = await accountFor(request);
+    let acct = await accountFor(request);
     const { message, context, body } = await aiBody(request);
+    acct = internalCommercial(acct, context, body);
     needCommercialBody(acct, body, context);
     const activeLevelId = typeof body.activeLevelId === 'string' ? body.activeLevelId.slice(0, 64) : '';
     const history = anthropic.cleanHistory(body.history);
@@ -431,7 +438,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       cacheWriteTokens: parsed.usage.cache_creation_input_tokens, cacheReadTokens: parsed.usage.cache_read_input_tokens,
       costUsdMicros: cost, credits: charged, opsCount: parsed.ops.length, latencyMs: now() - started, status: 'ok',
     });
-    if (acct.messageBased) {
+    if (acct.messageBased && !acct.internal) {
       // Actual token usage per message against the account, for the owner's cost view (GET /api/commercial/admin/usage).
       await store.logEvent({ id: `cai_${logBase.id}`, type: 'commercial_ai_use', createdAt: iso(started), detail: {
         account: acct.logId, kind: acct.accountKind, email: acct.email || null, model: aiConfig.anthropicModel,
@@ -459,7 +466,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (!(await topUpAllowed(org))) throw new HttpError('TOPUP_DISABLED', 'Top-ups are turned off for your organisation. Ask your builder.');
     const nowMs = now();
     if ((await store.hitRate(`topup:${org.oid}:${org.lid}`, 3600, nowMs)) > 10) throw new HttpError('RATE_LIMITED', 'Too many top-ups in the last hour.', { retryAfter: 600 });
-    const acct = await orgAccount(org);
+    const acct = await orgAccount(org, false);
     const month = credits.sydneyMonth(nowMs);
     const { topUpId } = credits.orgPoolIds(org.oid, org.lid, month.key);
     await store.addCredits(topUpId, config.topUpCredits);
@@ -514,10 +521,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (!portal) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not available on this server.');
     if (!config.portalEnabled) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not open yet.');
     const ctx = await portal.exportContext(request, url, type);
-    return exportCore(request, type, { ent: null, watermark: ctx.watermark, orgId: ctx.org.id });
+    return exportCore(request, type, { ent: null, watermark: ctx.watermark, orgId: ctx.org.id, internalTest: ctx.internalTest === true });
   }
 
-  async function exportCore(request, type, { ent, watermark = false, orgId = null, commercial: commercialAcct = null }) {
+  async function exportCore(request, type, { ent, watermark = false, orgId = null, internalTest = false, commercial: commercialAcct = null }) {
     const body = await readJson(request, config.exportMaxProjectBytes + (type === 'pdf' ? 2_000_000 : 0));
     let project;
     try {
@@ -528,6 +535,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (JSON.stringify(body.project).length > config.exportMaxProjectBytes) throw new HttpError('PAYLOAD_TOO_LARGE', 'This project is too large to export.');
     const problems = validate(project);
     if (problems.length) throw new HttpError('BAD_REQUEST', 'The project has problems and cannot be exported.', { details: problems.slice(0, 5) });
+    if (internalTest && project.titleBlock && typeof project.titleBlock === 'object') {
+      // An internal test plan set never carries a builder's branding or title block details.
+      for (const k of Object.keys(project.titleBlock)) project.titleBlock[k] = '';
+      project.titleBlock.company = 'INTERNAL TEST';
+    }
     if (commercialAcct && project.mode !== 'commercial') throw new HttpError('NOT_ENTITLED', 'The commercial access covers commercial layouts only.');
     if (ent && !coversProject(ent, project.id)) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
     const image = typeof body.image === 'string' && /^data:image\/png;base64,/.test(body.image) && body.image.length < 1_900_000 ? body.image : null;
@@ -573,6 +585,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       file = await mod.buildExport(type, project, {
         image,
         watermark: watermark === true,
+        ...(internalTest ? { internalTest: true } : {}),
         ...(commercialAcct?.sub === 'trial' && watermark === true ? { watermarkTitle: 'TRIAL, NOT FOR CONSTRUCTION' } : {}),
         config: exportConfig,
         catalogue: await getCatalogue(),

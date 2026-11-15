@@ -165,26 +165,66 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
     });
   }
 
+  async function toggleInternal(o, btn) {
+    const next = !o.internal;
+    const ok = await confirmDialog({ title: next ? `Mark ${o.name} as internal?` : `Make ${o.name} an ordinary account?`, confirmLabel: next ? 'Mark internal' : 'Make ordinary',
+      message: next ? 'No charges are ever raised for an internal test account. It has no trial and no pause, it is left out of usage, revenue and trial reporting, and it can browse every builder\'s designs read only.' : 'The account goes back to its stored trial or paid state and is included in reporting and billing again.' });
+    if (!ok) return;
+    await busy(btn, async () => {
+      await api.setInternal(o.id, next);
+      toast(next ? `${o.name} is now an internal test account.` : `${o.name} is an ordinary account again.`, { kind: 'ok' });
+      await reload();
+    });
+  }
+  function openInternalForm() {
+    const orgName = h('input', { type: 'text', name: 'orgName', autocomplete: 'off', maxlength: '120', value: 'Glide Inside Internal Test', 'aria-label': 'Organisation name' });
+    const user = h('input', { type: 'text', name: 'username', autocomplete: 'off', spellcheck: 'false', required: true, 'aria-label': 'Builder admin username' });
+    const pass = h('input', { type: 'password', name: 'password', autocomplete: 'new-password', required: true, 'aria-label': 'Builder admin password' });
+    const err = h('p', { class: 'pp-error', role: 'alert', hidden: true });
+    openDialog({
+      title: 'Create internal test account', size: 'md',
+      body: h('div', { class: 'pp-form' },
+        h('p', null, 'An internal test account is never charged, has no trial, and is left out of usage, revenue and trial reporting. Its logins can browse every builder\'s designs read only. You choose the username and password here. The password is stored hashed and is never shown again, so keep a note of it yourself.'),
+        field('Organisation name', () => orgName, { hint: 'Shown to the account only.' }),
+        field('Builder admin username', () => user, { required: true, hint: 'Letters, numbers, dot, dash or underscore, 3 to 40 characters.' }),
+        field('Builder admin password', () => pass, { required: true, hint: 'At least 10 characters.' }),
+        err),
+      footer: (d) => [h('button', { class: 'pp-btn', type: 'button', onclick: () => d.close() }, 'Cancel'),
+        h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: (e) => busy(e.currentTarget, async () => {
+          try {
+            await api.createInternal({ orgName: orgName.value.trim(), username: user.value.trim(), password: pass.value });
+            pass.value = '';
+            d.close();
+            toast('Internal test account created.', { kind: 'ok' });
+            await reload();
+          } catch (ex) {
+            err.textContent = errorMessage(ex);
+            err.hidden = false;
+          }
+        }) }, 'Create account')],
+    });
+  }
   function orgRow(o) {
     const [label, kind] = STATUS_CHIP[o.account.status] || [o.account.status, 'muted'];
     const last = o.invoices[0];
     const owed = o.invoices.filter((i) => i.status !== 'paid' && i.status !== 'void').reduce((s, i) => s + i.totalCents, 0);
     return h('tr', { dataset: { id: o.id } },
-      td('Builder', h('strong', null, o.name), h('div', { class: 'pp-sub' }, o.legalName ? `${o.legalName}${o.abn ? `, ABN ${o.abn}` : ''}` : ''), o.admin ? h('div', { class: 'pp-sub' }, `${o.admin.name} (${o.admin.username})${o.admin.mustChangePassword ? ', has not signed in' : ''}`) : null),
+      td('Builder', h('strong', null, o.name), o.internal ? chip('INTERNAL', 'warn') : null, h('div', { class: 'pp-sub' }, o.legalName ? `${o.legalName}${o.abn ? `, ABN ${o.abn}` : ''}` : ''), o.admin ? h('div', { class: 'pp-sub' }, `${o.admin.name} (${o.admin.username})${o.admin.mustChangePassword ? ', has not signed in' : ''}`) : null),
       td('Status', chip(label, kind), o.account.status === 'trial' ? h('div', { class: 'pp-sub' }, `${o.account.daysLeft} ${o.account.daysLeft === 1 ? 'day' : 'days'} left, ends ${o.account.lastTrialDay}`) : null,
         o.account.status === 'trial_ended' ? h('div', { class: 'pp-sub' }, `Ended ${when(o.account.trialEndsAt)}. Data kept until ${when(o.account.dataKeptUntil)}`) : null,
         o.account.card ? h('div', { class: 'pp-sub' }, `Card: ${o.account.card.brand} ending ${o.account.card.last4}`) : o.convertedHow === 'manual' ? h('div', { class: 'pp-sub' }, 'Converted manually') : null,
         o.trialExtendedDays ? h('div', { class: 'pp-sub' }, `Extended ${o.trialExtendedDays} days`) : null),
       td('Client logins', h('strong', null, String(o.clientLogins.issued)), h('div', { class: 'pp-sub' }, `${o.clientLogins.generated} generated`),
-        o.loginPricing ? h('div', { class: 'pp-sub' }, `${o.loginPricing.count} this month, next ${formatAud(o.loginPricing.currentRateCents)}${o.loginPricing.customRateCents ? ' (custom rate)' : ''}`) : null,
-        o.loginPricing?.over50Flag ? h('div', { class: 'pp-sub pp-adm-err' }, o.loginPricing.over50Flag) : null),
-      td('AI this month', `${o.ai.creditsUsed} credits used`, h('div', { class: 'pp-sub' }, `${o.ai.topUps} ${o.ai.topUps === 1 ? 'top-up' : 'top-ups'}`)),
-      td('Invoices', o.invoices.length ? `${o.invoices.length}, last ${last.number} ${last.status}` : 'None', owed ? h('div', { class: 'pp-sub' }, `${formatAud(owed)} open`) : null, last?.error ? h('div', { class: 'pp-sub pp-adm-err' }, last.error) : null),
+        o.loginPricing && !o.internal ? h('div', { class: 'pp-sub' }, `${o.loginPricing.count} this month, next ${formatAud(o.loginPricing.currentRateCents)}${o.loginPricing.customRateCents ? ' (custom rate)' : ''}`) : null,
+        o.loginPricing?.over50Flag && !o.internal ? h('div', { class: 'pp-sub pp-adm-err' }, o.loginPricing.over50Flag) : null),
+      td('AI this month', o.internal ? 'Not reported' : `${o.ai.creditsUsed} credits used`, o.internal ? null : h('div', { class: 'pp-sub' }, `${o.ai.topUps} ${o.ai.topUps === 1 ? 'top-up' : 'top-ups'}`)),
+      td('Invoices', o.internal ? 'Never invoiced' : o.invoices.length ? `${o.invoices.length}, last ${last.number} ${last.status}` : 'None', owed ? h('div', { class: 'pp-sub' }, `${formatAud(owed)} open`) : null, last?.error ? h('div', { class: 'pp-sub pp-adm-err' }, last.error) : null),
       td('Actions', h('div', { class: 'pp-actions pp-actions--tight' },
-        o.account.status !== 'active' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => extend(o, e.currentTarget) }, 'Extend 7 days') : null,
-        o.account.status !== 'active' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => convert(o, e.currentTarget) }, 'Convert to paid') : null,
-        h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => setRate(o) }, 'Login price'),
-        h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => resetAdmin(o, e.currentTarget) }, icon('key', 14), 'New admin password'))));
+        h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => toggleInternal(o, e.currentTarget) }, o.internal ? 'Make ordinary' : 'Mark internal'),
+        !o.internal && o.account.status !== 'active' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => extend(o, e.currentTarget) }, 'Extend 7 days') : null,
+        !o.internal && o.account.status !== 'active' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => convert(o, e.currentTarget) }, 'Convert to paid') : null,
+        o.internal ? null : h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => setRate(o) }, 'Login price'),
+        o.internal ? null : h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => resetAdmin(o, e.currentTarget) }, icon('key', 14), 'New admin password'))));
   }
 
   // Commercial trial login ----------------------------------------------------------------------------------------------------
@@ -281,6 +321,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
         h('div', { class: 'pp-adm-list' }, ...(shown.length ? shown.map(requestCard) : [h('p', { class: 'pp-empty' }, `No ${filter} requests.`)])),
         h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Builder accounts'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Trial, trial ended, active and read only.'))),
         orgTable,
+        h('div', { class: 'pp-actions pp-actions--tight', style: { marginTop: '12px' } }, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', id: 'create-internal', onclick: openInternalForm }, 'Create internal test account')),
         trialSection(),
         usageSection()));
   }

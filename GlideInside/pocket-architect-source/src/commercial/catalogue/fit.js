@@ -14,13 +14,15 @@ import { parkingLayout } from '../parking.js';
 
 export const BEST_PRESET = 'best';
 const EMPTY = { solid: [], loose: [] }; // choosing a type replaces whatever is on the lot
-const TOL = 60;
+const TOL = 5; // mm: the card's setback check is exact, so placement must not borrow more than rounding
 
 const distSeg = (p, a, b) => {
   const dx = b.x - a.x; const dy = b.y - a.y;
   const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy || 1)));
   return Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy);
 };
+const WALL_MARGIN = 100; // mm: walls stand about 80 mm outside the footprint outline, and the setback check measures the walls
+const insideBy = (p, poly, m) => G.pointInPolygon(p, poly) && poly.every((a, i) => distSeg(p, a, poly[(i + 1) % poly.length]) >= m);
 const inside = (p, poly) => G.pointInPolygon(p, poly) || poly.some((a, i) => distSeg(p, a, poly[(i + 1) % poly.length]) <= TOL);
 const envelopeOf = (lot) => (Array.isArray(lot.envelope) && lot.envelope.length >= 3 ? lot.envelope : lot.boundary);
 const extent = (pts, ax) => { const v = pts.map((q) => q.x * ax.x + q.y * ax.y); return [Math.min(...v), Math.max(...v)]; };
@@ -98,17 +100,17 @@ export function placeBuilding(project, rec, occ = null) {
     const [et0, et1] = extent(env, v);
     const [ls0, ls1] = extent(lot.boundary, u);
     const [lt0, lt1] = extent(lot.boundary, v);
-    const sLo = Math.max(es0 - ub.minX, ls0 - ab.minX);
-    const sHi = Math.min(es1 - ub.maxX, ls1 - ab.maxX);
-    const tLo = Math.max(et0 - ub.minY, lt0 - ab.minY);
-    const tHi = Math.min(et1 - ub.maxY, lt1 - ab.maxY);
+    const sLo = Math.max(es0 - ub.minX + WALL_MARGIN, ls0 - ab.minX);
+    const sHi = Math.min(es1 - ub.maxX - WALL_MARGIN, ls1 - ab.maxX);
+    const tLo = Math.max(et0 - ub.minY + WALL_MARGIN, lt0 - ab.minY);
+    const tHi = Math.min(et1 - ub.maxY - WALL_MARGIN, lt1 - ab.maxY);
     if (sLo > sHi + 1 || tLo > tHi + 1) continue;
     for (const fy of fb) for (const fx of fa) {
-      const A = Math.round((sLo + (sHi - sLo) * fx) / 100) * 100;
-      const B = Math.round((tLo + (tHi - tLo) * fy) / 100) * 100;
+      const A = Math.min(sHi, Math.max(sLo, Math.round((sLo + (sHi - sLo) * fx) / 100) * 100)); // rounded to 100 mm but never past the limit
+      const B = Math.min(tHi, Math.max(tLo, Math.round((tLo + (tHi - tLo) * fy) / 100) * 100));
       const place = { x: Math.round(u.x * A + v.x * B), y: Math.round(u.y * A + v.y * B), rotationDeg: deg };
       const w = (p) => toWorld(place, p);
-      if (!sh.outline.every((p) => inside(w(p), env))) continue;
+      if (!sh.outline.every((p) => insideBy(w(p), env, WALL_MARGIN - 1))) continue;
       if (![...sh.extras.flat(), ...sh.bays.flat()].every((p) => inside(w(p), lot.boundary))) continue;
       if (others.solid.length || others.loose.length) {
         const out = sh.outline.map(w);

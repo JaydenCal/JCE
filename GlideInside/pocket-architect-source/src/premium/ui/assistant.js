@@ -9,7 +9,7 @@ import { describeOp, summariseOps, nameResolver } from '../ai/summary.js';
 import { siteCallProblem } from '../ai/tools.js';
 import { friendlyError, isAuthLoss } from '../messages.js';
 import { canBuyMessages, buyMessagesLabel, topUpOfferText, normaliseCredits, meterText, resetText, leftFraction, meterLevel, isExhausted, warningText, exhaustedText, claimWarning, canTopUp, topUpLabel, availableCredits } from '../credits.js';
-import { promptsFor, chipsFor, BASE_PROMPTS } from '../ai/suggestions.js';
+import { promptsFor, chipsFor, BASE_PROMPTS, COMMERCIAL_PROMPTS } from '../ai/suggestions.js';
 import { hasCatalogue } from '../ai/commercial-catalogue.js';
 import { isCommercial } from '../../commercial/schema.js';
 
@@ -59,15 +59,15 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       st.notice ? el('div', { class: 'psp-note psp-note--warn', role: 'status' }, icon('info', 16), el('span', null, st.notice)) : null,
       el('div', { class: 'psp-ai-head' },
         el('h3', { class: 'psp-ai-title' }, icon('spark', 16), 'AI design assistant'),
-        el('span', { class: 'psp-badge' }, 'Plan Pack')),
+        el('span', { class: 'psp-badge' }, st.commercial ? 'Subscription' : 'Plan Pack')),
       el('p', { class: 'psp-ai-lead' }, st.commercial ? 'Describe a change in plain English and the assistant edits your layout, as one step you can undo. It comes with the Commercial Developer subscription.' : 'Describe a change in plain English and the assistant edits your plan, as one step you can undo. It is part of the Plan Pack.'),
       el('p', { class: 'psp-ai-label' }, 'Try asking'),
       el('div', { class: 'psp-prompts', role: 'list' },
-        EXAMPLE_PROMPTS.map((text) => el('button', { class: 'psp-prompt', type: 'button', disabled: true, role: 'listitem', title: 'Unlock the Plan Pack to use the assistant' }, icon('lock', 12), text))),
+        (st.commercial ? COMMERCIAL_PROMPTS : EXAMPLE_PROMPTS).map((text) => el('button', { class: 'psp-prompt', type: 'button', disabled: true, role: 'listitem', title: st.commercial ? 'Subscribe to use the assistant' : 'Unlock the Plan Pack to use the assistant' }, icon('lock', 12), text))),
       el('div', { class: 'psp-locked-box' },
         el('p', { class: 'psp-muted' }, st.commercial ? 'Commercial Developer, A$50 per month, unlimited plan sets, plus a monthly allowance of AI messages. Drawing and the 3D view stay free.' : `${pack.credits ?? 500} AI credits per job, plus PDF, DXF and 3D model exports. Drawing, the 3D view and walking through your design stay free.`),
         isOn() || st.commercial
-          ? el('button', { class: 'psp-btn psp-btn--primary psp-btn--block', type: 'button', onclick: () => actions.unlock('assistant') }, icon('lock', 14), st.commercial ? 'Commercial Developer, A$50 per month, Subscribe' : `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`)
+          ? el('button', { class: 'psp-btn psp-btn--primary psp-btn--block', type: 'button', onclick: () => actions.unlock('assistant') }, icon('lock', 14), st.commercial ? `Subscribe, ${formatAud(50)} per month` : `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`)
           : el('button', { class: 'psp-btn psp-btn--block', type: 'button', disabled: true }, icon('lock', 14), 'Plan Pack unavailable, try again'),
         isOn() || st.commercial ? el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => actions.restore() }, st.commercial ? 'Already subscribed? Restore subscription' : 'Already bought? Restore purchase') : null),
     ];

@@ -21,6 +21,8 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
   let requests = [];
   let orgs = [];
   let filter = 'pending';
+  let trial = null; // the shared commercial trial login, or null
+  let usage = null; // commercial AI usage and cost
 
   function gate(message = '') {
     clear(root);
@@ -50,6 +52,8 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
 
   async function load() {
     [requests, orgs] = await Promise.all([api.listRequests(), api.listOrgs()]);
+    // The commercial sections are extras: a failure there must not lock the owner out of trial requests.
+    [trial, usage] = await Promise.all([api.commercialTrial?.().catch(() => null) ?? null, api.commercialUsage?.().catch(() => null) ?? null]);
   }
   async function reload() {
     try {
@@ -161,26 +165,145 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
     });
   }
 
+  async function toggleInternal(o, btn) {
+    const next = !o.internal;
+    const ok = await confirmDialog({ title: next ? `Mark ${o.name} as internal?` : `Make ${o.name} an ordinary account?`, confirmLabel: next ? 'Mark internal' : 'Make ordinary',
+      message: next ? 'No charges are ever raised for an internal test account. It has no trial and no pause, it is left out of usage, revenue and trial reporting, and it can browse every builder\'s designs read only.' : 'The account goes back to its stored trial or paid state and is included in reporting and billing again.' });
+    if (!ok) return;
+    await busy(btn, async () => {
+      await api.setInternal(o.id, next);
+      toast(next ? `${o.name} is now an internal test account.` : `${o.name} is an ordinary account again.`, { kind: 'ok' });
+      await reload();
+    });
+  }
+  function openInternalForm() {
+    const orgName = h('input', { type: 'text', name: 'orgName', autocomplete: 'off', maxlength: '120', value: 'Glide Inside Internal Test', 'aria-label': 'Organisation name' });
+    const user = h('input', { type: 'text', name: 'username', autocomplete: 'off', spellcheck: 'false', required: true, 'aria-label': 'Builder admin username' });
+    const pass = h('input', { type: 'password', name: 'password', autocomplete: 'new-password', required: true, 'aria-label': 'Builder admin password' });
+    const err = h('p', { class: 'pp-error', role: 'alert', hidden: true });
+    openDialog({
+      title: 'Create internal test account', size: 'md',
+      body: h('div', { class: 'pp-form' },
+        h('p', null, 'An internal test account is never charged, has no trial, and is left out of usage, revenue and trial reporting. Its logins can browse every builder\'s designs read only. You choose the username and password here. The password is stored hashed and is never shown again, so keep a note of it yourself.'),
+        field('Organisation name', () => orgName, { hint: 'Shown to the account only.' }),
+        field('Builder admin username', () => user, { required: true, hint: 'Letters, numbers, dot, dash or underscore, 3 to 40 characters.' }),
+        field('Builder admin password', () => pass, { required: true, hint: 'At least 10 characters.' }),
+        err),
+      footer: (d) => [h('button', { class: 'pp-btn', type: 'button', onclick: () => d.close() }, 'Cancel'),
+        h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: (e) => busy(e.currentTarget, async () => {
+          try {
+            await api.createInternal({ orgName: orgName.value.trim(), username: user.value.trim(), password: pass.value });
+            pass.value = '';
+            d.close();
+            toast('Internal test account created.', { kind: 'ok' });
+            await reload();
+          } catch (ex) {
+            err.textContent = errorMessage(ex);
+            err.hidden = false;
+          }
+        }) }, 'Create account')],
+    });
+  }
   function orgRow(o) {
     const [label, kind] = STATUS_CHIP[o.account.status] || [o.account.status, 'muted'];
     const last = o.invoices[0];
     const owed = o.invoices.filter((i) => i.status !== 'paid' && i.status !== 'void').reduce((s, i) => s + i.totalCents, 0);
     return h('tr', { dataset: { id: o.id } },
-      td('Builder', h('strong', null, o.name), h('div', { class: 'pp-sub' }, o.legalName ? `${o.legalName}${o.abn ? `, ABN ${o.abn}` : ''}` : ''), o.admin ? h('div', { class: 'pp-sub' }, `${o.admin.name} (${o.admin.username})${o.admin.mustChangePassword ? ', has not signed in' : ''}`) : null),
+      td('Builder', h('strong', null, o.name), o.internal ? chip('INTERNAL', 'warn') : null, h('div', { class: 'pp-sub' }, o.legalName ? `${o.legalName}${o.abn ? `, ABN ${o.abn}` : ''}` : ''), o.admin ? h('div', { class: 'pp-sub' }, `${o.admin.name} (${o.admin.username})${o.admin.mustChangePassword ? ', has not signed in' : ''}`) : null),
       td('Status', chip(label, kind), o.account.status === 'trial' ? h('div', { class: 'pp-sub' }, `${o.account.daysLeft} ${o.account.daysLeft === 1 ? 'day' : 'days'} left, ends ${o.account.lastTrialDay}`) : null,
         o.account.status === 'trial_ended' ? h('div', { class: 'pp-sub' }, `Ended ${when(o.account.trialEndsAt)}. Data kept until ${when(o.account.dataKeptUntil)}`) : null,
         o.account.card ? h('div', { class: 'pp-sub' }, `Card: ${o.account.card.brand} ending ${o.account.card.last4}`) : o.convertedHow === 'manual' ? h('div', { class: 'pp-sub' }, 'Converted manually') : null,
         o.trialExtendedDays ? h('div', { class: 'pp-sub' }, `Extended ${o.trialExtendedDays} days`) : null),
       td('Client logins', h('strong', null, String(o.clientLogins.issued)), h('div', { class: 'pp-sub' }, `${o.clientLogins.generated} generated`),
-        o.loginPricing ? h('div', { class: 'pp-sub' }, `${o.loginPricing.count} this month, next ${formatAud(o.loginPricing.currentRateCents)}${o.loginPricing.customRateCents ? ' (custom rate)' : ''}`) : null,
-        o.loginPricing?.over50Flag ? h('div', { class: 'pp-sub pp-adm-err' }, o.loginPricing.over50Flag) : null),
-      td('AI this month', `${o.ai.creditsUsed} credits used`, h('div', { class: 'pp-sub' }, `${o.ai.topUps} ${o.ai.topUps === 1 ? 'top-up' : 'top-ups'}`)),
-      td('Invoices', o.invoices.length ? `${o.invoices.length}, last ${last.number} ${last.status}` : 'None', owed ? h('div', { class: 'pp-sub' }, `${formatAud(owed)} open`) : null, last?.error ? h('div', { class: 'pp-sub pp-adm-err' }, last.error) : null),
+        o.loginPricing && !o.internal ? h('div', { class: 'pp-sub' }, `${o.loginPricing.count} this month, next ${formatAud(o.loginPricing.currentRateCents)}${o.loginPricing.customRateCents ? ' (custom rate)' : ''}`) : null,
+        o.loginPricing?.over50Flag && !o.internal ? h('div', { class: 'pp-sub pp-adm-err' }, o.loginPricing.over50Flag) : null),
+      td('AI this month', o.internal ? 'Not reported' : `${o.ai.creditsUsed} credits used`, o.internal ? null : h('div', { class: 'pp-sub' }, `${o.ai.topUps} ${o.ai.topUps === 1 ? 'top-up' : 'top-ups'}`)),
+      td('Invoices', o.internal ? 'Never invoiced' : o.invoices.length ? `${o.invoices.length}, last ${last.number} ${last.status}` : 'None', owed ? h('div', { class: 'pp-sub' }, `${formatAud(owed)} open`) : null, last?.error ? h('div', { class: 'pp-sub pp-adm-err' }, last.error) : null),
       td('Actions', h('div', { class: 'pp-actions pp-actions--tight' },
-        o.account.status !== 'active' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => extend(o, e.currentTarget) }, 'Extend 7 days') : null,
-        o.account.status !== 'active' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => convert(o, e.currentTarget) }, 'Convert to paid') : null,
-        h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => setRate(o) }, 'Login price'),
-        h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => resetAdmin(o, e.currentTarget) }, icon('key', 14), 'New admin password'))));
+        h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => toggleInternal(o, e.currentTarget) }, o.internal ? 'Make ordinary' : 'Mark internal'),
+        !o.internal && o.account.status !== 'active' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => extend(o, e.currentTarget) }, 'Extend 7 days') : null,
+        !o.internal && o.account.status !== 'active' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => convert(o, e.currentTarget) }, 'Convert to paid') : null,
+        o.internal ? null : h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => setRate(o) }, 'Login price'),
+        o.internal ? null : h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => resetAdmin(o, e.currentTarget) }, icon('key', 14), 'New admin password'))));
+  }
+
+  // Commercial trial login ----------------------------------------------------------------------------------------------------
+  function openTrialForm() {
+    const user = h('input', { type: 'text', name: 'username', autocomplete: 'off', spellcheck: 'false', required: true, value: trial?.username || '', 'aria-label': 'Trial username' });
+    const pass = h('input', { type: 'password', name: 'password', autocomplete: 'new-password', required: true, 'aria-label': 'Trial password' });
+    const exp = h('input', { type: 'date', name: 'expiresAt', 'aria-label': 'Expiry date (optional)', value: trial?.expiresAt ? new Date(Date.parse(trial.expiresAt) - 3600000).toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' }) : '' });
+    const err = h('p', { class: 'pp-error', role: 'alert', hidden: true });
+    openDialog({
+      title: trial?.exists ? 'Reset the trial login' : 'Create the trial login', size: 'md',
+      body: h('div', { class: 'pp-form' },
+        h('p', null, 'This is the one login you can hand to friends to try commercial mode. You choose the username and password here. The password is stored hashed and is never shown again, so keep a note of it yourself.'),
+        field('Username', () => user, { required: true, hint: 'Letters, numbers, dot, dash or underscore, 3 to 40 characters.' }),
+        field('Password', () => pass, { required: true, hint: 'At least 10 characters. Resetting signs out everyone using the old login.' }),
+        field('Expiry date (optional)', () => exp, { hint: 'Leave blank for no expiry. The login works through the whole of that day.' }),
+        err),
+      footer: (d) => [h('button', { class: 'pp-btn', type: 'button', onclick: () => d.close() }, 'Cancel'),
+        h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: (e) => busy(e.currentTarget, async () => {
+          try {
+            trial = await api.saveCommercialTrial({ username: user.value.trim(), password: pass.value, expiresAt: exp.value });
+            pass.value = '';
+            d.close();
+            toast('Trial login saved.', { kind: 'ok' });
+            paint();
+          } catch (ex) {
+            err.textContent = errorMessage(ex);
+            err.hidden = false;
+          }
+        }) }, trial?.exists ? 'Reset login' : 'Create login')],
+    });
+  }
+  async function trialSettings(patch, message) {
+    trial = await api.commercialTrialSettings(patch);
+    toast(message, { kind: 'ok' });
+    paint();
+  }
+  function setTrialExpiry() {
+    const exp = h('input', { type: 'date', 'aria-label': 'Expiry date', value: '' });
+    openDialog({
+      title: 'Trial expiry date', size: 'sm',
+      body: h('div', { class: 'pp-form' }, field('Expiry date', () => exp, { hint: 'The login works through the whole of that day. Press Clear for no expiry.' })),
+      footer: (d) => [h('button', { class: 'pp-btn', type: 'button', onclick: () => d.close() }, 'Cancel'),
+        h('button', { class: 'pp-btn', type: 'button', onclick: (e) => busy(e.currentTarget, async () => { await trialSettings({ expiresAt: null }, 'Expiry cleared.'); d.close(); }) }, 'Clear'),
+        h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: (e) => busy(e.currentTarget, async () => { if (!exp.value) return; await trialSettings({ expiresAt: exp.value }, 'Expiry saved.'); d.close(); }) }, 'Save')],
+    });
+  }
+  function trialSection() {
+    const head = h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Commercial trial login'), h('p', { class: 'pp-lead pp-lead--sm' }, 'One shared login for friends to try commercial mode. Unlimited plan sets, watermarked, with a small AI message allowance.')));
+    if (!trial) return h('div', null, head, h('p', { class: 'pp-empty' }, 'The trial login settings could not be loaded.'));
+    if (!trial.exists) return h('div', null, head, h('div', { class: 'pp-card' }, h('p', null, 'There is no trial login yet.'), h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: openTrialForm }, 'Create trial login')));
+    const line = (k, v) => h('div', { class: 'pp-adm-kv' }, h('span', null, k), h('strong', null, v));
+    const status = trial.disabled ? chip('Disabled', 'warn') : trial.expired ? chip('Expired', 'warn') : chip('Active', 'ok');
+    return h('div', null, head, h('article', { class: 'pp-card', id: 'trial-card' },
+      h('div', { class: 'pp-card-head' }, h('h3', null, trial.username), status),
+      h('div', { class: 'pp-adm-grid' },
+        line('Expiry', trial.expiresAt ? ddmmyyyy(Date.parse(trial.expiresAt) - 3600000) : 'None'),
+        line('Last used', trial.lastUsedAt ? `${ddmmyyyy(trial.lastUsedAt)} ${new Date(trial.lastUsedAt).toLocaleTimeString('en-AU', { timeZone: 'Australia/Sydney', hour: '2-digit', minute: '2-digit' })}` : 'Never'),
+        line('Sign ins', String(trial.usage.logins)),
+        line('Plan set PDFs', `${trial.usage.pdf} (${trial.today.pdf} today)`),
+        line('DXF files', String(trial.usage.dxf)),
+        line('AI messages', `${trial.ai.used} of ${trial.ai.total} used`),
+        line('Plan set watermark', trial.watermark ? 'On' : 'Off'),
+        line('Saved designs', `${trial.projectCount}, kept ${trial.keepDays} days`)),
+      h('div', { class: 'pp-actions pp-actions--tight' },
+        h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: openTrialForm }, icon('key', 14), 'Reset username and password'),
+        h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => busy(e.currentTarget, () => trialSettings({ resetAi: true }, 'AI messages reset.')) }, 'Reset AI messages'),
+        h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: setTrialExpiry }, 'Set expiry'),
+        h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => busy(e.currentTarget, () => trialSettings({ disabled: !trial.disabled }, trial.disabled ? 'Trial login enabled.' : 'Trial login disabled.')) }, trial.disabled ? 'Enable' : 'Disable'))));
+  }
+
+  function usageSection() {
+    const head = h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Commercial AI cost'), h('p', { class: 'pp-lead pp-lead--sm' }, usage ? `Actual tokens used by each account on ${usage.model}, priced at US$${usage.priceUsdPerMtok.input} in and US$${usage.priceUsdPerMtok.output} out per million tokens (cache reads at a tenth of the input price).` : 'Usage could not be loaded.')));
+    if (!usage || !usage.months.length) return h('div', null, head, h('p', { class: 'pp-empty' }, 'No commercial AI messages yet.'));
+    const fmt = (n) => Number(n).toLocaleString('en-AU');
+    const rows = usage.months.flatMap((m) => [
+      ...m.accounts.map((a) => h('tr', null, h('td', null, m.month), h('td', null, a.kind === 'trial' ? 'Trial login' : a.email || a.account), h('td', null, fmt(a.messages)), h('td', null, fmt(a.input)), h('td', null, fmt(a.cacheRead)), h('td', null, fmt(a.output)), h('td', null, `US$${a.costUsd.toFixed(4)}`))),
+      h('tr', { class: 'pp-adm-total' }, h('td', null, m.month), h('td', null, h('strong', null, 'Total')), h('td', null, fmt(m.totals.messages)), h('td', null, fmt(m.totals.input)), h('td', null, fmt(m.totals.cacheRead)), h('td', null, fmt(m.totals.output)), h('td', null, h('strong', null, `US$${m.totals.costUsd.toFixed(4)}`)))]);
+    return h('div', null, head, h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table' },
+      h('thead', null, h('tr', null, ...['Month', 'Account', 'Messages', 'Input tokens', 'Cache read tokens', 'Output tokens', 'Cost'].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', null, ...rows))));
   }
 
   function paint() {
@@ -197,7 +320,10 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
         tabs,
         h('div', { class: 'pp-adm-list' }, ...(shown.length ? shown.map(requestCard) : [h('p', { class: 'pp-empty' }, `No ${filter} requests.`)])),
         h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Builder accounts'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Trial, trial ended, active and read only.'))),
-        orgTable));
+        orgTable,
+        h('div', { class: 'pp-actions pp-actions--tight', style: { marginTop: '12px' } }, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', id: 'create-internal', onclick: openInternalForm }, 'Create internal test account')),
+        trialSection(),
+        usageSection()));
   }
 
   const saved = store.get();

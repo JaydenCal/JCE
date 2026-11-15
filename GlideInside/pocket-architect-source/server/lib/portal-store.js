@@ -53,7 +53,7 @@ const SPECS = {
     cols: {
       orgId: 'org_id', status: 'status', trialStartedAt: 'trial_started_at', trialEndsAt: 'trial_ends_at', trialExtendedDays: 'trial_extended_days',
       requestId: 'request_id', convertedAt: 'converted_at', convertedHow: 'converted_how', paymentMethodId: 'payment_method_id', cardBrand: 'card_brand',
-      cardLast4: 'card_last4', cardAddedAt: 'card_added_at', ownerNote: 'owner_note',
+      cardLast4: 'card_last4', cardAddedAt: 'card_added_at', ownerNote: 'owner_note', internal: 'internal:b',
     },
   },
   trialRequests: {
@@ -72,7 +72,7 @@ const SPECS = {
 };
 
 const ACCOUNT_KEYS = Object.keys(SPECS.orgAccounts.cols).filter((k) => k !== 'orgId');
-const withAccount = (org, acct) => (org ? { ...org, ...Object.fromEntries(ACCOUNT_KEYS.map((k) => [k, acct?.[k] ?? null])), status: acct?.status || 'active' } : null);
+const withAccount = (org, acct) => (org ? { ...org, ...Object.fromEntries(ACCOUNT_KEYS.map((k) => [k, acct?.[k] ?? null])), status: acct?.status || 'active', internal: acct?.internal === true || acct?.internal === 1 } : null);
 const splitOrgPatch = (patch) => {
   const org = {};
   const acct = {};
@@ -241,6 +241,9 @@ export function createD1PortalStore(db) {
     },
     getHouse: (orgId, id) => one(SPECS.houses, 'id = ?1 AND org_id = ?2', id, orgId),
     listHouses: (orgId) => many(SPECS.houses, 'org_id = ?1', [orgId], 'ORDER BY name COLLATE NOCASE', ['project']),
+    // Internal test accounts only (server/lib/portal.js checks org.internal before calling these): every builder's designs, read only.
+    getHouseAny: (id) => one(SPECS.houses, 'id = ?1', id),
+    listAllHouses: () => many(SPECS.houses, '1 = 1', [], 'ORDER BY name COLLATE NOCASE', ['project']),
     async saveProject(p) {
       const exists = await first('SELECT 1 AS x FROM portal_projects WHERE id = ?1 AND org_id = ?2', p.id, p.orgId);
       if (exists) return update(SPECS.projects, 'id = ?1 AND org_id = ?2', [p.id, p.orgId], { ...p, id: undefined, orgId: undefined, ownerId: undefined, createdAt: undefined });
@@ -288,16 +291,16 @@ export function createMemoryPortalStore() {
       T.orgs.set(o.id, cp(o));
       return true;
     },
-    getOrg: async (id) => (T.orgs.has(id) ? { ...cp(T.orgs.get(id)), status: T.orgs.get(id).status || 'active' } : null),
+    getOrg: async (id) => (T.orgs.has(id) ? { ...cp(T.orgs.get(id)), status: T.orgs.get(id).status || 'active', internal: T.orgs.get(id).internal === true } : null),
     getOrgByShortCode: async (code) => {
       const o = [...T.orgs.values()].find((x) => x.shortCode === code);
       return o ? { ...cp(o), status: o.status || 'active' } : null;
     },
     getOrgBySlug: async (slug) => {
       const o = [...T.orgs.values()].find((x) => x.slug === slug);
-      return o ? { ...cp(o), status: o.status || 'active' } : null;
+      return o ? { ...cp(o), status: o.status || 'active', internal: o.internal === true } : null;
     },
-    listOrgs: async () => [...T.orgs.values()].sort((a, b) => a.createdAt.localeCompare(b.createdAt)).map((o) => ({ ...cp(o), status: o.status || 'active' })),
+    listOrgs: async () => [...T.orgs.values()].sort((a, b) => a.createdAt.localeCompare(b.createdAt)).map((o) => ({ ...cp(o), status: o.status || 'active', internal: o.internal === true })),
     async updateOrg(id, patch) {
       const o = T.orgs.get(id);
       if (!o) return false;
@@ -399,6 +402,8 @@ export function createMemoryPortalStore() {
       return h && h.orgId === orgId ? cp(h) : null;
     },
     listHouses: async (orgId) => [...T.houses.values()].filter((h) => h.orgId === orgId).sort((a, b) => a.name.localeCompare(b.name)).map((h) => ({ ...omit(h, ['project']), project: undefined })),
+    getHouseAny: async (id) => cp(T.houses.get(id)),
+    listAllHouses: async () => [...T.houses.values()].sort((a, b) => a.name.localeCompare(b.name)).map((h) => ({ ...omit(h, ['project']), project: undefined })),
     async saveProject(p) {
       const cur = T.projects.get(p.id);
       if (cur && cur.orgId !== p.orgId) return false;

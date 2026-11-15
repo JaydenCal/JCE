@@ -90,8 +90,7 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
         el('ul', { class: 'psp-includes' },
           ['Unlimited commercial plan set PDFs (sheets C000 to C103) and DXF drawings.',
             'AI design assistant with a monthly allowance of messages. Buy more AI messages when you need them, A$15 for 100 more.',
-            'Monthly subscription. Cancel anytime from Manage billing.',
-            'Residential pricing is unchanged.']
+            'Monthly subscription. Cancel anytime from Manage billing.']
             .map((t) => el('li', null, icon('check', 16), el('span', null, t)))),
         el('div', { class: 'psp-field' }, email),
         el('p', { class: 'psp-fine' }, 'Plans are indicative concept documents for developers. ', config.disclaimer || ''),

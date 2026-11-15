@@ -81,6 +81,38 @@ export function trialJsPDF(JsPDF, title = TRIAL_TITLE, footer = TRIAL_FOOTER) {
   return TrialPDF;
 }
 
+export const INTERNAL_FOOTER = 'INTERNAL TEST';
+
+/** The internal test account's PDFs: a small "INTERNAL TEST" footer line on every page and no TRIAL mark. */
+export function internalJsPDF(JsPDF, footer = INTERNAL_FOOTER) {
+  function InternalPDF(...args) {
+    const doc = new JsPDF(...args);
+    const output = doc.output.bind(doc);
+    let stamped = false;
+    doc.output = (...a) => {
+      if (!stamped) {
+        stamped = true;
+        const pages = doc.internal.getNumberOfPages();
+        for (let n = 1; n <= pages; n++) {
+          doc.setPage(n);
+          const w = doc.internal.pageSize.getWidth();
+          const h = doc.internal.pageSize.getHeight();
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(7);
+          doc.setTextColor(64, 64, 64);
+          doc.text(footer, w / 2, h - 2.2, { align: 'center' });
+        }
+        doc.setPage(1);
+      }
+      return output(...a);
+    };
+    return doc;
+  }
+  Object.assign(InternalPDF, JsPDF);
+  InternalPDF.prototype = JsPDF.prototype;
+  return InternalPDF;
+}
+
 /** GLB and OBJ: a small flat "TRIAL" plate beside the model, named and with metadata (glTF extras). */
 export function markTrialGroup(THREE, group) {
   const box = new THREE.Box3().setFromObject(group);
