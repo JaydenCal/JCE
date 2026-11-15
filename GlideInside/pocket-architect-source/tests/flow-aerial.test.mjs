@@ -22,3 +22,11 @@ test('step 3 wiring: fetches when missing, labels, and frames the home by lot ar
   assert.match(s, /marginMm = 20000/);
   assert.doesNotMatch(s, /Aerial: none/);
 });
+
+import { filterRows } from '../src/flow/res-logic.js';
+test('lot width filter tolerates a missing frontage and filters by frontage when present', () => {
+  const rows = [{ stats: { bedrooms: 3, storeys: 1 }, frontageM: 10 }, { stats: { bedrooms: 3, storeys: 1 }, frontageM: 14 }, { stats: { bedrooms: 3, storeys: 1 }, frontageM: 20 }, { stats: { bedrooms: 3, storeys: 1 }, frontageM: null }];
+  assert.equal(filterRows(rows, {}).length, 4);
+  assert.equal(filterRows(rows, { frontage: 12.5 }).length, 2); // 10 m and the unknown
+  assert.equal(filterRows(rows, { frontage: 18 }).length, 2); // 20 m and the unknown
+});

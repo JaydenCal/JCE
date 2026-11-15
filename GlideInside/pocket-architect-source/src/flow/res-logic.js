@@ -22,16 +22,20 @@ export function designRows(list) {
     const fitText = st === 'unknown' ? 'Fit not checked' : st === 'too-big' ? 'Does not fit' : d.fit.badge || 'Fits';
     return {
       id: d.id, name: d.name, group: d.group || null, design: d, stats: s, size: sizeLabel(s),
+      // Frontage (lot width) in metres: set by the designs data; missing on older data, in which case the design is never filtered out.
+      frontageM: Number.isFinite(d.frontageM) ? d.frontageM : Number.isFinite(d.project?.frontageM) ? d.project.frontageM : null,
       fitStatus: st, fitText, fitReason: d.fit?.reason || '', fits: st !== 'too-big' && st !== 'unknown',
     };
   });
 }
 
-/** Filter rows by bedrooms (null for any, 4 means 4 or more) and storeys (null for any, 2 means 2 or more). */
-export function filterRows(rows, { bedrooms = null, storeys = null } = {}) {
+/** Filter rows by bedrooms (null for any, 4 means 4 or more), lot width (frontage, m) and storeys (null for any, 2 means 2 or more). */
+export function filterRows(rows, { bedrooms = null, storeys = null, frontage = null } = {}) {
   return rows.filter((r) => {
     if (bedrooms != null && (bedrooms >= 4 ? r.stats.bedrooms < 4 : r.stats.bedrooms !== bedrooms)) return false;
     if (storeys != null && (storeys >= 2 ? r.stats.storeys < 2 : r.stats.storeys !== storeys)) return false;
+    // Lot width: a design suits a lot of that width or wider; 18 means 18 m and wider designs. A design with no frontage stays in.
+    if (frontage != null && r.frontageM != null && (frontage >= 18 ? r.frontageM < 18 : r.frontageM > frontage)) return false;
     return true;
   });
 }

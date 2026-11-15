@@ -22,7 +22,7 @@ function mountHomeStep(ctx, { getHomes }) {
   const { store } = ctx;
   let rows = [];
   let selected = flowOf(store.project)?.designId || store.project.placedHouse?.id || null;
-  const filter = { bedrooms: null, storeys: null };
+  const filter = { bedrooms: null, storeys: null, frontage: null };
   let disposed = false;
   const grid = h('div', { class: 'gf-homes', dataset: { ps: 'flow-homes' } }, h('p', { class: 'gf-empty' }, 'Loading homes'));
   const note = h('p', { class: 'gf-note', dataset: { ps: 'flow-homes-note' } });
@@ -32,7 +32,8 @@ function mountHomeStep(ctx, { getHomes }) {
   };
   const filters = h('div', { class: 'gf-filters' },
     sel('Bedrooms', 'bedrooms', [['', 'Any'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4 or more']]),
-    sel('Storeys', 'storeys', [['', 'Any'], ['1', 'Single storey'], ['2', 'Two storeys']]));
+    sel('Storeys', 'storeys', [['', 'Any'], ['1', 'Single storey'], ['2', 'Two storeys']]),
+    sel('Lot width', 'frontage', [['', 'Any'], ['10', '10 m'], ['12.5', '12.5 m'], ['14', '14 m'], ['18', '18 m and wider']]));
   // "Have a local builder in mind?": find a listed builder and ask them for a client login to their own homes.
   const finder = mountBuilderFinder({ getLot: () => lotOf(store.project)?.address || '', getDesign: () => { const r = rows.find((x) => x.id === selected); return r ? { id: r.id, name: r.name } : null; } });
   const el = h('div', null, finder.el, filters, grid, note);
