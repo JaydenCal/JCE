@@ -256,7 +256,8 @@ function mountPlaceStep(ctx, { getHomes }) {
 
   function paintStatus(st = placementStatus(liveProject || store.project)) {
     statusEl.dataset.state = st.state;
-    statusEl.replaceChildren(h('span', { 'aria-hidden': 'true' }, st.state === 'inside' ? '✓' : st.state === 'outside' ? '!' : 'i'), h('span', null, st.state === 'inside' ? 'Inside the setbacks. Good position.' : st.text));
+    statusEl.replaceChildren(h('span', { 'aria-hidden': 'true' }, st.state === 'inside' ? '✓' : st.state === 'outside' ? '!' : 'i'), h('span', null, st.state === 'inside' ? 'Inside the setbacks. Good position.' : st.text),
+      st.state === 'outside' ? h('span', { class: 'gf-note', dataset: { ps: 'flow-too-tight' }, style: { display: 'block', marginTop: '4px' } }, 'Too tight? Choose a narrower design in step 2 to fit the setbacks. ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(2); } }, 'Show narrower designs')) : null);
     const ph = store.project.placedHouse;
     nameEl.textContent = ph?.name ? `Home: ${ph.name}` : '';
   }
@@ -447,7 +448,8 @@ function mountCheckStep(ctx, { catalogue }) {
         stat(s.garage.has ? (s.garage.facesStreet ? 'Faces street' : 'Not to street') : 'No garage', s.garage.distanceM != null ? `Garage, ${s.garage.distanceM.toFixed(1)} m from street` : 'Garage'),
         stat(s.driveway.state === 'ok' ? `${s.driveway.lengthM.toFixed(1)} m` : s.driveway.state === 'none' ? 'None' : 'Not linked', 'Driveway to frontage')),
       h('ul', { class: 'gf-lines', dataset: { ps: 'flow-lines' } }, ...s.lines.map((t) => h('li', null, t))),
-      h('p', { class: 'gf-note' }, h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(3); } }, 'Back to placement'), ' to move or turn the home.'));
+      h('p', { class: 'gf-note' }, h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(3); } }, 'Back to placement'), ' to move or turn the home.',
+        s.verdict === 'not-met' ? h('span', { dataset: { ps: 'flow-too-tight' } }, ' Too tight? ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(2); } }, 'Show narrower designs'), ' to find a home that fits the setbacks.') : null));
   }
   const stat = (b, s) => h('div', { class: 'gf-stat' }, h('b', null, b), h('span', null, s));
   paint();

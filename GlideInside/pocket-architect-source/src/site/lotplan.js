@@ -249,6 +249,65 @@ export function circumradius(a, b, c) {
   return area < 1e-6 ? Infinity : (ab * bc * ca) / (4 * area);
 }
 
+
+/** The stored, edited driveway on the project (project.site.driveway), or null. { endOffsetMm, pis[{x,y}], radiusM, widthMm } */
+export function storedDriveway(project) {
+  const d = project?.site?.driveway;
+  if (!d || typeof d !== 'object' || !Number.isFinite(d.endOffsetMm)) return null;
+  return { endOffsetMm: d.endOffsetMm, pis: (Array.isArray(d.pis) ? d.pis : []).filter((q) => Number.isFinite(q?.x) && Number.isFinite(q?.y)).slice(0, 6), radiusM: Number.isFinite(d.radiusM) ? Math.min(30, Math.max(2, d.radiusM)) : 6, widthMm: Number.isFinite(d.widthMm) ? d.widthMm : null };
+}
+
+/** Where on the kerb an edited driveway ends: the offset along the frontage from its first corner, kept clear of the corners. */
+function drivewayEndOnKerb(lot, r, offsetMm, wd, onKerb) {
+  const a = lot.boundary[r.edge];
+  const b = lot.boundary[(r.edge + 1) % lot.boundary.length];
+  const len = G.dist(a, b);
+  const lo = Math.min(wd / 2 + 500, len / 2);
+  const hi = Math.max(len - wd / 2 - 500, len / 2);
+  return onKerb(G.clamp(offsetMm, lo, hi));
+}
+
+/** A polyline through the points with each interior corner rounded by a circular arc of the radius (mm), limited to what the legs allow. */
+export function filletPath(pts, radiusMm) {
+  if (pts.length < 3) return pts.slice();
+  const out = [pts[0]];
+  for (let i = 1; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const a = G.norm(G.sub(p0, p1));
+    const c = G.norm(G.sub(p2, p1));
+    const cosT = G.clamp(G.dot(a, c), -1, 1);
+    const ang = Math.acos(cosT); // interior angle at the corner
+    if (ang > Math.PI - 0.02 || ang < 0.02) { out.push(p1); continue; }
+    const tanLen = radiusMm / Math.tan(ang / 2);
+    const lim = Math.min(G.dist(p0, p1), G.dist(p2, p1)) * 0.5;
+    const tl = Math.min(tanLen, lim);
+    const rad = tl * Math.tan(ang / 2);
+    const A = G.add(p1, G.mul(a, tl));
+    const C = G.add(p1, G.mul(c, tl));
+    const bis = G.norm(G.add(a, c));
+    const cen = G.add(p1, G.mul(bis, rad / Math.sin(ang / 2)));
+    let a0 = Math.atan2(A.y - cen.y, A.x - cen.x);
+    let a1 = Math.atan2(C.y - cen.y, C.x - cen.x);
+    let d = a1 - a0;
+    while (d > Math.PI) d -= 2 * Math.PI;
+    while (d < -Math.PI) d += 2 * Math.PI;
+    const n = Math.max(3, Math.ceil(Math.abs(d) / 0.15));
+    for (let k = 0; k <= n; k++) { const t = a0 + (d * k) / n; out.push({ x: cen.x + Math.cos(t) * rad, y: cen.y + Math.sin(t) * rad }); }
+  }
+  out.push(pts.at(-1));
+  return out;
+}
+
+/** The project with its driveway edit stored; pass null to reset to the automatic driveway. Returns the new value. */
+export function setStoredDriveway(project, value) {
+  if (!project?.site) return null;
+  if (!value) { delete project.site.driveway; return null; }
+  project.site.driveway = { endOffsetMm: Math.round(value.endOffsetMm), pis: (value.pis || []).slice(0, 6).map((q) => ({ x: Math.round(q.x), y: Math.round(q.y) })), radiusM: value.radiusM || 6, widthMm: value.widthMm || null };
+  return project.site.driveway;
+}
+
 /**
  * The driveway from the garage door to the kerb. Constant width (the door width within 3.0 and 6.5 m), leaves the door square, follows
  * a smooth curve when the house is turned or offset from the street, and meets the kerb square. Also returns the crossover (the part
@@ -270,7 +329,7 @@ export function deriveDriveway(project, opts = {}) {
   }
   if (best.score < 0.2) return { ok: false, reason: 'door_faces_away', door };
   const r = best.r;
-  const wd = Math.min(6500, Math.max(3000, opts.widthMm || door.widthMm || 3000));
+  const wd = Math.min(6500, Math.max(3000, opts.widthMm || storedDriveway(project)?.widthMm || door.widthMm || 3000));
   const edgeA = lot.boundary[r.edge];
   const edgeB = lot.boundary[(r.edge + 1) % lot.boundary.length];
   const edgeLen = G.dist(edgeA, edgeB);
@@ -289,19 +348,41 @@ export function deriveDriveway(project, opts = {}) {
   const P2 = G.add(P3, G.mul(r.outward, -Math.max(wd * 0.9, D * 0.42)));
   const P = [P0, P1, P2, P3];
   const N = 48;
-  const centre = [];
-  const left = [];
-  const right = [];
+  let centre = [];
+  let left = [];
+  let right = [];
   let length = 0;
-  for (let i = 0; i <= N; i++) {
-    const s = i / N;
-    const c = bez(P, s);
-    const tan = bezTan(P, s);
-    const nl = { x: -tan.y, y: tan.x };
-    if (i) length += G.dist(c, centre[i - 1]);
-    centre.push(c);
-    left.push(G.add(c, G.mul(nl, wd / 2)));
-    right.push(G.add(c, G.mul(nl, -wd / 2)));
+  const stored = storedDriveway(project);
+  let usedStored = false;
+  let kerbEnd = P3;
+  if (stored && !opts.ignoreStored) {
+    const end = drivewayEndOnKerb(lot, r, stored.endOffsetMm, wd, onKerb);
+    kerbEnd = end;
+    const pts = filletPath([P0, G.add(P0, G.mul(door.normal, Math.max(1500, wd * 0.6))), ...stored.pis.map((q) => ({ x: q.x, y: q.y })), G.add(end, G.mul(r.outward, -1500)), end], (stored.radiusM || 6) * 1000);
+    centre = pts.map((c, i) => c);
+    usedStored = true;
+  }
+  if (usedStored) {
+    for (let i = 0; i < centre.length; i++) {
+      const o = centre[Math.max(0, i - 1)];
+      const q = centre[Math.min(centre.length - 1, i + 1)];
+      const tan = G.norm(G.sub(q, o));
+      const nl = { x: -tan.y, y: tan.x };
+      if (i) length += G.dist(centre[i], centre[i - 1]);
+      left.push(G.add(centre[i], G.mul(nl, wd / 2)));
+      right.push(G.add(centre[i], G.mul(nl, -wd / 2)));
+    }
+  } else {
+    for (let i = 0; i <= N; i++) {
+      const s = i / N;
+      const c = bez(P, s);
+      const tan = bezTan(P, s);
+      const nl = { x: -tan.y, y: tan.x };
+      if (i) length += G.dist(c, centre[i - 1]);
+      centre.push(c);
+      left.push(G.add(c, G.mul(nl, wd / 2)));
+      right.push(G.add(c, G.mul(nl, -wd / 2)));
+    }
   }
   let rmin = Infinity;
   for (let i = 1; i < centre.length - 1; i++) rmin = Math.min(rmin, circumradius(centre[i - 1], centre[i], centre[i + 1]));
@@ -321,7 +402,9 @@ export function deriveDriveway(project, opts = {}) {
   const crossover = { polygon: [...lc, lEnd, rEnd, ...rc.slice().reverse()], from: centre[k0], to: centre.at(-1), widthMm: wd, flareMm: flare };
   return {
     ok: true, widthMm: wd, centre, left, right, polygon, lengthMm: length, minRadiusM: Number.isFinite(rmin) ? rmin / 1000 : null,
-    doorMid: P0, kerbPoint: P3, edge: r.edge, crossover, door, straight: Math.abs(G.dist(P0, P3) - length) < 5,
+    doorMid: P0, kerbPoint: kerbEnd, edge: r.edge, crossover, door, straight: Math.abs(G.dist(P0, kerbEnd) - length) < 5,
+    edited: usedStored, edgeStart: edgeA, edgeU: u, edgeLenMm: edgeLen, endOffsetMm: G.dot(G.sub(kerbEnd, edgeA), u), pis: usedStored ? stored.pis : [], radiusM: stored?.radiusM || 6,
+    insideLot: centre.every((c) => side(c) >= 0 || G.pointInPolygon(c, lot.boundary)),
   };
 }
 

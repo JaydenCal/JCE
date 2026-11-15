@@ -342,7 +342,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     // Margins that overlay cards cover (the lot card): frame the plan in the clear area.
     const ins = state.inset;
     const clear = { w: Math.max(40, state.size.w - ins.left - ins.right), h: Math.max(40, state.size.h - ins.top - ins.bottom) };
-    const v = M.fitView(fitBounds(), clear, { padding: Math.min(84, Math.max(54, clear.w * 0.08)) });
+    const v = M.fitView(fitBounds(), clear, { padding: Math.min(84, Math.max(54, clear.w * 0.08)), minScale: 1e-6 });
     state.view = { ...v, ox: v.ox + ins.left, oy: v.oy + ins.top };
     state.fitted = true;
     state.autoFit = true;
@@ -354,9 +354,17 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     store.emit('plan:zoom', { scale: state.view.scale });
   }
 
+  // Zoom out as far as it takes to see the whole lot with a margin, and a bit beyond, on any lot size.
+  function dynMinScale() {
+    try {
+      const v = M.fitView(fitBounds(), state.size, { padding: 40, minScale: 1e-6 });
+      return Math.min(M.MIN_SCALE, v.scale * 0.5);
+    } catch { return M.MIN_SCALE; }
+  }
+
   function zoomBy(factor, about) {
     state.autoFit = false;
-    state.view = M.zoomAt(state.view, about || { x: state.size.w / 2, y: state.size.h / 2 }, factor);
+    state.view = M.zoomAt(state.view, about || { x: state.size.w / 2, y: state.size.h / 2 }, factor, dynMinScale());
     emitZoom();
     requestDraw();
   }
@@ -447,7 +455,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       const cy = (a.y + b.y) / 2;
       state.autoFit = false;
       state.view = M.panBy(state.view, cx - state.gesture.cx, cy - state.gesture.cy);
-      state.view = M.zoomAt(state.view, { x: cx, y: cy }, dist / state.gesture.dist);
+      state.view = M.zoomAt(state.view, { x: cx, y: cy }, dist / state.gesture.dist, dynMinScale());
       state.gesture = { dist, cx, cy };
       emitZoom();
       requestDraw();

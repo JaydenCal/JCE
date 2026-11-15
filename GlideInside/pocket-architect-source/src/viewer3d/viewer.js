@@ -651,7 +651,10 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   let embedFraming = false;
   // kind: 'hero' (three quarter from the street, slightly low), 'front' (close, square on), 'aerial' (the whole lot), 'fit' (old default)
   function poseFor(kind) {
-    if (embedFraming && store.project.site?.lot?.boundary?.length && kind !== 'front' && kind !== 'fit') {
+    // A big lot (over 70 m) frames the house, its driveway and the nearby boundary in every preset, never the lot centre.
+    const bdp = store.project.site?.lot?.boundary;
+    const bigLot = !!bdp?.length && Math.max(Math.max(...bdp.map((q) => q.x)) - Math.min(...bdp.map((q) => q.x)), Math.max(...bdp.map((q) => q.y)) - Math.min(...bdp.map((q) => q.y))) / 1000 > 70;
+    if ((embedFraming || bigLot) && bdp?.length && kind !== 'front' && kind !== 'fit') {
       const e = embedBase();
       if (e) return e;
     }

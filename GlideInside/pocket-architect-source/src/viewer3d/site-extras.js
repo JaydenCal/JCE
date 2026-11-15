@@ -240,6 +240,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
 
   // 2. Driveway, crossover, path to the front door ------------------------------------------------------------------------
   const dw = layerOn(lot, 'driveway') ? deriveDriveway(project) : null;
+  const gravelDrive = (G.polygonArea(lot.boundary) || 0) / 1e6 >= 4000; // rural lots get a gravel drive
   const driveCentres = [];
   const drivePolys = [];
   {
@@ -258,7 +259,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
         left.push({ x: p.x - t.y * half, y: p.y + t.x * half });
         right.push({ x: p.x + t.y * half, y: p.y - t.x * half });
       }
-      strip(b, 'drive', left, right, 0.05, 3, 1);
+      strip(b, 'drive', left, right, 0.07, 3, 1);
       // splayed crossover over the verge: its outline is the driveway polygon's end
       const co = dw.crossover.polygon;
       if (co?.length > 3) {
@@ -270,7 +271,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
           tris = [];
         }
         for (const t of tris) {
-          const P = t.map((i) => [contour[i].x, H(contour[i].x, contour[i].y) + 0.052, contour[i].y]);
+          const P = t.map((i) => [contour[i].x, H(contour[i].x, contour[i].y) + 0.072, contour[i].y]);
           b.tri('drive', P[0], P[1], P[2], [P[0][0] / 3, P[0][2] / 3], [P[1][0] / 3, P[1][2] / 3], [P[2][0] / 3, P[2][2] / 3], [0, 1, 0]);
         }
       }
@@ -299,7 +300,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
     }
     if (!b.empty) {
       add(makeMesh(b.build(), {
-        drive: concDrive ? mat('#ffffff', { map: concDrive, roughness: 0.9 }) : mat('#bdbab1'),
+        drive: gravelDrive ? mat('#a89f8c', { roughness: 1, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }) : concDrive ? mat('#ffffff', { map: concDrive, roughness: 0.9, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }) : mat('#bdbab1', { polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }),
         path: conc ? mat('#ffffff', { map: conc, roughness: 0.92 }) : mat('#c3c0b7'),
       }, { ground: true }, { cast: false, receive: true, name: 'driveway' }));
     }
