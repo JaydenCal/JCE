@@ -220,8 +220,8 @@ export function createCommercialPanel({ store, host, editor }) {
     const title = 'Indicative yield and value';
     return section(title,
       h('p', { class: 'cm-hint cm-fz-caveat', dataset: { ps: 'fz-caveat' } }, CAVEAT),
-      field('Area', areaSel, f.detectedKey === (c.feasibility?.area || f.detectedKey) ? 'Found from the lot' : 'Chosen by you'),
-      h('p', { class: 'cm-hint', dataset: { ps: 'fz-area-meta' } }, `${areaStatusLine(f)} Portal data as at ${DATA_DATE}.`),
+      field('Area', areaSel, f.detectedKey !== (c.feasibility?.area || f.detectedKey) ? 'Chosen by you' : f.detectedVia === 'default' ? 'Default for the state' : 'Found from the lot'),
+      h('p', { class: 'cm-hint', dataset: { ps: 'fz-area-meta' } }, `${areaStatusLine(f)}${Object.values(f.inputs).some((i) => i?.status === 'PORTAL') ? ` Portal data as at ${DATA_DATE}.` : ''}`),
       h('div', { class: 'cm-fz-outs cm-fz-heads', dataset: { ps: 'fz-headlines' } }, ...head),
       h('div', { class: 'cm-fz-outs', dataset: { ps: 'fz-outputs' } }, ...out),
       h('div', { class: 'gf-row', style: { justifyContent: 'space-between' } }, h('b', { class: 'cm-fz-h' }, 'Inputs'), resetAll),

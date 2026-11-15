@@ -37,7 +37,7 @@ export function chargeRule(areaKey, state) {
   return {
     model: 'pctOfCost', council: null, label: 'NSW s7.12 local infrastructure contribution', short: `s7.12 at ${n.pct}% above $${n.threshold.toLocaleString('en-AU')}`,
     status: n.status, asAt: n.asAt, sources: n.sources.slice(), note: n.note, pct: n.pct, threshold: n.threshold,
-    basis: `NSW s7.12 levy: ${n.pct}% of the cost of development (building and site works) when it is above $${n.threshold.toLocaleString('en-AU')}. Statutory maximum used because the council plan rate was not read. Confirm the council plan.`,
+    basis: `NSW s7.12 levy: ${n.pct}% of the cost of development (building and site works) when it is above $${n.threshold.toLocaleString('en-AU')}. Statutory maximum used because the council plan rate was not read. Water and sewer developer charges (s64) and any s7.11 contributions are not included. Confirm the council plan.`,
   };
 }
 

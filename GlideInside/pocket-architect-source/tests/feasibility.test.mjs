@@ -268,7 +268,7 @@ test('regional cost factor: the midpoint of the conflicting published factors, a
   assert.equal(tv.inputs.costFactor.value, 1.1);
   assert.equal(sc.inputs.costFactor.value, 1.12);
   assert.equal(areaDefaults('toowoomba').inputs.costFactor.value, 1.05);
-  assert.match(tv.inputs.costFactor.chip, /^Report, midpoint of published 0\.9 to 1\.3 \(15\/11\/2026\)$/);
+  assert.match(tv.inputs.costFactor.chip, /^Estimate, midpoint of published 0\.9 to 1\.3 \(15\/11\/2026\)$/);
   // the factor scales the build rate and the developed area site works, not land or landscaping; the rate input itself stays 1,500
   near(tv.mid.build, tv.gfa * 1500 * 1.1, 0.5);
   near(tv.mid.siteDev, tv.devM2 * 120 * 1.1, 0.5);
@@ -324,4 +324,40 @@ test('council charges: Townsville, Mackay and Toowoomba per m2 GFA by use, NSW s
   assert.equal(at('townsville', { councilCharges: 0 }).mid.charges, 0);
   assert.equal(chargesLabel(ed), 'Council charges (entered by you)');
   assert.ok(costRows(tv).some(([k]) => /^Council charges \(/.test(k)));
+});
+
+test('review fixes 15/11/2026: near councils, street types, full state names, postcode, removed towns', () => {
+  const r = (lot) => { const x = resolveArea(lot); return [x.key, x.via]; };
+  assert.deepEqual(r({ state: 'NSW', lga: 'PORT STEPHENS' }), ['newcastle', 'near']);
+  assert.deepEqual(r({ state: 'NSW', lga: 'LIVERPOOL' }), ['western-sydney', 'near']);
+  assert.deepEqual(r({ state: 'QLD', lga: 'REDLAND' }), ['brisbane-south', 'near']);
+  assert.deepEqual(r({ state: 'QLD', lga: 'LIVINGSTONE' }), ['rockhampton', 'near']);
+  assert.deepEqual(r({ state: 'QLD', lga: 'SCENIC RIM' }), ['ipswich', 'near']);
+  assert.deepEqual(r({ state: 'QLD', lga: 'GYMPIE' }), ['sunshine-coast', 'near']);
+  // an area's own council still resolves by council, and an unknown council uses the state default
+  assert.deepEqual(r({ state: 'QLD', lga: 'TOWNSVILLE' }), ['townsville', 'lga']);
+  assert.deepEqual(r({ state: 'QLD', lga: 'LONGREACH' }), ['default-qld', 'default']);
+  // a street type word that was missing no longer lets a street name pose as a town
+  assert.equal(resolveArea({ state: 'QLD', address: '4 Townsville Terrace Longreach QLD' }).key, 'default-qld');
+  assert.equal(resolveArea({ state: 'NSW', address: '2 Tamworth Grove Warren NSW' }).key, 'default');
+  assert.equal(resolveArea({ state: 'NSW', address: '8 Industrial Road Warren NSW' }).key, 'default'); // Warren is not Tamworth
+  assert.equal(resolveArea({ state: 'QLD', address: '3 Smith Street Kawana QLD', lga: '' }).key !== 'rockhampton', true); // Kawana is not Rockhampton
+  assert.equal(resolveArea({ state: 'QLD', address: '1 Pine Street Yatala' }).key !== 'logan', true);
+  // state names and postcodes
+  assert.equal(stateOf({ state: 'Queensland' }), 'QLD');
+  assert.equal(stateOf({ state: 'New South Wales' }), 'NSW');
+  assert.equal(stateOf({ postcode: '4810' }), 'QLD');
+  assert.equal(stateOf({ postcode: '2340' }), 'NSW');
+  assert.equal(stateOf({ postcode: '2600' }), null); // ACT
+  assert.equal(stateOf({}), null);
+});
+
+test('a building over 400 m2 with no sold evidence starts at the low end of the sale range', () => {
+  const small = areaDefaults('toowoomba', { avgUnitGfaM2: 100 }).inputs.saleRate;
+  const big = areaDefaults('toowoomba', { avgUnitGfaM2: 2500 }).inputs.saleRate;
+  const r = market.areas.Toowoomba.saleRatePerM2GFA;
+  assert.equal(big.value, Math.round(r.low));
+  assert.equal(small.value, Math.round((r.low + r.high) / 2 / 50) * 50);
+  assert.match(big.note, /over 400 m2/);
+  assert.ok(big.value < small.value);
 });

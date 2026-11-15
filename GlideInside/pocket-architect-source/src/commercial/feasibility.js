@@ -25,7 +25,7 @@ export const MIN_N = 4; // portal medians from fewer listings than this are weak
 export const SMALL_UNIT_M2 = 400; // the ranges target 100 to 400 m2 strata units
 export const CAVEAT = 'Estimates only, not a valuation. Enter your own values in any field. Defaults come from portal listings and published reports; check with a registered valuer and quantity surveyor before relying on them.';
 export const GST_NOTE = 'All figures are ex GST.';
-export const RENT_NOTE = 'Gross rent less outgoings gives net rent, which is capitalised at the net yield. The net yield is an investor yield set from published industrial yield evidence, not from asking prices. Small strata units usually sell to owner occupiers at prices above the value their rent implies, so compare the sell result with the hold result. Mezzanine floor area is valued at a fraction of the ground floor rate. Stamp duty, finance and holding costs are not included. Council charges are an allowance you can edit.';
+export const RENT_NOTE = 'Gross rent less outgoings gives net rent, which is capitalised at the net yield. The net yield is an investor yield set from published industrial yield evidence, not from asking prices. Small strata units usually sell to owner occupiers at prices above the value their rent implies, so compare the sell result with the hold result. Mezzanine floor area is valued at a fraction of the ground floor rate. Agent and selling costs, stamp duty, finance and holding costs are not included. Council charges are an allowance you can edit.';
 export const SOURCES_TEXT = `Sale and rent rates: commercialrealestate.com.au Factory, Warehouse and Industrial listings and sold statistics, read ${DATA_DATE}, and NSW and Queensland listing research read ${MARKET_DATE}. Yields: Herron Todd White and Opteon industrial reports, as at ${MARKET_DATE}. Land values, build costs, regional cost factors and council charges: published ranges and council resolutions, mostly analyst estimates, as at ${MARKET_DATE}.`;
 
 /**
@@ -35,7 +35,7 @@ export const SOURCES_TEXT = `Sale and rent rates: commercialrealestate.com.au Fa
  * (shire_name or the LGA layer, for example "Townsville City", "Cairns Regional").
  */
 export const AREAS = Object.freeze([
-  { key: 'tamworth', label: 'Tamworth', state: 'NSW', m: 'Tamworth', lga: ['TAMWORTH REGIONAL', 'TAMWORTH'], towns: ['TAMWORTH', 'WESTDALE', 'CALALA', 'OXLEY VALE', 'KOOTINGAL', 'HILLVUE', 'WARREN'] },
+  { key: 'tamworth', label: 'Tamworth', state: 'NSW', m: 'Tamworth', lga: ['TAMWORTH REGIONAL', 'TAMWORTH'], towns: ['TAMWORTH', 'WESTDALE', 'CALALA', 'OXLEY VALE', 'KOOTINGAL', 'HILLVUE'] },
   { key: 'gunnedah', label: 'Gunnedah', state: 'NSW', m: 'Gunnedah', lga: ['GUNNEDAH'], towns: ['GUNNEDAH'] },
   { key: 'narrabri', label: 'Narrabri', state: 'NSW', m: 'Narrabri', lga: ['NARRABRI'], towns: ['NARRABRI'] },
   { key: 'moree', label: 'Moree', state: 'NSW', m: 'Moree', lga: ['MOREE PLAINS', 'MOREE'], towns: ['MOREE'] },
@@ -59,7 +59,7 @@ export const AREAS = Object.freeze([
   { key: 'cessnock', label: 'Cessnock', state: 'NSW', m: 'Cessnock', lga: ['CESSNOCK'], towns: ['CESSNOCK'] },
   { key: 'maitland', label: 'Maitland', state: 'NSW', m: 'Maitland', lga: ['MAITLAND'], towns: ['MAITLAND'] },
   { key: 'lake-macquarie', label: 'Lake Macquarie', state: 'NSW', m: 'Lake Macquarie', lga: ['LAKE MACQUARIE'], towns: ['LAKE MACQUARIE'] },
-  { key: 'newcastle', label: 'Newcastle', state: 'NSW', m: 'Newcastle', lga: ['NEWCASTLE', 'CITY OF NEWCASTLE'], towns: ['NEWCASTLE'] },
+  { key: 'newcastle', label: 'Newcastle', state: 'NSW', m: 'Newcastle', lga: ['NEWCASTLE', 'CITY OF NEWCASTLE'], near: ['PORT STEPHENS'], towns: ['NEWCASTLE'] },
   { key: 'wollongong', label: 'Wollongong', state: 'NSW', m: 'Wollongong', lga: ['WOLLONGONG', 'SHELLHARBOUR'], towns: ['WOLLONGONG', 'UNANDERRA', 'KEMBLA GRANGE', 'PORT KEMBLA', 'WARRAWONG', 'CORRIMAL', 'FAIRY MEADOW', 'DAPTO', 'ALBION PARK RAIL', 'ALBION PARK', 'SHELLHARBOUR'] },
   { key: 'central-coast', label: 'Central Coast (Gosford/Wyong)', state: 'NSW', m: 'Central Coast (Gosford/Wyong)', lga: ['CENTRAL COAST'], towns: ['GOSFORD', 'WYONG', 'SOMERSBY', 'WARNERVALE', 'TUGGERAH', 'ERINA', 'NORTH GOSFORD', 'WEST GOSFORD', 'NIAGARA PARK', 'TOUKLEY'] },
   { key: 'nowra', label: 'Nowra (Shoalhaven)', state: 'NSW', m: 'Nowra (Shoalhaven)', lga: ['SHOALHAVEN'], towns: ['NOWRA', 'SOUTH NOWRA', 'BOMADERRY', 'ULLADULLA'] },
@@ -69,22 +69,22 @@ export const AREAS = Object.freeze([
   { key: 'griffith', label: 'Griffith', state: 'NSW', m: 'Griffith', lga: ['GRIFFITH'], towns: ['GRIFFITH'] },
   { key: 'parkes', label: 'Parkes', state: 'NSW', m: 'Parkes', lga: ['PARKES'], towns: ['PARKES'] },
   { key: 'broken-hill', label: 'Broken Hill', state: 'NSW', m: 'Broken Hill', lga: ['BROKEN HILL'], towns: ['BROKEN HILL'] },
-  { key: 'western-sydney', label: 'Western Sydney fringe (Penrith/Campbelltown)', state: 'NSW', m: 'Western Sydney fringe (Penrith/Campbelltown)', lga: ['PENRITH', 'CAMPBELLTOWN', 'CAMDEN'], towns: ['PENRITH', 'CAMPBELLTOWN', 'MINTO', 'INGLEBURN', 'SMEATON GRANGE', 'KEMPS CREEK'] },
+  { key: 'western-sydney', label: 'Western Sydney fringe (Penrith/Campbelltown)', state: 'NSW', m: 'Western Sydney fringe (Penrith/Campbelltown)', lga: ['PENRITH', 'CAMPBELLTOWN', 'CAMDEN'], near: ['LIVERPOOL', 'BLACKTOWN', 'FAIRFIELD', 'WOLLONDILLY', 'HAWKESBURY'], towns: ['PENRITH', 'CAMPBELLTOWN', 'MINTO', 'INGLEBURN', 'SMEATON GRANGE', 'KEMPS CREEK'] },
   { key: 'default', label: 'Regional NSW default', state: 'NSW', m: 'Regional NSW default', lga: [], towns: [] },
   // Queensland
-  { key: 'townsville', label: 'Townsville', state: 'QLD', m: 'Townsville', lga: ['TOWNSVILLE'], towns: ['TOWNSVILLE', 'GARBUTT', 'MOUNT LOUISA', 'MUNDINGBURRA', 'THURINGOWA CENTRAL', 'KIRWAN', 'BOHLE', 'BOHLE PLAINS', 'CURRAJONG', 'AITKENVALE', 'STUART', 'OONOONBA', 'CLUDEN'] },
-  { key: 'cairns', label: 'Cairns', state: 'QLD', m: 'Cairns', lga: ['CAIRNS REGIONAL', 'CAIRNS'], towns: ['CAIRNS', 'WESTCOURT', 'PORTSMITH', 'BUNGALOW', 'MANOORA', 'EDMONTON', 'WOREE', 'SMITHFIELD', 'BENTLEY PARK', 'MANUNDA'] },
-  { key: 'mackay', label: 'Mackay', state: 'QLD', m: 'Mackay', lga: ['MACKAY REGIONAL', 'MACKAY'], towns: ['MACKAY', 'PAGET', 'NORTH MACKAY', 'ANDERGROVE', 'MOUNT PLEASANT', 'WALKERSTON', 'SARINA'] },
-  { key: 'rockhampton', label: 'Rockhampton', state: 'QLD', m: 'Rockhampton', lga: ['ROCKHAMPTON REGIONAL', 'ROCKHAMPTON'], towns: ['ROCKHAMPTON', 'GRACEMERE', 'PARK AVENUE', 'KAWANA', 'NORTH ROCKHAMPTON'] },
+  { key: 'townsville', label: 'Townsville', state: 'QLD', m: 'Townsville', lga: ['TOWNSVILLE'], near: ['BURDEKIN'], towns: ['TOWNSVILLE', 'GARBUTT', 'MOUNT LOUISA', 'MUNDINGBURRA', 'THURINGOWA CENTRAL', 'KIRWAN', 'BOHLE', 'BOHLE PLAINS', 'CURRAJONG', 'AITKENVALE', 'STUART', 'OONOONBA', 'CLUDEN'] },
+  { key: 'cairns', label: 'Cairns', state: 'QLD', m: 'Cairns', lga: ['CAIRNS REGIONAL', 'CAIRNS'], near: ['CASSOWARY COAST', 'TABLELANDS'], towns: ['CAIRNS', 'WESTCOURT', 'PORTSMITH', 'BUNGALOW', 'MANOORA', 'EDMONTON', 'WOREE', 'SMITHFIELD', 'BENTLEY PARK', 'MANUNDA'] },
+  { key: 'mackay', label: 'Mackay', state: 'QLD', m: 'Mackay', lga: ['MACKAY REGIONAL', 'MACKAY'], near: ['WHITSUNDAY', 'ISAAC'], towns: ['MACKAY', 'PAGET', 'NORTH MACKAY', 'ANDERGROVE', 'MOUNT PLEASANT', 'WALKERSTON', 'SARINA'] },
+  { key: 'rockhampton', label: 'Rockhampton', state: 'QLD', m: 'Rockhampton', lga: ['ROCKHAMPTON REGIONAL', 'ROCKHAMPTON'], near: ['LIVINGSTONE'], towns: ['ROCKHAMPTON', 'GRACEMERE', 'PARK AVENUE', 'NORTH ROCKHAMPTON'] },
   { key: 'gladstone', label: 'Gladstone', state: 'QLD', m: 'Gladstone', lga: ['GLADSTONE REGIONAL', 'GLADSTONE'], towns: ['GLADSTONE', 'CALLIOPE', 'KIN KORA', 'TANNUM SANDS', 'BOYNE ISLAND'] },
   { key: 'bundaberg', label: 'Bundaberg', state: 'QLD', m: 'Bundaberg', lga: ['BUNDABERG REGIONAL', 'BUNDABERG'], towns: ['BUNDABERG', 'BUNDABERG EAST', 'BUNDABERG WEST', 'AVOCA', 'KALKIE', 'BARGARA', 'SVENSSON HEIGHTS', 'KEPNOCK', 'WALKERVALE'] },
   { key: 'toowoomba', label: 'Toowoomba', state: 'QLD', m: 'Toowoomba', lga: ['TOOWOOMBA REGIONAL', 'TOOWOOMBA'], towns: ['TOOWOOMBA', 'HARRISTOWN', 'TORRINGTON', 'GLENVALE', 'WELLCAMP', 'CHARLTON', 'DRAYTON', 'KEARNEYS SPRING', 'WILSONTON'] },
-  { key: 'sunshine-coast', label: 'Sunshine Coast', state: 'QLD', m: 'Sunshine Coast', lga: ['SUNSHINE COAST REGIONAL', 'SUNSHINE COAST', 'NOOSA'], towns: ['MAROOCHYDORE', 'KUNDA PARK', 'CALOUNDRA', 'BIRTINYA', 'NAMBOUR', 'COOLUM BEACH', 'MOOLOOLABA', 'WARANA', 'PACIFIC PARADISE', 'YANDINA'] },
+  { key: 'sunshine-coast', label: 'Sunshine Coast', state: 'QLD', m: 'Sunshine Coast', lga: ['SUNSHINE COAST REGIONAL', 'SUNSHINE COAST', 'NOOSA'], near: ['GYMPIE'], towns: ['MAROOCHYDORE', 'KUNDA PARK', 'CALOUNDRA', 'BIRTINYA', 'NAMBOUR', 'COOLUM BEACH', 'MOOLOOLABA', 'WARANA', 'PACIFIC PARADISE', 'YANDINA'] },
   { key: 'gold-coast', label: 'Gold Coast', state: 'QLD', m: 'Gold Coast', lga: ['GOLD COAST'], towns: ['SOUTHPORT', 'BURLEIGH HEADS', 'MOLENDINAR', 'ARUNDEL', 'CARRARA', 'NERANG', 'MERMAID WATERS', 'VARSITY LAKES', 'TUGUN', 'CURRUMBIN', 'COOMERA', 'GOLD COAST'] },
-  { key: 'ipswich', label: 'Ipswich', state: 'QLD', m: 'Ipswich', lga: ['IPSWICH'], towns: ['IPSWICH', 'RIPLEY', 'YAMANTO', 'AUGUSTINE HEIGHTS', 'WULKURAKA'] },
-  { key: 'logan', label: 'Logan', state: 'QLD', m: 'Logan', lga: ['LOGAN'], towns: ['LOGAN', 'SLACKS CREEK', 'YATALA', 'BETHANIA', 'LOGANHOLME', 'BROWNS PLAINS', 'MEADOWBROOK'] },
+  { key: 'ipswich', label: 'Ipswich', state: 'QLD', m: 'Ipswich', lga: ['IPSWICH'], near: ['SCENIC RIM', 'LOCKYER VALLEY', 'LOCKYER', 'SOMERSET'], towns: ['IPSWICH', 'RIPLEY', 'YAMANTO', 'AUGUSTINE HEIGHTS', 'WULKURAKA'] },
+  { key: 'logan', label: 'Logan', state: 'QLD', m: 'Logan', lga: ['LOGAN'], towns: ['LOGAN', 'SLACKS CREEK', 'BETHANIA', 'LOGANHOLME', 'BROWNS PLAINS', 'MEADOWBROOK'] },
   { key: 'brisbane-north', label: 'Brisbane North industrial fringe', state: 'QLD', m: 'Brisbane North industrial fringe', lga: ['MORETON BAY REGIONAL', 'MORETON BAY'], towns: ['GEEBUNG', 'VIRGINIA', 'BANYO', 'NUDGEE', 'ZILLMERE', 'BRIDGEMAN DOWNS', 'BOONDALL', 'NORTHGATE', 'EAGLE FARM', 'PINKENBA', 'NARANGBA', 'BRENDALE', 'CABOOLTURE', 'REDCLIFFE', 'STRATHPINE', 'KEDRON', 'STAFFORD'] },
-  { key: 'brisbane-south', label: 'Brisbane South industrial fringe', state: 'QLD', m: 'Brisbane South industrial fringe', lga: ['BRISBANE'], refine: ['brisbane-north'], towns: ['ACACIA RIDGE', 'ARCHERFIELD', 'ROCKLEA', 'COOPERS PLAINS', 'SALISBURY', 'YEERONGPILLY', 'DARRA', 'RICHLANDS', 'SUNNYBANK', 'MACGREGOR', 'EIGHT MILE PLAINS', 'TINGALPA', 'MURARRIE', 'HEMMANT', 'LYTTON', 'MOOROOKA'] },
+  { key: 'brisbane-south', label: 'Brisbane South industrial fringe', state: 'QLD', m: 'Brisbane South industrial fringe', lga: ['BRISBANE'], near: ['REDLAND'], refine: ['brisbane-north'], towns: ['ACACIA RIDGE', 'ARCHERFIELD', 'ROCKLEA', 'COOPERS PLAINS', 'SALISBURY', 'YEERONGPILLY', 'DARRA', 'RICHLANDS', 'SUNNYBANK', 'MACGREGOR', 'EIGHT MILE PLAINS', 'TINGALPA', 'MURARRIE', 'HEMMANT', 'LYTTON', 'MOOROOKA'] },
   { key: 'hervey-bay', label: 'Hervey Bay', state: 'QLD', m: 'Hervey Bay', lga: ['FRASER COAST REGIONAL', 'FRASER COAST'], towns: ['HERVEY BAY', 'PIALBA', 'URRAWEEN', 'TORQUAY', 'POINT VERNON', 'MARYBOROUGH'] },
   { key: 'mount-isa', label: 'Mount Isa', state: 'QLD', m: 'Mount Isa', lga: ['MOUNT ISA'], towns: ['MOUNT ISA'] },
   { key: 'default-qld', label: 'Regional QLD default', state: 'QLD', m: 'Regional QLD default', lga: [], towns: [] },
@@ -153,7 +153,7 @@ export function developedAreaM2(commercial, lot) {
 }
 
 const norm = (s) => String(s || '').toUpperCase().replace(/\b(CITY|SHIRE|COUNCIL|MUNICIPAL|OF|THE)\b/g, ' ').replace(/-/g, ' ').replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
-const STREET_TYPES = new Set(['ROAD', 'RD', 'STREET', 'ST', 'AVENUE', 'AVE', 'DRIVE', 'DR', 'LANE', 'HIGHWAY', 'HWY', 'CLOSE', 'PLACE', 'PL', 'CRESCENT', 'CRES', 'COURT', 'CT', 'BOULEVARD', 'BLVD', 'PARADE', 'WAY', 'TERRACE', 'CIRCUIT', 'CCT', 'ESPLANADE', 'TRACK']);
+const STREET_TYPES = new Set(['ROAD', 'RD', 'STREET', 'ST', 'AVENUE', 'AVE', 'DRIVE', 'DR', 'LANE', 'HIGHWAY', 'HWY', 'CLOSE', 'PLACE', 'PL', 'CRESCENT', 'CRES', 'COURT', 'CT', 'BOULEVARD', 'BLVD', 'PARADE', 'WAY', 'TERRACE', 'CIRCUIT', 'CCT', 'ESPLANADE', 'TRACK', 'CL', 'PDE', 'TCE', 'GR', 'GROVE', 'CRT', 'LOOP', 'RISE', 'ROW', 'LINK', 'CIRCLE', 'PROMENADE', 'PKWY', 'PARKWAY']);
 
 /** The text after the last street type word of an address ("12 Parkes Street Tamworth NSW" gives "TAMWORTH NSW"), so a town is not matched in a street name. */
 const afterStreet = (address) => {
@@ -165,18 +165,23 @@ const afterStreet = (address) => {
 
 /** 'NSW' or 'QLD' for a lot: the lot's own state, else the state named in its address, else null. */
 export function stateOf(lot) {
-  const s = String(lot?.state || '').toUpperCase();
-  if (s === 'NSW' || s === 'QLD') return s;
+  const raw = String(lot?.state || '').toUpperCase().replace(/[^A-Z ]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (raw === 'NSW' || raw === 'NEW SOUTH WALES') return 'NSW';
+  if (raw === 'QLD' || raw === 'QUEENSLAND') return 'QLD';
   const a = ` ${norm([lot?.address, lot?.suburb, lot?.locality].filter(Boolean).join(' '))} `;
   if (/ (QLD|QUEENSLAND) /.test(a)) return 'QLD';
   if (/ (NSW|NEW SOUTH WALES) /.test(a)) return 'NSW';
+  // A postcode: 4000 to 4999 is Queensland, 2000 to 2599 and 2619 to 2899 and 2921 to 2999 is New South Wales (the ACT is left out).
+  const pc = Number(String(lot?.postcode || lot?.postCode || '').trim() || (String(lot?.address || '').match(/\b([24]\d{3})\s*$/) || [])[1]);
+  if (pc >= 4000 && pc <= 4999) return 'QLD';
+  if ((pc >= 2000 && pc <= 2599) || (pc >= 2619 && pc <= 2899) || (pc >= 2921 && pc <= 2999)) return 'NSW';
   return null;
 }
 
 /**
  * Which area a lot belongs to and how it was found: { key, via, state }. The council (LGA) first, then the suburb or town (suburb, locality or
  * the end of the address), then the default of the lot's state (Regional QLD default for Queensland, Regional NSW default otherwise).
- * via is 'lga', 'town' or 'default'. A Brisbane City lot is placed north or south by its suburb.
+ * via is 'lga', 'town', 'near' (a council with no area of its own, next to one that has) or 'default'. A Brisbane City lot is placed north or south by its suburb.
  */
 export function resolveArea(lot) {
   const state = stateOf(lot);
@@ -195,6 +200,11 @@ export function resolveArea(lot) {
   }
   const town = pool.find(townHit);
   if (town) return { key: town.key, via: 'town', state: state || town.state };
+  if (lga) {
+    // A council with no area of its own but next to one that has: the nearest priced area (not a measurement of distance).
+    const near = pool.find((a) => (a.near || []).some((n) => norm(n) === lga));
+    if (near) return { key: near.key, via: 'near', state: state || near.state };
+  }
   return { key: dflt, via: 'default', state };
 }
 
@@ -263,6 +273,11 @@ export function areaDefaults(areaKey, { avgUnitGfaM2 = 0 } = {}) {
   } else {
     const weak = [p.askN ? `n ${p.askN} asking` : null, p.soldN ? `n ${p.soldN} sold` : null].filter(Boolean).join(', ');
     saleRate = est(sr, 50, weak ? `Portal evidence is weak (${weak}), the published range is used.` : 'No portal listings for this area, the published range is used.', {}, m.saleRatePerM2GFA);
+    if (!small) {
+      // A building over 400 m2 sells for less per m2 than the small strata units the range is read from, so start at the low end, not the middle.
+      saleRate.value = Math.round(sr.low);
+      saleRate.note += ' The building is over 400 m2 average unit size and larger buildings sell for less per m2 than small strata units, so the low end of the range is the default.';
+    }
   }
   saleRate.evidence = evidence;
 
@@ -443,7 +458,7 @@ export const band = (a, b, f = money) => (r0(a) === r0(b) ? f(a) : `${f(Math.min
  */
 export function areaStatusLine(f) {
   const m = f.areaMeta || {};
-  const how = f.areaKey !== f.detectedKey ? 'Chosen by you.' : f.detectedVia === 'lga' ? 'Found from the council area.' : f.detectedVia === 'town' ? 'Found from the suburb or town.' : `No area matched this lot, so the ${f.areaLabel} is used.`;
+  const how = f.areaKey !== f.detectedKey ? 'Chosen by you.' : f.detectedVia === 'lga' ? 'Found from the council area.' : f.detectedVia === 'town' ? 'Found from the suburb or town.' : f.detectedVia === 'near' ? 'Found from the council area, which has no area of its own: the nearest priced area is used.' : `No area matched this lot, so the ${f.areaLabel} is used.`;
   const anchor = (f.areaChain || []).length > 1 && (f.defaults?.fallbackTo) ? ` Thin evidence is anchored to ${f.defaults.fallbackTo}.` : '';
   return `${f.areaLabel}, ${f.areaState}. ${how} Market data as at ${f.marketDate}. Sale rate ${statusLabel(m.saleStatus)}, rent ${statusLabel(m.rentStatus)}, yield ${statusLabel(m.yieldStatus)}, land ${statusLabel(m.landStatus)}.${f.confidence ? ` Confidence ${f.confidence}.` : ''}${anchor}`;
 }

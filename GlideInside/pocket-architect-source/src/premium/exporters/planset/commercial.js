@@ -1352,7 +1352,7 @@ export function drawFeasibility(doc, model, x, y, w) {
   for (const ln of wrap(doc, clean(CAVEAT), w)) { doc.text(ln, x, y); y += 2.9; } // wrapped to the column so it never runs into the schedules beside it
   y += 1.2;
   setText(doc, 6.2, false, [90, 94, 102]);
-  for (const ln of wrap(doc, clean(`Area: ${f.areaLabel}, ${f.areaState}${f.areaKey === f.detectedKey ? ' (from the lot)' : ' (chosen)'}. Portal data as at ${f.dataDate}, market data as at ${f.marketDate}. ${GST_NOTE}`), w)) { doc.text(ln, x, y); y += 2.9; }
+  for (const ln of wrap(doc, clean(`Area: ${f.areaLabel}, ${f.areaState}${f.areaKey !== f.detectedKey ? ' (chosen)' : f.detectedVia === 'default' ? ' (state default)' : ' (from the lot)'}. ${Object.values(f.inputs).some((i) => i?.status === 'PORTAL') ? `Portal data as at ${f.dataDate}, market data as at ${f.marketDate}.` : `Market data as at ${f.marketDate}.`} ${GST_NOTE}`), w)) { doc.text(ln, x, y); y += 2.9; }
   y += 1.5;
   if (f.mid.yieldOk === false) { setText(doc, 6.2, true, [160, 30, 30]); doc.text('Enter a yield to see the end value and the margin if the units are held and leased.', x, y); y += 4; }
   const cols = [{ w: 62 }, { w: 46, align: 'right' }, { w: w - 108, align: 'right' }];

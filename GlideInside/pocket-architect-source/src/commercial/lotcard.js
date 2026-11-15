@@ -397,7 +397,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     } });
     const landRow = h('label', { class: 'cc-land' }, h('span', null, 'Land price, ex GST (leave blank to use the area rate)'), priceInput);
     panel.replaceChildren(x(), h('h3', null, 'Indicative yield and value'), landRow,
-      h('p', { class: 'cc-sub' }, `${areaStatusLine(f)} Portal data as at ${DATA_DATE}. ${CAVEAT}`),
+      h('p', { class: 'cc-sub' }, `${areaStatusLine(f)}${Object.values(f.inputs).some((i) => i?.status === 'PORTAL') ? ` Portal data as at ${DATA_DATE}.` : ''} ${CAVEAT}`),
       ...summaryRows(f).map(([k, v, b]) => h('div', { class: 'cc-line', dataset: { fz: k } }, h('span', null, k, b ? h('i', null, `Low to high: ${b}`) : null), h('b', null, v))),
       h('h4', null, 'Rates used'),
       ...keys.map(([k, label, unit]) => h('div', { class: 'cc-line' }, h('span', null, label, h('i', null, f.inputs[k].chip)), h('b', null, `${Number(f.inputs[k].value).toLocaleString('en-AU')} ${unit}`))),
