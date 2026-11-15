@@ -15,6 +15,7 @@ import * as G from '../model/geometry.js';
 import { buildingsOf } from './catalogue/buildings.js';
 import { buildingParking } from './catalogue/bays.js';
 import { buildingCost } from './catalogue/rates.js';
+import { hardstandList } from './catalogue/pavements/hardstand.js';
 
 export const DATA_DATE = '13/11/2026';
 export const MIN_N = 4; // portal medians from fewer listings than this are weak evidence and are not used
@@ -84,6 +85,7 @@ export function developedAreaM2(commercial, lot) {
     for (const e of b.extras) if (['apron', 'yard', 'dock-recess', 'fuel-canopy', 'canopy'].includes(e.kind)) polys.push(e.polygon);
   }
   for (const r of buildingParking(commercial).rows) for (const sl of r.slots) polys.push(sl.poly);
+  for (const a of hardstandList(commercial)) polys.push(a.polygon); // areas drawn with the Hardstand tool count as developed ground
   const w = commercial.waste;
   if (w) {
     const a = ((w.rotationDeg || 0) * Math.PI) / 180;

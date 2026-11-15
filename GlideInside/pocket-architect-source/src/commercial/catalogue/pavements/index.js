@@ -4,3 +4,4 @@ export { PAVEMENTS, USES, ROLE_DEFAULTS, MAKEUP_NOTE, pavementById, isPavementTy
 export { KERBS, KERB_DEFAULTS, kerbById, isKerbType, planLines, profileArea } from './kerbs.js';
 export { MARKINGS, PAINT, WHEEL_STOP, SPEED_HUMP, markingById, isMarkingType, markingGeometry, countMarkings, drawAccessibleIcon } from './markings.js';
 export { RATES, DATA_DATE, RATES_CAVEAT, FOOTPATH_MM, CROSSOVER_MM, defaultAreas, pavementAreas, netAreasM2, buildKerbs, buildWheelStops, buildMarkings, pavementModel, pavementCost, siteWorksCost, footprintM2, planLegend, pavementSchedule } from './logic.js';
+export { hardstandTypes, hardstandList, hsContext, snapPoint, rectPolygon, measure, drawnWarnings, addHardstand, setHardstandPolygon, moveHardstand, setHardstandType, removeHardstand, duplicateHardstand, insertVertex, removeVertex, fillRegion, markingPrompts, addPromptMarking, hardstandSummary, hardstandAt, OVERLAP_RULE } from './hardstand.js';

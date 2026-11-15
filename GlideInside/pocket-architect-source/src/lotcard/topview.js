@@ -6,7 +6,7 @@
 // The pure parts (scene builders, view maths, SVG text) have no DOM, so they are unit tested in node (tests/topview.test.mjs).
 // createTopView() is the dialog: role="dialog" aria-modal, focus moves in and returns to the button that opened it, Escape closes.
 
-import { h } from '../ui/dom.js';
+import { h, clear } from '../ui/dom.js';
 import { snapMove, moveWarnings, turnRing, shiftRing, boxCentre, inside, turnSnap } from './topview-move.js';
 import { lotOf, houseCentre } from '../model/placement.js';
 import { buildingRings, deriveDriveway } from '../site/lotplan.js';
@@ -151,10 +151,11 @@ const STYLE = {
   extra: 'fill="#5a646e" fill-opacity=".35" stroke="#4a5058" stroke-width="1"',
   bay: 'fill="#f4f4f6" stroke="#6d747c" stroke-width="1"',
   accessible: 'fill="#9cc0f6" stroke="#3b82f6" stroke-width="1"',
+  hardstand: (s) => `fill="${esc(s.fill || '#bdb9ae')}" fill-opacity=".9" stroke="#5c5a52" stroke-width="1"`,
 };
 const styleOf = (s) => { const v = STYLE[s.kind] || STYLE.extra; return typeof v === 'function' ? v(s) : v; };
 // Draw order: the ground things first, buildings on top.
-const ORDER = ['driveway', 'extra', 'bay', 'accessible', 'canopy', 'house', 'building', 'unit'];
+const ORDER = ['driveway', 'hardstand', 'extra', 'bay', 'accessible', 'canopy', 'house', 'building', 'unit'];
 
 /** Label text upright along an edge (reads left to right, or bottom to top on a vertical edge). */
 function edgeAngle(a, b) {
@@ -162,6 +163,36 @@ function edgeAngle(a, b) {
   if (ang >= 90) ang -= 180;
   if (ang < -90) ang += 180;
   return ang;
+}
+
+/** The Hardstand draft (see hardstand-controller.js draft()) as SVG: the selected outline, the shape being drawn, labels, corner handles, snap marker and readout. */
+function draftSvg(d, view, rot, text, px) {
+  const parts = [];
+  const gold = '#c7a256';
+  const warn = d.warn && d.warn.length > 0;
+  const line = warn ? '#e53935' : gold;
+  if (d.selected && !d.ring) parts.push(`<path data-part="hs-selected" d="${dPath(d.selected)}" fill="${gold}" fill-opacity=".16" stroke="${gold}" stroke-width="2.4" stroke-dasharray="8 5" ${NS}/>`);
+  if (d.ghost) parts.push(`<path d="${dPath(d.ghost)}" fill="none" stroke="#777" stroke-width="1.4" stroke-dasharray="4 4" ${NS}/>`);
+  if (d.ring && d.ring.length >= 2) {
+    const dd = d.open ? `M${d.ring.map((q) => `${f2(q.x)} ${f2(q.y)}`).join('L')}` : dPath(d.ring);
+    parts.push(`<path data-part="hs-draft" d="${dd}" fill="${d.ring.length >= 3 ? (warn ? '#e53935' : esc(d.colour || gold)) : 'none'}" fill-opacity=".38" stroke="${line}" stroke-width="2.2" ${d.open ? 'stroke-dasharray="7 5"' : ''} stroke-linejoin="round" ${NS}/>`);
+    if (d.open) for (const q of d.ring.slice(0, -1)) parts.push(`<circle cx="${f2(q.x)}" cy="${f2(q.y)}" r="${f2(4 * px)}" fill="#fff" stroke="${gold}" stroke-width="2" ${NS}/>`);
+  }
+  for (const l of d.labels || []) parts.push(text(l.x, l.y, l.text, 11, 'fill="#1d242b" font-weight="600"'));
+  for (const hd of d.handles || []) {
+    if (hd.kind === 'vertex') parts.push(`<rect data-part="hs-handle" x="${f2(hd.x - 5 * px)}" y="${f2(hd.y - 5 * px)}" width="${f2(10 * px)}" height="${f2(10 * px)}" fill="${hd.active ? gold : '#fff'}" stroke="${gold}" stroke-width="2" ${NS}/>`);
+    else parts.push(`<circle data-part="hs-mid" cx="${f2(hd.x)}" cy="${f2(hd.y)}" r="${f2(3.5 * px)}" fill="#fff" fill-opacity=".9" stroke="${gold}" stroke-width="1.4" ${NS}/>`);
+  }
+  if (d.snap) {
+    const s = d.snap;
+    const r = 6 * px;
+    parts.push(s.kind === 'corner' ? `<rect x="${f2(s.x - r)}" y="${f2(s.y - r)}" width="${f2(2 * r)}" height="${f2(2 * r)}" fill="none" stroke="#1b8f4a" stroke-width="2" ${NS}/>`
+      : s.kind === 'edge' ? `<path d="M${f2(s.x - r)} ${f2(s.y)}L${f2(s.x)} ${f2(s.y - r)}L${f2(s.x + r)} ${f2(s.y)}L${f2(s.x)} ${f2(s.y + r)}Z" fill="none" stroke="#1b8f4a" stroke-width="2" ${NS}/>`
+        : `<circle cx="${f2(s.x)}" cy="${f2(s.y)}" r="${f2(4 * px)}" fill="none" stroke="#555" stroke-width="2" ${NS}/>`);
+    const lines = [{ t: d.readout || '' }, ...(d.warn || []).map((t) => ({ t, w: true })), { t: s.text }].filter((x) => x.t);
+    lines.forEach((x, i) => parts.push(text(s.x + 14 * px, s.y + (18 + i * 15) * px, x.t, 11, `fill="${x.w ? '#b71c1c' : '#1d242b'}" font-weight="600"`)));
+  }
+  return `<g data-part="hardstand-draft">${parts.join('')}</g>`;
 }
 
 /** The inside of the SVG for `view` in a w x h pixel area (strokes and text keep their pixel size at any zoom). */
@@ -203,6 +234,7 @@ export function sceneInner(scene, view, w, h, deco = null) {
     const at = { x: mid.x + nx * 12 * px, y: mid.y + ny * 12 * px };
     out.push(text(at.x, at.y, `${(len / 1000).toFixed(2)} m`, 11, 'fill="#2f3a44"', edgeAngle({ x: 0, y: 0 }, rotVec(q.x - p.x, q.y - p.y, rot))));
   }
+  if (deco?.draft) out.push(draftSvg(deco.draft, view, rot, text, px));
   for (const l of scene.labels || []) if (l.widthMm * view.k >= 24) out.push(text(l.x, l.y, l.text, 12, 'fill="#1d242b" font-weight="700"'));
   if (scene.areaM2 && (Math.max(...b.map((q) => q.x)) - Math.min(...b.map((q) => q.x))) * view.k > 150) {
     const bx = sceneBounds({ boundary: b, envelope: null, shapes: [] });
@@ -236,6 +268,13 @@ export const TOPVIEW_CSS = `
 .tv-btn.tv-mode{font-size:12px;border-radius:20px;white-space:nowrap}
 .tv-btn.tv-t90{font-size:13px;white-space:nowrap}
 .tv-btn[hidden]{display:none}
+.tv-hs-host[hidden]{display:none}
+.tv-hs{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 14px;border-bottom:1px solid rgba(255,255,255,.14);background:rgba(199,162,86,.12)}
+.tv-hs .tv-btn{height:32px;font-size:12px}
+.tv-hs .tv-btn[aria-pressed="true"]{background:rgba(199,162,86,.45)!important;border-color:#c7a256!important}
+.tv-hs-type{height:32px;border-radius:16px;border:1px solid rgba(255,255,255,.3);background:#1b1e22;color:#fff;font:600 12px var(--lc-sans,system-ui,sans-serif);padding:0 10px}
+.tv-hs-note{font:600 12px var(--lc-sans,system-ui,sans-serif);color:#f3e2b4;cursor:help}
+.tv-hs-hint{flex-basis:100%;font:400 11px/1.3 var(--lc-sans,system-ui,sans-serif);color:rgba(255,255,255,.7)}
 .tv-btn:disabled{opacity:.4;cursor:default}
 .tv-stage{position:relative;flex:1;min-height:0;background:#e8ece7}
 .tv-svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
@@ -299,10 +338,11 @@ const HELP = 'Scroll or pinch to zoom, drag to pan. Right-drag, Shift and drag, 
  * @param {Function} [o.onChange]  (open) => void, after it opens or closes.
  */
 /**
+ * `hardstand` (optional, commercial) adds the Hardstand drawing tool: { can(project), create({ store, scale, redraw }) -> controller, bar(controller, { store, onChange }) -> element }.
  * `movers` (optional) lets the person move buildings from the top view: { can(project) -> bool, move(id, dx, dy, label), turn(id, deg, centre, label) }.
  * Each call is one store.apply; a drag replaces its own previous step so the whole drag is one undo step.
  */
-export function createTopView({ root: rootRef, getScene, store = null, trigger = null, onChange = null, movers = null }) {
+export function createTopView({ root: rootRef, getScene, store = null, trigger = null, onChange = null, movers = null, hardstand = null }) {
   injectCss();
   const rootEl = () => (typeof rootRef === 'function' ? rootRef() : rootRef);
   let ov = null;
@@ -323,7 +363,12 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
   let moveMode = true; // drag a building to move it (false: every drag pans)
   let drag = null; // { kind: 'move' | 'turn', id, ... } while a building is being moved or turned
   let flushAt = 0;
-  const canMove = () => !!(movers && store && (!movers.can || movers.can(store.project)));
+  let hsOn = false; // the Hardstand tool is armed
+  let hsCtl = null;
+  let hsDrag = false;
+  const canHs = () => !!(hardstand && store && hardstand.can(store.project));
+  const hsMods = (e, p) => ({ alt: e.altKey, shift: false, screen: p });
+  const canMove = () => !!(movers && store && !hsOn && (!movers.can || movers.can(store.project)));
   const selected = () => (scene?.movables || []).find((m) => m.id === sel) || null;
   const others = (id) => (scene?.movables || []).filter((m) => m.id !== id).flatMap((m) => m.rings);
   const upDir = () => { const a = ((view?.rot || 0) * Math.PI) / 180; return { x: Math.sin(a), y: -Math.cos(a) }; }; // screen up in plan axes
@@ -337,7 +382,9 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     if (!fit) { fit = fitView(scene, size.w, size.h); view = { ...fit }; }
     const vb = viewBoxOf(view, size.w, size.h);
     svg.setAttribute('viewBox', `${f2(vb.x)} ${f2(vb.y)} ${f2(vb.w)} ${f2(vb.h)}`);
-    svg.innerHTML = sceneInner(scene, view, size.w, size.h, decoOf());
+    const draft = hsOn && hsCtl ? { ...hsCtl.draft(), colour: hardstandColour() } : null;
+    const deco = decoOf();
+    svg.innerHTML = sceneInner(scene, view, size.w, size.h, draft ? { ...(deco || {}), draft } : deco);
     svg.setAttribute('aria-label', `Top view. ${scene.summary}`);
     els.sub.textContent = scene.summary;
     const sb = scaleBarFor(view.k);
@@ -348,6 +395,7 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     els.north.setAttribute('aria-label', nd > 0.5 && nd < 359.5 ? `North arrow, north is ${Math.round(nd)} degrees clockwise from the top of the view` : 'North arrow, north is at the top');
     if (els.northUp) els.northUp.setAttribute('aria-pressed', String(nd < 0.5 || nd > 359.5));
   }
+  const hardstandColour = () => { try { return hardstand?.colour?.() || null; } catch { return null; } };
   function warnOf(m) {
     if (!m) return [];
     return moveWarnings(m.rings, { envelope: scene.envelope, boundary: scene.boundary, others: others(m.id) });
@@ -363,8 +411,10 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
   function paintMoveUi() {
     if (!els.warn) return;
     const on = canMove();
-    els.moveBtn.hidden = !on;
+    els.moveBtn.hidden = !on || hsOn;
+    if (els.hsBtn) { els.hsBtn.hidden = !canHs(); els.hsBtn.setAttribute('aria-pressed', String(hsOn)); }
     els.turnL.hidden = els.turnR.hidden = !on;
+    if (els.hsHost) els.hsHost.hidden = !hsOn;
     const m = on ? selected() : null;
     els.turnL.disabled = els.turnR.disabled = !m;
     els.moveBtn.setAttribute('aria-pressed', String(moveMode));
@@ -454,7 +504,41 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
   // One step on the model: used by the 90 degree buttons and the keyboard.
   function stepMove(dx, dy) { const m = selected(); if (!m || !canMove()) return; try { movers.move(m.id, dx, dy, m.label); } catch { /* the move was not possible */ } }
   function stepTurn(deg) { const m = selected(); if (!m || !canMove()) return; try { movers.turn(m.id, deg, m.centre, m.label); } catch { /* the turn was not possible */ } }
+  function setHardstand(on) {
+    if (on === hsOn || (on && !canHs())) return;
+    hsOn = on;
+    if (on) {
+      sel = null;
+      if (!hsCtl) hsCtl = hardstand.create({ store, scale: () => view?.k || 1, redraw: schedule });
+      hsCtl.reset();
+      els.hsHost.hidden = false;
+      clear(els.hsHost);
+      els.hsBar = hardstand.bar(hsCtl, { store, onChange: schedule });
+      els.hsHost.append(els.hsBar);
+      announce('Hardstand drawing on. Pick a mode and a pavement type, then drag across the plan.');
+    } else {
+      hsCtl?.reset();
+      els.hsBar?.dispose?.();
+      els.hsBar = null;
+      clear(els.hsHost);
+      els.hsHost.hidden = true;
+      announce('Hardstand drawing off.');
+    }
+    paintMoveUi();
+    schedule();
+  }
   function onDown(e) {
+    if (hsOn && hsCtl && e.button === 0 && !e.shiftKey && ptrs.size === 0 && scene) {
+      const p0 = pt(e);
+      if (hsCtl.pointerDown(planPt(p0), hsMods(e, p0))) {
+        hsDrag = true;
+        ptrs.set(e.pointerId, p0);
+        try { svg.setPointerCapture(e.pointerId); } catch { /* no capture */ }
+        e.preventDefault();
+        schedule();
+        return;
+      }
+    }
     if (e.button === 0 && !e.shiftKey && ptrs.size === 0 && canMove() && moveMode && scene) {
       const p0 = pt(e);
       const pp = planPt(p0);
@@ -490,6 +574,11 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     e.preventDefault();
   }
   function onMove(e) {
+    if (hsOn && hsCtl && scene && (hsDrag || !ptrs.size)) {
+      const p = pt(e);
+      if (hsDrag && !ptrs.has(e.pointerId)) return;
+      if (!hsDrag || ptrs.size === 1) { hsCtl.pointerMove(planPt(p), hsMods(e, p)); if (hsDrag) return; }
+    }
     if (!ptrs.has(e.pointerId)) return;
     if (drag && ptrs.size === 1) {
       const p = pt(e);
@@ -528,6 +617,15 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     }
   }
   function onUp(e) {
+    if (hsDrag) {
+      hsDrag = false;
+      const p = pt(e);
+      hsCtl?.pointerUp(planPt(p), hsMods(e, p));
+      ptrs.delete(e.pointerId);
+      try { svg.releasePointerCapture(e.pointerId); } catch { /* not captured */ }
+      schedule();
+      return;
+    }
     if (drag) endDrag();
     ptrs.delete(e.pointerId);
     try { svg.releasePointerCapture(e.pointerId); } catch { /* not captured */ }
@@ -541,7 +639,12 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     zoomBy(Math.exp((-e.deltaY * unit) * (e.ctrlKey ? 0.01 : 0.0016)), p.x, p.y);
   }
   function onKey(e) {
-    if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); close(); return; }
+    if (e.key === 'Escape') {
+      e.stopPropagation(); e.preventDefault();
+      if (hsOn && hsCtl && hsCtl.keyDown(e)) { schedule(); return; } // cancels a draft or deselects first
+      close();
+      return;
+    }
     if (e.key === 'Tab' && ov) {
       const f = [...ov.querySelectorAll(FOCUSABLE)].filter((n) => !n.hidden && n.offsetParent !== null);
       if (!f.length) return;
@@ -553,6 +656,7 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
       return;
     }
     if (e.target !== svg) return;
+    if (hsOn && hsCtl && hsCtl.keyDown(e)) { e.preventDefault(); schedule(); return; }
     if (canMove() && selected()) {
       if (e.altKey && e.key.startsWith('Arrow')) {
         const n = e.shiftKey ? 1000 : 100;
@@ -606,6 +710,7 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
           btn('Zoom out', '−', 'tv-out', () => zoomBy(1 / 1.4), { dataset: { ps: 'topview-zoom-out' } }),
           btn('Zoom in', '+', 'tv-in', () => zoomBy(1.4), { dataset: { ps: 'topview-zoom-in' } }),
           (els.moveBtn = btn('Drag a building to move it, drag empty ground to pan. Press to switch to panning only', 'Move buildings', 'tv-mode', () => { moveMode = !moveMode; if (!moveMode) sel = null; paintMoveUi(); schedule(); }, { dataset: { ps: 'topview-move-mode' }, 'aria-pressed': 'true', hidden: true })),
+          (els.hsBtn = btn('Draw hardstand: rectangle, polygon or fill an area with a pavement type', 'Hardstand', 'tv-mode', () => setHardstand(!hsOn), { dataset: { ps: 'topview-hardstand' }, 'aria-pressed': 'false', hidden: true })),
           (els.turnL = btn('Turn the selected building 90 degrees anticlockwise', '\u21B6 90', 'tv-t90', () => stepTurn(-90), { dataset: { ps: 'topview-turn-left' }, hidden: true, disabled: true })),
           (els.turnR = btn('Turn the selected building 90 degrees clockwise', '90 \u21B7', 'tv-t90', () => stepTurn(90), { dataset: { ps: 'topview-turn-right' }, hidden: true, disabled: true })),
           btn('Rotate anticlockwise 15 degrees', '\u21BA', 'tv-rl', () => turnBy(-15), { dataset: { ps: 'topview-rotate-left' } }),
@@ -613,6 +718,7 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
           (els.northUp = btn('North up: turn the view so north is at the top', 'N', 'tv-n', () => northUp(), { dataset: { ps: 'topview-north-up' }, 'aria-pressed': 'false' })),
           btn('Fit the whole lot in view', 'Fit', 'tv-fit', () => resetView(), { dataset: { ps: 'topview-fit' } }),
           els.close)),
+      (els.hsHost = h('div', { class: 'tv-hs-host', hidden: true })),
       (els.warn = h('p', { class: 'tv-warn', role: 'status', hidden: true, dataset: { ps: 'topview-warning' } })),
       stage,
       h('p', { class: 'tv-help', id: 'tv-help' }, HELP),
@@ -625,7 +731,7 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     svg.addEventListener('pointercancel', onUp);
     svg.addEventListener('wheel', onWheel, { passive: false });
     svg.addEventListener('contextmenu', (e) => e.preventDefault());
-    svg.addEventListener('dblclick', (e) => { const p = pt(e); zoomBy(2, p.x, p.y); });
+    svg.addEventListener('dblclick', (e) => { const p = pt(e); if (hsOn && hsCtl) { hsCtl.dblClick(planPt(p)); schedule(); return; } zoomBy(2, p.x, p.y); });
   }
 
   function open() {
@@ -640,6 +746,8 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     view = null;
     sel = null;
     drag = null;
+    hsOn = false;
+    hsDrag = false;
     moveMode = true;
     refresh();
     if (store) off = store.on('project', () => refresh());
@@ -656,6 +764,9 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     token++;
     off?.();
     off = null;
+    if (hsOn) { hsCtl?.reset(); els.hsBar?.dispose?.(); hsOn = false; }
+    hsCtl?.dispose?.();
+    hsCtl = null;
     for (const c of inerted) c.inert = false;
     inerted = [];
     els.aerial?.dispose();

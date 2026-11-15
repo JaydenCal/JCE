@@ -342,6 +342,7 @@ svg { display: block; }
   overflow-y: auto;
   min-height: 0;
 }
+.ps-tool[hidden], .ps-tool-sep[hidden] { display: none; }
 .ps-tool-sep { width: 28px; height: 1px; background: var(--ps-border); margin: 4px 0; flex: none; }
 .ps-tool {
   position: relative;

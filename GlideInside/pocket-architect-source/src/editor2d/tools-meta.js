@@ -13,6 +13,7 @@ export const TOOL_DEFS = [
   { id: 'stairs', key: 'S', label: 'Stairs', icon: 'stairs' },
   { id: 'deck', key: 'K', label: 'Deck or patio', icon: 'deck' },
   { id: 'tank', key: 'T', label: 'Rainwater tank', icon: 'tank' },
+  { id: 'hardstand', key: 'P', label: 'Hardstand', icon: 'hardstand', commercialOnly: true },
   { id: 'measure', key: 'M', label: 'Measure', icon: 'measure' },
   { id: 'underlay', key: 'U', label: 'Underlay', icon: 'underlay' },
   { id: 'status', key: 'X', label: 'Status brush', icon: 'status' },

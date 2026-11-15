@@ -21,6 +21,7 @@ const PATHS = {
   stairs: '<path d="M3.5 20h5v-4.5h5V11h5V6.5H20.5"/><path d="M5 12.5l3.5-3.5M8.5 9v2.6M8.5 9H6"/>',
   deck: '<rect x="3.5" y="5" width="17" height="14" rx="0.6"/><path d="M8 5v14M12 5v14M16 5v14"/>',
   tank: '<ellipse cx="12" cy="6.5" rx="6.5" ry="2.5"/><path d="M5.5 6.5v11c0 1.4 2.9 2.5 6.5 2.5s6.5-1.1 6.5-2.5v-11"/>',
+  hardstand: '<path d="M3.5 17.5l3-9h11l3 9z"/><path d="M7.5 12.5h9M5.5 15h13M9 8.5l-1 4M15 8.5l1 4"/>',
   measure: '<rect x="2.5" y="8.5" width="19" height="7" rx="1"/><path d="M6.5 8.5v3M10.5 8.5v2M14.5 8.5v3M18.5 8.5v2"/>',
   underlay: '<rect x="3.5" y="4.5" width="17" height="15" rx="1"/><circle cx="9" cy="10" r="1.7"/><path d="M4 18l5-5 4 4 3-3 4.5 4.5"/>',
   status: '<path d="M17.5 3.5l3 3-8.5 8.5-3-3z"/><path d="M9 12.5c-3 0-4.2 2-4.2 3.8 0 1.2-.8 2.2-1.8 3 3 .4 6.2-.2 7.2-3.3"/>',

@@ -21,6 +21,7 @@ import { createSendToEngineer, SEND_LABEL } from '../lotcard/send-engineer.js';
 import { runUpload, creditText, FOOT_BASE } from '../site/upload/flow.js';
 import { createTopView, expandButton } from '../lotcard/topview.js';
 import { commercialScene, commercialMovers } from './topview-scene.js';
+import { topviewHardstand } from './ui/topview-hardstand.js';
 import { createAerialToggle } from '../ui/aerial-toggle.js';
 import { aerialOn } from '../site/aerial-pref.js';
 import { injectUploadCss } from '../site/upload/css.js';
@@ -127,7 +128,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   const miniX = expandButton(() => topView.open());
   const mini = h('div', { class: 'lc-mini', role: 'group', title: 'Top view. Click to enlarge', 'aria-label': 'Top view of the lot', dataset: { ps: 'lc-mini' }, onclick: (e) => { if (e.target.closest?.('.lc-mini-x')) return; if (miniView?.consumeClick()) return; topView.open(); } }, cv, northLabel, E('lc-mini-t', 'span', null, 'TOP VIEW'), miniX);
   const aerialT = createAerialToggle({ store, className: 'lc-aerial lc-glass' });
-  const topView = createTopView({ root: () => root, getScene: () => commercialScene(store.project), store, trigger: miniX, onChange: () => paintMenu(), movers: { can: cm.can, move: (id, dx, dy, label) => cm.move(store, id, dx, dy, label), turn: (id, deg, c, label) => cm.turn(store, id, deg, c, label) } });
+  const topView = createTopView({ root: () => root, getScene: () => commercialScene(store.project), store, trigger: miniX, onChange: () => paintMenu(), hardstand: topviewHardstand(), movers: { can: cm.can, move: (id, dx, dy, label) => cm.move(store, id, dx, dy, label), turn: (id, deg, c, label) => cm.turn(store, id, deg, c, label) } });
 
   // The search pill: the real address search (NSW and QLD) with suggestions, as in the housing viewer.
   const findInput = h('input', { class: 'lc-find-in', type: 'search', placeholder: 'Search a NSW or QLD address', 'aria-label': 'Street address in NSW or QLD', 'aria-autocomplete': 'list', autocomplete: 'off', spellcheck: 'false', maxlength: '120', dataset: { ps: 'lc-find-input' } });

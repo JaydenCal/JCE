@@ -9,6 +9,8 @@ import { buildingsOf } from './catalogue/buildings.js';
 import { CLADDING, finishesOf } from './finishes.js';
 import { parkingLayout } from './parking.js';
 import { buildingParking } from './catalogue/bays.js';
+import { hardstandModel } from './catalogue/pavements/hardstand.js';
+import { pavementById } from './catalogue/pavements/pavements.js';
 
 export async function commercialScene(project) {
   const c = project?.commercial;
@@ -18,6 +20,11 @@ export async function commercialScene(project) {
   try {
     for (const r of [...parkingLayout(c).rows, ...buildingParking(c).rows]) for (const s of r.slots) shapes.push({ kind: s.kind === 'bay' ? 'bay' : 'accessible', ring: ringPts(s.poly) });
   } catch { /* parking is decoration here */ }
+  try {
+    // Hardstand drawn with the Hardstand tool, as it stands once the newer areas have cut the older ones.
+    const m = hardstandModel(project);
+    for (const a of m?.areas || []) if (a.role === 'hardstand') shapes.push({ kind: 'hardstand', ring: ringPts(a.polygon), fill: pavementById(a.type)?.colour || '#bdb9ae', type: a.type });
+  } catch { /* hardstand is decoration here */ }
   const fill = CLADDING.find((x) => x.id === finishesOf(project).cladding)?.hex || '#cfc9bd';
   const blds = buildingsOf(c);
   for (const b of blds) {

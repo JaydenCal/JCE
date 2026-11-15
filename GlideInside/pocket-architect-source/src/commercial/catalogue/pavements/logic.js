@@ -24,6 +24,7 @@ import { PAVEMENTS, ROLE_DEFAULTS, MAKEUP_NOTE, pavementById, isPavementType, ma
 import { KERBS, KERB_DEFAULTS, kerbById, isKerbType } from './kerbs.js';
 import { MARKINGS, WHEEL_STOP, markingById, isMarkingType } from './markings.js';
 import { absArea, polyArea, pointInPoly, bbox, bboxOverlap, segCross, convexOverlap } from './geom.js';
+import { boolean, holeFree, overlapArea } from './polybool.js';
 
 export const RATES = rates;
 export const DATA_DATE = rates._meta.asAt;
@@ -94,20 +95,49 @@ export function pavementAreas(commercial) {
       if (isPavementType(o.type)) { a.type = o.type; a.overridden = true; }
       if (Array.isArray(o.polygon) && o.polygon.length >= 3) { a.polygon = o.polygon; a.overridden = true; }
     } else if (Array.isArray(o.polygon) && o.polygon.length >= 3 && isPavementType(o.type)) {
-      extras.push({ id: o.id || `extra:${n++}`, role: 'extra', rowId: null, type: o.type, polygon: o.polygon, auto: false, overridden: true });
+      const drawn = String(o.id || '').startsWith('hs_'); // drawn with the Hardstand tool (see hardstand.js)
+      extras.push({ id: o.id || `extra:${n++}`, role: drawn ? 'hardstand' : 'extra', rowId: null, type: o.type, polygon: o.polygon, auto: false, overridden: true, drawn });
     }
   }
-  return [...extras, ...base.filter((a) => !removed.has(a.id))];
+  const list = [...extras, ...base.filter((a) => !removed.has(a.id))];
+  return list.some((a) => a.drawn) ? cutByDrawn(list) : list;
+}
+
+/**
+ * Drawn hardstand areas sit on top: each one cuts every area behind it in the list (the newer drawn areas come first). An area that is cut
+ * keeps its id on the largest piece and gets `id~1`, `id~2` for the others; one that is covered completely drops out of the model (it stays
+ * in project.commercial.pavements, so it comes back when the area above it moves or goes).
+ */
+function cutByDrawn(list) {
+  const out = list.map((a) => ({ ...a }));
+  for (let i = 0; i < out.length; i++) {
+    if (!out[i].drawn) continue;
+    const cut = out[i].polygon;
+    const cb = bbox(cut);
+    for (let j = i + 1; j < out.length; j++) {
+      const t = out[j];
+      if (!bboxOverlap(cb, bbox(t.polygon))) continue;
+      if (overlapArea(t.polygon, cut) < 1e4) continue; // touching, or under 0.01 m2
+      const pieces = holeFree(boolean([t.polygon], [cut], 'diff')).sort((p, q) => Math.abs(polyArea(q)) - Math.abs(polyArea(p)));
+      const rest = pieces.map((poly, k) => ({ ...t, id: k === 0 ? t.id : `${t.id}~${k}`, polygon: poly, cut: true }));
+      out.splice(j, 1, ...rest);
+      j += rest.length - 1;
+    }
+  }
+  return out;
 }
 
 const isVehicular = (type) => { const t = pavementById(type); return !!t && t.use.some((u) => u === 'car' || u === 'truck') && type !== 'gravel-yard'; };
 const isPedestrianArea = (type) => { const t = pavementById(type); return !!t && t.use.length === 1 && t.use[0] === 'pedestrian'; };
 
+const isConvex = (p) => { let sign = 0; for (let i = 0; i < p.length; i++) { const a = p[i]; const b = p[(i + 1) % p.length]; const c = p[(i + 2) % p.length]; const z = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x); if (Math.abs(z) < 1e-6) continue; const sg = z > 0 ? 1 : -1; if (sign && sg !== sign) return false; sign = sg; } return true; };
+const polysOverlap = (a, b) => (isConvex(a) && isConvex(b) ? convexOverlap(a, b) : overlapArea(a, b) > 1e4);
+
 /** Net area per area id in m2. Exact when no two areas overlap, else a 250 mm grid where the earlier area in the list wins. */
 export function netAreasM2(areas) {
   const bbs = areas.map((a) => bbox(a.polygon));
   let overlap = false;
-  for (let i = 0; i < areas.length && !overlap; i++) for (let j = i + 1; j < areas.length; j++) if (bboxOverlap(bbs[i], bbs[j]) && convexOverlap(areas[i].polygon, areas[j].polygon)) { overlap = true; break; }
+  for (let i = 0; i < areas.length && !overlap; i++) for (let j = i + 1; j < areas.length; j++) if (bboxOverlap(bbs[i], bbs[j]) && polysOverlap(areas[i].polygon, areas[j].polygon)) { overlap = true; break; }
   const out = new Map();
   if (!overlap) { for (const a of areas) out.set(a.id, absArea(a.polygon) / 1e6); return out; }
   const step = 250;

@@ -22,6 +22,8 @@ import { zoneClass, effectiveClass, zoneMismatch, RESIDENTIAL_NOTE } from '../..
 import { feasibility, summaryRows, costRows, money, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT } from '../../../commercial/feasibility.js';
 import { buildingsOf } from '../../../commercial/catalogue/buildings.js';
 import { buildingParking } from '../../../commercial/catalogue/bays.js';
+import { hardstandModel, labelPoint } from '../../../commercial/catalogue/pavements/hardstand.js';
+import { pavementById } from '../../../commercial/catalogue/pavements/index.js';
 import { buildingPolys, buildingScheduleRows, dockLines, extraLabel } from '../../../commercial/catalogue/planset.js';
 import { scaleBar } from '../pdf.js';
 import { PEN, PHANTOM, clipSegment, hatch, hatchSegments, dimLine, haloText, alongLabel, LabelField, boxOfPts, clean, wrap, polygon } from '../eng/kit.js';
@@ -173,6 +175,10 @@ export function commercialModel(project, lot) {
   const a = analyse(project);
   const wp = { ...project, site: { ...(project.site || {}), lot } };
   const polys = [...a.units.map((u) => u.poly), ...pavedPolys(c, a), ...buildingPolys(c)];
+  const hs = hardstandModel(wp);
+  const hardstand = (hs?.areas || []).filter((x) => x.role === 'hardstand');
+  const hardstandKerbs = (hs?.kerbs || []).filter((k) => String(k.areaId || '').startsWith('hs_'));
+  for (const x of hardstand) polys.push(x.polygon); // drawn hardstand is paved ground: not landscaping, not a place for the OSD
   if (c.waste) polys.push(wastePoly(c.waste));
   let osd = null;
   if (lot) {
@@ -183,7 +189,7 @@ export function commercialModel(project, lot) {
   const land = lot ? landscapeShare(lot, covered) : { pct: null, areaM2: null };
   const cls = effectiveClass(wp) || 'industrial';
   const rules = { ...defaultRulesFor(cls), ...effectiveRules(wp, cls) };
-  return { project: wp, c, a, lot, units: a.units, stats: a.stats, osd, covered, land, cls, rules, off: bayOffsetMm(c.parking) };
+  return { project: wp, c, a, lot, units: a.units, stats: a.stats, osd, covered, land, cls, rules, off: bayOffsetMm(c.parking), hardstand, hardstandKerbs };
 }
 
 // Sheet list ----------------------------------------------------------------------------------------------------------------
@@ -194,6 +200,7 @@ export function layoutView(model) {
   for (const u of units) pts.push(...u.poly);
   for (const pr of a.parking.rows) for (const sl of pr.slots) pts.push(...sl.poly);
   pts.push(...buildingPolys(c).flat());
+  for (const x of model.hardstand || []) pts.push(...x.polygon);
   if (c.waste) pts.push(...wastePoly(c.waste));
   const roads = roadModel(lot);
   for (const r of roads) pts.push(...r.lines.centreline.slice(1, -1));
@@ -295,7 +302,7 @@ function drawRoads(doc, view, lot, field, roadName) {
 }
 
 function legendBlock(items) {
-  const rowH = 3.7;
+  const rowH = Math.min(3.7, 52 / Math.max(1, items.length)); // 14 rows fit at 3.7 mm; with hardstand rows added the rows close up to keep the block on the sheet
   return {
     title: 'LEGEND',
     h: 4 + items.length * rowH + 2,
@@ -312,6 +319,15 @@ function legendBlock(items) {
   };
 }
 
+const hexRgb = (hex) => { const n = parseInt(String(hex).replace('#', ''), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+const paleOf = (hex, k = 0.55) => hexRgb(hex).map((v) => Math.round(v + (255 - v) * k));
+/** A pavement type's plan swatch: its pale fill with the hatch lines of its plan pattern. */
+const pavementSwatch = (t) => (doc, a, b) => {
+  doc.setFillColor(...paleOf(t.colour)); doc.rect(a, b - 1.2, 12, 2.4, 'F');
+  doc.setDrawColor(...hexRgb(t.hatch2d.line)); doc.setLineWidth(0.08);
+  for (let k = 0; k < 6; k++) { const x0 = a + k * 2; const x1 = Math.min(a + 12, x0 + 2.4); doc.line(x0, b + 1.2, x1, b + 1.2 - (x1 - x0)); }
+  doc.setDrawColor(90, 94, 102); doc.setLineWidth(0.15); doc.rect(a, b - 1.2, 12, 2.4, 'S');
+};
 const swatch = (fill, line, dash = null) => (doc, a, b) => {
   if (fill) { doc.setFillColor(...fill); doc.rect(a, b - 1.2, 12, 2.4, 'F'); }
   if (line) { doc.setDrawColor(...line); doc.setLineWidth(0.2); if (dash) doc.setLineDashPattern(dash, 0); doc.rect(a, b - 1.2, 12, 2.4, 'S'); doc.setLineDashPattern([], 0); }
@@ -615,7 +631,8 @@ function drawBuildingShells(doc, model, view, field) {
 }
 
 // C101 proposed layout -----------------------------------------------------------------------------------------------------
-function layoutLegend() {
+function layoutLegend(model = null) {
+  const hsTypes = [...new Set((model?.hardstand || []).map((x) => x.type))];
   return legendBlock([
     ['Lot boundary (existing)', lineSw(PEN.ink, 0.7)],
     ['Adjoining lot (DCDB)', lineSw(GREYLINE, 0.18)],
@@ -630,6 +647,8 @@ function layoutLegend() {
     ['Accessible bay and shared zone', swatch([196, 214, 244], BLUE)],
     ['Bollard', (doc, a, b) => { doc.setFillColor(224, 168, 0); doc.setDrawColor(29, 32, 36); doc.setLineWidth(0.15); doc.circle(a + 6, b, 0.9, 'FD'); }],
     ['Landscaping (indicative)', (doc, a, b) => { doc.setDrawColor(...GREEN); doc.setLineWidth(0.1); for (let k = 0; k < 6; k++) doc.line(a + k * 2, b + 1.2, a + k * 2 + 2, b - 1.2); }],
+    ...hsTypes.map((id) => [`Hardstand: ${pavementById(id).short}, ${m2f((model.hardstand || []).filter((x) => x.type === id).reduce((s, x) => s + (x.areaM2 || 0), 0))} m2`, pavementSwatch(pavementById(id))]),
+    ...((model?.hardstandKerbs || []).length ? [['Kerb, drawn hardstand', lineSw(PEN.ink, 0.45)]] : []),
     ['OSD placeholder, waste, hydrant', (doc, a, b) => { doc.setDrawColor(...BLUE); doc.setLineWidth(0.2); doc.setLineDashPattern([1.2, 0.8], 0); doc.rect(a, b - 1.2, 5, 2.4, 'S'); doc.setLineDashPattern([], 0); doc.setFillColor(214, 196, 168); doc.rect(a + 6, b - 1.2, 3, 2.4, 'F'); doc.setFillColor(192, 57, 43); doc.circle(a + 11, b, 0.9, 'F'); }],
   ]);
 }
@@ -669,6 +688,43 @@ function placeNote(doc, field, text, cands, { size = 5.8, bold = false, colour =
     return box;
   }
   return null;
+}
+
+/** Hardstand drawn with the Hardstand tool: each area in the pale tint and hatch of its pavement type, its kerbs, and a label. */
+function drawHardstandAreas(doc, model, view) {
+  const T = view.T;
+  const done = new Set();
+  for (const x of model.hardstand || []) {
+    const t = pavementById(x.type);
+    if (!t) continue;
+    const poly = x.polygon.map(T);
+    doc.setFillColor(...paleOf(t.colour));
+    polygon(doc, poly, 'F');
+    const sp = Math.max(1.2, t.hatch2d.spacingMm / view.scale);
+    doc.setDrawColor(...hexRgb(t.hatch2d.line));
+    doc.setLineWidth(0.08);
+    dashOff(doc);
+    const angles = t.hatch2d.pattern === 'cross' || t.hatch2d.pattern === 'grid' ? [t.hatch2d.angleDeg, t.hatch2d.angleDeg + 90] : [t.hatch2d.angleDeg];
+    for (const ang of angles) for (const [p, q] of hatchSegments(poly, ang, sp)) doc.line(p.x, p.y, q.x, q.y);
+    doc.setDrawColor(...PEN.ink);
+    doc.setLineWidth(0.15);
+    polygon(doc, poly, 'S');
+  }
+  doc.setDrawColor(...PEN.ink);
+  doc.setLineWidth(0.45);
+  dashOff(doc);
+  for (const k of model.hardstandKerbs || []) { const a = T(k.polyline[0]); const b = T(k.polyline[1]); doc.line(a.x, a.y, b.x, b.y); }
+  for (const x of model.hardstand || []) {
+    const id = String(x.id).split('~')[0];
+    if (done.has(id)) continue;
+    done.add(id);
+    const poly = x.polygon.map(T);
+    const bb = boxOfPts(poly);
+    if (bb.x1 - bb.x0 < 22 || bb.y1 - bb.y0 < 6) continue;
+    const at = T(labelPoint(x.polygon));
+    const t = pavementById(x.type);
+    haloText(doc, `${t.short.toUpperCase()} ${m2f(x.areaM2 || 0)} m2`, at.x, at.y, { size: 4.6, bold: true, align: 'center', halo: 0.7 });
+  }
 }
 
 export function drawLayout(doc, model) {
@@ -735,6 +791,7 @@ export function drawLayout(doc, model) {
     doc.setFillColor(...PAVE_FILL);
     polygon(doc, [pt(0, pr.depth + off), pt(L, pr.depth + off), pt(L, pr.depth + off + bayL), pt(0, pr.depth + off + bayL)], 'F');
   }
+  drawHardstandAreas(doc, model, view);
   // OSD placeholder, waste, then landscape hatch (so it never goes under the paving).
   landscapeHatch(doc, model, view);
   if (osd) {
@@ -1051,7 +1108,7 @@ export function drawLayout(doc, model) {
     'Blue dimensions are the clearance from the buildings to the lot boundary.',
     'Site access and crossover are indicative and to be confirmed with council.',
   ];
-  return { scale, kv, notes, blocks: [layoutLegend()] };
+  return { scale, kv, notes, blocks: [layoutLegend(model)] };
 }
 
 // C102 mezzanine level plan --------------------------------------------------------------------------------------------------
