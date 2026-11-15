@@ -232,6 +232,10 @@ const PADDOCK_TINT = [1.3, 1.0, 1.04]; // lawn green -> dry tan grass
 // With a real aerial the 3D view keeps the clean lawn and paddock look and lets the picture through only subtly (this share, and at 55%
 // of its own colour), so the ground reads as real land without the muddy cast, the baked shadows and the roofs of the photograph.
 const AERIAL_BLEND = 0.08;
+// Owner 16/11/2026: with Aerial on, the real photograph shows in full on and around our lot and fades out with distance into the
+// clean lawn and paddock look (a fade scale), so the lot reads as the real site while the far ground stays tidy.
+const AERIAL_NEAR_MIN_M = 25; // full photograph out to at least this far from the lot centre
+const AERIAL_FAR_FACTOR = 2.6; // fully faded to the subtle blend at this multiple of the near radius
 function lawnGroundMaterial(ctx, lot, ext, aerial = null) {
   if (typeof document === 'undefined') return null;
   const base = ctx.lib.get('grass', LAWN_COLOUR);
@@ -271,12 +275,22 @@ function lawnGroundMaterial(ctx, lot, ext, aerial = null) {
     aerial.anisotropy = Math.max(aerial.anisotropy || 1, 8);
     aerial.needsUpdate = true;
   }
+  // the lot centre in the terrain's texture coordinates, and the fade radii in metres
+  const pts = lot.boundary || [];
+  const cx = pts.reduce((a, q) => a + q.x, 0) / Math.max(1, pts.length);
+  const cy = pts.reduce((a, q) => a + q.y, 0) / Math.max(1, pts.length);
+  const lotR = pts.reduce((a, q) => Math.max(a, Math.hypot(q.x - cx, q.y - cy)), 0) / 1000;
+  const nearR = Math.max(AERIAL_NEAR_MIN_M, lotR * 1.25);
+  const fadeC = new THREE.Vector2((cx - ext.x0) / 1000 / w, 1 - (cy - ext.y0) / 1000 / h);
   mat.onBeforeCompile = (shader) => {
     shader.uniforms.uLotMask = { value: mask };
+    shader.uniforms.uFadeC = { value: fadeC };
+    shader.uniforms.uFadeR = { value: new THREE.Vector2(nearR, nearR * AERIAL_FAR_FACTOR) };
+    shader.uniforms.uExtM = { value: new THREE.Vector2(w, h) };
     if (aerial) shader.uniforms.uAerialTex = { value: aerial };
     shader.uniforms.uPaddock = { value: new THREE.Vector3(...PADDOCK_TINT) };
     shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec2 vLotUv;\nvarying vec2 vAerUv;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvLotUv = vec2(uv.x, 1.0 - uv.y);\nvAerUv = uv;');
-    shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uLotMask;\nuniform vec3 uPaddock;\nvarying vec2 vLotUv;\nvarying vec2 vAerUv;' + (aerial ? '\nuniform sampler2D uAerialTex;' : ''))
+    shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uLotMask;\nuniform vec3 uPaddock;\nvarying vec2 vLotUv;\nvarying vec2 vAerUv;' + (aerial ? '\nuniform sampler2D uAerialTex;\nuniform vec2 uFadeC;\nuniform vec2 uFadeR;\nuniform vec2 uExtM;' : ''))
       .replace('#include <map_fragment>', `#include <map_fragment>
   float lotM = texture2D(uLotMask, vLotUv).r;
   // outside the lots: the dry paddock tone, with the mowing bands flattened (fine grain kept)
@@ -285,10 +299,13 @@ function lawnGroundMaterial(ctx, lot, ext, aerial = null) {
   vec3 padC = diffuse * uPaddock * mix(0.9, lawnL / max(dot(diffuse, vec3(0.3333)), 0.001), 0.25);
   diffuseColor.rgb = mix(padC, lawnC, lotM);
 ${aerial ? `  vec3 aerC = texture2D(uAerialTex, vAerUv).rgb;
-  aerC = mix(vec3(dot(aerC, vec3(0.3333))), aerC, 0.55) * 1.12;
-  diffuseColor.rgb = mix(diffuseColor.rgb, aerC, ${AERIAL_BLEND.toFixed(2)});` : ''}`);
+  float dM = length((vAerUv - uFadeC) * uExtM);
+  float nearK = 1.0 - smoothstep(uFadeR.x, uFadeR.y, dM);
+  vec3 aerSoft = mix(vec3(dot(aerC, vec3(0.3333))), aerC, 0.55) * 1.12;
+  vec3 aerFull = aerC * 1.06;
+  diffuseColor.rgb = mix(mix(diffuseColor.rgb, aerSoft, ${AERIAL_BLEND.toFixed(2)}), aerFull, nearK);` : ''}`);
   };
-  mat.customProgramCacheKey = () => (aerial ? 'lawn-ground-aerial-2' : 'lawn-ground-2');
+  mat.customProgramCacheKey = () => (aerial ? 'lawn-ground-aerial-3' : 'lawn-ground-2');
   return mat;
 }
 
