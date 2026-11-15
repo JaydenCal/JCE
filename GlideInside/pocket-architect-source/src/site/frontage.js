@@ -89,18 +89,20 @@ export function isCorner(lot, front) {
 export function deriveFrontage(lot) {
   if (!lot?.boundary || lot.boundary.length < 3) return { frontEdges: [], cornerLot: false, method: 'none' };
   const facts = edgeFacts(lot);
-  let front = facts.filter((f) => f.roadParcel >= 0.5 || f.lot < 0.5).map((f) => f.index);
+  const hasRoadInfo = (lot.roads || []).length > 0 || (lot.neighbours || []).some((n) => n.isRoad);
+  // An edge that abuts another lot is never a frontage, whatever its length or orientation. With road data, only an edge that abuts a road
+  // parcel or runs along a road centreline can be a frontage; open ground alone (no neighbour loaded) is not enough.
+  const abutsLot = (f) => f.lot >= 0.5 && f.roadParcel < 0.5;
+  let front = facts.filter((f) => !abutsLot(f) && (f.roadParcel >= 0.5 || f.lot < 0.5)).map((f) => f.index);
   let method = 'no-lot-beyond';
-  const near = facts.filter((f) => f.nearRoad >= 0.5).map((f) => f.index);
+  const near = facts.filter((f) => f.nearRoad >= 0.5 && !abutsLot(f)).map((f) => f.index);
   if (near.length) {
-    const kept = front.filter((i) => near.includes(i));
-    if (kept.length) {
-      front = kept;
-      method = 'roads';
-    } else {
-      front = near;
-      method = 'roads';
-    }
+    const kept = front.filter((i) => near.includes(i) || facts[i].roadParcel >= 0.5);
+    front = kept.length ? kept : near;
+    method = 'roads';
+  } else if (hasRoadInfo) {
+    const parcels = facts.filter((f) => f.roadParcel >= 0.5).map((f) => f.index);
+    if (parcels.length) { front = parcels; method = 'roads'; }
   }
   if (!front.length) {
     const longest = facts.reduce((a, b) => (b.length > a.length ? b : a));
@@ -109,6 +111,21 @@ export function deriveFrontage(lot) {
   }
   front.sort((a, b) => a - b);
   return { frontEdges: front, cornerLot: isCorner(lot, front), method };
+}
+
+/** The entries of lot.frontEdges that really abut a road (not another lot, and near a road when road data exists). Falls back to the list as given. */
+export function trueFrontEdges(lot) {
+  const given = (lot?.frontEdges || []).filter((i) => Number.isInteger(i) && i >= 0 && i < (lot?.boundary?.length || 0));
+  if (!given.length || !lot.boundary || lot.boundary.length < 3) return given;
+  const facts = edgeFacts(lot);
+  const hasRoadInfo = (lot.roads || []).length > 0 || (lot.neighbours || []).some((n) => n.isRoad);
+  const ok = given.filter((i) => {
+    const f = facts[i];
+    if (f.lot >= 0.5 && f.roadParcel < 0.5) return false;
+    if (hasRoadInfo && f.roadParcel < 0.5 && f.nearRoad < 0.5) return false;
+    return true;
+  });
+  return ok.length ? ok : given;
 }
 
 // Toggle one edge (the person's click). Returns the new sorted list.

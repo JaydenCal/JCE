@@ -341,7 +341,7 @@ test('templates still build with schema 2', () => {
 });
 
 // Frontage ------------------------------------------------------------------------------------------------------------------------
-import { deriveFrontage, toggleEdge, nearestEdge, isCorner } from '../src/site/frontage.js';
+import { deriveFrontage, trueFrontEdges, toggleEdge, nearestEdge, isCorner } from '../src/site/frontage.js';
 import { siteCredits, creditsOneLine, contourNote, INDICATIVE } from '../src/site/credits.js';
 
 const sq = (x0, y0, x1, y1) => [{ x: x0, y: y0 }, { x: x1, y: y0 }, { x: x1, y: y1 }, { x: x0, y: y1 }];
@@ -383,6 +383,31 @@ test('frontage: a road parcel next door counts as street, road centrelines pick 
   const f = deriveFrontage(open);
   assert.deepEqual(f.frontEdges, [0]);
   assert.equal(f.method, 'roads');
+});
+
+test('frontage: two road frontages plus neighbour lots; side and rear boundaries are never frontages', () => {
+  // Large lot 0..100 x 0..60 m. Road A along the north (y -20..0), road B along the east (x 100..120). Neighbours south and west. Edge 0 north, 1 east.
+  const lot = {
+    boundary: sq(0, 0, 100000, 60000),
+    neighbours: [{ ring: sq(0, 60000, 100000, 120000) }, { ring: sq(-60000, 0, 0, 60000) }],
+    roads: [{ name: 'A ST', pts: [-20000, -8000, 120000, -8000] }, { name: 'B RD', pts: [108000, -20000, 108000, 80000] }],
+  };
+  const f = deriveFrontage(lot);
+  assert.deepEqual(f.frontEdges, [0, 1]);
+  assert.equal(f.cornerLot, true);
+  // The long south boundary (edge 2) abuts a lot and is longest: never a frontage even though a user list names it
+  assert.deepEqual(trueFrontEdges({ ...lot, frontEdges: [2, 0] }), [0]);
+});
+
+test('frontage: with road data, open ground with no road beside it is not a frontage; irregular lot', () => {
+  // Irregular five sided lot; the road runs along the long diagonal-free north edge only, other sides are open (no neighbour loaded)
+  const lot = { boundary: [{ x: 0, y: 0 }, { x: 80000, y: 0 }, { x: 90000, y: 40000 }, { x: 40000, y: 70000 }, { x: -5000, y: 30000 }], neighbours: [], roads: [{ name: 'MAIN', pts: [-10000, -6000, 90000, -6000] }] };
+  const f = deriveFrontage(lot);
+  assert.deepEqual(f.frontEdges, [0]);
+  assert.equal(f.method, 'roads');
+  // A boundary shared with another lot beats proximity to a road centreline
+  const shared = { boundary: sq(0, 0, 20000, 30000), neighbours: [{ ring: sq(0, -10000, 20000, 0) }], roads: [{ name: 'X', pts: [-5000, -5000, 25000, -5000] }] };
+  assert.equal(deriveFrontage(shared).frontEdges.includes(0), false);
 });
 
 test('frontage: clicking toggles edges; nearest edge uses a tolerance', () => {

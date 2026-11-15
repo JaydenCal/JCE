@@ -217,3 +217,17 @@ test('wording: the new commercial files say building, layout and site, with no d
   }
   void readdirSync;
 });
+
+test('site layout: crossovers sit on the edge that abuts the road, not on a boundary shared with another lot', () => {
+  const store = site('service-station', { width: 80000, depth: 90000 });
+  const lot = store.project.site.lot;
+  const b = lot.boundary;
+  // A neighbouring lot beyond edge 1 (the east side boundary, x = 80 m).
+  const beyond = () => [{ x: 80000, y: 0 }, { x: 80000, y: 90000 }, { x: 100000, y: 90000 }, { x: 100000, y: 0 }];
+  lot.neighbours = [{ ring: beyond() }];
+  lot.frontEdges = [1, 0];
+  const sw = generateSiteWorks(store.project);
+  assert.ok(sw && sw.crossovers.length);
+  const dEdge = (p, a, c) => { const dx = c.x - a.x; const dy = c.y - a.y; const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy))); return Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy); };
+  for (const x of sw.crossovers) assert.ok(dEdge(x, b[0], b[1]) < 1500, 'crossover on edge 0 (' + Math.round(dEdge(x, b[0], b[1])) + ')');
+});

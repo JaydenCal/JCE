@@ -9,6 +9,7 @@
 
 import * as G from '../model/geometry.js';
 import { lotOf } from '../model/placement.js';
+import { trueFrontEdges } from '../site/frontage.js';
 import { buildingsOf, layoutSig } from './catalogue/buildings.js';
 import { bayDemand } from './catalogue/bays.js';
 import { layoutUnits } from './layout.js';
@@ -286,8 +287,10 @@ const centroid = (pts) => ({ x: pts.reduce((s, q) => s + q.x, 0) / pts.length, y
  */
 export function generateSiteWorks(project, opts = {}) {
   const c = project?.commercial;
-  const lot = lotOf(project);
-  if (!c || !lot || !Array.isArray(lot.boundary) || lot.boundary.length < 3 || !Array.isArray(lot.frontEdges) || !lot.frontEdges.length) return null;
+  const lot0 = lotOf(project);
+  if (!c || !lot0 || !Array.isArray(lot0.boundary) || lot0.boundary.length < 3 || !Array.isArray(lot0.frontEdges) || !lot0.frontEdges.length) return null;
+  // Entries, exits and crossovers sit only on an edge that really abuts a road, never on a boundary shared with another lot.
+  const lot = { ...lot0, frontEdges: trueFrontEdges(lot0) };
   const src = sources(project);
   if (!src.bs.length && !src.units.length) return null;
   const f = frameOfLot(lot);
