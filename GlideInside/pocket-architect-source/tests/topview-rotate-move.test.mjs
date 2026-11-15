@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { fitView, zoomAt, rotateAt, panBy, sceneInner, rotVec, wrapDeg } from '../src/lotcard/topview.js';
-import { snapMove, moveWarnings, overlaps, inside, turnRing, turnSnap } from '../src/lotcard/topview-move.js';
+import { snapMove, moveWarnings, overlaps, inside, turnRing, turnSnap, turnStep, ringAngle } from '../src/lotcard/topview-move.js';
 import { defaultView, isDefault, zoomAbout, turnAbout, toLocal, panView, cssOf } from '../src/lotcard/mini-view.js';
 import { createStore } from '../src/model/store.js';
 import { commercialMovers, commercialScene } from '../src/commercial/topview-scene.js';
@@ -154,4 +154,16 @@ test('top view move wiring: mode switch, handle, 90 degree buttons, warnings, on
   assert.match(read('../src/lotcard/lot-card.js'), /movers: \{ can: \(p\) => canMoveHouse\(p\)[^]*translateHouse[^]*rotateHouse/);
   assert.match(read('../src/commercial/lotcard.js'), /movers: \{ can: cm\.can/);
   assert.ok(!/[–—]/.test(src + read('../src/lotcard/topview-move.js') + read('../src/lotcard/mini-view.js')), 'no en or em dashes');
+});
+
+test('handle turn: 1 degree steps, Shift snaps to 15, lines up with a lot edge within 2 degrees', () => {
+  assert.equal(turnStep(37.4), 37);
+  assert.equal(turnStep(37.6), 38);
+  assert.equal(turnStep(37, { shift: true }), 30);
+  assert.equal(turnStep(-8, { shift: true }), -15);
+  const lot = sq(0, 0, 20000); // edges at 0 and 90 degrees
+  const base = ringAngle(sq(0, 0, 100).map((p) => p)); // 0 degrees
+  assert.equal(turnStep(2, { base, boundary: lot }), 0, 'within 2 degrees of the lot edge snaps to it');
+  assert.equal(turnStep(5, { base, boundary: lot }), 5, 'beyond 2 degrees stays free');
+  assert.equal(turnStep(88, { base, boundary: lot }), 90, 'the right angle also snaps');
 });

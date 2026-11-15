@@ -7,7 +7,7 @@
 // createTopView() is the dialog: role="dialog" aria-modal, focus moves in and returns to the button that opened it, Escape closes.
 
 import { h, clear } from '../ui/dom.js';
-import { snapMove, moveWarnings, turnRing, shiftRing, boxCentre, inside, turnSnap } from './topview-move.js';
+import { snapMove, moveWarnings, turnRing, shiftRing, boxCentre, inside, turnSnap, turnStep, ringAngle } from './topview-move.js';
 import { lotOf, houseCentre } from '../model/placement.js';
 import { buildingRings, deriveDriveway } from '../site/lotplan.js';
 import { schemeColours } from '../model/colour-schemes.js';
@@ -252,8 +252,8 @@ export function sceneSvg(scene, view, w, h) {
 
 // Dialog ---------------------------------------------------------------------------------------------------------------------------
 export const TOPVIEW_CSS = `
-.tv-ov{position:absolute;inset:0;z-index:8;background:rgba(6,8,10,.55);display:block}
-.tv-dlg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:76%;height:76%;min-width:0;display:flex;flex-direction:column;overflow:hidden;border-radius:14px;background:rgba(14,16,18,.96);border:1px solid rgba(255,255,255,.22);box-shadow:0 18px 60px rgba(0,0,0,.55);color:#fff}
+.tv-ov{position:fixed;inset:0;z-index:8;background:rgba(6,8,10,.55);display:block}
+.tv-dlg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:94vw;height:90vh;min-width:0;display:flex;flex-direction:column;overflow:hidden;border-radius:14px;background:rgba(14,16,18,.96);border:1px solid rgba(255,255,255,.22);box-shadow:0 18px 60px rgba(0,0,0,.55);color:#fff}
 .tv-bar{flex:none;display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;border-bottom:1px solid rgba(255,255,255,.14)}
 .tv-title{margin:0;font:600 11px/1 var(--lc-sans,system-ui,sans-serif);letter-spacing:.2em;white-space:nowrap}
 .tv-sub{flex:1;min-width:0;font:400 12px/1.3 var(--lc-sans,system-ui,sans-serif);color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -327,7 +327,7 @@ function injectCss() {
 }
 
 const FOCUSABLE = 'button:not([disabled]),[href],input,select,textarea,[tabindex]:not([tabindex="-1"])';
-const HELP = 'Scroll or pinch to zoom, drag to pan. Right-drag, Shift and drag, or twist two fingers to rotate. Drag a building to move it (it snaps to setback lines and other buildings), use its gold handle to turn it. Keyboard: arrow keys pan, Alt and arrow keys move the selected building, R turns it 90 degrees, plus and minus zoom, [ and ] rotate, N puts north up, 0 fits the lot, Escape closes.';
+const HELP = 'Scroll or pinch to zoom, drag to pan. Right-drag, Shift and drag, or twist two fingers to rotate. Drag a building to move it (it snaps to setback lines and other buildings), use its gold handle to turn it. Keyboard: arrow keys pan, Alt and arrow keys move the selected building, R turns it 90 degrees, plus and minus zoom, [ and ] turn the selected building 1 degree (Shift 15) or rotate the view, N puts north up, 0 fits the lot, Escape closes.';
 
 /**
  * @param {Object} o
@@ -545,7 +545,7 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
       const m = selected();
       if (m && handleHit(p0)) {
         const a0 = (Math.atan2(pp.y - m.centre.y, pp.x - m.centre.x) * 180) / Math.PI;
-        drag = { kind: 'turn', id: m.id, label: m.label, centre: m.centre, a0, total: 0, prev: null, deg: 0, key: '', applied: false, raf: 0 };
+        drag = { kind: 'turn', id: m.id, label: m.label, centre: m.centre, base: ringAngle(m.rings[0] || []), a0, total: 0, prev: null, deg: 0, key: '', applied: false, raf: 0 };
       } else {
         const hit = hitMovable(pp);
         if (hit) {
@@ -591,7 +591,8 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
         d = ((d + 540) % 360) - 180;
         drag.total = drag.prev == null ? d : drag.total + (((d - drag.prev + 540) % 360) - 180);
         drag.prev = d;
-        drag.deg = turnSnap(drag.total, e.altKey);
+        drag.deg = turnStep(drag.total, { shift: e.shiftKey, base: drag.base, boundary: scene.boundary });
+        if (els.warn) { els.warn.hidden = false; els.warn.dataset.state = 'ok'; els.warn.textContent = `${drag.label}: turned ${drag.deg > 0 ? '+' : ''}${Math.round(drag.deg * 10) / 10} degrees (hold Shift for 15 degree steps)`; }
       }
       flush();
       return;
@@ -672,8 +673,9 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     if (e.key === '+' || e.key === '=') { e.preventDefault(); zoomBy(1.4); }
     else if (e.key === '-' || e.key === '_') { e.preventDefault(); zoomBy(1 / 1.4); }
     else if (e.key === '0') { e.preventDefault(); resetView(); }
-    else if (e.key === '[') { e.preventDefault(); turnBy(-15); }
-    else if (e.key === ']') { e.preventDefault(); turnBy(15); }
+    else if ((e.key === '[' || e.key === ']' || e.key === '{' || e.key === '}') && canMove() && selected()) { e.preventDefault(); stepTurn((e.key === '[' || e.key === '{' ? -1 : 1) * (e.shiftKey ? 15 : 1)); }
+    else if (e.key === '[' || e.key === '{') { e.preventDefault(); turnBy(-15); }
+    else if (e.key === ']' || e.key === '}') { e.preventDefault(); turnBy(15); }
     else if (e.key === 'n' || e.key === 'N') { e.preventDefault(); northUp(); }
   }
 

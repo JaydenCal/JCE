@@ -119,10 +119,10 @@ test('wiring: both lot cards have an expand button on the mini map and open the 
   assert.match(com, /topView\.dispose\(\)/);
 });
 
-test('accessibility and sizing: dialog role, modal, focus return, Escape, keyboard, live region; 70 to 80 percent, full screen on phones', () => {
+test('accessibility and sizing: dialog role, modal, focus return, Escape, keyboard, live region; 94vw by 90vh, full screen on phones', () => {
   const src = read('../src/lotcard/topview.js');
   for (const want of ["role: 'dialog'", "'aria-modal': 'true'", "'aria-labelledby': 'tv-title'", "'aria-live': 'polite'", "e.key === 'Escape'", "e.key === 'Tab'", 'ArrowLeft', "e.key === '+'", "e.key === '0'", 'inert', 'back?.focus', "'aria-label': 'Enlarge top view'"]) assert.ok(src.includes(want), `missing ${want}`);
-  assert.match(TOPVIEW_CSS, /width:76%;height:76%/);
+  assert.match(TOPVIEW_CSS, /width:94vw;height:90vh/);
   assert.match(TOPVIEW_CSS, /@media \(max-width:640px\)[^{]*\{\.tv-dlg\{[^}]*width:100%;height:100%/);
   assert.match(src, /wheel/);
   assert.match(src, /pointerdown/);

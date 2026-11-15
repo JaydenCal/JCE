@@ -75,3 +75,37 @@ export function moveWarnings(rings, { envelope = null, boundary = null, others =
 
 /** Snap a turn to 15 degrees unless `free`. */
 export const turnSnap = (deg, free = false) => (free ? Math.round(deg) : Math.round(deg / 15) * 15);
+
+/** Orientation (degrees, plan axes, 0 to 180) of a ring's longest edge. */
+export function ringAngle(ring) {
+  let best = 0;
+  let ang = 0;
+  for (let i = 0; i < ring.length; i++) {
+    const a = ring[i];
+    const b = ring[(i + 1) % ring.length];
+    const len = Math.hypot(b.x - a.x, b.y - a.y);
+    if (len > best) { best = len; ang = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI; }
+  }
+  return ((ang % 180) + 180) % 180;
+}
+
+const edgeAngles = (ring) => ring.map((a, i) => { const b = ring[(i + 1) % ring.length]; return ((((Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI) % 90) + 90) % 90; });
+
+/**
+ * The turn applied while dragging the gold handle: whole degrees (1 degree steps), 15 degree steps with Shift, and, within 2 degrees of a
+ * lot boundary edge direction (or its right angle), the turn that lines the building up with that edge. `base` is the building's own angle.
+ */
+export function turnStep(deg, { shift = false, base = null, boundary = null } = {}) {
+  if (shift) return Math.round(deg / 15) * 15;
+  let d = Math.round(deg);
+  if (base != null && boundary && boundary.length > 2) {
+    const mod90 = (x) => ((x % 90) + 90) % 90;
+    const cur = mod90(base + d);
+    for (const e of edgeAngles(boundary)) {
+      let diff = e - cur;
+      diff = ((diff + 135) % 90) - 45;
+      if (Math.abs(diff) <= 2 && Math.abs(diff) > 1e-9) { d = Math.round((d + diff) * 100) / 100; break; }
+    }
+  }
+  return d;
+}
