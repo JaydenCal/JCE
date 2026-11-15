@@ -184,6 +184,7 @@ export function createTour(ps, { layer, onFinish, onActive }) {
   }
 
   function onKey(e) {
+    if (!active || !card?.isConnected) { window.removeEventListener('keydown', onKey, true); return; } // a finished tour never takes Escape
     if (e.key === 'Escape' && !isTyping(e.target)) {
       e.stopPropagation();
       end(false);

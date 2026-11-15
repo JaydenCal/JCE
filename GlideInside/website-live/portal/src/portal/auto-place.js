@@ -98,12 +98,31 @@ export function autoPose(project, house) {
   }
   if (!tried.length) return { pose: null, facing: false, fits: null, reason: 'no_footprint' };
   const best = tried.find((t) => t.fits === true) || tried[0];
+  // Never leave the house across the lot boundary: when the garage to the street pose runs over it (no setbacks to judge by, or a tight lot),
+  // search every turn and position for one inside the boundary. With no setback envelope the result is "fit not checked" (null), not a pass.
+  const boundaryPoly = lot.boundary.length >= 3 ? lot.boundary : null;
+  const overBoundaryAt = (pose) => {
+    if (!boundaryPoly) return 0;
+    const hull = buildingHull(placed(project, house, pose));
+    return hull.length >= 3 ? worstEncroachment(hull, [], boundaryPoly) : 0;
+  };
+  const boundaryFallback = () => {
+    if (!boundaryPoly || best.fits === true || !(overBoundaryAt(best.pose) > 5)) return null;
+    const inside = searchFit(project, house, lot, boundaryPoly, front, frontReq, hasGarage);
+    if (!inside) return { pose: best.pose, facing: best.facing, fits: false, tooBig: true, reason: 'too_big_for_lot', size: { widthMm: b.width, depthMm: b.depth } };
+    const withinEnv = envPoly ? worstEncroachment(buildingHull(placed(project, house, inside.pose)), [], envPoly) <= 5 : null;
+    if (withinEnv !== false) return { pose: inside.pose, facing: inside.facing, fits: withinEnv === true ? true : null, reason: '', size: { widthMm: b.width, depthMm: b.depth } };
+    // Inside the lot but not inside the setbacks: keep it in the lot; the flow reads tooBig as "does not fit the setbacks".
+    return { pose: inside.pose, facing: inside.facing, fits: false, tooBig: true, reason: 'too_big', size: { widthMm: b.width, depthMm: b.depth } };
+  };
   if (best.fits === false && envPoly) {
     // The garage to the street pose does not fit. Search every position and the four square turns, mirrored or not, for a pose that does.
     const found = searchFit(project, house, lot, envPoly, front, frontReq, hasGarage);
     if (found) return { pose: found.pose, facing: found.facing, fits: true, reason: '', size: { widthMm: b.width, depthMm: b.depth } };
-    return { pose: best.pose, facing: best.facing, fits: false, tooBig: true, reason: 'too_big', size: { widthMm: b.width, depthMm: b.depth } };
+    return boundaryFallback() || { pose: best.pose, facing: best.facing, fits: false, tooBig: true, reason: 'too_big', size: { widthMm: b.width, depthMm: b.depth } };
   }
+  const fb = boundaryFallback();
+  if (fb) return fb;
   return { pose: best.pose, facing: best.facing, fits: best.fits, reason: best.fits === false ? 'does_not_fit_envelope' : '', size: { widthMm: b.width, depthMm: b.depth } };
 }
 

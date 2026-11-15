@@ -12,10 +12,14 @@ export const SH = 297;
 export const M = 10; // inner border
 export const OUT = 4; // outer border
 export const TB_TOP = 238;
+/** Band above the title block: the legal terms note (at least 6 pt, up to 3 rows) with a clear row above it for the trial line. Never shared. */
+export const TERMS_PT = 6;
+export const TERMS_LEAD = 2.5;
+export const TERMS_BAND = 12.5;
 export const TB_FOOT = 279; // the footer band is below this line
 export const TB_BOTTOM = SH - M;
 /** Usable drawing area inside the border and above the title block. */
-export const BODY = { x0: M + 4, y0: M + 4, x1: SW - M - 4, y1: TB_TOP - 3 };
+export const BODY = { x0: M + 4, y0: M + 4, x1: SW - M - 4, y1: TB_TOP - TERMS_BAND };
 
 function cell(doc, x, y, w, h, label, value, { size = 9, bold = true, align = 'left', fill = null } = {}) {
   if (fill) doc.setFillColor(...fill);
@@ -30,9 +34,17 @@ function cell(doc, x, y, w, h, label, value, { size = 9, bold = true, align = 'l
     doc.setFont('helvetica', bold ? 'bold' : 'normal');
     doc.setFontSize(size);
     ink(doc, PEN.ink);
-    const t = fit(doc, clean(value), w - 2.8);
-    if (align === 'center') doc.text(t, x + w / 2, y + h - 2, { align: 'center' });
-    else doc.text(t, x + 2, y + h - 2);
+    // Long values shrink first (down to 6 pt) and then wrap onto a second line, so a status such as "Concept, private preview" is never cut.
+    const full = clean(value);
+    let sz = size;
+    while (sz > 6 && doc.getTextWidth(full) > w - 2.8) { sz -= 0.5; doc.setFontSize(sz); }
+    const lines = doc.getTextWidth(full) > w - 2.8 ? wrap(doc, full, w - 2.8).slice(0, 2) : [full];
+    const lead = sz * 0.36;
+    lines.forEach((l, i) => {
+      const ly = y + h - 2 - (lines.length - 1 - i) * lead;
+      if (align === 'center') doc.text(l, x + w / 2, ly, { align: 'center' });
+      else doc.text(l, x + 2, ly);
+    });
   }
 }
 
@@ -188,14 +200,14 @@ export function drawFrame(doc, ctx, sheet) {
   cell(doc, x4 + c3, y0 + hA + hB, c3, hB, 'SHEET', `${sheet.n} OF ${total}`, { size: 9.5 });
   cell(doc, x4 + 2 * c3, y0 + hA + hB, c3, hB, 'SIZE', paper, { size: 9.5 });
 
-  // Terms of use: the sheet note and the version accepted, small type in the gap above the title block (wrapped, never cut).
+  // Terms of use: the sheet note and the version accepted. Legal stamp: at least 6 pt, wrapped, never cut, and nothing else is drawn on its rows.
   {
     const [note, stamp] = termsLines(ctx.terms);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(3.5);
+    doc.setFontSize(TERMS_PT);
     ink(doc, PEN.ink2 || [58, 62, 70]);
     const rows = wrap(doc, clean(`${note} ${stamp}.`), SW - 2 * M - 4);
-    rows.forEach((l, i) => doc.text(l, x0 + 2, TB_TOP - 0.7 - (rows.length - 1 - i) * 1.3));
+    rows.forEach((l, i) => doc.text(l, x0 + 2, TB_TOP - 1 - (rows.length - 1 - i) * TERMS_LEAD));
   }
 
   // Footer band: concept statement, then attribution.

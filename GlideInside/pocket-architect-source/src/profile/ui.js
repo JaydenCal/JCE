@@ -196,6 +196,7 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   // The prompt (non blocking) --------------------------------------------------------------------------------------------------
   function closePrompt() {
     document.removeEventListener('keydown', onPromptKey, true);
+    window.removeEventListener('keydown', onPromptKey, true);
     prompt?.remove();
     prompt = null;
     policy.closed();
@@ -215,16 +216,24 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
     // Inside the guided flow (Check it step) the prompt stands above the flow, in the page itself.
     (document.documentElement.classList.contains('gf-open') ? document.body : refs.shell || document.body).append(prompt);
     document.addEventListener('keydown', onPromptKey, true);
+    window.addEventListener('keydown', onPromptKey, true);
+    // Focus belongs to the prompt while it is open: a leftover onboarding button must not keep it (Escape then goes to the prompt).
+    try {
+      const ae = document.activeElement;
+      if (!ae || ae === document.body || ae.closest?.('.pso-card, .pso-dock, .pso-pop, [class*="pso-"]')) { prompt.tabIndex = -1; prompt.focus({ preventScroll: true }); }
+    } catch { /* focus is a convenience */ }
   }
   // Escape closes the prompt like Not now (unless a dialog is open on top of it, which takes Escape for itself).
   function onPromptKey(e) {
     if (e.key !== 'Escape') return;
-    if (!prompt) { document.removeEventListener('keydown', onPromptKey, true); return; }
+    if (!prompt) { document.removeEventListener('keydown', onPromptKey, true); window.removeEventListener('keydown', onPromptKey, true); return; }
     if (document.querySelector('.ps-modal')) return;
+    e.stopPropagation();
     notNow();
   }
   function notNow() {
     document.removeEventListener('keydown', onPromptKey, true);
+    window.removeEventListener('keydown', onPromptKey, true);
     prompt?.remove();
     prompt = null;
     policy.dismiss();
@@ -435,12 +444,13 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
       body.append(h('div', { class: 'ps-prof-count' },
         h('span', null, `${data.count} of ${data.limit} designs${full ? '. Delete one to save another.' : ''}`),
         h('button', { class: 'ps-btn ps-btn--sm', type: 'button', dataset: { action: 'save-now' }, onclick: async (e) => {
-          e.currentTarget.disabled = true;
+          const btn = e.currentTarget; // currentTarget is null once the handler has awaited
+          btn.disabled = true;
           const r = await controller.saveNow();
           if (r.ok) await load();
           else {
             toast(controller.state.message || 'Not saved.', { kind: 'warn', timeout: 7000 });
-            e.currentTarget.disabled = false;
+            btn.disabled = false;
           }
         } }, 'Save this design now')));
       if (!data.designs.length) body.append(h('p', { class: 'ps-hint' }, 'Nothing saved yet. Your designs are saved here as you work, or press Save this design now.'));
@@ -522,7 +532,8 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
         h('button', { class: 'ps-btn ps-btn--danger', type: 'button', dataset: { action: 'confirm-delete-account' }, onclick: async (e) => {
           err.hidden = true;
           if (!pw.value) { err.textContent = 'Enter your password.'; err.hidden = false; return; }
-          e.currentTarget.disabled = true;
+          const btn = e.currentTarget; // currentTarget is null once the handler has awaited
+          btn.disabled = true;
           try {
             await controller.deleteAccount(pw.value);
             pw.value = '';
@@ -532,7 +543,7 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
           } catch (ex) {
             err.textContent = profileErrorText(ex);
             err.hidden = false;
-            e.currentTarget.disabled = false;
+            btn.disabled = false;
           }
         } }, 'Delete account')],
     });

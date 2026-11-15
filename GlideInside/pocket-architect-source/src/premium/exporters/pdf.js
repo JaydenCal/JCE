@@ -23,6 +23,8 @@ export const SCALES = SCALE_LIST;
 const M = 10; // inner frame margin
 const OUT = 4; // outer border
 const TB_TOP = 243; // title block strip top
+const TERMS_PT = 6; // legal terms note: at least 6 pt, up to 3 rows, nothing else drawn on them
+const TERMS_LEAD = 2.5;
 const TB_BOTTOM = SHEET_H - M;
 const TB_DISC = TB_BOTTOM - 6; // the disclaimer band sits below this line
 const DEFAULT_DISCLAIMER = 'Concept design only. Not for construction. Not a development application drawing. Verify all dimensions on site.';
@@ -309,14 +311,14 @@ function frame(doc, ctx, { title, scaleLabel, sheet }) {
   cell(doc, x4 + c3, y0 + hA + hB, c3, hB, 'SHEET', `${sheet} OF ${total}`, { size: 8 });
   cell(doc, x4 + 2 * c3, y0 + hA + hB, c3, hB, 'SIZE', v.paper, { size: 8 });
 
-  // Terms of use: the sheet note and the version accepted (src/legal), small type above the title block (wrapped, never cut).
+  // Terms of use: the sheet note and the version accepted (src/legal). Legal stamp: at least 6 pt, wrapped, never cut.
   {
     const [tnote, tstamp] = termsLines(ctx.terms);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(3.5);
+    doc.setFontSize(TERMS_PT);
     ink(doc, INK);
     const rows = doc.splitTextToSize(ascii(`${tnote} ${tstamp}.`), SHEET_W - 2 * M - 4);
-    rows.forEach((l, i) => doc.text(l, x0 + 2, TB_TOP - 0.7 - (rows.length - 1 - i) * 1.3));
+    rows.forEach((l, i) => doc.text(l, x0 + 2, TB_TOP - 1 - (rows.length - 1 - i) * TERMS_LEAD));
   }
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(5.5);
@@ -597,7 +599,7 @@ export function drawLevel(doc, ctx, content) {
   }
 
   // Plan title with its scale, the fallback note when the requested scale did not fit, scale bar and north arrow.
-  const sy = AREA.y + AREA.h + 8;
+  const sy = AREA.y + AREA.h + 3; // the band above the title block belongs to the terms note
   ink(doc);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
@@ -729,7 +731,7 @@ function drawCover(doc, ctx, plan) {
 
   // Site plan panel, lower left.
   const py = 124;
-  const ph = TB_TOP - 12 - py;
+  const ph = TB_TOP - 12 - 9 - py; // clear of the terms note band above the title block
   const px = 14;
   const pw = 184;
   doc.setLineWidth(0.4);

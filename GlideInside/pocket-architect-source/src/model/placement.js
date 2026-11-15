@@ -177,6 +177,58 @@ function clipHalfPlane(poly, a, n, offset) {
   return out;
 }
 
+
+// Concave lots ----------------------------------------------------------------------------------------------------------------
+const segCross = (p, q, r, t) => {
+  const d1 = G.cross(G.sub(q, p), G.sub(r, p));
+  const d2 = G.cross(G.sub(q, p), G.sub(t, p));
+  const d3 = G.cross(G.sub(t, r), G.sub(p, r));
+  const d4 = G.cross(G.sub(t, r), G.sub(q, r));
+  return d1 * d2 < -1e-6 && d3 * d4 < -1e-6;
+};
+const isSimple = (poly) => {
+  const n = poly.length;
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 2; j < n; j++) {
+      if (i === 0 && j === n - 1) continue;
+      if (segCross(poly[i], poly[(i + 1) % n], poly[j], poly[(j + 1) % n])) return false;
+    }
+  }
+  return true;
+};
+
+/** Mitre inset of a simple concave lot by the setback of each edge (mm), or null when it cannot be done cleanly. */
+function insetConcave(lot) {
+  const b = lot.boundary;
+  const n = b.length;
+  if (n < 4 || !lot.setbacks) return null;
+  const area = G.signedArea(b);
+  if (!area) return null;
+  const edges = classifyEdges(lot);
+  const lines = edges.map((e) => {
+    const d = G.norm(G.sub(e.b, e.a));
+    const nrm = inwardNormal(e.a, e.b, area);
+    const off = (requiredFor(e.kind, lot.setbacks) ?? 0) * 1000;
+    return { p: G.add(e.a, G.mul(nrm, off)), d };
+  });
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const l0 = lines[(i + n - 1) % n];
+    const l1 = lines[i];
+    const den = G.cross(l0.d, l1.d);
+    if (Math.abs(den) < 1e-6) { out.push(l1.p); continue; }
+    const t = G.cross(G.sub(l1.p, l0.p), l1.d) / den;
+    out.push(G.add(l0.p, G.mul(l0.d, t)));
+  }
+  if (out.some((p) => !Number.isFinite(p.x) || !Number.isFinite(p.y))) return null;
+  const a2 = G.signedArea(out);
+  if (!a2 || Math.sign(a2) !== Math.sign(area) || Math.abs(a2) > Math.abs(area)) return null;
+  if (!isSimple(out)) return null;
+  if (!out.every((p) => G.pointInPolygon(p, b) || edgeDistOf(p, b) < 5)) return null;
+  return out;
+}
+const edgeDistOf = (p, poly) => Math.min(...G.polygonEdges(poly).map(([a, c]) => G.projectToSegment(p, a, c).d));
+
 /**
  * The building envelope. Uses lot.envelope when given. Otherwise it is derived from the setbacks by moving each boundary
  * edge inward (convex lots only). Returns { polygon, source: 'lot'|'derived', missing: [kinds without a setback] } or
@@ -185,7 +237,12 @@ function clipHalfPlane(poly, a, n, offset) {
 export function envelopeOf(lot) {
   if (Array.isArray(lot.envelope) && lot.envelope.length >= 3) return { polygon: lot.envelope, source: 'lot', missing: [] };
   if (!lot.setbacks) return { polygon: null, reason: 'setbacks_not_loaded' };
-  if (!isConvex(lot.boundary)) return { polygon: null, reason: 'envelope_missing' };
+  if (!isConvex(lot.boundary)) {
+    // Battle axe and other concave lots: move every edge in by its own setback and join the offset lines (mitre). Used only when the
+    // result is a clean simple polygon inside the lot; otherwise the envelope stays missing and the lot says so.
+    const inset = insetConcave(lot);
+    return inset ? { polygon: inset, source: 'derived', missing: [] } : { polygon: null, reason: 'envelope_missing' };
+  }
   const area = G.signedArea(lot.boundary);
   let poly = lot.boundary.map((p) => ({ ...p }));
   const missing = new Set();

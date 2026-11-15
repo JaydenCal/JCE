@@ -163,7 +163,7 @@ export function drawStrip(doc, ctx, sheet) {
   doc.setTextColor(...RED);
   doc.text(STAMP, x0 + W / 2, yb + 4.6, { align: 'center' });
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(5);
+  doc.setFontSize(6);
   doc.setTextColor(...PEN.ink);
   doc.text(fit(doc, termsStamp(ctx.terms), W - 3), x0 + W / 2, yb + 9.6, { align: 'center' });
 

@@ -13,7 +13,8 @@ export const TRIAL_MATERIAL = 'GI_TRIAL_watermark_red';
 // Engineering plan sheet geometry (mirrors eng/frame.js: SW, SH and TB_TOP, the top edge of the title block, in A3 millimetres).
 const ENG_SW = 420;
 const ENG_SH = 297;
-const ENG_TB_TOP = 238;
+// The trial line sits in its own row above the terms note band (never on it): the legal note takes the 10 mm above the title block.
+const ENG_TRIAL_Y = 238 - 10.6;
 
 /** Draw the mark on every page of a jsPDF document (diagonal title, small footer line), at about 22 percent opacity. */
 export function stampPdf(doc, title = TRIAL_TITLE, footer = TRIAL_FOOTER) {
@@ -49,7 +50,7 @@ export function stampPdf(doc, title = TRIAL_TITLE, footer = TRIAL_FOOTER) {
     doc.setTextColor(64, 64, 64);
     if (eng) {
       const tw = doc.getTextWidth(footer) + 3 * k;
-      const by = (ENG_TB_TOP - 1.3) * k;
+      const by = ENG_TRIAL_Y * k;
       doc.setFillColor(255, 255, 255);
       doc.rect(w / 2 - tw / 2, by - 3.4 * k, tw, 4.6 * k, 'F');
       doc.text(footer, w / 2, by, { align: 'center' });

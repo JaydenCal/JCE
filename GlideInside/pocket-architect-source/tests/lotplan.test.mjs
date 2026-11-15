@@ -8,6 +8,7 @@ import { catalogue } from '../src/catalogue/index.js';
 import { placeHouse } from '../src/portal/place-house.js';
 import { lotEnvelope, portalLotToSiteLot, SAMPLE_LOT } from '../src/portal/envelope.js';
 import { autoPose } from '../src/portal/auto-place.js';
+import { worstEncroachment } from '../src/model/placement.js';
 import { arrangeApply, startingPose } from '../src/portal/arrange.js';
 import * as L from '../src/site/lotplan.js';
 import { snapAngle, normDeg } from '../src/portal/pose-session.js';
@@ -187,4 +188,44 @@ test('rotation is free by default (0.1 degree), or snaps to 15 with Shift, and w
   assert.equal(normDeg(190), -170);
   assert.equal(normDeg(-190), 170);
   assert.equal(normDeg(180), 180);
+});
+
+test('tiny lot: autoPose never leaves the house across the boundary (turns it if that fits), and says so when nothing fits', () => {
+  const tiny = lotProject([{ x: 0, y: 0 }, { x: 8000, y: 0 }, { x: 8000, y: 20000 }, { x: 0, y: 20000 }], [2], { picked: null });
+  tiny.site.lot.setbacks = null;
+  tiny.site.lot.envelope = null;
+  const h = catalogue.createFromTemplate('granny_flat');
+  const a = autoPose(tiny, h);
+  assert.ok(a.pose, 'a pose is returned');
+  const p = structuredClone(tiny);
+  p.levels = [];
+  placeHouse(p, h, a.pose);
+  const hull = L.buildingHull(p);
+  const over = hull.length >= 3 ? worstEncroachment(hull, [], p.site.lot.boundary) : 0;
+  if (!a.tooBig) assert.ok(over <= 5, `inside the lot boundary (over by ${over} mm)`);
+  else assert.equal(a.fits, false, 'a house that cannot fit is reported as not fitting');
+  // a lot that cannot hold the house at any turn is reported as too big, not passed
+  const slot = lotProject([{ x: 0, y: 0 }, { x: 3000, y: 0 }, { x: 3000, y: 5000 }, { x: 0, y: 5000 }], [2], { picked: null });
+  slot.site.lot.setbacks = null; slot.site.lot.envelope = null;
+  const b = autoPose(slot, h);
+  assert.equal(b.tooBig, true);
+  assert.equal(b.fits, false);
+});
+
+test('battle axe lot (handle and body): the setback envelope is derived, so the placement is checked, and the house is placed inside it', async () => {
+  const { envelopeOf, checkSetbacks } = await import('../src/model/placement.js');
+  const boundary = [[8000, 0], [12000, 0], [12000, 22000], [20000, 22000], [20000, 47000], [0, 47000], [0, 22000], [8000, 22000]].map(([x, y]) => ({ x, y }));
+  const lot = { boundary, frontEdges: [0], setbacks: { front: 6, secondaryFront: null, side: 0.9, rear: 3 }, envelope: null, areaM2: 1000 };
+  const env = envelopeOf(lot);
+  assert.ok(env.polygon && env.polygon.length >= 6, `envelope derived (${env.reason || 'ok'})`);
+  const p = createProject({ name: 'Battle axe' });
+  p.site.lot = lot;
+  const h = catalogue.createFromTemplate('granny_flat');
+  const a = autoPose(p, h);
+  assert.ok(a.pose);
+  placeHouse(p, h, a.pose);
+  const chk = checkSetbacks(p);
+  assert.notEqual(chk.status, 'unknown', 'the position is checked, not "setbacks not loaded"');
+  assert.equal(a.fits, true, 'a granny flat fits the body of a battle axe lot');
+  assert.equal(chk.status, 'ok');
 });

@@ -12,7 +12,7 @@ export const AERIAL_CSS = `
 .ps-aerial[disabled]{opacity:.5;cursor:default}
 .ps-aerial[hidden]{display:none!important}
 .lc-root .lc-aerial{position:absolute;right:64px;top:98px}
-.lc-embed.is-compact .lc-aerial{right:62px;top:94px}
+.lc-embed.is-compact .lc-aerial{right:12px;top:234px}
 .lc-root[data-view="2d"] .lc-aerial,.lc-root[data-view="split"] .lc-aerial{display:none!important}
 .ps-aerial-fab{position:absolute;left:12px;bottom:44px;z-index:15}
 .ps-stage:has(.lc-root:not([hidden])) .ps-aerial-fab{display:none}
