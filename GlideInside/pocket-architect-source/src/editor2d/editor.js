@@ -19,6 +19,7 @@ import { createMoveHouseTool } from './tool-movehouse.js';
 import { createCommercialTool } from '../commercial/ui/tool-commercial.js';
 import { drawCommercial, commercialExtents } from '../commercial/draw2d.js';
 import { createHardstandTool } from '../commercial/ui/tool-hardstand.js';
+import { buildingHull, deriveDriveway } from '../site/lotplan.js';
 import { createLabelLayer } from './label-layer.js';
 import { createDrawTools } from './tool-draw.js';
 import { createPlaceTools } from './tool-place.js';
@@ -332,6 +333,31 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     const u = project.site?.underlay;
     if (u && state.underlayBitmap) pts.push(...M.underlayCorners(u, state.underlayBitmap.w, state.underlayBitmap.h));
     return G.bbox(pts);
+  }
+
+  // Frame the selected building (or the house) closely, or the whole development: buildings plus the driveway, not the lot.
+  function zoomToRegion(pts, marginMm) {
+    if (!pts.length || !state.size.w) return;
+    const bb = G.bbox(pts);
+    const v = M.fitView({ cx: (bb.minX + bb.maxX) / 2, cy: (bb.minY + bb.maxY) / 2, w: bb.w + 2 * marginMm, h: bb.h + 2 * marginMm }, state.size, { padding: 48, minScale: 1e-6 });
+    state.autoFit = false;
+    state.view = v;
+    emitZoom();
+    requestDraw();
+  }
+  function zoomToBuilding() {
+    let pts = [];
+    try { pts = buildingHull(store.project); } catch { pts = []; }
+    if (!pts.length) pts = (store.level()?.walls || []).flatMap((w) => [w.a, w.b]);
+    zoomToRegion(pts, 3000);
+  }
+  function zoomToDevelopment() {
+    let pts = [];
+    try { pts = buildingHull(store.project); } catch { pts = []; }
+    if (!pts.length) pts = (store.level()?.walls || []).flatMap((w) => [w.a, w.b]);
+    try { const d = deriveDriveway(store.project); if (d?.ok) pts = [...pts, ...d.polygon, ...(d.crossover?.polygon || [])]; } catch { /* no driveway */ }
+    for (const l of store.project.levels || []) for (const w of l.walls || []) pts.push(w.a, w.b);
+    zoomToRegion(pts, 5000);
   }
 
   function zoomToFit() {
@@ -745,6 +771,8 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       }
     },
     zoomToFit,
+    zoomToBuilding,
+    zoomToDevelopment,
     element,
     // Screen margins covered by overlay cards. A view the person has not moved is re-framed in the clear area.
     setInset(next = {}) {

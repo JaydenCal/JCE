@@ -178,6 +178,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   let bounds = null;
   let points = [];
   let housePoints = [];
+  let developmentPoints = []; // buildings plus the driveway and site works, not the whole lot
   let dirtyModel = true;
   let framed = false;
   let lastProjectId = null;
@@ -330,6 +331,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   const vbHero = mkBtn('Street view', 'hero', 'Three quarter view from the street');
   const vbFront = mkBtn('Front', 'front', 'Close up of the front');
   const vbAerial = mkBtn('Aerial', 'aerial', 'The whole lot from above');
+  const vbBuilding = mkBtn('Zoom to building', 'building', 'Close up of the selected building, or the house');
+  const vbDev = mkBtn('Zoom to development', 'development', 'All buildings, the driveway and site works together');
   const vbSun = mkBtn('Warm light', 'sun', 'Switch between midday and late afternoon light');
   vbSun.setAttribute('aria-pressed', 'false');
   // Roof off / Roof on: a large, labelled toggle (the same switch as the Roof button in the top bar). Pressed means the roof is hidden.
@@ -344,7 +347,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   };
   vbRoof.addEventListener('click', () => store.setUI({ showRoof: store.ui.showRoof === false }));
   syncRoofBtn();
-  viewBar.append(vbHero, vbFront, vbAerial, vbSun, vbRoof);
+  viewBar.append(vbHero, vbFront, vbAerial, vbBuilding, vbDev, vbSun, vbRoof);
   rootEl.appendChild(viewBar);
   let sunKey = 'warm'; // warm afternoon light unless the person switched it off
   try {
@@ -518,6 +521,15 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     bounds = modelBounds(model);
     points = collectPoints(model);
     housePoints = collectPoints(model, true);
+    developmentPoints = housePoints.slice();
+    {
+      const v = new THREE.Vector3();
+      model.traverse((o) => {
+        if (!o.isMesh || o.name !== 'driveway' || !o.geometry?.attributes?.position) return;
+        const pos = o.geometry.attributes.position;
+        for (let i = 0; i < pos.count; i += Math.max(1, Math.floor(pos.count / 400))) { v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld); developmentPoints.push(v.x, v.y, v.z); }
+      });
+    }
     fitSun();
     applyLimits();
     if (!framed || lastProjectId !== store.project.id) {
@@ -654,6 +666,17 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     // A big lot (over 70 m) frames the house, its driveway and the nearby boundary in every preset, never the lot centre.
     const bdp = store.project.site?.lot?.boundary;
     const bigLot = !!bdp?.length && Math.max(Math.max(...bdp.map((q) => q.x)) - Math.min(...bdp.map((q) => q.x)), Math.max(...bdp.map((q) => q.y)) - Math.min(...bdp.map((q) => q.y))) / 1000 > 70;
+    if (kind === 'building' || kind === 'development') {
+      const sf0 = streetFrame();
+      const ang0 = 28 * RAD;
+      const az0 = sf0 ? (Math.atan2(sf0.n.x * Math.cos(ang0) + sf0.u.x * Math.sin(ang0), sf0.n.y * Math.cos(ang0) + sf0.u.y * Math.sin(ang0)) * 180) / Math.PI : 30;
+      const pts0 = kind === 'development' && developmentPoints.length ? developmentPoints : housePoints.length ? housePoints : points;
+      const box0 = bounds || new THREE.Box3(new THREE.Vector3(-5, 0, -5), new THREE.Vector3(10, 4, 8));
+      const pose0 = framedPose(camera, pts0, box0, az0, kind === 'building' ? 22 : 36);
+      if (kind === 'building') pose0.pos.sub(pose0.target).multiplyScalar(1.1).add(pose0.target);
+      return pose0;
+    }
+    if (bigLot && kind === 'hero') return poseFor('development');
     if ((embedFraming || bigLot) && bdp?.length && kind !== 'front' && kind !== 'fit') {
       const e = embedBase();
       if (e) return e;
@@ -702,6 +725,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   vbHero.addEventListener('click', () => frameCamera(true, 'hero'));
   vbFront.addEventListener('click', () => frameCamera(true, 'front'));
   vbAerial.addEventListener('click', () => frameCamera(true, 'aerial'));
+  vbBuilding.addEventListener('click', () => frameCamera(true, 'building'));
+  vbDev.addEventListener('click', () => frameCamera(true, 'development'));
   vbSun.addEventListener('click', () => {
     sunKey = sunKey === 'warm' ? 'day' : 'warm';
     try {

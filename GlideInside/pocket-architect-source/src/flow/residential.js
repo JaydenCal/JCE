@@ -108,7 +108,8 @@ function mountPlaceStep(ctx, { getHomes }) {
   const zoomBar = h('div', { class: 'gf-zoom', role: 'group', 'aria-label': 'Zoom the plan' },
     zbtn('Zoom in', '+', () => zoomBy(1 / 1.5), 'flow-zoom-in'), zbtn('Zoom out', '\u2212', () => zoomBy(1.5), 'flow-zoom-out'),
     zbtn('Fit the whole lot', 'Fit lot', () => { view = null; draw(liveProject || store.project); }, 'flow-fit-lot', 'gf-zb--wide'),
-    zbtn('Zoom to the home', 'Zoom to home', () => zoomHome(), 'flow-zoom-home', 'gf-zb--wide'), aerialBtn);
+    zbtn('Zoom to the building', 'Zoom to building', () => zoomHome(3000), 'flow-zoom-home', 'gf-zb--wide'),
+    zbtn('Zoom to the whole development: buildings and driveway', 'Zoom to development', () => zoomDev(), 'flow-zoom-dev', 'gf-zb--wide'), aerialBtn);
   stage.append(zoomBar);
   const busyEl = h('div', { class: 'gf-empty', style: { position: 'absolute', inset: '0', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,.6)' }, dataset: { ps: 'flow-placing' }, role: 'status' }, 'Placing your home');
 
@@ -171,6 +172,17 @@ function mountPlaceStep(ctx, { getHomes }) {
     const w = Math.min(box.w, Math.max(30000, Math.max(hb.w, hb.h * (box.w / box.h)) + 2 * marginMm));
     const c = houseCentre(store.project);
     view = w >= box.w - 1 ? null : clampView({ x: c.x - w / 2, y: c.y - (w * (box.h / box.w)) / 2, w, h: w * (box.h / box.w) });
+    draw(liveProject || store.project);
+  }
+  function zoomDev() {
+    const hl = buildingHull(store.project);
+    if (!box || hl.length < 3) return;
+    let pts = hl;
+    try { const d = deriveDriveway(store.project); if (d?.ok) pts = [...hl, ...d.polygon]; } catch { /* none */ }
+    const bb = G.bbox(pts);
+    const w = Math.min(box.w, Math.max(30000, Math.max(bb.w, bb.h * (box.w / box.h)) + 2 * 6000));
+    const cx = (bb.minX + bb.maxX) / 2; const cy = (bb.minY + bb.maxY) / 2;
+    view = w >= box.w - 1 ? null : clampView({ x: cx - w / 2, y: cy - (w * (box.h / box.w)) / 2, w, h: w * (box.h / box.w) });
     draw(liveProject || store.project);
   }
   const shoelace = (pts) => Math.abs(pts.reduce((t, p, i) => { const q = pts[(i + 1) % pts.length]; return t + p.x * q.y - q.x * p.y; }, 0)) / 2;

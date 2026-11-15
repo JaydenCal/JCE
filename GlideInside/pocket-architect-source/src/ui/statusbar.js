@@ -34,7 +34,9 @@ export function createStatusBar(el, store, { editor } = {}) {
   const cell = (...kids) => h('span', { class: 'ps-status-cell' }, ...kids);
   const cursorCell = cell(h('span', null, 'X Y'), cursor);
   cursorCell.classList.add('ps-cell-cursor');
-  const planCells = [cursorCell, cell(snapBtn), cell(h('span', null, 'Zoom'), zoom, fit)];
+  const fitB = h('button', { class: 'ps-status-btn', type: 'button', title: 'Zoom to building', 'aria-label': 'Zoom to building', dataset: { ps: 'zoom-building' } }, 'Bldg');
+  const fitD = h('button', { class: 'ps-status-btn', type: 'button', title: 'Zoom to development: buildings, driveway and site works', 'aria-label': 'Zoom to development', dataset: { ps: 'zoom-development' } }, 'Dev');
+  const planCells = [cursorCell, cell(snapBtn), cell(h('span', null, 'Zoom'), zoom, fit, fitB, fitD)];
   el.append(
     ...planCells,
     cell(h('span', null, 'Indoor'), area),
@@ -62,6 +64,8 @@ export function createStatusBar(el, store, { editor } = {}) {
 
   snapBtn.addEventListener('click', () => store.setUI({ snap: !store.ui.snap }));
   fit.addEventListener('click', () => editor?.zoomToFit());
+  fitB.addEventListener('click', () => editor?.zoomToBuilding?.());
+  fitD.addEventListener('click', () => editor?.zoomToDevelopment?.());
   themeBtn.addEventListener('click', () => applyTheme(currentTheme() === 'dark' ? 'light' : 'dark', { remember: true }));
   let autosaveWarned = false;
 
