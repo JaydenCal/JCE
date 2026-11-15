@@ -102,8 +102,8 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
         el('p', { class: 'psp-fine' }, 'Plans are indicative concept documents for developers. ', config.disclaimer || ''),
         links(),
         el('p', { class: 'psp-fine' },
-          'Already subscribed? ', el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => openRestore({ back: () => openGate({ source }) }) }, 'Restore subscription'),
-          '. Have a trial login? ', el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => openTrialLogin({ back: () => openGate({ source }) }) }, 'Sign in'), '.'),
+          'Already subscribed? ', el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { modal.close('sub'); openRestore({ back: () => openGate({ source }) }); } }, 'Restore subscription'),
+          '. Have a trial login? ', el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { modal.close('sub'); openTrialLogin({ back: () => openGate({ source }) }); } }, 'Sign in'), '.'),
         err),
       footer: (close) => [el('button', { class: 'psp-btn', type: 'button', onclick: () => close('cancel') }, 'Not now'), subscribeBtn],
     });

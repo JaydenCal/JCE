@@ -17,7 +17,7 @@ import { effectiveClass, zoneClass, ZONE_CLASS_LABEL } from '../zones.js';
 import { rowLength } from '../layout.js';
 import { facts, NCC_CLASSES, PARKING_M2_PER_SPACE } from '../dataset.js';
 import { needsZone, ensureZone, lotKey } from '../zone-lookup.js';
-import { feasibility, AREAS, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT, DATA_DATE, money, band, pct1, summaryRows, costRows } from '../feasibility.js';
+import { feasibility, AREAS, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT, DATA_DATE, money, band, pct1, summaryRows, costRows, headlineRows, INPUT_MAX } from '../feasibility.js';
 
 const getPath = (o, path) => path.split('.').reduce((a, k) => (a == null ? a : a[k]), o);
 function setPath(o, path, v) {
@@ -193,21 +193,24 @@ export function createCommercialPanel({ store, host, editor }) {
     const chip = (inp) => h('span', { class: `cm-chip2 cm-chip-${String(inp.status).toLowerCase()}`, title: inp.note || null }, inp.chip);
     const inRow = (key, label, unit, step) => {
       const inp = f.inputs[key];
-      const input = h('input', { type: 'number', min: 0, step, value: inp.value, dataset: { k: `fz-${key}` }, onchange: () => {
+      const input = h('input', { type: 'number', min: 0, max: INPUT_MAX[key], step, value: inp.value, dataset: { k: `fz-${key}` }, onchange: () => {
         const raw = input.value;
-        setFz(`Set ${label.toLowerCase()}`, (z) => { if (raw === '') delete z.v[key]; else z.v[key] = Math.max(0, Number(raw) || 0); });
+        setFz(`Set ${label.toLowerCase()}`, (z) => { if (raw === '') delete z.v[key]; else z.v[key] = Math.min(INPUT_MAX[key] ?? Infinity, Math.max(0, Number(raw) || 0)); });
       } });
       return h('div', { class: 'cm-fz-in' }, field(label, h('span', { class: 'cm-in' }, input, h('i', null, unit))), h('div', { class: 'cm-fz-chip' }, chip(inp), inp.edited ? h('button', { type: 'button', class: 'cm-link', onclick: () => setFz(`Reset ${label.toLowerCase()}`, (z) => { delete z.v[key]; }) }, `Reset to ${inp.defaultValue.toLocaleString('en-AU')}`) : null));
     };
     const ev = f.defaults.inputs.saleRate.evidence;
-    const priceInput = h('input', { type: 'number', min: 0, step: 10000, value: f.inputs.landPrice.value ?? '', placeholder: 'Auto', dataset: { k: 'fz-landPrice' }, onchange: () => {
+    const priceInput = h('input', { type: 'number', min: 0, max: INPUT_MAX.landPrice, step: 10000, value: f.inputs.landPrice.value ?? '', placeholder: 'Auto', dataset: { k: 'fz-landPrice' }, onchange: () => {
       const raw = priceInput.value;
-      setFz('Set land price', (z) => { if (raw === '' || Number(raw) <= 0) delete z.v.landPrice; else z.v.landPrice = Number(raw); });
+      setFz('Set land price', (z) => { if (raw === '' || Number(raw) <= 0) delete z.v.landPrice; else z.v.landPrice = Math.min(INPUT_MAX.landPrice, Number(raw)); });
     } });
     const sale = f.defaults.inputs.saleRate;
     const evLine = ev.askMedPsm || ev.soldMedPsm
       ? `Portal asking median ${ev.askMedPsm ? `$${ev.askMedPsm.toLocaleString('en-AU')}` : 'none'} per m² (n ${ev.askN}${ev.askUsed ? '' : ', not used'}), sold median ${ev.soldMedPsm ? `$${ev.soldMedPsm.toLocaleString('en-AU')}` : 'none'} per m² (n ${ev.soldN}${ev.soldUsed ? '' : ', not used'}).`
       : 'No portal listings for this area.';
+    const head = headlineRows(f).map(([k, v, n]) => h('div', { class: 'cm-fz-out cm-fz-head', dataset: { fz: k, ps: 'fz-headline' } }, h('span', null, k), h('b', null, v), n ? h('i', null, n) : null));
+    const anyEdited = Object.keys(c.feasibility?.v || {}).length > 0;
+    const resetAll = h('button', { type: 'button', class: 'cm-link', disabled: !anyEdited, dataset: { ps: 'fz-reset-all' }, onclick: () => setFz('Reset all feasibility inputs', (z) => { z.v = {}; }) }, 'Reset all');
     const out = summaryRows(f).map(([k, v, b]) => h('div', { class: 'cm-fz-out', dataset: { fz: k } }, h('span', null, k), h('b', null, v), b ? h('i', null, `Low to high: ${b}`) : null));
     const costs = costRows(f).map(([k, v], i, a) => h('p', { class: `cm-line${i === a.length - 1 ? ' cm-fz-total' : ''}` }, h('span', null, k), h('b', null, v)));
     const unitTable = h('table', { class: 'cm-fz-units', dataset: { ps: 'fz-units' } }, h('thead', null, h('tr', null, ...['Unit', 'GFA m²', 'Price', 'Rent per year'].map((t) => h('th', null, t)))),
@@ -217,8 +220,9 @@ export function createCommercialPanel({ store, host, editor }) {
     return section(title,
       h('p', { class: 'cm-hint cm-fz-caveat', dataset: { ps: 'fz-caveat' } }, CAVEAT),
       field('Area', areaSel, f.detectedKey === (c.feasibility?.area || f.detectedKey) ? `Portal data ${DATA_DATE}` : 'Chosen by you'),
+      h('div', { class: 'cm-fz-outs cm-fz-heads', dataset: { ps: 'fz-headlines' } }, ...head),
       h('div', { class: 'cm-fz-outs', dataset: { ps: 'fz-outputs' } }, ...out),
-      h('b', { class: 'cm-fz-h' }, 'Inputs'),
+      h('div', { class: 'gf-row', style: { justifyContent: 'space-between' } }, h('b', { class: 'cm-fz-h' }, 'Inputs'), resetAll),
       h('p', { class: 'cm-hint' }, evLine),
       inRow('saleRate', 'Sale rate', '$/m²', 50),
       inRow('rentRate', 'Rent per year', '$/m²', 5),

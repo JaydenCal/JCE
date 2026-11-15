@@ -193,10 +193,10 @@ export function areaDefaults(areaKey, { avgUnitGfaM2 = 0 } = {}) {
     buildRate: { ...est(bR, 50, 'Secondary cost guides, not a quantity survey, excludes fees and site works. The default is the low end of the analyst range; the verified references (large metal clad shed 1,060 to 1,340, precast 1,160 to 1,740, national warehouse 1,150, industrial warehouses 1,300 to 2,800) sit below its middle. Set your own after a quantity survey.'), value: bR.low, chip: `Estimate, low end of the range ${fmtN(bR.low)} to ${fmtN(bR.high)}` },
     outgoingsPct: { value: OUTGOINGS_PCT.value, low: OUTGOINGS_PCT.low, high: OUTGOINGS_PCT.high, status: 'ESTIMATE', chip: `Estimate, assumption ${OUTGOINGS_PCT.low} to ${OUTGOINGS_PCT.high}`, note: 'Percent of gross rent taken by outgoings (rates, insurance, repairs and management). An assumption, no regional figure was published. Set your own or use 0 for a net lease.' },
     mezzFactor: { value: MEZZ_FACTOR.value, low: MEZZ_FACTOR.low, high: MEZZ_FACTOR.high, status: 'ESTIMATE', chip: `Estimate, assumption ${MEZZ_FACTOR.low} to ${MEZZ_FACTOR.high}`, note: 'Mezzanine floor area is valued at this fraction of the ground floor sale and rent rate. An assumption, set your own.' },
-    siteRate: est(sw, 5, 'Pavements, drainage, services and detention, per m² of the developed area (building footprint plus hardstand).'),
+    siteRate: { ...est(sw, 5, 'Pavements, drainage, services and detention, per m² of the developed area (building footprint plus hardstand). The default is the low end of the published range, as for the build rate.'), value: sw.low, chip: `Estimate, low end of the range ${fmtN(sw.low)} to ${fmtN(sw.high)}` },
     landscapeRate: { value: LANDSCAPE_RATE.value, low: LANDSCAPE_RATE.low, high: LANDSCAPE_RATE.high, status: 'ESTIMATE', chip: `Estimate, allowance ${LANDSCAPE_RATE.low} to ${LANDSCAPE_RATE.high}`, note: 'Clearing and landscaping, per m² of the rest of the lot.' },
-    feesPct: { value: Math.round(((fe.low + fe.high) / 2) * 100) / 100, ...fe, status: 'ESTIMATE', chip: `Estimate, published range ${fe.low} to ${fe.high}`, note: 'Percent of construction cost (build plus site works).' },
-    contPct: { value: Math.round(((co.low + co.high) / 2) * 100) / 100, ...co, status: 'ESTIMATE', chip: `Estimate, published range ${co.low} to ${co.high}`, note: 'Percent of construction cost (build plus site works).' },
+    feesPct: { value: fe.low, ...fe, status: 'ESTIMATE', chip: `Estimate, published range ${fe.low} to ${fe.high}`, note: 'Percent of construction cost (build plus site works).' },
+    contPct: { value: co.low, ...co, status: 'ESTIMATE', chip: `Estimate, published range ${co.low} to ${co.high}`, note: 'Percent of construction cost (build plus site works).' },
   };
   return { areaKey: area.key, label: area.label, confidence: m.confidence || null, inputs };
 }
@@ -211,6 +211,8 @@ export function unitGfas(commercial) {
   });
 }
 
+/** Upper bounds for the inputs, so a mistyped value cannot produce billions. */
+export const INPUT_MAX = Object.freeze({ saleRate: 20000, rentRate: 1500, yieldPct: 25, landRate: 5000, buildRate: 10000, siteRate: 2000, landscapeRate: 500, feesPct: 40, contPct: 40, outgoingsPct: 100, mezzFactor: 1, landPrice: 500000000 });
 const INPUT_KEYS = ['saleRate', 'rentRate', 'yieldPct', 'landRate', 'buildRate', 'siteRate', 'landscapeRate', 'feesPct', 'contPct', 'outgoingsPct', 'mezzFactor'];
 
 /** The effective values: the person's overrides (project.commercial.feasibility.v) on top of the defaults. */
@@ -220,10 +222,10 @@ export function effectiveInputs(defaults, overrides = {}) {
     const d = defaults.inputs[k];
     const o = overrides[k];
     const edited = Number.isFinite(o) && o >= 0;
-    out[k] = { ...d, value: edited ? o : d.value, edited, defaultValue: d.value, status: edited ? 'EDITED' : d.status, chip: edited ? 'Edited by you' : d.chip };
+    out[k] = { ...d, max: INPUT_MAX[k], value: edited ? Math.min(o, INPUT_MAX[k]) : d.value, edited, defaultValue: d.value, status: edited ? 'EDITED' : d.status, chip: edited ? 'Edited by you' : d.chip };
   }
   const price = Number(overrides.landPrice);
-  out.landPrice = { value: Number.isFinite(price) && price > 0 ? price : null };
+  out.landPrice = { value: Number.isFinite(price) && price > 0 ? Math.min(price, INPUT_MAX.landPrice) : null };
   return out;
 }
 
@@ -268,10 +270,11 @@ function scenario(inp, { gfa, rowsGfa = gfa, mezzM2 = 0, buildings = [], devM2, 
   const marginSale = realisation - cost;
   const marginHold = endValue - cost;
   return {
+    yieldOk: yieldPct > 0,
     saleRate: sale, rentRate: rent, yieldPct, land, build, buildRows, buildBuildings, buildingCosts: bCosts.map((x) => ({ id: x.b.id, n: x.b.n, label: x.b.label, gfa: x.b.gfaM2, total: x.total, lines: x.lines })), siteWorks: site, siteDev, siteRest, fees, contingency, cost,
     realisation, grossRent, netRent, outgoingsPct, mezzFactor, revenueGfa, endValue, marginSale, marginHold,
     marginSalePct: cost > 0 ? (marginSale / cost) * 100 : 0,
-    marginHoldPct: cost > 0 ? (marginHold / cost) * 100 : 0,
+    marginHoldPct: cost > 0 && yieldPct > 0 ? (marginHold / cost) * 100 : 0,
     grossYieldOnCostPct: cost > 0 ? (grossRent / cost) * 100 : 0,
   };
 }
@@ -311,18 +314,30 @@ export const pct1 = (v) => `${(Math.round(v * 10) / 10).toFixed(1)}%`;
 export const band = (a, b, f = money) => (r0(a) === r0(b) ? f(a) : `${f(Math.min(a, b))} to ${f(Math.max(a, b))}`);
 
 /** The summary lines [label, value, band] for the panel and for C103. Same wording in both. */
+export const NEED_YIELD = 'Enter a yield';
+/** The headline: profit and margin on cost if the units are sold, and if they are held and leased. [label, value, note] */
+export function headlineRows(f) {
+  const m = f.mid;
+  const holdOk = m.yieldOk !== false;
+  return [
+    ['Indicative profit, sell the units', `${money(m.marginSale)} (${pct1(m.marginSalePct)} on cost)`, m.marginSale < 0 ? 'A loss at these values' : ''],
+    ['Indicative profit, hold and lease', holdOk ? `${money(m.marginHold)} (${pct1(m.marginHoldPct)} on cost)` : NEED_YIELD, holdOk && m.marginHold < 0 ? 'A loss at these values' : ''],
+  ];
+}
+
 export function summaryRows(f) {
   const { mid: m, low: l, high: h } = f;
+  const holdOk = m.yieldOk !== false;
   return [
     ['GFA incl. mezzanine', `${m2(f.gfa)} m²`, ''],
     ['Gross realisation (GFA x sale rate)', money(m.realisation), band(l.realisation, h.realisation)],
     ['Gross rent per year', money(m.grossRent), band(l.grossRent, h.grossRent)],
     [`Net rent per year (after ${Math.round(m.outgoingsPct * 10) / 10}% outgoings)`, money(m.netRent), band(l.netRent, h.netRent)],
-    ['End value by capitalisation (net rent / net yield)', money(m.endValue), band(l.endValue, h.endValue)],
+    ['End value by capitalisation (net rent / net yield)', holdOk ? money(m.endValue) : NEED_YIELD, holdOk ? band(l.endValue, h.endValue) : ''],
     ['Total development cost', money(m.cost), band(h.cost, l.cost)],
     ['Gross yield on cost', pct1(m.grossYieldOnCostPct), band(l.grossYieldOnCostPct, h.grossYieldOnCostPct, pct1)],
     ['Indicative margin, sell the units', `${money(m.marginSale)} (${pct1(m.marginSalePct)} on cost)`, `${band(l.marginSale, h.marginSale)} (${band(l.marginSalePct, h.marginSalePct, pct1)})`],
-    ['Indicative margin, hold and lease', `${money(m.marginHold)} (${pct1(m.marginHoldPct)} on cost)`, `${band(l.marginHold, h.marginHold)} (${band(l.marginHoldPct, h.marginHoldPct, pct1)})`],
+    ['Indicative margin, hold and lease', holdOk ? `${money(m.marginHold)} (${pct1(m.marginHoldPct)} on cost)` : NEED_YIELD, holdOk ? `${band(l.marginHold, h.marginHold)} (${band(l.marginHoldPct, h.marginHoldPct, pct1)})` : ''],
   ];
 }
 

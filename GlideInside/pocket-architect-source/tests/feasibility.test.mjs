@@ -72,7 +72,7 @@ test('fallback: portal medians from fewer than 4 listings are not used', () => {
   assert.equal(areaDefaults('tamworth', { avgUnitGfaM2: 600 }).inputs.saleRate.value, 1580);
   // yields, land and costs always come from market.json ranges
   const t = areaDefaults('tamworth').inputs;
-  assert.deepEqual([t.yieldPct.value, t.landRate.value, t.buildRate.value, t.siteRate.value, t.feesPct.value, t.contPct.value], [7.25, 100, 1500, 185, 10, 8.75]);
+  assert.deepEqual([t.yieldPct.value, t.landRate.value, t.buildRate.value, t.siteRate.value, t.feesPct.value, t.contPct.value], [7.25, 100, 1500, 120, 8, 7.5]);
   assert.ok(Object.values(t).every((x) => x.status === 'PORTAL' || x.status === 'ESTIMATE'));
   // sanity on the data files
   assert.equal(portal.asAt, '13/11/2026');
@@ -98,14 +98,14 @@ test('totals: golden numbers for the commercial fixture in Tamworth', () => {
   near(f.devM2, 3165, 1); // 3108 plus the site access driveway (siteAccess, 6 m wide to the front boundary)
   near(f.restM2, 9000 - f.devM2, 0.001);
   assert.ok(f.devM2 > 1440 && f.devM2 < f.lotM2);
-  near(m.siteDev, f.devM2 * 185, 0.01);
+  near(m.siteDev, f.devM2 * 120, 0.01);
   near(m.siteRest, f.restM2 * 15, 0.01);
   near(m.siteWorks, m.siteDev + m.siteRest, 0.01);
   const construction = m.build + m.siteWorks;
-  near(m.fees, construction * 0.1, 0.5);
-  near(m.contingency, construction * 0.0875, 0.5);
+  near(m.fees, construction * 0.08, 0.5);
+  near(m.contingency, construction * 0.075, 0.5);
   near(m.cost, m.land + construction + m.fees + m.contingency, 0.5);
-  near(m.cost, 4597697, 1); // golden, set after the net rent, mezzanine and build rate changes
+  near(m.cost, 4258884, 1); // golden, set after the site works, fees and contingency defaults moved to the low end of their ranges (15/11/2026)
   near(m.marginSale, m.realisation - m.cost, 0.01);
   near(m.marginSalePct, (m.marginSale / m.cost) * 100, 1e-6);
   near(m.grossYieldOnCostPct, (m.grossRent / m.cost) * 100, 1e-6);
