@@ -324,9 +324,16 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
       await pstore.updateDesign(profile.id, existing.id, { name: b.name, address: b.address, kind: b.kind, thumbnail: b.thumbnail ?? existing.thumbnail, project: b.text, bytes: b.bytes, updatedAt: at });
       return json({ design: designView({ ...existing, name: b.name, address: b.address, kind: b.kind, thumbnail: b.thumbnail ?? existing.thumbnail, bytes: b.bytes, updatedAt: at }), created: false });
     }
-    if ((await pstore.countDesigns(profile.id)) >= config.freeProfileMaxDesigns) throw new HttpError('DESIGN_LIMIT_REACHED', limitMessage(), { limit: config.freeProfileMaxDesigns });
     const d = { id: rid('des'), profileId: profile.id, projectId: b.project.id, name: b.name, address: b.address, kind: b.kind, thumbnail: b.thumbnail, project: b.text, bytes: b.bytes, createdAt: at, updatedAt: at };
-    if (!(await pstore.createDesign(d))) throw new HttpError('CONFLICT', 'That design is already saved. Try again.');
+    // F8: the limit is checked inside the insert itself, and a unique conflict on a first save made from several tabs becomes an update.
+    const made = await pstore.createDesign(d, config.freeProfileMaxDesigns);
+    if (made === 'limit') throw new HttpError('DESIGN_LIMIT_REACHED', limitMessage(), { limit: config.freeProfileMaxDesigns });
+    if (made === 'conflict') {
+      const won = await pstore.getDesignByProject(profile.id, b.project.id);
+      if (!won) throw new HttpError('CONFLICT', 'That design is already saved. Try again.');
+      await pstore.updateDesign(profile.id, won.id, { name: b.name, address: b.address, kind: b.kind, thumbnail: b.thumbnail ?? won.thumbnail, project: b.text, bytes: b.bytes, updatedAt: at });
+      return json({ design: designView({ ...won, name: b.name, address: b.address, kind: b.kind, thumbnail: b.thumbnail ?? won.thumbnail, bytes: b.bytes, updatedAt: at }), created: false });
+    }
     return json({ design: designView(d), created: true }, 201);
   }
 
@@ -370,7 +377,6 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     const { profile } = await auth(r);
     const d = await pstore.getDesign(profile.id, id);
     if (!d) throw new HttpError('NOT_FOUND', 'That design was not found.');
-    if ((await pstore.countDesigns(profile.id)) >= config.freeProfileMaxDesigns) throw new HttpError('DESIGN_LIMIT_REACHED', limitMessage(), { limit: config.freeProfileMaxDesigns });
     const project = JSON.parse(d.project);
     const at = iso();
     project.id = rid('p');
@@ -378,7 +384,9 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     project.createdAt = project.updatedAt = at;
     const text = JSON.stringify(project);
     const copy = { ...d, id: rid('des'), projectId: project.id, name: project.name, project: text, bytes: new TextEncoder().encode(text).length, createdAt: at, updatedAt: at };
-    if (!(await pstore.createDesign(copy))) throw new HttpError('CONFLICT', 'The copy could not be made. Try again.');
+    const made = await pstore.createDesign(copy, config.freeProfileMaxDesigns);
+    if (made === 'limit') throw new HttpError('DESIGN_LIMIT_REACHED', limitMessage(), { limit: config.freeProfileMaxDesigns });
+    if (made !== 'ok') throw new HttpError('CONFLICT', 'The copy could not be made. Try again.');
     return json({ design: designView(copy) }, 201);
   }
 

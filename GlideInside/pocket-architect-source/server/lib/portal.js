@@ -717,14 +717,18 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   /** Creates the organisation row only (a unique short code is picked). Returns the org, or throws CONFLICT. */
   async function makeOrg({ name, shortCode, extra = {} }) {
     const base = (shortCode || name.replace(/[^A-Za-z]/g, '').slice(0, 3)).toUpperCase().replace(/[^A-Z0-9]/g, '') || 'ORG';
-    let code = base;
-    for (let n = 2; await pstore.getOrgByShortCode(code); n += 1) code = `${base}${n}`;
-    let slug = cleanSlug(slugify(name)) || 'builder';
-    const slugBase = slug;
-    for (let n = 2; await pstore.getOrgBySlug(slug); n += 1) slug = `${slugBase}-${n}`;
-    const org = { id: rid('org'), name, shortCode: code, slug, displayName: name, logoDataUrl: null, allowClientTopUps: false, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, showAerialDefault: true, showAiAssistant: true, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso(), ...extra };
-    if (!(await pstore.createOrg(org))) throw new HttpError('CONFLICT', 'That organisation already exists.');
-    return org;
+    // The check and the insert are separate statements, so two organisations created together can pick the same short code or slug. The unique
+    // index decides (createOrg returns false) and the loser picks the next free code and tries again.
+    for (let attempt = 0; attempt < 8; attempt += 1) {
+      let code = base;
+      for (let n = 2; await pstore.getOrgByShortCode(code); n += 1) code = `${base}${n}`;
+      let slug = cleanSlug(slugify(name)) || 'builder';
+      const slugBase = slug;
+      for (let n = 2; await pstore.getOrgBySlug(slug); n += 1) slug = `${slugBase}-${n}`;
+      const org = { id: rid('org'), name, shortCode: code, slug, displayName: name, logoDataUrl: null, allowClientTopUps: false, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, showAerialDefault: true, showAiAssistant: true, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso(), ...extra };
+      if (await pstore.createOrg(org)) return org;
+    }
+    throw new HttpError('CONFLICT', 'That organisation already exists.');
   }
   /** GET /portal/brand/:slug (public). Only the name, logo and colours of an existing organisation, for the branded sign in page. */
   async function brandBySlug(r, slug) {

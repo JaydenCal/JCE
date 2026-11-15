@@ -274,10 +274,11 @@ test('health: probes every upstream and reports ok', async () => {
   const res = await get('/health');
   assert.equal(res.status, 200);
   const b = await res.json();
-  assert.equal(b.upstreams.length, 14);
+  assert.equal(b.upstreams.length, 15, '14 service descriptions plus one real zoning query');
+  assert.ok(b.upstreams.some((u) => u.id === 'nsw-zoning-query' && u.ok));
   assert.equal(b.ok, true);
   assert.ok(b.upstreams.every((u) => u.ok));
-  assert.ok(fetchImpl.calls.length >= 14);
+  assert.ok(fetchImpl.calls.length >= 15);
 });
 
 test('health: a failing required upstream makes ok false, optional ones only allOk', async () => {
@@ -569,4 +570,65 @@ test('aerial: wide request with maxpx caps the picture at 2048 px, separately ca
   assert.equal(sizes.length, n);
   await get(`/aerial?state=NSW&srid=7856&bbox=${wide}&res=0.1&maxpx=99999`);
   assert.equal(sizes.at(-1), '4096,4096');
+});
+
+test('lot: 100 identical parallel lookups share one set of upstream calls, and cache hits are exempt from the per IP limit (load test F4)', async () => {
+  const single = mk();
+  assert.equal((await single.get(`/lot?lon=${LON}&lat=${LAT}`, '9.9.9.9')).status, 200);
+  const perLookup = single.fetchImpl.calls.length;
+  assert.ok(perLookup >= 2, `one lookup makes ${perLookup} upstream calls`);
+  const { get, fetchImpl } = mk();
+  const herd = await Promise.all(Array.from({ length: 100 }, (_, i) => get(`/lot?lon=${LON}&lat=${LAT}`, `10.0.0.${i + 1}`)));
+  assert.equal(herd.filter((r) => r.status === 200).length, 100);
+  assert.equal(fetchImpl.calls.length, perLookup, `100 identical lookups made ${fetchImpl.calls.length} upstream calls (before the fix: ${perLookup * 100})`);
+  // 30 lookups from one address for the same, now cached, lot: all served, none counted against the 20 per minute limit
+  fetchImpl.calls.length = 0;
+  const same = await Promise.all(Array.from({ length: 30 }, () => get(`/lot?lon=${LON}&lat=${LAT}`, '10.1.1.1')));
+  assert.equal(same.filter((r) => r.status === 200).length, 30);
+  assert.equal(fetchImpl.calls.length, 0);
+  // a bad parameter still counts against the limit
+  const bad = await Promise.all(Array.from({ length: 25 }, () => get('/lot?lon=abc&lat=1', '10.2.2.2')));
+  assert.ok(bad.some((r) => r.status === 429), 'parameter errors are still limited');
+});
+
+test('lot: a failed zoning lookup is returned promptly, never stored, never cached, and retried by the next request (final report H1)', async () => {
+  let zoningDown = true;
+  const calls = [];
+  const inner = upstream({ calls });
+  const fetchImpl = async (input, init) => {
+    if (String(input).includes('EPI_Primary_Planning_Layers') && String(input).includes('/query') && zoningDown) {
+      // the live service accepted the request and never answered: the call is only ended by its own timeout
+      return new Promise((_, rej) => { const keep = setTimeout(() => {}, 20000); init?.signal?.addEventListener('abort', () => { clearTimeout(keep); rej(Object.assign(new Error('timeout'), { name: 'TimeoutError' })); }); });
+    }
+    return inner(input, init);
+  };
+  const store = createMemoryStore();
+  const app = createApp({ store, env: {}, fetchImpl, now: () => T0 });
+  const get = (ip) => app.fetch(new Request(`https://api.test/api/site/lot?lon=${LON}&lat=${LAT}`, { headers: { 'cf-connecting-ip': ip } }));
+  const t0 = Date.now();
+  const r1 = await get('7.7.7.7');
+  const took = Date.now() - t0;
+  assert.equal(r1.status, 200);
+  assert.ok(took < 7500, `the lot came back in ${took} ms (before the fix the zoning call alone waited 25 s and retried)`);
+  const b1 = await r1.json();
+  assert.equal(b1.zoning, null);
+  assert.equal(b1.zoningPending, true);
+  assert.equal(r1.headers.get('cache-control'), 'no-store', 'a lot without its zone is not cached by the browser or edge');
+  zoningDown = false;
+  const r2 = await get('7.7.7.8');
+  const b2 = await r2.json();
+  assert.equal(b2.zoning?.code, 'R2', 'the failed result was not stored, so the next request looked the zone up again');
+  assert.equal(b2.zoningPending, undefined);
+  assert.match(r2.headers.get('cache-control'), /max-age=3600/);
+  const r3 = await get('7.7.7.9');
+  assert.equal((await r3.json()).zoning?.code, 'R2');
+});
+
+test('health: a zoning query that fails or returns nothing makes ok false even when the service describes itself fine', async () => {
+  const bad = mk({ fail: /EPI_Primary_Planning_Layers\/MapServer\/2\/query/ });
+  const b = await (await bad.get('/health')).json();
+  const z = b.upstreams.find((u) => u.id === 'nsw-zoning-query');
+  assert.equal(z.ok, false);
+  assert.equal(b.ok, false);
+  assert.ok(b.upstreams.find((u) => u.id === 'nsw-zoning').ok, 'the service description alone still answers');
 });

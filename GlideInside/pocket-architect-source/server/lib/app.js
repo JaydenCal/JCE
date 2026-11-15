@@ -467,7 +467,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       data = await anthropic.callAnthropic({ config: aiConfig, fetchImpl: doFetch, body: reqBody });
     } catch (e) {
       await acct.release(reservation);
-      await store.logAiRequest({ ...logBase, latencyMs: now() - started, status: 'error' });
+      await store.logAiRequest({ ...logBase, latencyMs: now() - started, status: e?.code === 'AI_PAUSED' ? 'ai_paused' : 'error' });
       throw e;
     }
 
@@ -751,8 +751,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   // L6: anonymised consent records are kept CONSENT_ARCHIVE_YEARS after a profile is deleted, then removed.
   async function housekeeping() {
     const nowMs = now();
-    await store.purgeRateLimits?.(nowMs)?.catch?.(() => null);
-    await pstore?.purgeAuthFailures?.(nowMs)?.catch?.(() => null);
+    for (let i = 0; i < 20; i++) { // each purge is bounded (a batch per call); the cron clears a backlog by repeating
+      await store.purgeRateLimits?.(nowMs)?.catch?.(() => null);
+      await pstore?.purgeAuthFailures?.(nowMs)?.catch?.(() => null);
+    }
     await profstore?.purgeConsentArchive?.(iso(nowMs - config.consentArchiveYears * 365.25 * 86400000))?.catch?.(() => null);
   }
 

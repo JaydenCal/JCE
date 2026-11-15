@@ -207,7 +207,7 @@ export function createD1PortalStore(db) {
       await run('DELETE FROM sessions WHERE user_id = ?1 AND id_hash <> ?2', userId, exceptHash);
     },
     async purgeSessions(nowIso) {
-      await run('DELETE FROM sessions WHERE expires_at <= ?1', nowIso);
+      await run('DELETE FROM sessions WHERE id_hash IN (SELECT id_hash FROM sessions WHERE expires_at <= ?1 LIMIT 200)', nowIso); // bounded: a backlog is cleared a batch per call
     },
     // Lockout counters. addFailure counts a failure in the current window and locks once `max` is reached.
     async getFailure(key) {
@@ -261,7 +261,7 @@ export function createD1PortalStore(db) {
     },
     /** Housekeeping: drop sign in counters whose window ended long ago (they only grow otherwise). */
     async purgeAuthFailures(nowMs, olderThanMs = 86400000) {
-      await run('DELETE FROM auth_failures WHERE window_start < ?1 AND (locked_until IS NULL OR locked_until < ?2)', nowMs - olderThanMs, nowMs);
+      await run('DELETE FROM auth_failures WHERE key IN (SELECT key FROM auth_failures WHERE window_start < ?1 AND (locked_until IS NULL OR locked_until < ?2) LIMIT 500)', nowMs - olderThanMs, nowMs);
     },
     /** Epoch for AI bearer tokens: every bump invalidates the tokens issued before it. */
     async bumpSessionEpoch(userId) {

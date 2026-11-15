@@ -40,7 +40,7 @@ export async function world({ env = {}, files = false } = {}) {
   const fetchImpl = async (url, init = {}) => {
     const u = new URL(String(url));
     if (u.origin === 'https://api.anthropic.com') {
-      calls.anthropic.push(JSON.parse(init.body)); if (state.ai.delay) await new Promise((r) => setTimeout(r, state.ai.delay));
+      calls.anthropic.push(JSON.parse(init.body)); if (state.ai.error) return jr(state.ai.error.body, state.ai.error.status); if (state.ai.delay) await new Promise((r) => setTimeout(r, state.ai.delay));
       return jr({ content: [{ type: 'text', text: state.ai.text }], usage: state.ai.usage, stop_reason: 'end_turn' });
     }
     if (u.origin === 'https://api.stripe.com') {

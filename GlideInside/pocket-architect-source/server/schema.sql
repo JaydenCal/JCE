@@ -483,3 +483,8 @@ CREATE TABLE IF NOT EXISTS consent_archive (
 );
 CREATE INDEX IF NOT EXISTS idx_consent_archive_hash ON consent_archive(email_hash);
 CREATE INDEX IF NOT EXISTS idx_consent_archive_archived ON consent_archive(archived_at);
+
+-- Expiry indexes (migration 0021): purges read an index range instead of scanning the table.
+CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_psessions_expires ON profile_sessions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_rate_limits_window ON rate_limits(window_start);

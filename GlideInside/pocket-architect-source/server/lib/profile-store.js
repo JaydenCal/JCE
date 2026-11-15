@@ -97,14 +97,33 @@ export function createD1ProfileStore(db) {
       await run('DELETE FROM profile_sessions WHERE profile_id = ?1 AND id_hash <> ?2', profileId, exceptHash);
     },
     async purgeSessions(nowIso) {
-      await run('DELETE FROM profile_sessions WHERE expires_at <= ?1', nowIso);
+      await run('DELETE FROM profile_sessions WHERE id_hash IN (SELECT id_hash FROM profile_sessions WHERE expires_at <= ?1 LIMIT 200)', nowIso); // bounded: a backlog is cleared a batch per call
     },
     // Designs (the list leaves out the project JSON)
     countDesigns: async (profileId) => Number((await first('SELECT COUNT(*) AS n FROM profile_designs WHERE profile_id = ?1', profileId))?.n ?? 0),
     listDesigns: async (profileId) => (await all(`SELECT ${list(DESIGN_COLS, ['project'])} FROM profile_designs WHERE profile_id = ?1 ORDER BY updated_at DESC, id`, profileId)).map((r) => fromRow(DESIGN_COLS, r, { skip: ['project'] })),
     getDesign: async (profileId, id) => fromRow(DESIGN_COLS, await first(`SELECT ${list(DESIGN_COLS)} FROM profile_designs WHERE id = ?1 AND profile_id = ?2`, id, profileId)),
     getDesignByProject: async (profileId, projectId) => fromRow(DESIGN_COLS, await first(`SELECT ${list(DESIGN_COLS)} FROM profile_designs WHERE profile_id = ?1 AND project_id = ?2`, profileId, projectId)),
-    createDesign: (d) => insert('profile_designs', DESIGN_COLS, d).catch((e) => (isUnique(e) ? false : Promise.reject(e))),
+    /**
+     * F8: ONE statement checks the limit and inserts (INSERT ... SELECT ... WHERE count < limit), so parallel creates cannot all pass a count taken earlier.
+     * Returns 'ok', 'limit' (the profile already holds `limit` designs) or 'conflict' (the same design id or project id is already saved).
+     */
+    async createDesign(d, limit = Infinity) {
+      const keys = Object.keys(DESIGN_COLS).filter((k) => d[k] !== undefined);
+      const n = keys.length;
+      const cap = Number.isFinite(limit) ? limit : 1e9;
+      try {
+        const res = await run(
+          `INSERT INTO profile_designs (${keys.map((k) => colName(DESIGN_COLS[k])).join(', ')}) SELECT ${keys.map((_, i) => `?${i + 1}`).join(', ')}
+           WHERE (SELECT COUNT(*) FROM profile_designs WHERE profile_id = ?${n + 1}) < ?${n + 2}`,
+          ...keys.map((k) => param(DESIGN_COLS, k, d[k])), d.profileId, cap,
+        );
+        return changed(res) ? 'ok' : 'limit';
+      } catch (e) {
+        if (isUnique(e)) return 'conflict';
+        throw e;
+      }
+    },
     updateDesign: (profileId, id, patch) => update('profile_designs', DESIGN_COLS, 'id = ?1 AND profile_id = ?2', [id, profileId], { ...patch, id: undefined, profileId: undefined }),
     async deleteDesign(profileId, id) {
       return changed(await run('DELETE FROM profile_designs WHERE id = ?1 AND profile_id = ?2', id, profileId));
@@ -188,10 +207,11 @@ export function createMemoryProfileStore() {
     listDesigns: async (profileId) => [...T.designs.values()].filter((d) => d.profileId === profileId).sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : a.updatedAt > b.updatedAt ? -1 : a.id < b.id ? -1 : 1)).map(noJson),
     getDesign: async (profileId, id) => (T.designs.get(id)?.profileId === profileId ? cp(T.designs.get(id)) : null),
     getDesignByProject: async (profileId, projectId) => cp([...T.designs.values()].find((d) => d.profileId === profileId && d.projectId === projectId)),
-    async createDesign(d) {
-      if (T.designs.has(d.id) || [...T.designs.values()].some((x) => x.profileId === d.profileId && x.projectId === d.projectId)) return false;
+    async createDesign(d, limit = Infinity) {
+      if (T.designs.has(d.id) || [...T.designs.values()].some((x) => x.profileId === d.profileId && x.projectId === d.projectId)) return 'conflict';
+      if ([...T.designs.values()].filter((x) => x.profileId === d.profileId).length >= limit) return 'limit';
       T.designs.set(d.id, { address: null, thumbnail: null, ...cp(d) });
-      return true;
+      return 'ok';
     },
     async updateDesign(profileId, id, patch) {
       const d = T.designs.get(id);
