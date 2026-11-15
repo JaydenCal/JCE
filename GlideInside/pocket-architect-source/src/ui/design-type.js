@@ -24,7 +24,7 @@ export function designTypeOf(project) {
   if (DESIGN_TYPES.some((d) => d.id === project?.designType)) return project.designType;
   if (project?.type === 'shed') return 'shed';
   if (project?.type === 'extension') return 'extension';
-  if (project?.type === 'unit') return /duplex/i.test(project.name || '') ? 'duplex' : 'granny_flat';
+  if (project?.type === 'unit') return /duplex|dual occupancy/i.test(project.name || '') ? 'duplex' : 'granny_flat';
   return 'house';
 }
 

@@ -4,7 +4,7 @@
 import { writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { TEMPLATES, createFromTemplate } from '../src/catalogue/templates.js';
-import { houseStats } from '../src/portal/house-stats.js';
+import { houseStats, frontageClassM, areaBreakdown } from '../src/portal/house-stats.js';
 import { projectToSvg } from '../src/portal/thumbnail.js';
 
 const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
@@ -19,6 +19,8 @@ const items = TEMPLATES.filter((t) => t.id !== 'blank').map((t) => {
     type: t.type,
     category: CATEGORY[t.type] || 'Design',
     ...houseStats(project),
+    frontageM: t.frontageM !== undefined ? t.frontageM : t.type === 'shed' || t.type === 'extension' ? null : frontageClassM(houseStats(project).widthMm),
+    areas: areaBreakdown(project),
     thumbnail: projectToSvg(project),
   };
 });

@@ -7,7 +7,12 @@
 import { rankDesigns } from '../portal/fit.js';
 import { lotOf } from '../model/placement.js';
 
-export const PUBLIC_TEMPLATE_IDS = ['house_single', 'house_double', 'granny_flat', 'duplex'];
+export const PUBLIC_TEMPLATE_IDS = [
+  'house_single', 'house_double', 'granny_flat', 'duplex',
+  // The generic set (src/catalogue/tpl/generic-specs.js)
+  'narrow_10_3bed', 'narrow_125_4bed', 'narrow_14_3bed_media', 'single_3bed_starter', 'narrow_double_4bed', 'townhouse_3bed',
+  'dual_occupancy_narrow', 'acreage_homestead_4bed', 'granny_1bed', 'granny_studio', 'granny_2bed_carport', 'shed_house_barn',
+];
 
 /** Envelope polygon (plan mm) of the lot on the design, or null when none is loaded. */
 export const envelopeOfProject = (project) => {
@@ -37,7 +42,7 @@ export function publicDesigns(catalogue, project) {
   for (const t of list) {
     let proj = null;
     try { proj = catalogue.createFromTemplate ? catalogue.createFromTemplate(t.id) : t.create?.(); } catch { proj = null; }
-    if (proj?.levels?.length) out.push({ id: t.id, name: t.name || t.id, project: proj, group: 'public' });
+    if (proj?.levels?.length) out.push({ id: t.id, name: t.name || t.id, project: proj, group: 'public', ...(t.frontageM != null ? { frontageM: t.frontageM } : {}) });
   }
   return rankFor(project, out);
 }

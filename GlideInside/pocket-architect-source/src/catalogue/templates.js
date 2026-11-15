@@ -7,6 +7,9 @@ import { houseSingle } from './tpl/house1.js';
 import { houseDouble } from './tpl/house2.js';
 import { duplex } from './tpl/duplex.js';
 import { extensionStarter } from './tpl/extension.js';
+import { buildSpec } from './tpl/generic.js';
+import { SPECS } from './tpl/generic-specs.js';
+import { GENERIC_FURNITURE } from './tpl/generic-furniture.generated.js';
 
 export const TEMPLATES = [
   {
@@ -74,6 +77,21 @@ export const TEMPLATES = [
     create: extensionStarter,
   },
 ];
+
+// The generic design set (narrow lots, townhouse, homestead, granny flats, dual occupancy, shed house). Original plans, see tpl/generic-specs.js.
+// frontageM is the nominal lot frontage the design fits with typical side setbacks (null for rear lot buildings).
+const GENERIC = SPECS.map((spec) => ({
+  id: spec.id,
+  name: spec.name,
+  type: spec.type || 'house',
+  description: spec.description,
+  levels: spec.levels.length,
+  frontageM: spec.frontageM ?? null,
+  generic: true,
+  create: () => buildSpec(spec, GENERIC_FURNITURE[spec.id] || []),
+}));
+const at = TEMPLATES.findIndex((x) => x.id === 'extension_starter');
+TEMPLATES.splice(at, 0, ...GENERIC);
 
 export function createFromTemplate(id) {
   const t = TEMPLATES.find((x) => x.id === id);
