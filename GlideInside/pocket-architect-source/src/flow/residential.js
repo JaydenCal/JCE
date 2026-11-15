@@ -164,12 +164,22 @@ function mountPlaceStep(ctx, { getHomes }) {
     const dw = (() => { try { return deriveDriveway(project); } catch { return null; } })();
     if (dw?.ok) svg.append(poly(dw.polygon, { fill: '#9a9da3', stroke: '#6b6f76', 'stroke-width': Math.round(1.5 * px), opacity: '0.95' }));
     // clearances: short lines from the house to each boundary with the distance, in the status colour
+    // Labels that would land on each other (several edges of a battle axe or irregular lot close together) are stepped apart.
+    const taken = [];
     for (const r of clearances(project).rows) {
       if (!r.from || !r.to || r.clearanceM > 25) continue;
       const bad = r.status === 'outside' || r.clearanceM < 0;
       const c = bad ? STATUS_COLOUR.outside : STATUS_COLOUR.inside;
       svg.append(line(r.from, r.to, { stroke: c, 'stroke-width': Math.round(2 * px) }));
-      svg.append(text(G.lerp(r.from, r.to, 0.5), `${r.clearanceM.toFixed(1)} m`, 12, { fill: c, 'data-ps': 'flow-clearance' }));
+      const label = `${r.clearanceM.toFixed(1)} m`;
+      const at = G.lerp(r.from, r.to, 0.5);
+      const w = label.length * 7.4 * px;
+      const hh = 15 * px;
+      const hit = (q) => taken.some((t) => Math.abs(t.x - q.x) < (t.w + w) / 2 && Math.abs(t.y - q.y) < hh);
+      let pos = { x: at.x, y: at.y };
+      for (let k = 1; k <= 6 && hit(pos); k++) pos = { x: at.x, y: at.y + (k % 2 ? 1 : -1) * Math.ceil(k / 2) * hh };
+      taken.push({ x: pos.x, y: pos.y, w });
+      svg.append(text(pos, label, 12, { fill: c, 'data-ps': 'flow-clearance' }));
     }
     houseG = group({ class: 'gf-house', 'data-ps': 'flow-house' });
     const g0 = ground(project);
