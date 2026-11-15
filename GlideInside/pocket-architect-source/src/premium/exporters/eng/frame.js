@@ -34,9 +34,17 @@ function cell(doc, x, y, w, h, label, value, { size = 9, bold = true, align = 'l
     doc.setFont('helvetica', bold ? 'bold' : 'normal');
     doc.setFontSize(size);
     ink(doc, PEN.ink);
-    const t = fit(doc, clean(value), w - 2.8);
-    if (align === 'center') doc.text(t, x + w / 2, y + h - 2, { align: 'center' });
-    else doc.text(t, x + 2, y + h - 2);
+    // Long values shrink first (down to 6 pt) and then wrap onto a second line, so a status such as "Concept, private preview" is never cut.
+    const full = clean(value);
+    let sz = size;
+    while (sz > 6 && doc.getTextWidth(full) > w - 2.8) { sz -= 0.5; doc.setFontSize(sz); }
+    const lines = doc.getTextWidth(full) > w - 2.8 ? wrap(doc, full, w - 2.8).slice(0, 2) : [full];
+    const lead = sz * 0.36;
+    lines.forEach((l, i) => {
+      const ly = y + h - 2 - (lines.length - 1 - i) * lead;
+      if (align === 'center') doc.text(l, x + w / 2, ly, { align: 'center' });
+      else doc.text(l, x + 2, ly);
+    });
   }
 }
 

@@ -19,7 +19,7 @@
     b.addEventListener("click", function () {
       var st = b.closest(".live-stage"); if (!st) return;
       var f = document.createElement("iframe");
-      f.title = b.dataset.liveTitle || "Pocket Architect";
+      f.title = b.dataset.liveTitle || "Glide Inside Residential";
       f.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-pointer-lock");
       f.setAttribute("allow", "fullscreen; pointer-lock; clipboard-write");
       f.src = new URL(b.dataset.liveSrc, root || location.href).href;

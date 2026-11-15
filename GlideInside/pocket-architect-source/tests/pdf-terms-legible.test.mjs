@@ -45,3 +45,22 @@ for (const [name, opts] of [['engineering builder', {}], ['engineering trial', {
   });
 }
 test('trial footer text unchanged', () => assert.match(TRIAL_FOOTER, /^Free trial export/));
+
+test('schedules: many openings continue on further sheets and the title block is never overprinted', async () => {
+  const jsPDF = (await import('jspdf')).jsPDF;
+  const p = house();
+  applyOp(p, 'add_wall', { x1: -20000, y1: -5000, x2: 100000, y2: -5000 });
+  const wid = p.levels[0].walls.at(-1).id;
+  const kinds = ['window', 'door', 'window', 'sliding_door'];
+  for (let i = 0; i < 46; i++) { try { applyOp(p, 'add_opening', { wall: wid, kind: kinds[i % 4], offset: 1000 + i * 1800, width: 600 + (i % 9) * 150, height: 900 + (i % 5) * 200, sill: i % 2 ? 0 : 900, style: 'sliding' }); } catch { /* overlap */ } }
+  const r = await buildExport('pdf', p, { jsPDF, catalogue, config: {}, terms });
+  const pages = await items(r.bytes);
+  const sched = pages.filter((its) => its.some((i) => /DOOR AND WINDOW SCHEDULE|Door and window schedule/i.test(i.s)));
+  assert.ok(sched.length >= 2, `schedule continues (${sched.length} sheets)`);
+  for (const its of sched) {
+    // nothing from the schedule columns below the terms note rows (y in points, bottom origin: the note sits above the title block)
+    const termsTop = Math.max(...its.filter((i) => /CONCEPT ONLY|No third party/.test(i.s)).map((i) => i.y + i.h));
+    for (const c of its.filter((i) => /^Sliding |^Total openings|^Sizes are|^Glazing|^Room names/.test(i.s))) assert.ok(c.y > termsTop, `'${c.s}' is above the terms note (y ${c.y.toFixed(1)} vs ${termsTop.toFixed(1)})`);
+  }
+  assert.ok(pages.some((its) => its.some((i) => /Total openings: \d+/.test(i.s))));
+});

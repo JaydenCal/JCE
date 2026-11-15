@@ -466,17 +466,21 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
   }
   // Room schedule (paged)
   const rowsAll = f.data.rooms.map((r) => ({ cells: [cap(r.level), cap(r.name), cap(r.type), r.area.toFixed(2)] }));
-  const i0 = page.index * per;
-  heading(doc, `Room schedule${page.count > 1 ? ` (${page.index + 1} of ${page.count})` : ''}`, colB, BODY.y0 + 6);
-  const rt = table(doc, colB, top, [{ w: 26, head: 'LEVEL' }, { w: wB - 26 - 40 - 26, head: 'ROOM' }, { w: 40, head: 'TYPE' }, { w: 26, head: 'M²', align: 'right' }], rowsAll.slice(i0, i0 + per), opt);
-  if (page.index === page.count - 1 && rowsAll.length) {
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(TXT.small);
-    ink(doc, PEN.grey);
-    doc.text(`${rowsAll.length} rooms. Areas in square metres to two places.`, colB, rt.y + 5);
+  const roomPages = Math.max(1, Math.ceil(rowsAll.length / per));
+  if (page.index < roomPages) {
+    const i0 = page.index * per;
+    heading(doc, `Room schedule${roomPages > 1 ? ` (${page.index + 1} of ${roomPages})` : ''}`, colB, BODY.y0 + 6);
+    const rt = table(doc, colB, top, [{ w: 26, head: 'LEVEL' }, { w: wB - 26 - 40 - 26, head: 'ROOM' }, { w: 40, head: 'TYPE' }, { w: 26, head: 'M²', align: 'right' }], rowsAll.slice(i0, i0 + per), opt);
+    if (page.index === roomPages - 1 && rowsAll.length) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(TXT.small);
+      ink(doc, PEN.grey);
+      doc.text(`${rowsAll.length} rooms. Areas in square metres to two places.`, colB, rt.y + 5);
+    }
   }
-  if (page.index === 0) {
-    heading(doc, 'Door and window schedule', colC, BODY.y0 + 6);
+  const oplan = openingPlan(f.data.openings.length);
+  if (page.index < oplan.pages) {
+    heading(doc, `Door and window schedule${oplan.pages > 1 ? ` (${page.index + 1} of ${oplan.pages})` : ''}`, colC, BODY.y0 + 6);
     const openName = (o) => {
       const t = String(o.type || '').toLowerCase();
       const st = String(o.style || '').toLowerCase();
@@ -484,8 +488,9 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
       return /^(window|door)$/.test(t) ? cap(`${st} ${t}`) : cap(`${t} ${st}`);
     };
     const rowsO = f.data.openings.map((o) => ({ cells: [openName(o), `${o.width} x ${o.height}`, o.sill ? String(o.sill) : '', String(o.count)] }));
-    const ot = table(doc, colC, top, [{ w: wC - 70, head: 'TYPE' }, { w: 30, head: 'W x H (MM)' }, { w: 20, head: 'SILL', align: 'right' }, { w: 20, head: 'QTY', align: 'right' }], rowsO, opt);
+    const ot = table(doc, colC, top, [{ w: wC - 70, head: 'TYPE' }, { w: 30, head: 'W x H (MM)' }, { w: 20, head: 'SILL', align: 'right' }, { w: 20, head: 'QTY', align: 'right' }], rowsO.slice(page.index * OPEN_PER, (page.index + 1) * OPEN_PER), opt);
     let y = ot.y + 8;
+    if (page.index === oplan.summaryPage) {
     const total = f.data.openings.reduce((a, o) => a + (Number(o.count) || 0), 0);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(TXT.body);
@@ -518,10 +523,25 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
       lines.forEach((l, i) => doc.text(l, colC + (i ? 2.5 : 0), y + i * 3.3));
       y += lines.length * 3.3 + 2.4;
     }
+    }
   }
 }
 
-export const scheduleCount = (project) => Math.max(1, Math.ceil(scheduleData(project).rooms.length / 34));
+// The door and window schedule continues on further sheets when it would pass the frame (many openings); the total, colour scheme and notes
+// follow the last rows, on an extra sheet when they would not fit under them.
+const OPEN_PER = 22;
+const OPEN_WITH_SUMMARY = 16;
+export function openingPlan(n) {
+  if (n <= OPEN_WITH_SUMMARY) return { pages: 1, summaryPage: 0 };
+  const pages = Math.ceil(n / OPEN_PER);
+  const last = n - (pages - 1) * OPEN_PER;
+  return last <= OPEN_WITH_SUMMARY ? { pages, summaryPage: pages - 1 } : { pages: pages + 1, summaryPage: pages };
+}
+
+export const scheduleCount = (project) => {
+  const d = scheduleData(project);
+  return Math.max(1, Math.ceil(d.rooms.length / 34), openingPlan(d.openings.length).pages);
+};
 
 // Floor plan side panel --------------------------------------------------------------------------------------------------------
 /** Notes and the room areas of one level, in the free space to the left of the plan. `planLeft` is the sheet x where the plan starts. */
