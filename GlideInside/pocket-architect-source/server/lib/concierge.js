@@ -10,6 +10,7 @@ import { createD1BookingStore, createMemoryBookingStore } from './booking-store.
 import { answerFromKnowledge, BOOKING_WORDS, INTENTS, INTENT_OPENERS, LINKS, CONTACT } from './concierge-knowledge.js';
 import { askModel, budgetExhausted } from './concierge-ai.js';
 import { toB64u } from './entitlement.js';
+import { handleEnquiry, parseEnquiry } from './enquiry.js'; // CALLBACK: the default flow goes through the existing enquiry pipeline (save first, then Resend)
 
 const flag = (v) => ['1', 'true', 'yes', 'on'].includes(String(v ?? '').toLowerCase());
 const num = (v, d) => (v === undefined || v === null || v === '' || !Number.isFinite(Number(v)) ? d : Number(v));
@@ -40,6 +41,7 @@ export function readConciergeConfig(env = {}, base = {}) {
     ipPerMin: Math.round(num(env.CONCIERGE_IP_PER_MIN, 20)),
     ipSessionsPerHour: Math.round(num(env.CONCIERGE_IP_SESSIONS_PER_HOUR, 10)),
     ipConfirmsPerHour: Math.round(num(env.CONCIERGE_IP_CONFIRMS_PER_HOUR, 6)),
+    ipCallbacksPerHour: Math.round(num(env.CONCIERGE_IP_CALLBACKS_PER_HOUR, 4)),
     emailBookingsPerDay: Math.round(num(env.CONCIERGE_EMAIL_BOOKINGS_PER_DAY, 3)),
     turnstileSecret: String(env.TURNSTILE_SECRET_KEY || ''),
     turnstileSiteKey: String(env.TURNSTILE_SITE_KEY || ''),
@@ -60,16 +62,18 @@ export function createConcierge({ store, env = {}, baseConfig = {}, fetchImpl, n
   const providerOk = cfg.provider === 'calcom' ? !!env.CALCOM_API_KEY : mockOk;
   const provider = injected || (providerOk ? createProvider({ env: { ...env, BOOKING_PROVIDER: cfg.provider }, fetchImpl: doFetch, nowMs: now }) : null);
   const bstore = injectedStore || (env.DB ? createD1BookingStore(env.DB) : createMemoryBookingStore());
-  const secret = cfg.signingSecret || (mockOk ? ephemeralSecret : '');
-  const mode = !cfg.enabled ? 'off' : !providerOk ? 'no_provider' : cfg.provider === 'mock' ? 'test' : cfg.bookingLive ? 'live' : 'readonly';
+  const secret = cfg.signingSecret || (cfg.allowMock ? ephemeralSecret : '');
+  // Default flow is "Request a call back" (owner decision 15/11/2026). Slots and booking exist only behind BOOKING_PROVIDER=calcom (or the mock in tests).
+  const mode = !cfg.enabled ? 'off' : !providerOk ? 'callback' : cfg.provider === 'mock' ? 'test' : cfg.bookingLive ? 'live' : 'readonly';
+  const callbackAvailable = cfg.enabled && !!secret;
   const bookingAvailable = cfg.enabled && providerOk && !!secret && cfg.approved.length > 0 && (cfg.provider === 'mock' || cfg.bookingLive);
   const aiAvailable = cfg.enabled && cfg.aiEnabled && !!cfg.anthropicApiKey;
   const log = (o) => console.warn(JSON.stringify({ ...o, svc: 'concierge' })); // never pass personal data here
   const booking = provider && secret ? createBooking({ provider, bstore, settings: cfg.settings, secret, now, log }) : null;
-  const needTurnstile = cfg.turnstileSecret ? true : !mockOk; // fail closed everywhere except the mock
+  const needTurnstile = cfg.turnstileSecret ? true : !cfg.allowMock; // fail closed everywhere except the mock/test setup
 
   const publicConfig = () => ({
-    enabled: cfg.enabled, mode, bookingAvailable, aiAvailable,
+    enabled: cfg.enabled, mode, bookingAvailable, callbackAvailable, aiAvailable,
     testMode: mode === 'test',
     types: booking ? Object.values(booking.types()).filter((t) => t.active).map(({ id, label, durationMin, audience }) => ({ id, label, durationMin, audience })) : [],
     intents: Object.values(INTENTS).map((i) => ({ id: i.id, label: i.label, blurb: i.blurb, bookingType: i.bookingType, qualifier: i.qualifier })),
@@ -147,7 +151,7 @@ export function createConcierge({ store, env = {}, baseConfig = {}, fetchImpl, n
     await ipLimit(request);
     const body = await readJson(request, 8192);
     const cid = await convOf(body);
-    await limit(`cc:conv:msg:${cid}`, 6 * 3600, cfg.maxMessages, 'This chat has reached its message limit. Please use the enquiry form or book a time.');
+    await limit(`cc:conv:msg:${cid}`, 6 * 3600, cfg.maxMessages, 'This chat has reached its message limit. Please use the enquiry form.');
     const intent = INTENTS[body.intent] ? body.intent : null;
     const msg = text(body.message, 600);
     const page = text(body.page, 60);
@@ -167,9 +171,9 @@ export function createConcierge({ store, env = {}, baseConfig = {}, fetchImpl, n
         out.slots = await slotsFor(type);
         return json(out);
       }
-      out.reply = bookingAvailable ? 'Tell me which best describes you, and I will show times.' : 'Online booking is not open yet. You can book a demo with the form or send an enquiry and the team will reply.';
+      out.reply = bookingAvailable ? 'Tell me which best describes you, and I will show times. Or I can pass a call back request to Jayden.' : 'I cannot book a time here. I can pass a call back request to Jayden, who will call you, usually within one business day. You can also use the demo form or send an enquiry.';
       out.links = bookingAvailable ? [] : ['demo', 'enquiry'];
-      out.ops = bookingAvailable ? [{ op: 'choose_intent' }] : [];
+      out.ops = bookingAvailable ? [{ op: 'choose_intent' }, { op: 'callback' }] : [{ op: 'callback' }];
       return json(out);
     }
     // 2. FAQ and refusals (deterministic, free)
@@ -178,12 +182,13 @@ export function createConcierge({ store, env = {}, baseConfig = {}, fetchImpl, n
     // 3. model, only if allowed and the budget is not exhausted
     if (aiAvailable && !(await budgetExhausted({ store, config: cfg, now: now() }))) {
       try {
-        const r = await askModel({ config: cfg, fetchImpl: doFetch, store, now: now(), secret, intent, page, message: msg, priorUserMessages: (Array.isArray(body.history) ? body.history : []).filter((h) => typeof h === 'string').slice(-2) });
+        const r = await askModel({ config: cfg, fetchImpl: doFetch, store, now: now(), secret, intent, page, message: msg, booking: bookingAvailable, priorUserMessages: (Array.isArray(body.history) ? body.history : []).filter((h) => typeof h === 'string').slice(-2) });
         if (!r.exhausted) {
           out.source = 'ai'; out.ai = true; out.reply = r.text; out.flagged = r.flagged || undefined;
           for (const op of r.ops) {
             if (op.op === 'get_slots' && bookingAvailable && booking.types()[op.type]?.active) { out.ops.push(op); out.slots = await slotsFor(op.type, op.from, op.days); }
             else if (op.op === 'propose_booking' && bookingAvailable && booking.types()[op.type]?.active) out.ops.push(op);
+            else if (op.op === 'callback') out.ops.push(op); // only opens the form; the visitor still has to press the send button
             else if (op.op === 'handoff') { out.ops.push(op); out.links.push(op.target === 'tool' ? 'tool' : op.target); }
           }
           if (r.blocked.length) log({ event: 'concierge_blocked_tool', tools: r.blocked });
@@ -195,7 +200,7 @@ export function createConcierge({ store, env = {}, baseConfig = {}, fetchImpl, n
       }
       out.source = 'fallback'; out.aiPaused = true;
     } else { out.source = 'fallback'; out.aiPaused = aiAvailable; }
-    out.reply = 'I am not able to answer that here right now. You can book a time, send an enquiry, or email the team and they will reply.';
+    out.reply = 'I am not able to answer that here right now. You can request a call back, send an enquiry, or email the team and they will reply.';
     out.links = ['enquiry', 'demo'];
     return json(out);
   }
@@ -231,6 +236,57 @@ export function createConcierge({ store, env = {}, baseConfig = {}, fetchImpl, n
     return json({ ...r, testMode: mode === 'test' || undefined }, r.state === 'confirmed' || r.state === 'requested' ? 200 : r.state === 'failed' ? 409 : 202);
   }
 
+  // ---- Request a call back (default flow). The only place a visitor request becomes an email to the owner. ----
+  const TIMES = { morning: 'Morning', afternoon: 'Afternoon', evening: 'Evening', note: 'See note' };
+  const TYPE_LABEL = { homeowner: 'Homeowner', builder: 'Builder', developer: 'Developer or estate', agent: 'Real estate agent', other: 'Other' };
+  const refFrom = async (cid, idem) => {
+    const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${secret}|cb|${cid}|${idem}`));
+    const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    return `GI-${Array.from(new Uint8Array(h).slice(0, 5), (b) => A[b % A.length]).join('')}`;
+  };
+  async function callback(request) {
+    guard(request); await ipLimit(request);
+    const ip = clientIp(request);
+    const body = await readJson(request, 8192);
+    const cid = await convOf(body);
+    if (!callbackAvailable) throw err('CALLBACK_UNAVAILABLE', 'Call back requests are not available right now. Please use the enquiry form.', {}, 503);
+    // Explicit click only: a literal boolean from the Confirm button. Model text can never produce this request.
+    if (body.confirm !== true) throw err('CONFIRM_REQUIRED', 'Please press the send button to send your request.', {}, 400);
+    if (body.consent !== true) throw err('BAD_REQUEST', 'Please tick the box to agree to Glide Inside calling you back about your request.');
+    if (typeof body.idemKey !== 'string' || !/^[A-Za-z0-9_-]{16,64}$/.test(body.idemKey)) throw err('BAD_REQUEST', 'This request is not valid. Please reload and try again.');
+    const type = TYPE_LABEL[body.type] ? body.type : 'other';
+    const timeKey = TIMES[body.bestTime] ? body.bestTime : '';
+    const timeNote = text(body.bestTimeNote, 120).replace(/\s+/g, ' ');
+    if (!timeKey && !timeNote) throw err('BAD_REQUEST', 'Please tell us the best time to call: morning, afternoon, evening, or add a note.');
+    const bestTime = [timeKey && timeKey !== 'note' ? TIMES[timeKey] : '', timeNote].filter(Boolean).join(': ');
+    const page = /^\/[A-Za-z0-9\-_/.]{0,78}$/.test(String(body.page || '')) ? String(body.page) : '';
+    const campaign = /^[A-Za-z0-9._-]{1,60}$/.test(String(body.campaign || '')) ? String(body.campaign) : '';
+    const userNotes = text(body.notes, 1000);
+    const marketing = body.marketingOptIn === true;
+    const label = `Call back request (${TYPE_LABEL[type]})`;
+    const notes = [label, `Best time to call: ${bestTime || 'not given'}`, userNotes ? `Notes: ${userNotes}` : null, page ? `Page: ${page}` : null, campaign ? `Campaign: ${campaign}` : null, `Marketing updates: ${marketing ? 'yes' : 'no'}`].filter(Boolean).join('\n');
+    const enquiryBody = { consent: true, name: body.name, phone: body.phone, email: body.email, need: 'callback', source: 'public', notes, userNotes,
+      callback: { type: TYPE_LABEL[type], bestTime, page, campaign, marketing } };
+    parseEnquiry(enquiryBody); // the existing validation (name, phone, email); invalid requests do not use up the rate limit
+    // Duplicate submit: one attempt key makes one request. A replay (double click, retry) returns the same reference and sends nothing again.
+    const reference = await refFrom(cid, body.idemKey);
+    const seen = await store.hitRate(`cc:cb:idem:${await sha256Hex(`${cid}|${body.idemKey}`)}`, 86400, now());
+    if (seen > 1) return json({ ok: true, state: 'callback_requested', reference, duplicate: true });
+    await limit(`cc:ip:cb:${ip}`, 3600, cfg.ipCallbacksPerHour, 'Too many requests. Please try again later or use the enquiry form.');
+    await limit(`cc:conv:cb:${cid}`, 86400, 3, 'Too many requests for this chat. Please use the enquiry form.');
+    let emailed = false;
+    try {
+      const r = await handleEnquiry({ body: enquiryBody, request, store, config: baseConfig, fetchImpl: doFetch, now, clientIp, reference });
+      emailed = r.emailed === true;
+    } catch (e) {
+      // Email failure: the request is already saved (enquiry.js saves first), so the visitor is not told it failed.
+      if (e instanceof HttpError && e.code === 'EMAIL_FAILED') log({ event: 'concierge_callback_email_failed' });
+      else throw e;
+    }
+    log({ event: 'concierge_callback', type, emailed }); // no personal data in logs
+    return json({ ok: true, state: 'callback_requested', reference, emailed });
+  }
+
   async function status(request) {
     guard(request); await ipLimit(request);
     const body = await readJson(request, 4096);
@@ -251,10 +307,10 @@ export function createConcierge({ store, env = {}, baseConfig = {}, fetchImpl, n
     const m = request.method;
     const need = (...ms) => { if (!ms.includes(m)) throw err('BAD_REQUEST', `Use ${ms.join(' or ')} for this endpoint.`, {}, 405); };
     if (path === '/concierge/config') { need('GET'); if (!cfg.enabled) return json({ enabled: false }); await ipLimit(request); return json(publicConfig()); }
-    const handlers = { '/concierge/session': session, '/concierge/message': message, '/concierge/slots': slots, '/concierge/propose': propose, '/concierge/confirm': confirm, '/concierge/status': status, '/concierge/manage': manage };
+    const handlers = { '/concierge/callback': callback, '/concierge/session': session, '/concierge/message': message, '/concierge/slots': slots, '/concierge/propose': propose, '/concierge/confirm': confirm, '/concierge/status': status, '/concierge/manage': manage };
     if (handlers[path]) { need('POST'); return handlers[path](request); }
     return null;
   }
 
-  return { route, config: cfg, mode, provider, booking, bstore, publicConfig, bookingAvailable, aiAvailable };
+  return { route, config: cfg, mode, provider, booking, bstore, publicConfig, bookingAvailable, callbackAvailable, aiAvailable };
 }

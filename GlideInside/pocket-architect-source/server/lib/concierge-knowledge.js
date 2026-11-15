@@ -29,7 +29,7 @@ export const INTENT_OPENERS = {
   homeowner: 'Glide Inside Residential lets you type an address, see your lot and its indicative setbacks in 3D, and place a house on it. Drawing and viewing are free. What would you like to know?',
   builder: 'Glide Inside gives each of your clients a private login to place your own designs on their real lot. There is a free 14 day trial. What would you like to know?',
   developer: 'Glide Inside Commercial lays out industrial and commercial units on a real lot, and we also prepare subdivision concepts by quote. What would you like to know?',
-  agent: 'I can explain what Glide Inside does and set up a short demonstration. What would you like to know?',
+  agent: 'I can explain what Glide Inside does, or pass a call back request to Jayden. What would you like to know?',
 };
 
 export const FAQ = [
@@ -42,7 +42,7 @@ export const FAQ = [
   { id: 'cost-commercial', re: /\b(commercial|developer)\b.*\b(cost|price|pricing|how much|subscription|per month)\b|\b(cost|price|how much)\b.*\b(commercial|developer subscription)\b/i,
     a: 'Glide Inside Commercial is in beta. Commercial Developer is A$50 per month including GST: unlimited commercial plan set PDFs (sheets C000 to C103), DXF drawings and 150 AI assistant messages each month. Extra messages are A$15 for 100. It renews monthly and you can cancel anytime. Yield, value and cost figures are estimates only.', links: ['commercial', 'pricing'] },
   { id: 'cost-subdivision', re: /\bsubdivision|subdivide|estate\b.*\b(cost|price|quote|how much)\b|\b(cost|price|quote|how much)\b.*\bsubdivision/i,
-    a: 'Subdivision concepts and 3D site models are priced by quote because they depend on the site. The director is a qualified civil engineer and can assist with preliminary subdivision feasibility. You can ask for a quote through the enquiry form or book a presentation.', links: ['subdivision', 'enquiry'] },
+    a: 'Subdivision concepts and 3D site models are priced by quote because they depend on the site. The director is a qualified civil engineer and can assist with preliminary subdivision feasibility. You can ask for a quote through the enquiry form or request a call back.', links: ['subdivision', 'enquiry'] },
   { id: 'approved', re: /\b(approved|approval|council approv|da\b|development application|construction drawings?|ncc|national construction code)\b/i,
     a: 'No. Glide Inside outputs are concept designs. They are not construction drawings or development application documents, and they are not checked against planning controls or the National Construction Code. Check everything with your council and suitably qualified people.', links: ['accuracy'] },
   { id: 'accuracy', re: /\b(accura|survey|boundary|data source|where does .* data|setbacks? (are|accura|right))/i,
@@ -58,9 +58,9 @@ export const FAQ = [
   { id: 'engineering', re: /\b(engineer(ing)?|footings?|stormwater|site classification|jce)\b/i,
     a: 'Glide Inside is run by JCE Infrastructure Pty Ltd, a civil and hydraulic engineering consultancy. Engineering input is provided by JCE under a separate engagement, and not every service is available in every area. I cannot give fees or quotes. Please send an enquiry and the team will reply.', links: ['enquiry'] },
   { id: 'privacy', re: /\b(privacy|my data|personal information|stored|anthropic|data safe)\b/i,
-    a: 'This assistant is AI. I do not keep a transcript of our chat. If you book, only the details needed for the booking (name and email) go to the booking calendar. Marketing is opt in and never ticked for you. The privacy policy has the full detail.', links: [] },
+    a: 'This assistant is AI. I do not keep a transcript of our chat. If you request a call back, your name, phone number, email and note are sent to Jayden at Glide Inside so he can call you, and a copy is kept so the request is not lost. Marketing is opt in and never ticked for you. The privacy policy has the full detail.', links: [] },
   { id: 'contact', re: /\b(contact (you|us|the team|someone)|your (email|phone( number)?)|phone number|email address|speak to|talk to|call (you|us|back)|real person|human)\b/i,
-    a: `You can email ${CONTACT.email} or call ${CONTACT.phone}. You can also use the enquiry form and the team will reply by phone or email.`, links: ['enquiry', 'demo'] },
+    a: `You can email ${CONTACT.email} or call ${CONTACT.phone}. You can also request a call back here: Jayden will call you, usually within one business day after you send the request.`, links: ['enquiry', 'demo'] },
 ];
 
 /** Topics the assistant must not advise on. Deterministic refusal, then handoff. */
