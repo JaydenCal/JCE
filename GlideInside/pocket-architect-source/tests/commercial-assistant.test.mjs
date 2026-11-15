@@ -544,3 +544,37 @@ test('typeById is a guarded lookup and a type that throws does not break measuri
   assert.ok(m.issues.some((i) => /not in the catalogue/.test(i)));
   setCommercialTypes(null);
 });
+
+test('brief site lines: state, plan and council are not duplicated and read in title case', async () => {
+  const { addressLine, lotPlanLine, councilName } = await import('../src/premium/ai/commercial-brief.js');
+  assert.equal(addressLine({ address: '12 Industrial Drive, Westdale NSW', state: 'NSW' }), '12 Industrial Drive, Westdale NSW');
+  assert.equal(addressLine({ address: '12 Industrial Drive, Westdale NSW 2340', state: 'NSW' }), '12 Industrial Drive, Westdale NSW 2340');
+  assert.equal(addressLine({ address: '12 Industrial Drive, Westdale, New South Wales', state: 'NSW' }), '12 Industrial Drive, Westdale, New South Wales');
+  assert.equal(addressLine({ address: '12 Industrial Drive, Westdale', state: 'NSW' }), '12 Industrial Drive, Westdale NSW');
+  assert.equal(addressLine({}), 'not recorded');
+  assert.equal(lotPlanLine({ lotLabel: 'Lot 12 DP 1198432', planLabel: 'DP 1198432' }), 'Lot 12 DP 1198432');
+  assert.equal(lotPlanLine({ lotLabel: 'Lot 12', planLabel: 'DP 1198432' }), 'Lot 12 DP 1198432');
+  assert.equal(lotPlanLine({ planLabel: 'DP 1198432' }), 'DP 1198432');
+  assert.equal(councilName('TAMWORTH REGIONAL'), 'Tamworth Regional Council');
+  assert.equal(councilName('Tamworth Regional Council'), 'Tamworth Regional Council');
+  assert.equal(councilName("PORT STEPHENS"), 'Port Stephens Council');
+  assert.equal(councilName(''), 'not recorded');
+  const p = fixture();
+  p.site.lot = { ...p.site.lot, address: '12 Industrial Drive, Westdale NSW', state: 'NSW', lotLabel: 'Lot 12 DP 1198432', planLabel: 'DP 1198432', lga: 'TAMWORTH REGIONAL' };
+  const t = draftBrief(p).text;
+  assert.match(t, /Address: 12 Industrial Drive, Westdale NSW\n/);
+  assert.match(t, /Lot and plan: Lot 12 DP 1198432\n/);
+  assert.match(t, /Council area: Tamworth Regional Council\n/);
+  assert.doesNotMatch(t, /NSW, NSW|DP 1198432 DP 1198432/);
+  assert.match(t.split('\n')[0], /^Development brief/);
+});
+
+test('zone offer does not show when the page opens in commercial mode', async () => {
+  const { offerCommercial } = await import('../src/commercial/mode.js');
+  const s = storeOf(fixture());
+  s.project.mode = 'residential';
+  let shown = 0;
+  globalThis.location = { search: '?mode=commercial' };
+  try { assert.equal(offerCommercial(s, { toast: () => { shown++; return {}; }, available: true }), null); } finally { delete globalThis.location; }
+  assert.equal(shown, 0);
+});

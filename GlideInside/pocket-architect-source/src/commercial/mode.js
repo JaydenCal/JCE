@@ -111,6 +111,9 @@ export const commercialUi = { enabled: true };
 export function offerCommercial(store, { toast = realToast, available = commercialUi.enabled } = {}) {
   if (!available) return null; // no commercial dock on this screen (the embedded viewer, the demo): nothing to offer
   const p = store.project;
+  // The page was opened with ?mode=commercial: the lot lookup finishes before the switch, so the offer would flash up for a
+  // project that is about to be commercial. The app makes the switch itself.
+  try { if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('mode') === 'commercial') return null; } catch { /* no location */ }
   const z = zoneClass(lotOf(p) ? p.site.lot : null);
   if (isCommercial(p)) {
     if ((z.cls === 'residential' || z.cls === 'other') && !p.commercial.zoneClass) return toast(RESIDENTIAL_NOTE, { kind: 'warn', timeout: 9000 });

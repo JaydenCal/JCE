@@ -106,6 +106,34 @@ const buildingLine = (b) => {
   return `${t?.label || b.type}${bits ? ` (${bits})` : ''}`;
 };
 
+const STATE_NAMES = { NSW: 'New South Wales', VIC: 'Victoria', QLD: 'Queensland', SA: 'South Australia', WA: 'Western Australia', TAS: 'Tasmania', NT: 'Northern Territory', ACT: 'Australian Capital Territory' };
+
+/** The address with the state added only when the address does not already end in or contain it. */
+export function addressLine(lot) {
+  const a = String(lot?.address || '').trim();
+  if (!a) return 'not recorded';
+  const st = String(lot?.state || '').trim();
+  if (!st) return a;
+  const names = [st, STATE_NAMES[st.toUpperCase()]].filter(Boolean).map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  return new RegExp(`\\b(${names.join('|')})\\b`, 'i').test(a) ? a : `${a} ${st.toUpperCase()}`;
+}
+
+/** "Lot 12 DP 1198432": the plan label once, even when the lot label already carries it. */
+export function lotPlanLine(lot) {
+  const lotL = String(lot?.lotLabel || '').trim();
+  const plan = String(lot?.planLabel || '').trim();
+  if (lotL && plan) return lotL.toUpperCase().includes(plan.toUpperCase()) ? lotL : `${lotL} ${plan}`;
+  return lotL || plan || 'not recorded';
+}
+
+/** Council area in title case with "Council" added: "TAMWORTH REGIONAL" becomes "Tamworth Regional Council". */
+export function councilName(lga) {
+  const raw = String(lga || '').trim().replace(/\s+/g, ' ');
+  if (!raw) return 'not recorded';
+  const t = raw.toLowerCase().replace(/(^|[\s'(-])([a-z])/g, (m, a, b) => a + b.toUpperCase());
+  return /\b(council|shire|city|municipality)\b/i.test(t) ? t : `${t} Council`;
+}
+
 /** Sections of the development brief: [{ title, lines }]. */
 export function briefSections(p) {
   const c = p.commercial;
@@ -115,9 +143,9 @@ export function briefSections(p) {
   const ind = ms.value || indicative(p);
   const sections = [];
   const site = [];
-  site.push(`Address: ${lot?.address || 'not recorded'}${lot?.state && !String(lot?.address || '').includes(lot.state) ? `, ${lot.state}` : ''}`);
-  site.push(`Lot and plan: ${[lot?.lotLabel, lot?.planLabel].filter(Boolean).join(' ') || 'not recorded'}`);
-  site.push(`Council area: ${lot?.lga || 'not recorded'}`);
+  site.push(`Address: ${addressLine(lot)}`);
+  site.push(`Lot and plan: ${lotPlanLine(lot)}`);
+  site.push(`Council area: ${councilName(lot?.lga)}`);
   site.push(`Lot area: ${ms.lotM2 ? m2(ms.lotM2) : 'not recorded'}${d?.hasFront ? `, frontage ${m(d.frontageM)} m, depth ${m(d.depthM)} m` : ''}`);
   site.push(`Date: ${today()}`);
   sections.push({ title: 'Site', lines: site });
@@ -173,7 +201,8 @@ export function briefSections(p) {
 export function draftBrief(p, now = new Date()) {
   if (!isCommercial(p)) fail('This design is not in commercial mode.');
   const sections = briefSections(p).map((s) => ({ title: cleanWording(s.title), lines: s.lines.map(cleanWording) }));
-  const head = `DEVELOPMENT BRIEF${p.name ? `, ${cleanWording(p.name)}` : ''}`;
+  const nm = String(p.name || '').trim();
+  const head = nm && !/^untitled/i.test(nm) ? `Development brief: ${cleanWording(nm)}` : 'Development brief';
   const text = [head, today(now), '', ...sections.flatMap((s, i) => [`${i + 1}. ${s.title}`, ...s.lines.map((l) => (/^- /.test(l) ? l : `- ${l}`)), '']), cleanWording(NOT_APPROVAL)].join('\n');
   return { date: today(now), text, sections, notApproval: NOT_APPROVAL };
 }
