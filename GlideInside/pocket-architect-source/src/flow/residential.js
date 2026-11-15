@@ -5,7 +5,7 @@ import { confirmBreach } from './breach.js';
 import { h } from '../ui/dom.js';
 import * as G from '../model/geometry.js';
 import { lotOf, translateHouse, rotateHouse, houseCentre } from '../model/placement.js';
-import { buildingHull, clearances, deriveDriveway, garageDoor } from '../site/lotplan.js';
+import { buildingHull, clearances, deriveDriveway, garageDoor, setStoredDriveway, storedDriveway } from '../site/lotplan.js';
 import { projectToSvg, svgDataUri } from '../portal/thumbnail.js';
 import { mountLotStep, zoneText } from './lot-step.js';
 import { lotMapSvg, mapBox, roadSvg, aerialOf } from './lot-map.js';
@@ -133,6 +133,12 @@ function mountPlaceStep(ctx, { getHomes }) {
       h('label', { class: 'gf-note', style: { display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center' } }, 'Nudge step', stepSel),
       h('div', { style: { height: '8px' } }),
       mk('Best fit', () => bestFit(), 'flow-bestfit', 'gf-btn--primary'),
+      h('div', { style: { height: '8px' } }),
+      h('div', { class: 'gf-note', style: { fontWeight: '600' } }, 'Driveway'),
+      h('div', { class: 'gf-row', style: { gap: '6px', justifyContent: 'center', flexWrap: 'wrap' } },
+        mk('Add bend', () => addBend(), 'flow-drive-bend'), mk('Reset driveway', () => resetDriveway(), 'flow-drive-reset'),
+        h('label', { class: 'gf-note' }, 'Width ', h('select', { dataset: { ps: 'flow-drive-width' }, onchange: (e) => setDriveWidth(Number(e.target.value)) }, ...[3000, 3500, 4000, 5000, 6000].map((w) => h('option', { value: String(w) }, `${(w / 1000).toFixed(1)} m`))))),
+      h('p', { class: 'gf-note' }, 'Drag the white dot to slide the driveway along the street. Drag a yellow dot to bend it.'),
       h('p', { class: 'gf-note' }, 'Best fit puts the home back square to the street, garage facing the street, inside the setbacks. You can also drag the home, or drag the round handle to turn it.')),
     h('p', { class: 'gf-note' }, INDICATIVE));
   const el = h('div', { class: 'gf-place' }, stage, side);
@@ -209,6 +215,15 @@ function mountPlaceStep(ctx, { getHomes }) {
     if (env) svg.append(poly(env, { fill: st.state === 'outside' ? 'rgba(199,119,0,.10)' : 'rgba(23,114,74,.10)', stroke: col, 'stroke-width': Math.round(3 * px), 'stroke-dasharray': `${Math.round(10 * px)} ${Math.round(6 * px)}`, 'data-ps': 'flow-envelope' }));
     const dw = (() => { try { return deriveDriveway(project); } catch { return null; } })();
     if (dw?.ok) svg.append(poly(dw.polygon, { fill: '#9a9da3', stroke: '#6b6f76', 'stroke-width': Math.round(1.5 * px), opacity: '0.95' }));
+    if (dw?.ok) {
+      const knob = (pt, kind, idx, fill) => {
+        const c = document.createElementNS(NS, 'circle');
+        for (const [k, v] of Object.entries({ cx: Math.round(pt.x), cy: Math.round(pt.y), r: Math.round(9 * px), fill, stroke: '#1b4fd1', 'stroke-width': Math.round(2 * px), 'data-ps': 'flow-drive-handle', 'data-kind': kind, 'data-idx': String(idx), style: 'cursor:grab' })) c.setAttribute(k, v);
+        svg.append(c);
+      };
+      knob(dw.kerbPoint, 'end', 0, '#ffffff');
+      (dw.pis || []).forEach((q, i) => knob(q, 'pi', i, '#ffc83d'));
+    }
     // clearances: short lines from the house to each boundary with the distance, in the status colour
     // Labels that would land on each other (several edges of a battle axe or irregular lot close together) are stepped apart.
     const taken = [];
@@ -262,6 +277,30 @@ function mountPlaceStep(ctx, { getHomes }) {
     nameEl.textContent = ph?.name ? `Home: ${ph.name}` : '';
   }
 
+  // A bend point stays inside the lot: a point outside is pulled back toward the house.
+  function clampInLot(pt) {
+    const lot = lotNow();
+    if (!lot || G.pointInPolygon(pt, lot.boundary)) return pt;
+    const c = houseCentre(store.project);
+    let q = pt;
+    for (let i = 0; i < 24 && !G.pointInPolygon(q, lot.boundary); i++) q = { x: q.x + (c.x - q.x) * 0.1, y: q.y + (c.y - q.y) * 0.1 };
+    return q;
+  }
+  function addBend() {
+    const dw = deriveDriveway(store.project);
+    if (!dw?.ok || (dw.pis || []).length >= 4) return;
+    const m = dw.centre[Math.floor(dw.centre.length / 2)];
+    touched = true;
+    store.apply('Edit driveway', (pr) => { const st = storedDriveway(pr) || { radiusM: 6, widthMm: null }; setStoredDriveway(pr, { endOffsetMm: dw.endOffsetMm, pis: [...(dw.pis || []), { x: m.x, y: m.y }], radiusM: st.radiusM, widthMm: st.widthMm }); });
+  }
+  function setDriveWidth(mm) {
+    const dw = deriveDriveway(store.project);
+    if (!dw?.ok) return;
+    touched = true;
+    store.apply('Edit driveway', (pr) => { const st = storedDriveway(pr) || { radiusM: 6 }; setStoredDriveway(pr, { endOffsetMm: dw.endOffsetMm, pis: dw.pis || [], radiusM: st.radiusM, widthMm: mm }); });
+  }
+  function resetDriveway() { touched = true; store.apply('Reset driveway', (pr) => { setStoredDriveway(pr, null); }); }
+
   // Actions ----------------------------------------------------------------------------------------------------------------
   function nudge(sx, sy) { touched = true; nudgeHouse(store, sx * nudgeMm, sy * nudgeMm); }
   function turn(deg) { touched = true; handleDeg += deg; turnHouse(store, deg); }
@@ -312,6 +351,13 @@ function mountPlaceStep(ctx, { getHomes }) {
   const onDown = (ev) => {
     if (ev.button != null && ev.button !== 0) return;
     if (ptrs.size > 1) return; // a pinch, not a drag
+    const dh = ev.target.closest?.('[data-ps="flow-drive-handle"]');
+    if (dh) {
+      ev.preventDefault();
+      stage.setPointerCapture?.(ev.pointerId);
+      drag = { mode: 'drive', kind: dh.getAttribute('data-kind'), idx: Number(dh.getAttribute('data-idx')), value: null };
+      return;
+    }
     const onHandle = ev.target.closest?.('[data-ps="flow-handle"]');
     const onHouse = ev.target.closest?.('[data-ps="flow-house"]');
     if (!onHandle && !onHouse) {
@@ -340,6 +386,18 @@ function mountPlaceStep(ctx, { getHomes }) {
     }
     const p = toMm(ev);
     const prev = previewCopy(store.project);
+    if (drag.mode === 'drive') {
+      const cur = deriveDriveway(prev);
+      if (!cur?.ok) return;
+      const base = storedDriveway(prev) || { pis: [], radiusM: 6, widthMm: null };
+      const val = { endOffsetMm: cur.endOffsetMm, pis: cur.pis.map((q) => ({ ...q })), radiusM: base.radiusM, widthMm: base.widthMm };
+      if (drag.kind === 'end') val.endOffsetMm = (p.x - cur.edgeStart.x) * cur.edgeU.x + (p.y - cur.edgeStart.y) * cur.edgeU.y;
+      else val.pis[drag.idx] = clampInLot({ x: p.x, y: p.y });
+      setStoredDriveway(prev, val);
+      drag.value = val;
+      draw(prev);
+      return;
+    }
     if (drag.mode === 'move') {
       drag.dx = Math.round((p.x - drag.start.x) / 50) * 50; drag.dy = Math.round((p.y - drag.start.y) / 50) * 50;
       translateHouse(prev, drag.dx, drag.dy);
@@ -356,6 +414,7 @@ function mountPlaceStep(ctx, { getHomes }) {
     if (!drag) return;
     const d = drag; drag = null;
     if (d.mode === 'pan') return;
+    if (d.mode === 'drive') { if (d.value) { touched = true; store.apply('Edit driveway', (pr) => { setStoredDriveway(pr, d.value); }); } else draw(); return; }
     if (d.mode === 'move' && (d.dx || d.dy)) { touched = true; nudgeHouse(store, d.dx, d.dy); }
     else if (d.mode === 'turn' && d.deg) { touched = true; handleDeg += d.deg; turnHouse(store, d.deg); }
     else draw();
