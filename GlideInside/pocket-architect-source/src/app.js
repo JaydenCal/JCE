@@ -515,14 +515,14 @@ async function main() {
   };
   const openEditorDirect = () => openFullEditor({ ...store.project, flow: { kind: store.project.mode === 'commercial' ? 'commercial' : 'residential', step: 5 } });
   const lotCard = COMMERCIAL_VIEWER
-    ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a) })
+    ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openGuided, onFind: (a) => api.embedViewer?.run(a) })
     : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
   api.lotCard = lotCard;
   // The home page's "Open full editor" link asks the embedded viewer to hand over everything (lot, address, house, placement, colours) and open the editor itself.
   if (VIEWER) {
     window.addEventListener('message', (ev) => {
       if (ev.origin !== location.origin || ev.source !== window.parent) return;
-      if (ev.data && typeof ev.data === 'object' && ev.data.type === 'gi:open-editor') openEditorDirect();
+      if (ev.data && typeof ev.data === 'object' && ev.data.type === 'gi:open-editor') (COMMERCIAL_VIEWER ? openGuided : openEditorDirect)(); // commercial goes through the guided steps first, as the address links do
     });
   }
   if (COMMERCIAL_TOOL) api.commercial = createCommercialPanel({ store, host: refs.stage, editor }); // the residential tool has no commercial panel

@@ -35,7 +35,9 @@ export const addressFromSearch = (search = typeof location !== 'undefined' ? loc
 export function fullEditorUrl(project) {
   const lot = project?.site?.lot;
   const a = lot && lot.lotLabel !== 'Sample lot' ? String(lot.address || '').trim() : '';
-  return a ? `${FULL_EDITOR_PATH}?address=${encodeURIComponent(a)}` : FULL_EDITOR_PATH;
+  // A commercial design keeps its tool in the link, so an address link does not open the residential tool.
+  const mode = project?.mode === 'commercial' ? 'mode=commercial&' : '';
+  return a ? `${FULL_EDITOR_PATH}?${mode}address=${encodeURIComponent(a)}` : FULL_EDITOR_PATH;
 }
 
 const inFrame = () => { try { return window.parent !== window; } catch { return true; } };
