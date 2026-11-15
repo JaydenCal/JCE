@@ -225,6 +225,7 @@ test('site layout: crossovers sit on the edge that abuts the road, not on a boun
   // A neighbouring lot beyond edge 1 (the east side boundary, x = 80 m).
   const beyond = () => [{ x: 80000, y: 0 }, { x: 80000, y: 90000 }, { x: 100000, y: 90000 }, { x: 100000, y: 0 }];
   lot.neighbours = [{ ring: beyond() }];
+  lot.roads = [{ name: 'MAIN ST', pts: [-50000, -8000, 150000, -8000] }];
   lot.frontEdges = [1, 0];
   const sw = generateSiteWorks(store.project);
   assert.ok(sw && sw.crossovers.length);
