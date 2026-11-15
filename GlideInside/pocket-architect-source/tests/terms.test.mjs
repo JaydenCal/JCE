@@ -29,7 +29,7 @@ test('plan-terms.js: exports the fields, no dashes, never "compliant"', () => {
   const all = JSON.stringify(PLAN_TERMS);
   assert.ok(!/[–—]/.test(all));
   assert.ok(!/compliant/i.test(all));
-  assert.equal(version, '1.0');
+  assert.equal(version, '1.1');
 });
 
 // ---- gate logic (Node) ---------------------------------------------------------------------------------------------------------
@@ -220,9 +220,9 @@ test('sheet note: in the DXF and in the text of every PDF flavour (engineering, 
   const eng = await buildExport('pdf', p, { jsPDF, terms, config: {}, catalogue });
   const pages = await textOf(eng.bytes);
   assert.ok(pages.length > 1);
-  for (const t of pages) { assert.match(t, /CONCEPT ONLY\. NOT FOR CONSTRUCTION OR APPROVAL/); assert.match(t, /Terms of use v1\.0 accepted 15\/11\/2026/); }
+  for (const t of pages) { assert.match(t, /CONCEPT ONLY\. NOT FOR CONSTRUCTION OR APPROVAL/); assert.match(t, /Terms of use v1\.1 accepted 15\/11\/2026/); }
   const legacy = await buildExport('pdf', p, { jsPDF, terms, style: 'legacy', config: {}, catalogue });
-  for (const t of await textOf(legacy.bytes)) assert.match(t, /Terms of use v1\.0 accepted 15\/11\/2026/);
+  for (const t of await textOf(legacy.bytes)) assert.match(t, /Terms of use v1\.1 accepted 15\/11\/2026/);
   const { exportPlanSet } = await import('../src/premium/exporters/planset/index.js');
   const { FIXTURES } = await import('../src/site/fixtures/index.js');
   const { buildSiteLot } = await import('../src/site/model.js');
@@ -231,7 +231,7 @@ test('sheet note: in the DXF and in the text of every PDF flavour (engineering, 
   const set = await exportPlanSet({ project: proj('p_s2'), lot, kind: 'site', download: false, jsPDF, terms, fetchSite: null, catalogue });
   const sp = await textOf(await set.blob.arrayBuffer());
   assert.match(sp[0], /CONCEPT ONLY\. NOT FOR CONSTRUCTION OR APPROVAL/, 'the note is on the cover sheet');
-  for (const t of sp) assert.match(t, /Terms of use v1\.0 accepted 15\/11\/2026/, 'the stamp is in every title block');
+  for (const t of sp) assert.match(t, /Terms of use v1\.1 accepted 15\/11\/2026/, 'the stamp is in every title block');
 });
 
 // ---- public page -----------------------------------------------------------------------------------------------------------------
