@@ -179,4 +179,23 @@ export const LOT_CARD_CSS = `
 .lc-root.is-phone .lc-send{margin-top:6px}.lc-root.is-phone .lc-sendbtn{width:100%;white-space:normal;line-height:1.15;height:auto;min-height:36px;padding:6px 12px!important}
 .lc-root[data-room="1"]:not(.is-compact) .lc-card .lc-send{display:none}
 .ps-toast button{white-space:normal}
+
+/* Compact card and minimise (owner 15/11/2026: the card covered the plan) */
+.lc-card{width:min(430px,calc(100% - 24px));padding:12px 16px 0;border-radius:12px}
+.lc-title{font-size:20px}
+.lc-sub{margin-top:3px;font-size:11.5px}
+.lc-stats{gap:14px;margin:8px 0 6px}.lc-stats b{font-size:17px}.lc-stats i{margin-top:3px;font-size:9px}
+.lc-sp{margin:3px 0 4px}.lc-sp .lc-k{width:58px}.lc-k{font-size:9.5px}
+.lc-chip{width:24px;height:24px}.lc-sw{width:19px;height:19px}
+.lc-acts{gap:6px;margin-top:8px}
+.lc-btn{height:30px;padding:0 12px!important;font-size:12px;border-radius:15px}
+.lc-fit{min-height:30px;font-size:11.5px}
+.lc-card:has(.lc-fit[hidden]) .lc-acts{margin-bottom:12px}
+.lc-min{flex:none;width:28px;height:28px;border-radius:14px;border:1px solid rgba(255,255,255,.22)!important;display:inline-flex;align-items:center;justify-content:center;font:600 16px/1 var(--lc-sans)}
+.lc-min:hover{background:rgba(255,255,255,.1)}
+.lc-card.is-min{width:max-content;max-width:calc(100% - 24px);padding:8px 10px 8px 14px}
+.lc-card.is-min .lc-body,.lc-card.is-min .lc-sub,.lc-card.is-min .lc-more{display:none!important}
+.lc-card.is-min .lc-title{font-size:15px}
+.lc-card.is-min .lc-hd{align-items:center}
+.gf-backpill{min-height:30px!important;height:30px;padding:0 12px!important;font-size:12px!important;line-height:28px}
 `;
