@@ -10,7 +10,7 @@ import { commercialStatus } from '../../commercial/card-model.js';
 import { zoneClass, effectiveClass } from '../../commercial/zones.js';
 import { defaultRulesFor, ACCESSIBLE_RATE } from '../../commercial/rules.js';
 import { facts, statusText } from '../../commercial/dataset.js';
-import { money, pct1, CAVEAT, GST_NOTE, RENT_NOTE, DATA_DATE } from '../../commercial/feasibility.js';
+import { money, pct1, CAVEAT, GST_NOTE, RENT_NOTE, DATA_DATE, MARKET_DATE } from '../../commercial/feasibility.js';
 import { lotDimensions } from '../../model/placement.js';
 import { measure, indicative, buildingsOf, fail } from './commercial-core.js';
 import { typeById } from './commercial-catalogue.js';
@@ -172,7 +172,7 @@ export function briefSections(p) {
       if (x) fz.push(`- ${label}: ${money(x.value)}. Status: ${statusLabel(x.status)}`);
     }
     if (buildingsOf(p).length) fz.push('Buildings are costed at the build rate of their type (status ESTIMATE) and valued at the unit sale and rent rates, so treat their figures as a rough guide only.');
-    fz.push(`${CAVEAT} ${GST_NOTE} ${RENT_NOTE} Data as at ${DATA_DATE}.`);
+    fz.push(`${CAVEAT} ${GST_NOTE} ${RENT_NOTE} Portal data as at ${DATA_DATE}, market data as at ${MARKET_DATE}.`);
   } else fz.push('Feasibility could not be worked out for this layout.');
   sections.push({ title: 'Indicative feasibility', lines: fz });
   const risks = [];

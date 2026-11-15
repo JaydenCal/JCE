@@ -17,7 +17,7 @@ import { effectiveClass, zoneClass, ZONE_CLASS_LABEL } from '../zones.js';
 import { rowLength } from '../layout.js';
 import { facts, NCC_CLASSES, PARKING_M2_PER_SPACE } from '../dataset.js';
 import { needsZone, ensureZone, lotKey } from '../zone-lookup.js';
-import { feasibility, AREAS, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT, DATA_DATE, money, band, pct1, summaryRows, costRows, headlineRows, INPUT_MAX } from '../feasibility.js';
+import { feasibility, AREAS, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT, DATA_DATE, money, band, pct1, summaryRows, costRows, headlineRows, areaStatusLine, INPUT_MAX } from '../feasibility.js';
 
 const getPath = (o, path) => path.split('.').reduce((a, k) => (a == null ? a : a[k]), o);
 function setPath(o, path, v) {
@@ -188,7 +188,8 @@ export function createCommercialPanel({ store, host, editor }) {
     const f = feasibility(c, p.site?.lot);
     const setFz = (label, fn) => edit(label, (cc) => { cc.feasibility ??= { area: null, v: {} }; cc.feasibility.v ??= {}; fn(cc.feasibility); });
     const areaSel = h('select', { 'aria-label': 'Area', dataset: { ps: 'fz-area' }, onchange: () => setFz('Set feasibility area', (z) => { z.area = areaSel.value === '' ? null : areaSel.value; z.v = {}; }) },
-      h('option', { value: '' }, `${AREAS.find((x) => x.key === f.detectedKey)?.label} (auto)`), ...AREAS.map((x) => h('option', { value: x.key }, x.label)));
+      h('option', { value: '' }, `${AREAS.find((x) => x.key === f.detectedKey)?.label} (auto)`),
+      ...[['NSW', 'New South Wales'], ['QLD', 'Queensland']].map(([st, name]) => h('optgroup', { label: name }, ...AREAS.filter((x) => x.state === st).map((x) => h('option', { value: x.key }, `${x.label}, ${st}`)))));
     areaSel.value = c.feasibility?.area || '';
     const chip = (inp) => h('span', { class: `cm-chip2 cm-chip-${String(inp.status).toLowerCase()}`, title: inp.note || null }, inp.chip);
     const inRow = (key, label, unit, step) => {
@@ -219,7 +220,8 @@ export function createCommercialPanel({ store, host, editor }) {
     const title = 'Indicative yield and value';
     return section(title,
       h('p', { class: 'cm-hint cm-fz-caveat', dataset: { ps: 'fz-caveat' } }, CAVEAT),
-      field('Area', areaSel, f.detectedKey === (c.feasibility?.area || f.detectedKey) ? `Portal data ${DATA_DATE}` : 'Chosen by you'),
+      field('Area', areaSel, f.detectedKey === (c.feasibility?.area || f.detectedKey) ? 'Found from the lot' : 'Chosen by you'),
+      h('p', { class: 'cm-hint', dataset: { ps: 'fz-area-meta' } }, `${areaStatusLine(f)} Portal data as at ${DATA_DATE}.`),
       h('div', { class: 'cm-fz-outs cm-fz-heads', dataset: { ps: 'fz-headlines' } }, ...head),
       h('div', { class: 'cm-fz-outs', dataset: { ps: 'fz-outputs' } }, ...out),
       h('div', { class: 'gf-row', style: { justifyContent: 'space-between' } }, h('b', { class: 'cm-fz-h' }, 'Inputs'), resetAll),
@@ -230,12 +232,15 @@ export function createCommercialPanel({ store, host, editor }) {
       field('Land price', h('span', { class: 'cm-in' }, priceInput, h('i', null, '$')), f.landFromPrice ? 'Listing or purchase price, used instead of the land rate' : 'Listing price if known, else land rate x lot area'),
       inRow('landRate', 'Land rate', '$/m²', 5),
       inRow('buildRate', 'Build rate (GFA)', '$/m²', 50),
+      inRow('costFactor', 'Regional cost factor', 'x', 0.01),
       inRow('siteRate', 'Site works (developed)', '$/m²', 5),
       inRow('landscapeRate', 'Clearing, landscaping (rest)', '$/m²', 1),
       inRow('outgoingsPct', 'Outgoings, share of gross rent', '%', 1),
       inRow('mezzFactor', 'Mezzanine value, fraction of ground rate', 'x', 0.05),
       inRow('feesPct', 'Fees', '%', 0.5),
       inRow('contPct', 'Contingency', '%', 0.5),
+      inRow('councilCharges', 'Council charges', '$', 1000),
+      h('p', { class: 'cm-hint', dataset: { ps: 'fz-charges-basis' } }, f.inputs.councilCharges.rule.basis, ' ', f.inputs.councilCharges.rule.sources[0] && /^https?:/.test(f.inputs.councilCharges.rule.sources[0]) ? h('a', { href: f.inputs.councilCharges.rule.sources[0], target: '_blank', rel: 'noopener noreferrer' }, 'Source') : null, ` As at ${f.inputs.councilCharges.rule.asAt}.`),
       h('p', { class: 'cm-hint' }, `${GST_NOTE} ${RENT_NOTE} Developed area ${Math.round(f.devM2).toLocaleString('en-AU')} m² (building footprint plus hardstand), rest of lot ${Math.round(f.restM2).toLocaleString('en-AU')} m².`),
       h('b', { class: 'cm-fz-h' }, 'Cost build up'), ...costs,
       h('b', { class: 'cm-fz-h' }, 'Per unit'), unitTable,
