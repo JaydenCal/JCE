@@ -13,6 +13,7 @@ const SPECS = {
       allowClientCadExports: 'allow_client_cad_exports:b', showAerialDefault: 'show_aerial_default:b', showAiAssistant: 'show_ai_assistant:b', aiMonthlyCap: 'ai_monthly_cap', legalName: 'legal_name', abn: 'abn',
       billingName: 'billing_name', billingEmail: 'billing_email', billingPhone: 'billing_phone', stripeCustomerId: 'stripe_customer_id', createdAt: 'created_at',
       brandPrimary: 'brand_primary', brandAccent: 'brand_accent', brandDarkInk: 'brand_dark_ink', brandDarkBg: 'brand_dark_bg', slug: 'slug', // builder colours (migration 0010)
+      directoryListed: 'directory_listed:b', directoryRegion: 'directory_region', // opt in to the public builder search (migration 0022)
       customLoginCents: 'custom_login_cents', // nullable: the owner's per-login price for this org (migration 0008)
     },
   },
@@ -64,6 +65,13 @@ const SPECS = {
       firstName: 'first_name', lastName: 'last_name', email: 'email', mobile: 'mobile', region: 'region', homesPerYear: 'homes_per_year',
       howHeard: 'how_heard', consentAt: 'consent_at', termsVersion: 'terms_version', ipHash: 'ip_hash', notifyStatus: 'notify_status',
       decidedAt: 'decided_at', decisionNote: 'decision_note', orgId: 'org_id',
+    },
+  },
+  clientRequests: {
+    table: 'client_access_requests',
+    cols: {
+      id: 'id', orgId: 'org_id', createdAt: 'created_at', status: 'status', name: 'name', email: 'email', phone: 'phone', lotAddress: 'lot_address',
+      designId: 'design_id', designName: 'design_name', consentAt: 'consent_at', ipHash: 'ip_hash', decidedAt: 'decided_at', decisionNote: 'decision_note', clientId: 'client_id',
     },
   },
   loginIssues: {
@@ -171,6 +179,18 @@ export function createD1PortalStore(db) {
       const sets = keys.map((k, i) => `${colName(SPECS.trialRequests.cols[k])} = ?${i + 2}`).join(', ');
       const res = await run(`UPDATE trial_requests SET status = 'deciding', ${sets} WHERE id = ?1 AND status = 'pending'`, id, ...toParams(SPECS.trialRequests, patch, keys));
       return changed(res);
+    },
+    // Client access requests (migration 0022). Every read and write takes the orgId: a builder only ever sees their own queue.
+    createClientRequest: (r) => insert(SPECS.clientRequests, r),
+    getClientRequest: (orgId, id) => one(SPECS.clientRequests, 'org_id = ?1 AND id = ?2', orgId, id),
+    listClientRequests: (orgId, status = null) => (status ? many(SPECS.clientRequests, 'org_id = ?1 AND status = ?2', [orgId, status], 'ORDER BY created_at DESC, id') : many(SPECS.clientRequests, 'org_id = ?1', [orgId], 'ORDER BY created_at DESC, id')),
+    listAllClientRequests: () => many(SPECS.clientRequests, '1 = 1', [], 'ORDER BY created_at DESC, id'),
+    countPendingClientRequests: async (orgId) => Number((await first("SELECT COUNT(*) AS n FROM client_access_requests WHERE org_id = ?1 AND status = 'pending'", orgId))?.n ?? 0),
+    findOpenClientRequest: (orgId, email) => one(SPECS.clientRequests, "org_id = ?1 AND email = ?2 AND status IN ('pending','approving')", orgId, email),
+    updateClientRequest: (orgId, id, patch) => update(SPECS.clientRequests, 'org_id = ?1 AND id = ?2', [orgId, id], patch),
+    /** Atomic claim: pending -> approving. False when another click already took it. */
+    async claimClientRequest(orgId, id) {
+      return changed(await run("UPDATE client_access_requests SET status = 'approving' WHERE org_id = ?1 AND id = ?2 AND status = 'pending'", orgId, id));
     },
     // Users
     createUser: (u) => insert(SPECS.users, u).catch((e) => (isUnique(e) ? false : Promise.reject(e))),
@@ -306,7 +326,7 @@ export function createD1PortalStore(db) {
 
 // In memory (tests, development) -------------------------------------------------------------------------------------------
 export function createMemoryPortalStore() {
-  const T = { trialRequests: new Map(), orgs: new Map(), users: new Map(), sessions: new Map(), houses: new Map(), projects: new Map(), invoices: new Map(), loginIssues: new Map(), failures: new Map(), settings: new Map() };
+  const T = { trialRequests: new Map(), orgs: new Map(), users: new Map(), sessions: new Map(), houses: new Map(), projects: new Map(), invoices: new Map(), loginIssues: new Map(), clientRequests: new Map(), failures: new Map(), settings: new Map() };
   const cp = (o) => (o == null ? null : structuredClone(o));
   const omit = (o, keys) => {
     const c = cp(o);
@@ -361,6 +381,28 @@ export function createMemoryPortalStore() {
       const r = T.trialRequests.get(id);
       if (!r || r.status !== 'pending') return false;
       patchOf(r, { ...patch, status: 'deciding' });
+      return true;
+    },
+    // Client access requests (migration 0022); every call takes the orgId.
+    async createClientRequest(r) {
+      T.clientRequests.set(r.id, cp(r));
+      return true;
+    },
+    getClientRequest: async (orgId, id) => { const r = T.clientRequests.get(id); return r && r.orgId === orgId ? cp(r) : null; },
+    listClientRequests: async (orgId, status = null) => [...T.clientRequests.values()].filter((r) => r.orgId === orgId && (!status || r.status === status)).sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.id.localeCompare(b.id)).map(cp),
+    listAllClientRequests: async () => [...T.clientRequests.values()].sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.id.localeCompare(b.id)).map(cp),
+    countPendingClientRequests: async (orgId) => [...T.clientRequests.values()].filter((r) => r.orgId === orgId && r.status === 'pending').length,
+    findOpenClientRequest: async (orgId, email) => cp([...T.clientRequests.values()].find((r) => r.orgId === orgId && r.email === email && ['pending', 'approving'].includes(r.status))),
+    async updateClientRequest(orgId, id, patch) {
+      const r = T.clientRequests.get(id);
+      if (!r || r.orgId !== orgId) return false;
+      Object.assign(r, cp(patch));
+      return true;
+    },
+    async claimClientRequest(orgId, id) {
+      const r = T.clientRequests.get(id);
+      if (!r || r.orgId !== orgId || r.status !== 'pending') return false;
+      r.status = 'approving';
       return true;
     },
     async createUser(u) {

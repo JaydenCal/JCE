@@ -1,4 +1,5 @@
 // Styles for the guided start flow (residential and commercial). Uses the app tokens so the dark theme follows.
+import { FINDER_CSS } from './builder-finder.js';
 export const FLOW_CSS = `
 .ps-modal-root{z-index:1000} /* dialogs opened from a step (Add building) stand above the flow */
 .gf-root{--gf-bg:var(--ps-bg,#f1f2f4);--gf-panel:var(--ps-panel,#fff);--gf-text:var(--ps-text,#1a1c20);--gf-muted:var(--ps-muted,#5a5e66);--gf-border:var(--ps-border,#dcdde0);
@@ -131,4 +132,4 @@ export const FLOW_CSS = `
  .gf-homes,.gf-types{grid-template-columns:minmax(0,1fr)}
 }
 @media (prefers-reduced-motion:no-preference){.gf-root{animation:gf-in .18s ease-out}@keyframes gf-in{from{opacity:0}to{opacity:1}}}
-`;
+${FINDER_CSS}`;

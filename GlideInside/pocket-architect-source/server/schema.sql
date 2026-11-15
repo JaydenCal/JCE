@@ -221,7 +221,9 @@ CREATE TABLE IF NOT EXISTS orgs (
   brand_accent TEXT,
   brand_dark_ink TEXT,
   brand_dark_bg TEXT,
-  slug TEXT                          -- public builder slug for the home page picker, unique when set (migration 0011)
+  slug TEXT,                         -- public builder slug for the home page picker, unique when set (migration 0011)
+  directory_listed INTEGER NOT NULL DEFAULT 0, -- opt in to the public "Have a local builder in mind?" search (migration 0022)
+  directory_region TEXT              -- region shown beside the name and logo in that search (migration 0022)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_orgs_slug ON orgs(slug);
 
@@ -308,6 +310,26 @@ CREATE TABLE IF NOT EXISTS login_issues (
   amount_cents INTEGER NOT NULL DEFAULT 3500 -- legacy default, never relied on: the code always writes the tiered price (priceForNthLoginThisMonth), now A$30 then A$25
 );
 CREATE INDEX IF NOT EXISTS idx_login_issues_org ON login_issues(org_id, month);
+
+-- A visitor's request for a client login from one listed builder (migration 0022). Goes to that builder's queue only; nothing is emailed.
+CREATE TABLE IF NOT EXISTS client_access_requests (
+  id TEXT PRIMARY KEY,
+  org_id TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',   -- pending | approving | approved | declined
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  lot_address TEXT,
+  design_id TEXT,
+  design_name TEXT,
+  consent_at TEXT NOT NULL,
+  ip_hash TEXT,
+  decided_at TEXT,
+  decision_note TEXT,
+  client_id TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_car_org ON client_access_requests(org_id, status, created_at);
 
 -- AI top-ups are not stored here: the AI branch logs each one as an 'ai_topup' row in events (see server/README.md).
 

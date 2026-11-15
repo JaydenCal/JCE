@@ -12,6 +12,7 @@ import { lotMapSvg, mapBox, roadSvg, aerialOf } from './lot-map.js';
 import { writeFlow, flowOf } from './state.js';
 import { loadHomes, filterRows, placeBest, nudgeHouse, turnHouse, mirrorHouse, previewCopy, placementStatus, checkSummary, INDICATIVE } from './res-logic.js';
 import { mount3dPreview } from './preview3d.js';
+import { mountBuilderFinder } from './builder-finder.js';
 
 export const RESIDENTIAL_BRAND = 'Glide Inside Residential';
 
@@ -31,7 +32,9 @@ function mountHomeStep(ctx, { getHomes }) {
   const filters = h('div', { class: 'gf-filters' },
     sel('Bedrooms', 'bedrooms', [['', 'Any'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4 or more']]),
     sel('Storeys', 'storeys', [['', 'Any'], ['1', 'Single storey'], ['2', 'Two storeys']]));
-  const el = h('div', null, filters, grid, note);
+  // "Have a local builder in mind?": find a listed builder and ask them for a client login to their own homes.
+  const finder = mountBuilderFinder({ getLot: () => lotOf(store.project)?.address || '', getDesign: () => { const r = rows.find((x) => x.id === selected); return r ? { id: r.id, name: r.name } : null; } });
+  const el = h('div', null, finder.el, filters, grid, note);
 
   function card(r) {
     const thumb = (() => { try { return svgDataUri(projectToSvg(r.design.project)); } catch { return ''; } })();
@@ -70,7 +73,7 @@ function mountHomeStep(ctx, { getHomes }) {
     el,
     canNext: () => !!selected && rows.some((r) => r.id === selected),
     nextLabel: 'Place this home',
-    dispose() { disposed = true; },
+    dispose() { disposed = true; finder.dispose(); },
   };
 }
 

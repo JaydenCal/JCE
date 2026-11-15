@@ -24,6 +24,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
   let trial = null; // the shared commercial trial login, or null
   let usage = null; // commercial AI usage and cost
   let termsStats = null; // plan set terms acceptances per version
+  let clientReqs = []; // every builder's client login requests (read only)
   let contacts = null; // free profile contacts: { contacts, total, matching, marketable }
   const contactFilters = { consent: '', type: '', from: '', to: '', designs: '', mode: '', suburb: '' };
 
@@ -55,6 +56,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
 
   async function load() {
     [requests, orgs] = await Promise.all([api.listRequests(), api.listOrgs()]);
+    clientReqs = (await api.listClientRequests?.().catch(() => [])) || [];
     // The commercial sections are extras: a failure there must not lock the owner out of trial requests.
     [trial, usage, termsStats, contacts] = await Promise.all([api.commercialTrial?.().catch(() => null) ?? null, api.commercialUsage?.().catch(() => null) ?? null, api.termsCounts?.().catch(() => null) ?? null, api.profileContacts?.(contactFilters).catch(() => null) ?? null]);
   }
@@ -310,6 +312,15 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
   }
 
 
+  // Client login requests: visitors who asked a listed builder for a login. The builder decides; the owner can see them all.
+  function clientReqSection() {
+    const head = h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Client login requests'), h('p', { class: 'pp-lead pp-lead--sm' }, `${clientReqs.filter((q) => q.status === 'pending').length} waiting with builders. Each request sits in that builder's own queue and the builder approves or declines it. Nothing is emailed from here.`)));
+    if (!clientReqs.length) return h('div', { dataset: { ps: 'client-requests-admin' } }, head, h('p', { class: 'pp-empty' }, 'No requests yet.'));
+    return h('div', { dataset: { ps: 'client-requests-admin' } }, head, h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table pp-table--stack' },
+      h('thead', null, h('tr', null, ...['Builder', 'Name', 'Contact', 'Lot address', 'Design', 'Status', 'Requested'].map((t) => h('th', { scope: 'col' }, t)))),
+      h('tbody', null, ...clientReqs.slice(0, 100).map((q) => h('tr', null, td('Builder', q.builderName), td('Name', q.name), td('Contact', h('div', null, q.email), h('div', { class: 'pp-sub' }, q.phone)), td('Lot address', q.lotAddress || ''), td('Design', q.designName || ''), td('Status', q.status), td('Requested', when(q.createdAt))))))));
+  }
+
   // Plan set terms: how many accounts have accepted each version (signed in accounts only; free previews are recorded in the browser).
   function termsSection() {
     const head = h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Plan set terms acceptances'), h('p', { class: 'pp-lead pp-lead--sm' }, termsStats ? `Current version ${termsStats.currentVersion}. Counts are accounts that accepted each version (signed in accounts and Plan Packs; anonymous free previews are recorded in the browser only).` : 'Acceptances could not be loaded.')));
@@ -392,6 +403,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
         skipNote, orgTable,
         h('div', { class: 'pp-actions pp-actions--tight', style: { marginTop: '12px' } }, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', id: 'create-internal', onclick: openInternalForm }, 'Create internal test account')),
         trialSection(),
+        clientReqSection(),
         usageSection(),
         termsSection(),
         contactsSection()));

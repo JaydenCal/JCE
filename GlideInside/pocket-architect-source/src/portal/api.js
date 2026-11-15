@@ -15,6 +15,7 @@ export const CALLS = [
   'aiBalance', 'aiTopUp', 'aiToken',
   'listTeam', 'inviteStaff', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff',
   'setBranding', 'setOrgSettings', 'enquiryJce', 'getBrand',
+  'searchBuilders', 'requestClientAccess', 'listClientRequests', 'approveClientRequest', 'declineClientRequest',
 ];
 
 // method, path (":id" filled from the first argument), body from the arguments.
@@ -62,9 +63,14 @@ const ROUTES = {
   setBranding: ['PUT', '/portal/org/branding'],
   setOrgSettings: ['PATCH', '/portal/org/settings'],
   enquiryJce: ['POST', '/enquiry/jce'],
+  searchBuilders: ['GET', '/portal/builders/search'], // public: listed builders (name, region, logo) whose name contains q
+  requestClientAccess: ['POST', '/portal/client-access-request'], // public: a visitor asks one listed builder for a client login
+  listClientRequests: ['GET', '/portal/client-requests'],
+  approveClientRequest: ['POST', '/portal/client-requests/:id/approve'],
+  declineClientRequest: ['POST', '/portal/client-requests/:id/decline'],
   getBrand: ['GET', '/portal/brand/:id'], // public: { name, logoUrl, colours } for the branded sign in page; 404 when the builder is not on Glide Inside
 };
-const ID_CALLS = new Set(['getBrand', 'getHouse', 'duplicateHouse', 'archiveHouse', 'getGlideModel', 'updateClient', 'resetClientPassword', 'disableClient', 'enableClient', 'deleteClient', 'exportClientProjects', 'getInvoice', 'openProject', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff']);
+const ID_CALLS = new Set(['approveClientRequest', 'declineClientRequest', 'getBrand', 'getHouse', 'duplicateHouse', 'archiveHouse', 'getGlideModel', 'updateClient', 'resetClientPassword', 'disableClient', 'enableClient', 'deleteClient', 'exportClientProjects', 'getInvoice', 'openProject', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff']);
 
 /** Real HTTP implementation of the same calls. `me` resolves null on 401. `archiveHouse(id, archived)` sends { archived }. */
 export function createHttpApi({ base = CONFIG.apiBase, fetchImpl = null } = {}) {

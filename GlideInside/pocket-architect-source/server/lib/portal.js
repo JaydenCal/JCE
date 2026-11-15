@@ -120,7 +120,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   const publicOrg = (o, role) => ({
     id: o.id, name: o.name, shortCode: o.shortCode, branding: { displayName: o.displayName || o.name, logoDataUrl: o.logoDataUrl || null, colours: coloursOf(o) },
     allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true,
-    showGlideLibrary: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, showAerialDefault: o.showAerialDefault !== false, showAiAssistant: o.showAiAssistant !== false, aiMonthlyCap: o.aiMonthlyCap,
+    showGlideLibrary: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, showAerialDefault: o.showAerialDefault !== false, showAiAssistant: o.showAiAssistant !== false, directoryListed: o.directoryListed === true, directoryRegion: o.directoryRegion || '', aiMonthlyCap: o.aiMonthlyCap,
     ...(o.internal === true ? { internal: true } : {}),
     ...(role === 'admin' ? { billingContact: billingContact(o) } : {}),
   });
@@ -703,8 +703,110 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       if (typeof b[from] !== 'boolean') throw new HttpError('BAD_REQUEST', `${from} must be true or false.`);
       patch[to] = b[from];
     }
+    // Builder finder (migration 0022): opt in to the public search, and the region shown beside the name and logo.
+    if (b.directoryListed !== undefined) {
+      if (typeof b.directoryListed !== 'boolean') throw new HttpError('BAD_REQUEST', 'directoryListed must be true or false.');
+      patch.directoryListed = b.directoryListed;
+    }
+    if (b.directoryRegion !== undefined) patch.directoryRegion = text(b.directoryRegion, 'Region', { max: 60 });
     await pstore.updateOrg(org.id, patch);
     return json(publicOrg({ ...org, ...patch }, user.role));
+  }
+
+  // Local builder finder and client access requests (migration 0022) --------------------------------------------------------
+  // A visitor searches for a builder who opted in to being listed (name, region, logo only, never an id, email or any private data),
+  // then asks THAT builder for a client login. The request waits in the builder's own queue. Nothing is emailed to anyone.
+  const dirRef = async (org) => (await sha256Hex(`gi-dir:${org.id}`)).slice(0, 24);
+  const listable = (o) => o.directoryListed === true && o.internal !== true && !orgState(o, now()).readOnly;
+  const REQUESTS_PER_BUILDER_MAX = 300;
+
+  /** GET /portal/builders/search?q= (public). At least 2 letters; up to 8 listed builders whose name contains the text. */
+  async function searchBuilders(r) {
+    if ((await store.hitRate(`dirsearch:ip:${clientIp(r.request)}`, 600, now())) > 90) throw new HttpError('RATE_LIMITED', 'Too many searches. Please wait a moment.', { retryAfter: 600 });
+    const q = String(r.url.searchParams.get('q') || '').trim().toLowerCase().replace(/\s+/g, ' ').slice(0, 60);
+    if (q.length < 2) return json({ builders: [] });
+    const hits = (await pstore.listOrgs()).filter((o) => listable(o) && `${o.displayName || ''} ${o.name || ''}`.toLowerCase().includes(q)).slice(0, 8);
+    const builders = await Promise.all(hits.map(async (o) => ({ ref: await dirRef(o), name: o.displayName || o.name, region: o.directoryRegion || '', logoUrl: o.logoDataUrl || null })));
+    const res = json({ builders });
+    res.headers.set('cache-control', 'no-store');
+    return res;
+  }
+
+  const clientRequestView = (q) => ({ id: q.id, createdAt: q.createdAt, status: q.status === 'approving' ? 'pending' : q.status, name: q.name, email: q.email, phone: q.phone, lotAddress: q.lotAddress || '', designName: q.designName || '', consentAt: q.consentAt, decidedAt: q.decidedAt || null, decisionNote: q.decisionNote || '', clientId: q.clientId || null });
+
+  /** POST /portal/client-access-request (public, CSRF header required). Honeypot `website`, validated, rate limited, stored for that builder only. */
+  async function clientAccessRequest(r) {
+    const body = await readJson(r.request, 4096);
+    if (typeof body.website === 'string' && body.website.trim()) return json({ ok: true }); // bots fill the hidden field: pretend it worked
+    if (body.consent !== true) throw new HttpError('BAD_REQUEST', 'Please tick the box so we can pass your details to the builder.');
+    const ref = text(body.builder, 'Builder', { required: true, max: 40 });
+    const name = text(body.name, 'Name', { required: true, max: 100 }).replace(/\s+/g, ' ');
+    const email = text(body.email, 'Email', { required: true, max: 160 }).toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new HttpError('BAD_REQUEST', 'That email address does not look right.');
+    const phone = text(body.phone, 'Phone', { required: true, max: 30 });
+    if (!/^\d{8,15}$/.test(phone.replace(/[\s()+-]/g, ''))) throw new HttpError('BAD_REQUEST', 'That phone number does not look right.');
+    const lotAddress = text(body.lotAddress, 'Lot address', { max: 200 });
+    const designName = text(body.designName, 'Design', { max: 120 });
+    const designId = text(body.designId, 'Design', { max: 120 });
+    const nowMs = now();
+    const ip = clientIp(r.request);
+    if ((await store.hitRate(`car:ip:${ip}`, 3600, nowMs)) > 6 || (await store.hitRate(`car:email:${email}`, 86400, nowMs)) > 4) {
+      throw new HttpError('RATE_LIMITED', 'You have sent several requests already. Please wait before sending another.', { retryAfter: 3600 });
+    }
+    let org = null;
+    for (const o of await pstore.listOrgs()) if (listable(o) && (await dirRef(o)) === ref) { org = o; break; }
+    if (!org) throw new HttpError('NOT_FOUND', 'That builder is not listed on Glide Inside.');
+    const builderName = org.displayName || org.name;
+    if (await pstore.findOpenClientRequest(org.id, email)) return json({ ok: true, builderName }); // already waiting: no duplicate row
+    if ((await pstore.countPendingClientRequests(org.id)) >= REQUESTS_PER_BUILDER_MAX) throw new HttpError('RATE_LIMITED', `${builderName} has a lot of requests waiting. Please try again later.`, { retryAfter: 86400 });
+    await pstore.createClientRequest({ id: rid('car'), orgId: org.id, createdAt: iso(nowMs), status: 'pending', name, email, phone, lotAddress, designId, designName, consentAt: iso(nowMs), ipHash: (await sha256Hex(`gi-car:${ip}`)).slice(0, 16), decidedAt: null, decisionNote: null, clientId: null });
+    return json({ ok: true, builderName }, 201);
+  }
+
+  async function listClientRequests(r) {
+    const { org } = await auth(r, { need: 'clients.read' });
+    const status = r.url.searchParams.get('status');
+    if (status && !['pending', 'approved', 'declined'].includes(status)) throw new HttpError('BAD_REQUEST', 'status must be pending, approved or declined.');
+    return json((await pstore.listClientRequests(org.id, status || null)).map(clientRequestView));
+  }
+  /** Approve issues the client login through the same account flow and billing gates as Generate account. The builder passes the details on. */
+  async function approveClientRequest(r, id) {
+    const { org, state } = await auth(r, { need: 'clients.write' });
+    if (!state.canIssueClients) throw trialNoClients();
+    if (org.internal !== true && state.status === 'active' && !contactComplete(org) && !state.cardOnFile) {
+      throw new HttpError('BILLING_DETAILS_REQUIRED', 'Add your legal business name, ABN and billing email under Billing (or add a card) before you generate client logins. They are needed to invoice you.');
+    }
+    const q = await pstore.getClientRequest(org.id, id);
+    if (!q) throw new HttpError('NOT_FOUND', 'That request was not found.');
+    if (q.status !== 'pending') throw new HttpError('CONFLICT', `That request is already ${q.status === 'approving' ? 'being approved' : q.status}.`);
+    if (await pstore.emailExists(q.email.toLowerCase())) throw new HttpError('CONFLICT', 'That email address already has a login. Decline this request, or ask the person to use a different email address.');
+    if (!(await pstore.claimClientRequest(org.id, id))) throw new HttpError('CONFLICT', 'That request has just been decided.');
+    try {
+      const { user, credentials } = await createAccount(org, { firstName: q.name.split(' ')[0].slice(0, 60), email: q.email, role: 'client', lotAddress: q.lotAddress || '', houseAccess: 'all' });
+      const patch = { status: 'approved', decidedAt: iso(), clientId: user.id };
+      await pstore.updateClientRequest(org.id, id, patch);
+      const rate = org.internal === true ? 0 : priceForNthLoginThisMonth((await pstore.listLoginIssues(org.id)).filter((i) => i.month === monthKey(now())).length + 1, org);
+      return json({ request: clientRequestView({ ...q, ...patch }), client: await clientView(org, user, { billedIds: new Set() }), credentials, charge: org.internal === true ? { amountCents: 0, trigger: 'first_sign_in', note: INTERNAL_NOTE } : { amountCents: rate, trigger: 'first_sign_in', note: `${formatAud(rate)} incl. GST is charged on your monthly invoice once your client first signs in.` } }, 201);
+    } catch (e) {
+      await pstore.updateClientRequest(org.id, id, { status: 'pending' });
+      throw e;
+    }
+  }
+  async function declineClientRequest(r, id) {
+    const { org } = await auth(r, { need: 'clients.write' });
+    const b = await readJson(r.request, 2048).catch(() => ({}));
+    const q = await pstore.getClientRequest(org.id, id);
+    if (!q) throw new HttpError('NOT_FOUND', 'That request was not found.');
+    if (q.status !== 'pending') throw new HttpError('CONFLICT', `That request is already ${q.status === 'approving' ? 'being approved' : q.status}.`);
+    const patch = { status: 'declined', decidedAt: iso(), decisionNote: text(b.note, 'Note', { max: 300 }) };
+    await pstore.updateClientRequest(org.id, id, patch);
+    return json(clientRequestView({ ...q, ...patch }));
+  }
+  /** Owner's admin view: every builder's requests with the builder name, newest first. */
+  async function adminClientRequests(r) {
+    await adminAuth(r.request);
+    const names = new Map((await pstore.listOrgs()).map((o) => [o.id, o.displayName || o.name]));
+    return json((await pstore.listAllClientRequests()).map((q) => ({ ...clientRequestView(q), orgId: q.orgId, builderName: names.get(q.orgId) || '' })));
   }
 
   // Admin token jobs --------------------------------------------------------------------------------------------------------
@@ -895,6 +997,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       id: org.id, internal: org.internal === true, name: org.name, slug: org.slug || null, shortCode: org.shortCode, legalName: org.legalName || '', abn: org.abn || '', createdAt: org.createdAt, requestId: org.requestId || null,
       account: accountView(org, nowMs), trialExtendedDays: org.trialExtendedDays || 0, convertedAt: org.convertedAt || null, convertedHow: org.convertedHow || null,
       admin: admin ? { id: admin.id, name: admin.name, username: admin.username, email: admin.email || '', mustChangePassword: !!admin.mustChangePassword, lastSignInAt: admin.lastSignInAt || null } : null,
+      directoryListed: org.directoryListed === true, pendingClientRequests: await pstore.countPendingClientRequests(org.id),
       billingContact: billingContact(org), billingReady: org.internal === true || contactComplete(org) || !!org.paymentMethodId,
       billingSkipRisk: org.internal !== true && accountView(org, nowMs).status === 'active' && !contactComplete(org) && clients.length > 0, staffCount: staff.length,
       clientLogins: { generated: clients.length, issued: issues.length, firstSignedIn: clients.filter((c) => c.firstSignInAt).length },
@@ -1126,6 +1229,9 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     ['GET', '/team', listTeam], ['POST', '/team', inviteStaff], ['PATCH', `/team/${ID}`, updateStaff], ['POST', `/team/${ID}/reset-password`, resetStaff],
     ['POST', `/team/${ID}/disable`, (r, id) => setStatus(r, id, 'staff', 'disabled')], ['POST', `/team/${ID}/enable`, (r, id) => setStatus(r, id, 'staff', 'active')],
     ['PUT', '/org/branding', setBranding], ['PATCH', '/org/settings', setSettings],
+    ['GET', '/builders/search', searchBuilders, { noCsrf: true }], ['POST', '/client-access-request', clientAccessRequest],
+    ['GET', '/client-requests', listClientRequests], ['POST', `/client-requests/${ID}/approve`, approveClientRequest], ['POST', `/client-requests/${ID}/decline`, declineClientRequest],
+    ['GET', '/admin/client-requests', adminClientRequests, { token: true }],
     ['POST', '/admin/orgs', createOrg, { token: true }],
     ['POST', '/billing/setup', billingSetup], ['POST', '/billing/setup/confirm', billingSetupConfirm],
     ['POST', '/trial-request', trialRequest, { noCsrf: true }], ['GET', `/brand/${ID}`, brandBySlug, { noCsrf: true }], ['POST', `/admin/orgs/${ID}/slug`, adminSlug, { token: true }],
