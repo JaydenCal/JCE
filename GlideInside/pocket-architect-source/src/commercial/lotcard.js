@@ -335,7 +335,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   for (const s of DOORS) doorChips.append(chip(s, 'door'));
 
   // Plan set -------------------------------------------------------------------------------------------------------------------
-  // The same exporter as the commercial plan set in the editor (C000 to C103), so it has the same gating (the trial watermark and the Plan
+  // The same exporter as the commercial plan set in the editor (C000 to C104), so it has the same gating (the trial watermark and the Plan
   // Pack) as every other export. The send to an engineer offer follows the download, as in the housing card.
   let pdfBusy = false;
   async function planSet() {

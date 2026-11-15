@@ -605,7 +605,7 @@ export function createWalk({ camera, canvas, container, store, onExit, doors = n
     hud.hidden = false;
     hintEl.classList.remove('is-faded');
     clearTimeout(hintTimer);
-    hintTimer = setTimeout(() => hintEl.classList.add('is-faded'), touch ? 7000 : 14000);
+    hintTimer = setTimeout(() => hintEl.classList.add('is-faded'), touch ? 5000 : 6000);
     startEl.textContent = 'Click to look around';
     startEl.hidden = touch;
     zoneMove.hidden = !touch;

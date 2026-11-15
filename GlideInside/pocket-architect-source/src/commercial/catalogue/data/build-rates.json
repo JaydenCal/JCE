@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "asAt": "15/11/2026",
-  "note": "Build rates by building type, AUD ex GST, excluding fees and site works, regional NSW basis (the regional cost factor of the feasibility panel scales them for other areas, see market.json regionalCostFactors). All rows are ESTIMATE: analyst ranges anchored to the build cost blocks of src/commercial/data/market.json (buildCost.nsw and buildCost.qld from the 15/11/2026 cost research: RLB Q4 2025 rates as reproduced by Feasly, Matrix Estimating via BSG, Cushman and Wakefield). Warehouse and portal shed were updated on 15/11/2026 to the regional NSW rows (metal clad 1,000 to 1,410, tilt-up or precast proxy 1,100 to 1,830); the other rows were reconfirmed or carried over unchanged. Not a quantity survey, check with a quantity surveyor.",
+  "note": "Build rates by building type, AUD ex GST, excluding fees and site works, regional NSW basis (the regional cost factor of the feasibility panel scales them for other areas, see market.json regionalCostFactors). All rows are ESTIMATE: analyst ranges anchored to the build cost blocks of src/commercial/data/market.json (buildCost.nsw and buildCost.qld from the 15/11/2026 cost research: RLB Q4 2025 rates as reproduced by Feasly, Matrix Estimating via BSG, Cushman and Wakefield). Warehouse and portal shed were updated on 15/11/2026 to the regional NSW rows (metal clad 1,000 to 1,410, tilt-up or precast proxy 1,100 to 1,830); the other rows were reconfirmed or carried over unchanged. Not a quantity survey, check with a quantity surveyor. Wall construction keys (wall-*) are ESTIMATE deltas per m2 of concrete wall over the metal clad rate, with a stated low, value and high. They are found in the Cost build up lines and can be replaced by the person with their own rate.",
   "rates": {
     "warehouse": {
       "label": "Warehouse with docks",
@@ -146,6 +146,102 @@
       "status": "ESTIMATE",
       "source": "Analyst judgement, no published regional source found",
       "note": "Kiosk shell and fit out allowance per m2 of GFA, the fuel canopy is added as a lump sum."
+    },
+    "wall-tilt_up": {
+      "label": "Tilt-up concrete panels, extra over metal clad",
+      "low": 80,
+      "value": 150,
+      "high": 240,
+      "perM2": true,
+      "perM2Wall": true,
+      "wallPart": "system",
+      "status": "ESTIMATE",
+      "source": "Analyst derivation. Anchors: precast large Sydney 1,160 to 1,740 per m2 GFA against metal clad large shed 1,060 to 1,340 (https://www.feasly.com.au/guides/construction-cost-per-square-metre-australia, via market.json), and a precast panel guide of 150 to 300 per m2 of panel (localsearch.com.au concrete pre-cast panels guide, panel only, year not stated). No Australian tilt-up price per m2 found, set below precast because there is no factory and no haulage.",
+      "note": "Per m2 of external wall (concrete panel area including parapet), added to the metal clad rate already in the building rate. Panels cast on site, crane lift, bracing and grouting. Not a quantity survey."
+    },
+    "wall-precast": {
+      "label": "Precast concrete panels, extra over metal clad",
+      "low": 120,
+      "value": 220,
+      "high": 340,
+      "perM2": true,
+      "perM2Wall": true,
+      "wallPart": "system",
+      "status": "ESTIMATE",
+      "source": "Analyst derivation from the same two Feasly based market.json references (about 250 per m2 GFA dearer than metal clad at roughly 0.4 to 0.6 m2 of wall per m2 GFA), cross checked to the 150 to 300 per m2 panel guide at localsearch.com.au plus cartage and erection. Year of the guide not stated.",
+      "note": "Per m2 of external wall (concrete panel area including parapet), added to the metal clad rate already in the building rate. Factory made panels, trucked and erected."
+    },
+    "wall-blockwork": {
+      "label": "Concrete blockwork, extra over metal clad",
+      "low": 50,
+      "value": 110,
+      "high": 190,
+      "perM2": true,
+      "perM2Wall": true,
+      "wallPart": "system",
+      "status": "ESTIMATE",
+      "source": "Analyst judgement only. No published Australian source found for core-filled blockwork per m2 of wall in this research, treat as a placeholder and check with a quantity surveyor.",
+      "note": "Per m2 of external wall (concrete panel area including parapet), added to the metal clad rate already in the building rate. Core filled blocks, reinforcement and a render or paint finish not included."
+    },
+    "wall-finish-offform": {
+      "label": "Panel finish, off-form grey (no finish)",
+      "low": 0,
+      "value": 0,
+      "high": 0,
+      "perM2": true,
+      "perM2Wall": true,
+      "wallPart": "finish",
+      "status": "ESTIMATE",
+      "source": "Nothing added, the cast face is left as it comes off the slab.",
+      "note": "Per m2 of external wall (concrete panel area including parapet), added to the metal clad rate already in the building rate. Applies to the concrete panel face only."
+    },
+    "wall-finish-painted": {
+      "label": "Panel finish, painted",
+      "low": 20,
+      "value": 35,
+      "high": 60,
+      "perM2": true,
+      "perM2Wall": true,
+      "wallPart": "finish",
+      "status": "ESTIMATE",
+      "source": "Analyst judgement for sealer, filler and two coats of masonry paint to a large panel wall, no published source found.",
+      "note": "Per m2 of external wall (concrete panel area including parapet), added to the metal clad rate already in the building rate. Applies to the concrete panel face only."
+    },
+    "wall-finish-aggregate": {
+      "label": "Panel finish, exposed aggregate",
+      "low": 80,
+      "value": 130,
+      "high": 200,
+      "perM2": true,
+      "perM2Wall": true,
+      "wallPart": "finish",
+      "status": "ESTIMATE",
+      "source": "Analyst judgement for a retarder and wash back or blast finish, no published source found.",
+      "note": "Per m2 of external wall (concrete panel area including parapet), added to the metal clad rate already in the building rate. Applies to the concrete panel face only."
+    },
+    "wall-finish-honed": {
+      "label": "Panel finish, honed (ground smooth)",
+      "low": 120,
+      "value": 190,
+      "high": 280,
+      "perM2": true,
+      "perM2Wall": true,
+      "wallPart": "finish",
+      "status": "ESTIMATE",
+      "source": "Analyst judgement for grinding and sealing a cast face, no published source found.",
+      "note": "Per m2 of external wall (concrete panel area including parapet), added to the metal clad rate already in the building rate. Applies to the concrete panel face only."
+    },
+    "wall-reveals": {
+      "label": "Reveals, grooves and feature band",
+      "low": 5,
+      "value": 12,
+      "high": 25,
+      "perM2": true,
+      "perM2Wall": true,
+      "wallPart": "reveals",
+      "status": "ESTIMATE",
+      "source": "Analyst judgement for form liners or rebates on the casting bed, no published source found.",
+      "note": "Per m2 of external wall (concrete panel area including parapet), added to the metal clad rate already in the building rate. Added only when horizontal reveals, grooves or a feature band are chosen."
     }
   }
 }

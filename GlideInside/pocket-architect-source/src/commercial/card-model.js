@@ -13,7 +13,8 @@ import { unitGfas } from './feasibility.js';
 import { parkingLayout } from './parking.js';
 import { buildingsOf } from './catalogue/buildings.js';
 import { buildingParking } from './catalogue/bays.js';
-import { toWorld } from './catalogue/frame.js';
+import { toWorld, dirToWorld } from './catalogue/frame.js';
+import { runBuilding } from './catalogue/materialise.js';
 
 const fmt = (n) => Number(n).toLocaleString('en-AU');
 const fmt1 = (n) => Number(n).toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
@@ -149,7 +150,9 @@ export function commercialSummaryLine(project) {
 
 // Camera poses ---------------------------------------------------------------------------------------------------------------------
 // Metres in world space: X = plan x / 1000, Z = plan y / 1000, Y up. Same convention as src/viewer3d/room-logic.js.
-const unitPoints = (project) => [...layoutUnits(project.commercial).flatMap((u) => u.poly), ...buildingsOf(project.commercial).flatMap((b) => b.outline)];
+// The points the exterior views frame: the units and buildings, plus the canopies that belong to a building (a fuel canopy is most of a service station).
+const CANOPY_KINDS = ['canopy', 'awning', 'fuel-canopy', 'truck-canopy'];
+const unitPoints = (project) => [...layoutUnits(project.commercial).flatMap((u) => u.poly), ...buildingsOf(project.commercial).flatMap((b) => [...b.outline, ...(b.extras || []).filter((e) => CANOPY_KINDS.includes(e.kind)).flatMap((e) => e.polygon)])];
 
 function streetFrame(lot) {
   const bd = lot?.boundary;
@@ -176,16 +179,66 @@ export function exteriorPose(project, kind = '3d') {
   const ys = pts.map((q) => q.y);
   const c = { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 };
   const r = Math.hypot(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) / 2;
-  const hMax = Math.max(...project.levels.map((l) => (l.elevation || 0) + (l.height || 0)), 6000);
+  const hMax = Math.min(16000, Math.max(6000, ...project.levels.map((l) => (l.elevation || 0) + Math.max(0, ...(l.walls || []).map((w) => Number(w.height) || 0)))));
   if (kind === 'street') {
-    // 14 m into the road reserve from the middle of the frontage, eye 1.7 m, looking at the middle of the building.
-    const pos = { x: sf.mid.x + sf.n.x * 14000, y: sf.mid.y + sf.n.y * 14000 };
-    return { position: { x: pos.x / 1000, y: 1.7, z: pos.y / 1000 }, target: { x: c.x / 1000, y: Math.min(3.2, hMax / 2000), z: c.y / 1000 }, fov: 58 };
+    // Eye level (1.7 m) square on to the buildings from the street side, far enough back that the whole frontage is in the picture and
+    // no further: never further out than the far side of the road, and inside the lot when the buildings sit well back from the street.
+    const along = (q) => (q.x - sf.mid.x) * sf.u.x + (q.y - sf.mid.y) * sf.u.y;
+    const depth = (q) => -((q.x - sf.mid.x) * sf.n.x + (q.y - sf.mid.y) * sf.n.y); // metres into the lot from the frontage, in mm
+    const us = pts.map(along);
+    const uc = (Math.min(...us) + Math.max(...us)) / 2;
+    const half = (Math.max(...us) - Math.min(...us)) / 2;
+    const front = Math.min(...pts.map(depth));
+    const fov = 58;
+    const tanH = Math.tan((fov / 2) * (Math.PI / 180)) * 0.95; // usable horizontal half angle: the lot card covers the left of the view, so the clear part is about as wide as it is tall
+    const back = Math.max(12000, (half * 1.18) / tanH, (hMax * 1.25) / Math.tan((fov / 2) * (Math.PI / 180)) * 0.62);
+    // Stand on the street side of the boundary (6 m out or more) whenever the buildings still fill the picture from there; walk into the
+    // lot only when they sit so far back that they would be small.
+    const sCam = front + 6000 <= back * 1.35 ? Math.max(-19000, Math.min(front - back, -6000)) : front - back * 1.3;
+    const pos = { x: sf.mid.x + sf.u.x * uc - sf.n.x * sCam, y: sf.mid.y + sf.u.y * uc - sf.n.y * sCam };
+    const tgt = { x: sf.mid.x + sf.u.x * uc - sf.n.x * front, y: sf.mid.y + sf.u.y * uc - sf.n.y * front };
+    return { position: { x: pos.x / 1000, y: 1.7, z: pos.y / 1000 }, target: { x: tgt.x / 1000, y: Math.min(4.2, hMax * 0.42 / 1000), z: tgt.y / 1000 }, fov };
   }
-  const a = (32 * Math.PI) / 180;
+  // Three quarter hero view from the street side: low enough to read the facades, high enough to show the roof and the car park.
+  const a = (34 * Math.PI) / 180;
   const dir = { x: sf.n.x * Math.cos(a) + sf.u.x * Math.sin(a), y: sf.n.y * Math.cos(a) + sf.u.y * Math.sin(a) };
-  const dist = Math.max(30000, r * 2.15);
-  return { position: { x: (c.x + dir.x * dist) / 1000, y: dist * 0.5 / 1000, z: (c.y + dir.y * dist) / 1000 }, target: { x: c.x / 1000, y: 2.2, z: c.y / 1000 }, fov: 38 };
+  const dist = Math.max(26000, r * 2.45 + hMax * 0.6);
+  return { position: { x: (c.x + dir.x * dist) / 1000, y: dist * 0.36 / 1000, z: (c.y + dir.y * dist) / 1000 }, target: { x: c.x / 1000, y: Math.min(3.5, hMax * 0.3 / 1000), z: c.y / 1000 }, fov: 38 };
+}
+
+// A clear standing spot inside a catalogue building: the point of its largest ground floor room that is furthest from every wall of that
+// room, then stepped back along the longest clear run so most of the room is in view, keeping 1.6 m off the wall behind. Plan mm in,
+// a pose in metres out; null when the building has no indoor room.
+const segDist = (p, a, c) => { const dx = c.x - a.x; const dy = c.y - a.y; const l2 = dx * dx + dy * dy || 1; const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / l2)); return Math.hypot(p.x - a.x - dx * t, p.y - a.y - dy * t); };
+const inPoly = (p, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i]; const b = poly[j]; if ((a.y > p.y) !== (b.y > p.y) && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) c = !c; } return c; };
+const clearance = (p, poly) => (inPoly(p, poly) ? Math.min(...poly.map((a, i) => segDist(p, a, poly[(i + 1) % poly.length]))) : -1);
+const polyAreaAbs = (poly) => Math.abs(poly.reduce((t, a, i) => { const c = poly[(i + 1) % poly.length]; return t + a.x * c.y - c.x * a.y; }, 0)) / 2;
+export function clearSpotPose(b, project) {
+  let rooms = [];
+  try { rooms = runBuilding(b, project).rooms.filter((r) => !r.outdoor && r.polygon?.length >= 3 && (r.level || 'Ground') === 'Ground'); } catch { rooms = []; }
+  if (!rooms.length) return null;
+  const poly = rooms.reduce((a, c) => (polyAreaAbs(c.polygon) > polyAreaAbs(a.polygon) ? c : a)).polygon;
+  const xs = poly.map((q) => q.x); const ys = poly.map((q) => q.y);
+  const x0 = Math.min(...xs); const x1 = Math.max(...xs); const y0 = Math.min(...ys); const y1 = Math.max(...ys);
+  let best = null;
+  const N = 24;
+  for (let i = 1; i < N; i++) for (let j = 1; j < N; j++) {
+    const p = { x: x0 + ((x1 - x0) * i) / N, y: y0 + ((y1 - y0) * j) / N };
+    const c = clearance(p, poly);
+    if (!best || c > best.c) best = { p, c };
+  }
+  if (!best || best.c < 400) return null;
+  // The four directions of the building's own axes; the run in each is how far one can walk before clearance drops under 0.5 m.
+  const u = dirToWorld(b.place, { x: 1, y: 0 }); const f = dirToWorld(b.place, { x: 0, y: 1 });
+  const run = (d) => { let t = 0; while (t < 120000 && clearance({ x: best.p.x + d.x * (t + 500), y: best.p.y + d.y * (t + 500) }, poly) >= 500) t += 500; return t; };
+  const dirs = [f, { x: -f.x, y: -f.y }, u, { x: -u.x, y: -u.y }].map((d) => ({ d, t: run(d) }));
+  const fwd = dirs.reduce((a, c) => (c.t > a.t + 1 ? c : a));
+  const back = dirs.find((c) => c.d.x === -fwd.d.x && c.d.y === -fwd.d.y) || { t: 0 };
+  const step = Math.max(0, back.t - 1100); // run() already keeps 0.5 m clear; this leaves 1.6 m to the wall behind
+  const stand = { x: best.p.x - fwd.d.x * step, y: best.p.y - fwd.d.y * step };
+  const ahead = Math.max(3000, fwd.t + step);
+  const look = { x: stand.x + fwd.d.x * ahead, y: stand.y + fwd.d.y * ahead };
+  return { position: { x: stand.x / 1000, y: 1.6, z: stand.y / 1000 }, target: { x: look.x / 1000, y: 1.55, z: look.y / 1000 }, fov: 70, levelId: null };
 }
 
 /** Standing inside unit `n` (1 based), in line with its first roller door a little way in from the front, looking toward the rear. */
@@ -199,6 +252,9 @@ export function unitWalkPose(project, n = 1) {
     const bl = buildingsOf(project.commercial);
     const b = (isB && bl.find((x) => x.n === Number(n.slice(1)))) || bl[0];
     if (!b) return null;
+    // Stand in a clear spot of the building's largest ground floor room, looking down its longest run (never against a wall).
+    const clear = clearSpotPose(b, project);
+    if (clear) return clear;
     const xs = b.local.outline.map((q) => q.x);
     const ys = b.local.outline.map((q) => q.y);
     const cx = (Math.min(...xs) + Math.max(...xs)) / 2;

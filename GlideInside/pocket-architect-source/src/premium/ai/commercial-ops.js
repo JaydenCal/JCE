@@ -5,6 +5,7 @@
 import { lotOf } from '../../model/placement.js';
 import { isCommercial, DOOR_PRESETS, FRONT_WINDOWS } from '../../commercial/schema.js';
 import { applyFinishes, CLADDING, DOORS, claddingById, doorById } from '../../commercial/finishes.js';
+import { CONSTRUCTION_PARAMS, CONSTRUCTION_KEYS } from '../../commercial/catalogue/construction.js';
 import { chooseLayout, BEST_ID } from '../../commercial/layouts.js';
 import { COMMERCIAL_OPS, FEASIBILITY_KEYS, LAYOUT_IDS, GOALS } from './commercial-schemas.js';
 import { typeById, resolveParams, commercialTypes } from './commercial-catalogue.js';
@@ -141,9 +142,19 @@ const RUN = {
         if (!FRONT_WINDOWS.includes(o.windows)) fail(`windows must be one of: ${FRONT_WINDOWS.join(', ')}`);
         u.windows.front = o.windows;
       }
+      for (const cp of CONSTRUCTION_PARAMS) {
+        if (o[cp.key] == null) continue;
+        const v = o[cp.key];
+        if (cp.type === 'number') u[cp.key] = num(v, cp.key, cp.min, cp.max);
+        else if (cp.type === 'bool') { if (typeof v !== 'boolean') fail(`${cp.key} must be true or false.`); u[cp.key] = v; } else {
+          const ok = (cp.options || []).map((x) => (typeof x === 'object' ? x.value : x));
+          if (!ok.includes(v)) fail(`${cp.key} must be one of: ${ok.join(', ')}`);
+          u[cp.key] = v;
+        }
+      }
       row.perUnit = {}; // a change to the row replaces any single unit overrides, so the whole row reads the same
     }
-    for (const k of Object.keys(o)) if (!['widthMm', 'depthMm', 'heightMm', 'doors', 'doorSize', 'mezzanine', 'office', 'windows'].includes(k)) fail(`Unknown unit option ${k}.`);
+    for (const k of Object.keys(o)) if (!['widthMm', 'depthMm', 'heightMm', 'doors', 'doorSize', 'mezzanine', 'office', 'windows', ...CONSTRUCTION_KEYS].includes(k)) fail(`Unknown unit option ${k}.`);
     done.push(`${rows.length} row${rows.length === 1 ? '' : 's'}`);
     regen(p);
     return { changed: true, report: `Unit options set on ${done[0]}. ${summaryLine(p)}` };

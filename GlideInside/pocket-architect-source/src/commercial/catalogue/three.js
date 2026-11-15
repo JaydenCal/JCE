@@ -8,6 +8,7 @@ import { GeoBuilder, addOrientedBox, addCylinder } from '../../viewer3d/mesh-bui
 import { makeMesh } from '../../viewer3d/model-util.js';
 import { addFloorPoly } from '../../viewer3d/site.js';
 import { buildingParking } from './bays.js';
+import { textureFor } from './pavements/view3d.js';
 import { buildingsOf } from './buildings.js';
 import { runBuilding } from './materialise.js';
 import { toWorld, dirToWorld, toLocal, bboxOf } from './frame.js';
@@ -23,10 +24,37 @@ export const SLOT_STYLE = {
   roof: { colour: '#8a8f94' }, wall: { colour: '#aab0b5' }, vehicle: { colour: '#d8d8d2' }, pit: { colour: '#2b2f33' },
 };
 
+const pavedCache = new Map();
+function pavedTexture(kind, hex) {
+  const key = `${kind}:${hex}`;
+  if (pavedCache.has(key)) return pavedCache.get(key);
+  const base = textureFor(kind === 'concrete' ? { kind: 'concrete', base: hex, broom: true } : { kind: 'asphalt', base: hex });
+  let tex = null;
+  if (base) {
+    tex = base.clone();
+    const tile = kind === 'concrete' ? 4 : 3; // metres per tile; the extras carry texture coordinates in metres
+    tex.repeat.set(1 / tile, 1 / tile);
+    tex.needsUpdate = true;
+  }
+  pavedCache.set(key, tex);
+  return tex;
+}
+
 const makeMaterial = (lib, key) => {
   const [name, colour] = String(key).split('|');
   const st = SLOT_STYLE[name] || { colour: '#9aa0a6' };
   const hex = colour || st.colour;
+  // Paved extras (truck aprons, yards, forecourts, lanes) carry the same crisp canvas textures as the car park pavements: broom finished
+  // concrete with 4 m control joints, and asphalt. The cached texture is cloned so its own repeat never disturbs the pavements.
+  if (name === 'concrete' || name === 'asphalt') {
+    const tex = pavedTexture(name, hex);
+    if (tex) {
+      const m = new THREE.MeshStandardMaterial({ color: '#ffffff', map: tex, roughness: 0.94, metalness: 0, envMapIntensity: 0.25 });
+      m.userData.shared = false;
+      m.userData.disposeMap = false;
+      return m;
+    }
+  }
   if (st.unlit) return new THREE.MeshBasicMaterial({ color: new THREE.Color(hex), transparent: !!st.alpha, opacity: st.alpha ?? 1, side: st.alpha ? THREE.DoubleSide : THREE.FrontSide, depthWrite: !st.alpha });
   return lib.plain(hex, { rough: name === 'steel' ? 0.45 : 0.75, metal: name === 'steel' ? 0.35 : 0 });
 };
@@ -81,6 +109,7 @@ export function roofGeometry(b, roof, rinfo, builder = new GeoBuilder()) {
   if (type === 'flat') {
     const top = base + 150;
     builder.quad('roof', P(x0, y0, top), P(x1, y0, top), P(x1, y1, top), P(x0, y1, top), [uv(0, 0), uv(W, 0), uv(W, D), uv(0, D)], [0, 1, 0]);
+    if (roof.noParapet) return builder; // concrete panel walls carry their own parapet
     const t = 150;
     const pz = base + 150 + 450;
     for (const [ax0, ay0, ax1, ay1] of [[x0 - t, y0 - t, x1 + t, y0], [x0 - t, y1, x1 + t, y1 + t], [x0 - t, y0, x0, y1], [x1, y0, x1 + t, y1]]) {
@@ -228,11 +257,14 @@ export function addCatalogue3D(ctx, root, project, { showRoof = true } = {}) {
   const lib = ctx.lib;
   let n = 0;
   const parkingRows = buildingParking(c).rows;
+  // Concrete walls with a parapet hide the roof: it is drawn as a flat concealed roof inside the parapet (the walls draw the parapet).
+  const parapetOf = new Map();
+  for (const l of project.levels || []) for (const w of l.walls || []) if (w.building && w.panel && w.panel.parapetMm > 0 && !parapetOf.has(w.building)) parapetOf.set(w.building, w.panel.parapetMm);
   for (const b of buildingsOf(c)) {
     // Roofs: wall material for gable ends, roof sheet and fascia as the project finishes.
     const rb = new GeoBuilder();
     // Roof off: no roof sheet, so the building (and its mezzanine floor) can be seen into.
-    if (showRoof) for (const { roof, baseMm } of resolveRoofs(b, project)) roofGeometry(b, roof, { baseMm }, rb);
+    if (showRoof) for (const { roof, baseMm } of resolveRoofs(b, project)) roofGeometry(b, parapetOf.has(b.id) ? { ...roof, type: 'flat', noParapet: true } : roof, { baseMm }, rb);
     const res = showRoof ? rb.build() : null;
     if (res) {
       const ext = ctx.fin.externalWalls;

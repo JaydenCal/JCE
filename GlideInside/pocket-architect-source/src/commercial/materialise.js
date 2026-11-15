@@ -6,6 +6,7 @@ import * as S from '../model/schema.js';
 import { layoutUnits, facadeLayout, rearWindow, mezzanineOf, officeOf, onFacade, rowFrame, rowLength, PARTY_WALL_MM } from './layout.js';
 import { SLAB_MM } from './schema.js';
 import { materialiseBuildings } from './catalogue/materialise.js';
+import { constructionSpec, wallPanelOf } from './catalogue/construction.js';
 import { refreshSiteWorks } from './sitelayout.js';
 
 export const GEN = 'commercial';
@@ -78,12 +79,16 @@ function materialiseModel(p) {
     const d = us[0].d;
     const sign = fr.mirrored ? -1 : 1; // outside is +1 on the side the wall normal (the row's v) points to
     // Front wall: one wall along the row, openings per unit.
+    // The construction system of the row (metal clad leaves the walls as they are; the others tag the exterior walls with w.panel for the 3D, plan and elevations).
+    const panel = wallPanelOf(constructionSpec(row.unit));
     const front = addWall(wall(at(fr, 0, d), at(fr, L, d), { kind: 'exterior', outside: sign, thickness: EXT_MM }));
+    if (panel) front.panel = { ...panel, frontage: true };
     // Rear wall: the source row owns it; a mirrored row shares it as a party wall.
     const mirrorOfThis = rows.some((r) => r.mirrorOf === row.id);
     const rearKind = mirrorOfThis ? 'interior' : 'exterior';
     let rear = null;
     if (!fr.mirrored) rear = addWall(wall(at(fr, 0, 0), at(fr, L, 0), { kind: rearKind, outside: rearKind === 'interior' ? 0 : -sign, thickness: mirrorOfThis ? PARTY_WALL_MM : EXT_MM }));
+    if (panel && rear && rearKind === 'exterior') rear.panel = { ...panel };
     // Side walls: ends are exterior, the walls between units are party walls.
     const sides = [];
     for (let i = 0; i <= us.length; i++) {
@@ -92,7 +97,9 @@ function materialiseModel(p) {
       const kind = end ? 'exterior' : 'interior';
       // Wall direction is +f, whose normal is -u: outside is +1 at the left end, -1 at the right end.
       const outside = end ? sign * (i === 0 ? 1 : -1) : 0;
-      sides.push(addWall(wall(at(fr, x, 0), at(fr, x, d), { kind, outside, thickness: end ? EXT_MM : PARTY_WALL_MM })));
+      const sw = addWall(wall(at(fr, x, 0), at(fr, x, d), { kind, outside, thickness: end ? EXT_MM : PARTY_WALL_MM }));
+      if (panel && end) sw.panel = { ...panel };
+      sides.push(sw);
     }
     us.forEach((u, i) => {
       const spec = u.spec;

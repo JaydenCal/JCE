@@ -8,7 +8,7 @@ import { rowFrame, rowLength, rowPoly } from './layout.js';
 import { bayOffsetMm } from './schema.js';
 import { doorStrips } from './parking.js';
 import { siteAccess } from './access.js';
-import { drawBuildings, buildingExtents, drawSiteWorks } from './catalogue/draw2d.js';
+import { drawBuildings, drawPanelJoints, buildingExtents, drawSiteWorks } from './catalogue/draw2d.js';
 import { siteWorksOf } from './catalogue/buildings.js';
 import { drawPavementArea, drawKerb } from './catalogue/pavements/draw2d.js';
 import { pavementById } from './catalogue/pavements/pavements.js';
@@ -247,4 +247,5 @@ export function drawCommercial(ctx, st) {
   }
   ctx.restore();
   drawBuildings(ctx, st);
+  drawPanelJoints(ctx, st);
 }

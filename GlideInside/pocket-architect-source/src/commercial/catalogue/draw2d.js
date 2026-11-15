@@ -5,6 +5,7 @@ import { worldToScreen } from '../../editor2d/math.js';
 import { buildingsOf, siteWorksOf } from './buildings.js';
 import { buildingParking } from './bays.js';
 import { toWorld } from './frame.js';
+import { panelEnds, panelWallLayout } from './panels.js';
 import { pavementAreas } from './pavements/logic.js';
 import { drawPavementArea } from './pavements/draw2d.js';
 
@@ -89,6 +90,41 @@ export function drawBuildings(ctx, st) {
     const a0 = S(st, centre); const a1 = S(st, handle);
     ctx.beginPath(); ctx.moveTo(a0.x, a0.y); ctx.lineTo(a1.x, a1.y); ctx.strokeStyle = GOLD; ctx.lineWidth = 1.4; ctx.stroke();
     ctx.beginPath(); ctx.arc(a1.x, a1.y, 8, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 2.4; ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// Panel joints along the wall line: a short tick across the wall at every vertical joint between concrete panels (tilt-up, precast and the
+// concrete dado). Layouts are cached per wall object, so a redraw costs nothing until the model changes.
+const JOINT_CACHE = new WeakMap();
+export function wallJointPoints(w, openings, ends, wallHeightMm) {
+  const key = `${ends?.a}|${ends?.b}|${wallHeightMm}|${openings.map((o) => `${o.offset},${o.width},${o.sill},${o.height}`).join(';')}`;
+  const hit = JOINT_CACHE.get(w);
+  if (hit && hit.key === key) return hit.pts;
+  const { span, layout } = panelWallLayout(w, openings, { ends, wallHeightMm });
+  const dx = w.b.x - w.a.x; const dy = w.b.y - w.a.y; const L = Math.hypot(dx, dy) || 1;
+  const d = { x: dx / L, y: dy / L }; const n = { x: -d.y, y: d.x };
+  const half = (w.thickness || 200) / 2;
+  const pts = layout.joints.map((x) => { const u = span.start + x; const c = { x: w.a.x + d.x * u, y: w.a.y + d.y * u }; return [{ x: c.x + n.x * half, y: c.y + n.y * half }, { x: c.x - n.x * half, y: c.y - n.y * half }]; });
+  JOINT_CACHE.set(w, { key, pts });
+  return pts;
+}
+
+export function drawPanelJoints(ctx, st) {
+  const p = st.project;
+  if (st.view.scale < 0.003) return; // too small to read
+  const level = p.levels?.[0];
+  const walls = (level?.walls || []).filter((w) => w.panel && w.kind !== 'interior');
+  if (!walls.length) return;
+  const ends = panelEnds(walls);
+  ctx.save();
+  ctx.strokeStyle = st.theme.c.line; ctx.lineWidth = 1; ctx.setLineDash([]);
+  for (const w of walls) {
+    const ops = (level.openings || []).filter((o) => o.wallId === w.id);
+    for (const [a, b] of wallJointPoints(w, ops, ends.get(w.id), w.height ?? level.height)) {
+      const sa = S(st, a); const sb = S(st, b);
+      ctx.beginPath(); ctx.moveTo(sa.x, sa.y); ctx.lineTo(sb.x, sb.y); ctx.stroke();
+    }
   }
   ctx.restore();
 }

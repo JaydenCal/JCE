@@ -88,6 +88,15 @@ export function setBuildingParam(store, id, key, value) {
   });
 }
 
+/** Set settings on the strata units of every row (or one row), for example the wall construction. One undo step. */
+export function setRowsUnit(store, patch, rowId = null) {
+  store.apply('Change units', (p) => {
+    guard(p);
+    for (const r of p.commercial.rows || []) if (!rowId || r.id === rowId) Object.assign(r.unit, patch);
+    redo(p);
+  });
+}
+
 export function deleteBuilding(store, id) {
   store.apply('Delete building', (p) => {
     guard(p);

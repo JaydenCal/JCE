@@ -1,5 +1,5 @@
 // Commercial plan set (kind 'commercial'): C000 cover and locality, C100 existing site, C101 proposed layout, C102 mezzanine level plan,
-// C103 yield summary. The geometry comes from project.commercial through the same analysis the editor uses (src/commercial/analyse.js), so
+// C103 yield summary, C104 elevations. The geometry comes from project.commercial through the same analysis the editor uses (src/commercial/analyse.js), so
 // the sheets and the live stats strip always agree. Sheet units are millimetres on A3; plan units are millimetres on the ground (y down).
 //
 // Everything here is indicative: the sheets say so, every rate carries its source and status, and values that are UNVERIFIED in the
@@ -32,6 +32,7 @@ import { AREA, fit } from './frame.js';
 import { drawSite, roadModel, siteView, fitView, northPoint, northDegOf, SITE_SCALES, SCALES_BEYOND, VP } from './site.js';
 import { hasGround, groundLevelFn } from './contours.js';
 import { envelopePoly } from './lot.js';
+import { elevationScaleOf } from './commercial-elevations.js';
 
 export const COMMERCIAL_SHEETS = COMMERCIAL_SHEET_LIST;
 
@@ -257,6 +258,7 @@ export function commercialSheetPlan(project, lot) {
     base[1].scale = `1:${siteView(blankProject(project, lot), lot).scale} @ A3`;
     base[2].scale = `1:${layoutView(model).scale} @ A3`;
     base[3].scale = `1:${mezzView(model).scale} @ A3`;
+    base[5].scale = elevationScaleOf(model.project);
   } catch {
     // scales stay NTS
   }

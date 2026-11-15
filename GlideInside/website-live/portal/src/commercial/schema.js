@@ -35,6 +35,21 @@ export const defaultUnit = () => ({
   mezzanine: { enabled: true, use: 'office', mode: 'depth', depthMm: 6000, percent: 40, position: 'front', stairType: 'straight', stairSide: 'left', balustrade: true, levelMm: 3000, slabMm: SLAB_MM, minClearMm: MIN_CLEAR_MM, minClearBelowMm: MIN_CLEAR_BELOW_MM },
   roof: 'skillion',
   cladding: 'metal',
+  // Wall construction system (see catalogue/construction.js): 'metal_clad' (default), 'tilt_up', 'precast', 'tilt_up_metal_upper' or 'blockwork'.
+  // The panel settings apply to the whole row (the walls of a row are one run); they are read through constructionSpec so partial data is safe.
+  construction: 'metal_clad',
+  panelFinish: 'painted',
+  panelColour: 'project',
+  panelMaxWidthMm: 4000,
+  panelThicknessMm: 180,
+  dadoHeightMm: 3000,
+  parapet: true,
+  parapetHeightMm: 1200,
+  panelReveals: 'none',
+  featureBand: false,
+  accentPanels: 'none',
+  accentColour: 'charcoal',
+  signageBand: false,
 });
 
 export const defaultCommercial = (useClass = 'industrial') => ({

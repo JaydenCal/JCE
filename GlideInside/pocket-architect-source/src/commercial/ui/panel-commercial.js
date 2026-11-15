@@ -9,6 +9,7 @@ import { analyse } from '../analyse.js';
 import { buildingsOf } from '../catalogue/buildings.js';
 import { typesForPicker, typeById, typeIconName, STRATA_ID } from '../catalogue/types/index.js';
 import { optionList } from '../catalogue/params.js';
+import { CONSTRUCTION_PARAMS, paramApplies, systemById } from '../catalogue/construction.js';
 import { addBuilding, moveBuilding, setBuildingParam, deleteBuilding, duplicateBuilding, rerunSiteLayout } from '../catalogue/ops.js';
 import { openAddBuilding } from './add-building.js';
 import { RE_RUN_LABEL } from '../sitelayout.js';
@@ -103,7 +104,8 @@ export function createCommercialPanel({ store, host, editor }) {
         const inp = h('input', { type: 'number', min: p.min, max: p.max, step: p.step || 1, value: v, dataset: { param: p.key }, onchange: () => setBuildingParam(store, sel.id, p.key, Number(inp.value)) });
         return h('span', { class: 'cm-in' }, inp, p.unit ? h('em', null, p.unit) : null);
       };
-      kids.push(...def.params.map((p) => field(p.label, control(p))));
+      kids.push(...def.params.filter((p) => paramApplies(p, sel.params)).map((p) => field(p.label, control(p))));
+      if (sel.params.construction && sel.params.construction !== 'metal_clad') kids.push(h('p', { class: 'cm-hint' }, systemById(sel.params.construction).plain));
       const pos = (label, key, step) => { const inp = h('input', { type: 'number', step, value: Math.round((sel.place[key] || 0) * 100) / 100, dataset: { place: key }, onchange: () => moveBuilding(store, sel.id, { [key]: Number(inp.value) || 0 }) }); return field(label, h('span', { class: 'cm-in' }, inp, h('em', null, key === 'rotationDeg' ? 'deg' : 'mm'))); };
       kids.push(pos('Position x', 'x', 100), pos('Position y', 'y', 100), pos('Turn', 'rotationDeg', 1));
     }
@@ -113,6 +115,30 @@ export function createCommercialPanel({ store, host, editor }) {
   // Field builders ------------------------------------------------------------------------------------------------------
   const field = (label, control, hint) => h('label', { class: 'cm-field' }, h('span', { class: 'cm-l' }, label), control, hint ? h('span', { class: 'cm-hint' }, hint) : null);
   const edit = (label, fn) => { try { commercialEdit(store, label, fn); } catch (e) { console.warn(e); } };
+
+  // Wall construction of a strata row: one setting per row, whatever unit is chosen (the whole row is built in one system). Only the settings that apply show.
+  function constructionFields(row) {
+    const u = row.unit || {};
+    const setRow = (label, key, v) => edit(`Set ${label.toLowerCase()}`, (c) => { const r = c.rows.find((x) => x.id === row.id); if (r) r.unit[key] = v; });
+    const out = [];
+    for (const p of CONSTRUCTION_PARAMS) {
+      if (!paramApplies(p, u)) continue;
+      const v = u[p.key] ?? p.default;
+      if (p.type === 'bool') {
+        const input = h('input', { type: 'checkbox', checked: !!v, dataset: { path: p.key }, onchange: () => setRow(p.label, p.key, input.checked) });
+        out.push(h('label', { class: 'cm-chk' }, input, h('span', null, p.label)));
+      } else if (p.type === 'select') {
+        const el = h('select', { dataset: { path: p.key }, onchange: () => setRow(p.label, p.key, el.value) }, ...p.options.map((o) => h('option', { value: String(o.value) }, o.label)));
+        el.value = String(v);
+        out.push(field(p.label, el));
+      } else {
+        const inp = h('input', { type: 'number', min: p.min, max: p.max, step: p.step || 1, value: v, dataset: { path: p.key }, onchange: () => setRow(p.label, p.key, Math.min(p.max, Math.max(p.min, Number(inp.value) || p.default))) });
+        out.push(field(p.label, h('span', { class: 'cm-in' }, inp, h('i', null, p.unit))));
+      }
+    }
+    out.push(h('p', { class: 'cm-hint' }, `${systemById(u.construction).plain} Concept only, not a structural design.${scope !== 'all' ? ' Applies to the whole row.' : ''}`));
+    return out;
+  }
 
   function unitTarget(c) {
     const row = c.rows.find((r) => r.id === rowOf().id);
@@ -200,6 +226,15 @@ export function createCommercialPanel({ store, host, editor }) {
       } });
       return h('div', { class: 'cm-fz-in' }, field(label, h('span', { class: 'cm-in' }, input, h('i', null, unit))), h('div', { class: 'cm-fz-chip' }, chip(inp), inp.edited ? h('button', { type: 'button', class: 'cm-link', onclick: () => setFz(`Reset ${label.toLowerCase()}`, (z) => { delete z.v[key]; }) }, `Reset to ${inp.defaultValue.toLocaleString('en-AU')}`) : null));
     };
+    const wallUsed = (ff) => (ff.rowWalls || []).length > 0 || (ff.buildings || []).some((b) => b.q?.construction?.panelWallM2 > 0);
+    const wallRateRow = (ff) => {
+      const cur = ff.inputs.wallRate.value;
+      const input = h('input', { type: 'number', min: 0, step: 10, value: cur ?? '', placeholder: 'Auto', dataset: { k: 'fz-wallRate' }, onchange: () => {
+        const raw = input.value;
+        setFz('Set concrete wall rate', (z) => { if (raw === '') delete z.v.wallRate; else z.v.wallRate = Math.max(0, Number(raw) || 0); });
+      } });
+      return field('Concrete wall, extra over metal clad', h('span', { class: 'cm-in' }, input, h('i', null, '$/m² of wall')), cur == null ? 'ESTIMATE from the wall rates table, finish extras are added on top' : 'Your rate replaces the system line');
+    };
     const ev = f.defaults.inputs.saleRate.evidence;
     const priceInput = h('input', { type: 'number', min: 0, max: INPUT_MAX.landPrice, step: 10000, value: f.inputs.landPrice.value ?? '', placeholder: 'Auto', dataset: { k: 'fz-landPrice' }, onchange: () => {
       const raw = priceInput.value;
@@ -236,6 +271,7 @@ export function createCommercialPanel({ store, host, editor }) {
       inRow('siteRate', 'Site works (developed)', '$/m²', 5),
       inRow('landscapeRate', 'Clearing, landscaping (rest)', '$/m²', 1),
       inRow('outgoingsPct', 'Outgoings, share of gross rent', '%', 1),
+      ...(wallUsed(f) ? [wallRateRow(f)] : []),
       inRow('mezzFactor', 'Mezzanine value, fraction of ground rate', 'x', 0.05),
       inRow('feesPct', 'Fees', '%', 0.5),
       inRow('contPct', 'Contingency', '%', 0.5),
@@ -321,6 +357,7 @@ export function createCommercialPanel({ store, host, editor }) {
           numField('Unit width', 'widthMm', { min: 2500, max: 30000, step: 100, disabled: mirrored, hint: mirrored ? 'Widths follow the row it mirrors' : null }),
           numField('Unit depth', 'depthMm', { min: 4000, max: 80000, step: 500, disabled: scope !== 'all', hint: scope !== 'all' ? 'One depth per row, choose Whole row to change it' : 'One depth per row' }),
           numField('Unit height', 'heightMm', { min: 3000, max: 15000, step: 100 })),
+        section('Wall construction', ...constructionFields(row)),
         section('Doors',
           selField('Roller doors', 'doors.count', [[1, '1 at the front'], [2, '2 at the front']]),
           selField('Roller door size', 'doors.presetId', [...DOOR_PRESETS.map((d) => [d.id, `${d.id.replace('x', ' x ')} m`]), ['custom', 'Custom']]),

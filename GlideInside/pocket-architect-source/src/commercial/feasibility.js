@@ -15,8 +15,9 @@ import { bayOffsetMm } from './schema.js';
 import * as G from '../model/geometry.js';
 import { buildingsOf } from './catalogue/buildings.js';
 import { buildingParking } from './catalogue/bays.js';
-import { buildingCost } from './catalogue/rates.js';
+import { buildingCost, wallCost } from './catalogue/rates.js';
 import { chargeRule, computeCharges, statusLabel } from './charges.js';
+import { constructionSpec, rowsWallBasis, constructionLine } from './catalogue/construction.js';
 import { hardstandList } from './catalogue/pavements/hardstand.js';
 
 export const DATA_DATE = '13/11/2026'; // the portal evidence
@@ -343,6 +344,8 @@ export function effectiveInputs(defaults, overrides = {}) {
   }
   const price = Number(overrides.landPrice);
   out.landPrice = { value: Number.isFinite(price) && price > 0 ? Math.min(price, INPUT_MAX.landPrice) : null };
+  const wr = Number(overrides.wallRate);
+  out.wallRate = { value: overrides.wallRate != null && overrides.wallRate !== '' && Number.isFinite(wr) && wr >= 0 ? wr : null };
   return out;
 }
 
@@ -353,7 +356,7 @@ export const SAMPLE_CHIP = 'Example figures, enter your own';
 const r0 = (v) => Math.round(v);
 
 /** One scenario. side: 'mid' (the values in use), 'low' (low revenue, high cost) or 'high' (high revenue, low cost). */
-function scenario(inp, { gfa, rowsGfa = gfa, mezzM2 = 0, buildings = [], devM2, restM2, lotM2 }, side) {
+function scenario(inp, { gfa, rowsGfa = gfa, mezzM2 = 0, buildings = [], rowWalls = [], devM2, restM2, lotM2 }, side) {
   const pick = (k, revenue) => {
     const x = inp[k];
     if (side === 'mid') return x.value;
@@ -375,9 +378,17 @@ function scenario(inp, { gfa, rowsGfa = gfa, mezzM2 = 0, buildings = [], devM2, 
   const buildRows = rowsGfa * pick('buildRate', false) * fBuild;
   // Catalogue buildings use the ESTIMATE rate of their type (low revenue scenario takes the dear end), scaled by the regional factor.
   const costSide = side === 'mid' ? 'mid' : side === 'low' ? 'high' : 'low';
-  const bCosts = buildings.map((b) => { const c = buildingCost(b, costSide); return { b, total: c.total * cf, lines: c.lines.map((l) => ({ ...l, rate: l.perM2 ? l.rate * cf : l.rate, amount: l.amount * cf })) }; });
+  const wallOver = inp.wallRate?.value ?? null;
+  // Walls: the wall delta rates are stated estimates over the metal clad rate (not scaled by the regional factor); a rate the person typed replaces them.
+  const bCosts = buildings.map((b) => {
+    const c = buildingCost(b, costSide);
+    const wc = wallCost(b.q?.construction, constructionSpec(b.params), costSide, wallOver);
+    return { b, total: c.total * cf + wc.total, lines: [...c.lines.map((l) => ({ ...l, rate: l.perM2 ? l.rate * cf : l.rate, amount: l.amount * cf })), ...wc.lines], wallTotal: wc.total };
+  });
+  const rowWallCosts = rowWalls.map((rw) => ({ rw, ...wallCost(rw, rw.spec, costSide, wallOver) }));
+  const buildRowWalls = rowWallCosts.reduce((a, x) => a + x.total, 0);
   const buildBuildings = bCosts.reduce((a, x) => a + x.total, 0);
-  const build = buildRows + buildBuildings;
+  const build = buildRows + buildRowWalls + buildBuildings;
   const siteDev = devM2 * pick('siteRate', false) * fSite;
   const siteRest = restM2 * pick('landscapeRate', false);
   const site = siteDev + siteRest;
@@ -400,7 +411,7 @@ function scenario(inp, { gfa, rowsGfa = gfa, mezzM2 = 0, buildings = [], devM2, 
   const marginHold = endValue - cost;
   return {
     yieldOk: yieldPct > 0,
-    saleRate: sale, rentRate: rent, yieldPct, land, build, buildRows, buildBuildings, buildingCosts: bCosts.map((x) => ({ id: x.b.id, n: x.b.n, label: x.b.label, gfa: x.b.gfaM2, total: x.total, lines: x.lines })), siteWorks: site, siteDev, siteRest, fees, contingency, charges, chargesAuto, costFactor: cf, cost,
+    saleRate: sale, rentRate: rent, yieldPct, land, build, buildRows, buildRowWalls, rowWallLines: rowWallCosts.flatMap((x) => x.lines), buildBuildings, buildingCosts: bCosts.map((x) => ({ id: x.b.id, n: x.b.n, label: x.b.label, gfa: x.b.gfaM2, total: x.total, lines: x.lines })), siteWorks: site, siteDev, siteRest, fees, contingency, charges, chargesAuto, costFactor: cf, cost,
     realisation, grossRent, netRent, outgoingsPct, mezzFactor, revenueGfa, endValue, marginSale, marginHold,
     marginSalePct: cost > 0 ? (marginSale / cost) * 100 : 0,
     marginHoldPct: cost > 0 && yieldPct > 0 ? (marginHold / cost) * 100 : 0,
@@ -435,7 +446,8 @@ export function feasibility(commercial, lot, opts = {}) {
   const devM2 = developedAreaM2(commercial, lot);
   const restM2 = Math.max(0, lotM2 - devM2);
   const mezzM2 = units.reduce((s, u) => s + u.mezz, 0);
-  const ctx = { gfa, rowsGfa, mezzM2, buildings, devM2, restM2, lotM2 };
+  const rowWalls = rowsWallBasis(commercial).map((rw) => ({ ...rw, spec: constructionSpec((commercial.rows || []).find((r) => r.id === rw.rowId)?.unit) }));
+  const ctx = { gfa, rowsGfa, mezzM2, buildings, rowWalls, devM2, restM2, lotM2 };
   const mid_ = scenario(inputs, ctx, 'mid');
   const low = scenario(inputs, ctx, 'low');
   const high = scenario(inputs, ctx, 'high');
@@ -443,7 +455,7 @@ export function feasibility(commercial, lot, opts = {}) {
   inputs.councilCharges = { ...inputs.councilCharges, defaultValue: Math.round(mid_.chargesAuto), ...(inputs.councilCharges.edited ? {} : { value: Math.round(mid_.chargesAuto) }) };
   const perUnit = [...units.map((u) => ({ n: u.n, gfa: u.gfa, price: (u.ground + u.mezz * mid_.mezzFactor) * mid_.saleRate, rent: (u.ground + u.mezz * mid_.mezzFactor) * mid_.rentRate })), ...buildings.map((b) => ({ n: `B${b.n}`, label: b.label, gfa: b.gfaM2, price: b.gfaM2 * mid_.saleRate, rent: b.gfaM2 * mid_.rentRate }))];
   const resolved = resolveArea(lot);
-  return { areaKey, detectedKey: detected, detectedVia: resolved.via, areaLabel: defaults.label, areaState: defaults.state, areaMeta: defaults.meta, areaChain: defaults.chain, confidence: defaults.confidence, units, buildings, rowsGfa, perUnit, gfa, lotM2, devM2, restM2, inputs, defaults, mid: mid_, low, high, landFromPrice: inputs.landPrice.value != null, dataDate: DATA_DATE, marketDate: MARKET_DATE };
+  return { areaKey, detectedKey: detected, detectedVia: resolved.via, rowWalls, areaLabel: defaults.label, areaState: defaults.state, areaMeta: defaults.meta, areaChain: defaults.chain, confidence: defaults.confidence, units, buildings, rowsGfa, perUnit, gfa, lotM2, devM2, restM2, inputs, defaults, mid: mid_, low, high, landFromPrice: inputs.landPrice.value != null, dataDate: DATA_DATE, marketDate: MARKET_DATE };
 }
 
 // Formatting, shared by the panel and the C103 section --------------------------------------------------------------------------
@@ -497,7 +509,8 @@ export function costRows(f) {
   return [
     [f.landFromPrice ? 'Land (listing or purchase price)' : `Land (${money(f.inputs.landRate.value)} per m² x ${Math.round(f.lotM2).toLocaleString('en-AU')} m²)`, money(m.land)],
     ...(f.rowsGfa > 0 || !f.buildings?.length ? [[`Building (${money(f.inputs.buildRate.value)} per m²${factorText(f, 'buildRate')} x ${m2(f.rowsGfa ?? f.gfa)} m² GFA)`, money(m.buildRows ?? m.build)]] : []),
-    ...(m.buildingCosts || []).flatMap((bc) => bc.lines.map((l) => [`Building ${bc.n}, ${l.label} (${l.perM2 ? `${money(l.rate)} per m² x ${m2(bc.gfa)} m² GFA` : 'lump sum'}, ${l.status})`, money(l.amount)])),
+    ...(m.rowWallLines || []).map((l) => [`Unit walls, ${l.label} (${money(l.rate)} per m² x ${m2(l.area)} m² of wall, ${l.status})`, money(l.amount)]),
+    ...(m.buildingCosts || []).flatMap((bc) => bc.lines.map((l) => [`Building ${bc.n}, ${l.label} (${l.wall ? `${money(l.rate)} per m² x ${m2(l.area)} m² of wall` : l.perM2 ? `${money(l.rate)} per m² x ${m2(bc.gfa)} m² GFA` : 'lump sum'}, ${l.status})`, money(l.amount)])),
     [`Site works, developed area (${money(f.inputs.siteRate.value)} per m²${factorText(f, 'siteRate')} x ${m2(f.devM2)} m² of footprint and hardstand)`, money(m.siteDev)],
     [`Clearing and landscaping, rest of lot (${money(f.inputs.landscapeRate.value)} per m² x ${m2(f.restM2)} m²)`, money(m.siteRest)],
     [`Fees (${f.inputs.feesPct.value}% of building and site works)`, money(m.fees)],

@@ -15,11 +15,14 @@ import * as THREE from 'three';
 import { terrainAt, floorRLOf } from '../site/model.js';
 import * as S from './site-geom.js';
 import { addSiteExtras } from './site-extras.js';
+import { LAWN_COLOUR } from './site.js';
 import { addCommercialPavements } from '../commercial/catalogue/pavements/view3d.js';
+import { addCommercialEntourage, addForecourtSlabs } from '../commercial/catalogue/entourage3d.js';
 
 export { PAD_MARGIN_M } from './site-geom.js';
 
 const GRASS = '#6f8a58';
+const PADDOCK = '#9d9a60'; // dry grass beyond the lots when there is no aerial
 const GREY_GROUND = '#8b8e92'; // uploaded site with no aerial available: a plain grey ground
 const GREY_HORIZON = '#a7aaae';
 const HORIZON = '#9aa88a'; // the far edge of the ground ring: a neutral ground colour, not a pale haze towards the sky
@@ -144,12 +147,24 @@ function labelSprite(lines, kind) {
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.lineJoin = 'round';
+  // A rounded label plate (a pill for one line, a rounded rectangle for more), white at about 76% so the ground shows through a
+  // little; the text on it is drawn solid and crisp. Same size and place as before.
+  const rad = Math.min(height / 2 - 1, lines.length > 1 ? 20 : height / 2);
+  g.beginPath();
+  g.moveTo(1 + rad, 1);
+  g.arcTo(width - 1, 1, width - 1, height - 1, rad);
+  g.arcTo(width - 1, height - 1, 1, height - 1, rad);
+  g.arcTo(1, height - 1, 1, 1, rad);
+  g.arcTo(1, 1, width - 1, 1, rad);
+  g.closePath();
+  g.fillStyle = 'rgba(255,255,255,0.76)';
+  g.fill();
+  g.lineWidth = 1.5;
+  g.strokeStyle = strong ? 'rgba(166,27,27,0.55)' : 'rgba(58,63,51,0.35)';
+  g.stroke();
   lines.forEach((l, i) => {
     const y = pad + lh * (i + 0.5);
     g.font = font(i === 0 ? size : size * 0.86, i === 0 ? 700 : 600);
-    g.lineWidth = 7;
-    g.strokeStyle = 'rgba(255,255,255,0.92)';
-    g.strokeText(l, width / 2, y);
     g.fillStyle = strong ? '#a61b1b' : '#3a3f33';
     g.fillText(l, width / 2, y);
   });
@@ -165,6 +180,99 @@ function labelSprite(lines, kind) {
   sp.scale.x = sp.scale.y * (width / height);
   sp.renderOrder = 20;
   return sp;
+}
+
+// Crisp aerial ground. An aerial picture is about 0.1 m per pixel at best, so from eye level one texel covers many screen pixels and plain
+// bilinear filtering smears it. This patches the ground material (no extra texture, no extra draw call):
+//   * where the picture is magnified, texel edges are tightened (a smoothstep on the bilinear weights), so roof edges, kerbs and road lines
+//     stay defined instead of bleeding into each other,
+//   * a fine procedural grain in world space (three sizes, each fading out before it could alias) is laid over the picture, so close ground
+//     reads as a sharp surface tinted by the aerial rather than a blur. From above (picture at or below 1:1) nothing changes.
+// The same patch is used for the sharp inner tile and the wide outer tile.
+export function sharpenAerial(mat, texture) {
+  const img = texture?.image;
+  const size = new THREE.Vector2(img?.width || 1024, img?.height || 1024);
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.uAerialSize = { value: size };
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec2 vAerialW;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAerialW = (modelMatrix * vec4(position, 1.0)).xz;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', `#include <common>
+uniform vec2 uAerialSize;
+varying vec2 vAerialW;
+float aerialHash(vec2 p) { p = fract(p * vec2(0.1031, 0.1030)); p += dot(p, p.yx + 33.33); return fract((p.x + p.y) * p.x); }
+float aerialNoise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(aerialHash(i), aerialHash(i + vec2(1.0, 0.0)), f.x), mix(aerialHash(i + vec2(0.0, 1.0)), aerialHash(i + vec2(1.0, 1.0)), f.x), f.y); }`)
+      .replace('#include <map_fragment>', `#ifdef USE_MAP
+  vec2 aTx = vMapUv * uAerialSize - 0.5;
+  vec2 aI = floor(aTx);
+  vec2 aF = fract(aTx);
+  float aFp = max(length(dFdx(aTx)), length(dFdy(aTx)));       // texels per screen pixel: below 1 the picture is magnified
+  float aK = 1.0 - smoothstep(0.18, 0.75, aFp);                 // 0 at about 1:1, 1 when a texel covers five or more pixels
+  vec2 aS = smoothstep(0.0, 1.0, smoothstep(0.0, 1.0, aF));
+  vec2 aUv = (aI + mix(aF, aS, aK) + 0.5) / uAerialSize;
+  vec4 sampledDiffuseColor = textureGrad(map, aUv, dFdx(vMapUv), dFdy(vMapUv));
+  float aW = max(length(dFdx(vAerialW)), length(dFdy(vAerialW))); // metres per screen pixel
+  float aG = (aerialHash(floor(vAerialW / 0.03)) - 0.5) * 0.20 * (1.0 - smoothstep(0.012, 0.03, aW))
+           + (aerialNoise(vAerialW / 0.11) - 0.5) * 0.20 * (1.0 - smoothstep(0.04, 0.10, aW))
+           + (aerialNoise(vAerialW / 0.42 + 17.0) - 0.5) * 0.14 * (1.0 - smoothstep(0.15, 0.38, aW));
+  sampledDiffuseColor.rgb *= 1.0 + aG * aK;
+  diffuseColor *= sampledDiffuseColor;
+#endif`);
+  };
+  mat.customProgramCacheKey = () => 'aerial-sharp-1';
+  return mat;
+}
+
+// Ground with no aerial (the homepage hero look): mown, striped lawn on the lot and its neighbours, a dry paddock tone beyond them.
+// One material: the tiling lawn texture in metres, and a small mask picture of the lots over the terrain extent that turns the lawn
+// into paddock outside them (a soft 10 cm edge, as on real ground). No extra geometry or draw call. Returns null without a DOM.
+const PADDOCK_TINT = [1.26, 1.02, 0.86]; // lawn green -> dry grass
+function lawnGroundMaterial(ctx, lot, ext) {
+  if (typeof document === 'undefined') return null;
+  const base = ctx.lib.get('grass', LAWN_COLOUR);
+  if (!base?.map) return null;
+  const w = (ext.x1 - ext.x0) / 1000; const h = (ext.y1 - ext.y0) / 1000;
+  const k = 1024 / Math.max(w, h);
+  const c = document.createElement('canvas');
+  c.width = Math.max(8, Math.round(w * k)); c.height = Math.max(8, Math.round(h * k));
+  const g = c.getContext('2d');
+  g.fillStyle = '#000'; g.fillRect(0, 0, c.width, c.height);
+  g.fillStyle = '#fff';
+  const rings = [lot.boundary, ...(lot.neighbours || []).filter((n) => !n.isRoad && n.ring?.length > 2).map((n) => n.ring)];
+  for (const r of rings) {
+    g.beginPath();
+    r.forEach((q, i) => { const x = ((q.x - ext.x0) / 1000) * k; const y = ((q.y - ext.y0) / 1000) * k; if (i) g.lineTo(x, y); else g.moveTo(x, y); });
+    g.closePath(); g.fill();
+  }
+  const mask = new THREE.CanvasTexture(c);
+  mask.flipY = false; // row 0 is the top of the canvas = the lowest plan y, the same way the terrain's own coordinates run
+  mask.magFilter = THREE.LinearFilter; mask.minFilter = THREE.LinearMipmapLinearFilter; mask.anisotropy = 8;
+  const map = base.map.clone();
+  const tx = 1 / (base.map.repeat.x || 1); const ty = 1 / (base.map.repeat.y || 1); // metres per tile
+  map.repeat.set(w / tx, h / ty); // the terrain's texture coordinates run 0 to 1 over the extent, so the lawn tiles in metres
+  map.needsUpdate = true;
+  const mat = new THREE.MeshStandardMaterial({ color: base.color.clone(), map, roughness: 1, metalness: 0, envMapIntensity: 0.25 });
+  mat.userData.shared = false;
+  mat.userData.disposeMap = true;
+  mat.userData.lotMask = mask;
+  mat.addEventListener('dispose', () => mask.dispose());
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.uLotMask = { value: mask };
+    shader.uniforms.uPaddock = { value: new THREE.Vector3(...PADDOCK_TINT) };
+    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec2 vLotUv;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvLotUv = vec2(uv.x, 1.0 - uv.y);');
+    shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uLotMask;\nuniform vec3 uPaddock;\nvarying vec2 vLotUv;')
+      .replace('#include <map_fragment>', `#include <map_fragment>
+  float lotM = texture2D(uLotMask, vLotUv).r;
+  // outside the lots: the dry paddock tone, with the mowing bands flattened (fine grain kept)
+  vec3 lawnC = diffuseColor.rgb;
+  float lawnL = dot(lawnC, vec3(0.3333));
+  vec3 padC = diffuse * uPaddock * mix(0.9, lawnL / max(dot(diffuse, vec3(0.3333)), 0.001), 0.25);
+  diffuseColor.rgb = mix(padC, lawnC, lotM);`);
+  };
+  mat.customProgramCacheKey = () => 'lawn-ground-1';
+  return mat;
 }
 
 /**
@@ -218,8 +326,9 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
     texture.needsUpdate = true;
     mat = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, metalness: 0, envMapIntensity: 0.25 });
     mat.userData.shared = false;
+    sharpenAerial(mat, texture);
   } else {
-    mat = grey ? ctx.lib.get('grass', GREY_GROUND, { flat: true }) : ctx.lib.get('grass', '#76895f');
+    mat = grey ? ctx.lib.get('grass', GREY_GROUND, { flat: true }) : lawnGroundMaterial(ctx, lot, ext) || ctx.lib.get('grass', LAWN_COLOUR);
   }
   const mesh = new THREE.Mesh(geo, mat);
   mesh.name = 'site-terrain';
@@ -241,8 +350,8 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   const ring = S.fadeRing(nodes, edgeY - 0.05);
   // The aerial edge is often road, so lean on grass: the ring reads as open ground that fades to the horizon.
   // With the wide tile the ring starts from that picture's own edge colour (no seam); without it the old grass lean applies.
-  const inner = grey ? new THREE.Color(GREY_GROUND) : wide ? new THREE.Color(wideEdgeColour || GRASS) : new THREE.Color(edgeColour || GRASS).lerp(new THREE.Color(GRASS), 0.55).multiplyScalar(1.12);
-  const outer = new THREE.Color(grey ? GREY_HORIZON : HORIZON);
+  const inner = grey ? new THREE.Color(GREY_GROUND) : wide ? new THREE.Color(wideEdgeColour || GRASS) : !hasAerial ? new THREE.Color(PADDOCK) : new THREE.Color(edgeColour || GRASS).lerp(new THREE.Color(GRASS), 0.55).multiplyScalar(1.12);
+  const outer = new THREE.Color(grey ? GREY_HORIZON : !hasAerial ? PADDOCK : HORIZON);
   const rc = [];
   for (const t of ring.colourT) {
     const c = inner.clone().lerp(outer, t);
@@ -271,6 +380,11 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
     if (project.mode === 'commercial') addCommercialPavements(root, project, surf); // pavements, kerbs and markings of a commercial layout
   } catch (e) {
     console.warn('[viewer3d] commercial pavements skipped', e);
+  }
+  try {
+    if (project.mode === 'commercial') { addForecourtSlabs(root, project, surf); addCommercialEntourage(root, project, surf); } // a few parked cars and a truck at the dock, for scale
+  } catch (e) {
+    console.warn('[viewer3d] commercial entourage skipped', e);
   }
   const ow = wide ? wide.extent.x1 - wide.extent.x0 : aw;
   const oh = wide ? wide.extent.y1 - wide.extent.y0 : ah;
@@ -332,6 +446,7 @@ export function addWideGround(root, lot, tm, inner, texture) {
   texture.needsUpdate = true;
   const mat = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, metalness: 0, envMapIntensity: 0.25, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 2 });
   mat.userData.shared = false;
+  sharpenAerial(mat, texture);
   const mesh = new THREE.Mesh(geo, mat);
   mesh.name = 'site-terrain-wide';
   mesh.receiveShadow = true;

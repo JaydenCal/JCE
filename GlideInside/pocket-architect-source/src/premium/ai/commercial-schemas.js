@@ -4,6 +4,7 @@
 
 import { CLADDING, DOORS } from '../../commercial/finishes.js';
 import { FRONT_WINDOWS, DOOR_PRESETS } from '../../commercial/schema.js';
+import { CONSTRUCTION_PARAMS } from '../../commercial/catalogue/construction.js';
 
 const P = {
   num: (description) => ({ type: 'number', description }),
@@ -12,6 +13,10 @@ const P = {
   enm: (values, description) => ({ type: 'string', enum: values, description }),
   obj: (description, properties = {}) => ({ type: 'object', description, properties }),
 };
+
+/** Schema properties for the construction system keys (shared by set_unit_options and the building params). */
+export const constructionProps = () => Object.fromEntries(CONSTRUCTION_PARAMS.map((p) => [p.key,
+  p.type === 'number' ? P.num(`${p.label}, ${p.unit}`) : p.type === 'bool' ? P.bool(p.label) : P.enm(p.options.map((o) => o.value), p.label)]));
 
 export const LAYOUT_IDS = Object.freeze(['best', 'row-6', 'row-10', 'b2b-12', 'b2b-16', 'court-20', 'large-6']);
 export const GOALS = Object.freeze(['max_gfa', 'max_units', 'max_margin', 'min_cost']);
@@ -67,13 +72,14 @@ export const COMMERCIAL_SCHEMAS = {
   },
   set_unit_options: {
     label: 'Unit options',
-    description: 'Change the strata units of one row, or of every row. Sizes in mm. doors is the number of roller doors. mezzanine and office turn the mezzanine and the ground floor office on or off. windows is the front window style.',
+    description: 'Change the strata units of one row, or of every row. Sizes in mm. doors is the number of roller doors. mezzanine and office turn the mezzanine and the ground floor office on or off. windows is the front window style. construction is the wall system: metal_clad, tilt_up (site cast concrete panels), precast, tilt_up_metal_upper (concrete panels below metal cladding) or blockwork, with the panel settings listed in the plan context.',
     params: {
       target: P.str('A row id from the plan context, or "all"'),
       options: P.obj('Settings to change; leave out what stays', {
         widthMm: P.num('Unit width, mm'), depthMm: P.num('Unit depth, mm'), heightMm: P.num('Unit height, mm'),
         doors: P.num('Number of roller doors'), doorSize: P.enm(DOOR_PRESETS.map((d) => d.id), 'Roller door size, metres wide x high'),
         mezzanine: P.bool('Mezzanine on or off'), office: P.bool('Ground floor office on or off'), windows: P.enm([...FRONT_WINDOWS], 'Front window style'),
+        ...constructionProps(),
       }),
     },
     required: ['target', 'options'],
