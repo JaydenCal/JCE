@@ -95,6 +95,19 @@ function initialProject(catalogue) {
       if (saved) loaded = { project: saved, fromAutosave: true };
     }
   }
+  // ?address= asks for a specific lot. A design kept in this browser for a DIFFERENT address must not open in its place (it put a 50 ha
+  // rural lot under a town address, 15/11/2026). Start fresh for the asked address and keep the saved design as the earlier design.
+  const askedAddress = addressFromSearch();
+  if (loaded && askedAddress && !loaded.previous) {
+    const norm = (a) => String(a || '').toUpperCase().replace(/\b(NSW|QLD|NEW SOUTH WALES|QUEENSLAND|AUSTRALIA)\b/g, '').replace(/[^A-Z0-9]+/g, ' ').trim();
+    const savedAddr = loaded.project?.site?.lot?.address || '';
+    if (!savedAddr || norm(savedAddr) !== norm(askedAddress)) {
+      try { localStorage.setItem(PREV_AUTOSAVE_KEY, JSON.stringify(loaded.project)); } catch { /* storage blocked */ }
+      loaded = { previousOnly: loaded.project };
+    }
+  }
+  const previousOnly = loaded?.previousOnly || null;
+  if (previousOnly) loaded = null;
   const res = resolveTool({ search: location.search, project: loaded?.project, fromSaved: !!loaded });
   toolMode.current = res.tool;
   if (loaded && res.mismatch) {
@@ -106,7 +119,8 @@ function initialProject(catalogue) {
     switchFrom = other;
   }
   if (loaded) return { ...loaded, tool: res.tool };
-  if (res.tool === 'commercial' && !demoMode() && !VIEWER) return { project: freshCommercial(), fromAutosave: false, tool: res.tool, switchFrom };
+  const prevX = previousOnly ? { previous: previousOnly } : {};
+  if (res.tool === 'commercial' && !demoMode() && !VIEWER) return { project: freshCommercial(), fromAutosave: false, tool: res.tool, switchFrom, ...prevX };
   const wanted = new URLSearchParams(location.search).get('template') || 'house_single';
   const list = templatesOf(catalogue);
   // The first frame must show a real plan, so empty templates are skipped.
@@ -118,12 +132,12 @@ function initialProject(catalogue) {
       if (!hasContent(project) && t.id !== wanted) continue;
       const problems = validate(project);
       if (problems.length) console.warn(`[template] ${t.id} has problems`, problems);
-      return { project, fromAutosave: false, templateId: t.id, tool: res.tool, switchFrom };
+      return { project, fromAutosave: false, templateId: t.id, tool: res.tool, switchFrom, ...prevX };
     } catch (e) {
       console.warn(`[template] ${t.id} could not be loaded`, e);
     }
   }
-  return { project: createProject({ name: 'Untitled design' }), fromAutosave: false, tool: res.tool, switchFrom };
+  return { project: createProject({ name: 'Untitled design' }), fromAutosave: false, tool: res.tool, switchFrom, ...prevX };
 }
 
 async function main() {
