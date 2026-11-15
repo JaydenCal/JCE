@@ -1075,3 +1075,6 @@ svg { display: block; }
 /* The way back to the main page is always labelled. */
 .ps-shell .ps-topbar .ps-back .ps-btn-text { display: inline !important; }
 .ps-shell .ps-topbar .ps-back.ps-btn--wide:has(.ps-btn-text) { width: auto !important; padding: 0 10px !important; }
+/* Save design is always labelled. */
+.ps-shell .ps-topbar .ps-prof-save .ps-prof-save-text { display: inline !important; }
+.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text) { width: auto !important; padding: 0 11px !important; }
