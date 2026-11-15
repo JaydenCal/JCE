@@ -166,9 +166,12 @@ test('best fit v2: multi row stacks use the lot, park by the required rate, keep
   const lots = [[90000, 100000], [60000, 100000], [40000, 70000]];
   for (const [w, d] of lots) {
     const p = lotProject({ width: w, depth: d });
-    const t0 = Date.now();
+    // CPU time, not the wall clock: the search itself is bounded by work, and a busy machine must not fail a speed check that is about the code.
+    const cpu0 = process.cpuUsage();
     const c = chooseLayout(p, BEST_ID);
-    assert.ok(Date.now() - t0 < 1500, `runtime ${Date.now() - t0} ms`);
+    const cpu = process.cpuUsage(cpu0);
+    const cpuMs = (cpu.user + cpu.system) / 1000;
+    assert.ok(cpuMs < 1500, `runtime ${Math.round(cpuMs)} ms of CPU`);
     const s = storeOf(p);
     applyLayout(s, c);
     const q = s.project;
