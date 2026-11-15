@@ -56,3 +56,37 @@ export function houseStats(project) {
 }
 
 export const sizeLabel = (s) => `${(s.widthMm / 1000).toFixed(1)} x ${(s.depthMm / 1000).toFixed(1)} m`;
+
+/** Standard lot frontage classes in metres, used to tag designs ("Fits a 12.5 m lot"). */
+export const FRONTAGE_CLASSES_M = [7.5, 8.5, 10, 12.5, 14, 15, 16, 18, 20, 25, 30];
+
+/** The smallest standard lot frontage the footprint fits with 0.9 m side setbacks on both sides (a nominal class, guidance only). */
+export function frontageClassM(widthMm) {
+  const need = widthMm / 1000 + 1.8;
+  return FRONTAGE_CLASSES_M.find((c) => c >= need - 1e-6) ?? Math.ceil(need);
+}
+
+/**
+ * Area schedule of a design in m2, from the room outlines (wall centre lines, the same basis as the plan set schedules):
+ * living (indoor rooms except the garage), garage (carport included), alfresco, porch, other roofed outdoor (verandah) and
+ * unroofed outdoor (deck, patio, courtyard), with the total of all of them.
+ */
+export function areaBreakdown(project) {
+  const t = { living: 0, garage: 0, alfresco: 0, porch: 0, otherRoofed: 0, unroofed: 0 };
+  for (const l of project.levels) {
+    for (const r of l.rooms) {
+      if (r.status === 'demolish') continue;
+      const a = area(r.polygon) / 1e6;
+      if (!r.outdoor) { if (r.type === 'garage') t.garage += a; else t.living += a; }
+      else if (r.type === 'carport') t.garage += a;
+      else if (!r.roofed) t.unroofed += a;
+      else if (r.type === 'alfresco') t.alfresco += a;
+      else if (/porch/i.test(r.name || '')) t.porch += a;
+      else t.otherRoofed += a;
+    }
+  }
+  const r1 = (v) => Math.round(v * 10) / 10;
+  const out = Object.fromEntries(Object.entries(t).map(([k, v]) => [k, r1(v)]));
+  out.total = r1(Object.values(t).reduce((s, v) => s + v, 0));
+  return out;
+}

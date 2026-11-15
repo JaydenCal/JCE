@@ -89,7 +89,7 @@ test('choose a home: rows carry size, beds, baths and a fit status, and the filt
   for (const b of beds) assert.ok(filterRows(rows, { bedrooms: b >= 4 ? 4 : b }).every((r) => (b >= 4 ? r.stats.bedrooms >= 4 : r.stats.bedrooms === b)));
   assert.ok(filterRows(rows, { storeys: 1 }).every((r) => r.stats.storeys === 1));
   assert.ok(filterRows(rows, { storeys: 2 }).every((r) => r.stats.storeys >= 2));
-  assert.equal(filterRows(rows, { bedrooms: 0 }).length, 0);
+  assert.ok(filterRows(rows, { bedrooms: 0 }).every((r) => r.stats.bedrooms === 0), 'only studios have no bedroom');
   assert.equal(filterRows(rows, {}).length, rows.length);
 });
 

@@ -245,7 +245,10 @@ test('catalogue source avoids em and en dashes in names', () => {
 // ------------------------------------------------------------------------------------------------
 // Templates
 // ------------------------------------------------------------------------------------------------
-const TEMPLATE_IDS = ['blank', 'shed_workshop', 'shed_farm', 'granny_flat', 'house_single', 'house_double', 'duplex', 'extension_starter'];
+const TEMPLATE_IDS = ['blank', 'shed_workshop', 'shed_farm', 'granny_flat', 'house_single', 'house_double', 'duplex',
+  // the generic set, tests/generic-designs.test.mjs
+  'narrow_10_3bed', 'narrow_125_4bed', 'narrow_14_3bed_media', 'single_3bed_starter', 'narrow_double_4bed', 'townhouse_3bed', 'dual_occupancy_narrow', 'acreage_homestead_4bed', 'granny_1bed', 'granny_studio', 'granny_2bed_carport', 'shed_house_barn',
+  'extension_starter'];
 const indoorArea = (p, skip = []) => p.levels.reduce((s, l) => s + l.rooms.filter((r) => !r.outdoor && !skip.includes(r.type)).reduce((a, r) => a + G.roomAreaM2(r), 0), 0);
 
 test('templates list and createFromTemplate', () => {

@@ -441,7 +441,8 @@ export function buildModel(project, opts = {}) {
       const hasCat = level.walls.some((w) => w.bldg) || level.rooms.some((r) => r.bldg);
       const fp = hasCat ? F.rasteriseLevel(grid, { ...(frameLevels.get(level.id) || level), walls: (frameLevels.get(level.id) || level).walls.filter((w) => !w.bldg), rooms: (frameLevels.get(level.id) || level).rooms.filter((r) => !r.bldg) }, vis) : fpOf(level);
       if (!fp.any) return;
-      const upper = levels[li + 1] || null;
+      // An upper level with its own roof turned off (a mezzanine inside a shed) sits under this roof, so it does not cut a hole in it.
+      const upper = levels[li + 1] && levels[li + 1].roof?.enabled !== false ? levels[li + 1] : null;
       const upperFp = upper ? fpOf(upper) : null;
       const { builder } = buildLevelRoof({
         grid, footprint: fp.footprint, above: upperFp?.any ? upperFp.footprint : null,
