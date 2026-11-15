@@ -16,10 +16,12 @@
 <meta name="twitter:image" content="https://glideinside.com.au/assets/og-cover.jpg">
 <meta name="theme-color" content="#12231c">
 <link rel="icon" href="../assets/Glideinside_Favicon_v4.svg">
+<link rel="preload" href="../assets/fonts/newsreader-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../framework.css?v=20261115e">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://glideinside.com.au/"},{"@type":"ListItem","position":2,"name":"Commercial","item":"https://glideinside.com.au/commercial/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Glide Inside Commercial (beta)","applicationCategory":"DesignApplication","operatingSystem":"Web browser","url":"https://glideinside.com.au/commercial/","description":"Browser based layout tool for rows of industrial or commercial units on a real lot in regional NSW and Queensland, with unit sizes, roller doors, mezzanines and indicative parking. Concept layouts only. Beta.","publisher":{"@id":"https://glideinside.com.au/#organization"},"offers":{"@type":"Offer","name":"Commercial Developer subscription","price":"50","priceCurrency":"AUD","priceSpecification":{"@type":"UnitPriceSpecification","price":"50","priceCurrency":"AUD","valueAddedTaxIncluded":true,"unitCode":"MON"},"url":"https://glideinside.com.au/commercial/"}}</script>
-<script src="../site.config.js?v=20261115c"></script><script src="../framework.js?v=20261115c" defer></script><script src="../analytics.js" defer></script>
+<script src="../site.config.js?v=20261115c"></script><script src="../framework.js?v=20261115e" defer></script><script src="../analytics.js" defer></script>
 <style>
 .cm-land{padding-block:clamp(48px,7vw,96px)}
 .cm-land .eyebrow{margin-top:18px}
@@ -78,12 +80,12 @@
   </form>
 </div>
 <div class="live-wrap" style="margin-top:clamp(14px,1.6vw,22px)">
-  <div class="live-hero" id="live-tool" data-auto data-mode="commercial" style="--poster:linear-gradient(160deg,#1d3a2e,#0d1627)">
+  <div class="live-hero" id="live-tool" data-mode="commercial" style="--poster:linear-gradient(160deg,#1d3a2e,#0d1627)">
     <div class="lh-bar"><i></i><i></i><i></i><span>glideinside.com.au/plan-studio</span><button class="lh-fs" type="button" data-fs aria-label="Full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg><span>Full screen</span></button><a class="lh-edit" href="../plan-studio/app/?mode=commercial">Open full editor</a></div>
     <div class="lh-stage">
       <iframe title="Glide Inside Commercial, commercial layout viewer" data-src="plan-studio/app/?embed=1&amp;mode=commercial" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-pointer-lock allow-top-navigation-by-user-activation" allow="fullscreen; pointer-lock; clipboard-write" tabindex="-1"></iframe>
       <button class="lh-exit" type="button" data-fs-exit>Exit full screen</button>
-      <div class="lh-poster"><div><button class="btn" type="button" data-live-open>Tap to open the live viewer</button><p>Loading the live tool.</p></div></div>
+      <div class="lh-poster"><div><button class="btn" type="button" data-live-open>Open the live viewer</button><p>Loads the live viewer in this page.</p></div></div>
     </div>
   </div>
   <p class="stage-cap">The live commercial layout viewer. Search a lot above, step through ready-made layouts, pick colours and open the plan set.</p>

@@ -60,8 +60,11 @@
       if (note) note.textContent = "Opens the live viewer full screen.";
       if (btn) btn.addEventListener("click", function () { location.assign(appUrl(live.last)); });
     }
-    else if ("IntersectionObserver" in window) { new IntersectionObserver(function (es, o) { if (es[0].isIntersecting) { o.disconnect(); go(); } }, { rootMargin: "300px 0px" }).observe(box); }
-    else go();
+    else {
+      // SEO-008: the 3D viewer no longer starts by itself on desktop. It loads when the visitor presses the button or searches an address.
+      if (note) note.textContent = "Loads the live viewer in this page.";
+      if (btn) btn.addEventListener("click", function () { if (note) note.textContent = "Loading the live viewer."; go(); });
+    }
     // Full screen: the Fullscreen API on the frame wrapper; a new tab with the viewer where the browser has none (iPhone).
     var fsBtn = box.querySelector("[data-fs]"), exitBtn = box.querySelector("[data-fs-exit]"), st = live.stage;
     var fsOn = function () { return document.fullscreenElement || document.webkitFullscreenElement; };
