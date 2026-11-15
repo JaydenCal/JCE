@@ -60,7 +60,7 @@ const DRAW = {
   concrete(g, n, t) {
     g.fillStyle = t.base; g.fillRect(0, 0, n, n);
     const r = rngFrom(7);
-    for (let i = 0; i < 14; i++) { g.globalAlpha = 0.035; g.fillStyle = r() > 0.5 ? '#ffffff' : '#6a655a'; g.fillRect(r() * n - 120, r() * n - 120, 240 + r() * 200, 240 + r() * 200); }
+    for (let i = 0; i < 14; i++) { g.globalAlpha = 0.016; g.fillStyle = r() > 0.5 ? '#ffffff' : '#77746e'; g.fillRect(r() * n - 120, r() * n - 120, 240 + r() * 200, 240 + r() * 200); }
     g.globalAlpha = 1;
     speckle(g, n, 14000, ['#a9a69d', '#d3d0c7', '#bbb8ae', '#c4c1b7', '#8f8c83'], 0.32, 2.2, 11);
     if (t.broom) { g.strokeStyle = 'rgba(70,66,58,0.05)'; g.lineWidth = 1; for (let y = 0; y < n; y += 3) { g.beginPath(); g.moveTo(0, y + (y % 7) * 0.2); g.lineTo(n, y); g.stroke(); } }
@@ -156,7 +156,7 @@ const PAINT_LIFT = 0.012; // paint above the pavement
 const SEG_M = 3; // drape grid
 
 /** Add one pavement polygon to the builder, draped on the ground, with UVs aligned to the polygon's first edge. */
-function addArea(b, slot, poly, H, tileM) {
+export function addArea(b, slot, poly, H, tileM) {
   const p0 = poly[0];
   const e = { x: poly[1].x - p0.x, y: poly[1].y - p0.y };
   const el = Math.hypot(e.x, e.y) || 1;

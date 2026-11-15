@@ -14,6 +14,8 @@ import { GeoBuilder, addOrientedBox } from './mesh-builder.js';
 import { makeMesh } from './model-util.js';
 import { layerOn } from './site-geom.js';
 import { roadReserve, deriveDriveway, buildingHull, orientedBox } from '../site/lotplan.js';
+import { pavementModel } from '../commercial/catalogue/pavements/logic.js';
+import { buildingsOf } from '../commercial/catalogue/buildings.js';
 import { frontFrame, houseSpec, toWorld, rng, streetTreeSpots, ROOFS, WALLS } from '../site/neighbours.js';
 
 const hasDom = typeof document !== 'undefined';
@@ -299,11 +301,20 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
 
   // 3. Garden beds and low bushes along the frontage ------------------------------------------------------------------------
   const bushSpots = [];
+  const frontTrees = [];
   const frontEdges = (lot.frontEdges || []).filter((i) => Number.isInteger(i) && i >= 0 && i < lot.boundary.length);
   const subjectOn = layerOn(lot, 'fences');
   {
     const bBeds = new GeoBuilder();
-    const clearOf = (p, rad) => driveCentres.every((c) => c.every((q, i) => i % 2 || Math.hypot(q.x - p.x, q.y - p.y) > rad));
+    // A commercial site: planting never sits on a pavement (crossovers, aisles, bays, aprons), and the frontage strip carries trees too.
+    let paved = [];
+    if (project.mode === 'commercial' && project.commercial) {
+      try {
+        paved = [...pavementModel(project.commercial, lot).areas.map((a) => a.polygon), ...buildingsOf(project.commercial).flatMap((b) => [b.outline, ...(b.extras || []).map((e) => e.polygon)])].filter((q) => q?.length > 2);
+      } catch { paved = []; }
+    }
+    const onPaved = (p, m = 600) => paved.some((poly) => G.pointInPolygon(p, poly) || poly.some((q, i) => G.projectToSegment(p, q, poly[(i + 1) % poly.length]).d < m));
+    const clearOf = (p, rad) => !onPaved(p) && driveCentres.every((c) => c.every((q, i) => i % 2 || Math.hypot(q.x - p.x, q.y - p.y) > rad));
     for (const ei of frontEdges.slice(0, 2)) {
       const a = lot.boundary[ei];
       const bb = lot.boundary[(ei + 1) % lot.boundary.length];
@@ -336,6 +347,26 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
         const p = { x: a.x + u.x * s + nIn.x * 1300, y: a.y + u.y * s + nIn.y * 1300 };
         if (!clearOf(p, rad)) continue;
         bushSpots.push({ x: p.x / 1000, z: p.y / 1000, r: 0.35 + r() * 0.35, h: r() > 0.8 ? 1.1 : 0.5 + r() * 0.35, seed: r() });
+      }
+    }
+    if (project.mode === 'commercial') {
+      for (const ei of frontEdges.slice(0, 2)) {
+        const a = lot.boundary[ei];
+        const bb = lot.boundary[(ei + 1) % lot.boundary.length];
+        const len = Math.hypot(bb.x - a.x, bb.y - a.y);
+        if (len < 12000) continue;
+        const u = G.norm({ x: bb.x - a.x, y: bb.y - a.y });
+        let nIn = { x: -u.y, y: u.x };
+        const mid = G.lerp(a, bb, 0.5);
+        if (!G.pointInPolygon({ x: mid.x + nIn.x * 300, y: mid.y + nIn.y * 300 }, lot.boundary)) nIn = { x: -nIn.x, y: -nIn.y };
+        const r = rng(41 + ei);
+        const n = Math.max(1, Math.floor(len / 13000));
+        for (let k = 0; k < n; k++) {
+          const sAt = ((k + 0.5) / n) * len + (r() - 0.5) * 2500;
+          const p = { x: a.x + u.x * sAt + nIn.x * 1500, y: a.y + u.y * sAt + nIn.y * 1500 };
+          if (onPaved(p, 1800)) continue;
+          frontTrees.push({ x: p.x / 1000, z: p.y / 1000, r: 1.5 + r() * 0.5, h: 4.6 + r() * 1.4, seed: 300 + ei * 20 + k });
+        }
       }
     }
     // beds against the house front are left to the lawn; corner shrubs where fences meet the frontage add depth
@@ -372,7 +403,9 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       const ya = H(p.x / 1000, p.y / 1000);
       addOrientedBox(b, p.x / 1000, p.y / 1000, 0.035, 0.04, ang, ya - 0.06, ya + 1.85, 'post');
     }
-    add(makeMesh(b.build(), { sheet: mat('#cdc9bb', { roughness: 0.6, metalness: 0.25 }), cap: mat('#9a978b', { roughness: 0.6, metalness: 0.3 }), post: mat('#8e8b80', { roughness: 0.6, metalness: 0.3 }) }, { ground: true }, { cast: true, receive: true, name: 'fences' }));
+    // A commercial site is fenced in a dark steel colour (security fencing); a house lot keeps the light Colorbond sheet.
+    const fc = project.mode === 'commercial' ? { sheet: '#4a5056', cap: '#34383d', post: '#34383d' } : { sheet: '#cdc9bb', cap: '#9a978b', post: '#8e8b80' };
+    add(makeMesh(b.build(), { sheet: mat(fc.sheet, { roughness: 0.6, metalness: 0.25 }), cap: mat(fc.cap, { roughness: 0.6, metalness: 0.3 }), post: mat(fc.post, { roughness: 0.6, metalness: 0.3 }) }, { ground: true }, { cast: true, receive: true, name: 'fences' }));
   }
 
   // 5. Letterbox on the frontage, clear of the drive ---------------------------------------------------------------------------
@@ -399,7 +432,8 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   const rings = nbRings.map((r) => r.map(asArr));
   const housesOn = lot.source === 'sample' ? layerOn(lot, 'houses') : lot.layers?.houses === true;
   const treeSpots = [];
-  if (housesOn) buildNeighbourHouses(group, rings, H, stats, treeSpots);
+  // Around a commercial site the neighbours are drawn as plain industrial sheds, not houses.
+  if (housesOn) (project.mode === 'commercial' ? buildNeighbourSheds : buildNeighbourHouses)(group, rings, H, stats, treeSpots);
   if (reserves.length || housesOn) {
     for (const t of streetTreeSpots(rings)) {
       const x = t.x * 1000;
@@ -407,9 +441,19 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       if (extent && (x < extent.x0 + 2000 || x > extent.x1 - 2000 || y < extent.y0 + 2000 || y > extent.y1 - 2000)) continue;
       // keep clear of the lot's own driveway and the roads' lines
       if (driveCentres.some((c) => c.some((q, i) => !(i % 2) && Math.hypot(q.x - x, q.y - y) < 2600))) continue;
+      // keep the view of the lot from across the road clear: no street trees in front of its own frontage, on either side of the road
+      if (reserves.some((rv) => {
+        const [pa, pb] = rv.lines.property;
+        const half = G.dist(pa, pb) / 2;
+        const mx = (pa.x + pb.x) / 2; const my = (pa.y + pb.y) / 2;
+        const along = (x - mx) * rv.u.x + (y - my) * rv.u.y;
+        const out = (x - mx) * rv.outward.x + (y - my) * rv.outward.y;
+        return out > 0 && out < 40000 && Math.abs(along) < half + 2500;
+      })) continue;
       treeSpots.push({ x: t.x, z: t.y, r: t.r, h: t.h, seed: t.seed });
     }
   }
+  treeSpots.push(...frontTrees);
   addTrees(group, treeSpots, H, stats);
   addBushes(group, bushSpots, H, stats);
 
@@ -546,9 +590,18 @@ function addTrees(group, spots, H, stats) {
   trunk.setAttribute('color', new THREE.BufferAttribute(tc, 3));
   trunk.deleteAttribute('uv');
   trunk.deleteAttribute('normal');
-  const crown = [[0, 0.64, 0, 0.46], [0.34, 0.52, 0.1, 0.34], [-0.3, 0.56, -0.15, 0.36], [0.05, 0.86, 0.05, 0.3], [-0.12, 0.45, 0.3, 0.28], [0.18, 0.7, -0.28, 0.3], [-0.34, 0.74, 0.1, 0.24]];
-  const blobs = crown.map(([x, y, z, rr], k) => {
-    const b = foliageBlob(rr, 2, 0.9, k * 1.7);
+  // A fuller crown: four large masses and a ring of smaller clumps around and on top, each baked a little lighter or darker (inner and
+  // lower clumps darker, the top and the sunny side lighter), so the canopy reads as layered foliage and not as one ball. Unlit.
+  const crown = [
+    [0, 0.62, 0, 0.42, 2, 0.92], [0.3, 0.54, 0.12, 0.33, 2, 0.86], [-0.28, 0.57, -0.14, 0.34, 2, 0.9], [0.04, 0.84, 0.03, 0.29, 2, 1.1],
+    [-0.1, 0.47, 0.32, 0.25, 1, 0.82], [0.2, 0.7, -0.27, 0.27, 1, 1.0], [-0.35, 0.73, 0.1, 0.22, 1, 1.04], [0.4, 0.68, -0.06, 0.2, 1, 0.98],
+    [0.12, 0.5, -0.36, 0.22, 1, 0.8], [-0.4, 0.5, 0.18, 0.2, 1, 0.78], [0.3, 0.84, 0.2, 0.19, 1, 1.14], [-0.16, 0.92, -0.14, 0.2, 1, 1.18],
+    [0.02, 0.98, 0.12, 0.15, 1, 1.22], [-0.2, 0.64, -0.38, 0.19, 1, 0.94], [0.44, 0.52, 0.26, 0.17, 1, 0.84],
+  ];
+  const blobs = crown.map(([x, y, z, rr, detail, tone], k) => {
+    const b = foliageBlob(rr, detail, 0.88, k * 1.7);
+    const c = b.attributes.color;
+    for (let i = 0; i < c.count; i++) c.setXYZ(i, c.getX(i) * tone, c.getY(i) * tone, c.getZ(i) * tone);
     b.translate(x, y, z);
     return b;
   });
@@ -702,6 +755,57 @@ function buildNeighbourHouses(group, rings, H, stats, treeSpots) {
   if (!roofB.empty) add2(group, makeMesh(roofB.build(), { ...roofMats2, soffit: mat('#d8d3c6'), shedroof: mat('#5d6266', { roughness: 0.5, metalness: 0.3 }) }, { ground: true }, { cast: true, receive: true, name: 'neighbour-roofs' }));
   if (!trimB.empty) add2(group, makeMesh(trimB.build(), { fascia: mat('#4a4f54', { roughness: 0.5, metalness: 0.2 }), garagedoor: mat('#d9d6cc', { roughness: 0.6 }), door: mat('#3d4b5c', { roughness: 0.6 }) }, { ground: true }, { cast: false, receive: false, name: 'neighbour-trim' }));
   if (!glassB.empty) add2(group, makeMesh(glassB.build(), { glass: basic('#8fb0c6', { side: THREE.DoubleSide }) }, { ground: true }, { cast: false, receive: false, name: 'neighbour-windows' }));
+}
+
+// Neighbouring industrial sheds as massing (commercial sites): a clad box with a low gable roof, a darker dado and roller doors on the
+// street face. One merged mesh for all of them. Sized from each neighbouring lot, set back from its street edge for a yard and parking.
+const SHED_WALLS = ['#d3d6d8', '#c2c7cc', '#d6d0c0', '#b3bab5', '#9aa2aa', '#e2e1dc'];
+function buildNeighbourSheds(group, rings, H, stats) {
+  const b = new GeoBuilder();
+  for (let li = 1; li < rings.length; li++) {
+    const f = frontFrame(rings, li);
+    if (!(f.W > 16) || !(f.depth > 24)) continue;
+    const r = rng(900 + li);
+    const hw = Math.min(f.W - 10, f.W * (0.44 + 0.16 * r()), 44);
+    const hd = Math.min(f.depth - 20, f.depth * (0.32 + 0.14 * r()), 48);
+    const setback = Math.max(11, f.depth * 0.16 + r() * 4);
+    const eaveH = 5.2 + r() * 1.8;
+    const slot = `w${Math.floor(r() * SHED_WALLS.length)}`;
+    const T = (a, d, y) => { const w = toWorld(f, a, d); return [w[0], y, w[1]]; };
+    const N = (a, d) => [a * f.ux + d * f.nx, 0, a * f.uy + d * f.ny];
+    const c = [[-hw / 2, setback], [hw / 2, setback], [hw / 2, setback + hd], [-hw / 2, setback + hd]];
+    const gY = c.map(([a, d]) => { const p = T(a, d, 0); return H(p[0], p[2]); });
+    const lo = Math.min(...gY) - 0.15;
+    const fl = Math.max(...gY) + 0.1;
+    const top = fl + eaveH;
+    const rise = (hw / 2) * Math.tan((5 * Math.PI) / 180);
+    const wall = (i, j, n) => {
+      b.quad('dado', T(c[i][0], c[i][1], lo), T(c[j][0], c[j][1], lo), T(c[j][0], c[j][1], fl + 1.1), T(c[i][0], c[i][1], fl + 1.1), [[0, 0], [1, 0], [1, 1], [0, 1]], n);
+      b.quad(slot, T(c[i][0], c[i][1], fl + 1.1), T(c[j][0], c[j][1], fl + 1.1), T(c[j][0], c[j][1], top), T(c[i][0], c[i][1], top), [[0, 0], [1, 0], [1, 1], [0, 1]], n);
+    };
+    wall(0, 1, N(0, -1)); wall(1, 2, N(1, 0)); wall(2, 3, N(0, 1)); wall(3, 0, N(-1, 0));
+    // gable ends front and rear, ridge running back from the street
+    for (const [d, sg] of [[setback, -1], [setback + hd, 1]]) b.tri(slot, T(-hw / 2, d, top), T(hw / 2, d, top), T(0, d, top + rise), [0, 0], [1, 0], [0.5, 1], N(0, sg));
+    const o = 0.3;
+    const k = Math.cos(Math.atan(rise / (hw / 2)));
+    const sn = Math.sin(Math.atan(rise / (hw / 2)));
+    const eY = top - (o * rise) / (hw / 2);
+    for (const sg of [-1, 1]) {
+      const n = N(sg, 0);
+      b.quad('roof', T(sg * (hw / 2 + o), setback - o, eY), T(sg * (hw / 2 + o), setback + hd + o, eY), T(0, setback + hd + o, top + rise), T(0, setback - o, top + rise), [[0, 0], [1, 0], [1, 1], [0, 1]], [n[0] * sn, k, n[2] * sn]);
+    }
+    // roller doors on the street face
+    const nd = Math.max(1, Math.min(4, Math.floor(hw / 12)));
+    for (let i = 0; i < nd; i++) {
+      const a = (-0.5 + (i + 0.5) / nd) * hw * 0.8;
+      b.quad('door', T(a - 2.2, setback - 0.04, fl), T(a + 2.2, setback - 0.04, fl), T(a + 2.2, setback - 0.04, fl + 4.6), T(a - 2.2, setback - 0.04, fl + 4.6), [[0, 0], [1, 0], [1, 1], [0, 1]], N(0, -1));
+    }
+    stats.houses++;
+  }
+  if (b.empty) return;
+  const mats = { dado: mat('#a9a8a2', { roughness: 0.95 }), roof: mat('#b9bec2', { roughness: 0.5, metalness: 0.3, side: THREE.DoubleSide }), door: mat('#5b636b', { roughness: 0.6, metalness: 0.2 }) };
+  SHED_WALLS.forEach((col, i) => { mats[`w${i}`] = mat(col, { roughness: 0.7, metalness: 0.15 }); });
+  add2(group, makeMesh(b.build(), mats, { ground: true }, { cast: true, receive: true, name: 'neighbour-sheds' }));
 }
 
 function add2(group, mesh) {

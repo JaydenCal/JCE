@@ -31,6 +31,10 @@ const CONCRETE_PANELS = new Set(['tilt_up', 'precast', 'tilt_up_metal_upper']);
 const FINISH_TEXTURE = { offform: 'tilt_offform', aggregate: 'tilt_aggregate', honed: 'tilt_honed' };
 const FINISH_GREY = { offform: '#aeafab', aggregate: '#a8a7a1', honed: '#bbbab4' };
 
+// A face that is built but never drawn (the outside of a wall lining that sits behind concrete panels).
+const HIDDEN_FACE = new THREE.MeshBasicMaterial({ visible: false });
+HIDDEN_FACE.userData.shared = true;
+
 /** Materials of a concrete panel wall mesh (see panels3d.js): crisp, no blur. Colours follow the finish: painted takes the chosen colour. */
 function panelMaterials(lib, hex, fin, spec, int, tintId) {
   const wallHex = hex(fin.externalWalls.colour);
@@ -328,6 +332,13 @@ export function buildModel(project, opts = {}) {
           const ures = ub.build(['out', 'in', 'edge']);
           const um = makeMesh(ures, { out: uExt, in: uInt, edge: uInt.map ? lib.get('paint', hex(uint.colour), { tint: ut, flat: true }) : uInt }, { kind: 'wall', id: w.id, levelId: level.id, face: 'outside' }, { name: `wall-upper:${w.id}`, cast: ut !== 'demolish', faceOf: FACE_OF_SLOT });
           if (um) group.add(um);
+          // Below the dado only the inside lining of the wall is drawn (the concrete panels are the outside): a second full height
+          // outside face would lie in the same plane as the panels and flicker against them.
+          const lowOps = wallOpenings.filter((op) => (op.sill || 0) < dado - 50).map((op) => ({ ...op, height: Math.min((op.sill || 0) + op.height, dado) - (op.sill || 0) }));
+          const lb = buildWallBody(w, { baseY: elev, H: dado / 1000, outSide, openings: lowOps, join: joins.get(w.id) });
+          const lm = makeMesh(lb.build(['out', 'in', 'edge']), { out: HIDDEN_FACE, in: uInt, edge: HIDDEN_FACE }, { kind: 'wall', id: w.id, levelId: level.id, face: 'inside' }, { name: `wall-lining:${w.id}`, cast: false, faceOf: FACE_OF_SLOT });
+          if (lm) group.add(lm);
+          skipBody = true;
         }
       } else if (pSys === 'blockwork') wallH = H + (topLevel ? (w.panel.parapetMm || 0) / 1000 : 0);
       if (!skipBody) {
@@ -356,7 +367,10 @@ export function buildModel(project, opts = {}) {
         // Door leaves and the garage door are never left black: a dark frame colour gives a timber leaf, and the garage door takes a
         // lifted tone of the fascia so its panel lines read, with matt paint and no metal sheen to mirror a dark sky.
         const lum = (h) => { const c = new THREE.Color(h); return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b; };
-        const leafHex = lum(frameHex) < 0.2 ? '#7a5233' : frameHex;
+        // A commercial personnel door is a painted steel door in the roller door colour (never a timber leaf).
+        const leafHex = project.mode === 'commercial'
+          ? (project.finishes?.rollerDoor?.colour ? hex(project.finishes.rollerDoor.colour) : '#4b5158')
+          : lum(frameHex) < 0.2 ? '#7a5233' : frameHex;
         // A commercial layout names its roller door colour (finishes.rollerDoor); otherwise the door follows the fascia.
         const doorBase = o.kind === 'roller_door' && project.finishes?.rollerDoor?.colour ? hex(project.finishes.rollerDoor.colour) : fasciaHex;
         const garageHex = lum(doorBase) < 0.35 ? shade(doorBase, 0.35 / Math.max(0.05, lum(doorBase))) : doorBase;

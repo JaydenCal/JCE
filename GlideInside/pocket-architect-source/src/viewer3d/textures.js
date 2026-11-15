@@ -104,18 +104,24 @@ function roofTile(c, W, H, bump, rnd, o) {
 
 export const TEXTURE_SPECS = {
   brick: {
-    tile: [0.48, 0.342], ppm: 520, rough: 0.9, bump: 1.2,
+    // Standard bricks (230 x 76, 10 mm joints) in stretcher bond. The tile is eight bricks by sixteen courses: with only a couple of
+    // bricks per tile the tone of one brick repeated every half metre and read from a distance as giant blocks.
+    tile: [1.92, 1.368], ppm: 420, rough: 0.9, bump: 1.2,
     draw(c, W, H, bump, rnd) {
-      const courses = 4;
+      const courses = 16;
+      const across = 8;
       const bh = H / courses;
-      const m = Math.max(2, Math.round(0.011 * (W / 0.48)));
+      const m = Math.max(2, Math.round(0.011 * (W / 1.92)));
       c.fillStyle = gray(bump ? 0.1 : 0.985);
       c.fillRect(0, 0, W, H);
-      const bw = W / 2;
+      const bw = W / across;
       for (let r = 0; r < courses; r++) {
         const off = (r % 2) * (bw / 2);
-        for (let k = -1; k <= 2; k++) {
-          c.fillStyle = gray(bump ? 0.78 + rnd() * 0.12 : 0.78 + rnd() * 0.16);
+        for (let k = -1; k <= across; k++) {
+          // the brick that wraps round the tile edge takes the same tone on both sides
+          const tone = mulberry32(977 * r + ((k + across) % across) * 31 + 5)();
+          void rnd;
+          c.fillStyle = gray(bump ? 0.78 + tone * 0.12 : 0.8 + tone * 0.13);
           c.fillRect(off + k * bw + m / 2, r * bh + m / 2, bw - m, bh - m);
         }
       }
@@ -434,39 +440,47 @@ export const TEXTURE_SPECS = {
     },
   },
   polished_concrete: {
-    tile: [2, 2], ppm: 128, rough: 0.5, bump: 0,
+    // Burnished slab: an even grey with fine exposed aggregate specks (crisp, no cloudy blotches) and a saw cut joint on the tile edge.
+    tile: [3, 3], ppm: 170, rough: 0.5, bump: 0,
     draw(c, W, H, bump, rnd) {
       c.fillStyle = gray(0.93);
       c.fillRect(0, 0, W, H);
-      for (let i = 0; i < 46; i++) {
+      for (let i = 0; i < 30; i++) {
         const x = rnd() * W;
         const y = rnd() * H;
-        const r = 20 + rnd() * 60;
+        const r = 30 + rnd() * 90;
         const gr = c.createRadialGradient(x, y, 0, x, y, r);
         const dark = rnd() < 0.5;
-        gr.addColorStop(0, `rgba(${dark ? '0,0,0' : '255,255,255'},${0.035 + rnd() * 0.04})`);
+        gr.addColorStop(0, `rgba(${dark ? '0,0,0' : '255,255,255'},${0.008 + rnd() * 0.012})`);
         gr.addColorStop(1, 'rgba(0,0,0,0)');
         c.fillStyle = gr;
         c.fillRect(x - r, y - r, 2 * r, 2 * r);
       }
-      c.fillStyle = 'rgba(0,0,0,0.12)';
-      c.fillRect(0, 0, W, 1);
-      c.fillRect(0, 0, 1, H);
-      jitter(c, W, H, 0.012, rnd);
+      for (let i = 0; i < 5200; i++) {
+        c.fillStyle = `rgba(${rnd() < 0.62 ? '0,0,0' : '255,255,255'},${0.03 + rnd() * 0.07})`;
+        const d = rnd() < 0.2 ? 2 : 1;
+        c.fillRect(Math.floor(rnd() * W), Math.floor(rnd() * H), d, d);
+      }
+      c.fillStyle = 'rgba(0,0,0,0.2)';
+      c.fillRect(0, 0, W, 2);
+      c.fillRect(0, 0, 2, H);
+      c.fillStyle = 'rgba(255,255,255,0.1)';
+      c.fillRect(0, 2, W, 1);
+      c.fillRect(2, 0, 1, H);
     },
   },
   grass: {
-    tile: [8, 8], ppm: 64, rough: 1, bump: 0,
+    tile: [6, 6], ppm: 128, rough: 1, bump: 0,
     draw(c, W, H, bump, rnd) {
       c.fillStyle = gray(0.9);
       c.fillRect(0, 0, W, H);
       // Soft tonal patches, wrapped across the tile edges so the texture repeats without a seam.
-      for (let i = 0; i < 90; i++) {
+      for (let i = 0; i < 44; i++) {
         const x = rnd() * W;
         const y = rnd() * H;
-        const r = 24 + rnd() * 80;
+        const r = 60 + rnd() * 150;
         const dark = rnd() < 0.55;
-        const alpha = 0.025 + rnd() * 0.035;
+        const alpha = 0.01 + rnd() * 0.016; // faint: the lawn is carried by the crisp blade strokes below, not by cloudy patches
         for (const ox of [-W, 0, W]) {
           for (const oy of [-H, 0, H]) {
             const cx = x + ox;
@@ -480,8 +494,8 @@ export const TEXTURE_SPECS = {
           }
         }
       }
-      for (let i = 0; i < 2600; i++) {
-        c.strokeStyle = `rgba(${rnd() < 0.6 ? '0,0,0' : '255,255,255'},${0.04 + rnd() * 0.06})`;
+      for (let i = 0; i < 16000; i++) {
+        c.strokeStyle = `rgba(${rnd() < 0.6 ? '0,0,0' : '255,255,255'},${0.05 + rnd() * 0.11})`;
         c.lineWidth = 1;
         const x = rnd() * W;
         const y = rnd() * H;
@@ -490,7 +504,7 @@ export const TEXTURE_SPECS = {
         c.lineTo(x + (rnd() - 0.5) * 3, y + 2 + rnd() * 3);
         c.stroke();
       }
-      jitter(c, W, H, 0.035, rnd);
+      jitter(c, W, H, 0.03, rnd);
     },
   },
   roller: {

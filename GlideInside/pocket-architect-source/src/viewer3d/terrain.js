@@ -16,6 +16,7 @@ import { terrainAt, floorRLOf } from '../site/model.js';
 import * as S from './site-geom.js';
 import { addSiteExtras } from './site-extras.js';
 import { addCommercialPavements } from '../commercial/catalogue/pavements/view3d.js';
+import { addCommercialEntourage, addForecourtSlabs } from '../commercial/catalogue/entourage3d.js';
 
 export { PAD_MARGIN_M } from './site-geom.js';
 
@@ -167,6 +168,49 @@ function labelSprite(lines, kind) {
   return sp;
 }
 
+// Crisp aerial ground. An aerial picture is about 0.1 m per pixel at best, so from eye level one texel covers many screen pixels and plain
+// bilinear filtering smears it. This patches the ground material (no extra texture, no extra draw call):
+//   * where the picture is magnified, texel edges are tightened (a smoothstep on the bilinear weights), so roof edges, kerbs and road lines
+//     stay defined instead of bleeding into each other,
+//   * a fine procedural grain in world space (three sizes, each fading out before it could alias) is laid over the picture, so close ground
+//     reads as a sharp surface tinted by the aerial rather than a blur. From above (picture at or below 1:1) nothing changes.
+// The same patch is used for the sharp inner tile and the wide outer tile.
+export function sharpenAerial(mat, texture) {
+  const img = texture?.image;
+  const size = new THREE.Vector2(img?.width || 1024, img?.height || 1024);
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.uAerialSize = { value: size };
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec2 vAerialW;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAerialW = (modelMatrix * vec4(position, 1.0)).xz;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', `#include <common>
+uniform vec2 uAerialSize;
+varying vec2 vAerialW;
+float aerialHash(vec2 p) { p = fract(p * vec2(0.1031, 0.1030)); p += dot(p, p.yx + 33.33); return fract((p.x + p.y) * p.x); }
+float aerialNoise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(aerialHash(i), aerialHash(i + vec2(1.0, 0.0)), f.x), mix(aerialHash(i + vec2(0.0, 1.0)), aerialHash(i + vec2(1.0, 1.0)), f.x), f.y); }`)
+      .replace('#include <map_fragment>', `#ifdef USE_MAP
+  vec2 aTx = vMapUv * uAerialSize - 0.5;
+  vec2 aI = floor(aTx);
+  vec2 aF = fract(aTx);
+  float aFp = max(length(dFdx(aTx)), length(dFdy(aTx)));       // texels per screen pixel: below 1 the picture is magnified
+  float aK = 1.0 - smoothstep(0.18, 0.75, aFp);                 // 0 at about 1:1, 1 when a texel covers five or more pixels
+  vec2 aS = smoothstep(0.0, 1.0, smoothstep(0.0, 1.0, aF));
+  vec2 aUv = (aI + mix(aF, aS, aK) + 0.5) / uAerialSize;
+  vec4 sampledDiffuseColor = textureGrad(map, aUv, dFdx(vMapUv), dFdy(vMapUv));
+  float aW = max(length(dFdx(vAerialW)), length(dFdy(vAerialW))); // metres per screen pixel
+  float aG = (aerialHash(floor(vAerialW / 0.03)) - 0.5) * 0.20 * (1.0 - smoothstep(0.012, 0.03, aW))
+           + (aerialNoise(vAerialW / 0.11) - 0.5) * 0.20 * (1.0 - smoothstep(0.04, 0.10, aW))
+           + (aerialNoise(vAerialW / 0.42 + 17.0) - 0.5) * 0.14 * (1.0 - smoothstep(0.15, 0.38, aW));
+  sampledDiffuseColor.rgb *= 1.0 + aG * aK;
+  diffuseColor *= sampledDiffuseColor;
+#endif`);
+  };
+  mat.customProgramCacheKey = () => 'aerial-sharp-1';
+  return mat;
+}
+
 /**
  * addSiteTerrain(ctx, root, project, { texture, edgeColour, showContours }) -> { edgeY, extent, grid } | null
  * `texture` is a THREE.Texture of the aerial (north up, covering lot.aerial.extent), or null for a plain grass surface.
@@ -218,6 +262,7 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
     texture.needsUpdate = true;
     mat = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, metalness: 0, envMapIntensity: 0.25 });
     mat.userData.shared = false;
+    sharpenAerial(mat, texture);
   } else {
     mat = grey ? ctx.lib.get('grass', GREY_GROUND, { flat: true }) : ctx.lib.get('grass', '#76895f');
   }
@@ -271,6 +316,11 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
     if (project.mode === 'commercial') addCommercialPavements(root, project, surf); // pavements, kerbs and markings of a commercial layout
   } catch (e) {
     console.warn('[viewer3d] commercial pavements skipped', e);
+  }
+  try {
+    if (project.mode === 'commercial') { addForecourtSlabs(root, project, surf); addCommercialEntourage(root, project, surf); } // a few parked cars and a truck at the dock, for scale
+  } catch (e) {
+    console.warn('[viewer3d] commercial entourage skipped', e);
   }
   const ow = wide ? wide.extent.x1 - wide.extent.x0 : aw;
   const oh = wide ? wide.extent.y1 - wide.extent.y0 : ah;
@@ -332,6 +382,7 @@ export function addWideGround(root, lot, tm, inner, texture) {
   texture.needsUpdate = true;
   const mat = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, metalness: 0, envMapIntensity: 0.25, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 2 });
   mat.userData.shared = false;
+  sharpenAerial(mat, texture);
   const mesh = new THREE.Mesh(geo, mat);
   mesh.name = 'site-terrain-wide';
   mesh.receiveShadow = true;

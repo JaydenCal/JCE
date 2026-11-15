@@ -123,7 +123,9 @@ export function feasibilityHeadline(project) {
 
 // Camera poses ---------------------------------------------------------------------------------------------------------------------
 // Metres in world space: X = plan x / 1000, Z = plan y / 1000, Y up. Same convention as src/viewer3d/room-logic.js.
-const unitPoints = (project) => [...layoutUnits(project.commercial).flatMap((u) => u.poly), ...buildingsOf(project.commercial).flatMap((b) => b.outline)];
+// The points the exterior views frame: the units and buildings, plus the canopies that belong to a building (a fuel canopy is most of a service station).
+const CANOPY_KINDS = ['canopy', 'awning', 'fuel-canopy', 'truck-canopy'];
+const unitPoints = (project) => [...layoutUnits(project.commercial).flatMap((u) => u.poly), ...buildingsOf(project.commercial).flatMap((b) => [...b.outline, ...(b.extras || []).filter((e) => CANOPY_KINDS.includes(e.kind)).flatMap((e) => e.polygon)])];
 
 function streetFrame(lot) {
   const bd = lot?.boundary;
@@ -150,16 +152,29 @@ export function exteriorPose(project, kind = '3d') {
   const ys = pts.map((q) => q.y);
   const c = { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 };
   const r = Math.hypot(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) / 2;
-  const hMax = Math.max(...project.levels.map((l) => (l.elevation || 0) + (l.height || 0)), 6000);
+  const hMax = Math.min(16000, Math.max(6000, ...project.levels.map((l) => (l.elevation || 0) + Math.max(0, ...(l.walls || []).map((w) => Number(w.height) || 0)))));
   if (kind === 'street') {
-    // 14 m into the road reserve from the middle of the frontage, eye 1.7 m, looking at the middle of the building.
-    const pos = { x: sf.mid.x + sf.n.x * 14000, y: sf.mid.y + sf.n.y * 14000 };
-    return { position: { x: pos.x / 1000, y: 1.7, z: pos.y / 1000 }, target: { x: c.x / 1000, y: Math.min(3.2, hMax / 2000), z: c.y / 1000 }, fov: 58 };
+    // Eye level (1.7 m) square on to the buildings from the street side, far enough back that the whole frontage is in the picture and
+    // no further: never further out than the far side of the road, and inside the lot when the buildings sit well back from the street.
+    const along = (q) => (q.x - sf.mid.x) * sf.u.x + (q.y - sf.mid.y) * sf.u.y;
+    const depth = (q) => -((q.x - sf.mid.x) * sf.n.x + (q.y - sf.mid.y) * sf.n.y); // metres into the lot from the frontage, in mm
+    const us = pts.map(along);
+    const uc = (Math.min(...us) + Math.max(...us)) / 2;
+    const half = (Math.max(...us) - Math.min(...us)) / 2;
+    const front = Math.min(...pts.map(depth));
+    const fov = 58;
+    const tanH = Math.tan((fov / 2) * (Math.PI / 180)) * 1.5; // horizontal half angle at a 3:2 view, the narrowest the card is shown at
+    const back = Math.max(12000, (half * 1.18) / tanH, (hMax * 1.25) / Math.tan((fov / 2) * (Math.PI / 180)) * 0.62);
+    const sCam = Math.max(-19000, front - back);
+    const pos = { x: sf.mid.x + sf.u.x * uc - sf.n.x * sCam, y: sf.mid.y + sf.u.y * uc - sf.n.y * sCam };
+    const tgt = { x: sf.mid.x + sf.u.x * uc - sf.n.x * front, y: sf.mid.y + sf.u.y * uc - sf.n.y * front };
+    return { position: { x: pos.x / 1000, y: 1.7, z: pos.y / 1000 }, target: { x: tgt.x / 1000, y: Math.min(4.2, hMax * 0.42 / 1000), z: tgt.y / 1000 }, fov };
   }
-  const a = (32 * Math.PI) / 180;
+  // Three quarter hero view from the street side: low enough to read the facades, high enough to show the roof and the car park.
+  const a = (34 * Math.PI) / 180;
   const dir = { x: sf.n.x * Math.cos(a) + sf.u.x * Math.sin(a), y: sf.n.y * Math.cos(a) + sf.u.y * Math.sin(a) };
-  const dist = Math.max(30000, r * 2.15);
-  return { position: { x: (c.x + dir.x * dist) / 1000, y: dist * 0.5 / 1000, z: (c.y + dir.y * dist) / 1000 }, target: { x: c.x / 1000, y: 2.2, z: c.y / 1000 }, fov: 38 };
+  const dist = Math.max(26000, r * 2.45 + hMax * 0.6);
+  return { position: { x: (c.x + dir.x * dist) / 1000, y: dist * 0.36 / 1000, z: (c.y + dir.y * dist) / 1000 }, target: { x: c.x / 1000, y: Math.min(3.5, hMax * 0.3 / 1000), z: c.y / 1000 }, fov: 38 };
 }
 
 /** Standing inside unit `n` (1 based), in line with its first roller door a little way in from the front, looking toward the rear. */
