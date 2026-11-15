@@ -64,7 +64,8 @@ test('diagnosis text: a house too big for the narrow lot says how much too wide,
   const card = fitCardModel(s.project);
   assert.equal(card.verdict, 'none');
   assert.equal(card.title, 'This house is too big for this lot');
-  assert.match(card.lines[0], /^The house is \d+\.\d m too wide( and \d+\.\d m too deep)? for the buildable area, however it is turned\. It overhangs most (on the (left|right) side \(looking from the street\)|at the (front|rear))\.$/);
+  assert.match(card.lines[0], /^The house is \d+\.\d m too wide( and \d+\.\d m too deep)? for the buildable area, however it is turned\.$/);
+  assert.match(card.lines[1], /^It overhangs most (on the (left|right) side \(looking from the street\)|at the (front|rear))\. A smaller design will fit, or a registered engineer can design one for this lot\.$/);
   assert.deepEqual(card.actions.map((a) => a.id), ['designs', 'narrower', 'auto', 'engineer']);
   assert.equal(card.actions.find((a) => a.id === 'engineer').label, ENGINEER_LABEL);
   assert.match(narrowerGuidance(s.project), /^To make the house narrower, drag a side wall inward on the floor plan\. It needs to come in by about \d+\.\d m\./);
@@ -313,4 +314,134 @@ test('step 2 filter "Fits this lot", the first placement tips and the wording ru
     all.push(c.title, ...c.lines, ...c.actions.map((a) => a.label), c.slope?.text || '', c.driveway?.text || '');
   }
   for (const t of all) { assert.ok(!/[–—]/.test(t), t); assert.ok(!/complian/i.test(t), t); }
+});
+
+// Suggestions: ways to make the house smaller and other sizes that fit ---------------------------------------------------------------
+import { shrinkSuggestions, sizeAlternatives, swapKeeping, applyShrink, narrowerDesignSuggestion, keptPose } from '../src/site/fit-suggest.js';
+import { publicDesigns } from '../src/lotcard/designs.js';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+
+test('a wide house on the narrow lot gets ways to shrink it, each with its saving, ranked against the shortfall', () => {
+  const s = squarePlaced(narrowLot(), 'house_single');
+  const plan = fitPlan(s.project);
+  assert.equal(plan.verdict, 'none');
+  const ways = shrinkSuggestions(s.project, { needWideM: plan.tooWideM, needDeepM: plan.tooDeepM });
+  assert.ok(ways.length >= 3, `several suggestions (${ways.map((w) => w.id).join(', ')})`);
+  for (const w of ways) {
+    assert.match(w.text, / saves about \d+\.\d m of (width|depth)( and \d+\.\d m of depth)?( at the garage)?\.$/, w.text);
+    assert.ok(!/[–—]|complian/i.test(w.text + w.guide));
+    assert.ok(w.oneTap || w.guide.length > 10, `${w.id} says what to do in the editor`);
+  }
+  const ids = ways.map((w) => w.id);
+  assert.ok(ids.includes('garage-single'));
+  assert.match(ways.find((w) => w.id === 'garage-single').text, /^A single garage instead of a double saves about \d+\.\d m of width( at the garage)?\.$/);
+  assert.ok(ids.includes('alfresco') && ids.includes('two-storey'));
+  // Ranked: each covers no more of the shortfall than the one before it.
+  const rel = (w) => Math.min(w.saveWideM, plan.tooWideM) + Math.min(w.saveDeepM, plan.tooDeepM);
+  for (let i = 1; i < ways.length; i++) assert.ok(rel(ways[i]) <= rel(ways[i - 1]) + 1e-9, 'most useful first');
+  // A two storey house is not told to go two storey.
+  assert.ok(!shrinkSuggestions(squarePlaced(narrowLot(), 'house_double').project, {}).some((w) => w.id === 'two-storey'));
+});
+
+test('drop the alfresco is one tap with Undo, and the house is smaller for it', () => {
+  const s = squarePlaced(narrowLot(), 'house_single');
+  const before = snap(s.project);
+  const rooms = (p) => p.levels.flatMap((l) => l.rooms).filter((r) => r.type === 'alfresco').length;
+  assert.equal(rooms(s.project), 1);
+  const w = shrinkSuggestions(s.project, {}).find((x) => x.id === 'alfresco');
+  assert.equal(w.oneTap, true);
+  const m0 = margin(s.project);
+  assert.equal(applyShrink(s, 'alfresco').ok, true);
+  assert.equal(rooms(s.project), 0);
+  assert.equal(s.undoLabel(), 'Remove alfresco');
+  assert.ok(margin(s.project) >= m0);
+  s.undo();
+  assert.equal(snap(s.project), before);
+  assert.equal(rooms(s.project), 1);
+});
+
+test('other sizes: the designs that fit come first, then by likeness, with a label and the width; the swap keeps the spot and the facing', () => {
+  const s = squarePlaced(narrowLot(), 'house_single');
+  const designs = publicDesigns(catalogue, s.project);
+  const alts = sizeAlternatives(s.project, designs);
+  assert.ok(!alts.list.some((a) => a.id === 'house_single'), 'the placed design is not offered');
+  assert.ok(alts.fitCount >= 2);
+  const fits = alts.list.map((a) => a.fit > 0);
+  assert.ok(fits.indexOf(false) === -1 || fits.lastIndexOf(true) < fits.indexOf(false), 'fitting designs first');
+  const best = alts.list[0];
+  assert.equal(best.id, 'house_double', 'the nearest in size and kind that fits');
+  assert.match(best.label, /^Similar 5 bedroom that fits: \d+\.\d m wide$/);
+  assert.ok(alts.list.find((a) => a.id === 'duplex').fit === 0);
+  const nd = narrowerDesignSuggestion(s.project, alts);
+  assert.match(nd.text, /^A narrower design: .+ is \d+\.\d m wide and saves about \d+\.\d m of width\.$/);
+  // One tap swap: same place, same facing where it fits; one undo step.
+  const n = storeWith(largeLot(), 'house_single');
+  n.apply('turn', (p) => { rotateHouse(p, 25, houseCentre(p)); translateHouse(p, 1500, 9000); });
+  const c0 = G.polygonCentroid(buildingHull(n.project));
+  const a0 = Math.atan2(garageDoor(n.project).normal.y, garageDoor(n.project).normal.x);
+  const before = snap(n.project);
+  const r = swapKeeping(n, designs.find((d) => d.id === 'house_double'));
+  assert.deepEqual([r.ok, r.fits, r.kept], [true, true, true]);
+  const c1 = G.polygonCentroid(buildingHull(n.project));
+  const a1 = Math.atan2(garageDoor(n.project).normal.y, garageDoor(n.project).normal.x);
+  assert.ok(G.dist(c0, c1) < 60, 'same position');
+  assert.ok(Math.abs(a1 - a0) < 0.01, 'same facing');
+  assert.equal(n.project.placedHouse.id, 'house_double');
+  assert.equal(n.undoLabel(), 'Change house design');
+  n.undo();
+  assert.equal(snap(n.project), before);
+  // On the narrow lot the swap ends inside the buildable area.
+  const r2 = swapKeeping(s, best.design);
+  assert.equal(r2.fits, true);
+  assert.equal(checkSetbacks(s.project).status, 'ok');
+  assert.ok(keptPose(n.project, designs.find((d) => d.id === 'granny_flat').project) === null, 'a home with no garage door falls back to the usual placement');
+});
+
+test('a tight fit is called out gently, with the same suggestions', () => {
+  const s = storeWith(normalLot(), 'house_single');
+  const p = fitPlan(s.project);
+  const card = fitCardModel(s.project);
+  if (p.now.margin < 250 && p.auto.margin < 400) {
+    assert.equal(card.verdict, 'tight');
+    assert.equal(card.title, 'A tight fit');
+    assert.match(card.lines[0], /^The house fits with about \d+\.\d m to spare\. There are smaller options below if you want more room\.$/);
+    assert.equal(card.tone, 'note');
+  } else assert.equal(card.show, false);
+  assert.ok(shrinkSuggestions(s.project, {}).length >= 2);
+});
+
+test('the new designs catalogue (branch claude/new-designs, when it is fetched) feeds the suggestions with no code change', async (t) => {
+  let dir = null;
+  try {
+    dir = mkdtempSync(join(tmpdir(), 'gi-new-designs-'));
+    const tar = execFileSync('git', ['archive', 'origin/claude/new-designs', 'src'], { cwd: fileURLToPath(new URL('..', import.meta.url)), maxBuffer: 1 << 28, stdio: ['ignore', 'pipe', 'ignore'] });
+    execFileSync('tar', ['-x', '-C', dir], { input: tar });
+  } catch { t.skip('branch claude/new-designs is not available here'); return; }
+  const src = join(dir, 'src/catalogue/index.js');
+  if (!existsSync(src)) { t.skip('no catalogue in the branch'); return; }
+  const cat = (await import(pathToFileURL(src).href)).default;
+  const designs = [];
+  for (const tpl of cat.templates) {
+    if (!/^(house_|granny|duplex|narrow_|single_|townhouse|dual_|acreage|shed_house)/.test(tpl.id)) continue;
+    let proj = null;
+    try { proj = cat.createFromTemplate(tpl.id); } catch { proj = null; }
+    if (proj?.levels?.length) designs.push({ id: tpl.id, name: tpl.name, project: JSON.parse(JSON.stringify(proj)), ...(tpl.frontageM != null ? { frontageM: tpl.frontageM } : {}) });
+  }
+  assert.ok(designs.length >= 12, `${designs.length} designs loaded from the branch`);
+  const s = squarePlaced(narrowLot(), 'house_single');
+  const alts = sizeAlternatives(s.project, designs);
+  const fitting = alts.list.filter((a) => a.fit > 0);
+  assert.ok(fitting.length >= 5, `${fitting.length} of the new designs fit the narrow lot`);
+  assert.ok(fitting.some((a) => /^narrow_/.test(a.id)), 'the narrow lot homes are among them');
+  assert.match(fitting[0].label, /^Similar \d bedroom that fits: \d+\.\d m wide$/);
+  assert.ok(/^(narrow_|single_|house_)/.test(fitting[0].id), `a similar home leads (${fitting[0].id})`);
+  // Swapping to a narrow home lands inside the buildable area.
+  const pick = fitting.find((a) => /^narrow_/.test(a.id));
+  assert.equal(swapKeeping(s, pick.design).fits, true);
+  assert.equal(checkSetbacks(s.project).status, 'ok');
+  assert.ok(shrinkSuggestions(s.project, {}).every((w) => / saves about /.test(w.text)));
 });

@@ -17,29 +17,23 @@ import { ensureFlowAerial, NO_AERIAL } from './flow-aerial.js';
 import { createFitCard } from '../ui/fit-card.js';
 import { createCoach, FLOW_COACH } from '../ui/fit-coach.js';
 import { createSendToEngineer } from '../lotcard/send-engineer.js';
-import { narrowerGuidance, ENGINEER_LABEL, NOTHING_FITS } from '../site/fit-advice.js';
+import { ENGINEER_LABEL, NOTHING_FITS } from '../site/fit-advice.js';
 import { toast } from '../ui/toast.js';
 
-// The fit card's actions, shared by steps 3 and 4: designs that fit (step 2 with the filter on), make it narrower (the editor, with
-// guidance) and send to a registered engineer.
-function fitActions(ctx, { getHomes, want }) {
+// The fit card's host side, shared by steps 3 and 4: the designs that are loaded (for the other sizes), a guide handed to the editor,
+// and send to a registered engineer.
+function fitActions(ctx, { getHomes }) {
   const { store } = ctx;
   const engineer = createSendToEngineer({ getApp: () => (typeof window !== 'undefined' ? window.__ps : null) || {}, getProject: () => store.project, getLot: () => lotOf(store.project) });
+  let designs = [];
+  const ready = Promise.resolve().then(() => getHomes()).then((r) => { designs = r.rows.map((x) => x.design); }).catch(() => { designs = []; });
   return {
-    engineer,
+    engineer, ready,
     canEngineer: () => engineer.available(),
     onEngineer: () => engineer.open(),
-    async onDesigns() {
-      let rows = [];
-      try { rows = (await getHomes()).rows; } catch { rows = []; }
-      const placed = store.project.placedHouse?.id || null;
-      if (!rows.some((r) => r.fits && r.id !== placed)) return false;
-      want.fits = true;
-      ctx.go(2);
-      return true;
-    },
-    async onNarrower() {
-      const text = narrowerGuidance(store.project);
+    getDesigns: () => designs,
+    onSwapped: (d) => { writeFlow(store, { designId: d.id }); store.setUI({ placedDesign: { id: d.id, name: d.name } }); },
+    async onGuide(text) {
       await ctx.flow.editor();
       store.setUI({ view: '2d' });
       toast(text, { kind: 'info', timeout: 20000 });
@@ -142,8 +136,9 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
   let aerialState = 'loading'; // loading | done
   let sides = []; // the boundary edges the house breaches, highlighted on the plan
   const narrow = () => (typeof window !== 'undefined' ? window.innerWidth <= 900 : false);
-  const acts = fitActions(ctx, { getHomes, want });
-  const fitCard = createFitCard({ store, theme: 'light', onDesigns: acts.onDesigns, onNarrower: acts.onNarrower, onEngineer: acts.onEngineer, canEngineer: acts.canEngineer, compact: narrow(), onSides: (s) => { sides = s; }, onChange: () => syncStatus() });
+  const acts = fitActions(ctx, { getHomes });
+  const fitCard = createFitCard({ store, theme: 'light', getDesigns: acts.getDesigns, onSwapped: acts.onSwapped, onGuide: acts.onGuide, onEngineer: acts.onEngineer, canEngineer: acts.canEngineer, compact: narrow(), onSides: (s) => { sides = s; }, onChange: () => syncStatus() });
+  acts.ready.then(() => { if (!disposed) fitCard.update({ now: true }); });
   const coach = createCoach({ theme: 'light', steps: FLOW_COACH });
   const coachRow = h('div', { class: 'gf-coachrow' }, coach.el);
   try { aerialOn = localStorage.getItem('gi.flow.aerial') !== '0'; } catch { /* default on */ }
@@ -175,7 +170,7 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
   const statusCard = h('div', { class: 'gf-card' }, nameEl, h('div', { style: { height: '8px' } }), statusEl);
   const fitWrap = h('div', { class: 'gf-fitwrap' }, statusCard, fitCard.el);
   // The fit card says what is wrong better than the one line status, so the status steps aside while the card is up.
-  function syncStatus() { statusEl.hidden = !fitCard.el.hidden && fitCard.el.dataset.verdict !== 'fits' && !fitCard.el.classList.contains('is-min'); }
+  function syncStatus() { statusEl.hidden = !fitCard.el.hidden && !['fits', 'tight'].includes(fitCard.el.dataset.verdict) && !fitCard.el.classList.contains('is-min'); }
   const side = h('div', { class: 'gf-side' },
     h('div', { class: 'gf-card' },
       h('div', { class: 'gf-ctl' },
@@ -355,8 +350,7 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
 
   function paintStatus(st = placementStatus(liveProject || store.project)) {
     statusEl.dataset.state = st.state;
-    statusEl.replaceChildren(h('span', { 'aria-hidden': 'true' }, st.state === 'inside' ? '✓' : st.state === 'outside' ? '!' : 'i'), h('span', null, st.state === 'inside' ? (store.project.placedHouse?.turnedToFit && !touched ? 'Inside the setbacks. The home was turned to suit the shape of this lot.' : 'Inside the setbacks. Good position.') : st.text),
-      null);
+    statusEl.replaceChildren(h('span', { 'aria-hidden': 'true' }, st.state === 'inside' ? '✓' : st.state === 'outside' ? '!' : 'i'), h('span', null, st.state === 'inside' ? (store.project.placedHouse?.turnedToFit && !touched ? 'Inside the setbacks. The home was turned to suit the shape of this lot.' : 'Inside the setbacks. Good position.') : st.text));
     const ph = store.project.placedHouse;
     nameEl.textContent = ph?.name ? `Home: ${ph.name}` : '';
   }
@@ -533,7 +527,7 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
     const k = lotNow()?.aerial?.key || null;
     if (k !== aerialKey) { aerialKey = k; aerial = null; aerialOf(lotNow()).then((a) => { if (!disposed) { aerial = a; draw(); } }); }
     // A fit card fix or an undo of one moves the home too: from then on it is the person's own position.
-    if (/^(Auto fit|Rotate to fit|Square to the street|Undo)/.test(e?.label || '')) touched = true;
+    if (/^(Auto fit|Rotate to fit|Square to the street|Change house design|Remove alfresco|Undo)/.test(e?.label || '')) touched = true;
     fitCard.update({ now: true });
     draw();
     // Late setbacks (the design's own storeys and heights change the council envelope): a home the person has not touched is fitted again.
@@ -581,8 +575,9 @@ function mountCheckStep(ctx, { catalogue, getHomes, want = {} }) {
   const { store } = ctx;
   const card = h('div', { class: 'gf-card', dataset: { ps: 'flow-summary' } });
   const view = h('div', { class: 'gf-3d', dataset: { ps: 'flow-3d' } });
-  const acts = fitActions(ctx, { getHomes, want });
-  const fitCard = createFitCard({ store, theme: 'light', onDesigns: acts.onDesigns, onNarrower: acts.onNarrower, onEngineer: acts.onEngineer, canEngineer: acts.canEngineer });
+  const acts = fitActions(ctx, { getHomes });
+  const fitCard = createFitCard({ store, theme: 'light', getDesigns: acts.getDesigns, onSwapped: acts.onSwapped, onGuide: acts.onGuide, onEngineer: acts.onEngineer, canEngineer: acts.canEngineer });
+  acts.ready.then(() => fitCard.update({ now: true }));
   const el = h('div', { class: 'gf-check' }, h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '0' } }, fitCard.el, card), view);
   let preview = null;
   let disposed = false;

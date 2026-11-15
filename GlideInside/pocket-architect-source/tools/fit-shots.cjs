@@ -55,7 +55,7 @@ const log = [];
     for (const [w, hgt, tag] of [[1440, 900, '1440'], [390, 844, '390']].filter((x) => ONLY.includes(x[2]))) {
       const T = 120000;
       const shot = async (page, n) => { await page.waitForTimeout(1200); const f = path.join(OUT, `${TAG}-${lotName}-${n}-${tag}.png`); try { await page.screenshot({ path: f, timeout: T }); console.log('shot', f); } catch (e) { console.log('NO SHOT', f, e.message.split('\n')[0]); } };
-      const info = (page) => page.evaluate(() => { const s = window.__ps?.store; const q = (x) => document.querySelector(x); return { status: q('[data-ps="flow-place-status"]')?.textContent || '', card: q('[data-ps="fit-card"]')?.innerText || '', tooBig: !!s?.project.placedHouse?.tooBig, tanks: (s?.project.site.tanks || []).map((t) => [t.x, t.y]) }; });
+      const info = (page) => page.evaluate(() => { const s = window.__ps?.store; const q = (x) => document.querySelector(x); return { status: q('[data-ps="flow-place-status"]')?.textContent || '', card: [...document.querySelectorAll('[data-ps="fit-card"]')].map((e) => e.innerText).filter(Boolean).join(' || '), tooBig: !!s?.project.placedHouse?.tooBig, tanks: (s?.project.site.tanks || []).map((t) => [t.x, t.y]) }; });
       // 1. The guided flow ------------------------------------------------------------------------------------------------
       let page = await newPage(browser, { width: w, height: hgt }, log);
       page.setDefaultTimeout(T);
@@ -77,23 +77,37 @@ const log = [];
         await page.waitForFunction(() => !document.querySelector('[data-ps="flow-placing"]'));
         await page.waitForTimeout(1500);
         console.log(lotName, tag, 'step 3', JSON.stringify(await info(page)));
+        const top = () => page.evaluate(() => { document.querySelector('[data-ps="fit-coach"]:not([hidden])')?.scrollIntoView({ block: 'start' }) || document.querySelector('.gf-place')?.scrollIntoView({ block: 'start' }); });
+        await top();
         await shot(page, 'flow3-placed');
+        if (TAG === 'after' && lotName === 'narrow') {
+          // what the tester saw: the same home square to the street (turned back with the ] key), now with the fit card
+          const back = await page.evaluate(() => Math.round(window.__ps.store.project.placedHouse?.turnedToFit || 0));
+          await page.focus('[data-ps="flow-stage"]');
+          for (let i = 0; i < Math.abs(back); i++) await page.keyboard.press(back < 0 ? ']' : '[');
+          await page.waitForTimeout(900);
+          console.log(lotName, tag, 'squared', JSON.stringify(await info(page)));
+          await top();
+          await shot(page, 'flow3-square-fitcard');
+        }
         if (lotName !== 'narrow') {
           // push the house over the side boundary to see what the tool says
           for (let i = 0; i < (lotName === 'large' ? 16 : 6); i++) await page.evaluate(() => { const s = document.querySelector('[data-ps="flow-nudge-step"]'); s.value = '1000'; s.dispatchEvent(new Event('change')); document.querySelector('[data-ps="flow-nudge-left"]').click(); });
           await page.waitForTimeout(600);
           console.log(lotName, tag, 'pushed', JSON.stringify(await info(page)));
+          await top();
           await shot(page, 'flow3-pushed');
         }
-        if (TAG === 'after' && await page.$('[data-ps="fit-act-auto"]')) {
-          await page.click('[data-ps="fit-act-auto"]');
+        if (TAG === 'after' && await page.$('[data-ps="flow-root"] [data-ps="fit-act-auto"]')) {
+          await page.click('[data-ps="flow-root"] [data-ps="fit-act-auto"]');
           await page.waitForTimeout(900);
           console.log(lotName, tag, 'auto fit', JSON.stringify(await info(page)));
+          await top();
           await shot(page, 'flow3-autofit');
-          if (lotName === 'narrow' && await page.$('[data-ps="fit-undo"]')) {
-            await page.click('[data-ps="fit-undo"]'); await page.waitForTimeout(500);
+          if (lotName === 'narrow' && await page.$('[data-ps="flow-root"] [data-ps="fit-undo"]')) {
+            await page.click('[data-ps="flow-root"] [data-ps="fit-undo"]'); await page.waitForTimeout(500);
             await shot(page, 'flow3-undo');
-            await page.click('[data-ps="fit-act-auto"]'); await page.waitForTimeout(700);
+            await page.click('[data-ps="flow-root"] [data-ps="fit-act-auto"]'); await page.waitForTimeout(700);
           }
         }
         if (lotName === 'narrow') {
@@ -102,6 +116,32 @@ const log = [];
           await shot(page, 'flow3-garage-away');
           await page.click('[data-ps="flow-rot-left"]'); await page.click('[data-ps="flow-rot-left"]'); await page.waitForTimeout(400);
         }
+        if (TAG === 'after' && lotName === 'narrow') {
+          // a home that is too big for this lot: the suggestions
+          await page.click('[data-ps="flow-back"]');
+          await page.waitForSelector('[data-ps="flow-home"]');
+          await page.click('[data-ps="flow-home"][data-id="house_single"]');
+          await next();
+          await page.waitForSelector('[data-ps="flow-house"]');
+          await page.waitForFunction(() => !document.querySelector('[data-ps="flow-placing"]'));
+          await page.waitForTimeout(1500);
+          await top();
+          await shot(page, 'flow3-toobig');
+          const F = '[data-ps="flow-root"] ';
+          if (await page.$(`${F}[data-ps="fit-shrink-toggle"]`)) {
+            await page.click(`${F}[data-ps="fit-shrink-toggle"]`);
+            if (await page.$(`${F}[data-ps="fit-alts-all"]`)) await page.click(`${F}[data-ps="fit-alts-all"]`);
+            await page.waitForTimeout(600);
+            console.log(lotName, tag, 'too big', JSON.stringify(await info(page)));
+            await top();
+            await shot(page, 'flow3-toobig-suggestions');
+            await page.click(`${F}[data-ps="fit-alt"]`);
+            await page.waitForTimeout(1200);
+            console.log(lotName, tag, 'swapped', JSON.stringify(await info(page)));
+            await top();
+            await shot(page, 'flow3-swapped');
+          }
+        }
         await next();
         await page.waitForTimeout(800);
         const keep = page.getByRole('button', { name: 'Keep this position' });
@@ -109,12 +149,19 @@ const log = [];
         await page.waitForSelector('[data-ps="flow-summary"]');
         await page.waitForTimeout(5000);
         await shot(page, 'flow4-check');
+        // the driveway in 3D, from the street
+        await page.getByRole('button', { name: 'Street view' }).first().click().catch(() => {});
+        await page.waitForTimeout(3500);
+        await shot(page, 'flow4-3d-street');
         await next();
         await page.waitForTimeout(4000);
         await shot(page, 'editor-open');
         await page.evaluate(() => window.__ps.store.setUI({ view: '3d' }));
         await page.waitForTimeout(5000);
         await shot(page, 'editor-3d');
+        await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /^(Street view|Front)$/.test(x.textContent.trim()) && x.offsetParent); b?.click(); });
+        await page.waitForTimeout(3500);
+        await shot(page, 'editor-3d-street');
         await page.evaluate(() => window.__ps.store.setUI({ view: '2d' }));
         await page.waitForTimeout(2500);
         await shot(page, 'editor-2d');
@@ -134,10 +181,36 @@ const log = [];
         await page.waitForTimeout(3000);
         console.log(lotName, tag, 'embed', JSON.stringify(await info(page)));
         await shot(page, 'embed');
-        if (TAG === 'after' && await page.$('[data-ps="fit-act-auto"]')) {
-          await page.click('[data-ps="fit-act-auto"]');
-          await page.waitForTimeout(3500);
-          await shot(page, 'embed-autofit');
+        if (TAG === 'after') {
+          // a home that is too big for the lot: the fit card, then "Show designs that fit"
+          for (let i = 0; i < 5 && (await page.evaluate(() => window.__ps.store.project.placedHouse?.id)) !== 'house_single'; i++) { await page.click('[aria-label="Next design"]'); await page.waitForTimeout(2500); }
+          await page.waitForTimeout(3000);
+          console.log(lotName, tag, 'embed single', JSON.stringify(await info(page)));
+          await shot(page, 'embed-single');
+          if (lotName !== 'narrow') {
+            // push it over the side boundary from the top view code path
+            await page.evaluate(() => { const s = window.__ps.store; const b = s.project.site.lot.boundary; const w = Math.max(...b.map((q) => q.x)) - Math.min(...b.map((q) => q.x)); s.run('move_house', { dx: -Math.round(w / 2), dy: 0 }); });
+            await page.waitForTimeout(3000);
+            console.log(lotName, tag, 'embed pushed', JSON.stringify(await info(page)));
+            await shot(page, 'embed-pushed');
+          }
+          if (await page.$('[data-ps="fit-act-auto"]')) {
+            await page.click('[data-ps="fit-act-auto"]');
+            await page.waitForTimeout(3500);
+            console.log(lotName, tag, 'embed auto', JSON.stringify(await info(page)));
+            await shot(page, 'embed-autofit');
+          }
+          if (await page.$('[data-ps="fit-shrink-toggle"]')) {
+            await page.click('[data-ps="fit-shrink-toggle"]');
+            if (await page.$('[data-ps="fit-alts-all"]')) await page.click('[data-ps="fit-alts-all"]');
+            await page.waitForTimeout(1500);
+            console.log(lotName, tag, 'embed suggestions', JSON.stringify(await info(page)));
+            await shot(page, 'embed-suggestions');
+            await page.click('[data-ps="fit-alt"]');
+            await page.waitForTimeout(6000);
+            console.log(lotName, tag, 'embed swapped', JSON.stringify(await info(page)));
+            await shot(page, 'embed-swapped');
+          }
         }
         await page.click('.lc-mini-x').catch(() => {});
         await page.waitForTimeout(1500);

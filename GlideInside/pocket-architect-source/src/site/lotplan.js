@@ -340,7 +340,7 @@ export function deriveDriveway(project, opts = {}) {
     best = { r: near.r, score: best.score };
   }
   const r = best.r;
-  const wd = Math.min(6500, Math.max(3000, opts.widthMm || storedDriveway(project)?.widthMm || door.widthMm || 3000));
+  let wd = Math.min(6500, Math.max(3000, opts.widthMm || storedDriveway(project)?.widthMm || door.widthMm || 3000));
   const edgeA = lot.boundary[r.edge];
   const edgeB = lot.boundary[(r.edge + 1) % lot.boundary.length];
   const edgeLen = G.dist(edgeA, edgeB);
@@ -367,7 +367,7 @@ export function deriveDriveway(project, opts = {}) {
   let usedStored = false;
   let kerbEnd = P3;
   const rings = buildingRings(project);
-  const clear = (pts) => drivewayClear(pts, { lot, rings, door, r, wd });
+  let clear = (pts) => drivewayClear(pts, { lot, rings, door, r, wd });
   let storedInvalid = false;
   let routed = false;
   if (stored && !opts.ignoreStored) {
@@ -384,7 +384,13 @@ export function deriveDriveway(project, opts = {}) {
     const direct = [];
     if (facing) for (let i = 0; i <= N; i++) direct.push(bez(P, i / N));
     if (!facing || !clear(direct)) {
-      const path = opts.route === false ? null : routeDriveway({ lot, rings, door, r, wd, onKerb, edgeLen, along, lo, hi, clear });
+      let path = opts.route === false ? null : routeDriveway({ lot, rings, door, r, wd, onKerb, edgeLen, along, lo, hi, clear });
+      // No room at the full width: a single width driveway (3 m) down the side of the house.
+      if (!path && opts.route !== false && wd > 3000) {
+        const narrow = (pts) => drivewayClear(pts, { lot, rings, door, r, wd: 3000 });
+        path = routeDriveway({ lot, rings, door, r, wd: 3000, onKerb, edgeLen, along, lo, hi, clear: narrow });
+        if (path) { wd = 3000; clear = narrow; }
+      }
       if (path) {
         kerbEnd = path.end;
         centre = filletPath(path.pts, 5000);
@@ -453,7 +459,12 @@ function drivewayClear(pts, { lot, rings, door, r, wd }) {
   const check = (p) => {
     if (G.dist(p, door.mid) < wd / 2 + 900) return true;
     if (inAnyRing(p, rings) || ringGap(p, rings) < keep) return false;
-    return past(p) || G.pointInPolygon(p, lot.boundary);
+    if (past(p)) return true;
+    if (!G.pointInPolygon(p, lot.boundary)) return false;
+    // Half the driveway's width clear of the side and rear boundaries, so its edge stays on the lot.
+    const b = lot.boundary;
+    for (let i = 0; i < b.length; i++) if (i !== r.edge && G.projectToSegment(p, b[i], b[(i + 1) % b.length]).d < wd / 2 - 100) return false;
+    return true;
   };
   for (let i = 0; i < pts.length; i++) {
     if (!check(pts[i])) return false;

@@ -17,6 +17,7 @@ import { settleSiteItems } from './site-items.js';
 export const SLOPE_NOTE_M = 1.5;
 export const ENGINEER_LABEL = 'Send to a registered engineer for a custom design';
 const TOL = 5;
+export const TIGHT_MM = 250; // under this much room all round the fit is called tight
 const COMFORT_MM = 1000; // clearance beyond this is not worth moving the house further for
 const m1 = (mm) => (Math.round(mm / 100) / 10).toFixed(1);
 const normDeg = (d) => { const v = (((d % 360) + 540) % 360) - 180; return v === -180 ? 180 : v; };
@@ -269,7 +270,11 @@ export function slopeUnderHouse(project) {
 export function slopeNote(project) {
   const s = slopeUnderHouse(project);
   if (!s || !(s.fallM > SLOPE_NOTE_M)) return null;
-  return { fallM: s.fallM, text: `The ground falls about ${s.fallM.toFixed(1)} m across this house. This is a concept only: a sloping site may need a split level design. Send it to a registered engineer for advice.` };
+  return {
+    fallM: s.fallM,
+    text: `The ground falls about ${s.fallM.toFixed(1)} m across this house. This is a concept only: a sloping site may need a split level design. Send it to a registered engineer for advice.`,
+    short: `Sloping site: the ground falls about ${s.fallM.toFixed(1)} m across this house. Concept only, it may need a split level design.`,
+  };
 }
 
 // The card ------------------------------------------------------------------------------------------------------------------
@@ -296,6 +301,13 @@ export function fitCardModel(project, { withPlan = true, canDesigns = true, canN
   const dw = (() => { try { return deriveDriveway(project); } catch { return null; } })();
   const driveway = dw && !dw.ok && garageDoor(project) ? { blocked: true, text: 'There is no room for a driveway to the garage from here. Turn the house so the garage faces the street.' } : dw?.ok && dw.routed ? { routed: true, text: 'The garage faces away from the street, so the driveway runs round the house.' } : null;
   if (facts.state === 'fits' || facts.state === 'unchecked') {
+    // A tight fit: it meets the setbacks with next to nothing to spare, and moving it does not find more room.
+    if (!driveway?.blocked && withPlan && facts.state === 'fits') {
+      const plan = fitPlan(project);
+      if (plan && plan.now.margin < TIGHT_MM && plan.auto.margin < TIGHT_MM + 150) {
+        return { ...none, show: true, tone: 'note', title: 'A tight fit', lines: [`The house fits with about ${m1(Math.max(0, plan.now.margin))} m to spare. There are smaller options below if you want more room.`], verdict: 'tight', plan, driveway };
+      }
+    }
     if (!driveway?.blocked) return { ...none, driveway };
     return { ...none, show: true, tone: 'warn', title: 'No driveway yet', lines: [driveway.text], actions: [{ id: 'square', label: 'Square to the street', primary: true }], driveway };
   }
@@ -334,11 +346,11 @@ export function fitCardModel(project, { withPlan = true, canDesigns = true, canN
     const wide = plan.tooWideM > 0.05;
     const deep = plan.tooDeepM > 0.05;
     const size = wide && deep ? `${plan.tooWideM.toFixed(1)} m too wide and ${plan.tooDeepM.toFixed(1)} m too deep` : deep ? `${plan.tooDeepM.toFixed(1)} m too deep` : `${plan.tooWideM.toFixed(1)} m too wide`;
-    lines.push(`The house is ${size} for ${areaWords}, however it is turned. It overhangs most ${worst.where}.`);
-    lines.push(canDesigns ? 'A smaller design will fit, or a registered engineer can design one for this lot.' : 'A registered engineer can design a home for this lot.');
+    lines.push(`The house is ${size} for ${areaWords}, however it is turned.`);
+    lines.push(`It overhangs most ${worst.where}. ${canDesigns ? 'A smaller design will fit, or a registered engineer can design one for this lot.' : 'A registered engineer can design a home for this lot.'}`);
     if (canDesigns) actions.push({ id: 'designs', label: 'Show designs that fit', primary: true });
     if (canNarrower) actions.push({ id: 'narrower', label: wide || !deep ? 'Make it narrower' : 'Make it shallower' });
-    actions.push({ id: 'auto', label: 'Closest fit' });
+    actions.push({ id: 'auto', label: 'Closest fit', extra: true });
     if (canEngineer) actions.push({ id: 'engineer', label: ENGINEER_LABEL, primary: !canDesigns });
   }
   if (verdict !== 'none' && canDesigns) actions.push({ id: 'designs', label: 'Show designs that fit' });

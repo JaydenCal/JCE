@@ -36,8 +36,6 @@ import { createAerialToggle } from '../ui/aerial-toggle.js';
 import { moveHouseBy, turnHouseBy } from '../site/site-items.js';
 import { createFitCard, stashGuidance } from '../ui/fit-card.js';
 import { createCoach, TOPVIEW_COACH } from '../ui/fit-coach.js';
-import { narrowerGuidance } from '../site/fit-advice.js';
-import { poseFor } from './swap.js';
 import { aerialOn } from '../site/aerial-pref.js';
 import { injectUploadCss } from '../site/upload/css.js';
 
@@ -85,13 +83,14 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   // The fit card and the first placement tips sit in the design card under its title (never over the lot), so they show on a phone too,
   // where the rest of the card is folded away.
   let breachSides = [];
+  let tipsRef = null; // the homepage "How to" tips: they step aside while the fit card has something to say
   const fitCard = createFitCard({
     store, theme: 'glass', compact: true,
     onSides: (s) => { breachSides = s; },
-    onChange: () => { try { fit.classList.toggle('lc-fit-off', !fitCard.el.hidden && fitCard.el.dataset.verdict !== 'fits'); sizeInset(); schedule(); } catch { /* not ready */ } },
-    onDesigns: () => nextThatFits(),
-    onNarrower: () => {
-      const text = narrowerGuidance(store.project);
+    onChange: () => { try { const up = !fitCard.el.hidden && !['fits', 'tight'].includes(fitCard.el.dataset.verdict); fit.classList.toggle('lc-fit-off', up); advice.classList.toggle('has-problem', up); if (up) tipsRef?.hide(); sizeInset(); schedule(); } catch { /* not ready */ } },
+    getDesigns: () => designs,
+    onSwapped: (d) => { store.setUI({ placedDesign: { id: d.id, name: d.name } }); selTab = 'aerial'; bedI = 0; go('aerial'); },
+    onGuide: (text) => {
       if (embed) { stashGuidance(text); (onFullEditor || onEdit)?.(); return; }
       store.setUI({ view: '2d' });
       toast(text, { kind: 'info', timeout: 20000 });
@@ -179,6 +178,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   if (embed) {
     root.classList.add('lc-embed');
     const tips = createTips();
+    tipsRef = tips;
     root.append(tips.el, tips.q);
   }
   host.append(root);
@@ -258,6 +258,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       if (disposed) return;
       designs = Array.isArray(list) ? list : [];
       designsKey = key;
+      fitCard.update();
     } catch (e) {
       console.warn('[lotcard] designs unavailable', e?.message);
       designs = [];
@@ -310,24 +311,6 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => setTimeout(run, 0));
       else setTimeout(run, 0);
     });
-  }
-
-  // "Show designs that fit": place the next design in the carousel that fits this lot. False when none of the others does.
-  async function nextThatFits() {
-    if (stepping) return true;
-    const n = designs.length;
-    const at = currentIndex(designs, store.project, uiPlaced());
-    for (let k = 1; k < n + (at < 0 ? 1 : 0); k++) {
-      const i = (((at < 0 ? -1 : at) + k) % n + n) % n;
-      const d = designs[i];
-      if (d.fit && d.fit.status === 'too-big') continue;
-      let ok = false;
-      try { ok = poseFor(store.project, d.project).fits === true; } catch { ok = false; }
-      if (!ok) continue;
-      await placeDesign(d);
-      return true;
-    }
-    return false;
   }
 
   function setScheme(id) {
