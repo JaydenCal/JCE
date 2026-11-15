@@ -1071,3 +1071,7 @@ svg { display: block; }
 /* Walk: an open "Arrange / Place house" session is suspended (its overlay and bar would catch the clicks that start looking around); it returns with the Plan view. */
 .ps-shell[data-view="walk"] .pas-catch, .ps-shell[data-view="walk"] .pas-pose { display: none !important; }
 .ps-shell[data-view="split"] .pso-dock, .ps-shell[data-view="split"] .ps3d-hints { display: none; }
+
+/* The way back to the main page is always labelled. */
+.ps-shell .ps-topbar .ps-back .ps-btn-text { display: inline !important; }
+.ps-shell .ps-topbar .ps-back.ps-btn--wide:has(.ps-btn-text) { width: auto !important; padding: 0 10px !important; }

@@ -106,7 +106,8 @@ export function openAerialSource({ store, deps = {} }) {
     h('p', { class: 'as-note' }, 'Paste your own Nearmap API key. It stays in this browser and is sent only to Nearmap to fetch the tiles for this lot. It is never sent to Glide Inside.'),
     h('div', { class: 'as-row' }, keyIn, forget), savedNote,
     h('label', { class: 'as-row', style: { gap: '8px' } }, remember, h('span', { class: 'as-note' }, 'Remember my key in this browser')),
-    h('p', { class: 'as-note' }, 'Imagery is shown as "Nearmap imagery, your licence".'), nmBtn);
+    h('p', { class: 'as-note' }, 'Imagery is shown as "Nearmap imagery, your licence".'),
+    h('p', { class: 'as-warn', dataset: { ps: 'aerial-src-nm-terms' } }, 'Your Nearmap subscription terms apply. Exported and shared plans will include the imagery.'), nmBtn);
 
   // File panel ---------------------------------------------------------------------------------------------------------
   const fileIn = h('input', { type: 'file', multiple: true, accept: '.tif,.tiff,.jpg,.jpeg,.png,.jgw,.jpgw,.pgw,.pngw,.tfw,.tifw,.wld', 'aria-label': 'Your picture and world file', dataset: { ps: 'aerial-src-file' } });
@@ -206,14 +207,14 @@ export function openAerialSource({ store, deps = {} }) {
     fileIn, crsRow, fileNote, ptsHost, fileBtn);
 
   // Frame --------------------------------------------------------------------------------------------------------------
-  const panels = { standard: pStd, file: pFile };
-  const radios = SOURCES.filter(([id]) => id !== 'nearmap').map(([id, text]) => h('label', null, h('input', { type: 'radio', name: 'as-src', value: id, checked: id === current, dataset: { ps: `aerial-src-${id}` }, onchange: () => show(id) }), text));
+  const panels = { standard: pStd, nearmap: pNm, file: pFile };
+  const radios = SOURCES.map(([id, text]) => h('label', null, h('input', { type: 'radio', name: 'as-src', value: id, checked: id === current, dataset: { ps: `aerial-src-${id}` }, onchange: () => show(id) }), text));
   function show(id) { Object.entries(panels).forEach(([k, p]) => { p.hidden = k !== id; }); say(''); }
-  show(current === 'nearmap' ? 'standard' : current);
+  show(current);
   const shareWarn = h('p', { class: 'as-warn', dataset: { ps: 'aerial-src-sharewarn' }, hidden: current === 'standard' }, SHARE_WARNING);
   const body = h('div', { class: 'as-dlg', dataset: { ps: 'aerial-source-dialog' } },
     h('div', { class: 'as-seg', role: 'radiogroup', 'aria-label': 'Aerial source' }, ...radios),
     h('p', { class: 'as-note', dataset: { ps: 'aerial-src-licence' } }, LICENCE_NOTE),
-    pStd, pFile, shareWarn, status);
+    pStd, pNm, pFile, shareWarn, status);
   return openModal({ title: 'Aerial source', size: 'lg', body, footer: (c) => { close = c; return h('button', { class: 'ps-btn', type: 'button', onclick: () => c('done') }, 'Close'); } });
 }
