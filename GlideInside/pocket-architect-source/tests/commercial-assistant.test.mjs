@@ -601,11 +601,15 @@ test('catalogue alignment: the assistant adds the catalogue building record, fac
   const rotations = [0, 90, 180, 270].map((k) => Math.round((((frontRotation(lot) + k) % 360) + 360) % 360));
   assert.ok(rotations.includes(Math.round(((rec.place.rotationDeg % 360) + 360) % 360)), `rotation ${rec.place.rotationDeg}`);
   const placed = catalogueBuildings(s.project.commercial)[0];
-  assert.equal(Math.round(((rec.place.rotationDeg % 360) + 360) % 360), Math.round(((frontRotation(lot) % 360) + 360) % 360), 'the first choice faces the street');
+  // On a bare lot the first choice is the street facing one.
+  const bare = storeOf(fixture());
+  bare.project.commercial.rows = [];
+  assert.ok(run(bare, 'add_building', { type: 'warehouse' }).ok);
+  assert.equal(Math.round(((buildingsOf(bare.project)[0].place.rotationDeg % 360) + 360) % 360), Math.round(((frontRotation(lot) % 360) + 360) % 360), 'faces the street');
   // Drawn by the catalogue: materialise holds walls and a PROPOSED room for it, stats count it, the parking uses the {use, per, m2} rate shape.
   const sum = materialise(s.project);
   assert.equal(sum.buildings, 1, 'materialise reports the building');
-  assert.ok(s.project.rooms.some((x) => /PROPOSED WAREHOUSE/.test(x.name)), 'a PROPOSED WAREHOUSE room exists');
+  assert.ok(s.project.levels.flatMap((l) => l.rooms).some((x) => /PROPOSED WAREHOUSE/.test(x.name)), 'a PROPOSED WAREHOUSE room exists');
   const st = commercialStats(s.project);
   assert.equal(st.buildingCount, 1);
   const rows = placed.site.parking.ratePerM2;

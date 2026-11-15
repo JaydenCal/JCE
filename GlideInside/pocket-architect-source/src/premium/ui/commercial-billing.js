@@ -6,7 +6,7 @@
 import { el, ddmmyyyy, formatAud, track, sleep as realSleep } from '../util.js';
 import { icon } from '../icons.js';
 import { friendlyError } from '../messages.js';
-import { buyMessagesLabel, canBuyMessages, topUpOfferText } from '../credits.js';
+import { buyMessagesLabel, canBuyMessages, topUpOfferText, graceText } from '../credits.js';
 
 export const COMMERCIAL_PRICE_AUD = 50;
 export const PLAN_NAME = 'Commercial Developer';
@@ -165,6 +165,15 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
     });
   }
 
+  /** Open the Stripe billing page for the signed in subscriber (throws on failure, the caller shows it). */
+  async function openPortal() {
+    const csub = getCsub();
+    if (!csub || csub.kind !== 'subscription') throw new Error('No subscription is signed in.');
+    const { url } = await api.commercialPortal(csub.token);
+    if (!isSafeUrl(url)) throw new Error('bad url');
+    navigate(url);
+  }
+
   // Account page -------------------------------------------------------------------------------------------------------------
   function openAccount() {
     const csub = getCsub();
@@ -213,9 +222,7 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
       show(portalErr, '');
       portalBtn.disabled = true;
       try {
-        const { url } = await api.commercialPortal(csub.token);
-        if (!isSafeUrl(url)) throw new Error('bad url');
-        navigate(url);
+        await openPortal();
       } catch (e) {
         show(portalErr, friendlyError(e, { area: 'checkout' }));
         portalBtn.disabled = false;
@@ -225,6 +232,7 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
       el('ul', { class: 'psp-includes' },
         el('li', null, el('strong', null, 'Plan: '), `${account.plan}, ${formatAud(account.priceAud)} per month, GST inclusive`),
         el('li', null, el('strong', null, 'Status: '), STATUS_TEXT[account.status] || account.status),
+        account.grace ? el('li', { class: 'psp-warn-line', role: 'status' }, graceText(account.grace.daysLeft), ` Access continues until ${ddmmyyyy(account.grace.endsAt)}.`) : null,
         account.currentPeriodEnd ? el('li', null, el('strong', null, active ? 'Renews on: ' : 'Access ends on: '), ddmmyyyy(account.currentPeriodEnd)) : null,
         el('li', null, el('strong', null, 'Plan sets: '), 'Unlimited commercial plan set PDFs.'),
         aiLine,
@@ -344,5 +352,5 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
     }
   }
 
-  return { openGate, openAccount, openRestore, openTrialLogin, buyMore, handleReturn, checkSubscribable };
+  return { openPortal, openGate, openAccount, openRestore, openTrialLogin, buyMore, handleReturn, checkSubscribable };
 }

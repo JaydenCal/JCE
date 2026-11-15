@@ -25,6 +25,7 @@ import { importPdf as runImportPdf } from './pdf-import.js';
 import { openPdfPreview } from './pdf-preview.js';
 import { openEnquiry, lotPrefill } from './ui/enquiry.js';
 import { createCommercialBilling } from './ui/commercial-billing.js';
+import { createGraceBanner } from './ui/grace-banner.js';
 import { storage } from './util.js';
 
 export function createPremium(store, options = {}) {
@@ -84,6 +85,7 @@ export function createPremium(store, options = {}) {
   const bearer = () => (csubOn() ? state.csub.token : state.token || state.portal?.token || null);
   let disposed = false;
   let topbar = null;
+  let graceBanner = null;
   let assistant = null;
 
   // A builder or client login (src/portal) includes the plans and the AI helper: the builder pays, so there is no A$30 step.
@@ -108,6 +110,7 @@ export function createPremium(store, options = {}) {
     const c = state.credits;
     store.setUI({ premium: { entitled: isEntitled(), credits: c ? { total: c.total, used: c.used, remaining: c.remaining } : null } });
     topbar?.render();
+    graceBanner?.render();
     assistant?.render();
   }
 
@@ -118,6 +121,7 @@ export function createPremium(store, options = {}) {
     const c = state.credits;
     store.setUI({ premium: { entitled: isEntitled(), credits: c ? { total: c.total, used: c.used, remaining: c.remaining } : null } });
     topbar?.render();
+    graceBanner?.render();
     assistant?.refreshCredits();
   }
 
@@ -205,6 +209,13 @@ export function createPremium(store, options = {}) {
     refreshCredits: () => refreshCredits(), navigate, timing,
     onReplace: (project) => store.replace?.(project),
   });
+  if (mounts.topbar) {
+    graceBanner = createGraceBanner({
+      getState: view,
+      manageBilling: () => commercialUi.openPortal().catch((e) => layer.notify(friendlyError(e, { area: 'checkout' }), 'error', 8000)),
+    });
+    graceBanner.render();
+  }
   /** Every "unlock" entry point: the commercial gate in commercial mode, the A$30 Plan Pack otherwise. */
   const openUpgrade = (o) => (commercialNow() ? commercialUi.openGate(o) : flows.openUpgrade(o));
   const openRestore = (o) => (commercialNow() ? commercialUi.openRestore() : flows.openRestore(o));
@@ -487,6 +498,7 @@ export function createPremium(store, options = {}) {
       window.removeEventListener('storage', onStorage);
       assistant?.dispose();
       topbar?.dispose();
+      graceBanner?.dispose();
       layer.dispose();
     },
     // Extras for the host page and tests.

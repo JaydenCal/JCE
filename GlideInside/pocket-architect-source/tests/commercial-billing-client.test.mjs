@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createApi } from '../src/premium/api.js';
 import { createAdminApi } from '../src/portal/admin-api.js';
-import { normaliseCredits, meterText, resetText, warningText, exhaustedText, isExhausted, canBuyMessages, buyMessagesLabel, topUpOfferText, canTopUp } from '../src/premium/credits.js';
+import { normaliseCredits, meterText, resetText, warningText, exhaustedText, isExhausted, canBuyMessages, buyMessagesLabel, topUpOfferText, canTopUp, graceText } from '../src/premium/credits.js';
 import { createCommercialBilling, GATE_LINE } from '../src/premium/ui/commercial-billing.js';
 import { isAuthLoss } from '../src/premium/messages.js';
 
@@ -124,4 +124,14 @@ test('return from Stripe: gives up with a message when the payment never confirm
   assert.equal(await ui.handleReturn({ status: 'success', sessionId: 'cs_x' }), null);
   assert.equal(state.csub, null);
   assert.match(state.notes.at(-1)[1], /not been confirmed yet/);
+});
+
+test('grace period: the meter snapshot carries the days left and the banner reads as the owner asked, with no dashes', () => {
+  const c = normaliseCredits({ commercial: true, total: 150, used: 3, remaining: 147, warnLevel: 0, paymentGrace: { daysLeft: 3, endsAt: '2026-11-18T03:00:00.000Z' } });
+  assert.deepEqual(c.paymentGrace, { daysLeft: 3, endsAt: '2026-11-18T03:00:00.000Z' });
+  assert.equal(normaliseCredits({ commercial: true, total: 150, used: 3, remaining: 147 }).paymentGrace, undefined);
+  assert.equal(normaliseCredits({ commercial: true, total: 150, used: 3, remaining: 147, paymentGrace: { daysLeft: 'x', endsAt: 'no' } }).paymentGrace, undefined);
+  assert.equal(graceText(3), 'Your card payment failed. Update your card within 3 days to keep access.');
+  assert.equal(graceText(1), 'Your card payment failed. Update your card within 1 day to keep access.');
+  assert.ok(!/[\u2013\u2014]/.test(graceText(2)) && !/compliant/i.test(graceText(2)));
 });

@@ -150,6 +150,9 @@ export const CSS = `
 .psp-note--warn { border-color: var(--psp-warn); background: color-mix(in srgb, var(--psp-warn) 12%, var(--psp-bg)); }
 .psp-note--danger { border-color: var(--psp-danger); background: color-mix(in srgb, var(--psp-danger) 10%, var(--psp-bg)); }
 .psp-note--ok { border-color: var(--psp-ok); background: color-mix(in srgb, var(--psp-ok) 10%, var(--psp-bg)); }
+.psp-grace { position: fixed; z-index: 40; top: 56px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; max-width: min(720px, calc(100vw - 24px)); padding: 8px 12px; border: 1px solid var(--psp-warn); border-radius: var(--psp-radius); background: color-mix(in srgb, var(--psp-warn) 16%, var(--psp-bg)); color: var(--psp-text); font: 13px/1.4 var(--psp-font); box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+.psp-grace[hidden] { display: none; }
+.psp-grace .psp-grace-link { flex: none; font-weight: 600; }
 .psp-field { display: grid; gap: 4px; margin: 0 0 10px; }
 .psp-label { font: 600 12px/1.2 var(--psp-label); letter-spacing: 0.05em; text-transform: uppercase; color: var(--psp-muted); }
 .psp-input {

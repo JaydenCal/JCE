@@ -73,7 +73,7 @@ function makeWorld(env = {}) {
     assert.equal(got.status, 200, JSON.stringify(got.json));
     return got.json.token;
   };
-  w.ai = (token, extra = {}) => w.call('POST', '/api/ai/edit', { token, body: { message: 'Make the roof dark grey', context: 'PROJECT "T"\nLEVEL l_1 "Ground" active', history: [], activeLevelId: 'l_1', commercial: true, ...extra } });
+  w.ai = (token, extra = {}) => w.call('POST', '/api/ai/edit', { token, body: { message: 'Make the roof dark grey', context: 'PROJECT "T" type=commercial mode=commercial units=mm\nLEVEL l_1 "Ground" active', history: [], activeLevelId: 'l_1', commercial: true, ...extra } });
   w.pdf = (token, project = commercialProject({ plain: false })) => w.call('POST', '/api/export/pdf', { token, body: { project } });
   w.admin = (method, path, body, token = ADMIN) => w.call(method, `/api/commercial/admin/trial${path}`, { token, body });
   w.createTrial = async (body = {}) => {
@@ -118,8 +118,8 @@ test('subscribe: Coming soon without a price id, subscription mode Checkout with
   assert.match(form.success_url, /csub=success&session_id=\{CHECKOUT_SESSION_ID\}/);
 });
 
-test('webhook transitions: created, past due, renewed, payment failed, cancelled', async () => {
-  const w = makeWorld();
+test('webhook transitions with no grace period: created, past due, renewed, payment failed, cancelled', async () => {
+  const w = makeWorld({ COMMERCIAL_GRACE_DAYS: '0' });
   const token = await w.subscribe();
   const acct = async () => (await w.call('GET', '/api/commercial/account', { token })).json;
   let a = await acct();
@@ -146,6 +146,91 @@ test('webhook transitions: created, past due, renewed, payment failed, cancelled
   assert.equal((await w.call('GET', '/api/commercial/account', { token })).status, 403);
   // an event for an unknown subscription is accepted and ignored
   assert.equal(await w.event({ type: 'customer.subscription.updated', data: { object: { id: 'sub_unknown', status: 'active' } } }), 200);
+});
+
+// Failed payment grace period (owner decision 15/11/2026): access for COMMERCIAL_GRACE_DAYS (default 3) from the first failed invoice -------
+const pastDue = (id = 'sub_1', end = T0 + 30 * DAY) => ({ type: 'customer.subscription.updated', data: { object: { id, status: 'past_due', current_period_end: Math.floor(end / 1000) } } });
+const recovered = (id = 'sub_1', end = T0 + 60 * DAY) => ({ type: 'customer.subscription.updated', data: { object: { id, status: 'active', current_period_end: Math.floor(end / 1000) } } });
+const failedInvoice = (createdMs, id = 'in_1') => ({ type: 'invoice.payment_failed', data: { object: { id, subscription: 'sub_1', ...(createdMs ? { created: Math.floor(createdMs / 1000) } : {}) } } });
+
+test('grace period: three days of access from the first failed payment, banner data on the account and the AI meter, then it locks', async () => {
+  const w = makeWorld();
+  const token = await w.subscribe();
+  assert.equal(await w.event(failedInvoice(T0)), 200);
+  assert.equal(await w.event(pastDue()), 200);
+  const acct = await w.call('GET', '/api/commercial/account', { token });
+  assert.equal(acct.status, 200, JSON.stringify(acct.json));
+  assert.equal(acct.json.account.status, 'past_due');
+  assert.equal(acct.json.account.grace.daysLeft, 3);
+  assert.equal(acct.json.account.grace.endsAt, new Date(T0 + 3 * DAY).toISOString());
+  assert.equal((await w.ai(token)).status, 200, 'the assistant still works');
+  assert.equal((await w.pdf(token)).status, 200, 'plan set exports still work');
+  const credits = await w.call('GET', '/api/credits', { token });
+  assert.equal(credits.status, 200);
+  assert.equal(credits.json.paymentGrace.daysLeft, 3);
+  // a second failed invoice (a card retry) does not move the start
+  w.clock.t = T0 + 2 * DAY;
+  assert.equal(await w.event(failedInvoice(T0 + 2 * DAY, 'in_2')), 200);
+  const day2 = await w.call('GET', '/api/commercial/account', { token });
+  assert.equal(day2.json.account.grace.daysLeft, 1);
+  assert.equal(day2.json.account.grace.endsAt, new Date(T0 + 3 * DAY).toISOString(), 'the window runs from the first failed invoice');
+  // the window ends
+  w.clock.t = T0 + 3 * DAY;
+  const locked = await w.call('GET', '/api/commercial/account', { token });
+  assert.equal(locked.status, 403);
+  assert.match(locked.json.error.message, /3 day grace period has ended/);
+  assert.equal((await w.ai(token)).status, 403);
+  assert.equal((await w.pdf(token)).status, 403);
+});
+
+test('grace period: counted from the invoice time Stripe gives, a recovered card clears it, a new failure starts a new window', async () => {
+  const w = makeWorld();
+  const token = await w.subscribe();
+  // the webhook arrives a day after the invoice failed
+  w.clock.t = T0 + DAY;
+  assert.equal(await w.event(failedInvoice(T0)), 200);
+  const a = (await w.call('GET', '/api/commercial/account', { token })).json.account;
+  assert.equal(a.grace.daysLeft, 2);
+  assert.equal(a.grace.endsAt, new Date(T0 + 3 * DAY).toISOString());
+  // the card is fixed
+  assert.equal(await w.event(recovered()), 200);
+  const ok = (await w.call('GET', '/api/commercial/account', { token })).json.account;
+  assert.equal(ok.status, 'active');
+  assert.equal(ok.grace, undefined);
+  assert.equal((await w.call('GET', '/api/credits', { token })).json.paymentGrace, undefined);
+  // a later failure gets its own three days
+  w.clock.t = T0 + 40 * DAY;
+  assert.equal(await w.event(failedInvoice(T0 + 40 * DAY, 'in_9')), 200);
+  const again = (await w.call('GET', '/api/commercial/account', { token })).json.account;
+  assert.equal(again.grace.endsAt, new Date(T0 + 43 * DAY).toISOString());
+  w.clock.t = T0 + 43 * DAY + 1;
+  assert.equal((await w.call('GET', '/api/commercial/account', { token })).status, 403);
+});
+
+test('grace period: COMMERCIAL_GRACE_DAYS changes the length, a restore works inside it and not after it', async () => {
+  const w = makeWorld({ COMMERCIAL_GRACE_DAYS: '7' });
+  const token = await w.subscribe();
+  assert.equal(await w.event(failedInvoice(T0)), 200);
+  w.clock.t = T0 + 6 * DAY;
+  assert.equal((await w.call('GET', '/api/commercial/account', { token })).json.account.grace.daysLeft, 1);
+  const restored = await w.call('POST', '/api/commercial/subscription/restore', { body: { email: 'dev@example.com', sessionOrReceipt: 'cs_sub_000001' } });
+  assert.equal(restored.status, 200, JSON.stringify(restored.json));
+  assert.equal(restored.json.subscription.status, 'past_due');
+  assert.equal(restored.json.subscription.grace.days, 7);
+  w.clock.t = T0 + 7 * DAY;
+  assert.equal((await w.call('GET', '/api/commercial/account', { token })).status, 403);
+  assert.equal((await w.call('POST', '/api/commercial/subscription/restore', { body: { email: 'dev@example.com', sessionOrReceipt: 'cs_sub_000001' } })).status, 403);
+});
+
+test('grace period: a cancelled subscription gets no grace, and manage billing opens during it', async () => {
+  const w = makeWorld();
+  const token = await w.subscribe();
+  assert.equal(await w.event(failedInvoice(T0)), 200);
+  const portal = await w.call('POST', '/api/commercial/billing-portal', { token, body: {} });
+  assert.equal(portal.status, 200, JSON.stringify(portal.json));
+  assert.match(portal.json.url, /billing\.stripe\.com/);
+  assert.equal(await w.event({ type: 'customer.subscription.deleted', data: { object: { id: 'sub_1', status: 'canceled' } } }), 200);
+  assert.equal((await w.call('GET', '/api/commercial/account', { token })).status, 403);
 });
 
 test('a subscription that has passed its paid period ends even without an event', async () => {
@@ -512,4 +597,20 @@ test('per-message token usage is recorded per account and shown to the owner wit
   assert.equal(subRow.email, 'dev@example.com');
   assert.equal(m.accounts.find((a) => a.kind === 'trial').messages, 1);
   assert.equal(m.totals.messages, 3);
+});
+
+test('merged assistant and billing: a subscriber in commercial mode gets the commercial tools and prompt on the commercial model, a housing context is refused', async () => {
+  const w = makeWorld({ COMMERCIAL_AI_MODEL: 'claude-test-commercial', ANTHROPIC_MODEL: 'claude-test-housing' });
+  const token = await w.subscribe();
+  const ok = await w.ai(token);
+  assert.equal(ok.status, 200, JSON.stringify(ok.json));
+  const body = w.anthropicBodies.at(-1);
+  assert.equal(body.model, 'claude-test-commercial');
+  const names = body.tools.map((t) => t.name);
+  assert.ok(names.includes('add_building') && names.includes('compare_options'), names.join(','));
+  assert.ok(!names.includes('set_finish'), 'the housing tools are not offered in commercial mode');
+  assert.match(JSON.stringify(body.system), /commercial/i);
+  const housing = await w.ai(token, { context: 'PROJECT "T" type=house units=mm\nLEVEL l_1 "Ground" active' });
+  assert.equal(housing.status, 403, 'the subscription does not cover a housing design');
+  assert.equal(w.anthropicBodies.length, 1, 'the model was not called for it');
 });

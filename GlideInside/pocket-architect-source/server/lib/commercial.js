@@ -9,7 +9,10 @@
 //     that the owner can reset, no top-ups, optional daily PDF cap and optional expiry date (both off by default).
 // Both are stored without new tables: the subscription is an entitlement row (id csub_..., project '*', the Stripe subscription id in the
 // payment_intent column, status active / past_due / canceled, expires_at = the paid period end), and the trial login is one JSON value in
-// portal_settings. Passwords are only ever hashed (password.js, PBKDF2) and never logged or returned.
+// portal_settings. Failed card payments get a grace period (owner decision 15/11/2026, COMMERCIAL_GRACE_DAYS, default 3): while Stripe says
+// past_due the subscription keeps working for that many days from the FIRST failed invoice, then it locks. The first failure time is one
+// marker entitlement row (id cgrace:<csub id>, project 'csubgrace', expires_at holding the start time, status active while the episode is
+// open and recovered once the card works again), so there is still no new table. Passwords are only ever hashed (password.js, PBKDF2) and never logged or returned.
 
 import { migrate, validate } from '../../src/model/schema.js';
 import { passwordProblem } from '../../src/portal/credentials.js';
@@ -23,6 +26,7 @@ import * as stripe from './stripe.js';
 const DAY = 86400000;
 const LOCKOUT_MS = 15 * 60000;
 export const SUB_PREFIX = 'csub_';
+const GRACE_PREFIX = 'cgrace:';
 export const TRIAL_ROLE = 'commercial_trial';
 export const TRIAL_KEY = 'commercial_trial';
 const PROJ_INDEX_KEY = 'commercial_trial_projects';
@@ -65,7 +69,43 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     return signToken({ eid: ent.id, pid: '*', exp: Math.floor(now() / 1000) + Math.round(config.entitlementDays * 86400) }, config.entitlementSecret);
   }
 
-  const subView = (ent) => ({
+  // Failed payment grace period -------------------------------------------------------------------------------------------------
+  const graceId = (ent) => `${GRACE_PREFIX}${ent.id}`;
+  const graceDays = () => Math.max(0, Number(config.commercialGraceDays) || 0);
+
+  /** { active, startedAt, endsAt, daysLeft } while the subscription is past_due with an open marker, else null. daysLeft counts part days up. */
+  async function graceOf(ent, nowMs = now()) {
+    if (!ent || ent.status !== 'past_due') return null;
+    const marker = await store.getEntitlement(graceId(ent));
+    const start = marker && marker.status === 'active' && marker.expiresAt ? Date.parse(marker.expiresAt) : NaN;
+    if (!Number.isFinite(start)) return null;
+    const endsMs = start + graceDays() * DAY;
+    return { active: nowMs < endsMs, startedAt: iso(start), endsAt: iso(endsMs), daysLeft: Math.max(0, Math.ceil((endsMs - nowMs) / DAY)) };
+  }
+
+  /** The first failed invoice opens the episode; later failures in the same episode keep the first time. */
+  async function startGrace(ent, atMs) {
+    const id = graceId(ent);
+    const startIso = iso(Number.isFinite(atMs) && atMs > 0 ? atMs : now());
+    const r = await store.createEntitlement({ id, projectId: 'csubgrace', email: null, stripeSessionId: `cgrace-s:${ent.id}`, amountCents: 0, currency: 'aud', creditsTotal: 0, status: 'active', createdAt: iso(), expiresAt: startIso });
+    if (r.created) return;
+    const marker = await store.getEntitlement(id);
+    if (marker && marker.status !== 'active') {
+      await store.setEntitlementExpiry(id, startIso); // a new episode after the card had recovered
+      await store.setEntitlementStatus(id, 'active');
+    }
+  }
+
+  /** The card works again (or the subscription ended): the episode is over. */
+  async function endGrace(ent) {
+    const marker = await store.getEntitlement(graceId(ent));
+    if (marker && marker.status === 'active') await store.setEntitlementStatus(marker.id, 'recovered');
+  }
+
+  /** Whether the subscription may be used now: active, or past_due inside the grace period. */
+  const usable = (st, grace) => st === 'active' || (st === 'past_due' && !!grace?.active);
+
+  const subView = (ent, grace = null) => ({
     kind: 'subscription',
     plan: 'Commercial Developer',
     priceAud: config.commercialSubPriceAud,
@@ -76,7 +116,9 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     receipt: ent.id,
     unlimitedPlanSets: true,
     aiMonthly: config.commercialAiMonthly,
+    ...(grace?.active ? { grace: { endsAt: grace.endsAt, daysLeft: grace.daysLeft, days: graceDays() } } : {}),
   });
+  const viewOf = async (ent) => subView(ent, await graceOf(ent));
 
   /** Create, or refresh, the subscription entitlement from a completed subscription Checkout Session. Idempotent. */
   async function fromSession(session) {
@@ -92,6 +134,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     if (existing && existing.id.startsWith(SUB_PREFIX)) {
       await store.setEntitlementStatus(existing.id, status);
       await store.setEntitlementExpiry(existing.id, end);
+      if (status === 'active') await endGrace(existing);
       return 'subscription refreshed';
     }
     const r = await store.createEntitlement({
@@ -123,6 +166,8 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
         await store.setEntitlementStatus(ent.id, status);
         const end = periodEndOf(obj);
         if (end) await store.setEntitlementExpiry(ent.id, end);
+        if (status === 'past_due') await startGrace(ent, (Number(event.created) || 0) * 1000); // keeps the first failure time when one is already open
+        else await endGrace(ent);
         return `subscription ${status}`;
       }
       case 'invoice.payment_failed': {
@@ -131,6 +176,8 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
         const ent = await store.getEntitlementByPaymentIntent(subId);
         if (!ent || !ent.id.startsWith(SUB_PREFIX)) return 'ignored: no commercial subscription for this invoice';
         if (ent.status === 'active') await store.setEntitlementStatus(ent.id, 'past_due');
+        // The grace period runs from the first failed invoice, not from the retries Stripe makes after it.
+        await startGrace(ent, (Number(obj.created) || Number(event.created) || 0) * 1000);
         return 'subscription past due';
       }
       default:
@@ -158,8 +205,9 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
       ent = await store.getEntitlementBySession(sessionId);
     }
     if (!ent || !ent.id.startsWith(SUB_PREFIX)) throw new HttpError('NOT_ENTITLED', 'Your subscription has not been confirmed yet.', { pending: true }, 404);
-    if (subStatus(ent, now()) !== 'active') throw new HttpError('NOT_ENTITLED', 'This subscription is not active.');
-    return json({ token: await subToken(ent), subscription: subView(ent) });
+    const grace = await graceOf(ent);
+    if (!usable(subStatus(ent, now()), grace)) throw new HttpError('NOT_ENTITLED', 'This subscription is not active.');
+    return json({ token: await subToken(ent), subscription: subView(ent, grace) });
   }
 
   async function subscriptionRestore(request) {
@@ -172,8 +220,9 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
       throw new HttpError('RATE_LIMITED', 'Too many attempts. Try again later.', { retryAfter: 600 });
     }
     const ent = await store.findForRestore(email, ref);
-    if (!ent || !ent.id.startsWith(SUB_PREFIX) || subStatus(ent, nowMs) !== 'active') throw new HttpError('NOT_ENTITLED', 'We could not find an active subscription with those details.');
-    return json({ token: await subToken(ent), subscription: subView(ent) });
+    const grace = ent && ent.id.startsWith(SUB_PREFIX) ? await graceOf(ent, nowMs) : null;
+    if (!ent || !ent.id.startsWith(SUB_PREFIX) || !usable(subStatus(ent, nowMs), grace)) throw new HttpError('NOT_ENTITLED', 'We could not find an active subscription with those details.');
+    return json({ token: await subToken(ent), subscription: subView(ent, grace) });
   }
 
   async function billingPortal(request) {
@@ -241,8 +290,9 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     const ent = await store.getEntitlement(payload.eid);
     if (!ent || ent.projectId !== '*') throw new HttpError('NOT_ENTITLED', 'No Commercial Developer subscription was found.');
     const st = subStatus(ent, nowMs);
-    if (st !== 'active') {
-      throw new HttpError('NOT_ENTITLED', st === 'past_due' ? 'The last subscription payment did not go through. Update your card under Manage billing.' : 'This Commercial Developer subscription is no longer active.');
+    const grace = await graceOf(ent, nowMs);
+    if (!usable(st, grace)) {
+      throw new HttpError('NOT_ENTITLED', st === 'past_due' ? `The last subscription payment did not go through and the ${graceDays()} day grace period has ended. Update your card under Manage billing.` : 'This Commercial Developer subscription is no longer active.');
     }
     // One monthly pool per billing period (a new period end means a new pool, so the allowance resets on renewal) and one top-up pool that
     // carries over for as long as this subscription lives.
@@ -265,6 +315,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
         kind: 'commercial', commercial: true, unit: 'messages', total: b.total, used: b.used, remaining: b.remaining, reserved: b.reserved,
         warnLevel: credits.warnLevel(b.used + b.reserved, b.total, WARN), topUpRemaining: b.topUpRemaining, available: b.available,
         renewsOn: ent.expiresAt || null, topUp: undefined, commercialTopUp: topUpOffer(true),
+        ...(grace?.active ? { paymentGrace: { endsAt: grace.endsAt, daysLeft: grace.daysLeft } } : {}),
       };
     };
     const ai = {
@@ -304,7 +355,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     };
     return {
       kind: 'commercial', sub: 'subscription', id: ent.id, ent, rateKey: `csub:${ent.id}`, watermark: false, ai, topUpId, ensure,
-      view: () => subView(ent),
+      view: () => subView(ent, grace),
       async beforeExport() {},
       async afterExport() {},
     };

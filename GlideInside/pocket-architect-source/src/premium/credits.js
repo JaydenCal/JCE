@@ -23,6 +23,8 @@ export function normaliseCredits(raw) {
     out.commercial = true;
     out.trial = raw.trial === true;
     if (typeof raw.renewsOn === 'string' && !Number.isNaN(Date.parse(raw.renewsOn))) out.renewsOn = raw.renewsOn;
+    const g = raw.paymentGrace;
+    if (g && typeof g === 'object' && Number.isFinite(Number(g.daysLeft)) && !Number.isNaN(Date.parse(g.endsAt))) out.paymentGrace = { daysLeft: Math.max(0, Math.round(Number(g.daysLeft))), endsAt: g.endsAt };
     const o = raw.commercialTopUp;
     out.commercialTopUp = o && typeof o === 'object' ? { allowed: o.allowed !== false, available: o.available === true, messages: Math.round(Number(o.messages)) || 0, priceAud: Number(o.priceAud) || 0 } : null;
   }
@@ -30,6 +32,9 @@ export function normaliseCredits(raw) {
   if (offer && Number(offer.credits) > 0 && Number(offer.amountCents) > 0) out.topUp = { allowed: offer.allowed !== false, credits: Math.round(Number(offer.credits)), amountCents: Math.round(Number(offer.amountCents)) };
   return out;
 }
+
+/** The banner for a subscription whose last card payment failed and is still inside the grace period. */
+export const graceText = (daysLeft) => `Your card payment failed. Update your card within ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} to keep access.`;
 
 /** 'YYYY-MM-DD' to DD/MM/YYYY without time zone shifts. */
 export const resetDate = (iso) => (typeof iso === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(iso) ? iso.split('-').reverse().join('/') : '');

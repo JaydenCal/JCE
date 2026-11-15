@@ -118,6 +118,7 @@ export function readConfig(env = {}) {
     commercialAiPriceCacheWritePerMtok: num(env.COMMERCIAL_AI_PRICE_CACHE_WRITE_PER_MTOK_USD, 2.5), // 5 minute cache write
     commercialAiPriceCacheReadPerMtok: num(env.COMMERCIAL_AI_PRICE_CACHE_READ_PER_MTOK_USD, 0.1),
     commercialAiTopupQty: Math.max(1, Math.round(num(env.COMMERCIAL_AI_TOPUP_QTY, 100))), // messages in one top-up pack
+    commercialGraceDays: Math.max(0, num(env.COMMERCIAL_GRACE_DAYS, 3)), // days of access kept after the first failed subscription invoice (Stripe past_due), then it locks
     commercialExportRatePerHour: Math.max(1, Math.round(num(env.COMMERCIAL_EXPORT_RATE_PER_HOUR, 120))), // anti-abuse only, per account
     commercialTrialDailyPdfs: Math.max(0, Math.round(num(env.COMMERCIAL_TRIAL_DAILY_PDFS, 0))), // 0 = off (plan set PDFs are unlimited)
     commercialTrialAiTotal: Math.max(0, Math.round(num(env.COMMERCIAL_TRIAL_AI_TOTAL, 50))), // assistant messages for the whole trial login, owner can reset
