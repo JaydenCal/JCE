@@ -353,13 +353,13 @@ const crun = async (extra = {}) => {
   return { r, text: texts.join('\n'), texts };
 };
 
-test('commercial kind: C000 to C103 sheets, one page each', async () => {
+test('commercial kind: C000 to C104 sheets, one page each', async () => {
   const { r } = await crun();
-  assert.equal(r.pages, 5);
-  assert.equal(await pagesOf(r.blob), 5);
-  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'C101', 'C102', 'C103']);
+  assert.equal(r.pages, 6);
+  assert.equal(await pagesOf(r.blob), 6);
+  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'C101', 'C102', 'C103', 'C104']);
   assert.match(r.filename, /commercial-plan-set\.pdf$/);
-  assert.equal(planSetSheets({ project: cproject, lot: null, kind: 'commercial' }).length, 5);
+  assert.equal(planSetSheets({ project: cproject, lot: null, kind: 'commercial' }).length, 6);
 });
 
 test('commercial kind: PROPOSED UNIT n labels, areas, schedule and title block', async () => {
@@ -402,7 +402,7 @@ test('commercial exports go through buildExport: pdf is the plan set, dxf still 
   const { buildExport } = await import('../src/premium/exporters/index.js');
   const pdf = await buildExport('pdf', cproject, { jsPDF });
   assert.match(pdf.filename, /commercial-plan-set\.pdf$/);
-  assert.equal(await pagesOf(new Blob([pdf.bytes])), 5);
+  assert.equal(await pagesOf(new Blob([pdf.bytes])), 6);
   const dxf = await buildExport('dxf', cproject, {});
   assert.ok(dxf.bytes.length > 1000);
 });
@@ -417,7 +417,7 @@ test('commercial kind: catalogue buildings appear on C101 (plan label, docks, ca
   const { Rec, texts } = recorder();
   const r = await exportPlanSet({ project: s.project, kind: 'commercial', download: false, jsPDF: Rec, fetchSite: null, date: new Date(2026, 10, 13) });
   const text = texts.join('\n');
-  assert.equal(r.pages, 5);
+  assert.equal(r.pages, 6);
   assert.match(text, /WAREHOUSE/);
   assert.match(text, /SHOWROOM/);
   assert.match(text, /\d DOCKS?/);

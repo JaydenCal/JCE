@@ -88,7 +88,7 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
           el('span', { class: 'psp-price-note' }, 'per month, GST inclusive')),
         el('p', null, el('strong', null, GATE_LINE), '.'),
         el('ul', { class: 'psp-includes' },
-          ['Unlimited commercial plan set PDFs (sheets C000 to C103) and DXF drawings.',
+          ['Unlimited commercial plan set PDFs (sheets C000 to C104) and DXF drawings.',
             'AI design assistant with a monthly allowance of messages. Buy more AI messages when you need them, A$15 for 100 more.',
             'Monthly subscription. Cancel anytime from Manage billing.']
             .map((t) => el('li', null, icon('check', 16), el('span', null, t)))),

@@ -40,7 +40,7 @@ export function createTopbarUI({ root, config, getState, actions }) {
       if (allowed && !allowed.includes(base.type)) continue;
       // Commercial layouts export the commercial plan set and the DXF; the 3D and HTML files come with the commercial 3D stage.
       if (st.commercial && !['pdf', 'dxf'].includes(base.type)) continue;
-      const item = st.commercial && base.type === 'pdf' ? { ...base, label: 'Commercial plan set (PDF)', hint: 'A3 sheets C000 to C103, indicative' } : base;
+      const item = st.commercial && base.type === 'pdf' ? { ...base, label: 'Commercial plan set (PDF)', hint: 'A3 sheets C000 to C104, indicative' } : base;
       const busy = busyType === item.type;
       const btn = el('button', {
         class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: item.type },

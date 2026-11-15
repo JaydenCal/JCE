@@ -193,14 +193,23 @@ function attempt(L, top, maxW, ops, legMax, forced, issues) {
     if (s.type !== 'col') return;
     const c = s.c;
     const pieces = [];
-    for (const r of solidsOf(c.x0, c.x1, top, c.members)) {
-      if (r.y1 >= top - 0.5 && r.y1 - r.y0 < MIN_ABOVE_MM) continue; // a head too shallow for a panel: the wall is open to the top there
+    const all = solidsOf(c.x0, c.x1, top, c.members).filter((r) => !(r.y1 >= top - 0.5 && r.y1 - r.y0 < MIN_ABOVE_MM)); // a head too shallow for a panel: the wall is open to the top there
+    // A strip narrower than a panel beside an opening (where two openings of different widths share a column) is cast with the panel above or below it.
+    const narrow = all.filter((r) => r.x1 - r.x0 < MIN_PANEL_MM - EPS && all.some((q) => q !== r && q.x1 - q.x0 >= MIN_PANEL_MM && q.x0 <= r.x0 + EPS && q.x1 >= r.x1 - EPS && (Math.abs(q.y1 - r.y0) < 0.5 || Math.abs(q.y0 - r.y1) < 0.5)));
+    const extra = new Map();
+    for (const r of narrow) {
+      const host = all.find((q) => !narrow.includes(q) && q.x0 <= r.x0 + EPS && q.x1 >= r.x1 - EPS && (Math.abs(q.y1 - r.y0) < 0.5 || Math.abs(q.y0 - r.y1) < 0.5));
+      if (host) extra.set(host, [...(extra.get(host) || []), r]);
+    }
+    for (const r of all) {
+      if (narrow.includes(r) && [...extra.values()].some((l) => l.includes(r))) continue;
       const kind = r.y0 < 0.5 ? 'spandrel' : 'lintel';
       const n = Math.max(1, Math.ceil((r.x1 - r.x0 - EPS) / MAX_LINTEL_MM));
       for (let k = 0; k < n; k++) {
         const xa = r.x0 + ((r.x1 - r.x0) * k) / n;
         const xb = r.x0 + ((r.x1 - r.x0) * (k + 1)) / n;
-        pieces.push({ kind, x0: xa, x1: xb, y0: r.y0, y1: r.y1, rects: [{ x0: xa, x1: xb, y0: r.y0, y1: r.y1 }], holes: [] });
+        const more = n === 1 ? extra.get(r) || [] : [];
+        pieces.push({ kind, x0: Math.min(xa, ...more.map((m) => m.x0)), x1: Math.max(xb, ...more.map((m) => m.x1)), y0: r.y0, y1: r.y1, rects: [{ x0: xa, x1: xb, y0: r.y0, y1: r.y1 }, ...more.map((m) => ({ x0: m.x0, x1: m.x1, y0: m.y0, y1: m.y1 }))], holes: [] });
       }
     }
     colPieces.set(i, { c, pieces });
