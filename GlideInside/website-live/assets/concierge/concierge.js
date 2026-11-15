@@ -1,6 +1,8 @@
 /* Glide Inside AI booking assistant: the panel. Fetched by launcher.js on first click. Vanilla JS, no dependencies.
-   Privacy: the chat lives only in this page (nothing is stored in the browser or sent to analytics). Name and email go only to the booking
-   calls. GA4 events carry no personal data (window.giTrackBooking in analytics.js enforces a fixed schema). */
+   Default flow (owner decision 15/11/2026): "Request a call back". The details go to Jayden through the existing enquiry pipeline. Nothing is
+   booked and no time is promised. The calendar screens below only appear when the server says bookingAvailable (BOOKING_PROVIDER=calcom).
+   Privacy: the chat lives only in this page (nothing is stored in the browser or sent to analytics). GA4 events carry no personal data
+   (window.giTrackBooking in analytics.js enforces a fixed schema). */
 (function () {
   "use strict";
   var cfgSite = window.GI_CONFIG || {};
@@ -52,7 +54,7 @@
     var panel = el("div", { class: "gic-panel", role: "dialog", "aria-modal": "true", "aria-labelledby": "gic-title" });
     var close = el("button", { type: "button", class: "gic-x", "aria-label": "Close assistant", text: "×", onclick: function () { closePanel(); } });
     var head = el("div", { class: "gic-head" }, [el("h2", { id: "gic-title", text: "Glide Inside assistant" }), el("span", { class: "gic-badge", text: "AI" }), close]);
-    var priv = el("p", { class: "gic-privacy" }, ["You are chatting with an AI assistant. We do not keep this chat. Booking uses only your name and email. ", el("a", { href: ctx.root + "privacy.html", target: "_blank", rel: "noopener", text: "Privacy" }), "."]);
+    var priv = el("p", { class: "gic-privacy" }, ["You are chatting with an AI assistant. We do not keep this chat. A call back request sends your name, phone and email to Jayden. ", el("a", { href: ctx.root + "privacy.html", target: "_blank", rel: "noopener", text: "Privacy" }), "."]);
     var live = el("div", { class: "gic-sr", "aria-live": "polite", "aria-atomic": "true" });
     var body = el("div", { class: "gic-body" });
     panel.appendChild(head); panel.appendChild(priv); panel.appendChild(body); panel.appendChild(live);
@@ -119,7 +121,7 @@
     return input;
   }
   function intro() {
-    say("Hello, I am the Glide Inside AI assistant. I can answer questions about what the site says and help you book a time. I cannot give planning, engineering or approval advice. Who are you?");
+    say("Hello, I am the Glide Inside AI assistant. I can answer questions about what the site says and pass a call back request to Jayden. I cannot give planning, engineering or approval advice. Who are you?");
     var items = (state.cfg.intents || []).map(function (i) {
       return el("button", { type: "button", class: "gic-chip gic-intent", onclick: function () { pickIntent(i.id); } }, [i.label, el("small", { text: i.blurb })]);
     });
@@ -157,11 +159,12 @@
   }
   function offerNext() {
     var t = typeInfo(typeFor(state.intent)), nodes = [];
-    if (t && state.cfg.bookingAvailable) {
-      say("Thanks. Would you like to see times for a " + t.label.toLowerCase() + " (" + t.durationMin + " minutes), or ask a question first?");
-      nodes.push(el("button", { type: "button", class: "gic-btn", onclick: function () { showSlots(t.id); } }, ["See available times"]));
+    if (state.cfg.callbackAvailable) {
+      say("Thanks. Would you like Jayden to call you back? You send your details and he will call you, usually within one business day. Or ask a question first.");
+      nodes.push(el("button", { type: "button", class: "gic-btn", onclick: function () { callbackScreen(); } }, ["Request a call back"]));
+      if (t && state.cfg.bookingAvailable) nodes.push(el("button", { type: "button", class: "gic-chip", onclick: function () { showSlots(t.id); } }, ["See available times"]));
     } else {
-      say("Thanks. Online booking is not open yet. You can ask a question here, use the demo form, or send an enquiry and the team will reply.");
+      say("Thanks. The call back request is not open right now. You can ask a question here, use the demo form, or send an enquiry and the team will reply.");
       ["demo", "enquiry"].forEach(function (k) { var a = linkFor(k); if (a) nodes.push(a); });
     }
     nodes.push(el("button", { type: "button", class: "gic-chip", onclick: function () { state.input.focus(); } }, ["Ask a question"]));
@@ -183,6 +186,7 @@
         if (r.status !== 200) return apiError(r);
         say(r.body.reply); state.history.push({ who: "bot", text: r.body.reply });
         showLinks(r.body.links);
+        if (r.body.ops && r.body.ops.some(function (o) { return o.op === "callback"; }) && state.cfg.callbackAvailable) chips([el("button", { type: "button", class: "gic-btn", onclick: function () { callbackScreen(); } }, ["Request a call back"])]);
         if (r.body.slots && r.body.slots.slots && r.body.slots.slots.length) renderSlots(r.body.slots.type, r.body.slots.slots, r.body.slots.durationMin);
         else if (r.body.ops && r.body.ops.some(function (o) { return o.op === "choose_intent"; })) { var ch = (state.cfg.intents || []).map(function (i) { return el("button", { type: "button", class: "gic-chip", onclick: function () { state.intent = i.id; showSlots(i.bookingType); } }, [i.label]); }); chips(ch); }
       });
@@ -203,7 +207,94 @@
       el("button", { type: "button", class: "gic-btn gic-quiet", onclick: function () { state.sessionError = null; chatScreen(false); } }, ["Back"])]);
   }
 
-  // ---- slots ----
+  // ---- request a call back (default flow) ----
+  function campaignParam() { try { var m = /[?&]utm_campaign=([^&#]*)/.exec(location.search); var v = m ? decodeURIComponent(m[1]) : ""; return /^[A-Za-z0-9._-]{1,60}$/.test(v) ? v : ""; } catch (e) { return ""; } }
+  var TIME_OPTS = [["morning", "Morning"], ["afternoon", "Afternoon"], ["evening", "Evening"], ["note", "Another time (add a note)"]];
+  function callbackScreen(errMsg) {
+    var d = state.cb || (state.cb = {});
+    var name = el("input", { type: "text", id: "gic-cb-name", autocomplete: "name", maxlength: "120", required: true, value: d.name || "" });
+    var phone = el("input", { type: "tel", id: "gic-cb-phone", autocomplete: "tel", maxlength: "40", required: true, value: d.phone || "" });
+    var email = el("input", { type: "email", id: "gic-cb-email", autocomplete: "email", maxlength: "200", required: true, value: d.email || "" });
+    var when = el("select", { id: "gic-cb-when" }, TIME_OPTS.map(function (o) { var op = el("option", { value: o[0], text: o[1] }); if (d.bestTime === o[0]) op.selected = true; return op; }));
+    var whenNote = el("input", { type: "text", id: "gic-cb-note", maxlength: "120", placeholder: "For example, weekdays after 3pm", value: d.bestTimeNote || "" });
+    var types = [["homeowner", "Homeowner"], ["builder", "Builder"], ["developer", "Developer or estate"], ["agent", "Real estate agent"], ["other", "Other"]];
+    var type = el("select", { id: "gic-cb-type" }, types.map(function (o) { var op = el("option", { value: o[0], text: o[1] }); if ((d.type || state.intent || "other") === o[0]) op.selected = true; return op; }));
+    var notes = el("textarea", { id: "gic-cb-notes", maxlength: "1000", rows: "3", text: d.notes || "" });
+    var consent = el("input", { type: "checkbox", id: "gic-cb-consent" }); // never ticked for the visitor
+    var mk = el("input", { type: "checkbox", id: "gic-cb-mk" }); // never ticked for the visitor
+    var err = el("p", { class: "gic-err", role: "alert", text: errMsg || "" });
+    var sub = el("button", { type: "submit", class: "gic-btn", text: "Review request" });
+    var form = el("form", { class: "gic-screen", novalidate: true, "data-view": "callback", style: "padding:0;overflow:visible", onsubmit: function (e) {
+      e.preventDefault(); err.textContent = "";
+      var n = name.value.trim(), p = phone.value.trim(), m = email.value.trim();
+      if (n.length < 2) { err.textContent = "Enter your name."; name.focus(); return; }
+      if (!/[0-9]{6,}/.test(p.replace(/[\s()+-]/g, ""))) { err.textContent = "Enter a phone number Jayden can call."; phone.focus(); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) { err.textContent = "Enter a valid email address."; email.focus(); return; }
+      if (when.value === "note" && !whenNote.value.trim()) { err.textContent = "Add a note about the best time to call."; whenNote.focus(); return; }
+      if (!consent.checked) { err.textContent = "Tick the box to agree to Glide Inside calling you back about your request."; consent.focus(); return; }
+      state.cb = { name: n, phone: p, email: m, bestTime: when.value, bestTimeNote: whenNote.value.trim(), type: type.value, notes: notes.value.trim(), marketing: mk.checked };
+      callbackReview();
+    } }, [
+      el("h3", { text: "Request a call back" }),
+      el("p", { class: "gic-note", text: "Jayden at Glide Inside will call you, usually within one business day. No time is booked and nothing is scheduled until you speak." }),
+      el("label", { class: "gic-field", for: "gic-cb-name" }, ["Name", name]),
+      el("label", { class: "gic-field", for: "gic-cb-phone" }, ["Phone (required)", phone]),
+      el("label", { class: "gic-field", for: "gic-cb-email" }, ["Email", email]),
+      el("label", { class: "gic-field", for: "gic-cb-type" }, ["I am a", type]),
+      el("label", { class: "gic-field", for: "gic-cb-when" }, ["Best time to call", when]),
+      el("label", { class: "gic-field", for: "gic-cb-note" }, ["Note about the time (optional)", whenNote]),
+      el("label", { class: "gic-field", for: "gic-cb-notes" }, ["Anything Jayden should know (optional)", notes]),
+      el("label", { class: "gic-check", for: "gic-cb-consent" }, [consent, el("span", { text: "I agree to JCE Infrastructure Pty Ltd, trading as Glide Inside, calling me back about my request using these details." })]),
+      el("label", { class: "gic-check", for: "gic-cb-mk" }, [mk, el("span", { text: "Optional: send me occasional Glide Inside updates and offers. You can say no and still ask for a call." })]),
+      err,
+    ]);
+    form.appendChild(el("div", { class: "gic-row" }, [sub, el("button", { type: "button", class: "gic-btn gic-quiet", onclick: function () { chatScreen(false); } }, ["Back to chat"])]));
+    state.view = "callback"; state.body.textContent = ""; state.body.appendChild(el("div", { class: "gic-screen" }, [form])); state.body.appendChild(footer());
+    name.focus();
+  }
+  function callbackReview() {
+    var d = state.cb;
+    var tl = { morning: "Morning", afternoon: "Afternoon", evening: "Evening", note: "" };
+    var when = [tl[d.bestTime], d.bestTimeNote].filter(Boolean).join(": ");
+    var typeLabel = ({ homeowner: "Homeowner", builder: "Builder", developer: "Developer or estate", agent: "Real estate agent", other: "Other" })[d.type] || "Other";
+    var btn = el("button", { type: "button", class: "gic-btn", id: "gic-cb-send", text: "Send call back request", onclick: function () { sendCallback(btn); } });
+    var rows = [["Name", d.name], ["Phone", d.phone], ["Email", d.email], ["I am a", typeLabel], ["Best time to call", when], ["Notes", d.notes || "None"], ["Updates", d.marketing ? "Yes, occasional updates" : "No marketing"]];
+    var dl = el("dl", { class: "gic-summary" }); rows.forEach(function (r) { dl.appendChild(el("dt", { text: r[0] })); dl.appendChild(el("dd", { text: r[1] })); });
+    screen("callback-confirm", [el("h3", { text: "Check and send" }), dl,
+      el("p", { class: "gic-note", text: "Nothing is sent until you press Send call back request. This sends your details to Jayden. It does not book a time." }),
+      el("div", { class: "gic-row" }, [btn, el("button", { type: "button", class: "gic-btn gic-quiet", onclick: function () { callbackScreen(); } }, ["Back"])])]);
+    btn.focus();
+  }
+  function sendCallback(btn) {
+    if (state.sending) return; // duplicate click protection
+    state.sending = true; btn.disabled = true; btn.textContent = "Sending";
+    state.cbKey = state.cbKey || newKey(); // one key per attempt; a network retry reuses it, any definite error gets a new one
+    var d = state.cb;
+    api("/callback", { conv: state.conv, idemKey: state.cbKey, confirm: true, consent: true, type: d.type, name: d.name, phone: d.phone, email: d.email, bestTime: d.bestTime === "note" ? undefined : d.bestTime, bestTimeNote: d.bestTimeNote, notes: d.notes, marketingOptIn: d.marketing, page: state.ctx.page, campaign: campaignParam() }).then(function (r) {
+      state.sending = false;
+      var b = r.body || {};
+      if (r.status === 0) { btn.disabled = false; btn.textContent = "Send call back request"; state.live.textContent = "We could not reach the server. Press Send again; it will not send twice."; var p = btn.parentNode; if (p && !p.querySelector(".gic-err")) p.parentNode.insertBefore(el("p", { class: "gic-err", role: "alert", text: "We could not reach the server. Press Send again. It will not send twice." }), p); return; }
+      if (b.state === "callback_requested") return callbackDone(b);
+      state.cbKey = null;
+      track("booking_agent_booking_failed", { booking_type: typeFor(state.intent) || undefined, reason: b.code === "RATE_LIMITED" ? "rate_limited" : "callback_error" });
+      if (b.code === "SESSION_EXPIRED") { state.conv = null; }
+      var bad = b.code === "BAD_REQUEST" || b.code === "CONFIRM_REQUIRED";
+      if (bad) return callbackScreen(b.message || "Please check your details.");
+      screen("error", [el("h3", { text: "We could not send your request" }), el("p", { text: (b.message || "Something went wrong.") + " Your request was not sent. You can try again later, or use the enquiry form or email." }),
+        el("div", { class: "gic-row" }, [linkFor("enquiry"), el("a", { href: "mailto:" + ((state.cfg.contact || {}).email || "hello@glideinside.com.au"), text: "Email us" })].filter(Boolean)),
+        el("button", { type: "button", class: "gic-btn gic-quiet", onclick: function () { callbackScreen(); } }, ["Back to the form"])], { say: "Your request was not sent." });
+    });
+  }
+  function callbackDone(b) {
+    if (!state.sent[b.reference]) { state.sent[b.reference] = 1; track("booking_agent_callback_requested", { intent: state.intent || undefined, page_path: state.ctx.page, dedupe: "gi_cb_" + b.reference }); }
+    state.cb = null; state.cbKey = null;
+    screen("callback-done", [el("h3", { text: "Request received" }),
+      el("p", { class: "gic-ok", text: "Thanks, your request is with Jayden at Glide Inside. He will call you, usually within one business day." }),
+      el("dl", { class: "gic-summary" }, [el("dt", { text: "Reference" }), el("dd", { text: b.reference })]),
+      el("button", { type: "button", class: "gic-btn", onclick: closePanel }, ["Done"])], { say: "Request received. Jayden will call you, usually within one business day." });
+  }
+
+  // ---- slots (only when the server says a calendar is on) ----
   function showSlots(type) {
     var t = typeInfo(type);
     if (!t) { say("That booking type is not open yet. Please use the demo form or enquiry form."); showLinks(["demo", "enquiry"]); return; }

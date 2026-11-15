@@ -36,7 +36,8 @@
 .gic-slots{display:flex;flex-wrap:wrap;gap:8px}
 .gic-slot{min-width:92px}
 .gic-field{display:flex;flex-direction:column;gap:5px;font:700 13px Manrope,sans-serif}
-.gic-field input[type=text],.gic-field input[type=email]{font:400 15px Manrope,sans-serif;padding:10px 12px;border:1px solid var(--gic-line);border-radius:11px;min-height:44px}
+.gic-field input[type=text],.gic-field input[type=email],.gic-field input[type=tel],.gic-field select,.gic-field textarea{background:#fff;color:inherit;width:100%;box-sizing:border-box;font:400 15px Manrope,sans-serif;padding:10px 12px;border:1px solid var(--gic-line);border-radius:11px;min-height:44px}
+.gic-field textarea{resize:vertical;min-height:72px}
 .gic-check{display:flex;gap:10px;align-items:flex-start;font:400 13.5px/1.4 Manrope,sans-serif}
 .gic-check input{width:20px;height:20px;margin-top:1px;flex:none}
 .gic-summary{border:1px solid var(--gic-line);border-radius:13px;padding:12px 14px;background:var(--gic-bg);display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:14px}

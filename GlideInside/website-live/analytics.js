@@ -76,7 +76,7 @@
     qualifier: ["house", "granny", "unsure", "custom", "volume", "other", "commercial", "subdivision", "both", "land", "homes"],
     slot_count: ["none", "1_10", "11_30", "30_plus"],
     target: ["enquiry", "demo", "tool"],
-    reason: ["slot_taken", "not_confirmed", "rate_limited", "expired", "other", "slots_calendar", "slots_error"]
+    reason: ["slot_taken", "not_confirmed", "rate_limited", "expired", "other", "slots_calendar", "slots_error", "callback_error"]
   };
   var BK_EVENTS = {
     booking_agent_opened: ["page_path"],
@@ -85,6 +85,7 @@
     booking_slots_viewed: ["booking_type", "slot_count"],
     booking_agent_booking_attempt: ["booking_type"],
     booking_agent_booking_confirmed: ["booking_type"],
+    booking_agent_callback_requested: ["intent", "page_path"], /* default flow (owner decision 15/11/2026): sent only after the server accepted the request, once per request */
     booking_agent_booking_failed: ["booking_type", "reason"],
     booking_agent_handoff_requested: ["target", "page_path"]
   };
