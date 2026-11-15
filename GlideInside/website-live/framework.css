@@ -200,7 +200,7 @@ a.chip:hover{border-color:var(--accent);background:#fff}
 .site-footer .shell{display:grid;grid-template-columns:1.6fr repeat(3,1fr);gap:36px 40px}
 .site-footer a{color:#e6efe6;text-decoration:none}.site-footer a:hover{text-decoration:underline}
 .site-footer nav{display:flex;flex-direction:column;gap:9px}
-.site-footer h4{font:700 14px var(--font);letter-spacing:0;color:#fff;margin:0 0 4px}
+.site-footer .foot-h,.site-footer h3,.site-footer h4{font:700 14px var(--font);letter-spacing:0;color:#fff;margin:0 0 4px}
 .site-footer .brand p{margin:14px 0 0;max-width:36ch}
 .site-footer .brand img{height:30px;width:auto;filter:brightness(0) invert(1)}
 .site-footer .legal-line{grid-column:1/-1;border-top:1px solid #33503f;padding-top:24px;font-size:13px;color:#93a69a;max-width:none}
