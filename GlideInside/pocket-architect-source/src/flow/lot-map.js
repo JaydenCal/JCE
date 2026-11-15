@@ -1,7 +1,7 @@
 // A small SVG map of a lot (plan mm, y down): boundary, indicative setback envelope, the street and the frontage. Used by the Find your lot
 // step of both flows. Pure string building apart from the optional aerial.
 
-import { lotOf, classifyEdges } from '../model/placement.js';
+import { lotOf, classifyEdges, requiredFor } from '../model/placement.js';
 import { roadReserve } from '../site/lotplan.js';
 import * as G from '../model/geometry.js';
 
@@ -87,8 +87,9 @@ export function setbacksText(lot) {
   if (!lot) return 'Not loaded';
   const sb = lot.setbacks;
   if (sb && (sb.front != null || sb.side != null || sb.rear != null)) {
-    const f = (v) => (v == null ? 'n/a' : `${Number(v).toFixed(1)} m`);
-    return `Council rules loaded. Front ${f(sb.front)}, side ${f(sb.side)}, rear ${f(sb.rear)}`;
+    // Setback values can be plain metres or rule objects ({ minM } or { value }); requiredFor reads both.
+    const f = (k) => { const v = requiredFor(k, sb); return Number.isFinite(v) ? `${v.toFixed(1)} m` : 'check with council'; };
+    return `Council rules loaded. Front ${f('front')}, side ${f('side')}, rear ${f('rear')}`;
   }
   if (lot.setbacksDefault) return 'Council rules not loaded. Indicative setbacks are used';
   if (lot.setbacksStatus === 'error') return 'Council rules could not be loaded. Check with council';
