@@ -439,6 +439,27 @@ export function roomViewpoint(project, roomId, opts = {}) {
   };
 }
 
+/**
+ * Turntable for a room view: dragging orbits a fixed point at the centre of the room at eye height. The camera stays on a circle that
+ * fits inside the room (0.85 of the shorter half side), facing the centre, starting on the side of the standing point of `pose`.
+ * Returns { pivot, position, radius, minDist, maxDist } in metres, or null.
+ */
+export function roomTurntable(project, roomId, pose) {
+  const found = findRoom(project, roomId);
+  if (!found) return null;
+  const { room, level } = found;
+  const bb = G.bbox(room.polygon);
+  const c = G.pointInPolygon({ x: bb.cx, y: bb.cy }, room.polygon) ? { x: bb.cx, y: bb.cy } : G.polygonCentroid(room.polygon);
+  const eye = level.elevation / 1000 + EYE_HEIGHT;
+  const pivot = { x: c.x / 1000, y: eye, z: c.y / 1000 };
+  const half = Math.max(0.6, (Math.min(bb.w, bb.h) / 2000) * 0.85);
+  let dx = (pose?.position?.x ?? pivot.x + 1) - pivot.x;
+  let dz = (pose?.position?.z ?? pivot.z) - pivot.z;
+  const l = Math.hypot(dx, dz);
+  if (l < 1e-6) { dx = 1; dz = 0; } else { dx /= l; dz /= l; }
+  return { pivot, position: { x: pivot.x + dx * half, y: eye, z: pivot.z + dz * half }, radius: half, minDist: half * 0.45, maxDist: half * 1.05 };
+}
+
 // Viewpoint for a tab: the tab's largest room, looking towards the tab's subject.
 export function tabViewpoint(project, tab) {
   if (!tab?.roomIds?.length) return null;

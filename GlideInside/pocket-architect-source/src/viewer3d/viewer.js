@@ -463,7 +463,33 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     sun.target.updateMatrixWorld();
   }
 
+  // Room turntable (rooms.js snapToRoom): orbit around the room centre at eye height, no panning, zoom kept inside the room.
+  let turntable = null;
+  function setRoomTurntable(tt) {
+    if (!tt) { clearRoomTurntable(); return; }
+    turntable = { enablePan: controls.enablePan, minPolar: controls.minPolarAngle, maxPolar: controls.maxPolarAngle };
+    controls.target.set(tt.pivot.x, tt.pivot.y, tt.pivot.z);
+    controls.enablePan = false;
+    controls.zoomToCursor = false;
+    controls.minPolarAngle = Math.PI / 2 - 0.14;
+    controls.maxPolarAngle = Math.PI / 2 + 0.1;
+    controls.minDistance = tt.minDist;
+    controls.maxDistance = tt.maxDist;
+    controls.update();
+    invalidate();
+  }
+  function clearRoomTurntable() {
+    if (!turntable) return;
+    controls.enablePan = true;
+    controls.zoomToCursor = true;
+    controls.minPolarAngle = 0;
+    controls.maxPolarAngle = Math.PI / 2 - 0.02;
+    turntable = null;
+    applyLimits();
+  }
+
   function applyLimits() {
+    if (turntable) return;
     if (!bounds) return;
     const r = Math.max(bounds.getSize(new THREE.Vector3()).length() / 2, 3);
     controls.minDistance = 1.2;
@@ -651,6 +677,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   }
 
   function frameCamera(animate, kind = null) {
+    clearRoomTurntable();
     const hasLot = !!store.project.site?.lot?.boundary?.length;
     lastKind = kind;
     userMoved = false;
@@ -828,6 +855,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
 
   function setMode(next) {
     const m = next === 'walk' ? 'walk' : 'orbit';
+    if (m === 'walk') clearRoomTurntable();
     if (m === mode) {
       // same mode: just make sure the walk controller matches whether the viewer is showing
       if (m === 'walk' && active && !walk.active) walk.enter();
@@ -1088,6 +1116,9 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     },
     // Room snapping (rooms.js). snapToRoom('living' | 'kitchen' | 'master' | 'bed2' | 'alfresco' | 'garage' | 'aerial' | a room id) -> Promise.
     snapToRoom: (tab, opts) => snapRoom(api, store.project, tab, opts),
+    setRoomTurntable,
+    clearRoomTurntable,
+    get inTurntable() { return !!turntable; },
     roomTabs: (levelId, opts) => roomTabsOf(store.project, levelId, opts),
     flyTo: (pose, opts) => flyToPose(api, pose, opts),
     // plumbing for rooms.js

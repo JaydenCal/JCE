@@ -9,7 +9,7 @@
 // exported here too: listRoomTabs(project, levelId?), roomViewpoint(project, roomId), flyTo(viewer, pose, opts).
 // See docs/ROOMS.md. Geometry and wording live in room-logic.js (no three, no DOM).
 
-import { listRoomTabs, roomViewpoint, tabViewpoint, cutawayPose, roomAtPoint, ORBIT_FOV } from './room-logic.js';
+import { listRoomTabs, roomViewpoint, tabViewpoint, cutawayPose, roomAtPoint, roomTurntable, ORBIT_FOV } from './room-logic.js';
 
 export { listRoomTabs, roomViewpoint, tabViewpoint, cutawayPose, roomAtPoint };
 export const roomTabs = listRoomTabs;
@@ -45,8 +45,9 @@ export function cancelFlight(viewer) {
 // flyTo(viewer, { position, target, fov?, levelId? }, { duration = 1.2, ease }) -> Promise<{ completed }>
 // Glides the camera position and look target (orbit mode) or the walker's position and look direction (walk mode).
 // Any pointer, wheel, touch or movement key press cancels it where it is.
-export function flyTo(viewer, pose, { duration = 1.2, ease = easeInOutCubic, keepCutaway = false } = {}) {
+export function flyTo(viewer, pose, { duration = 1.2, ease = easeInOutCubic, keepCutaway = false, keepTurntable = false } = {}) {
   cancelFlight(viewer);
+  if (!keepTurntable) viewer.clearRoomTurntable?.();
   if (!keepCutaway) exitCutaway(viewer);
   const cam = viewer.camera;
   const walking = viewer.mode === 'walk' && viewer.walk?.active;
@@ -142,8 +143,17 @@ export async function snapToRoom(viewer, project, tabOrRoomId, opts = {}) {
   const tab = tabs.find((t) => t.id === tabOrRoomId);
   const pose = tab ? tabViewpoint(project, tab) : roomViewpoint(project, tabOrRoomId);
   if (!pose) return null;
-  const r = await flyTo(viewer, pose, opts);
-  return { ...r, pose };
+  // Orbit mode: the room view is a turntable around the centre of the room at eye height (walk mode keeps the standing point).
+  const walking = viewer.mode === 'walk' && viewer.walk?.active;
+  const tt = !walking && !opts.free && viewer.setRoomTurntable ? roomTurntable(project, pose.roomId, pose) : null;
+  if (!tt) {
+    const r = await flyTo(viewer, pose, opts);
+    return { ...r, pose };
+  }
+  const tpose = { ...pose, position: tt.position, target: tt.pivot };
+  const r = await flyTo(viewer, tpose, opts);
+  if (viewer.mode !== 'walk') viewer.setRoomTurntable(tt);
+  return { ...r, pose: tpose };
 }
 
 // Cutaway ---------------------------------------------------------------------------------------------------

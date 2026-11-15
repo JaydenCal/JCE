@@ -236,3 +236,21 @@ test('snapToRoom: tab ids, room ids, aerial and unknown ids', async () => {
   await snapToRoom(w.v, p, 'aerial', { duration: 0 });
   assert.equal(w.v.mode, 'orbit', 'the aerial view leaves walk mode');
 });
+
+test('room turntable: pivot at the room centre at eye height, camera on a circle inside the room, zoom kept inside', async () => {
+  const { roomTurntable } = await import('../src/viewer3d/room-logic.js');
+  const p = TEMPLATES.find((t) => t.id === 'house_single').create();
+  for (const tab of listRoomTabs(p).filter((t) => t.roomIds.length)) {
+    const vp = tabViewpoint(p, tab);
+    const tt = roomTurntable(p, vp.roomId, vp);
+    assert.ok(tt, tab.id);
+    const lvl = p.levels.find((l) => l.rooms.some((r) => r.id === vp.roomId));
+    assert.ok(Math.abs(tt.pivot.y - (lvl.elevation / 1000 + EYE_HEIGHT)) < 1e-9);
+    assert.equal(tt.position.y, tt.pivot.y);
+    assert.ok(Math.abs(Math.hypot(tt.position.x - tt.pivot.x, tt.position.z - tt.pivot.z) - tt.radius) < 1e-9);
+    assert.ok(tt.maxDist <= tt.radius * 1.1 && tt.minDist < tt.radius);
+    const room = lvl.rooms.find((r) => r.id === vp.roomId);
+    assert.ok(G.pointInPolygon({ x: tt.position.x * 1000, y: tt.position.z * 1000 }, room.polygon), `${tab.id} camera stays inside the room`);
+  }
+  assert.equal(roomTurntable(p, 'nope', null), null);
+});
