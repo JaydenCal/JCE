@@ -47,7 +47,7 @@ export async function createCheckoutSession({ config, fetchImpl, projectId, proj
   }
   p.set('success_url', withQuery(config.appUrl, `checkout=success&session_id={CHECKOUT_SESSION_ID}&project=${encodeURIComponent(projectId)}`));
   p.set('cancel_url', withQuery(config.appUrl, 'checkout=cancel'));
-  p.set('locale', 'en-AU');
+  p.set('locale', 'auto');
   let res;
   try {
     res = await fetchImpl(`${API}/checkout/sessions`, {
@@ -221,7 +221,7 @@ export async function createSubscriptionCheckout({ config, fetchImpl, email = nu
   if (typeof email === 'string' && email.length <= 254 && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) p.set('customer_email', email.trim());
   p.set('success_url', withQuery(config.appUrl, 'csub=success&session_id={CHECKOUT_SESSION_ID}&mode=commercial'));
   p.set('cancel_url', withQuery(config.appUrl, 'csub=cancel&mode=commercial'));
-  p.set('locale', 'en-AU');
+  p.set('locale', 'auto');
   const data = await stripeForm(config, fetchImpl, 'POST', '/checkout/sessions', p);
   if (!data.url) throw new HttpError('PAYMENTS_UNAVAILABLE', 'The payment page could not be created. Try again shortly.');
   return { id: data.id, url: data.url };
@@ -267,7 +267,7 @@ export async function createAiTopUpCheckout({ config, fetchImpl, entId, email = 
   if (typeof email === 'string' && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) p.set('customer_email', email.trim());
   p.set('success_url', withQuery(config.appUrl, 'csub=topup&session_id={CHECKOUT_SESSION_ID}&mode=commercial'));
   p.set('cancel_url', withQuery(config.appUrl, 'csub=cancel&mode=commercial'));
-  p.set('locale', 'en-AU');
+  p.set('locale', 'auto');
   const data = await stripeForm(config, fetchImpl, 'POST', '/checkout/sessions', p);
   if (!data.url) throw new HttpError('PAYMENTS_UNAVAILABLE', 'The payment page could not be created. Try again shortly.');
   return { id: data.id, url: data.url };

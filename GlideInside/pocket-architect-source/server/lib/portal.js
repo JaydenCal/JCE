@@ -1031,7 +1031,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const session = await stripeCall({
       config, fetchImpl, path: '/checkout/sessions',
       form: {
-        mode: 'setup', customer, 'payment_method_types[0]': 'card', client_reference_id: org.id, locale: 'en-AU',
+        mode: 'setup', customer, 'payment_method_types[0]': 'card', client_reference_id: org.id, locale: 'auto',
         'metadata[org_id]': org.id, 'metadata[purpose]': 'gi_card_setup', 'setup_intent_data[metadata][org_id]': org.id,
         success_url: `${origin}/portal/?billing=success&session_id={CHECKOUT_SESSION_ID}#/billing`, cancel_url: `${origin}/portal/?billing=cancel#/billing`,
       },
