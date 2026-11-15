@@ -98,12 +98,15 @@ export const CSS = `
   background: var(--psp-bg); border: 1px solid var(--psp-border-strong); border-radius: var(--psp-radius); box-shadow: var(--psp-shadow);
 }
 .psp-menu[hidden] { display: none; }
+.psp-menu { box-sizing: border-box; max-width: calc(100vw - 16px); overflow-x: hidden; }
+.psp-menu, .psp-menu * { white-space: normal; overflow-wrap: anywhere; }
 .psp-menu-head { padding: 6px 8px 4px; font: 600 11px/1.2 var(--psp-label); letter-spacing: 0.08em; text-transform: uppercase; color: var(--psp-muted); }
 .psp-menu-item {
   display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 10px; width: 100%;
   padding: 8px; border: 0; border-radius: var(--psp-radius); background: transparent; color: var(--psp-text);
-  text-align: left; font: 500 13.5px/1.25 var(--psp-font); cursor: pointer;
+  text-align: left; font: 500 13.5px/1.25 var(--psp-font); cursor: pointer; min-width: 0; box-sizing: border-box;
 }
+.psp-menu-item > span, .psp-menu-item small { min-width: 0; }
 .psp-menu-item:hover:not(:disabled), .psp-menu-item:focus-visible { background: var(--psp-hover); }
 .psp-menu-item small { grid-column: 1; color: var(--psp-muted); font-weight: 400; font-size: 12px; }
 .psp-menu-item .psp-icon { grid-column: 2; grid-row: 1 / span 2; color: var(--psp-muted); }

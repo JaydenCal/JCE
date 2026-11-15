@@ -1,6 +1,7 @@
 /* Builder portal screens. Uses the Glide Inside framework tokens (framework.css). Class prefix pp-. */
 .pp-root{min-height:60vh}
 .pp-sub{color:var(--muted);font-size:13px;line-height:1.4}
+.pp-check>span{min-width:0}.pp-check>span>strong{display:block;margin-bottom:2px}.pp-check>span>.pp-sub{display:block}
 .pp-hint{color:var(--muted);font-size:13px;margin:4px 0 0}
 .pp-lead{color:var(--muted);font-size:17px;margin:0 0 16px;max-width:60ch}.pp-lead--sm{font-size:15px;margin:4px 0 0}
 .pp-center{text-align:center;margin:0}
