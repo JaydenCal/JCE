@@ -328,16 +328,14 @@ export function snapWayPoint(project, p, opts = {}) {
   const reserves = lot ? roadReserve(lot) : [];
   const out = (kind, q, extra = {}) => ({ x: r1(q.x), y: r1(q.y), kind, text: SNAP_LABEL[kind], ...extra });
 
-  // The verge: a point on it goes to the kerb, whatever else is near.
+  // The verge: a point on it (or within a few pixels of the frontage or the kerb) goes to the kerb, whatever else is near.
   if (allowKerb) {
     for (const r of reserves) {
-      const side = G.dot(G.sub(p, r.lines.property[0]), r.outward);
-      const inBand = side > -tol * 0.4 && side <= r.vergeM * 1000 + tol * 1.5;
+      const side = G.dot(G.sub(p, r.lines.property[0]), r.outward); // distance out from the property line
       const along = G.dot(G.sub(p, r.lines.property[0]), r.u);
       const len = dist(r.lines.property[0], r.lines.property[1]);
-      if (inBand && along > -widthMm && along < len + widthMm && (side > 0 || !alt)) {
-        if (side > 0 || side > -tol * 0.4) { const k = kerbPointFor(r, p, widthMm); return out('kerb', k, { kerbEdge: r.edge }); }
-      }
+      const inBand = side > -tol * 0.4 && side <= r.vergeM * 1000 + tol * 1.5;
+      if (inBand && along > -widthMm && along < len + widthMm) return out('kerb', kerbPointFor(r, p, widthMm), { kerbEdge: r.edge });
     }
   }
   if (alt) return out('free', lot && !G.pointInPolygon(p, lot.boundary) ? clampToLot(project, p) : p);
@@ -347,10 +345,6 @@ export function snapWayPoint(project, p, opts = {}) {
   for (const w of getWays(project)) {
     if (w.id === exclude) continue;
     for (const q of [w.pts[0], w.pts.at(-1)]) if (dist(p, q) <= tol * 1.3) return out('end', q, { kerbEdge: w.kerbEdge != null && q === w.pts[0] ? w.kerbEdge : undefined });
-  }
-  if (!drivewayIsDrawn(project)) {
-    const dw = null; // the automatic driveway is not a drawn pavement: its end is not a snap target
-    void dw;
   }
   if (lot) {
     for (const v of lot.boundary) if (dist(p, v) <= tol) return out('corner', v);

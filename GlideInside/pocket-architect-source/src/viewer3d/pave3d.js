@@ -78,8 +78,8 @@ export function addDrawnWays(project, surf) {
         b.tri(slot, V(p[0], p[1]), V(q[0], q[1]), V(r[0], r[1]), uv(p[0], p[1]), uv(q[0], q[1]), uv(r[0], r[1]), [0, 1, 0]);
         stats.triangles += 1;
       }
-      // Edge line: a 0.1 m dark strip centred on the outline, draped.
-      if (!mats.edge) mats.edge = mat('#2f3236', { roughness: 0.9, polygonOffset: true, polygonOffsetFactor: -7, polygonOffsetUnits: -7 });
+      // Edge line: a 0.07 m dark strip centred on the outline, draped.
+      if (!mats.edge) mats.edge = mat('#50545a', { roughness: 0.9, polygonOffset: true, polygonOffsetFactor: -7, polygonOffsetUnits: -7 });
       const ring = pc.ring;
       for (let i = 0; i < ring.length; i++) {
         const a = ring[i]; const c = ring[(i + 1) % ring.length];
@@ -90,7 +90,7 @@ export function addDrawnWays(project, surf) {
         for (let k = 0; k < n; k++) {
           const p0 = { x: a.x + ((c.x - a.x) * k) / n, y: a.y + ((c.y - a.y) * k) / n };
           const p1 = { x: a.x + ((c.x - a.x) * (k + 1)) / n, y: a.y + ((c.y - a.y) * (k + 1)) / n };
-          const E = (p, s) => V(p.x / 1000 + nx * 0.05 * s, p.y / 1000 + ny * 0.05 * s);
+          const E = (p, s) => V(p.x / 1000 + nx * 0.035 * s, p.y / 1000 + ny * 0.035 * s);
           b.quad('edge', E(p0, -1), E(p1, -1), E(p1, 1), E(p0, 1), [[0, 0], [1, 0], [1, 1], [0, 1]], [0, 1, 0]);
         }
       }

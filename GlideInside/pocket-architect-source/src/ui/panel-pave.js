@@ -2,7 +2,7 @@
 // road), the material, the width and bend radius, the selected way (split, join, turning heads, delete) and the pavement drawn so far by material.
 
 import { h, clear } from './dom.js';
-import { button } from './panel-forms.js';
+import { button, numberField } from './panel-forms.js';
 import { paveState, setPaveState, onPaveState, PAVE_MODES, currentWidth } from '../editor2d/pave-state.js';
 import { KINDS, MATERIALS, MATERIAL_IDS, HEADS, defaultMaterial, pavedSummary, getWay, wayGeometry, clampWidth } from '../site/pavedways.js';
 import { garageDoor } from '../site/lotplan.js';
@@ -46,14 +46,16 @@ export function pavePanel(ctx) {
     const input = h('input', { type: 'range', min: String(def.minMm), max: String(def.maxMm), step: '250', value: String(now), 'aria-label': 'Width', dataset: { ps: 'pave-width' }, style: { width: '100%' } });
     input.addEventListener('input', () => { out.textContent = m1(Number(input.value) / 1000); });
     input.addEventListener('change', () => ctl()?.setWidth(Number(input.value)));
-    return h('div', null, h('div', { class: 'ps-row', style: { justifyContent: 'space-between', margin: '0 0 4px' } }, h('span', { class: 'ps-hint', style: { margin: 0 } }, `${m1(def.minMm / 1000)} to ${m1(def.maxMm / 1000)}`), out), input);
+    const num = numberField({ label: 'Exact width', get: () => (sel()?.widthMm ?? paveState.widthMm[sel()?.kind || paveState.kind]) / 1000, commit: (v) => ctl()?.setWidth(Math.round(v * 1000)), min: def.minMm / 1000, max: def.maxMm / 1000, step: 0.05, unit: 'm', decimals: 2 });
+    return h('div', null, h('div', { class: 'ps-row', style: { justifyContent: 'space-between', margin: '0 0 4px' } }, h('span', { class: 'ps-hint', style: { margin: 0 } }, `${m1(def.minMm / 1000)} to ${m1(def.maxMm / 1000)}`), out), input, num.el);
   }
 
   function radiusControl() {
     const now = sel()?.radiusMm ?? paveState.radiusMm;
     const wrap = h('div', { class: 'ps-chips', role: 'group', 'aria-label': 'Bend radius', dataset: { ps: 'pave-radius' } });
     for (const [v, label] of RADII) wrap.append(h('button', { class: 'ps-chip', type: 'button', 'aria-pressed': String(now === v), dataset: { value: v }, onclick: () => ctl()?.setRadius(v) }, label));
-    return wrap;
+    const num = numberField({ label: 'Exact radius', get: () => (sel()?.radiusMm ?? paveState.radiusMm) / 1000, commit: (v) => ctl()?.setRadius(Math.round(v * 1000)), min: 0, max: 30, step: 0.5, unit: 'm', decimals: 1 });
+    return h('div', null, wrap, num.el);
   }
 
   function modes() {
