@@ -2,9 +2,10 @@
 // Used by the home page frame (?embed=1 or ?view=viewer). Also the shared "find an address and load it" flow, which both modes use
 // for ?address= and which the viewer runs for a gi:find-address message from the page around it.
 //
-//   parent -> app   { type: 'gi:find-address', address }       same origin parent only
+//   parent -> app   { type: 'gi:find-address', address, pick? } same origin parent only; pick { label, state, lon, lat } is a suggestion the
+//                                                              visitor chose, used as is (no second search)
 //   app -> parent   { type: 'gi:ready' }                         the app is listening for gi:find-address
-//   app -> parent   { type: 'gi:status', state: 'loading' | 'done' | 'error', message?, address? }
+//   app -> parent   { type: 'gi:status', state: 'loading' | 'done' | 'error', message?, address?, retry? }
 
 import { h } from './dom.js';
 import { toast } from './toast.js';
@@ -194,15 +195,17 @@ export async function placeBestDesign(store, catalogue, wantId = null, { after =
   return first;
 }
 
+export const validPick = (p) => !!p && typeof p === 'object' && Number.isFinite(p.lon) && Number.isFinite(p.lat) && typeof p.label === 'string' && p.label.length > 0;
+
 /**
  * Find my block without any dialogs: look the address up, take the first result, load the lot, accept the detected frontage and
  * place the current design. Throws a readable Error when the address is not found.
  */
-export async function loadAddress(store, catalogue, address, { onStep, viewer = false, after = null, place = true } = {}) {
+export async function loadAddress(store, catalogue, address, { onStep, viewer = false, after = null, place = true, pick: given = null } = {}) {
   const q = String(address || '').trim();
   if (q.length < 3) throw new Error('Type a street address first.');
-  const results = await smartSearch(q, { onRetry: () => onStep?.('busy') });
-  const pick = results[0];
+  // A suggestion the visitor already chose carries its coordinates: use it directly, no second search.
+  const pick = validPick(given) ? given : (await smartSearch(q, { onRetry: () => onStep?.('busy') }))[0];
   if (!pick) throw Object.assign(new Error(NOT_FOUND_TEXT), { notFound: true });
   const wantId = store.ui.placedDesign?.id || null;
   const { lot, warnings } = await applySiteLookup(store, pick, { onStep });
@@ -248,12 +251,13 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
   let busy = false;
   let pending = null;
   let pendingNotify = false;
+  let pendingPick = null;
   let off = null;
 
   const settle = () => {
     busy = false;
     delete shell.dataset.embedBusy;
-    if (pending != null) { const a = pending; const n = pendingNotify; pending = null; pendingNotify = false; run(a, { notify: n }); }
+    if (pending != null) { const a = pending; const n = pendingNotify; const pk = pendingPick; pending = null; pendingNotify = false; pendingPick = null; run(a, { notify: n, pick: pk }); }
   };
 
   // The whole lot from above (the lot card's Aerial pill), the first frame of the cinematic view.
@@ -269,19 +273,19 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
 
   /** Load an address. Resolves true when it loaded, false when it failed, null when it was queued behind a lookup in progress.
    *  `notify`: the search came from the viewer's own pill, so a failure is shown here (a search sent by the page around it is reported to that page). */
-  async function run(address, { notify = false } = {}) {
-    if (busy) { pending = address; pendingNotify = notify; return null; }
+  async function run(address, { notify = false, pick = null } = {}) {
+    if (busy) { pending = address; pendingNotify = notify; pendingPick = pick; return null; }
     busy = true;
     shell.dataset.embedBusy = '1';
     postToParent({ type: 'gi:status', state: 'loading', address });
     try {
-      const r = commercial ? await loadAddressCommercial(store, address, { onStep: null }) : await loadAddress(store, catalogue, address, { viewer: viewerMode, after: viewerMode ? settleAerial : null });
+      const r = commercial ? await loadAddressCommercial(store, address, { onStep: null }) : await loadAddress(store, catalogue, address, { viewer: viewerMode, after: viewerMode ? settleAerial : null, pick });
       if (viewerMode) { store.setUI({ view: '3d' }); await aerial(); }
       postToParent({ type: 'gi:status', state: 'done', address: r.lot?.address || address });
       return true;
     } catch (e) {
       const message = e?.message || 'The address could not be loaded.';
-      postToParent({ type: 'gi:status', state: 'error', message, address });
+      postToParent({ type: 'gi:status', state: 'error', message, address, retry: e?.code === 'SLOW' });
       // Not found: a sample lot is always offered, so the pill never just reverts.
       if (notify) toast(message, e?.notFound ? { kind: 'warn', timeout: 14000, action: { label: 'Try a sample lot', onClick: () => startDemo() } } : { kind: 'error' });
       return false;
@@ -309,7 +313,8 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
     if (ev.origin !== location.origin || ev.source !== window.parent) return;
     const m = ev.data;
     if (!m || typeof m !== 'object' || m.type !== 'gi:find-address' || typeof m.address !== 'string') return;
-    run(m.address.slice(0, 160));
+    const pk = m.pick && typeof m.pick === 'object' ? { label: String(m.pick.label || '').slice(0, 160), state: m.pick.state === 'QLD' ? 'QLD' : 'NSW', lon: Number(m.pick.lon), lat: Number(m.pick.lat) } : null;
+    run(m.address.slice(0, 160), { pick: validPick(pk) ? pk : null });
   };
   window.addEventListener('message', onMessage);
   postToParent({ type: 'gi:ready' }); // the listener is on: a search sent now waits its turn behind the lot that is loading

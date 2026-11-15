@@ -89,9 +89,15 @@
   // Address search: one component for the bar above the frame and the field in step 1. Suggestions come from /api/site/search?q=
   // (the same call the app makes). Choosing one sends gi:find-address to the embedded viewer and scrolls it into view; on a phone it
   // opens the viewer full screen at that address instead.
-  function postFind(address) {
-    try { live.frame.contentWindow.postMessage({ type: "gi:find-address", address: address }, location.origin); } catch (e) {}
+  function postFind(address, pick) {
+    var msg = { type: "gi:find-address", address: address };
+    if (pick && isFinite(pick.lon) && isFinite(pick.lat)) msg.pick = { label: pick.label, state: pick.state, lon: pick.lon, lat: pick.lat };
+    try { live.frame.contentWindow.postMessage(msg, location.origin); } catch (e) {}
   }
+  // Suggestions already shown, by lower case label: submitting text that matches one uses its coordinates and makes no second search.
+  var shown = {};
+  function remember(list) { (list || []).forEach(function (r) { if (r && r.label) shown[r.label.toLowerCase().replace(/\s+/g, " ")] = r; }); }
+  function shownFor(q) { return shown[String(q).toLowerCase().trim().replace(/\s+/g, " ")] || null; }
   // "Open full editor" carries the last searched address into the app.
   function syncEdit() {
     document.querySelectorAll(".lh-edit").forEach(function (a) {
@@ -101,17 +107,17 @@
       a.setAttribute("href", u.pathname + u.search);
     });
   }
-  function openAddress(address) {
-    live.last = address; syncEdit();
+  function openAddress(address, pick) {
+    live.last = address; live.lastPick = pick || null; syncEdit();
     try { if (window.gtag) window.gtag("event", "address_search", {}); } catch (e) {}
     if (phoneMq.matches || !live.frame) { location.assign(appUrl(address)); return; }
     live.box.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
     setBusy(true);
-    if (live.ready) { postFind(address); return; }
+    if (live.ready) { postFind(address, pick); return; }
     // Not ready: a frame that has not started loads straight at the address (?address=); one that is still starting gets it when it says gi:ready,
     // and is pointed at the address itself if that does not happen.
     if (live.start(address)) { live.pending = null; return; }
-    live.pending = address;
+    live.pending = address; live.pendingPick = pick || null;
     clearTimeout(live.fallback);
     live.fallback = setTimeout(function () {
       if (!live.pending || live.ready) return;
@@ -124,15 +130,25 @@
     searches.forEach(function (c) { if (!c.go) return; if (on) { c.go.dataset.label = c.go.dataset.label || c.go.textContent; c.go.textContent = "Finding your block..."; c.go.disabled = true; } else if (c.go.dataset.label) { c.go.textContent = c.go.dataset.label; c.go.disabled = false; } });
     if (on) live.busyT = setTimeout(function () { setBusy(false); }, 60000);
   }
-  function setStatus(text, kind) { searches.forEach(function (c) { c.status.textContent = text || ""; c.status.dataset.kind = kind || ""; }); }
+  // A warning always ends the "Finding your block..." state, and may carry a Try again button.
+  function setStatus(text, kind, retry) {
+    if (kind === "warn") setBusy(false);
+    searches.forEach(function (c) {
+      c.status.textContent = text || ""; c.status.dataset.kind = kind || "";
+      if (retry && text) {
+        var b = document.createElement("button"); b.type = "button"; b.className = "as-retry"; b.textContent = "Try again";
+        b.addEventListener("click", retry); c.status.appendChild(document.createTextNode(" ")); c.status.appendChild(b);
+      }
+    });
+  }
   window.addEventListener("message", function (e) {
     if (e.origin !== location.origin || !live.frame || e.source !== live.frame.contentWindow) return;
     var m = e.data; if (!m || typeof m !== "object") return;
-    if (m.type === "gi:ready") { live.ready = true; clearTimeout(live.fallback); if (live.pending) { var a = live.pending; live.pending = null; postFind(a); } }
+    if (m.type === "gi:ready") { live.ready = true; clearTimeout(live.fallback); if (live.pending) { var a = live.pending; live.pending = null; postFind(a, live.pendingPick); } }
     else if (m.type === "gi:status") {
       if (m.state === "loading") setStatus("Loading your block");
       else if (m.state === "done") { setBusy(false); if (m.address) { live.last = m.address; syncEdit(); } setStatus(m.address ? "Showing " + m.address : "", ""); }
-      else if (m.state === "error") { setBusy(false); setStatus(m.message || "That address could not be loaded.", "warn"); }
+      else if (m.state === "error") { setBusy(false); setStatus(m.message || "That address could not be loaded.", "warn", m.retry && live.last ? function () { setBusy(true); setStatus(""); postFind(live.last, live.lastPick); } : null); }
     }
   });
   var searchCache = {};
@@ -164,11 +180,23 @@
       ctl = window.AbortController ? new AbortController() : null;
       return fetch("/api/site/search?q=" + encodeURIComponent(q), ctl ? { signal: ctl.signal } : {})
         .then(function (res) { if (!res.ok) throw new Error("search " + res.status); return res.json(); })
-        .then(function (body) { if (my !== seq) return null; return (body && body.results) || []; })
-        .catch(function (e) { if (e && e.name === "AbortError") return null; if (my === seq) { setBusy(false); setStatus("The address search is not available right now. Try again soon.", "warn"); } return null; });
+        .then(function (body) {
+          if (my !== seq) return null;
+          if (body && body.unavailable) { var er = new Error("slow"); er.slow = true; throw er; }
+          var r = (body && body.results) || []; r.hint = body && body.hint; remember(r); return r;
+        })
+        .catch(function (e) {
+          if (e && e.name === "AbortError") return null;
+          if (my === seq) {
+            if (e && e.slow) setStatus("The address service is slow, try again.", "warn", function () { var q2 = input.value.trim(); if (q2.length >= 3) { setStatus(""); run(q2, true); } });
+            else setStatus("The address search is not available right now. Try again soon.", "warn");
+          }
+          return null;
+        });
     }
-    function run(q) {
+    function run(q, fresh) {
       var key = q.toLowerCase().replace(/\s+/g, " ");
+      if (fresh) delete searchCache[key];
       if (searchCache[key]) { results = searchCache[key]; active = -1; searching = false; paint(); setStatus(""); return Promise.resolve(results); }
       searching = true; paint(); // the previous suggestions stay up while the new ones load
       return search(q).then(function (r) {
@@ -176,7 +204,7 @@
         if (r == null) { paint(); return null; }
         searchCache[key] = r;
         results = r; active = -1; paint();
-        setStatus(r.length ? "" : "No matching address found. Check the spelling, or try the street name and suburb.", r.length ? "" : "warn");
+        setStatus(r.length ? (r.hint ? "Add a house number to find your exact address." : "") : (r.hint ? "Add a house number, for example 12 " + q.replace(/^\d+\s*/, "") + "." : "No matching address found. Check the spelling, or try the street name and suburb."), r.length && !r.hint ? "" : (r.length ? "" : "warn"));
         return r;
       });
     }
@@ -185,12 +213,14 @@
       close(); results = [];
       searches.forEach(function (c) { c.input.value = r.label; });
       setStatus("");
-      openAddress(r.label);
+      openAddress(r.label, r);
     }
     function submit() {
       var q = input.value.trim();
       if (q.length < 3) { setStatus("Type your street address first.", "warn"); return; }
       if (active >= 0) { choose(active); return; }
+      var known = shownFor(q); // exactly a suggestion already shown: use its coordinates, no second search
+      if (known) { results = [known]; choose(0); return; }
       setBusy(true);
       run(q).then(function (r) { if (r && r.length) choose(0); else setBusy(false); });
     }

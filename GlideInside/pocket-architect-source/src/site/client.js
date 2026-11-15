@@ -45,11 +45,12 @@ function friendly(body, status) {
 }
 
 export const RETRY_DELAY_MS = 1500;
-export const SEARCH_TIMEOUT_MS = 12000;
+export const SLOW_TEXT = 'The address service is slow, try again.';
+export const SEARCH_TIMEOUT_MS = 16000; // the server allows its prefix query up to 6.5 s plus one retry
 export const BUSY_MESSAGE = 'Busy, trying again';
 
 // A failure worth one more try: the network, a timeout or a 5xx. Never a 4xx, a rate limit or the user's own abort.
-export const isRetryable = (e) => e?.name !== 'AbortError' && (e?.code === 'NETWORK' || e?.code === 'TIMEOUT' || /^HTTP_5\d\d$/.test(e?.code || '') || e?.code === 'SITE_UPSTREAM');
+export const isRetryable = (e) => e?.name !== 'AbortError' && (e?.code === 'NETWORK' || e?.code === 'TIMEOUT' || e?.code === 'SLOW' || /^HTTP_5\d\d$/.test(e?.code || '') || e?.code === 'SITE_UPSTREAM');
 
 // Sleep that ends early (rejecting with an AbortError) when the caller's signal aborts.
 function wait(ms, signal, sleepImpl = sleep) {
@@ -92,7 +93,14 @@ export async function searchAddresses(q, opts = {}) {
     return mockSearch(text);
   }
   const { onRetry, retryDelayMs = RETRY_DELAY_MS, sleepImpl, signal, fetchImpl, timeoutMs } = opts;
-  const once = async () => ((await getJsonTimed('search', { q: text }, { signal, fetchImpl, timeoutMs }))?.results || []);
+  const once = async () => {
+    const body = await getJsonTimed('search', { q: text }, { signal, fetchImpl, timeoutMs });
+    // The upstream timed out: this is "slow, try again", never "no match".
+    if (body?.unavailable) throw new SiteError(SLOW_TEXT, 'SLOW');
+    const rows = body?.results || [];
+    if (body?.hint) rows.hint = body.hint;
+    return rows;
+  };
   let first;
   try {
     first = await once();

@@ -90,6 +90,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
       results = [];
       paint();
       say(e?.message || 'The address search failed. You can keep drawing without a lot.', 'warn');
+      if (e?.code === 'SLOW') status.append(' ', h('button', { class: 'ps-btn ps-btn--ghost', type: 'button', dataset: { ps: 'find-retry' }, onclick: () => search() }, 'Try again'));
     }
   }
   const debounced = debounce(search, 150);

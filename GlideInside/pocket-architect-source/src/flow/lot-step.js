@@ -22,6 +22,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
   let list = [];
   let timer = 0;
   let notFound = false;
+  let slow = false;
   let disposed = false;
   const app = typeof window !== 'undefined' ? window.__ps : null;
 
@@ -74,9 +75,9 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
   async function find() {
     const q = input.value.trim();
     if (q.length < 3) { error = 'Type a street address first.'; paint(); return; }
-    loading = true; error = ''; notFound = false; paint();
-    let pick = null;
-    try { pick = (await smartSearch(q, {}))[0]; } catch (e) { error = e?.message || 'The address search is not available right now.'; }
+    loading = true; error = ''; notFound = false; slow = false; paint();
+    let pick = list.find((r) => String(r.label || '').toLowerCase() === q.toLowerCase()) || null; // a suggestion already shown: no second search
+    try { if (!pick) pick = (await smartSearch(q, {}))[0]; } catch (e) { error = e?.message || 'The address search is not available right now.'; slow = e?.code === 'SLOW'; }
     loading = false;
     if (!pick && !error) { error = NOT_FOUND_TEXT; notFound = true; }
     if (pick) await choose(pick); else paint();
@@ -129,6 +130,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     upload.hidden = !notFound;
     sample.textContent = notFound ? 'Try a sample lot' : 'No address? Try a sample lot';
     status.textContent = loading ? 'Finding your lot' : error;
+    if (slow && error && !loading) status.append(' ', h('button', { class: 'gf-skip', type: 'button', style: { padding: '0 0 0 6px', fontWeight: '700' }, dataset: { ps: 'flow-retry' }, onclick: () => find() }, 'Try again'));
     status.className = `gf-note${error && !loading ? ' gf-note--bad' : ''}`;
     paintConfirm();
   }
