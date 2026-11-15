@@ -1,0 +1,24 @@
+// Steps 3 and 4 fetch the lot's aerial themselves when step 1 left none (same /site/aerial request as the editor), and only say "No aerial for this lot" when that fails.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { lotBboxMga, ensureFlowAerial, NO_AERIAL } from '../src/flow/flow-aerial.js';
+
+const lot = { state: 'NSW', srid: 7856, origin: { e: 400000, n: 6400000 }, boundary: [{ x: -10000, y: -20000 }, { x: 10000, y: -20000 }, { x: 10000, y: 20000 }, { x: -10000, y: 20000 }] };
+test('lot box in MGA metres', () => {
+  assert.deepEqual(lotBboxMga(lot), { minE: 399990, maxE: 400010, maxN: 6400020, minN: 6399980 });
+});
+test('no lot, outside NSW/QLD or a failing service: false and never throws', async () => {
+  assert.equal(await ensureFlowAerial({ project: { id: 'a', site: {} } }), false);
+  assert.equal(await ensureFlowAerial({ project: { id: 'b', site: { lot: { ...lot, state: 'VIC' } } } }), false);
+  const failing = { project: { id: 'c', site: { lot: { ...lot } } }, emit() {} };
+  assert.equal(await ensureFlowAerial(failing, { fetchImpl: async () => new Response('x', { status: 500 }) }), false);
+  assert.equal(NO_AERIAL, 'No aerial for this lot');
+});
+test('step 3 wiring: fetches when missing, labels, and frames the home by lot area', () => {
+  const s = fs.readFileSync(new URL('../src/flow/residential.js', import.meta.url), 'utf8');
+  assert.match(s, /ensureFlowAerial\(store\)/);
+  assert.match(s, /shoelace\(lot\.boundary\) \/ Math\.max\(shoelace\(hl\), 1\) > 4/);
+  assert.match(s, /marginMm = 20000/);
+  assert.doesNotMatch(s, /Aerial: none/);
+});

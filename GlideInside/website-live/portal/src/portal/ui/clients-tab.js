@@ -41,10 +41,74 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
     h('thead', null, h('tr', null, ...['Client', 'Lot address', 'Houses', 'Status', 'Last sign in', 'Projects', 'AI credits', 'Actions'].map((t) => h('th', { scope: 'col' }, t)))), tbody);
   const empty = h('p', { class: 'pp-empty', hidden: true }, locked ? 'No client logins yet.' : 'No client logins yet. Use Generate account to create the first one.');
 
+  function regionRow(canSet) {
+    const input = h('input', { type: 'text', maxlength: '60', value: me.org.directoryRegion || '', disabled: !canSet, placeholder: 'Mid North Coast NSW', dataset: { setting: 'directoryRegion' }, 'aria-label': 'Region shown in the local builder search' });
+    const save = async () => {
+      try {
+        me.org = await api.setOrgSettings({ directoryRegion: input.value });
+        toast('Saved.', { kind: 'ok' });
+      } catch (ex) {
+        toast(errorMessage(ex), { kind: 'error' });
+      }
+    };
+    return h('div', { class: 'pp-region', style: { display: 'flex', gap: '10px', alignItems: 'flex-end', flexWrap: 'wrap', padding: '6px 0 6px 28px' } }, h('div', null, h('strong', null, 'Region shown in the builder search'), h('span', { class: 'pp-sub' }, 'Optional. For example the towns or area you build in.'), h('div', null, input)), h('button', { class: 'pp-btn pp-btn--sm', type: 'button', disabled: !canSet, onclick: save }, 'Save region'));
+  }
+
+  // Client access requests: visitors who asked this builder for a login. Approve issues the login through the normal flow.
+  const reqHost = h('section', { class: 'pp-card', id: 'client-requests', hidden: true, dataset: { ps: 'client-requests' } });
+  async function loadRequests() {
+    let list = [];
+    try { list = await api.listClientRequests({ status: 'pending' }); } catch { list = []; }
+    reqHost.hidden = list.length === 0;
+    if (!list.length) return;
+    reqHost.replaceChildren(
+      h('h3', null, `Client login requests (${list.length})`),
+      h('p', { class: 'pp-lead pp-lead--sm' }, 'These people found you in the local builder search and asked for a login. Approve to generate their account, then pass the username and temporary password on yourself. The system sends no email.'),
+      h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table pp-table--stack' },
+        h('thead', null, h('tr', null, ...['Name', 'Contact', 'Lot address', 'Chosen design', 'Requested', 'Actions'].map((t) => h('th', { scope: 'col' }, t)))),
+        h('tbody', null, ...list.map((q) => h('tr', { dataset: { id: q.id, ps: 'client-request' } },
+          td('Name', h('strong', null, q.name)),
+          td('Contact', h('div', null, q.email), h('div', { class: 'pp-sub' }, q.phone)),
+          td('Lot address', q.lotAddress || h('span', { class: 'pp-sub' }, 'Not given')),
+          td('Chosen design', q.designName || h('span', { class: 'pp-sub' }, 'None yet')),
+          td('Requested', day(q.createdAt)),
+          td('Actions', canGenerate ? h('div', { class: 'pp-actions' },
+            h('button', { class: 'pp-btn pp-btn--sm pp-btn--primary', type: 'button', dataset: { act: 'approve' }, onclick: (e) => approveRequest(e.currentTarget, q) }, 'Approve'),
+            h('button', { class: 'pp-btn pp-btn--sm', type: 'button', dataset: { act: 'decline' }, onclick: () => declineRequest(q) }, 'Decline')) : h('span', { class: 'pp-sub' }, locked ? 'Add billing details to approve' : 'Read only')))))));
+  }
+  async function approveRequest(btn, q) {
+    await busy(btn, async () => {
+      try {
+        const r = await api.approveClientRequest(q.id);
+        openDialog({ title: `Account for ${r.client.name}`, body: h('div', null,
+          credentialsCard({ username: r.credentials.username, password: r.credentials.password, who: r.client.name, signInUrl: portalUrl('?client=1'), expiryDays: TEMP_PASSWORD_DAYS }),
+          h('p', { class: 'pp-notice pp-notice--quiet' }, icon('info', 18), `${r.charge.note} Pass these details to ${r.client.name} yourself (${q.email}, ${q.phone}).`)),
+        footer: (x) => h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: () => x.close() }, 'Done') });
+        await load();
+        await loadRequests();
+        refreshBilling?.();
+      } catch (ex) {
+        toast(errorMessage(ex), { kind: 'error' });
+      }
+    });
+  }
+  function declineRequest(q) {
+    confirmDialog({ title: `Decline ${q.name}?`, message: 'The request is marked declined. Nothing is sent to them.', confirmLabel: 'Decline request' }).then(async (ok) => {
+      if (!ok) return;
+      try {
+        await api.declineClientRequest(q.id, {});
+        toast('Request declined.', { kind: 'ok' });
+        await loadRequests();
+      } catch (ex) {
+        toast(errorMessage(ex), { kind: 'error' });
+      }
+    });
+  }
+
   function settingsCard() {
     const canSet = me.permissions.includes('billing.write') && !isReadOnly(me);
     const row = (key, title, help) => {
-      const box = h('input', { type: 'checkbox', checked: (key === 'showAerialDefault' || key === 'showAiAssistant') ? me.org[key] !== false : !!me.org[key], disabled: !canSet, onchange: async (e) => {
+      const box = h('input', { type: 'checkbox', dataset: { setting: key }, checked: (key === 'showAerialDefault' || key === 'showAiAssistant') ? me.org[key] !== false : !!me.org[key], disabled: !canSet, onchange: async (e) => {
         try {
           me.org = await api.setOrgSettings({ [key]: e.target.checked });
           toast('Saved.', { kind: 'ok' });
@@ -60,6 +124,8 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
       h('p', { class: 'pp-lead pp-lead--sm' }, 'What your clients can see and do. Your own staff logins are not affected.'),
       row('showAerialDefault', 'Show aerial by default', 'On by default: lots open with the aerial imagery. Turn it off to open on a clean ground. Anyone can still switch the aerial on or off, and the browser remembers their choice.'),
       row('showAiAssistant', 'Show AI design assistant to clients', 'On by default. Turn it off to hide the assistant entirely for your clients (their plans, colours and exports are unaffected). Your own staff logins keep it.'),
+      row('directoryListed', 'List my business in the local builder search', 'Off by default. When on, visitors to Glide Inside Residential can find your business by name (you appear with your name, region and logo only) and ask you for a client login. Their request waits in the list on this page and nothing is emailed. You decide whether to approve it.'),
+      regionRow(canSet),
       row('showGlideToClients', 'Show Glide Inside sample designs to clients', 'Off (the default) means clients see only your own house designs.'),
       row('allowClientEnquiries', 'Let clients send their plans to JCE for engineering and DA quotes', 'On by default. Nothing is sent until the client ticks consent and presses Send.'),
       row('allowClientCadExports', 'Let clients export DXF and 3D models as well as the PDF', 'Off by default: clients get your branded PDF plans only. The design files stay your property (see the terms: clients are licensed to use the plans for their own build only).'));
@@ -198,7 +264,9 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
       h('div', null, h('h2', null, 'Clients'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Give each client a login to Glide Inside Residential with your branding and your house designs. The system sends no email, so you pass the username and password on yourself.')),
       canGenerate ? h('button', { class: 'pp-btn pp-btn--primary pp-btn--lg', type: 'button', id: 'generate-account', onclick: generateDialog }, icon('plus', 18), 'Generate account') : null),
     locked ? lockedNotice : h('p', { class: 'pp-notice' }, icon('info', 18), CHARGE_NOTICE),
+    reqHost,
     h('div', { class: 'pp-table-wrap' }, table), empty,
     settingsCard());
+  loadRequests();
   return load();
 }

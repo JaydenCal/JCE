@@ -36,6 +36,8 @@ export function createAdminApi({ token, base = CONFIG.apiBase, fetchImpl = null 
     approve: (id) => call('POST', `/trial-requests/${encodeURIComponent(id)}/approve`, {}),
     decline: (id, note) => call('POST', `/trial-requests/${encodeURIComponent(id)}/decline`, { note }),
     listOrgs: () => call('GET', '/orgs'),
+    /** Every builder's client access requests (read only; the builder decides). */
+    listClientRequests: () => call('GET', '/client-requests'),
     extendTrial: (id) => call('POST', `/orgs/${encodeURIComponent(id)}/extend-trial`, {}),
     convert: (id, note) => call('POST', `/orgs/${encodeURIComponent(id)}/convert`, { note }),
     setLoginRate: (id, cents) => call('POST', `/orgs/${encodeURIComponent(id)}/login-rate`, { cents }),

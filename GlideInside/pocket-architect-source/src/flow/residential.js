@@ -13,6 +13,7 @@ import { writeFlow, flowOf } from './state.js';
 import { loadHomes, filterRows, placeBest, nudgeHouse, turnHouse, mirrorHouse, previewCopy, placementStatus, checkSummary, INDICATIVE } from './res-logic.js';
 import { mount3dPreview } from './preview3d.js';
 import { mountBuilderFinder } from './builder-finder.js';
+import { ensureFlowAerial, NO_AERIAL } from './flow-aerial.js';
 
 export const RESIDENTIAL_BRAND = 'Glide Inside Residential';
 
@@ -95,6 +96,7 @@ function mountPlaceStep(ctx, { getHomes }) {
   // Zoom and pan: `view` is the visible box in plan mm (same shape as `box`); null means the whole lot. Aerial on/off is remembered.
   let view = null;
   let aerialOn = true;
+  let aerialState = 'loading'; // loading | done
   try { aerialOn = localStorage.getItem('gi.flow.aerial') !== '0'; } catch { /* default on */ }
 
   const stage = h('div', { class: 'gf-stage', tabindex: '0', role: 'application', 'aria-label': 'Placement plan. Drag the home to move it. Arrow keys nudge it.', dataset: { ps: 'flow-stage' } });
@@ -155,15 +157,17 @@ function mountPlaceStep(ctx, { getHomes }) {
     view = next.w >= box.w - 1 ? null : next;
     draw(liveProject || store.project);
   }
-  function zoomHome(frames = 4) {
+  // Frame the home with 20 m of ground around it (the whole lot when that is nearly as big).
+  function zoomHome(marginMm = 20000) {
     const hl = buildingHull(store.project);
     if (!box || hl.length < 3) return;
+    const hb = G.bbox(hl);
+    const w = Math.min(box.w, Math.max(30000, Math.max(hb.w, hb.h * (box.w / box.h)) + 2 * marginMm));
     const c = houseCentre(store.project);
-    const diag = Math.max(...hl.map((p) => G.dist(p, c))) * 2;
-    const w = Math.min(box.w, Math.max(18000, diag * frames));
     view = w >= box.w - 1 ? null : clampView({ x: c.x - w / 2, y: c.y - (w * (box.h / box.w)) / 2, w, h: w * (box.h / box.w) });
     draw(liveProject || store.project);
   }
+  const shoelace = (pts) => Math.abs(pts.reduce((t, p, i) => { const q = pts[(i + 1) % pts.length]; return t + p.x * q.y - q.x * p.y; }, 0)) / 2;
   const toMm = (ev) => { const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; const m = svg.getScreenCTM(); return m ? p.matrixTransform(m.inverse()) : { x: 0, y: 0 }; };
 
   const poly = (pts, attrs) => { const e = document.createElementNS(NS, 'polygon'); e.setAttribute('points', pts.map((p) => `${Math.round(p.x)},${Math.round(p.y)}`).join(' ')); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); return e; };
@@ -184,7 +188,7 @@ function mountPlaceStep(ctx, { getHomes }) {
     if (!box) box = mapBox(lot, { margin: 0.12, roadM: 12 });
     const V = vb();
     svg.setAttribute('viewBox', `${Math.round(V.x)} ${Math.round(V.y)} ${Math.round(V.w)} ${Math.round(V.h)}`);
-    aerialBtn.textContent = aerial?.href ? `Aerial: ${aerialOn ? 'On' : 'Off'}` : 'Aerial: none';
+    aerialBtn.textContent = aerial?.href ? `Aerial: ${aerialOn ? 'On' : 'Off'}` : aerialState === 'loading' ? 'Aerial: loading' : NO_AERIAL;
     aerialBtn.disabled = !aerial?.href;
     const px = mmPerPx();
     const st = placementStatus(project);
@@ -393,7 +397,11 @@ function mountPlaceStep(ctx, { getHomes }) {
     async onEnter() {
       const lot = lotNow();
       if (!lot) return;
-      aerialOf(lot).then((a) => { if (a && !disposed) { aerial = a; draw(); } });
+      aerialOf(lot).then(async (a) => {
+        if (!a && !disposed) { await ensureFlowAerial(store); a = await aerialOf(lotNow()); } // step 1 did not leave one: fetch it as the editor does
+        aerialState = 'done';
+        if (!disposed) { if (a) aerial = a; draw(); }
+      });
       try { homes = await getHomes(); } catch { homes = null; }
       const d = currentDesign();
       const placed = store.project.placedHouse;
@@ -404,13 +412,10 @@ function mountPlaceStep(ctx, { getHomes }) {
         try { await placeBest(store, d); } finally { busy = false; busyEl.remove(); }
       }
       draw();
-      // A large lot makes the home a speck: frame the home with the lot around it.
+      // A large lot makes the home a speck: when the lot is more than 4 times the home's footprint, open framed on the home.
       try {
         const hl = buildingHull(store.project);
-        if (box && hl.length >= 3 && !view) {
-          const hb = G.bbox(hl);
-          if (Math.max(box.w, box.h) / Math.max(hb.w, hb.h, 1) > 5) zoomHome();
-        }
+        if (box && hl.length >= 3 && !view && shoelace(lot.boundary) / Math.max(shoelace(hl), 1) > 4) zoomHome();
       } catch { /* the whole lot stays in view */ }
       ctx.refresh();
     },
@@ -450,7 +455,7 @@ function mountCheckStep(ctx, { catalogue }) {
   return {
     el,
     nextLabel: 'Open the editor',
-    async onEnter() { preview = await mount3dPreview(view, store, catalogue); if (disposed) preview?.dispose?.(); },
+    async onEnter() { await ensureFlowAerial(store); preview = await mount3dPreview(view, store, catalogue); if (disposed) preview?.dispose?.(); },
     dispose() { disposed = true; off?.(); preview?.dispose?.(); },
   };
 }

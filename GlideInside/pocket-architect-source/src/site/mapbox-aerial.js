@@ -55,7 +55,7 @@ export function tileUrl(z, x, y, token) {
 }
 
 /** Metres per pixel of a @2x 512 pixel tile at zoom z (256 pixel grid) and latitude. */
-export const metresPerPixel = (z, lat) => (WORLD_M * Math.cos((lat * Math.PI) / 180)) / (TILE_PX * 2 ** z);
+export const metresPerPixel = (z, lat, tilePx = TILE_PX) => (WORLD_M * Math.cos((lat * Math.PI) / 180)) / (tilePx * 2 ** z);
 
 const mercX = (lon, z) => ((lon + 180) / 360) * 2 ** z; // tile units
 const mercY = (lat, z) => {
@@ -69,13 +69,13 @@ export const lonLatToTile = (lon, lat, z) => ({ x: mercX(lon, z), y: mercY(lat, 
  * opts.maxZoom) that keeps the output at most maxPx a side and the tile count at most MAX_TILES. Pure.
  * Returns { z, tiles: [{ x, y, col, row }], cols, rows, widthPx, heightPx, mPerPx, corners: [lonlat x4], box }
  */
-export function planMosaic({ frame, bbox, maxPx = MAX_OUT_PX, maxZoom = CONFIG.mapboxMaxZoom || 19, minZoom = 3 }) {
+export function planMosaic({ frame, bbox, maxPx = MAX_OUT_PX, maxZoom = CONFIG.mapboxMaxZoom || 19, minZoom = 3, tilePx = TILE_PX }) {
   const corners = [[bbox.minE, bbox.maxN], [bbox.maxE, bbox.maxN], [bbox.maxE, bbox.minN], [bbox.minE, bbox.minN]].map(([e, n]) => frameToLonLat(frame, e, n));
   const cLat = (corners[0].lat + corners[3].lat) / 2;
   const spanM = Math.max(bbox.maxE - bbox.minE, bbox.maxN - bbox.minN);
   let z = Math.min(22, maxZoom);
   for (; z >= minZoom; z--) {
-    const mpp = metresPerPixel(z, cLat);
+    const mpp = metresPerPixel(z, cLat, tilePx);
     if (spanM / mpp > maxPx * 1.02) continue;
     const xs = corners.map((c) => mercX(c.lon, z));
     const ys = corners.map((c) => mercY(c.lat, z));
@@ -94,7 +94,7 @@ export function planMosaic({ frame, bbox, maxPx = MAX_OUT_PX, maxZoom = CONFIG.m
   const y1 = Math.floor(Math.max(...ys));
   const tiles = [];
   for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) tiles.push({ x, y, col: x - x0, row: y - y0 });
-  const mpp = metresPerPixel(z, cLat);
+  const mpp = metresPerPixel(z, cLat, tilePx);
   // Output pixel size: the source resolution, but never more than maxPx on the long side.
   const scale = Math.min(1, maxPx / (spanM / mpp));
   const widthPx = Math.max(16, Math.round(((bbox.maxE - bbox.minE) / mpp) * scale));
@@ -149,24 +149,19 @@ const defaultCanvas = (w, h) => (typeof OffscreenCanvas !== 'undefined' ? new Of
 const toBlob = (cv, type, q) => (cv.convertToBlob ? cv.convertToBlob({ type, quality: q }) : new Promise((r) => cv.toBlob(r, type, q)));
 
 /**
- * The picture for a box of ground, north up in the lot's frame. Fetches the tiles (memory cache), draws them on one mosaic and draws the
- * mosaic onto the output with one affine map (exact at the corners, within a centimetre over a lot, a few decimetres over a kilometre).
- * deps (for tests): fetchImpl, createCanvas(w, h), decode(blob) -> bitmap, signal.
- * Returns { blob, meta } with meta { source, attribution, captureDate: null, bbox, widthPx, heightPx, mmPerPx, georef: 'mga'|'frame', zoom }.
+ * Draw the fetched tiles on one mosaic and draw the mosaic onto the north up output canvas with one affine map (exact at the corners, within a
+ * centimetre over a lot). Shared by the Mapbox and the bring your own Nearmap key paths. Returns the output canvas.
  */
-export async function fetchMapboxAerial({ frame, bbox, token = mapboxToken(), fetchImpl = globalThis.fetch, createCanvas = defaultCanvas, decode = (b) => createImageBitmap(b), signal, maxPx = MAX_OUT_PX, maxZoom }) {
-  if (!token) throw new AerialError(NO_AERIAL_TEXT, 'NO_TOKEN');
-  const plan = planMosaic({ frame, bbox, maxPx, ...(maxZoom ? { maxZoom } : {}) });
-  const blobs = await Promise.all(plan.tiles.map((t) => getTile(plan.z, t.x, t.y, token, fetchImpl, signal)));
-  const mosaic = createCanvas(plan.cols * TILE_PX, plan.rows * TILE_PX);
+export async function stitchMosaic(plan, blobs, { tilePx = TILE_PX, createCanvas = defaultCanvas, decode = (b) => createImageBitmap(b) } = {}) {
+  const mosaic = createCanvas(plan.cols * tilePx, plan.rows * tilePx);
   const mctx = mosaic.getContext('2d');
   for (let i = 0; i < plan.tiles.length; i++) {
     const bmp = await decode(blobs[i]);
-    mctx.drawImage(bmp, plan.tiles[i].col * TILE_PX, plan.tiles[i].row * TILE_PX, TILE_PX, TILE_PX);
+    mctx.drawImage(bmp, plan.tiles[i].col * tilePx, plan.tiles[i].row * tilePx, tilePx, tilePx);
     bmp.close?.();
   }
   // Affine map from output pixels to mosaic pixels through the three corners (top left, top right, bottom left).
-  const px = (c) => ({ x: (mercX(c.lon, plan.z) - plan.x0) * TILE_PX, y: (mercY(c.lat, plan.z) - plan.y0) * TILE_PX });
+  const px = (c) => ({ x: (mercX(c.lon, plan.z) - plan.x0) * tilePx, y: (mercY(c.lat, plan.z) - plan.y0) * tilePx });
   const tl = px(plan.corners[0]);
   const tr = px(plan.corners[1]);
   const bl = px(plan.corners[3]);
@@ -187,6 +182,22 @@ export async function fetchMapboxAerial({ frame, bbox, token = mapboxToken(), fe
   ctx.setTransform(ia, ib, ic, id, ie, iff);
   ctx.drawImage(mosaic, 0, 0);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
+  return out;
+}
+
+/**
+ * The picture for a box of ground, north up in the lot's frame. Fetches the tiles (memory cache), draws them on one mosaic and draws the
+ * mosaic onto the output with one affine map (exact at the corners, within a centimetre over a lot, a few decimetres over a kilometre).
+ * deps (for tests): fetchImpl, createCanvas(w, h), decode(blob) -> bitmap, signal.
+ * Returns { blob, meta } with meta { source, attribution, captureDate: null, bbox, widthPx, heightPx, mmPerPx, georef: 'mga'|'frame', zoom }.
+ */
+export async function fetchMapboxAerial({ frame, bbox, token = mapboxToken(), fetchImpl = globalThis.fetch, createCanvas = defaultCanvas, decode = (b) => createImageBitmap(b), signal, maxPx = MAX_OUT_PX, maxZoom }) {
+  if (!token) throw new AerialError(NO_AERIAL_TEXT, 'NO_TOKEN');
+  const plan = planMosaic({ frame, bbox, maxPx, ...(maxZoom ? { maxZoom } : {}) });
+  const blobs = await Promise.all(plan.tiles.map((t) => getTile(plan.z, t.x, t.y, token, fetchImpl, signal)));
+  const out = await stitchMosaic(plan, blobs, { tilePx: TILE_PX, createCanvas, decode });
+  const W = plan.widthPx;
+  const H = plan.heightPx;
   const blob = await toBlob(out, 'image/jpeg', 0.95);
   const meta = { source: MAPBOX_SOURCE, attribution: MAPBOX_ATTRIBUTION, captureDate: null, licence: 'Mapbox terms of service', retrieved: new Date().toISOString(), georef: frame.kind === 'mga' ? 'mga' : 'frame', bbox, widthPx: W, heightPx: H, mmPerPx: Math.round(((bbox.maxE - bbox.minE) / W) * 1000 * 1000) / 1000, zoom: plan.z, tiles: plan.tiles.length };
   return { blob, meta };

@@ -133,7 +133,7 @@ function seedDb(now) {
   ];
   return {
     version: 1,
-    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null, colours: { primary: '#1f4d3a', accent: '#d9822b', darkInk: null, darkBg: null } }, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, showAerialDefault: true, showAiAssistant: true, aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
+    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null, colours: { primary: '#1f4d3a', accent: '#d9822b', darkInk: null, darkBg: null } }, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, showAerialDefault: true, showAiAssistant: true, directoryListed: true, directoryRegion: 'Hunter Valley', aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
     users, houses, projects, issues, topUps, resets: {},
   };
 }
@@ -191,7 +191,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     id: u.id, name: u.name, email: u.email || '', username: u.username, role: u.role, status: u.status, mustChangePassword: !!u.mustChangePassword,
     createdAt: u.createdAt, lastSignInAt: u.lastSignInAt, tempPasswordExpiresAt: u.mustChangePassword ? u.tempPasswordExpiresAt || null : null, ...(org ? { ai: aiBalance(u, org) } : {}),
   });
-  const publicOrg = (o) => ({ id: o.id, name: o.name, shortCode: o.shortCode, branding: clone(o.branding), allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, showAerialDefault: o.showAerialDefault !== false, showAiAssistant: o.showAiAssistant !== false, aiMonthlyCap: o.aiMonthlyCap, billingContact: clone(o.billingContact) });
+  const publicOrg = (o) => ({ id: o.id, name: o.name, shortCode: o.shortCode, branding: clone(o.branding), allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true, directoryListed: o.directoryListed === true, directoryRegion: o.directoryRegion || '', allowClientCadExports: !!o.allowClientCadExports, showAerialDefault: o.showAerialDefault !== false, showAiAssistant: o.showAiAssistant !== false, aiMonthlyCap: o.aiMonthlyCap, billingContact: clone(o.billingContact) });
   const staffEdit = (p) => ({ editedByStaff: !!p.editedById, editedByName: p.editedById ? p.editedByName || '' : '', editedByStaffAt: p.editedById ? p.editedByStaffAt || null : null });
   const houseMeta = (h) => { const { project, ...rest } = h; return { ...clone(rest), hasProject: !!project }; };
   const visibleHouse = (user, h) => !h.archived && (user.houseAccess === 'all' || (Array.isArray(user.houseAccess) && user.houseAccess.includes(h.id)));
@@ -750,7 +750,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       return clone(b);
     },
     /** Organisation settings. allowClientTopUps (default on) lets client logins buy AI credit top-ups. */
-    async setOrgSettings({ allowClientTopUps, allowClientEnquiries, showGlideToClients, allowClientCadExports, showAerialDefault, showAiAssistant } = {}) {
+    async setOrgSettings({ allowClientTopUps, allowClientEnquiries, showGlideToClients, allowClientCadExports, showAerialDefault, showAiAssistant, directoryListed, directoryRegion } = {}) {
       await wait();
       const { db, org } = ctx('billing.write');
       if (allowClientTopUps !== undefined) org.allowClientTopUps = !!allowClientTopUps;
@@ -759,8 +759,68 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       if (allowClientCadExports !== undefined) org.allowClientCadExports = !!allowClientCadExports;
       if (showAerialDefault !== undefined) org.showAerialDefault = !!showAerialDefault;
       if (showAiAssistant !== undefined) org.showAiAssistant = !!showAiAssistant;
+      if (directoryListed !== undefined) org.directoryListed = !!directoryListed;
+      if (directoryRegion !== undefined) org.directoryRegion = text(directoryRegion, 'Region', { max: 60 });
       save(db);
       return publicOrg(org);
+    },
+
+    // Local builder finder and client access requests (review mode twin of server/lib/portal.js). Nothing is emailed.
+    /** Public: up to 8 listed builders whose name contains the text. Name, region and logo only. */
+    async searchBuilders({ q } = {}) {
+      await wait();
+      const t = String(q || '').trim().toLowerCase().replace(/\s+/g, ' ').slice(0, 60);
+      if (t.length < 2) return { builders: [] };
+      const hits = load().orgs.filter((o) => o.directoryListed === true && `${o.branding?.displayName || ''} ${o.name}`.toLowerCase().includes(t)).slice(0, 8);
+      return { builders: hits.map((o) => ({ ref: `ref_${o.id}`, name: o.branding?.displayName || o.name, region: o.directoryRegion || '', logoUrl: o.branding?.logoDataUrl || null })) };
+    },
+    /** Public: a visitor asks one listed builder for a client login. Same checks as the server. */
+    async requestClientAccess(body = {}) {
+      await wait();
+      if (typeof body.website === 'string' && body.website.trim()) return { ok: true };
+      if (body.consent !== true) throw err('BAD_REQUEST', 'Please tick the box so we can pass your details to the builder.', 400);
+      const name = text(body.name, 'Name', { required: true, max: 100 });
+      const email = text(body.email, 'Email', { required: true, max: 160 }).toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw err('BAD_REQUEST', 'That email address does not look right.', 400);
+      const phone = text(body.phone, 'Phone', { required: true, max: 30 });
+      if (!/^\d{8,15}$/.test(phone.replace(/[\s()+-]/g, ''))) throw err('BAD_REQUEST', 'That phone number does not look right.', 400);
+      const db = load();
+      const org = db.orgs.find((o) => o.directoryListed === true && `ref_${o.id}` === body.builder);
+      if (!org) throw err('NOT_FOUND', 'That builder is not listed on Glide Inside.', 404);
+      const builderName = org.branding?.displayName || org.name;
+      const list = (db.clientRequests ||= []);
+      if (!list.some((q) => q.orgId === org.id && q.email === email && q.status === 'pending')) {
+        list.push({ id: rid('car'), orgId: org.id, createdAt: iso(), status: 'pending', name, email, phone, lotAddress: text(body.lotAddress, 'Lot address', { max: 200 }), designName: text(body.designName, 'Design', { max: 120 }), consentAt: iso(), decidedAt: null, decisionNote: '', clientId: null });
+        save(db);
+      }
+      return { ok: true, builderName };
+    },
+    async listClientRequests({ status } = {}) {
+      await wait();
+      const { db, org } = ctx('clients.read');
+      return (db.clientRequests || []).filter((q) => q.orgId === org.id && (!status || q.status === status)).sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1)).map(clone);
+    },
+    async approveClientRequest(id) {
+      await wait();
+      const { db, org } = ctx('clients.write');
+      const q = (db.clientRequests || []).find((x) => x.id === id && x.orgId === org.id);
+      if (!q) throw err('NOT_FOUND', 'That request was not found.', 404);
+      if (q.status !== 'pending') throw err('CONFLICT', `That request is already ${q.status}.`, 409);
+      const { user, credentials } = createAccount(db, org, { firstName: q.name.split(' ')[0], email: q.email, role: 'client', lotAddress: q.lotAddress, houseAccess: 'all' });
+      Object.assign(q, { status: 'approved', decidedAt: iso(), clientId: user.id });
+      save(db);
+      const rate = priceForNthLoginThisMonth(db.issues.filter((i) => i.orgId === org.id && monthKey(i.chargedAt) === monthKey(now())).length + 1, org);
+      return { request: clone(q), client: clientView(db, org, user), credentials, charge: { amountCents: rate, trigger: 'first_sign_in', note: `${formatAud(rate)} incl. GST is charged on your monthly invoice once your client first signs in.` } };
+    },
+    async declineClientRequest(id, { note } = {}) {
+      await wait();
+      const { db, org } = ctx('clients.write');
+      const q = (db.clientRequests || []).find((x) => x.id === id && x.orgId === org.id);
+      if (!q) throw err('NOT_FOUND', 'That request was not found.', 404);
+      if (q.status !== 'pending') throw err('CONFLICT', `That request is already ${q.status}.`, 409);
+      Object.assign(q, { status: 'declined', decidedAt: iso(), decisionNote: text(note, 'Note', { max: 300 }) });
+      save(db);
+      return clone(q);
     },
 
     /** "Send to JCE": the mock sends nothing and returns a fake reference. Same consent and field checks as the server. */
