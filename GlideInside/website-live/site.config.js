@@ -25,6 +25,8 @@ window.GI_CONFIG = {
   // Tracking (leave empty until the owner creates the accounts; see docs/marketing/TRACKING.md)
   ga4Id: "G-8TLHQ55DN4",                      // GA4 Measurement ID, for example "G-XXXXXXXXXX". Empty = no analytics loaded.
   adsConversion: "",              // Google Ads purchase conversion, "AW-XXXXXXXXX/label". Empty = not sent.
+  // CONCIERGE (AI booking assistant). OFF until the owner approves. The Worker also needs CONCIERGE_ENABLED=1. See growth/concierge/DESIGN.md.
+  conciergeEnabled: false,
   abn: "29 699 165 663",
   email: "hello@glideinside.com.au",
   phone: "0477 207 027"

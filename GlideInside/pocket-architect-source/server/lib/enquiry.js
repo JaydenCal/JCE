@@ -6,8 +6,8 @@
 import { HttpError } from './http.js';
 import { migrate, validate } from '../../src/model/schema.js';
 
-export const NEEDS = ['engineering', 'da', 'both'];
-const NEED_TEXT = { engineering: 'Engineering', da: 'DA plans', both: 'Engineering and DA plans' };
+export const NEEDS = ['engineering', 'da', 'both', 'callback']; // CONCIERGE: 'callback' added (call back request from the website assistant)
+const NEED_TEXT = { engineering: 'Engineering', da: 'DA plans', both: 'Engineering and DA plans', callback: 'Call back request' };
 const REF_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0, 1, I or O: easy to read out
 const randomRef = () => `GI-${Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => REF_ALPHABET[b % REF_ALPHABET.length]).join('')}`;
 // Single line fields lose control characters and line breaks, so a name or project name cannot break the email subject or
@@ -49,8 +49,17 @@ export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 
     if (Math.floor((pdfBase64.length * 3) / 4) > maxPdfBytes) throw new HttpError('PAYLOAD_TOO_LARGE', 'The plan set is too large to send.');
     if (!pdfBase64.startsWith('JVBERi0')) throw new HttpError('BAD_REQUEST', 'The plan set is not a PDF.'); // "%PDF-"
   }
+  // CONCIERGE: call back requests carry a type label and a few call details (kept in notes too, so the saved row has everything).
+  let callback = null;
+  if (need === 'callback') {
+    const c = body.callback && typeof body.callback === 'object' ? body.callback : {};
+    callback = {
+      type: text(c.type, 'Type', { max: 40 }), bestTime: text(c.bestTime, 'Best time', { max: 200 }),
+      page: text(c.page, 'Page', { max: 80 }), campaign: text(c.campaign, 'Campaign', { max: 60 }), marketing: c.marketing === true,
+    };
+  }
   return {
-    name, phone, email, need, notes: text(body.notes, 'Notes', { max: 4000, multiline: true }), lot,
+    callback, name, phone, email, need, notes: text(body.notes, 'Notes', { max: 4000, multiline: true }), userNotes: text(body.userNotes, 'Notes', { max: 1000, multiline: true }), lot,
     source: ['public', 'builder', 'client'].includes(body.source) ? body.source : 'public',
     orgName: text(body.orgName, 'Builder', { max: 120 }),
     projectName: text(project?.name || body.projectName, 'Project name', { max: 120 }),
@@ -60,6 +69,21 @@ export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 
 
 export function summaryText(e, reference) {
   const lot = e.lot || {};
+  if (e.need === 'callback') { // CONCIERGE: plain, everything needed to call back. Nothing has been booked.
+    const c = e.callback || {};
+    return [
+      `Call back request from the Glide Inside website assistant (${c.type || 'type not given'})`,
+      `Reference: ${reference}`, '',
+      `Name: ${e.name}`, `Phone: ${e.phone}`, `Email: ${e.email}`,
+      `Type: ${c.type || 'not given'}`, `Best time to call: ${c.bestTime || 'not given'}`,
+      `Notes: ${e.userNotes || 'none'}`,
+      `Page: ${c.page || 'not given'}`, `Campaign: ${c.campaign || 'none'}`,
+      `Marketing updates: ${c.marketing ? 'yes, opted in' : 'no'}`, '',
+      'No time has been promised and nothing has been booked. The person was told you will call, usually within one business day.',
+      'Consent ticked: "I agree to Glide Inside calling me back about my request using these details".',
+      'This email goes to you only. Nothing was sent to the visitor.',
+    ].join('\n');
+  }
   return [
     `New engineering / DA enquiry from Glide Inside`,
     `Reference: ${reference}`,
@@ -98,7 +122,7 @@ export async function sendViaResend({ config, fetchImpl, enquiry, reference }) {
         from: config.enquiryFrom,
         to: [config.enquiryTo],
         reply_to: enquiry.email,
-        subject: `[${reference}] ${NEED_TEXT[enquiry.need]} enquiry: ${enquiry.projectName || enquiry.lot.address || enquiry.name}`,
+        subject: enquiry.need === 'callback' ? `[${reference}] Call back request (${enquiry.callback?.type || 'Website'}): ${enquiry.name}, ${enquiry.phone}` : `[${reference}] ${NEED_TEXT[enquiry.need]} enquiry: ${enquiry.projectName || enquiry.lot.address || enquiry.name}`,
         text: summaryText(enquiry, reference),
         attachments,
       }),
@@ -117,13 +141,13 @@ export async function sendViaResend({ config, fetchImpl, enquiry, reference }) {
  * Returns { ok: true, reference, emailed }. If saving fails the error is returned. If the email fails the enquiry is already
  * saved and EMAIL_FAILED carries the reference (the person is still told it was saved).
  */
-export async function handleEnquiry({ body, request, store, config, fetchImpl, now, clientIp }) {
+export async function handleEnquiry({ body, request, store, config, fetchImpl, now, clientIp, reference: fixedRef }) {
   const enquiry = parseEnquiry(body, { maxProjectBytes: config.exportMaxProjectBytes, maxPdfBytes: config.enquiryMaxPdfBytes });
   const t = now();
   const byIp = await store.hitRate(`enquiry:ip:${clientIp(request)}`, 3600, t);
   const byEmail = await store.hitRate(`enquiry:email:${enquiry.email}`, 86400, t);
   if (byIp > 5 || byEmail > 3) throw new HttpError('RATE_LIMITED', 'You have sent several requests already. Please wait before sending another.', { retryAfter: 3600 });
-  const reference = randomRef();
+  const reference = /^GI-[A-Z2-9]{5}$/.test(fixedRef || '') ? fixedRef : randomRef(); // CONCIERGE: a fixed reference makes a replayed submit idempotent
   const projectJson = enquiry.project ? JSON.stringify({ ...enquiry.project, site: { ...enquiry.project.site, underlay: null } }) : null;
   const emailOn = !!config.resendApiKey;
   await store.saveEnquiry({
