@@ -8,6 +8,7 @@ import { openModal } from './modal.js';
 import { CONFIG } from '../config.js';
 import { searchAddresses } from '../site/client.js';
 import { applySiteLookup } from '../site/apply.js';
+import { runUpload } from '../site/upload/flow.js';
 
 const STEPS = { lot: 'Finding the lot', aerial: 'Loading the aerial image', contours: 'Loading ground levels', busy: 'Busy, trying again' };
 let seq = 0;
@@ -25,6 +26,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     h('div', { class: 'ps-find-box' }, icon('search', { size: large ? 22 : 16 }), input),
     list,
     status,
+    h('button', { class: 'ps-btn ps-btn--ghost ps-find-upload', type: 'button', dataset: { ps: 'find-upload' }, title: 'Use your own lot boundary, in Australia or anywhere in the world', onclick: () => runUpload(store, { viewer: false, after: (lot) => onDone?.(lot) }) }, 'Upload your own boundary'),
     CONFIG.siteMock ? h('p', { class: 'ps-hint ps-find-mock' }, 'Sample mode: example lots are shown until the live address lookup is switched on.') : null);
 
   let results = [];

@@ -68,6 +68,25 @@ const titleCase = (s) => String(s || '').toLowerCase().replace(/\b[a-z]/g, (c) =
 export async function applySiteLookup(store, selection, { onStep, signal, fetchImpl, prefetched = null, deferContours = true } = {}) {
   const res = prefetched || (await fetchSite(selection, { onStep, signal, fetchImpl, deferContours }));
   const warnings = [...res.warnings];
+  const { aerialKey, aerialWideKey } = await storeAerials(store, res, warnings);
+  const lot = buildSiteLot({
+    lot: res.lot,
+    aerialMeta: aerialKey ? res.aerial.meta : null,
+    aerialKey,
+    aerialWideMeta: aerialWideKey ? res.aerialWide.meta : null,
+    aerialWideKey,
+    contours: res.contours,
+    address: String(selection.label || '').replace(/\s*\(sample\)$/, ''),
+    source: res.lot.sample ? 'sample' : String(res.lot.state || '').toLowerCase(),
+    warnings,
+  });
+  commitLot(store, lot, { label: 'Find my block', aerialKey, aerialWideKey });
+  res.contoursPromise?.then((c) => addContours(store, lot, c)).catch(() => {});
+  return { lot, warnings };
+}
+
+// Put the aerial pictures of a lookup in the browser's image store. Returns the keys that could be read back (null when none).
+export async function storeAerials(store, res, warnings) {
   let aerialKey = null;
   if (res.aerial?.blob) {
     aerialKey = `${underlayKey(store.project.id)}.site.${Date.now().toString(36)}`;
@@ -84,27 +103,23 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
     await saveImage(aerialWideKey, res.aerialWide.blob);
     if (!(await loadBitmap(aerialWideKey))) aerialWideKey = null;
   }
-  const lot = buildSiteLot({
-    lot: res.lot,
-    aerialMeta: aerialKey ? res.aerial.meta : null,
-    aerialKey,
-    aerialWideMeta: aerialWideKey ? res.aerialWide.meta : null,
-    aerialWideKey,
-    contours: res.contours,
-    address: String(selection.label || '').replace(/\s*\(sample\)$/, ''),
-    source: res.lot.sample ? 'sample' : String(res.lot.state || '').toLowerCase(),
-    warnings,
-  });
+  return { aerialKey, aerialWideKey };
+}
+
+// Make `lot` the project's lot as one undo step: title block, underlay, frontage step and the commercial offer. Shared by a looked up lot
+// and an uploaded boundary.
+export function commitLot(store, lot, { label = 'Find my block', aerialKey = null, aerialWideKey = null, offer = true } = {}) {
   const oldKey = store.project.site?.underlay?.key;
   const oldWide = store.project.site?.lot?.aerialWide?.key || null;
   const first = !store.project.site?.lot;
-  store.apply('Find my block', (p) => {
+  store.apply(label, (p) => {
     if (first) recentreDesign(p);
     p.site.lot = lot;
     if (first) faceHouseToStreet(p);
-    p.site.northDeg = 0; // plan up is MGA grid north
+    p.site.northDeg = 0; // plan up is grid north
     const u = underlayFor(lot);
     if (u) p.site.underlay = u;
+    else if (p.site.underlay?.site) p.site.underlay = null;
     const tb = p.titleBlock || (p.titleBlock = {});
     // Fields filled in by an earlier lookup are replaced; anything the person typed is kept.
     if (!tb.address || tb.address === tb.addressAuto) { tb.address = lot.address; tb.addressAuto = lot.address; }
@@ -113,13 +128,12 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
     if (council && (!tb.council || tb.council === tb.councilAuto)) { tb.council = council; tb.councilAuto = council; }
   });
   if (oldKey && oldKey !== aerialKey && store.project.site.underlay?.key === aerialKey) removeImage(oldKey);
+  else if (oldKey && !aerialKey && !store.project.site.underlay) removeImage(oldKey); // a lot with no aerial replaced one that had it
   if (oldWide && oldWide !== aerialWideKey) removeImage(oldWide);
   // Next the person confirms which edges are the street frontage (setbacks depend on it).
   store.setUI({ view: planView(store.ui.view), frontageEdit: true });
   // The lot is on screen: the ground levels join it when they arrive (or never, silently, if the service fails or is over 30 s).
-  try { offerCommercial(store); } catch { /* the offer is a convenience */ }
-  res.contoursPromise?.then((c) => addContours(store, lot, c)).catch(() => {});
-  return { lot, warnings };
+  if (offer) { try { offerCommercial(store); } catch { /* the offer is a convenience */ } }
 }
 
 /**

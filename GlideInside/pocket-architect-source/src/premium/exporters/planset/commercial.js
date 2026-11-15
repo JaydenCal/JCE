@@ -14,6 +14,7 @@ import { analyse } from '../../../commercial/analyse.js';
 import { mezzanineOf, officeOf, facadeLayout, onFacade, rowFrame, rowPoint } from '../../../commercial/layout.js';
 import { bayOffsetMm, doorSize } from '../../../commercial/schema.js';
 import { ACCESSIBLE_BAY, defaultRulesFor } from '../../../commercial/rules.js';
+import { effectiveRules } from '../../../site/custom-rules.js';
 import { factsByStatus, facts, statusText } from '../../../commercial/dataset.js';
 import { zoneClass, effectiveClass } from '../../../commercial/zones.js';
 import { feasibility, summaryRows, costRows, money, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT } from '../../../commercial/feasibility.js';
@@ -178,7 +179,7 @@ export function commercialModel(project, lot) {
   const covered = coveredFn(polys);
   const land = lot ? landscapeShare(lot, covered) : { pct: null, areaM2: null };
   const cls = effectiveClass(wp) || 'industrial';
-  const rules = defaultRulesFor(cls);
+  const rules = { ...defaultRulesFor(cls), ...effectiveRules(wp, cls) };
   return { project: wp, c, a, lot, units: a.units, stats: a.stats, osd, covered, land, cls, rules, off: bayOffsetMm(c.parking) };
 }
 
@@ -1331,8 +1332,8 @@ export function drawYield(doc, model) {
     ['Ground floor area', `${m2f(stats.groundGfaM2)} m²`],
     ['Mezzanine area', `${m2f(stats.mezzGfaM2)} m²`],
     ['GFA (ground plus mezzanine)', `${m2f(stats.gfaM2)} m²`],
-    ['Site coverage', stats.coveragePct != null ? `${stats.coveragePct} % of the lot (indicative maximum ${rules.coverageMaxPct} %, check with council)` : 'n/a'],
-    ['Landscaping (not built or paved, excluding the OSD placeholder)', model.land.pct != null ? `${model.land.pct} % of the lot, about ${m2f(model.land.areaM2)} m² (indicative minimum ${landMin} %, check with council)` : 'n/a'],
+    ['Site coverage', stats.coveragePct != null ? `${stats.coveragePct} % of the lot (${rules.custom ? 'maximum set by you' : 'indicative maximum'} ${rules.coverageMaxPct} %${rules.custom ? '' : ', check with council'})` : 'n/a'],
+    ['Landscaping (not built or paved, excluding the OSD placeholder)', model.land.pct != null ? `${model.land.pct} % of the lot, about ${m2f(model.land.areaM2)} m² (${rules.custom ? 'minimum set by you' : 'indicative minimum'} ${landMin} %${rules.custom ? '' : ', check with council'})` : 'n/a'],
     ['Parking required', stats.buildingCount ? `${par.required} bays: ${stats.units ? `${par.required - par.buildingRequired} for the strata units plus ` : ''}${par.buildingRequired} for the ${stats.buildingCount === 1 ? 'building' : 'buildings'} at the rates per use shown on the building schedule, each rounded up once, check with council` : par.officeSplit
       ? `${par.required} bays: workshop and other ${m2f(par.split.otherM2)} m² at 1 per ${Math.round(1 / par.ratePerM2)} m² (${par.split.otherSpaces.toFixed(2)}) plus office ${m2f(par.split.officeM2)} m² at 1 per ${Math.round(1 / par.officeRatePerM2)} m² (${par.split.officeSpaces.toFixed(2)}), rounded up once`
       : `${par.required} bays at 1 per ${Math.round(1 / par.ratePerM2)} m² of GFA, rounded up`],

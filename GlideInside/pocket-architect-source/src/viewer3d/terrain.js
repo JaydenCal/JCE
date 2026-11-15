@@ -20,6 +20,8 @@ import { addCommercialPavements } from '../commercial/catalogue/pavements/view3d
 export { PAD_MARGIN_M } from './site-geom.js';
 
 const GRASS = '#6f8a58';
+const GREY_GROUND = '#8b8e92'; // uploaded site with no aerial available: a plain grey ground
+const GREY_HORIZON = '#a7aaae';
 const HORIZON = '#9aa88a'; // the far edge of the ground ring: a neutral ground colour, not a pale haze towards the sky
 
 // Footprint (plan mm bbox) of the lowest level: walls and rooms. null when there is nothing drawn.
@@ -181,6 +183,7 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   const pos = new Float32Array(cols * rows * 3);
   const uv = new Float32Array(cols * rows * 2);
   const hasAerial = !!(texture && lot.aerial?.extent && S.layerOn(lot, 'aerial'));
+  const grey = !hasAerial && lot.aerialSource === 'none';
   const aw = ext.x1 - ext.x0;
   const ah = ext.y1 - ext.y0;
   for (let j = 0; j < rows; j++) {
@@ -216,7 +219,7 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
     mat = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, metalness: 0, envMapIntensity: 0.25 });
     mat.userData.shared = false;
   } else {
-    mat = ctx.lib.get('grass', '#76895f');
+    mat = grey ? ctx.lib.get('grass', GREY_GROUND, { flat: true }) : ctx.lib.get('grass', '#76895f');
   }
   const mesh = new THREE.Mesh(geo, mat);
   mesh.name = 'site-terrain';
@@ -238,8 +241,8 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   const ring = S.fadeRing(nodes, edgeY - 0.05);
   // The aerial edge is often road, so lean on grass: the ring reads as open ground that fades to the horizon.
   // With the wide tile the ring starts from that picture's own edge colour (no seam); without it the old grass lean applies.
-  const inner = wide ? new THREE.Color(wideEdgeColour || GRASS) : new THREE.Color(edgeColour || GRASS).lerp(new THREE.Color(GRASS), 0.55).multiplyScalar(1.12);
-  const outer = new THREE.Color(HORIZON);
+  const inner = grey ? new THREE.Color(GREY_GROUND) : wide ? new THREE.Color(wideEdgeColour || GRASS) : new THREE.Color(edgeColour || GRASS).lerp(new THREE.Color(GRASS), 0.55).multiplyScalar(1.12);
+  const outer = new THREE.Color(grey ? GREY_HORIZON : HORIZON);
   const rc = [];
   for (const t of ring.colourT) {
     const c = inner.clone().lerp(outer, t);

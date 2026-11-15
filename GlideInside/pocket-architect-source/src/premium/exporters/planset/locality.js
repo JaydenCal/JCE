@@ -119,6 +119,7 @@ const blobToDataUrl = (blob) => new Promise((res) => {
 /** Browser default: ask the site service for the wide aerial and the wider cadastre. Resolves to null when it cannot. */
 export async function browserFetchSite({ lot, request }) {
   if (typeof window === 'undefined' || typeof fetch !== 'function' || !request || !lot.origin) return null;
+  if (lot.source === 'upload' && !(Number(lot.srid) > 0)) return null; // a local frame lot: the state services know nothing about it, its own stored aerial is used
   const needAerial = request.need?.aerial !== false;
   const { fetchAerial, getJson } = await import('../../../site/client.js');
   const { aerialExtentPlan } = await import('../../../site/model.js');

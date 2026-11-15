@@ -2,6 +2,7 @@
 // primary source) and market.json (researched ranges, mostly ESTIMATE; used for yields, land, build costs and as the fallback where the
 // portal evidence is missing or weak). Both as at 13/11/2026. All figures are AUD ex GST. Indicative only, not a valuation.
 
+import { activeSymbol, syncCurrency } from '../site/custom-rules.js';
 import market from './data/market.json' with { type: 'json' };
 import portal from './data/market-portal.json' with { type: 'json' };
 import { layoutUnits, mezzanineOf } from './layout.js';
@@ -263,6 +264,7 @@ function scenario(inp, { gfa, rowsGfa = gfa, buildings = [], devM2, restM2, lotM
  * Outputs are unrounded numbers; the UI rounds for display. Per unit price and rent use each unit's own GFA.
  */
 export function feasibility(commercial, lot, opts = {}) {
+  syncCurrency({ site: { lot } });
   const fz = commercial?.feasibility || {};
   const detected = areaKeyFor(lot);
   const areaKey = opts.areaKey || fz.area || detected;
@@ -286,7 +288,7 @@ export function feasibility(commercial, lot, opts = {}) {
 
 // Formatting, shared by the panel and the C103 section --------------------------------------------------------------------------
 const m2 = (v) => (Math.round(v * 10) / 10).toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
-export const money = (v) => `${v < 0 ? '-' : ''}$${Math.round(Math.abs(v)).toLocaleString('en-AU')}`;
+export const money = (v) => `${v < 0 ? '-' : ''}${activeSymbol()}${Math.round(Math.abs(v)).toLocaleString('en-AU')}`;
 export const pct1 = (v) => `${(Math.round(v * 10) / 10).toFixed(1)}%`;
 export const band = (a, b, f = money) => (r0(a) === r0(b) ? f(a) : `${f(Math.min(a, b))} to ${f(Math.max(a, b))}`);
 

@@ -48,6 +48,7 @@ const fmt = (n) => Number(n).toLocaleString('en-AU');
  */
 export function lotHeading(lot) {
   if (!lot) return '';
+  if (lot.source === 'upload') return String(lot.lotLabel || 'Uploaded boundary').trim();
   const num = lot.lotNumber ? String(lot.lotNumber).trim() : '';
   const dp = lot.planLabel ? String(lot.planLabel).trim() : '';
   if (lot.proposed || (!num && !dp)) return `Proposed Lot ${num || '1'}`;

@@ -27,6 +27,8 @@ import { icon } from '../ui/icons.js';
 import { listRoomTabs } from '../viewer3d/rooms.js';
 import { roomsPlanModel } from './rooms-plan.js';
 import { createSendToEngineer, SEND_LABEL } from './send-engineer.js';
+import { runUpload, creditText, FOOT_BASE } from '../site/upload/flow.js';
+import { injectUploadCss } from '../site/upload/css.js';
 
 const STYLE_ID = 'lc-style';
 const COMPACT_W = 980;
@@ -116,8 +118,12 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     ['Site plan PDF', () => planSetPdf('site')],
     ['House plan PDF', () => planSetPdf('house')],
     [SEND_LABEL, () => engineer.open()],
+    ['Upload boundary', () => runUpload(store, { viewer: true, catalogue })],
+    ['Site rules', () => import('../site/upload/rules-panel.js').then((m) => m.openRulesPanel(store))],
     ['Enlarge top view', () => toggle2d()],
   ] : [];
+  injectUploadCss();
+  const uploadBtn = embed ? h('button', { class: 'lc-upload lc-glass', type: 'button', dataset: { ps: 'lc-upload' }, title: 'Use your own lot boundary, anywhere in the world', onclick: () => runUpload(store, { viewer: true, catalogue }) }, 'Upload boundary') : null;
   const menuList = embed ? h('div', { class: 'lc-menu-list lc-glass', role: 'menu', hidden: true }, ...menuItems.map(([label, fn]) => h('button', { class: 'lc-menu-item', type: 'button', role: 'menuitem', onclick: () => { menuList.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); fn(); paintMenu(); } }, label))) : null;
   const menuBtn = embed ? (() => {
     const b = h('button', { class: 'lc-menu lc-glass', type: 'button', 'aria-label': 'Menu', 'aria-haspopup': 'menu', 'aria-expanded': 'false', dataset: { ps: 'lc-menu' }, onclick: () => { paintMenu(); menuList.hidden = !menuList.hidden; b.setAttribute('aria-expanded', String(!menuList.hidden)); } });
@@ -126,8 +132,8 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   })() : null;
   // The last menu item names what it will do: "Enlarge top view" or "Shrink top view".
   function paintMenu() { const it = menuList?.lastElementChild; if (it) it.textContent = mini.classList.contains('is-big') ? 'Shrink top view' : 'Enlarge top view'; }
-  const foot = embed ? E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, 'Concept only · Glide Inside · JCE Infrastructure') : null;
-  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, ...(compass ? [compass] : []), findPill, ...(menuBtn ? [menuBtn, menuList] : []), card, rooms, pager, mini, ...(foot ? [foot] : []));
+  const foot = embed ? E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, FOOT_BASE) : null;
+  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, ...(compass ? [compass] : []), findPill, ...(uploadBtn ? [uploadBtn] : []), ...(menuBtn ? [menuBtn, menuList] : []), card, rooms, pager, mini, ...(foot ? [foot] : []));
   if (embed) root.classList.add('lc-embed');
   host.append(root);
 
@@ -362,6 +368,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     const sid = effectiveSchemeId(p);
     const scheme = schemeById(sid);
     headT.textContent = lotHeading(lot);
+    if (foot) foot.textContent = FOOT_BASE + creditText(lot);
     headS.textContent = mutedLine(builderName());
     title.textContent = name;
     sub.replaceChildren(h('span', null, lotLine(lot)), h('span', { class: 'lc-sc' }, schemeLine(scheme)));

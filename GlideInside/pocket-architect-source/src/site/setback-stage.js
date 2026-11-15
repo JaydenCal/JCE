@@ -6,6 +6,8 @@ import { siteLotSetbacks } from './setbacks.js';
 import { loadRuleSet } from './setback-data.js';
 import { computeCommercialSetbacks } from '../commercial/setbacks.js';
 import { effectiveClass } from '../commercial/zones.js';
+import { customRulesOn, CUSTOM_BASIS } from './custom-rules.js';
+import { classifyEdges, buildEnvelope } from './setbacks.js';
 
 const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
 const r2 = (v) => Math.round(v * 100) / 100;
@@ -58,13 +60,33 @@ export function setbackInputsFor(project, lot) {
 // Change key: when this is the same, the stored setbacks are still right.
 export function setbackKey(lot, inputs) {
   return JSON.stringify([lot.origin?.e, lot.origin?.n, lot.lotLabel, lot.lga, lot.state, lot.zoning?.code || null, lot.frontEdges || [], !!lot.frontageConfirmed,
-    inputs.storeys, inputs.wallHeightM, inputs.buildingHeightM, inputs.streetType, lot.boundary?.length || 0, inputs.mode, lot.zoning?.name || null]);
+    inputs.storeys, inputs.wallHeightM, inputs.buildingHeightM, inputs.streetType, lot.boundary?.length || 0, inputs.mode, lot.zoning?.name || null,
+    customRulesOn(lot) ? ['front', 'secondaryFront', 'side', 'rear'].map((k) => lot.customRules[k]) : null]);
+}
+
+/** Setbacks from the person's own values (custom rules): no council lookup. Housing mode only; commercial has its own path. */
+export function customSetbacks(lot) {
+  const c = lot.customRules;
+  const kinds = classifyEdges(lot.boundary, lot.frontEdges || []);
+  const slot = (v) => (Number.isFinite(v) ? { minM: v, basis: CUSTOM_BASIS, flag: 'user_rule' } : null);
+  const picked = { basis: CUSTOM_BASIS, state: lot.state || '', council: null, source: { kind: 'custom', name: 'Custom rules' }, front: slot(c.front), secondaryFront: slot(c.secondaryFront), side: slot(c.side), rear: slot(c.rear),
+    sources: { front: 'custom', secondaryFront: 'custom', side: 'custom', rear: 'custom' }, flag: 'user_rule', flagReason: 'Setbacks are the values you entered, check them against the local rule', warnings: [], ruleIds: [], edgeKinds: kinds };
+  if (!lot.cornerLot && !kinds.includes('secondaryFront')) picked.secondaryFront = null;
+  return { setbacks: picked, envelope: buildEnvelope(lot.boundary, lot.frontEdges || [], picked), attempts: [{ basis: picked.basis, reason: 'used' }] };
 }
 
 /** Compute for one lot. Returns { setbacks, envelope, attempts, key, error? }. Never throws. */
 export async function computeSetbacks(project, lot, { fetchImpl = null, base = null } = {}) {
   const inputs = setbackInputsFor(project, lot);
   const key = setbackKey(lot, inputs);
+  if (customRulesOn(lot) && project.mode !== 'commercial') {
+    try {
+      const r = customSetbacks(lot);
+      return { setbacks: { ...r.setbacks, designInputs: null }, envelope: r.envelope, attempts: r.attempts, key };
+    } catch (e) {
+      return { setbacks: null, envelope: null, attempts: [{ basis: null, reason: e?.message || 'The setbacks could not be worked out.' }], key, error: e?.message || 'failed' };
+    }
+  }
   if (project.mode === 'commercial') {
     try {
       const r = await computeCommercialSetbacks(project, lot, { fetchImpl, base });

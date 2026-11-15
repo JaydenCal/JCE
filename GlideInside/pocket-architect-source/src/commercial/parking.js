@@ -66,7 +66,7 @@ export function parkingLayout(commercial) {
     out.push({ rowId: `extra-${k + 1}`, frame: fr, length: cnt * bayW, depth: -aisle, off: aisle, extra: true, slots });
   });
   // Required accessible bays: fixpoint, because the shared zones take slots that are not bays.
-  const table = commercial.buildingClass || 'class_8';
+  const table = Number.isFinite(commercial.parking?.accessiblePerBays) && commercial.parking.accessiblePerBays > 0 ? { perBays: commercial.parking.accessiblePerBays } : (commercial.buildingClass || 'class_8');
   const override = Number.isInteger(commercial.parking.accessibleOverride) ? commercial.parking.accessibleOverride : null;
   let req = slotsTotal >= 2 ? 1 : 0;
   const zonesFor = (a) => Math.floor(a / 2) + (a % 2);

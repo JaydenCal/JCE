@@ -7,6 +7,7 @@ import { zoneMatches, findCouncil, buildEnvelope, classifyEdges } from '../site/
 import { loadRuleSet } from '../site/setback-data.js';
 import { defaultRulesFor } from './rules.js';
 import { effectiveClass } from './zones.js';
+import { customRulesOn, CUSTOM_BASIS } from '../site/custom-rules.js';
 
 import { classifyZone } from '../site/zone-class.js';
 
@@ -83,10 +84,17 @@ export function siteLotCommercialSetbacks(lot, ruleSet, { cls = 'industrial' } =
   if (!fronts.length) return none('street frontage not set');
   const kinds = classifyEdges(lot.boundary, fronts);
   const def = defaultRulesFor(cls);
-  const council = String(lot.state || 'NSW').toUpperCase() === 'NSW' ? findCouncil(ruleSet?.councils, lot.lga) : null;
-  const picked = { basis: COMMERCIAL_BASIS.default, state: lot.state || 'NSW', council: council ? council.council || council.lga_slug : null, source: { kind: 'default', name: def.label }, commercial: true, class: cls };
+  const custom = customRulesOn(lot) ? lot.customRules : null;
+  const council = !custom && String(lot.state || 'NSW').toUpperCase() === 'NSW' ? findCouncil(ruleSet?.councils, lot.lga) : null;
+  const picked = { basis: COMMERCIAL_BASIS.default, state: lot.state ?? 'NSW', council: council ? council.council || council.lga_slug : null, source: { kind: 'default', name: def.label }, commercial: true, class: cls };
   const sources = {};
   for (const s of SLOTS) {
+    if (custom) {
+      const m = custom[s];
+      picked[s] = Number.isFinite(m) ? { minM: m, basis: CUSTOM_BASIS, flag: 'user_rule' } : null;
+      sources[s] = 'custom';
+      continue;
+    }
     const c = council ? councilSlot(council, s, cls, lot.zoning?.code, lot.zoning?.name) : null;
     if (c) { picked[s] = c; sources[s] = 'council'; continue; }
     if (council && bcaSlot(council, s, cls, lot.zoning?.code, lot.zoning?.name)) {
@@ -100,9 +108,10 @@ export function siteLotCommercialSetbacks(lot, ruleSet, { cls = 'industrial' } =
     sources[s] = 'default';
   }
   if (Object.values(sources).some((v) => v === 'council' || v === 'bca')) picked.basis = COMMERCIAL_BASIS.council;
+  if (custom) { picked.basis = CUSTOM_BASIS; picked.source = { kind: 'custom', name: 'Custom rules' }; }
   picked.sources = sources;
-  picked.flag = 'check_with_council';
-  picked.flagReason = 'Commercial setbacks are indicative, check with council';
+  picked.flag = custom ? 'user_rule' : 'check_with_council';
+  picked.flagReason = custom ? 'Setbacks are the values you entered, check them against the local rule' : 'Commercial setbacks are indicative, check with council';
   picked.warnings = [];
   picked.ruleIds = [];
   picked.edgeKinds = kinds;
@@ -116,7 +125,7 @@ export async function computeCommercialSetbacks(project, lot, { fetchImpl = null
   const cls = effectiveClass(project) || 'industrial';
   let ruleSet = { councils: [] };
   try {
-    ruleSet = await loadRuleSet(lot, { fetchImpl, base });
+    if (!customRulesOn(lot)) ruleSet = await loadRuleSet(lot, { fetchImpl, base });
   } catch { /* the default table is used */ }
   const r = siteLotCommercialSetbacks(lot, { councils: ruleSet.councils || [] }, { cls });
   return { ...r, councilNotFound: ruleSet.councilNotFound || null, cls };
