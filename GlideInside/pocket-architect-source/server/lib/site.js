@@ -229,7 +229,7 @@ export function normalizeQuery(q) {
   return String(q ?? '').toUpperCase().replace(/[,.]/g, ' ').replace(/[^A-Z0-9'/\- ]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-export function createSite({ store = null, fetchImpl, now = () => Date.now(), cache = null } = {}) {
+export function createSite({ store = null, fetchImpl, now = () => Date.now(), cache = null, searchMs = null } = {}) {
   const doFetch = fetchImpl || ((...a) => globalThis.fetch(...a));
   const bytesCache = cache || createCache({ now });
   const iso = () => new Date(now()).toISOString();
@@ -327,26 +327,50 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
   // Once either state has results the other only gets SEARCH_GRACE_MS more.
   const SEARCH_GRACE_MS = 1200;
   const byLen = (x, y) => x.label.length - y.label.length || x.label.localeCompare(y.label); // shortest first: closest to what was typed
-  const SEARCH_TIMEOUT_MS = 4000;
-  const SEARCH_FALLBACK_MS = 3500;
+  // The NSW addressing service is slow on a cold prefix query (7 s seen live), so the prefix gets a long budget and one retry.
+  const SEARCH_TIMEOUT_MS = searchMs?.prefix ?? 6500;
+  const SEARCH_FALLBACK_MS = searchMs?.fallback ?? 3500;
+  const STREET_PROBES = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 60, 80, 100];
   const NEAR_STEPS = 8;
   async function searchNsw(tokens, st) {
     const w = buildNswWhere(tokens);
     if (!w) return [];
-    const run = (where, timeoutMs = SEARCH_TIMEOUT_MS, n = '8') => upstream(`${SERVICES.nswAddresses}/query`, {
+    const run = (where, timeoutMs = SEARCH_TIMEOUT_MS, n = '8', retries = 0) => upstream(`${SERVICES.nswAddresses}/query`, {
       f: 'json', where, outFields: 'address', returnGeometry: 'true', outSR: '4326', resultRecordCount: n,
-    }, { timeoutMs, retries: 0 }).catch(() => { st.partial = true; return { features: [] }; });
+    }, { timeoutMs, retries }).catch(() => { st.partial = true; return { features: [], failed: true }; });
     const toRows = (body) => (body.features || []).filter((f) => f.geometry && Number.isFinite(f.geometry.x) && f.attributes?.address).map((f) => ({
       label: `${titleCase(f.attributes.address)} NSW`, state: 'NSW', lon: round(f.geometry.x, 6), lat: round(f.geometry.y, 6),
     }));
-    const pre = toRows(await run(w.prefix)).sort(byLen);
-    if (pre.length) return pre;
     const words = searchWords(tokens, 'NSW');
-    const nearP = nearNumbers(words, run);
+    const streetOnly = !/^\d/.test(words[0] || '') && words.length >= 2;
+    if (streetOnly) st.streetOnly = true;
+    // A prefix query that times out is tried once more (the service is usually warm by then).
+    const first = await run(w.prefix, SEARCH_TIMEOUT_MS, '8', 1);
+    const pre = toRows(first).sort(byLen);
+    if (pre.length) { st.partial = false; return pre; }
+    if (first.failed) { st.unavailable = true; return []; } // the service is not answering: the caller reports "slow", not "not found"
+    const nearP = streetOnly ? streetProbe(words, run) : nearNumbers(words, run);
     const anyP = w.words !== w.prefix ? run(w.words, SEARCH_FALLBACK_MS).then(toRows) : Promise.resolve([]);
     const [near, any] = await Promise.all([nearP.then((b) => b.flatMap(toRows)), anyP]);
     const seen = new Set();
     return [...near, ...any].filter((r) => !seen.has(r.label) && seen.add(r.label)).slice(0, 8);
+  }
+
+  // Street name only (no house number): the layer is only indexed on the start of the address, so probe common numbers on that street.
+  async function streetProbe(words, run) {
+    const rest = sqlText(words.join(' '));
+    const found = [];
+    const t0 = Date.now();
+    let i = 0;
+    const worker = async () => {
+      while (i < STREET_PROBES.length && found.length < 6 && Date.now() - t0 < SEARCH_FALLBACK_MS) {
+        const k = STREET_PROBES[i++];
+        const body = await run(`address LIKE '${k} ${rest}%'`, SEARCH_FALLBACK_MS, '1');
+        if ((body.features || []).length) found.push({ k, body });
+      }
+    };
+    await Promise.all([worker(), worker(), worker()]);
+    return found.sort((a, b) => a.k - b.k).map((x) => x.body);
   }
 
   // Same street, nearest house numbers first (an address that does not exist, e.g. 30 Henrys Lane, shows 29 and 31).
@@ -405,10 +429,9 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
   const searchHeaders = (tag) => ({ 'cache-control': 'public, max-age=300', 'x-search-cache': tag });
   const usable = (v) => Array.isArray(v?.results) && v.results.length > 0;
 
-  async function runSearch(key, tokens, only) {
+  async function runSearch(key, tokens, only, st = { partial: false }) {
     const wantNsw = only !== 'QLD';
     const wantQld = only !== 'NSW';
-    const st = { partial: false };
     const { value, cached } = await jsonCached(key, TTL.search, async () => {
       // Once one state has answered with results, the other state gets SEARCH_GRACE_MS more and is then left out of this answer.
       const pa = wantNsw ? searchNsw(tokens, st) : Promise.resolve([]);
@@ -438,30 +461,41 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         try { await edge.put(`https://site-cache.invalid/${encodeURIComponent(key)}`, new Response(JSON.stringify(value), { headers: { 'content-type': 'application/json', 'cache-control': `public, max-age=${TTL.search}` } })); } catch { /* ignore */ }
       }
     }
-    return { value, cached };
+    return { value, cached, st };
   }
 
   async function search(request, url) {
     const q = (url.searchParams.get('q') || '').trim();
     if (q.length < 3) { await rateLimit(request, 'search'); return json({ results: [] }); }
     if (q.length > 120) { await rateLimit(request, 'search'); throw new HttpError('BAD_REQUEST', 'q is too long.'); }
-    const norm = normalizeQuery(q);
     const tokens = searchTokens(q);
     const only = inferState(tokens);
-    const key = `search:${norm}`;
+    // The cache key is the words that reach the upstream (state, postcode and punctuation removed, street types expanded), so
+    // "756 Quia Road Gunnedah NSW" and "756 quia rd, gunnedah" share one entry with "756 Quia Road Gunnedah".
+    const words = searchWords(tokens, only).join(' ');
+    if (words.length < 3) { await rateLimit(request, 'search'); return json({ results: [] }); }
+    const scope = only || 'ANY';
+    const key = `search:${scope}:${words}`;
+    const readKeys = only ? [key, `search:ANY:${words}`] : [key];
+    const fit = (v) => (only ? { results: v.results.filter((r) => r.state === only), ...(v.hint ? { hint: v.hint } : {}) } : v);
+    const okFit = (v) => usable(v) && fit(v).results.length > 0;
     // 1. per isolate LRU, 2. Workers Cache API (24 h): both skip the rate limit, they cost the upstream nothing.
-    const mem = memGet(key);
-    if (mem) return json(mem, 200, searchHeaders('memory'));
+    for (const k of readKeys) {
+      const mem = memGet(k);
+      if (mem && okFit(mem)) return json(fit(mem), 200, searchHeaders('memory'));
+    }
     const edge = edgeApi();
     if (edge) {
-      try {
-        const hit = await edge.match(`https://site-cache.invalid/${encodeURIComponent(key)}`);
-        if (hit) {
-          const v = await hit.json();
-          if (usable(v)) { memPut(key, v, TTL.search); return json(v, 200, searchHeaders('edge')); }
+      for (const k of readKeys) {
+        try {
+          const hit = await edge.match(`https://site-cache.invalid/${encodeURIComponent(k)}`);
+          if (hit) {
+            const v = await hit.json();
+            if (okFit(v)) { memPut(k, v, TTL.search); return json(fit(v), 200, searchHeaders('edge')); }
+          }
+        } catch {
+          /* cache unavailable */
         }
-      } catch {
-        /* cache unavailable */
       }
     }
     await rateLimit(request, 'search');
@@ -469,11 +503,18 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     let p = searchInflight.get(key);
     const joined = !!p;
     if (!p) {
-      p = runSearch(key, tokens, only).finally(() => searchInflight.delete(key));
+      p = runSearch(key, tokens, only, { partial: false }).finally(() => searchInflight.delete(key));
       searchInflight.set(key, p);
     }
-    const { value, cached } = await p;
-    return json(value, 200, searchHeaders(joined ? 'coalesced' : cached ? 'store' : 'miss'));
+    const { value, cached, st } = await p;
+    const streetOnly = !!st?.streetOnly;
+    const out = { ...value };
+    if (streetOnly) out.hint = 'number';
+    // The upstream timed out: say so (never "not found"), and never cache or let a browser cache the answer.
+    if (!value.results.length && (st?.unavailable || st?.partial)) {
+      return json({ results: [], unavailable: true }, 200, { 'cache-control': 'no-store', 'x-search-cache': 'unavailable' });
+    }
+    return json(out, 200, searchHeaders(joined ? 'coalesced' : cached ? 'store' : 'miss'));
   }
 
   // Lot ----------------------------------------------------------------------------------------------------------------------------
