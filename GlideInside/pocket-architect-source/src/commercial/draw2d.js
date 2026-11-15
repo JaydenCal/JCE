@@ -10,6 +10,9 @@ import { doorStrips } from './parking.js';
 import { siteAccess } from './access.js';
 import { drawBuildings, buildingExtents, drawSiteWorks } from './catalogue/draw2d.js';
 import { siteWorksOf } from './catalogue/buildings.js';
+import { drawPavementArea, drawKerb } from './catalogue/pavements/draw2d.js';
+import { pavementById } from './catalogue/pavements/pavements.js';
+import { labelPoint, hardstandModel } from './catalogue/pavements/hardstand.js';
 
 const GOLD = '#c7a256';
 const BLUE = '#1b5fbf';
@@ -20,6 +23,32 @@ const S = (st, p) => worldToScreen(st.view, p);
 function tracePoly(ctx, st, poly) {
   poly.forEach((q, i) => { const s = S(st, q); if (i) ctx.lineTo(s.x, s.y); else ctx.moveTo(s.x, s.y); });
   ctx.closePath();
+}
+
+/** Drawn hardstand: each area filled and hatched in its pavement type (on a backing so the aisle and bay shading under it does not show), its kerbs, and a label. */
+function drawHardstand(ctx, st, labels) {
+  const m = hardstandModel(st.project);
+  if (!m) return;
+  const scale = st.view.scale;
+  const drawn = m.areas.filter((a) => a.role === 'hardstand');
+  for (const a of drawn) {
+    const pts = a.polygon.map((q) => S(st, q));
+    ctx.beginPath(); pts.forEach((q, i) => (i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y))); ctx.closePath();
+    ctx.fillStyle = st.theme.c.canvas; ctx.globalAlpha = 0.8; ctx.fill(); ctx.globalAlpha = 1;
+    drawPavementArea(ctx, pts, a.type, scale);
+  }
+  for (const k of m.kerbs) if (String(k.areaId || '').startsWith('hs_')) drawKerb(ctx, k, (q) => S(st, q), scale);
+  const seen = new Set();
+  for (const a of drawn) {
+    const id = String(a.id).split('~')[0];
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const t = pavementById(a.type);
+    const at = S(st, labelPoint(a.polygon));
+    const w = Math.max(...a.polygon.map((q) => q.x)) - Math.min(...a.polygon.map((q) => q.x));
+    if (w * scale < 90) continue;
+    labels.push({ at, text: `${t.short.toUpperCase()}  ${(a.areaM2 || 0).toFixed(0)} m2` });
+  }
 }
 
 /** The turn handle of a row: 5 m out from the middle of its front facade (world mm). */
@@ -119,6 +148,8 @@ export function drawCommercial(ctx, st) {
     labels.push({ a: c0, b: c1, text: `CAR AISLE ${(aisleMm / 1000).toFixed(1)} m`, off: -8, t: 0.25 }); // a quarter of the way along, clear of the row dimension and the turn handle
     labels.push({ a: k0, b: k1, text: `${bays} BAY${bays === 1 ? '' : 'S'} ${(bayW / 1000).toFixed(1)} x ${(bayL / 1000).toFixed(1)} m, INDICATIVE`, off: null, out: S(st, pt(B / 2, pr.depth + off + bayL + 1)) });
   }
+  const hsLabels = [];
+  drawHardstand(ctx, st, hsLabels);
   // Bays: marked on both sides and open to the aisle, as line marking is.
   for (const pr of a.parking.rows) {
     for (const sl of pr.slots) {
@@ -172,6 +203,8 @@ export function drawCommercial(ctx, st) {
     ctx.fillStyle = st.theme.c.muted; ctx.fillText(l.text, 0, 0);
     ctx.restore();
   }
+  ctx.font = `600 10px ${st.theme.f.ui}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for (const l of hsLabels) { ctx.lineWidth = 3.5; ctx.strokeStyle = st.theme.c.canvas; ctx.strokeText(l.text, l.at.x, l.at.y); ctx.fillStyle = st.theme.c.text; ctx.fillText(l.text, l.at.x, l.at.y); }
   // Accessible path of travel
   if (a.parking.path) {
     const [p0, p1] = a.parking.path.map((q) => S(st, q));

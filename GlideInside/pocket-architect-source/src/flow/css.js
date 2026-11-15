@@ -94,7 +94,7 @@ export const FLOW_CSS = `
 .gf-lines{margin:12px 0 0;padding:0 0 0 18px}
 .gf-lines li{margin:4px 0}
 .gf-resume{position:absolute;left:12px;top:12px;z-index:30}
-.gf-backpill{position:absolute;left:12px;bottom:56px;z-index:30;border:1px solid var(--ps-border,#dcdde0);background:var(--ps-panel,#fff);color:var(--ps-text,#1a1c20);border-radius:999px;padding:8px 16px;font:600 13px var(--ps-font-ui,system-ui,sans-serif);box-shadow:0 2px 10px rgba(0,0,0,.18);cursor:pointer;min-height:40px}
+.gf-backpill{position:absolute;left:12px;bottom:88px;z-index:30;border:1px solid var(--ps-border,#dcdde0);background:var(--ps-panel,#fff);color:var(--ps-text,#1a1c20);border-radius:999px;padding:8px 16px;font:600 13px var(--ps-font-ui,system-ui,sans-serif);box-shadow:0 2px 10px rgba(0,0,0,.18);cursor:pointer;min-height:40px}
 .gf-backpill:hover{border-color:var(--ps-accent,#1b4fd1)}
 .gf-kinds{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 .gf-kind-ic{font-size:12px;color:var(--gf-muted)}

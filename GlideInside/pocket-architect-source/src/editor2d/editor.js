@@ -18,6 +18,7 @@ import { createSelectTool } from './tool-select.js';
 import { createMoveHouseTool } from './tool-movehouse.js';
 import { createCommercialTool } from '../commercial/ui/tool-commercial.js';
 import { drawCommercial, commercialExtents } from '../commercial/draw2d.js';
+import { createHardstandTool } from '../commercial/ui/tool-hardstand.js';
 import { createLabelLayer } from './label-layer.js';
 import { createDrawTools } from './tool-draw.js';
 import { createPlaceTools } from './tool-place.js';
@@ -807,6 +808,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     },
   };
   ed.api = api;
+  api.hardstand = null; // set below once the tools exist (the panel reads it)
   const unregisterUnderlay = registerUnderlayEditor(store, {
     centre: () => M.screenToWorld(state.view, { x: state.size.w / 2, y: state.size.h / 2 }),
     setBitmap(key, bitmap) {
@@ -822,10 +824,13 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     ...createSelectTool(ed),
     ...createMoveHouseTool(ed),
     ...createCommercialTool(ed),
+    ...createHardstandTool(ed),
     ...createDrawTools(ed),
     ...createPlaceTools(ed),
     ...createMiscTools(ed, { onCalibrated: () => { state.calibrating = false; store.emit('plan:calibrating', false); } }),
   };
+
+  api.hardstand = tools.hardstand?.controller || null;
 
   // Listeners ---------------------------------------------------------------------------------------------------------------------------
   canvas.addEventListener('pointerdown', onPointerDown);

@@ -56,7 +56,7 @@ export function duplicateBuilding(store, id) {
   return res;
 }
 
-/** Re-run the automatic car park and site layout from scratch (one undo step). Clears hand edits to the generated paving. */
+/** Re-run the automatic car park and site layout from scratch (one undo step). Clears hand edits to the generated paving. Hardstand areas the person drew (hs_ ids) are theirs and are kept. */
 export function rerunSiteLayout(store) {
   store.apply('Re-run car park layout', (p) => {
     guard(p);
