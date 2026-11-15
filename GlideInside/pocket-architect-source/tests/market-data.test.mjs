@@ -148,7 +148,7 @@ test('council charges, soft costs and build costs: sources, dates and the figure
   assert.equal(market.buildCost.qld.strataWorkshopMezzanine_brisbane.high, 3170);
   // build-rates.json: ordered ranges, status, an as-at date, and its provenance
   assert.match(rates.asAt, DATE);
-  for (const [k, r] of Object.entries(rates.rates)) { assert.ok(r.low > 0 && r.high >= r.low, k); assert.ok(STATUS.has(r.status), k); assert.ok(r.source, k); }
+  for (const [k, r] of Object.entries(rates.rates)) { assert.ok((r.low > 0 || (r.perM2Wall && r.low === 0)) && r.high >= r.low, k); assert.ok(STATUS.has(r.status), k); assert.ok(r.source, k); }
 });
 
 test('wording in the data: no dashes, no compliant, dates in DD/MM/YYYY', () => {

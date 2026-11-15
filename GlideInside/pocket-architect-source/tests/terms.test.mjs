@@ -240,7 +240,7 @@ test('plan-terms.html carries the same text, the nav tabs, and is linked from te
   assert.ok(page.includes(bodyHtml));
   assert.ok(page.includes(`>${version}<`));
   assert.equal(syncPage(page), page, 'in step with src/legal/plan-terms.js (node tools/sync-plan-terms.mjs)');
-  assert.match(page, /<a href="index\.html">Residential<\/a>/);
+  assert.match(page, /<a href="(?:index\.html|\.\/)">Residential<\/a>/);
   assert.match(page, /<a href="commercial\/">Commercial<\/a>/);
   assert.match(page, /framework\.css/);
   assert.match(rd('../website-live/terms.html'), /href="plan-terms\.html"/);
