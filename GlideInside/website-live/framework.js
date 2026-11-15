@@ -61,9 +61,13 @@
       if (btn) btn.addEventListener("click", function () { location.assign(appUrl(live.last)); });
     }
     else {
-      // SEO-008: the 3D viewer no longer starts by itself on desktop. It loads when the visitor presses the button or searches an address.
-      if (note) note.textContent = "Loads the live viewer in this page.";
-      if (btn) btn.addEventListener("click", function () { if (note) note.textContent = "Loading the live viewer."; go(); });
+      // The 3D viewer still starts by itself on desktop (owner decision 15/11/2026), but only once it is near the
+      // viewport and after the page has finished loading and the browser is idle, so it does not hold up the first paint.
+      if (note) note.textContent = "Loading the live viewer.";
+      if (btn) btn.addEventListener("click", function () { go(); });
+      var whenIdle = function (fn) { var run = function () { if ("requestIdleCallback" in window) requestIdleCallback(fn, { timeout: 1500 }); else setTimeout(fn, 300); }; if (document.readyState === "complete") run(); else window.addEventListener("load", run, { once: true }); };
+      if ("IntersectionObserver" in window) { new IntersectionObserver(function (es, o) { if (es[0].isIntersecting) { o.disconnect(); whenIdle(function () { go(); }); } }, { rootMargin: "300px 0px" }).observe(box); }
+      else whenIdle(function () { go(); });
     }
     // Full screen: the Fullscreen API on the frame wrapper; a new tab with the viewer where the browser has none (iPhone).
     var fsBtn = box.querySelector("[data-fs]"), exitBtn = box.querySelector("[data-fs-exit]"), st = live.stage;
