@@ -8,8 +8,8 @@ import { makeMesh, flattenGroup } from './model-util.js';
 
 const DEG = Math.PI / 180;
 
-/** The mown lawn green of the ground (the homepage hero look): a warm, slightly olive green. */
-export const LAWN_COLOUR = '#879b54';
+/** The mown lawn green of the ground (the homepage hero look): a fresh, warm green. */
+export const LAWN_COLOUR = '#9aae52';
 
 // Triangulated horizontal polygon (plan mm) at height y, facing up (or down).
 export function addFloorPoly(b, slot, polygon, y, up = true, holes = []) {

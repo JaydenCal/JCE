@@ -23,13 +23,13 @@ const SUN_DIR = new THREE.Vector3(-0.45, 0.78, 0.65).normalize();
 // With a lot loaded plan up is grid north and the sun is in the northern sky (southern hemisphere), so a street frontage on the
 // north side is lit. 'warm' is a low afternoon sun from the north west with longer shadows.
 const SUN_PRESETS = {
-  day: { dir: new THREE.Vector3(0.5, 0.72, -0.5).normalize(), color: '#fff6ea', intensity: 3.0, hemi: 1.05, exposure: 1.0, sky: '#eef3fb', ground: '#a39d8e' },
+  day: { dir: new THREE.Vector3(0.5, 0.72, -0.5).normalize(), color: '#fff4e4', intensity: 2.7, hemi: 1.5, exposure: 1.05, sky: '#f1f3f6', ground: '#b9b2a0' },
   // The default, and the look of the homepage hero render: a warm afternoon sun about 34 degrees up, long soft shadows from the trees,
   // houses and fences, and a gentle warm sky light. No fog and no haze.
-  warm: { dir: new THREE.Vector3(-0.66, 0.56, -0.5).normalize(), color: '#ffe2b8', intensity: 2.9, hemi: 1.25, exposure: 0.95, sky: '#f4ecdc', ground: '#b3a57c' },
+  warm: { dir: new THREE.Vector3(-0.66, 0.56, -0.5).normalize(), color: '#fff0da', intensity: 2.6, hemi: 1.8, exposure: 1.08, sky: '#f6f3ea', ground: '#c4b98f' },
 };
 // Without a lot there is no north: the same warm afternoon light from the front left.
-const NO_LOT_SUN = { dir: new THREE.Vector3(-0.56, 0.56, 0.61).normalize(), color: '#ffe2b8', intensity: 2.9, hemi: 1.25, exposure: 0.95, sky: '#f4ecdc', ground: '#b3a57c' };
+const NO_LOT_SUN = { dir: new THREE.Vector3(-0.56, 0.56, 0.61).normalize(), color: '#fff0da', intensity: 2.6, hemi: 1.8, exposure: 1.08, sky: '#f6f3ea', ground: '#c4b98f' };
 // Sky and ground are tuned for the white app theme: the horizon is a clear blue grey rather than near white,
 // so the edge of the view reads against a white page and white overlay chips stand out on it.
 const SKY = { top: '#3d7fd9', horizon: '#cfe3f7', ground: '#9aa28f' };
@@ -128,7 +128,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   sun.shadow.mapSize.set(3072, 3072);
   sun.shadow.bias = -0.0004;
   sun.shadow.normalBias = 0.04;
-  sun.shadow.radius = 1.6; // soft edge, still a crisp shadow line
+  sun.shadow.radius = 3.2; // soft edge, still a crisp shadow line
   scene.add(sun, sun.target);
   const headlight = new THREE.PointLight('#fff1dd', 0, 16, 1.6);
   scene.add(headlight);
@@ -441,7 +441,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   function fitSun() {
     if (!bounds) return;
     const hasLot = !!store.project.site?.lot?.boundary?.length;
-    const preset = hasLot ? SUN_PRESETS[sunKey] : sunKey === 'warm' ? NO_LOT_SUN : { dir: SUN_DIR, color: '#fff6ea', intensity: 3.0, hemi: 1.05, exposure: 1.0, sky: '#eef3fb', ground: '#a39d8e' };
+    const preset = hasLot ? SUN_PRESETS[sunKey] : sunKey === 'warm' ? NO_LOT_SUN : { dir: SUN_DIR, color: '#fff4e4', intensity: 2.7, hemi: 1.5, exposure: 1.05, sky: '#f1f3f6', ground: '#b9b2a0' };
     hemi.color.set(preset.sky);
     if (mode !== 'walk') hemi.groundColor.set(preset.ground);
     sun.color.set(preset.color);

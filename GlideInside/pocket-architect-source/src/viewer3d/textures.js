@@ -473,9 +473,9 @@ export const TEXTURE_SPECS = {
     tile: [6, 6], ppm: 128, rough: 1, bump: 0,
     draw(c, W, H, bump, rnd) {
       // Mown lawn: two 3 m mowing bands per tile, one a touch lighter than the other, with a crisp edge between them.
-      c.fillStyle = gray(0.925);
+      c.fillStyle = gray(0.95);
       c.fillRect(0, 0, W / 2, H);
-      c.fillStyle = gray(0.885);
+      c.fillStyle = gray(0.855);
       c.fillRect(W / 2, 0, W / 2, H);
       // Soft tonal patches, wrapped across the tile edges so the texture repeats without a seam.
       for (let i = 0; i < 44; i++) {

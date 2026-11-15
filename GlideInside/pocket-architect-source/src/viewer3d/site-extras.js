@@ -581,7 +581,7 @@ function foliageBlob(r, detail, squash = 1, phase = 0) {
     p.setXYZ(i, x * bump, y * bump * squash, z * bump);
     const t = (y / r + 1) / 2;
     const patch = 0.9 + 0.2 * (Math.sin((x * 7 + y * 3) / r + phase) * Math.cos(z * 6 / r) * 0.5 + 0.5);
-    c.setScalar(0.5 + 0.62 * t).multiplyScalar(patch);
+    c.setScalar(0.62 + 0.55 * t).multiplyScalar(patch);
     colors[i * 3] = c.r;
     colors[i * 3 + 1] = c.g;
     colors[i * 3 + 2] = c.b;
@@ -599,34 +599,51 @@ function addTrees(group, spots, H, stats) {
   trunk.translate(0, 0.5, 0);
   const tc = new Float32Array(trunk.attributes.position.count * 3);
   for (let i = 0; i < tc.length; i += 3) {
-    tc[i] = 0.36;
-    tc[i + 1] = 0.27;
-    tc[i + 2] = 0.2;
+    tc[i] = 0.43;
+    tc[i + 1] = 0.36;
+    tc[i + 2] = 0.29;
   }
   trunk.setAttribute('color', new THREE.BufferAttribute(tc, 3));
   trunk.deleteAttribute('uv');
   trunk.deleteAttribute('normal');
-  // A fuller crown: four large masses and a ring of smaller clumps around and on top, each baked a little lighter or darker (inner and
-  // lower clumps darker, the top and the sunny side lighter), so the canopy reads as layered foliage and not as one ball. Unlit.
+  // An open eucalypt style crown (the homepage hero look): a loose scatter of leaf clumps with gaps between them, so the sky, the branches
+  // and the lawn show through, each baked lighter on top and on the sunny side and darker underneath. Unlit, so no tree is muddy.
   const crown = [
-    [0, 0.62, 0, 0.42, 2, 0.92], [0.3, 0.54, 0.12, 0.33, 2, 0.86], [-0.28, 0.57, -0.14, 0.34, 2, 0.9], [0.04, 0.84, 0.03, 0.29, 2, 1.1],
-    [-0.1, 0.47, 0.32, 0.25, 1, 0.82], [0.2, 0.7, -0.27, 0.27, 1, 1.0], [-0.35, 0.73, 0.1, 0.22, 1, 1.04], [0.4, 0.68, -0.06, 0.2, 1, 0.98],
-    [0.12, 0.5, -0.36, 0.22, 1, 0.8], [-0.4, 0.5, 0.18, 0.2, 1, 0.78], [0.3, 0.84, 0.2, 0.19, 1, 1.14], [-0.16, 0.92, -0.14, 0.2, 1, 1.18],
-    [0.02, 0.98, 0.12, 0.15, 1, 1.22], [-0.2, 0.64, -0.38, 0.19, 1, 0.94], [0.44, 0.52, 0.26, 0.17, 1, 0.84],
+    [0.0, 0.78, 0.0, 0.2, 1, 1.0], [0.3, 0.64, 0.12, 0.17, 1, 0.94], [-0.3, 0.68, -0.1, 0.18, 1, 0.98], [0.08, 0.96, 0.1, 0.15, 1, 1.12],
+    [-0.14, 0.56, 0.3, 0.15, 1, 0.88], [0.22, 0.82, -0.28, 0.16, 1, 1.04], [-0.38, 0.84, 0.12, 0.14, 1, 1.08], [0.42, 0.78, -0.08, 0.13, 1, 1.0],
+    [0.1, 0.58, -0.38, 0.14, 1, 0.86], [-0.2, 1.02, -0.14, 0.13, 1, 1.16], [0.3, 0.98, 0.24, 0.12, 1, 1.14], [-0.1, 0.72, 0.42, 0.12, 1, 0.92],
   ];
   const blobs = crown.map(([x, y, z, rr, detail, tone], k) => {
-    const b = foliageBlob(rr, detail, 0.88, k * 1.7);
+    const b = foliageBlob(rr * 1.1, detail, 0.8, k * 1.7);
     const c = b.attributes.color;
     for (let i = 0; i < c.count; i++) c.setXYZ(i, c.getX(i) * tone, c.getY(i) * tone, c.getZ(i) * tone);
     b.translate(x, 0.34 + y * 0.7, z); // crown lifted so the trunk reads clear below it
     return b;
   });
+  // a few thin limbs from the top of the trunk out towards the main clumps, so the crown is held up by visible branches
+  const limbs = [];
+  for (const k of [1, 2, 4, 5, 6, 8]) {
+    const [x, y, z] = crown[k];
+    const top = new THREE.Vector3(0, 0.62, 0);
+    const end = new THREE.Vector3(x * 0.8, 0.34 + y * 0.7 - 0.05, z * 0.8);
+    const len = top.distanceTo(end);
+    const limb = new THREE.CylinderGeometry(0.018, 0.04, len, 4, 1).toNonIndexed();
+    limb.translate(0, len / 2, 0);
+    limb.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), end.clone().sub(top).normalize()));
+    limb.translate(top.x, top.y, top.z);
+    const lc = new Float32Array(limb.attributes.position.count * 3);
+    for (let i = 0; i < lc.length; i += 3) { lc[i] = 0.4; lc[i + 1] = 0.33; lc[i + 2] = 0.26; }
+    limb.setAttribute('color', new THREE.BufferAttribute(lc, 3));
+    limb.deleteAttribute('uv');
+    limb.deleteAttribute('normal');
+    limbs.push(limb);
+  }
   // a clear trunk to about 0.6 of the tree; the crown sits above (heights are fractions of h)
-  const geo = mergeGeometries([trunk.clone().scale(0.8, 0.7, 0.8), ...blobs], false);
+  const geo = mergeGeometries([trunk.clone().scale(0.8, 0.7, 0.8), ...limbs, ...blobs], false);
   if (!geo) return;
   const m = basic('#ffffff', { vertexColors: true });
   const mesh = new THREE.InstancedMesh(geo, m, spots.length);
-  const GREENS = ['#3f7436', '#4d8340', '#35692f', '#5b8f44', '#487b3a', '#6b9448'];
+  const GREENS = ['#5e9448', '#6c9f4c', '#527f40', '#79a455', '#66934a', '#88aa5c'];
   const o = new THREE.Object3D();
   const col = new THREE.Color();
   spots.forEach((s, i) => {

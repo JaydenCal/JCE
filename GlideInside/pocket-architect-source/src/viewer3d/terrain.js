@@ -22,7 +22,7 @@ import { addCommercialEntourage, addForecourtSlabs } from '../commercial/catalog
 export { PAD_MARGIN_M } from './site-geom.js';
 
 const GRASS = '#6f8a58';
-const PADDOCK = '#9d9a60'; // dry grass beyond the lots when there is no aerial
+const PADDOCK = '#a89a62'; // dry grass beyond the lots when there is no aerial
 const GREY_GROUND = '#8b8e92'; // uploaded site with no aerial available: a plain grey ground
 const GREY_HORIZON = '#a7aaae';
 const HORIZON = '#9aa88a'; // the far edge of the ground ring: a neutral ground colour, not a pale haze towards the sky
@@ -228,8 +228,11 @@ float aerialNoise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3
 // Ground with no aerial (the homepage hero look): mown, striped lawn on the lot and its neighbours, a dry paddock tone beyond them.
 // One material: the tiling lawn texture in metres, and a small mask picture of the lots over the terrain extent that turns the lawn
 // into paddock outside them (a soft 10 cm edge, as on real ground). No extra geometry or draw call. Returns null without a DOM.
-const PADDOCK_TINT = [1.26, 1.02, 0.86]; // lawn green -> dry grass
-function lawnGroundMaterial(ctx, lot, ext) {
+const PADDOCK_TINT = [1.3, 1.0, 1.04]; // lawn green -> dry tan grass
+// With a real aerial the 3D view keeps the clean lawn and paddock look and lets the picture through only subtly (this share, and at 55%
+// of its own colour), so the ground reads as real land without the muddy cast, the baked shadows and the roofs of the photograph.
+const AERIAL_BLEND = 0.08;
+function lawnGroundMaterial(ctx, lot, ext, aerial = null) {
   if (typeof document === 'undefined') return null;
   const base = ctx.lib.get('grass', LAWN_COLOUR);
   if (!base?.map) return null;
@@ -258,20 +261,34 @@ function lawnGroundMaterial(ctx, lot, ext) {
   mat.userData.disposeMap = true;
   mat.userData.lotMask = mask;
   mat.addEventListener('dispose', () => mask.dispose());
+  if (aerial) {
+    aerial.colorSpace = THREE.SRGBColorSpace;
+    aerial.wrapS = THREE.ClampToEdgeWrapping;
+    aerial.wrapT = THREE.ClampToEdgeWrapping;
+    aerial.magFilter = THREE.LinearFilter;
+    aerial.generateMipmaps = true;
+    aerial.minFilter = THREE.LinearMipmapLinearFilter;
+    aerial.anisotropy = Math.max(aerial.anisotropy || 1, 8);
+    aerial.needsUpdate = true;
+  }
   mat.onBeforeCompile = (shader) => {
     shader.uniforms.uLotMask = { value: mask };
+    if (aerial) shader.uniforms.uAerialTex = { value: aerial };
     shader.uniforms.uPaddock = { value: new THREE.Vector3(...PADDOCK_TINT) };
-    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec2 vLotUv;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvLotUv = vec2(uv.x, 1.0 - uv.y);');
-    shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uLotMask;\nuniform vec3 uPaddock;\nvarying vec2 vLotUv;')
+    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec2 vLotUv;\nvarying vec2 vAerUv;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvLotUv = vec2(uv.x, 1.0 - uv.y);\nvAerUv = uv;');
+    shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uLotMask;\nuniform vec3 uPaddock;\nvarying vec2 vLotUv;\nvarying vec2 vAerUv;' + (aerial ? '\nuniform sampler2D uAerialTex;' : ''))
       .replace('#include <map_fragment>', `#include <map_fragment>
   float lotM = texture2D(uLotMask, vLotUv).r;
   // outside the lots: the dry paddock tone, with the mowing bands flattened (fine grain kept)
   vec3 lawnC = diffuseColor.rgb;
   float lawnL = dot(lawnC, vec3(0.3333));
   vec3 padC = diffuse * uPaddock * mix(0.9, lawnL / max(dot(diffuse, vec3(0.3333)), 0.001), 0.25);
-  diffuseColor.rgb = mix(padC, lawnC, lotM);`);
+  diffuseColor.rgb = mix(padC, lawnC, lotM);
+${aerial ? `  vec3 aerC = texture2D(uAerialTex, vAerUv).rgb;
+  aerC = mix(vec3(dot(aerC, vec3(0.3333))), aerC, 0.55) * 1.12;
+  diffuseColor.rgb = mix(diffuseColor.rgb, aerC, ${AERIAL_BLEND.toFixed(2)});` : ''}`);
   };
-  mat.customProgramCacheKey = () => 'lawn-ground-1';
+  mat.customProgramCacheKey = () => (aerial ? 'lawn-ground-aerial-2' : 'lawn-ground-2');
   return mat;
 }
 
@@ -313,8 +330,10 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   geo.setIndex(S.gridIndices(cols, rows));
   geo.computeVertexNormals();
-  let mat;
-  if (hasAerial) {
+  let mat = null;
+  const blended = hasAerial ? lawnGroundMaterial(ctx, lot, ext, texture) : null; // the clean lawn with the aerial let through subtly
+  if (blended) mat = blended;
+  else if (hasAerial) {
     // Sharp: the aerial at full resolution, bilinear when magnified, trilinear mipmaps and anisotropy when minified.
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.wrapS = THREE.ClampToEdgeWrapping;
@@ -342,7 +361,7 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
 
   // Wide outer tile: a lower resolution aerial on a frame of ground around the sharp inner tile, so the visible ground is real imagery
   // well past the lot. Only the far edge of this tile fades (the ring below), into the neutral ground colour.
-  const wide = hasAerial && wideTexture ? addWideGround(root, lot, tm, ext, wideTexture) : null;
+  const wide = hasAerial && !blended && wideTexture ? addWideGround(root, lot, tm, ext, wideTexture) : null;
   const nodes = wide ? wide.nodes : S.perimeterNodes(cols, rows).map((n) => ({ x: pos[(n.j * cols + n.i) * 3], y: heights[n.j * cols + n.i], z: pos[(n.j * cols + n.i) * 3 + 2], dir: n.dir }));
   let edgeSum = 0;
   for (const n of nodes) edgeSum += n.y;
@@ -350,8 +369,8 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   const ring = S.fadeRing(nodes, edgeY - 0.05);
   // The aerial edge is often road, so lean on grass: the ring reads as open ground that fades to the horizon.
   // With the wide tile the ring starts from that picture's own edge colour (no seam); without it the old grass lean applies.
-  const inner = grey ? new THREE.Color(GREY_GROUND) : wide ? new THREE.Color(wideEdgeColour || GRASS) : !hasAerial ? new THREE.Color(PADDOCK) : new THREE.Color(edgeColour || GRASS).lerp(new THREE.Color(GRASS), 0.55).multiplyScalar(1.12);
-  const outer = new THREE.Color(grey ? GREY_HORIZON : !hasAerial ? PADDOCK : HORIZON);
+  const inner = grey ? new THREE.Color(GREY_GROUND) : wide ? new THREE.Color(wideEdgeColour || GRASS) : (!hasAerial || blended) ? new THREE.Color(PADDOCK) : new THREE.Color(edgeColour || GRASS).lerp(new THREE.Color(GRASS), 0.55).multiplyScalar(1.12);
+  const outer = new THREE.Color(grey ? GREY_HORIZON : (!hasAerial || blended) ? PADDOCK : HORIZON);
   const rc = [];
   for (const t of ring.colourT) {
     const c = inner.clone().lerp(outer, t);
