@@ -5,6 +5,7 @@
 import * as S from '../../model/schema.js';
 import { buildingsOf } from './buildings.js';
 import { toWorld, dirToWorld } from './frame.js';
+import { constructionSpec, wallPanelOf } from './construction.js';
 
 const GEN = 'commercial';
 export const CAT_LEVEL_PREFIX = 'lvl_commercial_cat_';
@@ -70,6 +71,9 @@ export function materialiseBuildings(p, baseHeight = 0) {
   for (const b of bs) {
     const r = runBuilding(b, p);
     out.buildings += 1;
+    const panel = wallPanelOf(constructionSpec(b.params));
+    // The front of the building faces the street: its outward normal is the frame's -v.
+    const frontDir = { x: -b.frame.v.x, y: -b.frame.v.y };
     const sorted = [...r.levels].sort((a, c) => (a.elevationMm || 0) - (c.elevationMm || 0));
     const lv = new Map(sorted.map((l, i) => [l.name, { ...l, heightMm: l.heightMm > 0 ? l.heightMm : sorted[i + 1] ? sorted[i + 1].elevationMm - (l.elevationMm || 0) : 3000 }]));
     const heightOf = (name) => lv.get(name || GROUND)?.heightMm || null;
@@ -100,6 +104,12 @@ export function materialiseBuildings(p, baseHeight = 0) {
       }
       if (w.height == null) w.height = heightOf(d.level);
       tag(w, b);
+      if (panel && w.kind === 'exterior' && w.outside) {
+        const len = Math.hypot(w.b.x - w.a.x, w.b.y - w.a.y) || 1;
+        const nx = (-(w.b.y - w.a.y) / len) * w.outside;
+        const ny = ((w.b.x - w.a.x) / len) * w.outside;
+        w.panel = { ...panel, frontage: nx * frontDir.x + ny * frontDir.y > 0.9 };
+      }
       const level = L(d.level);
       level.walls.push(w);
       out.walls += 1;

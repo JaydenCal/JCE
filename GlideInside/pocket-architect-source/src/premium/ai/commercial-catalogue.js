@@ -4,6 +4,7 @@
 // list with setCommercialTypes. Every call into a type module is guarded, so a broken type never breaks the assistant.
 
 import { TYPES as REGISTRY, STRATA_ID } from '../../commercial/catalogue/types/index.js';
+import { CONSTRUCTION_PARAMS, CONSTRUCTION_KEYS } from '../../commercial/catalogue/construction.js';
 
 let OVERRIDE = null;
 
@@ -81,7 +82,15 @@ const opt = (p) => (p.type === 'select' ? `{${(p.options || []).map((o) => (type
 
 /** One line per type for the plan context. */
 export function typeLine(type) {
-  const params = type.params.map((p) => `${p.key}${opt(p) ? `(${opt(p)}${p.unit ? ` ${p.unit}` : ''})` : ''}=${p.default ?? ''}`).join(' ');
+  // The construction parameters are the same on every type, so they are listed once (constructionLine), not per type.
+  const params = type.params.filter((p) => !CONSTRUCTION_KEYS.includes(p.key)).map((p) => `${p.key}${opt(p) ? `(${opt(p)}${p.unit ? ` ${p.unit}` : ''})` : ''}=${p.default ?? ''}`).join(' ');
   const hint = Array.isArray(type.zonesHint) && type.zonesHint.length ? ` zones=${type.zonesHint.join('/')}` : '';
   return `TYPE ${type.id} "${String(type.label).slice(0, 50)}" ${type.category || 'other'}${hint} params: ${params}`;
 }
+
+/** One line for the plan context: the construction system parameters that every building type and every unit row take. */
+export function constructionLine() {
+  const bits = CONSTRUCTION_PARAMS.map((p) => `${p.key}(${p.type === 'select' ? `{${(p.options || []).map((o) => (typeof o === 'object' ? o.value : o)).join('|')}}` : p.type === 'bool' ? 'bool' : `${p.min}..${p.max}${p.unit ? ` ${p.unit}` : ''}`})=${p.default}`);
+  return `CONSTRUCTION params on every type (set with add_building or update_building) and on unit rows (set_unit_options): ${bits.join(' ')}`;
+}
+export { CONSTRUCTION_KEYS };

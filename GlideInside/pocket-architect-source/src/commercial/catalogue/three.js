@@ -81,6 +81,7 @@ export function roofGeometry(b, roof, rinfo, builder = new GeoBuilder()) {
   if (type === 'flat') {
     const top = base + 150;
     builder.quad('roof', P(x0, y0, top), P(x1, y0, top), P(x1, y1, top), P(x0, y1, top), [uv(0, 0), uv(W, 0), uv(W, D), uv(0, D)], [0, 1, 0]);
+    if (roof.noParapet) return builder; // concrete panel walls carry their own parapet
     const t = 150;
     const pz = base + 150 + 450;
     for (const [ax0, ay0, ax1, ay1] of [[x0 - t, y0 - t, x1 + t, y0], [x0 - t, y1, x1 + t, y1 + t], [x0 - t, y0, x0, y1], [x1, y0, x1 + t, y1]]) {
@@ -228,10 +229,13 @@ export function addCatalogue3D(ctx, root, project) {
   const lib = ctx.lib;
   let n = 0;
   const parkingRows = buildingParking(c).rows;
+  // Concrete walls with a parapet hide the roof: it is drawn as a flat concealed roof inside the parapet (the walls draw the parapet).
+  const parapetOf = new Map();
+  for (const l of project.levels || []) for (const w of l.walls || []) if (w.building && w.panel && w.panel.parapetMm > 0 && !parapetOf.has(w.building)) parapetOf.set(w.building, w.panel.parapetMm);
   for (const b of buildingsOf(c)) {
     // Roofs: wall material for gable ends, roof sheet and fascia as the project finishes.
     const rb = new GeoBuilder();
-    for (const { roof, baseMm } of resolveRoofs(b, project)) roofGeometry(b, roof, { baseMm }, rb);
+    for (const { roof, baseMm } of resolveRoofs(b, project)) roofGeometry(b, parapetOf.has(b.id) ? { ...roof, type: 'flat', noParapet: true } : roof, { baseMm }, rb);
     const res = rb.build();
     if (res) {
       const ext = ctx.fin.externalWalls;

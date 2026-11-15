@@ -230,6 +230,95 @@ export const TEXTURE_SPECS = {
       jitter(c, W, H, bump ? 0.1 : 0.025, rnd);
     },
   },
+  // Concrete panel finishes (commercial tilt-up and precast). Small tiles, drawn without blur: the joints between panels are real geometry.
+  tilt_offform: {
+    // Off-form: faint form-ply sheet joints (1.2 x 2.4 m) and a few small bug holes on a lightly mottled grey.
+    tile: [1.2, 2.4], ppm: 128, rough: 0.92, bump: 0.3,
+    draw(c, W, H, bump, rnd) {
+      c.fillStyle = gray(bump ? 0.5 : 0.95);
+      c.fillRect(0, 0, W, H);
+      for (let i = 0; i < 26; i++) {
+        c.fillStyle = `rgba(${bump ? '255,255,255' : '0,0,0'},${0.012 + rnd() * 0.016})`;
+        c.beginPath();
+        c.arc(rnd() * W, rnd() * H, 6 + rnd() * 22, 0, Math.PI * 2);
+        c.fill();
+      }
+      for (let i = 0; i < 40; i++) {
+        c.fillStyle = `rgba(0,0,0,${0.12 + rnd() * 0.12})`;
+        c.fillRect(Math.floor(rnd() * W), Math.floor(rnd() * H), 1, 1);
+      }
+      c.fillStyle = bump ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.09)';
+      c.fillRect(0, 0, W, 1);
+      c.fillRect(0, 0, 1, H);
+      c.fillRect(0, Math.round(H / 2), W, 1);
+      jitter(c, W, H, bump ? 0.05 : 0.014, rnd);
+    },
+  },
+  tilt_aggregate: {
+    // Exposed aggregate: small stones in a cement paste.
+    tile: [0.4, 0.4], ppm: 320, rough: 0.88, bump: 1.1,
+    draw(c, W, H, bump, rnd) {
+      c.fillStyle = gray(bump ? 0.3 : 0.9);
+      c.fillRect(0, 0, W, H);
+      for (let i = 0; i < 520; i++) {
+        const x = rnd() * W;
+        const y = rnd() * H;
+        const r = 1 + rnd() * 2.2;
+        const v = bump ? 0.62 + rnd() * 0.36 : 0.55 + rnd() * 0.45;
+        c.fillStyle = gray(v);
+        c.beginPath();
+        c.arc(x, y, r, 0, Math.PI * 2);
+        c.fill();
+        if (!bump) {
+          c.fillStyle = 'rgba(0,0,0,0.18)';
+          c.beginPath();
+          c.arc(x + 0.6, y + 0.8, r * 0.7, 0, Math.PI * 2);
+          c.fill();
+        }
+      }
+      jitter(c, W, H, bump ? 0.03 : 0.02, rnd);
+    },
+  },
+  tilt_honed: {
+    // Honed (ground smooth): fine flecks of aggregate showing through a smooth surface.
+    tile: [0.6, 0.6], ppm: 256, rough: 0.5, bump: 0,
+    draw(c, W, H, bump, rnd) {
+      c.fillStyle = gray(0.95);
+      c.fillRect(0, 0, W, H);
+      for (let i = 0; i < 700; i++) {
+        c.fillStyle = `rgba(0,0,0,${0.04 + rnd() * 0.1})`;
+        c.fillRect(Math.floor(rnd() * W), Math.floor(rnd() * H), 1 + Math.floor(rnd() * 2), 1 + Math.floor(rnd() * 2));
+      }
+      for (let i = 0; i < 200; i++) {
+        c.fillStyle = `rgba(255,255,255,${0.1 + rnd() * 0.15})`;
+        c.fillRect(Math.floor(rnd() * W), Math.floor(rnd() * H), 1, 1);
+      }
+      jitter(c, W, H, 0.012, rnd);
+    },
+  },
+  blockwork: {
+    // Core-filled concrete blockwork: 390 x 190 blocks, 10 mm mortar, stretcher bond (module 0.4 x 0.2 m, two courses and two blocks per tile).
+    tile: [0.8, 0.4], ppm: 256, rough: 0.92, bump: 1.0,
+    draw(c, W, H, bump, rnd) {
+      const m = Math.max(2, Math.round(0.01 * (W / 0.8)));
+      c.fillStyle = gray(bump ? 0.12 : 0.62);
+      c.fillRect(0, 0, W, H);
+      const bw = W / 2;
+      const bh = H / 2;
+      for (let r = 0; r < 2; r++) {
+        const off = (r % 2) * (bw / 2);
+        for (let k = -1; k <= 2; k++) {
+          c.fillStyle = gray(bump ? 0.8 + rnd() * 0.1 : 0.94 + rnd() * 0.06);
+          c.fillRect(off + k * bw + m / 2, r * bh + m / 2, bw - m, bh - m);
+        }
+      }
+      for (let i = 0; i < 160; i++) {
+        c.fillStyle = `rgba(0,0,0,${0.05 + rnd() * 0.09})`;
+        c.fillRect(Math.floor(rnd() * W), Math.floor(rnd() * H), 1, 1);
+      }
+      jitter(c, W, H, bump ? 0.03 : 0.016, rnd);
+    },
+  },
   corrugated: {
     tile: [0.304, 0.5], ppm: 640, rough: 0.42, metal: 0.55, bump: 1.4,
     draw(c, W, H, bump, rnd) {

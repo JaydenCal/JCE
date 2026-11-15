@@ -18,12 +18,37 @@ import { addSiteTerrain } from './terrain.js';
 import { siteReady } from './site-geom.js';
 import { rotateHouse } from '../model/placement.js';
 import { addCatalogue3D } from '../commercial/catalogue/three.js';
+import { buildPanelWall, panelEnds, openingsAbove, PANEL_SLOTS } from './panels3d.js';
+import { hexOfCladding } from '../commercial/catalogue/construction.js';
 import { addFloorPoly, addGround, addDeck, addRoomBalustrade, addStair, addTank, addFurniture, shade } from './site.js';
 
 export { disposeModel, modelBounds } from './model-util.js';
 
 export const SLAB = { ground: 0.15, upper: 0.3 };
 const FACE_OF_SLOT = { out: 'outside', in: 'inside', edge: 'edge', roof: 'roof', fascia: 'fascia', gable: 'gable' };
+const PANEL_FACE_OF_SLOT = { face: 'outside', accent: 'outside', back: 'inside', edge: 'edge', cap: 'edge', joint: 'edge', sign: 'outside' };
+const CONCRETE_PANELS = new Set(['tilt_up', 'precast', 'tilt_up_metal_upper']);
+const FINISH_TEXTURE = { offform: 'tilt_offform', aggregate: 'tilt_aggregate', honed: 'tilt_honed' };
+const FINISH_GREY = { offform: '#aeafab', aggregate: '#a8a7a1', honed: '#bbbab4' };
+
+/** Materials of a concrete panel wall mesh (see panels3d.js): crisp, no blur. Colours follow the finish: painted takes the chosen colour. */
+function panelMaterials(lib, hex, fin, spec, int, tintId) {
+  const wallHex = hex(fin.externalWalls.colour);
+  const colourOf = (id) => (id === 'project' ? wallHex : hexOfCladding(id, wallHex));
+  const faceHex = liftDark(spec.finish === 'painted' ? colourOf(spec.colour) : FINISH_GREY[spec.finish] || '#aeafab', 0.27);
+  const accHex = liftDark(hexOfCladding(spec.accentColour, '#464a4f'), 0.27);
+  const tex = FINISH_TEXTURE[spec.finish];
+  const surface = (h) => (tex ? lib.get(tex, h, { tint: tintId }) : lib.plain(h, { rough: 0.9, tint: tintId }));
+  return {
+    face: surface(faceHex),
+    accent: surface(accHex),
+    back: lib.get(int.material || 'paint', hex(int.colour), { tint: tintId }),
+    edge: lib.plain(shade(faceHex, 0.74), { rough: 0.95, tint: tintId }),
+    cap: lib.plain(shade(faceHex, 0.9), { rough: 0.95, tint: tintId }),
+    joint: lib.plain('#2d3034', { rough: 0.98, tint: tintId }),
+    sign: lib.plain('#30353b', { rough: 0.8, tint: tintId }),
+  };
+}
 
 const merge = (base, over) => ({ material: over?.material ?? base?.material, colour: over?.colour ?? base?.colour });
 
@@ -189,6 +214,10 @@ export function buildModel(project, opts = {}) {
     THREE, project, lib, catalogue, walk, statusView, groundY, grid, fin, hex, vis, tint, floorFinish,
   };
 
+  // The top level of each building (or of the strata rows) that has panel walls: only its walls take the parapet.
+  const panelTopLi = new Map();
+  levels.forEach((lv, i) => { for (const w of lv.walls) if (w.panel) panelTopLi.set(w.building || '_rows', Math.max(panelTopLi.get(w.building || '_rows') ?? -1, i)); });
+
   // Level by level -----------------------------------------------------------------------------
   levels.forEach((level, li) => {
     if (!levelShown(li)) return;
@@ -260,6 +289,7 @@ export function buildModel(project, opts = {}) {
 
     // walls and openings
     const joins = computeJoins(walls);
+    const pEnds = walls.some((x) => x.panel) ? panelEnds(walls) : new Map();
     for (const w of walls) {
       let H = (w.height ?? level.height) / 1000;
       if (w.height == null && upper && upperFp?.any) {
@@ -274,18 +304,47 @@ export function buildModel(project, opts = {}) {
       const cls = statusView === 'both' ? { kind: w.kind, outside: w.outside || 0 } : viewClass(w, shownIndoor);
       const outSide = cls.kind === 'interior' ? 0 : cls.outside;
       const wallOpenings = level.openings.filter((o) => o.wallId === w.id && vis(o.status));
-      const body = buildWallBody(w, { baseY: elev, H, outSide, openings: wallOpenings, join: joins.get(w.id) });
-      const ext = merge(fin.externalWalls, cls.kind === 'interior' ? null : w.finish);
-      const int = merge(fin.internalWalls, cls.kind === 'interior' ? w.finish : null);
+      // Construction system: concrete panels are built by panels3d.js (real joints and openings); blockwork is a block textured wall with a parapet.
+      const pSys = w.panel && cls.kind !== 'interior' && outSide ? w.panel.system : null;
+      const topLevel = (panelTopLi.get(w.building || '_rows') ?? li) === li;
+      let wallH = H;
+      let skipBody = false;
+      if (CONCRETE_PANELS.has(pSys)) {
+        const pr = buildPanelWall(w, { baseY: elev, wallHeightMm: H * 1000, outSide, openings: wallOpenings, ends: pEnds.get(w.id), topLevel });
+        const pmesh = makeMesh(pr.builder.build(PANEL_SLOTS), panelMaterials(lib, hex, fin, w.panel, merge(fin.internalWalls, null), tint(w.status)), {
+          kind: 'wall', id: w.id, levelId: level.id, face: 'outside', panels: true,
+        }, { name: `panels:${w.id}`, cast: tint(w.status) !== 'demolish', faceOf: PANEL_FACE_OF_SLOT });
+        if (pmesh) group.add(pmesh);
+        skipBody = pSys !== 'tilt_up_metal_upper';
+        if (!skipBody) {
+          // Metal cladding above the concrete: the standard wall body from the top of the panels, with the openings clipped to it.
+          const dado = Math.min(w.panel.dadoMm, H * 1000 - 100);
+          const ub = buildWallBody(w, { baseY: elev + dado / 1000, H: H - dado / 1000, outSide, openings: openingsAbove(wallOpenings, dado), join: joins.get(w.id) });
+          const uext = merge(fin.externalWalls, w.finish);
+          const uint = merge(fin.internalWalls, null);
+          const ut = tint(w.status);
+          const uExt = lib.get(uext.material || 'paint', hex(uext.colour), { tint: ut });
+          const uInt = lib.get(uint.material || 'paint', hex(uint.colour), { tint: ut });
+          const ures = ub.build(['out', 'in', 'edge']);
+          const um = makeMesh(ures, { out: uExt, in: uInt, edge: uInt.map ? lib.get('paint', hex(uint.colour), { tint: ut, flat: true }) : uInt }, { kind: 'wall', id: w.id, levelId: level.id, face: 'outside' }, { name: `wall-upper:${w.id}`, cast: ut !== 'demolish', faceOf: FACE_OF_SLOT });
+          if (um) group.add(um);
+        }
+      } else if (pSys === 'blockwork') wallH = H + (topLevel ? (w.panel.parapetMm || 0) / 1000 : 0);
+      if (!skipBody) {
+        const body = buildWallBody(w, { baseY: elev, H: wallH, outSide, openings: wallOpenings, join: joins.get(w.id) });
+        const ext = merge(fin.externalWalls, cls.kind === 'interior' ? null : w.finish);
+        const int = merge(fin.internalWalls, cls.kind === 'interior' ? w.finish : null);
+        const t = tint(w.status);
+        const extMat = pSys === 'blockwork' ? lib.get('blockwork', hex(ext.colour), { tint: t }) : lib.get(ext.material || 'paint', hex(ext.colour), { tint: t });
+        const intMat = lib.get(int.material || 'paint', hex(int.colour), { tint: t });
+        const edgeMat = intMat.map ? lib.get('paint', hex(int.colour), { tint: t, flat: true }) : intMat;
+        const res = body.build(['out', 'in', 'edge']);
+        const mesh = makeMesh(res, { out: extMat, in: intMat, edge: edgeMat }, {
+          kind: 'wall', id: w.id, levelId: level.id, face: outSide ? 'outside' : 'inside',
+        }, { name: `wall:${w.id}`, cast: t !== 'demolish', faceOf: FACE_OF_SLOT });
+        if (mesh) group.add(mesh);
+      }
       const t = tint(w.status);
-      const extMat = lib.get(ext.material || 'paint', hex(ext.colour), { tint: t });
-      const intMat = lib.get(int.material || 'paint', hex(int.colour), { tint: t });
-      const edgeMat = intMat.map ? lib.get('paint', hex(int.colour), { tint: t, flat: true }) : intMat;
-      const res = body.build(['out', 'in', 'edge']);
-      const mesh = makeMesh(res, { out: extMat, in: intMat, edge: edgeMat }, {
-        kind: 'wall', id: w.id, levelId: level.id, face: outSide ? 'outside' : 'inside',
-      }, { name: `wall:${w.id}`, cast: t !== 'demolish', faceOf: FACE_OF_SLOT });
-      if (mesh) group.add(mesh);
 
       for (const o of wallOpenings) {
         const fit = buildOpeningFittings(w, o, { baseY: elev, H });
@@ -372,7 +431,9 @@ export function buildModel(project, opts = {}) {
       const upperFp = upper ? fpOf(upper) : null;
       const { builder } = buildLevelRoof({
         grid, footprint: fp.footprint, above: upperFp?.any ? upperFp.footprint : null,
-        H0: (level.elevation + level.height) / 1000, roof: level.roof || {},
+        H0: (level.elevation + level.height) / 1000,
+        // Concrete walls with a parapet hide the roof: it stops at the wall (no overhang).
+        roof: level.walls.some((w) => w.panel && !w.bldg && w.panel.parapetMm > 0) ? { ...(level.roof || {}), overhang: 0 } : level.roof || {},
       });
       const res = builder.build();
       if (!res) return;

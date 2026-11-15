@@ -12,7 +12,7 @@ import { finishesOf } from '../../commercial/finishes.js';
 import { layoutUnits } from '../../commercial/layout.js';
 import { LAYOUT_LIST } from '../../commercial/layouts.js';
 import { measure, buildingsOf } from './commercial-core.js';
-import { commercialTypes, typeLine } from './commercial-catalogue.js';
+import { commercialTypes, typeLine, constructionLine } from './commercial-catalogue.js';
 import { money } from '../../commercial/feasibility.js';
 import { estimateTokens, DEFAULT_TOKEN_CAP } from './context.js';
 import { today } from './commercial-brief.js';
@@ -106,6 +106,7 @@ function render(p, tier) {
   const types = commercialTypes();
   if (!types.length) lines.push('TYPES none (building types are not available, plan strata units only)');
   else for (const t of types) lines.push(tier < 2 ? typeLine(t) : `TYPE ${t.id} "${t.label}" ${t.category}`);
+  if (types.length && tier < 2) lines.push(constructionLine());
   return lines;
 }
 

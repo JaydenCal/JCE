@@ -25,6 +25,7 @@ import { sheetNotes } from '../../../site/upload/sheet-text.js';
 import { drawSite, siteView } from './site.js';
 import { drawHouseSheet, houseSheets } from './house.js';
 import { zoneMismatch, RESIDENTIAL_NOTE } from '../../../commercial/zones.js';
+import { drawElevations } from './commercial-elevations.js';
 import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, drawLayout, drawMezzanine, drawYield, coverThumbnail, COMMERCIAL_NOTES } from './commercial.js';
 import { lotOf } from '../../../model/placement.js';
 
@@ -145,8 +146,9 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
         if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null });
         else if (s.id === 'layout') r = drawLayout(doc, cmodel);
         else if (s.id === 'mezz') r = drawMezzanine(doc, cmodel);
+        else if (s.id === 'elev') r = drawElevations(doc, cmodel);
         else r = drawYield(doc, cmodel);
-        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' ? 'SITE DATA' : s.id === 'yield' ? 'KEY FIGURES' : s.id === 'mezz' ? 'MEZZANINE DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
+        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' ? 'SITE DATA' : s.id === 'yield' ? 'KEY FIGURES' : s.id === 'mezz' ? 'MEZZANINE DATA' : s.id === 'elev' ? 'ELEVATION DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
       }
     } else if (s.id === 'cover') {
       drawCover(doc, { project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });

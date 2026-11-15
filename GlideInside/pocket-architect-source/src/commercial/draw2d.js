@@ -8,7 +8,7 @@ import { rowFrame, rowLength, rowPoly } from './layout.js';
 import { bayOffsetMm } from './schema.js';
 import { doorStrips } from './parking.js';
 import { siteAccess } from './access.js';
-import { drawBuildings, buildingExtents } from './catalogue/draw2d.js';
+import { drawBuildings, drawPanelJoints, buildingExtents } from './catalogue/draw2d.js';
 
 const GOLD = '#c7a256';
 const BLUE = '#1b5fbf';
@@ -212,4 +212,5 @@ export function drawCommercial(ctx, st) {
   }
   ctx.restore();
   drawBuildings(ctx, st);
+  drawPanelJoints(ctx, st);
 }

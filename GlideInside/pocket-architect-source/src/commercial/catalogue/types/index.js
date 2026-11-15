@@ -2,6 +2,7 @@
 // one line each. Add your import below, then add its name to TYPES (also one per line, alphabetical).
 // Each type module follows INTERFACE.md and FRAMEWORK.md. 'strata-units' is the existing rows code behind the same interface.
 
+import { withConstruction } from '../construction.js';
 import { TYPES_B } from './index-typesB.js';
 import { TYPES_C } from './index-typesC.js';
 import showroom from './showroom.js';
@@ -10,13 +11,14 @@ import warehouse from './warehouse.js';
 
 export const STRATA_ID = 'strata-units';
 
+// Every type carries the construction system parameters (metal clad, tilt-up, precast and so on, see ../construction.js).
 export const TYPES = [
   ...TYPES_B,
   ...TYPES_C,
   showroom,
   strataUnits,
   warehouse,
-];
+].map(withConstruction);
 
 export const typeById = (id) => TYPES.find((t) => t.id === id) || null;
 

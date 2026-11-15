@@ -7,6 +7,7 @@ import { defaultRow, normaliseCommercial } from '../../schema.js';
 import { layoutUnits, mezzanineOf, officeOf } from '../../layout.js';
 import { materialise as materialiseRows, MEZZ_LEVEL_ID } from '../../materialise.js';
 import { rect } from '../frame.js';
+import { CONSTRUCTION_KEYS } from '../construction.js';
 
 const num = (key, label, unit, min, max, step, def) => ({ key, label, type: 'number', unit, min, max, step, default: def });
 
@@ -17,6 +18,7 @@ const rowFor = (params, place = { x: 0, y: 0, rotationDeg: 0 }, origin = null) =
   row.unit.heightMm = params.heightMm;
   row.unit.office.enabled = !!params.office;
   row.unit.mezzanine.enabled = !!params.mezzanine;
+  for (const k of CONSTRUCTION_KEYS) if (params[k] !== undefined) row.unit[k] = params[k];
   return row;
 };
 const scratchOf = (params, place, origin) => {
