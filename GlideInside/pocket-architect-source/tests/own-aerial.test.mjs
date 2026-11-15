@@ -48,11 +48,11 @@ test('files are classified as picture and world file', () => {
   assert.equal(classifyFiles([f('site.tif')]).kind, 'tiff');
 });
 
-test('the file route stays in the browser and the Nearmap key route is not offered', () => {
+test('the file route stays in the browser and is never uploaded', () => {
   const own = readFileSync(new URL('../src/site/own-aerial.js', import.meta.url), 'utf8');
   assert.ok(!/fetch\(|XMLHttpRequest|sendBeacon/.test(own), 'own-aerial.js must not send anything');
   const ui = readFileSync(new URL('../src/ui/aerial-source.js', import.meta.url), 'utf8');
-  assert.match(ui, /filter\(\(\[id\]\) => id !== 'nearmap'\)/);
+  assert.match(ui, /SOURCES\.map\(/);
   assert.match(ui, /never uploaded to our server/);
   assert.match(ui, /hold the rights to this imagery/);
   assert.match(readFileSync(new URL('../src/flow/residential.js', import.meta.url), 'utf8'), /createAerialSourceButton/);

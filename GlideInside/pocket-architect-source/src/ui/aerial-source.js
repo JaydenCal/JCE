@@ -89,7 +89,7 @@ export function openAerialSource({ store, deps = {} }) {
   const keyIn = h('input', { type: 'password', autocomplete: 'off', spellcheck: 'false', 'aria-label': 'Your Nearmap API key', placeholder: 'Paste your own Nearmap API key', dataset: { ps: 'aerial-src-key' } });
   const remember = h('input', { type: 'checkbox', checked: true, dataset: { ps: 'aerial-src-remember' } });
   const saved = () => !!readKey();
-  const forget = h('button', { class: 'ps-btn', type: 'button', dataset: { ps: 'aerial-src-forget' }, hidden: !saved(), onclick: () => { forgetKey(); keyIn.value = ''; forget.hidden = true; savedNote.hidden = true; say('Key forgotten. It has been removed from this browser.'); } }, 'Forget key');
+  const forget = h('button', { class: 'ps-btn', type: 'button', dataset: { ps: 'aerial-src-forget' }, hidden: !saved(), onclick: () => { forgetKey(); keyIn.value = ''; forget.hidden = true; savedNote.hidden = true; say('Key forgotten. It has been removed from this browser.'); } }, 'Forget my key');
   const savedNote = h('p', { class: 'as-note', hidden: !saved() }, 'A key is saved in this browser. It is used when you press Use my Nearmap key.');
   const nmBtn = h('button', { class: 'ps-btn ps-btn--primary', type: 'button', dataset: { ps: 'aerial-src-use-nearmap' }, onclick: () => busyBtn(nmBtn, async () => {
     const key = (keyIn.value || readKey()).trim();
