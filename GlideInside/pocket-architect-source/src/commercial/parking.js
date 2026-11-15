@@ -5,6 +5,10 @@
 import { layoutUnits, rowFrame, rowLength, rowPoint, facadeLayout, onFacade } from './layout.js';
 import { accessibleRequired, ACCESSIBLE_BAY } from './rules.js';
 import { bayOffsetMm } from './schema.js';
+import { rowsSignature } from './estate.js';
+
+/** The strata estate record when it still matches the rows (nothing moved since it was drawn), else null. */
+export const estateOf = (c) => (c?.estate && c.estate.sig === rowsSignature(c.rows) ? c.estate : null);
 
 const add = (a, b) => ({ x: a.x + b.x, y: a.y + b.y });
 const mul = (a, k) => ({ x: a.x * k, y: a.y * k });
@@ -25,7 +29,7 @@ export function accessibleEntry(units) {
  * rows is never landscaping. Returns [{ rowId, frame, length, depth, off, poly }].
  */
 export function doorStrips(commercial, layout = null) {
-  if (!commercial || commercial.parking?.enabled === false) return [];
+  if (!commercial || commercial.parking?.enabled === false || estateOf(commercial)) return []; // an estate's door aprons are part of its pavement network
   const off = bayOffsetMm(commercial.parking);
   if (!(off > 0)) return [];
   return (layout || parkingLayout(commercial)).rows.filter((r) => !r.extra && !r.slots.length && r.length > 0).map((r) => ({

@@ -16,8 +16,9 @@ import { parkingLayout } from './parking.js';
 import { accessibleRequired } from './rules.js';
 import { clipTo } from './catalogue/pavements/polybool.js';
 import { polyArea } from './catalogue/pavements/geom.js';
+import { rowsSignature } from './estate.js';
 
-export const SITEWORKS_VERSION = 2; // 2: entry and exit stay on the first frontage edge and clear of a corner road; project.commercial.accessEdit overrides them
+export const SITEWORKS_VERSION = 3; // 2: entry and exit stay on the first frontage edge and clear of a corner road; project.commercial.accessEdit overrides them
 export const AISLE_MM = 6000;
 export const AISLE_TRUCK_MM = 7500;
 export const CROSSOVER_W = 6000;
@@ -753,6 +754,8 @@ export function generateSiteWorks(project, opts = {}) {
  * the driveway and crossover stay the access line the rows have always had.
  */
 function rowsOnlyWorks(c, lot, f) {
+  const est = estateWorks(c, lot);
+  if (est) return est;
   const fp = lot.boundary.map((q) => toFrame(f, q));
   const sLo = Math.min(...fp.map((q) => q.s)); const sHi = Math.max(...fp.map((q) => q.s)); const tHi = Math.max(...fp.map((q) => q.t));
   const inLot = (poly) => G.pointInPolygon(centroid(poly), lot.boundary);
@@ -765,6 +768,25 @@ function rowsOnlyWorks(c, lot, f) {
   return { version: SITEWORKS_VERSION, kind: 'rows', aisleMm: 0, crossovers: [], aisles: [], pavedAisles: [], forecourts: [], aprons: [], footpaths: [], landscape, bayRows: [], summary: { required: 0, provided: 0, accessibleRequired: 0, accessibleProvided: 0, limited: false, perBuilding: [], reachable: {}, unreachable: [] }, generatedAt: 0 };
 }
 
+/**
+ * A strata estate (estate.js) carries its own connected pavement network: the crossover(s), entry drive, car park aisles, the driveway or
+ * aisle between the door faces, door aprons, footpaths, turning heads, frontage landscaping and the balance of a huge lot. It is only valid
+ * for the rows it was drawn for (a moved row makes it stale and the plain row layout applies).
+ */
+function estateWorks(c, lot) {
+  const e = c?.estate;
+  if (!e || !e.network || e.sig !== rowsSignature(c.rows)) return null;
+  const n = e.network;
+  const provided = (c.parking?.extra || []).reduce((t, x) => t + (x.count || 0), 0);
+  return {
+    version: SITEWORKS_VERSION, kind: 'estate', family: e.family, aisleMm: e.aisleMm,
+    crossovers: n.crossovers, aisles: n.aisles, pavedAisles: n.paved.map(({ id, polygon }) => ({ id, polygon })), forecourts: [], aprons: n.aprons, footpaths: n.foot, landscape: n.landscape,
+    pedestrianEntries: n.foot.filter((x) => x.pedestrian).map((x) => x.id),
+    balance: e.balance || null, estateWindow: n.window, warnings: [], bayRows: [],
+    summary: { required: 0, provided, accessibleRequired: 0, accessibleProvided: 0, limited: false, perBuilding: [], reachable: {}, unreachable: [] }, generatedAt: 0,
+  };
+}
+
 /** The key of what a layout depends on: lot, building placements and parameters, strata rows. A change means the layout is out of date. */
 export function siteKey(project) {
   const c = project?.commercial;
@@ -775,6 +797,7 @@ export function siteKey(project) {
     lot.boundary?.map((q) => [r(q.x), r(q.y)]), lot.frontEdges, lot.envelope?.length || 0,
     (c.buildings || []).map((b) => [b.id, b.type, r(b.place?.x), r(b.place?.y), r(b.place?.rotationDeg), b.params]),
     (c.rows || []).map((rw) => [rw.id, r(rw.x), r(rw.y), r(rw.rotationDeg), rw.count]),
+    c.estate?.sig || null, (c.parking?.extra || []).length,
     c.parking?.bayW, c.parking?.bayL, c.parking?.aisleMm, c.parking?.enabled, c.buildingClass,
     c.accessEdit ? [c.accessEdit.in?.offsetMm, c.accessEdit.out?.offsetMm, c.accessEdit.widthMm] : null,
   ]);

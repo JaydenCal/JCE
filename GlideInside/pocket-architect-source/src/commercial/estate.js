@@ -173,10 +173,8 @@ export function describe(p) {
     E.units.push({ face: '-s', a0: half, a1: half + d, t0: T0, t1: T0 + L, n });
     E.paved.push({ role: 'aisle', a0: -ENTRY_DRIVE / 2, a1: ENTRY_DRIVE / 2, t0: -0, t1: T0, id: 'entry' });
     E.paved.push({ role: 'aisle', a0: -CARRIAGE_W / 2, a1: CARRIAGE_W / 2, t0: T0, t1: T0 + L, id: 'carriage' });
-    E.aprons.push({ a0: -half + FOOT_W, a1: -CARRIAGE_W / 2, t0: T0, t1: T0 + L, id: 'apron:w' });
-    E.aprons.push({ a0: CARRIAGE_W / 2, a1: half - FOOT_W, t0: T0, t1: T0 + L, id: 'apron:e' });
-    E.foot.push({ a0: -half, a1: -half + FOOT_W, t0: T0, t1: T0 + L, id: 'foot:w' });
-    E.foot.push({ a0: half - FOOT_W, a1: half, t0: T0, t1: T0 + L, id: 'foot:e' });
+    E.aprons.push({ a0: -half, a1: -CARRIAGE_W / 2, t0: T0, t1: T0 + L, id: 'apron:w' });
+    E.aprons.push({ a0: CARRIAGE_W / 2, a1: half, t0: T0, t1: T0 + L, id: 'apron:e' });
     E.paved.push({ role: 'aisle', a0: -half - 6000, a1: half + 6000, t0: T0 + L, t1: T0 + L + TURN_HEAD, id: 'head' });
     E.head = { t0: T0 + L, t1: T0 + L + TURN_HEAD };
     E.aisles.push({ a: 0, t0: 0, t1: T0 + L });
@@ -196,8 +194,7 @@ export function describe(p) {
     E.units.push({ face: '-s', a0: aF, a1: aF + d, t0: T0, t1: T0 + L, n });
     E.paved.push({ role: 'aisle', a0: -ENTRY_DRIVE / 2, a1: ENTRY_DRIVE / 2, t0: 0, t1: T0, id: 'entry' });
     E.paved.push({ role: 'aisle', a0: -ENTRY_DRIVE / 2, a1: aF - FOOT_W - APRON_W, t0: T0, t1: T0 + L, id: 'carriage' });
-    E.aprons.push({ a0: aF - FOOT_W - APRON_W, a1: aF - FOOT_W, t0: T0, t1: T0 + L, id: 'apron' });
-    E.foot.push({ a0: aF - FOOT_W, a1: aF, t0: T0, t1: T0 + L, id: 'foot' });
+    E.aprons.push({ a0: aF - FOOT_W - APRON_W, a1: aF, t0: T0, t1: T0 + L, id: 'apron' });
     // bays opposite the doors, along the whole row
     const c = nBays(L);
     if (c > 0) E.bays.push({ axis: 't', a0: T0, a1: T0 + c * BAY_W, b0: -ENTRY_DRIVE / 2 - BAY_L, b1: -ENTRY_DRIVE / 2, ext: -1, count: c, zone: 'opp', side: 'W' });
@@ -241,8 +238,7 @@ export function describe(p) {
       const nm = sgn < 0 ? 'w' : 'e';
       const lo = (x) => Math.min(x, x);
       void lo;
-      E.foot.push({ a0: sgn < 0 ? aF - FOOT_W : aF, a1: sgn < 0 ? aF : aF + FOOT_W, t0: T0, t1: T0 + L, id: `foot:${nm}` });
-      E.aprons.push({ a0: sgn < 0 ? aF - FOOT_W - APRON_W : aF + FOOT_W, a1: sgn < 0 ? aF - FOOT_W : aF + FOOT_W + APRON_W, t0: T0, t1: T0 + L, id: `apron:${nm}` });
+      E.aprons.push({ a0: sgn < 0 ? aF - FOOT_W - APRON_W : aF, a1: sgn < 0 ? aF : aF + FOOT_W + APRON_W, t0: T0, t1: T0 + L, id: `apron:${nm}` });
       E.paved.push({ role: 'aisle', a0: sgn < 0 ? aF - dr : aF + FOOT_W + APRON_W, a1: sgn < 0 ? aF - FOOT_W - APRON_W : aF + dr, t0: T0, t1: T0 + L, id: `carriage:${nm}` });
       E.paved.push({ role: 'aisle', a0: (sgn < 0 ? aw : ae) - XOVER_SPLIT_W / 2, a1: (sgn < 0 ? aw : ae) + XOVER_SPLIT_W / 2, t0: 0, t1: T0, id: `entry:${nm}` });
       E.aisles.push({ a: sgn < 0 ? aw : ae, t0: 0, t1: T0 + L });
@@ -256,12 +252,12 @@ export function describe(p) {
     E.cross = { a0: aw + XOVER_SPLIT_W / 2, a1: ae - XOVER_SPLIT_W / 2, t0: T0 - FOOT_W, t1: T0 };
     E.crossFull = { a0: -d - FOOT_W, a1: d + FOOT_W };
   } else if (family === 'u') {
-    const cw = COURT_W;
+    const cw = Math.ceil(COURT_W / w) * w; // the rear row fills the court between the two side rows
     const half = cw / 2;
     const fz = zone(-cpHalf, cpHalf, gapW, gapE);
     T0 = fz.t1 + (nb ? FOOT_W : 0);
-    const nr = Math.max(1, Math.floor((cw + 2 * d) / w));
-    const Wr = nr * w;
+    const nr = cw / w;
+    const Wr = cw;
     E.aisleMm = cw;
     E.xovers.push({ role: 'both', a: 0, w: XOVER_W });
     E.units.push({ face: '+s', a0: -(half + d), a1: -half, t0: T0, t1: T0 + L, n });
@@ -269,16 +265,12 @@ export function describe(p) {
     E.units.push({ face: '-t', a0: -Wr / 2, a1: Wr / 2, t0: T0 + L, t1: T0 + L + d, n: nr });
     E.paved.push({ role: 'aisle', a0: -ENTRY_DRIVE / 2, a1: ENTRY_DRIVE / 2, t0: 0, t1: T0, id: 'entry' });
     E.paved.push({ role: 'aisle', a0: -(half - FOOT_W - APRON_W), a1: half - FOOT_W - APRON_W, t0: T0, t1: T0 + L - FOOT_W - APRON_W, id: 'court' });
-    E.aprons.push({ a0: -half + FOOT_W, a1: -(half - FOOT_W - APRON_W), t0: T0, t1: T0 + L - FOOT_W - APRON_W, id: 'apron:w' });
-    E.aprons.push({ a0: half - FOOT_W - APRON_W, a1: half - FOOT_W, t0: T0, t1: T0 + L - FOOT_W - APRON_W, id: 'apron:e' });
-    E.aprons.push({ a0: -(half - FOOT_W), a1: half - FOOT_W, t0: T0 + L - FOOT_W - APRON_W, t1: T0 + L - FOOT_W, id: 'apron:r' });
-    E.foot.push({ a0: -half, a1: -half + FOOT_W, t0: T0, t1: T0 + L, id: 'foot:w' });
-    E.foot.push({ a0: half - FOOT_W, a1: half, t0: T0, t1: T0 + L, id: 'foot:e' });
-    E.foot.push({ a0: -half + FOOT_W, a1: half - FOOT_W, t0: T0 + L - FOOT_W, t1: T0 + L, id: 'foot:r' });
+    E.aprons.push({ a0: -half, a1: -(half - FOOT_W - APRON_W), t0: T0, t1: T0 + L - FOOT_W - APRON_W, id: 'apron:w' });
+    E.aprons.push({ a0: half - FOOT_W - APRON_W, a1: half, t0: T0, t1: T0 + L - FOOT_W - APRON_W, id: 'apron:e' });
+    E.aprons.push({ a0: -half, a1: half, t0: T0 + L - FOOT_W - APRON_W, t1: T0 + L, id: 'apron:r' });
     E.head = { t0: T0, t1: T0 + L };
     E.aisles.push({ a: 0, t0: 0, t1: T0 + L - FOOT_W - APRON_W });
     E.span = [-(half + d), half + d];
-    E.span = [Math.min(E.span[0], -Wr / 2), Math.max(E.span[1], Wr / 2)];
     E.tEnd = T0 + L + d;
     E.fz = fz;
     E.pedA = ENTRY_DRIVE / 2 + FOOT_W / 2;
@@ -345,7 +337,7 @@ export function realise(E, sc, f, spec, lot) {
   const pa = sc + E.pedA;
   const pedW = FOOT_W;
   const T0 = E.T0;
-  foot.push({ id: `sw:foot:${foot.length}`, buildingId: null, polygon: rect(f, pa - pedW / 2, pa + pedW / 2, -VERGE, T0 - 0) });
+  foot.push({ id: `sw:foot:${foot.length}`, buildingId: null, pedestrian: true, polygon: rect(f, pa - pedW / 2, pa + pedW / 2, -VERGE, T0 - 0) });
   if (E.cross) foot.push({ id: `sw:foot:${foot.length}`, buildingId: null, polygon: rect(f, sc + E.cross.a0, sc + E.cross.a1, E.cross.t0, E.cross.t1) });
   // crossovers
   const crossovers = E.xovers.map((x, i) => {
@@ -398,3 +390,38 @@ export function balanceOf(window, f, lot) {
 
 /** The signature of a set of rows: what an estate network was drawn for. A moved or edited row makes the network stale. */
 export const rowsSignature = (rows) => JSON.stringify((rows || []).map((r) => [r.x, r.y, r.rotationDeg, r.count, r.mirrorOf ? 1 : 0, r.unit?.widthMm, r.unit?.depthMm]));
+
+// Planner -------------------------------------------------------------------------------------------------------------------------------
+const envelopeOf = (lot) => (Array.isArray(lot.envelope) && lot.envelope.length >= 3 ? lot.envelope : lot.boundary);
+const CP_WIDTHS = [64000, 52000, 40000, 30000];
+
+/**
+ * Find where the estate described by `p` ({ family, w, d, n, nb, ... }) stands on the lot: the spine position `sc` (frame s) at which the
+ * units are inside the setback envelope and every pavement and bay is inside the lot, centred first. `edit` is project.commercial.accessEdit
+ * (a dragged entry offset wins). Returns { E, sc, f } or null.
+ */
+export function placeEstate(lot, p, edit = null) {
+  const f = frameOf(lot);
+  const env = envelopeOf(lot);
+  const yard = yardPoly(lot);
+  const fp = env.map((q) => toFrame(f, q));
+  const e0 = Math.min(...fp.map((q) => q.s)); const e1 = Math.max(...fp.map((q) => q.s));
+  const widths = p.nb > 0 && p.family !== 'b2b' ? CP_WIDTHS : [64000];
+  for (const cpWidth of widths) {
+    const E = describe({ ...p, cpWidth });
+    const lo = e0 - E.span[0] - 3000; const hi = e1 - E.span[1] + 3000;
+    if (lo > hi) continue;
+    const cands = [];
+    const edited = Number.isFinite(edit?.in?.offsetMm) ? edit.in.offsetMm - (E.xovers[0]?.a || 0) : null;
+    if (edited != null) cands.push(edited);
+    for (const k of [0.5, 0, 1, 0.25, 0.75]) cands.push(Math.round((lo + (hi - lo) * k) / 50) * 50);
+    for (const sc of cands) if (fitsAt(E, sc, f, env, yard, lot)) return { E, sc, f, cpWidth };
+  }
+  return null;
+}
+
+/** The unit spec an estate row takes: the standard unit (ground office and mezzanine) or the large plain unit. */
+export const SPECS = Object.freeze({
+  std: (w, d) => ({ w, d, h: 6000 }),
+  large: () => ({ w: 10000, d: 30000, h: 8000, doors: { presetId: '4.5x5.0', widthMm: 4500, heightMm: 5000 }, plain: true }),
+});
