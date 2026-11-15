@@ -16,7 +16,7 @@ import { materialise } from '../commercial/materialise.js';
 import { normaliseCommercial } from '../commercial/schema.js';
 import { rowFrame, rowLength, rowPoly, layoutUnits } from '../commercial/layout.js';
 import { commercialStats } from '../commercial/stats.js';
-import { feasibility, summaryRows, headlineRows, CAVEAT } from '../commercial/feasibility.js';
+import { feasibility, summaryRows, headlineRows, CAVEAT, feasibilityNotes } from '../commercial/feasibility.js';
 import { commercialStatus } from '../commercial/card-model.js';
 import { siteAccess } from '../commercial/access.js';
 import { buildingsOf } from '../commercial/catalogue/buildings.js';
@@ -305,7 +305,9 @@ export function checkSummary(project) {
   if (verdict === 'met') lines.push('Every building sits inside the setbacks on every boundary.');
   else if (verdict === 'not-met') lines.push(`${st.text} Move or turn a building, or try another layout.`);
   else lines.push(st.text || 'Setbacks are not confirmed. Check with council.');
-  lines.push(`The buildings cover about ${Math.round(stats.groundGfaM2 || 0)} m2 of the ${Math.round(lotArea)} m2 lot${stats.coveragePct != null ? ` (${Math.round(stats.coveragePct)} percent)` : ''}.`);
+  const covTxt = stats.coveragePct != null ? (stats.coveragePct > 0 && stats.coveragePct < 0.1 ? '<0.1%' : `${Math.round(stats.coveragePct)} percent`) : '';
+  lines.push(`The buildings cover about ${Math.round(stats.groundGfaM2 || 0)} m2 of the ${Math.round(lotArea)} m2 lot${covTxt ? ` (${covTxt})` : ''}.`);
+  if (feas) for (const n of feasibilityNotes(feas)) lines.push(n);
   lines.push(status.parking.text || 'Parking is not set out yet.');
   if (truck.has) lines.push(truck.ok ? `Trucks reach the loading area through a ${truck.crossoverM ? truck.crossoverM.toFixed(0) : '6'} m crossover and apron (indicative, swept paths still to be checked).` : 'Check truck access: the loading area is not clearly linked to a crossover.');
   if (lot.setbacksDefault) lines.push('Council setbacks could not be loaded for this lot, so a standard indicative envelope was used.');
@@ -317,6 +319,8 @@ export function checkSummary(project) {
     gfaM2: stats.gfaM2 ?? null,
     parking: { required: park.required, provided: park.provided, accessibleRequired: park.accessible.required, accessibleProvided: park.accessible.provided, text: status.parking.text, state: status.parking.state },
     truck,
+    coverageText: stats.coveragePct == null ? null : stats.coveragePct > 0 && stats.coveragePct < 0.1 ? '<0.1%' : `${Math.round(stats.coveragePct)} percent`,
+    accessibleText: park.accessible.required > 0 ? `${park.accessible.provided} provided, ${park.accessible.required} required` : `${park.accessible.provided} provided, none required`,
     yield: yieldRow ? { headline, profitSell: headline[0]?.[1] || null, profitHold: headline[1]?.[1] || null, loss: feas ? feas.mid.marginSale < 0 : false, yieldOk, cost: costRow?.[1] || null, grossRent: rentRow?.[1] || null, rentBand: rentRow?.[2] || '', value: yieldOk ? valueRow?.[1] || null : 'Enter a yield', valueBand: valueRow?.[2] || '', yieldPct: yieldRow[1], yieldBand: yieldRow[2] || '' } : null,
     caveat: ESTIMATES,
     feasibilityCaveat: CAVEAT,

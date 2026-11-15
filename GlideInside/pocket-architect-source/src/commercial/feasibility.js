@@ -95,6 +95,8 @@ const AREA_BY_M = new Map(AREAS.map((a) => [a.m, a]));
 export const DEFAULT_AREA = 'default';
 export const DEFAULT_AREA_BY_STATE = Object.freeze({ NSW: 'default', QLD: 'default-qld' });
 export const OUTGOINGS_PCT = Object.freeze({ low: 5, high: 15, value: 10 }); // assumption, % of gross rent
+/** A lot over this area (m2) is treated as huge: only the development area is costed. */
+export const HUGE_LOT_M2 = 20000;
 export const MEZZ_FACTOR = Object.freeze({ low: 0.4, high: 0.7, value: 0.5 }); // assumption, fraction of the ground floor rate
 export const LANDSCAPE_RATE = Object.freeze({ low: 10, high: 25, value: 15 }); // owner allowance 13/11/2026, $/m2 of the lot outside the developed area
 
@@ -356,7 +358,7 @@ export const SAMPLE_CHIP = 'Example figures, enter your own';
 const r0 = (v) => Math.round(v);
 
 /** One scenario. side: 'mid' (the values in use), 'low' (low revenue, high cost) or 'high' (high revenue, low cost). */
-function scenario(inp, { gfa, rowsGfa = gfa, mezzM2 = 0, buildings = [], rowWalls = [], devM2, restM2, lotM2 }, side) {
+function scenario(inp, { gfa, rowsGfa = gfa, mezzM2 = 0, buildings = [], rowWalls = [], devM2, restM2, lotM2, landM2 = lotM2 }, side) {
   const pick = (k, revenue) => {
     const x = inp[k];
     if (side === 'mid') return x.value;
@@ -369,7 +371,7 @@ function scenario(inp, { gfa, rowsGfa = gfa, mezzM2 = 0, buildings = [], rowWall
   const rent = pick('rentRate', true);
   const yieldPct = side === 'mid' ? inp.yieldPct.value : (side === 'high' ? Math.min(inp.yieldPct.low ?? inp.yieldPct.value, inp.yieldPct.value) : Math.max(inp.yieldPct.high ?? inp.yieldPct.value, inp.yieldPct.value));
   const landFixed = inp.landPrice.value;
-  const land = landFixed != null ? landFixed : (lotM2 || 0) * pick('landRate', false);
+  const land = landFixed != null ? landFixed : (landM2 || 0) * pick('landRate', false);
   // The regional cost factor scales the published build and site works rates; a rate the person typed is used as entered. It is a single value
   // (the published ranges already carry the uncertainty), so it does not widen the low to high band.
   const cf = inp.costFactor?.value ?? 1;
@@ -444,10 +446,16 @@ export function feasibility(commercial, lot, opts = {}) {
     }
   }
   const devM2 = developedAreaM2(commercial, lot);
-  const restM2 = Math.max(0, lotM2 - devM2);
+  // A huge lot is not bought, cleared and built out as one: the land and the clearing are costed on the development area only (the estate window
+  // when there is one, else the developed ground with a margin). The balance of the lot is left out of the cost.
+  const win = commercial.estate?.network?.window;
+  const winM2 = win ? Math.max(0, ((win.s1 - win.s0) * win.t1) / 1e6) : 0;
+  const hugeLot = lotM2 > HUGE_LOT_M2 && Math.max(devM2 * 1.5, winM2) < lotM2 * 0.5;
+  const landM2 = hugeLot ? Math.min(lotM2, Math.max(devM2 * 1.5, winM2)) : lotM2;
+  const restM2 = Math.max(0, landM2 - devM2);
   const mezzM2 = units.reduce((s, u) => s + u.mezz, 0);
   const rowWalls = rowsWallBasis(commercial).map((rw) => ({ ...rw, spec: constructionSpec((commercial.rows || []).find((r) => r.id === rw.rowId)?.unit) }));
-  const ctx = { gfa, rowsGfa, mezzM2, buildings, rowWalls, devM2, restM2, lotM2 };
+  const ctx = { gfa, rowsGfa, mezzM2, buildings, rowWalls, devM2, restM2, lotM2, landM2 };
   const mid_ = scenario(inputs, ctx, 'mid');
   const low = scenario(inputs, ctx, 'low');
   const high = scenario(inputs, ctx, 'high');
@@ -455,7 +463,7 @@ export function feasibility(commercial, lot, opts = {}) {
   inputs.councilCharges = { ...inputs.councilCharges, defaultValue: Math.round(mid_.chargesAuto), ...(inputs.councilCharges.edited ? {} : { value: Math.round(mid_.chargesAuto) }) };
   const perUnit = [...units.map((u) => ({ n: u.n, gfa: u.gfa, price: (u.ground + u.mezz * mid_.mezzFactor) * mid_.saleRate, rent: (u.ground + u.mezz * mid_.mezzFactor) * mid_.rentRate })), ...buildings.map((b) => ({ n: `B${b.n}`, label: b.label, gfa: b.gfaM2, price: b.gfaM2 * mid_.saleRate, rent: b.gfaM2 * mid_.rentRate }))];
   const resolved = resolveArea(lot);
-  return { areaKey, detectedKey: detected, detectedVia: resolved.via, rowWalls, areaLabel: defaults.label, areaState: defaults.state, areaMeta: defaults.meta, areaChain: defaults.chain, confidence: defaults.confidence, units, buildings, rowsGfa, perUnit, gfa, lotM2, devM2, restM2, inputs, defaults, mid: mid_, low, high, landFromPrice: inputs.landPrice.value != null, dataDate: DATA_DATE, marketDate: MARKET_DATE };
+  return { areaKey, detectedKey: detected, detectedVia: resolved.via, rowWalls, areaLabel: defaults.label, areaState: defaults.state, areaMeta: defaults.meta, areaChain: defaults.chain, confidence: defaults.confidence, units, buildings, rowsGfa, perUnit, gfa, lotM2, landM2, hugeLot, devM2, restM2, inputs, defaults, mid: mid_, low, high, landFromPrice: inputs.landPrice.value != null, dataDate: DATA_DATE, marketDate: MARKET_DATE };
 }
 
 // Formatting, shared by the panel and the C103 section --------------------------------------------------------------------------
@@ -473,6 +481,18 @@ export function areaStatusLine(f) {
   const how = f.areaKey !== f.detectedKey ? 'Chosen by you.' : f.detectedVia === 'lga' ? 'Found from the council area.' : f.detectedVia === 'town' ? 'Found from the suburb or town.' : f.detectedVia === 'near' ? 'Found from the council area, which has no area of its own: the nearest priced area is used.' : `No area matched this lot, so the ${f.areaLabel} is used.`;
   const anchor = (f.areaChain || []).length > 1 && (f.defaults?.fallbackTo) ? ` Thin evidence is anchored to ${f.defaults.fallbackTo}.` : '';
   return `${f.areaLabel}, ${f.areaState}. ${how} Market data as at ${f.marketDate}. Sale rate ${statusLabel(m.saleStatus)}, rent ${statusLabel(m.rentStatus)}, yield ${statusLabel(m.yieldStatus)}, land ${statusLabel(m.landStatus)}.${f.confidence ? ` Confidence ${f.confidence}.` : ''}${anchor}`;
+}
+
+/** A plain note on the result: the huge lot costing basis, and why a margin below -50% is so low. '' when there is nothing to add. */
+export function feasibilityNotes(f) {
+  const out = [];
+  if (f.hugeLot) out.push(`The lot is ${Math.round(f.lotM2).toLocaleString('en-AU')} m2, so land and clearing are costed on the development area only (${Math.round(f.landM2).toLocaleString('en-AU')} m2). The balance of the lot is not costed.`);
+  const m = f.mid;
+  if (m.marginSalePct < -50) {
+    const why = m.build + m.siteDev + m.siteRest > m.land ? 'Building and site works cost far more than the units would sell for at the rates used' : 'The land cost is far above what the units would sell for at the rates used';
+    out.push(`${why}, so the margin is below -50%. Check the land price, the sale rate and the number of units before relying on it.`);
+  }
+  return out;
 }
 
 /** The summary lines [label, value, band] for the panel and for C103. Same wording in both. */
@@ -507,7 +527,7 @@ export function summaryRows(f) {
 export function costRows(f) {
   const m = f.mid;
   return [
-    [f.landFromPrice ? 'Land (listing or purchase price)' : `Land (${money(f.inputs.landRate.value)} per m² x ${Math.round(f.lotM2).toLocaleString('en-AU')} m²)`, money(m.land)],
+    [f.landFromPrice ? 'Land (listing or purchase price)' : `Land (${money(f.inputs.landRate.value)} per m² x ${Math.round(f.landM2).toLocaleString('en-AU')} m²${f.hugeLot ? ', development area only' : ''})`, money(m.land)],
     ...(f.rowsGfa > 0 || !f.buildings?.length ? [[`Building (${money(f.inputs.buildRate.value)} per m²${factorText(f, 'buildRate')} x ${m2(f.rowsGfa ?? f.gfa)} m² GFA)`, money(m.buildRows ?? m.build)]] : []),
     ...(m.rowWallLines || []).map((l) => [`Unit walls, ${l.label} (${money(l.rate)} per m² x ${m2(l.area)} m² of wall, ${l.status})`, money(l.amount)]),
     ...(m.buildingCosts || []).flatMap((bc) => bc.lines.map((l) => [`Building ${bc.n}, ${l.label} (${l.wall ? `${money(l.rate)} per m² x ${m2(l.area)} m² of wall` : l.perM2 ? `${money(l.rate)} per m² x ${m2(bc.gfa)} m² GFA` : 'lump sum'}, ${l.status})`, money(l.amount)])),
