@@ -115,6 +115,11 @@ export function createViewManager({ store, refs, editor, catalogue, startGate = 
     return loading;
   }
 
+  const embedded = () => { try { return typeof window !== 'undefined' && (window.self !== window.top || /[?&]embed=/.test(location.search)); } catch { return true; } };
+  const afterLoadIdle = () => new Promise((res) => {
+    const idle = () => (typeof requestIdleCallback === 'function' ? requestIdleCallback(() => res(), { timeout: 2000 }) : setTimeout(res, 300));
+    if (document.readyState === 'complete') idle(); else window.addEventListener('load', () => setTimeout(idle, 100), { once: true });
+  });
   // The guided start screen sits over the editor until a lot is found or the flow closes. Loading the 3D code behind it would slow the first screen on a phone connection for nothing.
   const startScreenCovers = () => typeof document !== 'undefined' && document.documentElement.classList.contains('gf-open') && !store.project.site?.lot && !(store.project.commercial?.buildings || []).length;
   async function apply() {
@@ -136,6 +141,7 @@ export function createViewManager({ store, refs, editor, catalogue, startGate = 
       showNote(h('div', { class: 'ps-spinner', role: 'progressbar', 'aria-label': 'Loading' }), h('p', null, 'Loading the 3D view'));
     }
     if (!viewer && startGate) { await startGate; if (mine !== seq || !has3d(store.ui.view)) return; }
+    if (!viewer && embedded()) { await afterLoadIdle(); if (mine !== seq || !has3d(store.ui.view)) return; } // the home page iframe: the 3D code starts once the page has loaded and the browser is idle, so it does not compete with the host page's first paint
     if (!viewer && startScreenCovers()) return; // the start screen covers the editor: the 3D code (about 230 KB compressed) loads when a lot or a design appears, or the flow closes
     try {
       const v = await ensureViewer();
