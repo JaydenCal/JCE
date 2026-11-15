@@ -206,8 +206,8 @@ CREATE TABLE IF NOT EXISTS orgs (
   allow_client_enquiries INTEGER NOT NULL DEFAULT 1,
   show_glide_to_clients INTEGER NOT NULL DEFAULT 1,
   allow_client_cad_exports INTEGER NOT NULL DEFAULT 0,
-  show_ai_assistant INTEGER NOT NULL DEFAULT 1,  -- builder setting: clients are offered the AI design assistant (migration 0016)
-  show_aerial_default INTEGER NOT NULL DEFAULT 1,  -- builder setting: new lots open with the aerial imagery on (migration 0015)
+  show_ai_assistant INTEGER NOT NULL DEFAULT 1,  -- builder setting: clients are offered the AI design assistant (migration 0018)
+  show_aerial_default INTEGER NOT NULL DEFAULT 1,  -- builder setting: new lots open with the aerial imagery on (migration 0017)
   ai_monthly_cap INTEGER NOT NULL DEFAULT 300,
   legal_name TEXT,                   -- buyer on tax invoices
   abn TEXT,
@@ -384,7 +384,7 @@ CREATE TABLE IF NOT EXISTS org_accounts (
   internal INTEGER NOT NULL DEFAULT 0        -- 1 = owner's internal test account: no charges, no trial, not in reports (migration 0014)
 );
 
--- ===== 15. Plan set terms acceptance (migration 0015_terms_acceptance.sql) =====
+-- ===== 15. Plan set terms acceptance (migration 0017_terms_acceptance.sql) =====
 -- One row per (account or entitlement, terms version). ip_hash = SHA-256 of IP_HASH_SALT + address; the raw address is never stored.
 CREATE TABLE IF NOT EXISTS terms_acceptance (
   id TEXT PRIMARY KEY,
@@ -399,7 +399,7 @@ CREATE TABLE IF NOT EXISTS terms_acceptance (
 CREATE UNIQUE INDEX IF NOT EXISTS idx_terms_subject_version ON terms_acceptance(subject_id, version);
 CREATE INDEX IF NOT EXISTS idx_terms_version ON terms_acceptance(version, accepted_at);
 -- =====================================================================================================================
--- Free user profiles (migration 0016_free_profiles.sql, lib/profiles.js)
+-- Free user profiles (migration 0018_free_profiles.sql, lib/profiles.js)
 -- =====================================================================================================================
 CREATE TABLE IF NOT EXISTS profiles (
   id TEXT PRIMARY KEY,

@@ -7,6 +7,7 @@ import { layoutUnits, facadeLayout, rearWindow, mezzanineOf, officeOf, onFacade,
 import { SLAB_MM } from './schema.js';
 import { materialiseBuildings } from './catalogue/materialise.js';
 import { constructionSpec, wallPanelOf } from './catalogue/construction.js';
+import { refreshSiteWorks } from './sitelayout.js';
 
 export const GEN = 'commercial';
 export const MEZZ_LEVEL_ID = 'lvl_commercial_mezz';
@@ -39,7 +40,13 @@ export function clearGenerated(p) {
 }
 
 /** Rebuild the generated model from p.commercial. Returns a summary { units, walls, openings, rooms, mezzanines }. */
-export function materialise(p) {
+export function materialise(p, opts = {}) {
+  const summary = materialiseModel(p);
+  if (opts.site !== false && p.mode === 'commercial' && p.commercial) refreshSiteWorks(p);
+  return summary;
+}
+
+function materialiseModel(p) {
   clearGenerated(p);
   if (p.mode !== 'commercial' || !p.commercial) return { units: 0, walls: 0, openings: 0, rooms: 0, mezzanines: 0, buildings: 0 };
   const c = p.commercial;

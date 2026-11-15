@@ -183,6 +183,7 @@ export function defineType(def) {
       const build = (h) => {
         const b = new h.GeoBuilder();
         for (const bx of boxes) {
+          if (ctx && ctx.showRoof === false && /canopy|skylight|roof/.test(String(bx.slot))) continue; // roof off: canopies and skylights go with the roof
           const c = T({ x: (bx.x0 + bx.x1) / 2, y: (bx.y0 + bx.y1) / 2 });
           h.addOrientedBox(b, c.x / 1000, c.y / 1000, (bx.x1 - bx.x0) / 2000, (bx.y1 - bx.y0) / 2000, rot, bx.z0 / 1000, bx.z1 / 1000, bx.slot);
         }

@@ -7,6 +7,7 @@ import { h, clear } from './dom.js';
 import { icon } from './icons.js';
 import { button, segmented, numberField, checkField, section, formBuilder } from './panel-forms.js';
 import { drawItemPreview } from './preview.js';
+import { hardstandPanel } from '../commercial/ui/panel-hardstand.js';
 
 function helpCard(title, lines) {
   return h('div', null, h('div', { class: 'ps-sel-title' }, h('strong', null, title)), h('ul', { class: 'ps-hint', style: { paddingLeft: '18px', margin: '0 0 10px' } }, lines.map((l) => h('li', { style: { marginBottom: '3px' } }, l))));
@@ -16,6 +17,7 @@ const radio = (selected, onclick, ...kids) => h('button', { class: 'ps-radio', t
 
 export function buildToolPanel(ctx, tool) {
   const { store, editor } = ctx;
+  if (tool === 'hardstand') return hardstandPanel(ctx); // commercial Hardstand picker, quantities and selected area
   const fb = formBuilder();
   const root = h('div', { class: 'ps-form' });
   const body = h('div');

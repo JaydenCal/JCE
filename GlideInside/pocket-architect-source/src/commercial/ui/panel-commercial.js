@@ -10,7 +10,9 @@ import { buildingsOf } from '../catalogue/buildings.js';
 import { typesForPicker, typeById, typeIconName, STRATA_ID } from '../catalogue/types/index.js';
 import { optionList } from '../catalogue/params.js';
 import { CONSTRUCTION_PARAMS, paramApplies, systemById } from '../catalogue/construction.js';
-import { addBuilding, moveBuilding, setBuildingParam, deleteBuilding } from '../catalogue/ops.js';
+import { addBuilding, moveBuilding, setBuildingParam, deleteBuilding, duplicateBuilding, rerunSiteLayout } from '../catalogue/ops.js';
+import { openAddBuilding } from './add-building.js';
+import { RE_RUN_LABEL } from '../sitelayout.js';
 import { icon } from '../../ui/icons.js';
 import { effectiveClass, zoneClass, ZONE_CLASS_LABEL } from '../zones.js';
 import { rowLength } from '../layout.js';
@@ -84,6 +86,9 @@ export function createCommercialPanel({ store, host, editor }) {
       ...bs.map((b) => h('button', { type: 'button', role: 'tab', class: 'cm-chip', 'aria-selected': String(b.id === sel?.id), dataset: { building: b.id }, onclick: () => store.setUI({ commercialBuilding: b.id, commercialRow: null }) }, icon(typeIconName(b.def), { size: 16 }), `B${b.n} ${b.label}`, h('i', null, `${Math.round(b.gfaM2).toLocaleString('en-AU')} m²`))));
     const add = h('div', { class: 'cm-actions' },
       h('button', { type: 'button', class: 'cm-btn', dataset: { action: 'add-building' }, onclick: () => { try { const id = addBuilding(store, typeSel.value); store.setUI({ commercialBuilding: id, commercialRow: null }); } catch (e) { console.warn(e); } } }, 'Add building'),
+      h('button', { type: 'button', class: 'cm-btn', dataset: { action: 'pick-building' }, onclick: () => openAddBuilding({ store }) }, 'Choose a type'),
+      h('button', { type: 'button', class: 'cm-btn', dataset: { action: 'duplicate-building' }, disabled: !sel, title: 'A copy of the selected building, placed in free space', onclick: () => { const r = duplicateBuilding(store, sel.id); if (r) store.setUI({ commercialBuilding: r.id }); } }, 'Duplicate building'),
+      h('button', { type: 'button', class: 'cm-btn', dataset: { action: 'rerun-site-layout' }, title: 'Lay out the driveway, aisles, bays, footpaths and landscaping again', onclick: () => rerunSiteLayout(store) }, RE_RUN_LABEL),
       h('button', { type: 'button', class: 'cm-btn cm-danger', dataset: { action: 'delete-building' }, disabled: !sel, onclick: () => { deleteBuilding(store, sel.id); store.setUI({ commercialBuilding: null }); } }, 'Delete building'));
     const kids = [list, field('Building type', typeSel), add];
     if (sel) {

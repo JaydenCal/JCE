@@ -19,11 +19,13 @@
 import rates from './rates.json' with { type: 'json' };
 import { layoutUnits, rowPoly, rowPoint } from '../../layout.js';
 import { parkingLayout } from '../../parking.js';
+import { siteWorksOf } from '../buildings.js';
 import { bayOffsetMm } from '../../schema.js';
 import { PAVEMENTS, ROLE_DEFAULTS, MAKEUP_NOTE, pavementById, isPavementType, makeUpShort } from './pavements.js';
 import { KERBS, KERB_DEFAULTS, kerbById, isKerbType } from './kerbs.js';
 import { MARKINGS, WHEEL_STOP, markingById, isMarkingType } from './markings.js';
 import { absArea, polyArea, pointInPoly, bbox, bboxOverlap, segCross, convexOverlap } from './geom.js';
+import { boolean, holeFree, overlapArea } from './polybool.js';
 
 export const RATES = rates;
 export const DATA_DATE = rates._meta.asAt;
@@ -63,6 +65,16 @@ export function defaultAreas(commercial) {
       if (footW > 0) out.push({ id: `${pr.rowId}:footpath`, role: 'footpath', rowId: pr.rowId, polygon: quad(0, B, pr.depth + off + bayL, pr.depth + off + bayL + footW) });
     }
   }
+  // The automatic site layout: crossover pads, aisles, forecourt and apron slabs, bay rows and footpaths (sitelayout.js).
+  const sw = siteWorksOf(c);
+  if (sw && c.parking?.enabled !== false) {
+    for (const f of sw.forecourts || []) out.push({ id: f.id, role: 'apron', rowId: null, polygon: f.polygon });
+    for (const a of sw.aprons || []) out.push({ id: a.id, role: 'apron', rowId: null, polygon: a.polygon });
+    for (const x of sw.crossovers || []) if (x.polygon) out.push({ id: `${x.id}:pad`, role: 'aisle', rowId: null, polygon: x.polygon });
+    for (const a of sw.pavedAisles || []) out.push({ id: a.id, role: 'aisle', rowId: null, polygon: a.polygon });
+    for (const r of sw.bayRows || []) for (const b of r.bayAreas || []) out.push({ id: b.id, role: 'bays', rowId: r.rowId, polygon: b.polygon });
+    for (const f of sw.footpaths || []) out.push({ id: f.id, role: 'footpath', rowId: null, polygon: f.polygon });
+  }
   const w = c.waste;
   if (w && w.widthMm > 0 && w.depthMm > 0) {
     const a = ((w.rotationDeg || 0) * Math.PI) / 180;
@@ -94,20 +106,49 @@ export function pavementAreas(commercial) {
       if (isPavementType(o.type)) { a.type = o.type; a.overridden = true; }
       if (Array.isArray(o.polygon) && o.polygon.length >= 3) { a.polygon = o.polygon; a.overridden = true; }
     } else if (Array.isArray(o.polygon) && o.polygon.length >= 3 && isPavementType(o.type)) {
-      extras.push({ id: o.id || `extra:${n++}`, role: 'extra', rowId: null, type: o.type, polygon: o.polygon, auto: false, overridden: true });
+      const drawn = String(o.id || '').startsWith('hs_'); // drawn with the Hardstand tool (see hardstand.js)
+      extras.push({ id: o.id || `extra:${n++}`, role: drawn ? 'hardstand' : 'extra', rowId: null, type: o.type, polygon: o.polygon, auto: false, overridden: true, drawn });
     }
   }
-  return [...extras, ...base.filter((a) => !removed.has(a.id))];
+  const list = [...extras, ...base.filter((a) => !removed.has(a.id))];
+  return list.some((a) => a.drawn) ? cutByDrawn(list) : list;
+}
+
+/**
+ * Drawn hardstand areas sit on top: each one cuts every area behind it in the list (the newer drawn areas come first). An area that is cut
+ * keeps its id on the largest piece and gets `id~1`, `id~2` for the others; one that is covered completely drops out of the model (it stays
+ * in project.commercial.pavements, so it comes back when the area above it moves or goes).
+ */
+function cutByDrawn(list) {
+  const out = list.map((a) => ({ ...a }));
+  for (let i = 0; i < out.length; i++) {
+    if (!out[i].drawn) continue;
+    const cut = out[i].polygon;
+    const cb = bbox(cut);
+    for (let j = i + 1; j < out.length; j++) {
+      const t = out[j];
+      if (!bboxOverlap(cb, bbox(t.polygon))) continue;
+      if (overlapArea(t.polygon, cut) < 1e4) continue; // touching, or under 0.01 m2
+      const pieces = holeFree(boolean([t.polygon], [cut], 'diff')).sort((p, q) => Math.abs(polyArea(q)) - Math.abs(polyArea(p)));
+      const rest = pieces.map((poly, k) => ({ ...t, id: k === 0 ? t.id : `${t.id}~${k}`, polygon: poly, cut: true }));
+      out.splice(j, 1, ...rest);
+      j += rest.length - 1;
+    }
+  }
+  return out;
 }
 
 const isVehicular = (type) => { const t = pavementById(type); return !!t && t.use.some((u) => u === 'car' || u === 'truck') && type !== 'gravel-yard'; };
 const isPedestrianArea = (type) => { const t = pavementById(type); return !!t && t.use.length === 1 && t.use[0] === 'pedestrian'; };
 
+const isConvex = (p) => { let sign = 0; for (let i = 0; i < p.length; i++) { const a = p[i]; const b = p[(i + 1) % p.length]; const c = p[(i + 2) % p.length]; const z = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x); if (Math.abs(z) < 1e-6) continue; const sg = z > 0 ? 1 : -1; if (sign && sg !== sign) return false; sign = sg; } return true; };
+const polysOverlap = (a, b) => (isConvex(a) && isConvex(b) ? convexOverlap(a, b) : overlapArea(a, b) > 1e4);
+
 /** Net area per area id in m2. Exact when no two areas overlap, else a 250 mm grid where the earlier area in the list wins. */
 export function netAreasM2(areas) {
   const bbs = areas.map((a) => bbox(a.polygon));
   let overlap = false;
-  for (let i = 0; i < areas.length && !overlap; i++) for (let j = i + 1; j < areas.length; j++) if (bboxOverlap(bbs[i], bbs[j]) && convexOverlap(areas[i].polygon, areas[j].polygon)) { overlap = true; break; }
+  for (let i = 0; i < areas.length && !overlap; i++) for (let j = i + 1; j < areas.length; j++) if (bboxOverlap(bbs[i], bbs[j]) && polysOverlap(areas[i].polygon, areas[j].polygon)) { overlap = true; break; }
   const out = new Map();
   if (!overlap) { for (const a of areas) out.set(a.id, absArea(a.polygon) / 1e6); return out; }
   const step = 250;
@@ -180,6 +221,8 @@ function classifyEdges(area, others, buildings) {
 }
 
 function autoCrossovers(runs, lot, c) {
+  const swo = siteWorksOf(c);
+  if (!Array.isArray(c.crossovers) && Array.isArray(swo?.crossovers) && swo.crossovers.length) return swo.crossovers.map((x) => ({ x: x.x, y: x.y, widthMm: x.widthMm, auto: true }));
   if (Array.isArray(c.crossovers)) return c.crossovers.filter((x) => Number.isFinite(x?.x) && Number.isFinite(x?.y)).map((x) => ({ x: x.x, y: x.y, widthMm: x.widthMm > 0 ? x.widthMm : CROSSOVER_MM, auto: false }));
   const b = lot?.boundary;
   const fe = lot?.frontEdges;
@@ -354,6 +397,23 @@ export function buildMarkings(commercial) {
       const along = (park.path[0].x - fr.o.x) * fr.u.x + (park.path[0].y - fr.o.y) * fr.u.y;
       const at = rowPoint(fr, along, home.depth + apron + aisleDepth / 2);
       items.push({ id: `crossing:${home.rowId}`, type: 'ped-crossing', x: at.x, y: at.y, rotationDeg: rowAngleDeg(fr), lengthMm: aisleDepth, widthMm: 2400, rowId: home.rowId });
+    }
+  }
+  const swm = siteWorksOf(c);
+  if (swm?.bayRows && c.parking?.enabled !== false) {
+    for (const r of swm.bayRows) {
+      if (!r.slots.length) continue;
+      const lines = [];
+      for (const sl of r.slots) {
+        const [p0, p1, p2, p3] = sl.poly;
+        const long01 = len(sub(p1, p0)) > len(sub(p3, p0));
+        lines.push(long01 ? [p0, p1] : [p0, p3], long01 ? [p3, p2] : [p1, p2]);
+      }
+      items.push({ id: `baylines:${r.rowId}`, type: 'bay-lines', lines, count: r.slots.filter((x) => x.kind !== 'zone').length, rowId: r.rowId });
+      r.slots.forEach((sl, i) => {
+        if (sl.kind === 'accessible') items.push({ id: `access:${r.rowId}:${i}`, type: 'accessible-symbol', x: sl.centre.x, y: sl.centre.y, rotationDeg: 0, rowId: r.rowId });
+        else if (sl.kind === 'zone') items.push({ id: `zone:${r.rowId}:${i}`, type: 'accessible-hatch', polygon: sl.poly, x: sl.centre.x, y: sl.centre.y, rotationDeg: 0, rowId: r.rowId });
+      });
     }
   }
   (Array.isArray(c.markings) ? c.markings : []).forEach((m, i) => {

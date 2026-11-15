@@ -177,7 +177,7 @@ export function quantitiesOf(plan) {
 export function emit3d(plan, ctx = {}) {
   const f = xform(ctx.place || {});
   const ang = (((ctx.place || {}).rotationDeg || 0) * Math.PI) / 180;
-  const items = plan.props.map((p) => ({ ...p }));
+  const items = plan.props.filter((p) => !(ctx.showRoof === false && /canopy|skylight|roof/.test(String(p.slot)))).map((p) => ({ ...p }));
   let emitted = 0;
   if (ctx.builder && ctx.addOrientedBox) {
     for (const p of items) {

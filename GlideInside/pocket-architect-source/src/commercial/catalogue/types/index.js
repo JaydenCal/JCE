@@ -6,6 +6,7 @@ import { withConstruction } from '../construction.js';
 import { TYPES_B } from './index-typesB.js';
 import { TYPES_C } from './index-typesC.js';
 import showroom from './showroom.js';
+import { TYPES_SMALL } from './small.js';
 import strataUnits from './strata-units.js';
 import warehouse from './warehouse.js';
 
@@ -15,6 +16,7 @@ export const STRATA_ID = 'strata-units';
 export const TYPES = [
   ...TYPES_B,
   ...TYPES_C,
+  ...TYPES_SMALL,
   showroom,
   strataUnits,
   warehouse,

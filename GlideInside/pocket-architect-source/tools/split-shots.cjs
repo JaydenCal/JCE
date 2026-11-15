@@ -41,6 +41,7 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
         return out.length ? 'OVERLAP ' + out.join(' | ') : 'clear';
       });
       console.log(w, view, rep);
+      if (view === '3d' && w === 1440) { const rb = await page.$('[data-ps="view3d-roof"]'); if (rb) { console.log('roof button', await rb.boundingBox().then((b) => b && Math.round(b.height)), await rb.textContent()); await page.screenshot({ path: path.join(OUT, `${PRE}-${w}-3d-roof-on.png`) }); await rb.click(); await page.waitForTimeout(1500); console.log('roof pressed', await rb.getAttribute('aria-pressed'), await rb.textContent()); await page.screenshot({ path: path.join(OUT, `${PRE}-${w}-3d-roof-off.png`) }); await rb.click(); await page.waitForTimeout(500); } else console.log('no roof button'); }
       await page.screenshot({ path: path.join(OUT, `${PRE}-${w}-${view}.png`) });
     }
     await ctx.close();

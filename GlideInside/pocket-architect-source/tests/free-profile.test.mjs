@@ -575,7 +575,7 @@ test('csv helpers: formulas are defused and quotes escaped; dates are DD/MM/YYYY
   assert.equal(ddmmyyyy('nonsense'), '');
 });
 
-test('migration 0016 is additive, repeatable and matches schema.sql', { skip: !DatabaseSync }, () => {
+test('migration 0018 is additive, repeatable and matches schema.sql', { skip: !DatabaseSync }, () => {
   const mig = fs.readFileSync(new URL('../server/migrations/0016_free_profiles.sql', import.meta.url), 'utf8');
   assert.ok(!/\b(DROP|ALTER|TRUNCATE)\b|DELETE\s+FROM/i.test(mig.replace(/--.*$/gm, '')), 'no destructive statements');
   const db = new DatabaseSync(':memory:');

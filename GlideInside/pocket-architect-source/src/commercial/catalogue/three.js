@@ -186,12 +186,12 @@ export function resolveRoofs(b, project) {
 const CONCRETE_KINDS = ['apron', 'yard', 'hardstand', 'forecourt', 'display-yard', 'dock-apron', 'weighbridge'];
 const ASPHALT_KINDS = ['service-lane', 'bypass-lane', 'queue-lane', 'drop-off-bays', 'bay'];
 
-function genericExtras(b, builder) {
+function genericExtras(b, builder, { showRoof = true } = {}) {
   const place = b.place;
   for (const e of b.extras) {
     const slot = CONCRETE_KINDS.includes(e.kind) ? 'concrete|#c9c7c0' : ASPHALT_KINDS.includes(e.kind) ? 'asphalt' : e.kind === 'dock-recess' ? 'concrete|#a9a69d' : null;
     if (slot) addFloorPoly(builder, slot, e.polygon, e.kind === 'dock-recess' ? 0.035 : 0.03, true);
-    if (Number.isFinite(e.heightMm) && ['canopy', 'awning', 'fuel-canopy', 'truck-canopy'].includes(e.kind)) {
+    if (showRoof && Number.isFinite(e.heightMm) && ['canopy', 'awning', 'fuel-canopy', 'truck-canopy'].includes(e.kind)) {
       const loc = e.polygon.map((q) => toLocal(place, q));
       const bb = bboxOf(loc);
       const t = e.thicknessMm || 250;
@@ -212,10 +212,10 @@ function genericExtras(b, builder) {
 }
 
 /** Run a type's view3d and put its output in the builder (supports both conventions). */
-function typeExtras(b, project, builder) {
+function typeExtras(b, project, builder, showRoof = true) {
   const c3 = extrasCtx(b);
   let res = null;
-  try { res = b.def.view3d?.(b.params, { ...c3, project }); } catch { res = null; }
+  try { res = b.def.view3d?.(b.params, { ...c3, project, showRoof }); } catch { res = null; }
   if (res && typeof res.build === 'function' && !res.builder) { try { res.builder = res.build(c3.helpers); } catch { /* the type draws nothing */ } }
   builder.append(c3.builder);
   if (res?.builder && res.builder !== c3.builder) builder.append(res.builder);
@@ -251,7 +251,7 @@ function bays3D(rows, builder) {
   });
 }
 
-export function addCatalogue3D(ctx, root, project) {
+export function addCatalogue3D(ctx, root, project, { showRoof = true } = {}) {
   const c = project.commercial;
   if (!c?.buildings?.length || project.mode !== 'commercial') return 0;
   const lib = ctx.lib;
@@ -263,8 +263,9 @@ export function addCatalogue3D(ctx, root, project) {
   for (const b of buildingsOf(c)) {
     // Roofs: wall material for gable ends, roof sheet and fascia as the project finishes.
     const rb = new GeoBuilder();
-    for (const { roof, baseMm } of resolveRoofs(b, project)) roofGeometry(b, parapetOf.has(b.id) ? { ...roof, type: 'flat', noParapet: true } : roof, { baseMm }, rb);
-    const res = rb.build();
+    // Roof off: no roof sheet, so the building (and its mezzanine floor) can be seen into.
+    if (showRoof) for (const { roof, baseMm } of resolveRoofs(b, project)) roofGeometry(b, parapetOf.has(b.id) ? { ...roof, type: 'flat', noParapet: true } : roof, { baseMm }, rb);
+    const res = showRoof ? rb.build() : null;
     if (res) {
       const ext = ctx.fin.externalWalls;
       const mats = { roof: lib.get(ctx.fin.roof.material || 'corrugated', ctx.hex(ctx.fin.roof.colour), { side: 'double' }), fascia: lib.plain(ctx.hex(ctx.fin.fascia.colour), { rough: 0.5, metal: 0.3 }), gable: lib.get(ext.material || 'paint', ctx.hex(ext.colour)) };
@@ -272,9 +273,9 @@ export function addCatalogue3D(ctx, root, project) {
       if (mesh) { root.add(mesh); n += 1; }
     }
     const eb = new GeoBuilder();
-    genericExtras(b, eb);
+    genericExtras(b, eb, { showRoof });
     bays3D(parkingRows.filter((r) => r.buildingId === b.id), eb);
-    typeExtras(b, project, eb);
+    typeExtras(b, project, eb, showRoof);
     const em = meshFromBuilder(ctx, eb, `extras:${b.id}`, { building: b.id });
     if (em) { root.add(em); n += 1; }
   }

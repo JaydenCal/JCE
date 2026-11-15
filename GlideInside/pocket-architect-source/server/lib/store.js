@@ -237,7 +237,7 @@ export function createD1Store(db) {
       const rows = await all('SELECT chunk FROM jce_enquiry_pdfs WHERE reference = ?1 ORDER BY seq', reference);
       return rows.length ? rows.map((r) => r.chunk).join('') : null;
     },
-    // Plan set terms acceptance (migration 0015). One row per (subject, version): the first acceptance is kept.
+    // Plan set terms acceptance (migration 0017). One row per (subject, version): the first acceptance is kept.
     async recordTermsAcceptance(r) {
       await run(
         'INSERT OR IGNORE INTO terms_acceptance (id, subject_id, subject_kind, version, context, accepted_at, ip_hash, user_agent) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)',

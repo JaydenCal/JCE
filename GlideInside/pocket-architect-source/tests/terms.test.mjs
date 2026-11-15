@@ -188,7 +188,7 @@ test('server: TERMS_REQUIRED=0 switches the gate off', async () => {
 });
 
 // ---- migration -------------------------------------------------------------------------------------------------------------------
-test('migration 0015 is additive, repeatable and matches schema.sql', { skip: !DatabaseSync }, () => {
+test('migration 0017 is additive, repeatable and matches schema.sql', { skip: !DatabaseSync }, () => {
   const mig = rd('server/migrations/0015_terms_acceptance.sql');
   assert.ok(!/DROP|ALTER|DELETE/i.test(mig));
   const db = new DatabaseSync(':memory:');

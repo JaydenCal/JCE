@@ -465,7 +465,7 @@ export function buildModel(project, opts = {}) {
   }
 
   // catalogue buildings: roofs and the extras each type draws (dock levellers, canopies, skylights)
-  if (showRoof || project.commercial?.buildings?.length) { try { addCatalogue3D(ctx, root, project); } catch (e) { console.warn('[catalogue 3D]', e?.message); } }
+  if (showRoof || project.commercial?.buildings?.length) { try { addCatalogue3D(ctx, root, project, { showRoof }); } catch (e) { console.warn('[catalogue 3D]', e?.message); } }
 
   // ground last so it can size itself to the model
   const bounds = modelBounds(root);
