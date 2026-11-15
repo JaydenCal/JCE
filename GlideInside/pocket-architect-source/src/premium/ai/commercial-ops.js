@@ -33,7 +33,7 @@ export function summaryLine(p) {
   if (ms.buildings.length) parts.push(`${ms.buildings.length} building${ms.buildings.length === 1 ? '' : 's'}`);
   parts.push(`${m2(ms.gfaM2)} GFA`);
   if (ms.coveragePct != null) parts.push(`${ms.coveragePct}% coverage`);
-  parts.push(`${ms.parking.provided} of ${ms.parking.required} bays`);
+  parts.push(`${ms.parking.provided} of ${ms.parking.required} ${ms.parking.required === 1 ? 'bay' : 'bays'}`);
   const line = `Now ${parts.join(', ')}.`;
   return ms.issues.length ? `${line} Check: ${ms.issues[0]}.` : line;
 }

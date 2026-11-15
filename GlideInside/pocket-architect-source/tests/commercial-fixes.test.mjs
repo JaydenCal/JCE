@@ -83,3 +83,41 @@ test('feasibility: inputs are bounded', () => {
   const f = feasibility({ ...p.commercial, feasibility: { area: null, v: { saleRate: 99999999 } } }, p.site.lot);
   assert.ok(f.mid.marginSalePct < 5000);
 });
+
+// Plan set wording ----------------------------------------------------------------------------------------------------------------
+import { jsPDF } from 'jspdf';
+import { exportPlanSet } from '../src/premium/exporters/planset/index.js';
+import { sheetListText, COMMERCIAL_SHEET_LIST } from '../src/commercial/sheet-list.js';
+import { COMMERCIAL_SHEETS, commercialNotes } from '../src/premium/exporters/planset/commercial.js';
+
+async function pdfText(project) {
+  const texts = [];
+  class Rec extends jsPDF { constructor(...a) { super(...a); const t = this.text.bind(this); this.text = (s, x, y, o) => { texts.push(Array.isArray(s) ? s.join(' ') : String(s)); return t(s, x, y, o); }; } }
+  await exportPlanSet({ project, kind: 'commercial', download: false, jsPDF: Rec, fetchSite: null, date: new Date(2026, 10, 15) });
+  return texts.join('\n');
+}
+
+test('plan set list: the copy names the pages that are really in the set', () => {
+  assert.equal(COMMERCIAL_SHEETS, COMMERCIAL_SHEET_LIST);
+  assert.equal(sheetListText(), 'C000 and C100 to C103');
+  assert.equal(sheetListText([{ code: 'C000' }, { code: 'C100' }, { code: 'C101' }]), 'C000 and C100 and C101');
+});
+
+test('plan set: a warehouse set says site layout, hides a zero unit count and prints the terms once on the cover', async () => {
+  const store = createStore(conadillyProject({ corner: false }), { autosaveKey: null });
+  C.chooseType(store, 'warehouse');
+  const text = await pdfText(store.project);
+  assert.ok(!/commercial unit layout/i.test(text), 'no unit wording for a warehouse');
+  assert.ok(!/\bUnits\b\s*\n?\s*0\b/.test(text) && !/\b0 units\b/.test(text), 'no zero unit count');
+  assert.ok(!/\b1 bays\b/.test(text));
+  assert.match(text, /commercial site layout/i);
+  const notes = commercialNotes({ units: 0, buildingCount: 1 });
+  assert.ok(notes.every((n) => !/^Unit areas/.test(n)));
+  assert.ok(commercialNotes({ units: 16, buildingCount: 0 })[0].includes('commercial unit layout'));
+});
+
+test('plan set: the terms note is not followed by a second Terms of use stamp when nothing was accepted', async () => {
+  const p = commercialProject({ plain: false });
+  const text = await pdfText(p);
+  assert.ok(!/ABN 29 699 165 663\.\s*Terms of use v/.test(text.replace(/\n/g, ' ')));
+});

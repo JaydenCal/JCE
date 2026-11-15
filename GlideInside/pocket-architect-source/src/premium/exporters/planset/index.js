@@ -25,7 +25,7 @@ import { sheetNotes } from '../../../site/upload/sheet-text.js';
 import { drawSite, siteView } from './site.js';
 import { drawHouseSheet, houseSheets } from './house.js';
 import { zoneMismatch, RESIDENTIAL_NOTE } from '../../../commercial/zones.js';
-import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, existingScale, drawLayout, drawMezzanine, drawYield, coverThumbnail, COMMERCIAL_NOTES } from './commercial.js';
+import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, existingScale, drawLayout, drawMezzanine, drawYield, coverThumbnail, commercialNotes, layoutKind, cap1 } from './commercial.js';
 import { lotOf } from '../../../model/placement.js';
 
 void schemeColours;
@@ -147,8 +147,8 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
       let r = null;
       if (s.id === 'cover') {
         const z = siteLot.zoning ? [siteLot.zoning.code && `Zone ${siteLot.zoning.code}`, siteLot.zoning.name].filter(Boolean).join(' ') : '';
-        drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes([...(zoneMismatch(siteLot) ? [`${RESIDENTIAL_NOTE}.`] : []), ...COMMERCIAL_NOTES], siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
-        strip = { ...strip, subtitle: 'Commercial unit layout', kvTitle: 'SITE DATA', kv: [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`], ['Units', String(cmodel.stats.units)]], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
+        drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes([...(zoneMismatch(siteLot) ? [`${RESIDENTIAL_NOTE}.`] : []), ...commercialNotes(cmodel.stats)], siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
+        strip = { ...strip, subtitle: cap1(layoutKind(cmodel.stats)), kvTitle: 'SITE DATA', kv: [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`], ...(cmodel.stats.units ? [['Units', String(cmodel.stats.units)]] : [])], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
       } else {
         if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null });
         else if (s.id === 'layout') r = drawLayout(doc, cmodel);
