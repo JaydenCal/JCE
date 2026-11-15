@@ -181,4 +181,28 @@ export const LOT_CARD_CSS = `
 .lc-root.is-phone .lc-send{margin-top:6px}.lc-root.is-phone .lc-sendbtn{width:100%;white-space:normal;line-height:1.15;height:auto;min-height:36px;padding:6px 12px!important}
 .lc-root[data-room="1"]:not(.is-compact) .lc-card .lc-send{display:none}
 .ps-toast button{white-space:normal}
+/* Slim card in the editor (not the home page viewer): compact by default, minimise to a chip (remembered) */
+.lc-min{height:26px;padding:0 10px!important;border:1px solid rgba(255,255,255,.22)!important;border-radius:13px;font:500 11px var(--lc-sans);white-space:nowrap;flex:none}
+.lc-min:hover{background:rgba(255,255,255,.1)}
+.lc-root.lc-embed .lc-min{display:none}
+.lc-root:not(.lc-embed) .lc-card{width:min(400px,calc(100% - 24px));padding:10px 14px 0;border-radius:12px;max-height:min(46%,calc(100% - 140px));overflow:auto}
+.lc-root:not(.lc-embed) .lc-title{font-size:17px}
+.lc-root:not(.lc-embed) .lc-sub{margin-top:3px;font-size:11px}
+.lc-root:not(.lc-embed) .lc-sub .lc-sc{display:none}
+.lc-root:not(.lc-embed) .lc-stats{gap:14px;margin:8px 0 6px;flex-wrap:nowrap}
+.lc-root:not(.lc-embed) .lc-stats b{font-size:15px}
+.lc-root:not(.lc-embed) .lc-stats i{font-size:8.5px;margin-top:2px}
+.lc-root:not(.lc-embed) .lc-sp{margin:4px 0}
+.lc-root:not(.lc-embed) .lc-sp .lc-k{width:52px;font-size:9px}
+.lc-root:not(.lc-embed) .lc-chip{width:24px;height:24px}
+.lc-root:not(.lc-embed) .lc-sw{width:18px;height:18px}
+.lc-root:not(.lc-embed) .lc-acts{gap:6px;margin-top:6px}
+.lc-root:not(.lc-embed) .lc-btn{height:28px;padding:0 12px!important;font-size:12px;border-radius:14px}
+.lc-root:not(.lc-embed) .lc-gh{padding:0 4px!important}
+.lc-root:not(.lc-embed) .lc-fit{min-height:22px;margin-top:2px;font-size:11.5px}
+.lc-root:not(.lc-embed) .lc-zone{font-size:11px;padding:4px 8px}
+.lc-card.is-min{width:auto!important;max-width:min(300px,calc(100% - 24px));padding:6px 10px!important;border-radius:999px!important;max-height:none;overflow:visible}
+.lc-card.is-min .lc-body,.lc-card.is-min .lc-sub,.lc-card.is-min .lc-more{display:none!important}
+.lc-card.is-min .lc-title{font-size:13px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc-card.is-min .lc-hd{align-items:center}
 `;
