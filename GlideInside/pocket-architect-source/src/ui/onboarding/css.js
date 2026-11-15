@@ -36,6 +36,8 @@ body:has(.ps-scrim) .pso-layer { visibility: hidden; }
 .pso-dock { position: absolute; left: 12px; bottom: 88px; z-index: 8; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-family: var(--ps-font-ui); }
 .pso-dock--fixed { position: fixed; z-index: 800; }
 .ps-stage:has(.gf-backpill:not([hidden])) .pso-dock { bottom: 136px; }
+/* Narrow screens: the tips pill joins the top left column (Back to plan, Back to placement, tips), leaving the bottom left to the Aerial switch and the view chips. */
+@media (max-width:599.98px) { .ps-stage .pso-dock:not(.pso-dock--fixed), .ps-stage:has(.gf-backpill:not([hidden])) .pso-dock:not(.pso-dock--fixed) { top: 92px; bottom: auto; } }
 .pso-pill { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px 0 8px; font: inherit; font-size: 12.5px; font-weight: 500; color: var(--ps-text); background: var(--ps-panel); border: 1px solid var(--ps-border-strong); border-radius: 999px; cursor: pointer; box-shadow: 0 1px 3px rgba(14, 28, 50, .15); }
 .pso-pill:hover { background: var(--ps-hover); }
 .pso-pill .pso-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ps-ok); }

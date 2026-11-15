@@ -186,24 +186,51 @@ const ADDRESS = '12 Industrial Drive, Westdale NSW';
     await pl.evaluate(() => { window.__ps.store.setUI({ view: '3d' }); });
     await pl.waitForTimeout(9000);
     await pl.evaluate(() => document.querySelector('[data-ps="view3d-aerial"]')?.click()); await pl.waitForTimeout(4000);
+    console.log('controls in the residential editor with the lot card', await pl.evaluate(() => {
+      const stage = document.querySelector('.ps-stage') || document.body;
+      const els = [...stage.querySelectorAll('button, [role="button"], .ps3d-chip')].filter((e) => e.offsetParent && !e.closest('[hidden]') && !e.closest('.ps3d-hints') && getComputedStyle(e).visibility !== 'hidden' && getComputedStyle(e).pointerEvents !== 'none');
+      const boxes = els.map((e) => ({ e, r: e.getBoundingClientRect(), t: (e.textContent || e.getAttribute('aria-label') || e.className).trim().slice(0, 24) })).filter((x) => x.r.width > 4 && x.r.height > 4);
+      const pairs = [];
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i]; const c = boxes[j];
+        if (a.e.contains(c.e) || c.e.contains(a.e)) continue;
+        if (!(a.r.right <= c.r.left + 1 || a.r.left >= c.r.right - 1 || a.r.bottom <= c.r.top + 1 || a.r.top >= c.r.bottom - 1)) pairs.push(`${a.t} / ${c.t}`);
+      }
+      return `${boxes.length} controls, ${pairs.length} overlapping pairs${pairs.length ? ': ' + pairs.join('; ') : ''}`;
+    }));
     console.log('labels', await pl.evaluate(() => { let n = 0; window.__ps.getViewer?.()?.getModel?.()?.traverse((o) => { if (o.isSprite && o.visible) n += 1; }); return n; }));
     await shot(pl, `${PRE}-labels-3d`);
     await pl.context().close();
     RES = false;
   }
   if (want('pill')) {
-    // 390 px wide: the "Back to placement" pill of the guided flow against the 3D view chips in the commercial editor.
-    const pp = await mk({ width: 390, height: 844 });
-    await pp.goto(`${ORIGIN}/plan-studio/app/?mode=commercial&address=${encodeURIComponent(ADDRESS)}`, { waitUntil: 'domcontentloaded' });
-    await pp.waitForFunction(() => window.__ps?.store?.project?.commercial?.rows?.length > 0, null, { timeout: 240000 }).catch((e) => log.push('pill wait: ' + e.message));
-    await pp.waitForTimeout(5000);
-    await pp.evaluate(() => { [...document.querySelectorAll('a,button')].find((e) => /Skip to editor/.test(e.textContent || ''))?.click(); });
-    await pp.waitForTimeout(3000);
-    await pp.evaluate(() => { window.__ps.store.setUI({ view: '3d' }); });
-    await pp.waitForTimeout(6000);
-    console.log('pill', await pp.evaluate(() => { const b = document.querySelector('.gf-backpill'); if (!b) return 'no pill element'; b.hidden = false; const r = b.getBoundingClientRect(); const chips = [...document.querySelectorAll('.ps3d-viewbar .ps3d-chip')].filter((c) => c.offsetParent).map((c) => c.getBoundingClientRect()); const hit = chips.filter((c) => !(c.right <= r.left || c.left >= r.right || c.bottom <= r.top || c.top >= r.bottom)).length; return `pill ${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}x${Math.round(r.height)}; chips ${chips.length}, overlapped ${hit}`; }));
-    await shot(pp, `${PRE}-pill-390`);
-    await pp.context().close();
+    // The controls laid over the 3D view of the commercial editor, at 390 px and 1440 px: the "Back to placement" pill of the guided flow, the
+    // view chips, the Aerial switch and the tips pill. Counts every pair of visible controls whose boxes overlap (0 is the target).
+    for (const [w, hgt] of [[390, 844], [1440, 900]]) {
+      const pp = await mk({ width: w, height: hgt });
+      await pp.goto(`${ORIGIN}/plan-studio/app/?mode=commercial&address=${encodeURIComponent(ADDRESS)}`, { waitUntil: 'domcontentloaded' });
+      await pp.waitForFunction(() => window.__ps?.store?.project?.commercial?.rows?.length > 0, null, { timeout: 240000 }).catch((e) => log.push('pill wait: ' + e.message));
+      await pp.waitForTimeout(5000);
+      await pp.evaluate(() => { [...document.querySelectorAll('a,button')].find((e) => /Skip to editor/.test(e.textContent || ''))?.click(); });
+      await pp.waitForTimeout(3000);
+      await pp.evaluate(() => { window.__ps.store.setUI({ view: '3d' }); });
+      await pp.waitForTimeout(8000);
+      console.log(`controls at ${w}`, await pp.evaluate(() => {
+        const pill = document.querySelector('.gf-backpill'); if (pill) pill.hidden = false;
+        const stage = document.querySelector('.ps-stage') || document.body;
+        const els = [...stage.querySelectorAll('button, [role="button"], .ps3d-chip')].filter((e) => e.offsetParent && !e.closest('[hidden]') && !e.closest('.ps3d-hints') && getComputedStyle(e).visibility !== 'hidden' && getComputedStyle(e).pointerEvents !== 'none');
+        const boxes = els.map((e) => ({ e, r: e.getBoundingClientRect(), t: (e.textContent || e.getAttribute('aria-label') || e.className).trim().slice(0, 24) })).filter((x) => x.r.width > 4 && x.r.height > 4);
+        const pairs = [];
+        for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+          const a = boxes[i]; const c = boxes[j];
+          if (a.e.contains(c.e) || c.e.contains(a.e)) continue;
+          if (!(a.r.right <= c.r.left + 1 || a.r.left >= c.r.right - 1 || a.r.bottom <= c.r.top + 1 || a.r.top >= c.r.bottom - 1)) pairs.push(`${a.t} / ${c.t}`);
+        }
+        return `${boxes.length} controls, ${pairs.length} overlapping pairs${pairs.length ? ': ' + pairs.join('; ') : ''}`;
+      }));
+      await shot(pp, `${PRE}-pill-${w}`);
+      await pp.context().close();
+    }
   }
   await browser.close(); server.close();
   console.log(log.length ? 'LOG:\n' + [...new Set(log)].join('\n') : 'no console errors');
