@@ -23,6 +23,7 @@ import { createMemoryProfileStore } from './profile-store.js';
 import { createMemoryPortalStore } from './portal-store.js';
 import { createCommercial, COMMERCIAL_EXPORT_TYPES } from './commercial.js';
 import { createTerms } from './terms.js';
+import { createConcierge } from './concierge.js'; // CONCIERGE: AI booking concierge (off unless CONCIERGE_ENABLED=1)
 
 const EXPORT_TYPES = ['pdf', 'dxf', 'glb', 'obj', 'html'];
 const WEBHOOK_MAX_BYTES = 1_000_000;
@@ -79,6 +80,9 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       return null;
     },
   });
+
+  // CONCIERGE: AI booking and sales concierge (lib/concierge.js). Routes /api/concierge/*. Disabled unless CONCIERGE_ENABLED=1.
+  const concierge = createConcierge({ store, env, baseConfig: config, fetchImpl: doFetch, now });
 
   let toolsCache = null;
   let catalogueCache = null;
@@ -706,6 +710,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       const res = await terms.route(request, url, path);
       if (res) return res;
     }
+    if (path.startsWith('/concierge/')) { // CONCIERGE
+      const res = await concierge.route(request, url, path);
+      if (res) return res;
+    }
     if (path === '/enquiry/jce') return allow('POST'), enquiryJce(request);
     const pexp = /^\/portal\/export\/([a-z0-9]+)$/.exec(path);
     if (pexp) return allow('POST'), portalExportFile(request, url, pexp[1]);
@@ -732,7 +740,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
   }
 
-  return { fetch: handle, handle, config, portal, profiles, scheduled: async () => {
+  return { fetch: handle, handle, config, portal, profiles, concierge, scheduled: async () => {
       await commercial.sweepProjects()?.catch?.(() => null); // trial saved projects older than the keep period
       return portal ? portal.scheduled() : null;
     },
