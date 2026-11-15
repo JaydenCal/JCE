@@ -34,6 +34,10 @@ import { createTopView, expandButton, housingScene } from './topview.js';
 import { createTips } from './tips.js';
 import { createAerialToggle } from '../ui/aerial-toggle.js';
 import { moveHouseBy, turnHouseBy } from '../site/site-items.js';
+import { createFitCard, stashGuidance } from '../ui/fit-card.js';
+import { createCoach, TOPVIEW_COACH } from '../ui/fit-coach.js';
+import { narrowerGuidance } from '../site/fit-advice.js';
+import { poseFor } from './swap.js';
 import { aerialOn } from '../site/aerial-pref.js';
 import { injectUploadCss } from '../site/upload/css.js';
 
@@ -78,7 +82,26 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   let isMin = false; try { isMin = localStorage.getItem(MINK) === '1'; } catch { isMin = false; }
   const minBtn = h('button', { class: 'lc-min', type: 'button', dataset: { ps: 'lc-minimise' }, onclick: () => { isMin = !card.classList.contains('is-min'); card.classList.toggle('is-min', isMin); paintMin(); try { localStorage.setItem(MINK, isMin ? '1' : '0'); } catch { /* storage blocked */ } try { sizeInset(); } catch { /* not ready */ } } });
   const paintMin = () => { minBtn.textContent = isMin ? '+' : '\u2212'; minBtn.setAttribute('aria-label', isMin ? 'Expand the design card' : 'Minimise the design card'); minBtn.title = isMin ? 'Expand' : 'Minimise'; minBtn.setAttribute('aria-expanded', String(!isMin)); };
-  const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more, minBtn), body);
+  // The fit card and the first placement tips sit in the design card under its title (never over the lot), so they show on a phone too,
+  // where the rest of the card is folded away.
+  let breachSides = [];
+  const fitCard = createFitCard({
+    store, theme: 'glass', compact: true,
+    onSides: (s) => { breachSides = s; },
+    onChange: () => { try { fit.classList.toggle('lc-fit-off', !fitCard.el.hidden && fitCard.el.dataset.verdict !== 'fits'); sizeInset(); schedule(); } catch { /* not ready */ } },
+    onDesigns: () => nextThatFits(),
+    onNarrower: () => {
+      const text = narrowerGuidance(store.project);
+      if (embed) { stashGuidance(text); (onFullEditor || onEdit)?.(); return; }
+      store.setUI({ view: '2d' });
+      toast(text, { kind: 'info', timeout: 20000 });
+    },
+    onEngineer: () => engineer.open(),
+    canEngineer: () => engineer.available(),
+  });
+  const coach = createCoach({ theme: 'glass', steps: TOPVIEW_COACH, onChange: () => { try { sizeInset(); } catch { /* not ready */ } } });
+  const advice = E('lc-advice', 'div', null, coach.el, fitCard.el);
+  const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more, minBtn), advice, body);
   if (isMin) card.classList.add('is-min');
   paintMin();
 
@@ -115,7 +138,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const miniX = expandButton(() => topView.open());
   const mini = h('div', { class: 'lc-mini', role: 'group', title: 'Top view. Click to enlarge', 'aria-label': 'Top view of the lot', dataset: { ps: 'lc-mini' }, onclick: (e) => { if (e.target.closest?.('.lc-mini-x')) return; if (suppressClick) { suppressClick = false; return; } if (mv?.consumeClick()) return; if (embed) topView.open(); else toggle2d(); } }, cv, h('span', { class: 'lc-mini-t' }, 'TOP VIEW'), north, northLabel, h('span', { class: 'lc-mini-hint', 'aria-hidden': 'true' }, 'Drag the house to move it, drag the map to pan, scroll to zoom, right-drag to rotate. Click to enlarge'), miniX);
   const aerialT = createAerialToggle({ store, className: 'lc-aerial lc-glass' });
-  const topView = createTopView({ root: () => root, getScene: () => housingScene(store.project), store, trigger: miniX, onChange: () => paintMenu(), movers: { can: (p) => canMoveHouse(p), move: (id, dx, dy) => store.apply('Move house', (q) => { moveHouseBy(q, dx, dy); }), turn: (id, deg, c) => store.apply('Rotate house', (q) => { turnHouseBy(q, deg, c); }) } });
+  const topView = createTopView({ root: () => root, getScene: () => housingScene(store.project), store, trigger: miniX, onChange: () => paintMenu(), movers: { can: (p) => canMoveHouse(p), move: (id, dx, dy) => { coach.did('move'); return store.apply('Move house', (q) => { moveHouseBy(q, dx, dy); }); }, turn: (id, deg, c) => { coach.did('move'); return store.apply('Rotate house', (q) => { turnHouseBy(q, deg, c); }); } } });
   let suppressClick = false;
 
   // The search pill. In the embedded viewer it is the real address search (NSW and QLD, /api/site/search) as an input with suggestions; in the
@@ -251,7 +274,9 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   function step(dir) {
     if (designs.length < 2 || stepping) return Promise.resolve(false);
     const i = stepIndex(designs.length, currentIndex(designs, store.project, uiPlaced()), dir);
-    const d = designs[i];
+    return placeDesign(designs[i]);
+  }
+  function placeDesign(d) {
     stepping = true;
     pager.classList.add('is-busy');
     pager.setAttribute('aria-busy', 'true');
@@ -264,7 +289,8 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     return new Promise((resolve) => {
       const run = () => {
         try {
-          const { fits, tooBig } = swapHouse(store, d.project, { id: d.id, name: d.name });
+          const { fits, tooBig, turnedDeg } = swapHouse(store, d.project, { id: d.id, name: d.name });
+          if (turnedDeg) toast(`${d.name} was turned to suit the shape of this lot.`, { kind: 'info' });
           store.setUI({ placedDesign: { id: d.id, name: d.name } });
           if (tooBig) toast(`${d.name} is too big for this block.`, { kind: 'info' });
           else if (fits === false) toast(`${d.name} does not fit inside the setbacks on this lot.`, { kind: 'info' });
@@ -284,6 +310,24 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => setTimeout(run, 0));
       else setTimeout(run, 0);
     });
+  }
+
+  // "Show designs that fit": place the next design in the carousel that fits this lot. False when none of the others does.
+  async function nextThatFits() {
+    if (stepping) return true;
+    const n = designs.length;
+    const at = currentIndex(designs, store.project, uiPlaced());
+    for (let k = 1; k < n + (at < 0 ? 1 : 0); k++) {
+      const i = (((at < 0 ? -1 : at) + k) % n + n) % n;
+      const d = designs[i];
+      if (d.fit && d.fit.status === 'too-big') continue;
+      let ok = false;
+      try { ok = poseFor(store.project, d.project).fits === true; } catch { ok = false; }
+      if (!ok) continue;
+      await placeDesign(d);
+      return true;
+    }
+    return false;
   }
 
   function setScheme(id) {
@@ -395,6 +439,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     const view = store.ui.view;
     // Not while the placement panel is open (it uses the bottom of the stage), nor in walk mode.
     const show = !!lot && hasBuilding(p) && p.mode !== 'commercial' && view !== 'walk' && !host.querySelector('.pas-pose');
+    if (show && canMoveHouse(p)) coach.start();
     root.hidden = !show;
     root.dataset.view = view;
     viewerHost.classList.toggle('lc-on', show && (view === '3d' || view === 'split'));
@@ -532,6 +577,10 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     }
     if (!hasImg) { path(pts); ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fill(); }
     if (Array.isArray(lot.envelope) && lot.envelope.length >= 3) {
+      // The buildable area, lightly shaded so it is plain where a house can go.
+      path(lot.envelope);
+      ctx.fillStyle = breachSides.length ? 'rgba(242,185,75,.26)' : 'rgba(111,211,154,.24)';
+      ctx.fill();
       path(lot.envelope);
       ctx.setLineDash([5, 4]);
       ctx.strokeStyle = hasImg ? 'rgba(255,255,255,.95)' : 'rgba(40,50,60,.7)';
@@ -543,6 +592,8 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     ctx.strokeStyle = '#e53935';
     ctx.lineWidth = 1.5;
     ctx.stroke();
+    // The side the house breaches, picked out.
+    for (const sd of breachSides) { ctx.beginPath(); ctx.moveTo(sd.a.x * k + ox, sd.a.y * k + oy); ctx.lineTo(sd.b.x * k + ox, sd.b.y * k + oy); ctx.strokeStyle = '#ffd23d'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.stroke(); ctx.lineCap = 'butt'; }
     const col = schemeColours(p);
     for (const ring of buildingRings(p)) {
       if (ring.length < 3) continue;
@@ -621,6 +672,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     applyDrag(true);
     if (md.mode !== 'move' && md.applied) miniRot = (((miniRot + md.deg) % 360) + 360) % 360;
     if (md.moved) suppressClick = true;
+    if (md.applied) coach.did('move');
     md = null;
     schedule();
   }
@@ -748,6 +800,6 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     /** Reload the designs (a sign-in finished after the card was drawn). */
     refresh() { designsKey = null; schedule(); },
     get designs() { return designs; },
-    dispose() { disposed = true; window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); topView.dispose(); aerialT.dispose(); ro?.disconnect(); mo?.disconnect(); root.remove(); },
+    dispose() { disposed = true; window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); fitCard.dispose(); coach.dispose(); topView.dispose(); aerialT.dispose(); ro?.disconnect(); mo?.disconnect(); root.remove(); },
   };
 }

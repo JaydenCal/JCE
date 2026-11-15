@@ -14,15 +14,49 @@ import { loadHomes, filterRows, placeBest, nudgeHouse, turnHouse, mirrorHouse, p
 import { mount3dPreview } from './preview3d.js';
 import { mountBuilderFinder } from './builder-finder.js';
 import { ensureFlowAerial, NO_AERIAL } from './flow-aerial.js';
+import { createFitCard } from '../ui/fit-card.js';
+import { createCoach, FLOW_COACH } from '../ui/fit-coach.js';
+import { createSendToEngineer } from '../lotcard/send-engineer.js';
+import { narrowerGuidance, ENGINEER_LABEL, NOTHING_FITS } from '../site/fit-advice.js';
+import { toast } from '../ui/toast.js';
+
+// The fit card's actions, shared by steps 3 and 4: designs that fit (step 2 with the filter on), make it narrower (the editor, with
+// guidance) and send to a registered engineer.
+function fitActions(ctx, { getHomes, want }) {
+  const { store } = ctx;
+  const engineer = createSendToEngineer({ getApp: () => (typeof window !== 'undefined' ? window.__ps : null) || {}, getProject: () => store.project, getLot: () => lotOf(store.project) });
+  return {
+    engineer,
+    canEngineer: () => engineer.available(),
+    onEngineer: () => engineer.open(),
+    async onDesigns() {
+      let rows = [];
+      try { rows = (await getHomes()).rows; } catch { rows = []; }
+      const placed = store.project.placedHouse?.id || null;
+      if (!rows.some((r) => r.fits && r.id !== placed)) return false;
+      want.fits = true;
+      ctx.go(2);
+      return true;
+    },
+    async onNarrower() {
+      const text = narrowerGuidance(store.project);
+      await ctx.flow.editor();
+      store.setUI({ view: '2d' });
+      toast(text, { kind: 'info', timeout: 20000 });
+    },
+  };
+}
 
 export const RESIDENTIAL_BRAND = 'Glide Inside Residential';
 
 // Step 2 ----------------------------------------------------------------------------------------------------------------------
-function mountHomeStep(ctx, { getHomes }) {
+function mountHomeStep(ctx, { getHomes, want = {} }) {
   const { store } = ctx;
   let rows = [];
+  const engineer = createSendToEngineer({ getApp: () => (typeof window !== 'undefined' ? window.__ps : null) || {}, getProject: () => store.project, getLot: () => lotOf(store.project) });
   let selected = flowOf(store.project)?.designId || store.project.placedHouse?.id || null;
-  const filter = { bedrooms: null, storeys: null, frontage: null };
+  const filter = { bedrooms: null, storeys: null, frontage: null, fitsOnly: !!want.fits };
+  want.fits = false;
   let disposed = false;
   const grid = h('div', { class: 'gf-homes', dataset: { ps: 'flow-homes' } }, h('p', { class: 'gf-empty' }, 'Loading homes'));
   const note = h('p', { class: 'gf-note', dataset: { ps: 'flow-homes-note' } });
@@ -33,7 +67,12 @@ function mountHomeStep(ctx, { getHomes }) {
   const filters = h('div', { class: 'gf-filters' },
     sel('Bedrooms', 'bedrooms', [['', 'Any'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4 or more']]),
     sel('Storeys', 'storeys', [['', 'Any'], ['1', 'Single storey'], ['2', 'Two storeys']]),
-    sel('Lot width', 'frontage', [['', 'Any'], ['10', '10 m'], ['12.5', '12.5 m'], ['14', '14 m'], ['18', '18 m and wider']]));
+    sel('Lot width', 'frontage', [['', 'Any'], ['10', '10 m'], ['12.5', '12.5 m'], ['14', '14 m'], ['18', '18 m and wider']]),
+    (() => {
+      const s = h('select', { 'aria-label': 'Fit', dataset: { ps: 'flow-filter-fits' }, onchange: () => { filter.fitsOnly = s.value === '1'; paint(); } }, h('option', { value: '' }, 'Any'), h('option', { value: '1' }, 'Fits this lot'));
+      if (filter.fitsOnly) s.value = '1';
+      return h('label', null, 'Fit', s);
+    })());
   // "Have a local builder in mind?": find a listed builder and ask them for a client login to their own homes.
   const finder = mountBuilderFinder({ getLot: () => lotOf(store.project)?.address || '', getDesign: () => { const r = rows.find((x) => x.id === selected); return r ? { id: r.id, name: r.name } : null; } });
   const el = h('div', null, finder.el, filters, grid, note);
@@ -53,7 +92,10 @@ function mountHomeStep(ctx, { getHomes }) {
 
   function paint() {
     const shown = filterRows(rows, filter);
-    grid.replaceChildren(...(shown.length ? shown.map(card) : [h('p', { class: 'gf-empty', dataset: { ps: 'flow-homes-empty' } }, rows.length ? 'No homes match those filters. Try Any.' : 'No homes are available yet.')]));
+    const none = filter.fitsOnly && rows.length && !rows.some((r) => r.fits);
+    grid.replaceChildren(...(shown.length ? shown.map(card) : [h('div', { class: 'gf-empty', dataset: { ps: 'flow-homes-empty' } },
+      h('p', null, none ? NOTHING_FITS : rows.length ? 'No homes match those filters. Try Any.' : 'No homes are available yet.'),
+      none && engineer.available() ? h('button', { class: 'gf-btn gf-btn--primary', type: 'button', dataset: { ps: 'flow-homes-engineer' }, onclick: () => engineer.open() }, ENGINEER_LABEL) : null)]));
   }
 
   (async () => {
@@ -82,7 +124,7 @@ function mountHomeStep(ctx, { getHomes }) {
 // Step 3 ----------------------------------------------------------------------------------------------------------------------
 const STATUS_COLOUR = { inside: '#17724a', outside: '#c77700', unknown: '#1b4fd1', none: '#1b4fd1' };
 
-function mountPlaceStep(ctx, { getHomes }) {
+function mountPlaceStep(ctx, { getHomes, want = {} }) {
   let homes = null;
   const { store } = ctx;
   const NS = 'http://www.w3.org/2000/svg';
@@ -98,6 +140,12 @@ function mountPlaceStep(ctx, { getHomes }) {
   let view = null;
   let aerialOn = true;
   let aerialState = 'loading'; // loading | done
+  let sides = []; // the boundary edges the house breaches, highlighted on the plan
+  const narrow = () => (typeof window !== 'undefined' ? window.innerWidth <= 900 : false);
+  const acts = fitActions(ctx, { getHomes, want });
+  const fitCard = createFitCard({ store, theme: 'light', onDesigns: acts.onDesigns, onNarrower: acts.onNarrower, onEngineer: acts.onEngineer, canEngineer: acts.canEngineer, compact: narrow(), onSides: (s) => { sides = s; }, onChange: () => syncStatus() });
+  const coach = createCoach({ theme: 'light', steps: FLOW_COACH });
+  const coachRow = h('div', { class: 'gf-coachrow' }, coach.el);
   try { aerialOn = localStorage.getItem('gi.flow.aerial') !== '0'; } catch { /* default on */ }
 
   const stage = h('div', { class: 'gf-stage', tabindex: '0', role: 'application', 'aria-label': 'Placement plan. Drag the home to move it. Arrow keys nudge it.', dataset: { ps: 'flow-stage' } });
@@ -124,8 +172,11 @@ function mountPlaceStep(ctx, { getHomes }) {
     h('span'), arrow('↑', 0, -1, 'flow-nudge-up'), h('span'),
     arrow('←', -1, 0, 'flow-nudge-left'), h('span', { class: 'gf-mid' }, 'nudge'), arrow('→', 1, 0, 'flow-nudge-right'),
     h('span'), arrow('↓', 0, 1, 'flow-nudge-down'), h('span'));
+  const statusCard = h('div', { class: 'gf-card' }, nameEl, h('div', { style: { height: '8px' } }), statusEl);
+  const fitWrap = h('div', { class: 'gf-fitwrap' }, statusCard, fitCard.el);
+  // The fit card says what is wrong better than the one line status, so the status steps aside while the card is up.
+  function syncStatus() { statusEl.hidden = !fitCard.el.hidden && fitCard.el.dataset.verdict !== 'fits' && !fitCard.el.classList.contains('is-min'); }
   const side = h('div', { class: 'gf-side' },
-    h('div', { class: 'gf-card' }, nameEl, h('div', { style: { height: '8px' } }), statusEl),
     h('div', { class: 'gf-card' },
       h('div', { class: 'gf-ctl' },
         mk('Turn left 90°', () => turn(-90), 'flow-rot-left'),
@@ -142,9 +193,9 @@ function mountPlaceStep(ctx, { getHomes }) {
         mk('Add bend', () => addBend(), 'flow-drive-bend'), mk('Reset driveway', () => resetDriveway(), 'flow-drive-reset'),
         h('label', { class: 'gf-note' }, 'Width ', h('select', { dataset: { ps: 'flow-drive-width' }, onchange: (e) => setDriveWidth(Number(e.target.value)) }, ...[3000, 3500, 4000, 5000, 6000].map((w) => h('option', { value: String(w) }, `${(w / 1000).toFixed(1)} m`))))),
       h('p', { class: 'gf-note' }, 'Drag the white dot to slide the driveway along the street. Drag a yellow dot to bend it.'),
-      h('p', { class: 'gf-note' }, 'Best fit puts the home back square to the street, garage facing the street, inside the setbacks. You can also drag the home, or drag the round handle to turn it.')),
+      h('p', { class: 'gf-note' }, 'Best fit puts the home back square to the street, garage facing the street. The rainwater tank and the driveway follow the home.')),
     h('p', { class: 'gf-note' }, INDICATIVE));
-  const el = h('div', { class: 'gf-place' }, stage, side);
+  const el = h('div', { class: 'gf-place gf-place--fit' }, coachRow, stage, fitWrap, side);
 
   // Geometry ---------------------------------------------------------------------------------------------------------------
   let box = null;
@@ -226,7 +277,17 @@ function mountPlaceStep(ctx, { getHomes }) {
     const roads = document.createElementNS(NS, 'g'); roads.innerHTML = roadSvg(lot, px); svg.append(roads);
     svg.append(poly(lot.boundary, { fill: 'rgba(255,255,255,.22)', stroke: '#d11f1f', 'stroke-width': Math.round(3 * px) }));
     const env = Array.isArray(lot.envelope) && lot.envelope.length >= 3 ? lot.envelope : null;
-    if (env) svg.append(poly(env, { fill: st.state === 'outside' ? 'rgba(199,119,0,.10)' : 'rgba(23,114,74,.10)', stroke: col, 'stroke-width': Math.round(3 * px), 'stroke-dasharray': `${Math.round(10 * px)} ${Math.round(6 * px)}`, 'data-ps': 'flow-envelope' }));
+    // The buildable area (the lot less the setbacks), shaded, so it is plain where a house can go.
+    if (env) svg.append(poly(env, { fill: st.state === 'outside' ? 'rgba(199,119,0,.20)' : 'rgba(23,114,74,.22)', stroke: col, 'stroke-width': Math.round(3 * px), 'stroke-dasharray': `${Math.round(10 * px)} ${Math.round(6 * px)}`, 'data-ps': 'flow-envelope' }));
+    if (env) {
+      // Its label sits at the corner of the area furthest from the house, pulled a little toward the middle.
+      const hc0 = houseCentre(project);
+      const far = env.reduce((a, b) => (G.dist(b, hc0) > G.dist(a, hc0) ? b : a));
+      const mid = G.polygonCentroid(env);
+      svg.append(text(G.lerp(far, mid, 0.3), 'Buildable area', 11, { fill: st.state === 'outside' ? '#8a5200' : '#17724a', 'data-ps': 'flow-envelope-label' }));
+    }
+    // The side the house breaches, picked out on the boundary.
+    for (const sd of sides) svg.append(line(sd.a, sd.b, { stroke: '#e0321c', 'stroke-width': Math.round(7 * px), 'stroke-linecap': 'round', class: 'gf-breach', 'data-ps': 'flow-breach-side' }));
     const dw = (() => { try { return deriveDriveway(project); } catch { return null; } })();
     if (dw?.ok) svg.append(poly(dw.polygon, { fill: '#9a9da3', stroke: '#6b6f76', 'stroke-width': Math.round(1.5 * px), opacity: '0.95' }));
     if (dw?.ok) {
@@ -266,6 +327,13 @@ function mountPlaceStep(ctx, { getHomes }) {
     const door = garageDoor(project);
     if (door) houseG.append(line(door.mid, G.add(door.mid, G.mul(door.normal, 1800)), { stroke: '#1b4fd1', 'stroke-width': Math.round(4 * px), 'marker-end': '', 'stroke-linecap': 'round', 'data-ps': 'flow-garage-door' }));
     svg.append(houseG);
+    // Rainwater tanks: they follow the house.
+    for (const tk of project.site?.tanks || []) {
+      const c = document.createElementNS(NS, 'circle');
+      for (const [k, v] of Object.entries({ cx: Math.round(tk.x), cy: Math.round(tk.y), r: Math.round((tk.diameter || 2000) / 2), fill: '#9fb8c9', stroke: '#3d5a70', 'stroke-width': Math.round(1.5 * px), 'data-ps': 'flow-tank' })) c.setAttribute(k, v);
+      const tt = document.createElementNS(NS, 'title'); tt.textContent = 'Rainwater tank'; c.append(tt);
+      svg.append(c);
+    }
     // rotate handle
     const hull = buildingHull(project);
     if (hull.length >= 3) {
@@ -281,12 +349,14 @@ function mountPlaceStep(ctx, { getHomes }) {
     }
     svg.append(text({ x: V.x + V.w / 2, y: V.y + V.h - 9 * px }, 'Drag the home to move it, scroll to zoom', 11, { fill: '#3b3f46', opacity: '0.8' }));
     paintStatus(st);
+    // While dragging the card follows the preview (words only); the fixes come back on the drop.
+    if (drag && (drag.mode === 'move' || drag.mode === 'turn') && project !== store.project) fitCard.update({ live: true, project });
   }
 
   function paintStatus(st = placementStatus(liveProject || store.project)) {
     statusEl.dataset.state = st.state;
-    statusEl.replaceChildren(h('span', { 'aria-hidden': 'true' }, st.state === 'inside' ? '✓' : st.state === 'outside' ? '!' : 'i'), h('span', null, st.state === 'inside' ? 'Inside the setbacks. Good position.' : st.text),
-      st.state === 'outside' ? h('span', { class: 'gf-note', dataset: { ps: 'flow-too-tight' }, style: { display: 'block', marginTop: '4px' } }, 'Too tight? Choose a narrower design in step 2 to fit the setbacks. ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(2); } }, 'Show narrower designs')) : null);
+    statusEl.replaceChildren(h('span', { 'aria-hidden': 'true' }, st.state === 'inside' ? '✓' : st.state === 'outside' ? '!' : 'i'), h('span', null, st.state === 'inside' ? (store.project.placedHouse?.turnedToFit && !touched ? 'Inside the setbacks. The home was turned to suit the shape of this lot.' : 'Inside the setbacks. Good position.') : st.text),
+      null);
     const ph = store.project.placedHouse;
     nameEl.textContent = ph?.name ? `Home: ${ph.name}` : '';
   }
@@ -316,8 +386,8 @@ function mountPlaceStep(ctx, { getHomes }) {
   function resetDriveway() { touched = true; store.apply('Reset driveway', (pr) => { setStoredDriveway(pr, null); }); }
 
   // Actions ----------------------------------------------------------------------------------------------------------------
-  function nudge(sx, sy) { touched = true; nudgeHouse(store, sx * nudgeMm, sy * nudgeMm); }
-  function turn(deg) { touched = true; handleDeg += deg; turnHouse(store, deg); }
+  function nudge(sx, sy) { touched = true; coach.did('move'); nudgeHouse(store, sx * nudgeMm, sy * nudgeMm); }
+  function turn(deg) { touched = true; coach.did('turn'); handleDeg += deg; turnHouse(store, deg); }
   async function bestFit() {
     const d = currentDesign();
     if (!d || busy) return;
@@ -429,9 +499,9 @@ function mountPlaceStep(ctx, { getHomes }) {
     const d = drag; drag = null;
     if (d.mode === 'pan') return;
     if (d.mode === 'drive') { if (d.value) { touched = true; store.apply('Edit driveway', (pr) => { setStoredDriveway(pr, d.value); }); } else draw(); return; }
-    if (d.mode === 'move' && (d.dx || d.dy)) { touched = true; nudgeHouse(store, d.dx, d.dy); }
-    else if (d.mode === 'turn' && d.deg) { touched = true; handleDeg += d.deg; turnHouse(store, d.deg); }
-    else draw();
+    if (d.mode === 'move' && (d.dx || d.dy)) { touched = true; coach.did('move'); nudgeHouse(store, d.dx, d.dy); }
+    else if (d.mode === 'turn' && d.deg) { touched = true; coach.did('turn'); handleDeg += d.deg; turnHouse(store, d.deg); }
+    else { draw(); fitCard.update({ now: true }); }
   };
   svg.addEventListener('pointerdown', onDown);
   stage.addEventListener('wheel', (e) => { e.preventDefault(); zoomBy(Math.exp(e.deltaY * (e.ctrlKey ? 0.01 : 0.0016)), toMm(e)); }, { passive: false });
@@ -462,6 +532,9 @@ function mountPlaceStep(ctx, { getHomes }) {
     // The aerial source changed (a picture of the person's own, or back to standard): load the new image.
     const k = lotNow()?.aerial?.key || null;
     if (k !== aerialKey) { aerialKey = k; aerial = null; aerialOf(lotNow()).then((a) => { if (!disposed) { aerial = a; draw(); } }); }
+    // A fit card fix or an undo of one moves the home too: from then on it is the person's own position.
+    if (/^(Auto fit|Rotate to fit|Square to the street|Undo)/.test(e?.label || '')) touched = true;
+    fitCard.update({ now: true });
     draw();
     // Late setbacks (the design's own storeys and heights change the council envelope): a home the person has not touched is fitted again.
     if (e?.label === 'setbacks' && !touched && refits < 2 && !busy && placementStatus(store.project).state === 'outside') { refits += 1; bestFit(); }
@@ -489,7 +562,9 @@ function mountPlaceStep(ctx, { getHomes }) {
         busy = true; stage.append(busyEl);
         try { await placeBest(store, d); } finally { busy = false; busyEl.remove(); }
       }
+      fitCard.update({ now: true });
       draw();
+      coach.start();
       // A large lot makes the home a speck: when the lot is more than 4 times the home's footprint, open framed on the home.
       try {
         const hl = buildingHull(store.project);
@@ -497,16 +572,18 @@ function mountPlaceStep(ctx, { getHomes }) {
       } catch { /* the whole lot stays in view */ }
       ctx.refresh();
     },
-    dispose() { disposed = true; off?.(); ro?.disconnect(); srcBtn.dispose(); },
+    dispose() { disposed = true; off?.(); ro?.disconnect(); srcBtn.dispose(); fitCard.dispose(); coach.dispose(); },
   };
 }
 
 // Step 4 ----------------------------------------------------------------------------------------------------------------------
-function mountCheckStep(ctx, { catalogue }) {
+function mountCheckStep(ctx, { catalogue, getHomes, want = {} }) {
   const { store } = ctx;
   const card = h('div', { class: 'gf-card', dataset: { ps: 'flow-summary' } });
   const view = h('div', { class: 'gf-3d', dataset: { ps: 'flow-3d' } });
-  const el = h('div', { class: 'gf-check' }, card, view);
+  const acts = fitActions(ctx, { getHomes, want });
+  const fitCard = createFitCard({ store, theme: 'light', onDesigns: acts.onDesigns, onNarrower: acts.onNarrower, onEngineer: acts.onEngineer, canEngineer: acts.canEngineer });
+  const el = h('div', { class: 'gf-check' }, h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '0' } }, fitCard.el, card), view);
   let preview = null;
   let disposed = false;
 
@@ -525,17 +602,17 @@ function mountCheckStep(ctx, { catalogue }) {
         stat(s.garage.has ? (s.garage.facesStreet ? 'Faces street' : 'Not to street') : 'No garage', s.garage.distanceM != null ? `Garage, ${s.garage.distanceM.toFixed(1)} m from street` : 'Garage'),
         stat(s.driveway.state === 'ok' ? `${s.driveway.lengthM.toFixed(1)} m` : s.driveway.state === 'none' ? 'None' : 'Not linked', 'Driveway to frontage')),
       h('ul', { class: 'gf-lines', dataset: { ps: 'flow-lines' } }, ...s.lines.map((t) => h('li', null, t))),
-      h('p', { class: 'gf-note' }, h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(3); } }, 'Back to placement'), ' to move or turn the home.',
-        s.verdict === 'not-met' ? h('span', { dataset: { ps: 'flow-too-tight' } }, ' Too tight? ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(2); } }, 'Show narrower designs'), ' to find a home that fits the setbacks.') : null));
+      h('p', { class: 'gf-note' }, h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(3); } }, 'Back to placement'), ' to move or turn the home.'));
   }
   const stat = (b, s) => h('div', { class: 'gf-stat' }, h('b', null, b), h('span', null, s));
   paint();
+  fitCard.update({ now: true });
   const off = store.on('project', () => { if (!disposed) paint(); });
   return {
     el,
     nextLabel: 'Open the editor',
     async onEnter() { await ensureFlowAerial(store); preview = await mount3dPreview(view, store, catalogue); if (disposed) preview?.dispose?.(); },
-    dispose() { disposed = true; off?.(); preview?.dispose?.(); },
+    dispose() { disposed = true; off?.(); preview?.dispose?.(); fitCard.dispose(); },
   };
 }
 
@@ -544,11 +621,12 @@ export function residentialSteps({ catalogue, store }) {
   // The ranked homes are worked out once per lot visit (step 1 clears them, a different lot changes the ranking).
   let cache = null;
   const getHomes = () => (cache ||= loadHomes(store, catalogue).catch((e) => { cache = null; throw e; }));
+  const want = { fits: false }; // "Show designs that fit" opens step 2 with the fit filter on
   return [
     { id: 'lot', title: 'Find your lot', intro: 'Search your address. Check that the boundary, street frontage and setbacks look right.', mount: (ctx) => { cache = null; return mountLotStep(ctx); } },
-    { id: 'home', title: 'Choose a home', intro: 'Pick a home that suits your lot. The best fits come first.', mount: (ctx) => mountHomeStep(ctx, { getHomes }) },
-    { id: 'place', title: 'Place it', intro: 'The home is placed square to the street with the driveway to the frontage. Move, turn or mirror it as you like.', mount: (ctx) => mountPlaceStep(ctx, { getHomes }) },
-    { id: 'check', title: 'Check it', intro: 'A quick check of setbacks, site coverage and the driveway, and a 3D look at your lot.', mount: (ctx) => mountCheckStep(ctx, { catalogue }) },
+    { id: 'home', title: 'Choose a home', intro: 'Pick a home that suits your lot. The best fits come first.', mount: (ctx) => mountHomeStep(ctx, { getHomes, want }) },
+    { id: 'place', title: 'Place it', intro: 'The home is placed square to the street with the driveway to the frontage. Move, turn or mirror it as you like.', mount: (ctx) => mountPlaceStep(ctx, { getHomes, want }) },
+    { id: 'check', title: 'Check it', intro: 'A quick check of setbacks, site coverage and the driveway, and a 3D look at your lot.', mount: (ctx) => mountCheckStep(ctx, { catalogue, getHomes, want }) },
   ];
 }
 export { zoneText };

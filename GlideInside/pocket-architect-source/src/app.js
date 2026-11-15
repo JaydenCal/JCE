@@ -518,6 +518,8 @@ async function main() {
     ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openGuided, onFind: (a) => api.embedViewer?.run(a) })
     : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
   api.lotCard = lotCard;
+  // "Make it narrower" in the homepage viewer hands over to this editor: say how, once it has opened.
+  if (!VIEWER) import('./ui/fit-card.js').then((m) => { const g = m.takeGuidance(); if (g) setTimeout(() => { store.setUI({ view: '2d' }); toast(g, { kind: 'info', timeout: 20000 }); }, 1800); }).catch(() => {});
   // The home page's "Open full editor" link asks the embedded viewer to hand over everything (lot, address, house, placement, colours) and open the editor itself.
   if (VIEWER) {
     window.addEventListener('message', (ev) => {

@@ -10,6 +10,7 @@ import { lotOf } from '../model/placement.js';
 import { lotChecks } from '../site/lot-checks.js';
 import { schemeColours } from '../model/colour-schemes.js';
 import * as G from '../model/geometry.js';
+import { fitFacts } from '../site/fit-advice.js';
 
 export const OK = '#2f7d4f';
 export const BAD = '#c0392b';
@@ -124,11 +125,25 @@ export function drawEnvelope(ctx, st) {
     else ctx.moveTo(s.x, s.y);
   });
   ctx.closePath();
+  // The buildable area is shaded lightly, so it is plain where a house can go; the side the house breaches is picked out.
+  let issues = [];
+  if (st.project.mode !== 'commercial') {
+    try { issues = fitFacts(st.project)?.issues || []; } catch { issues = []; }
+    ctx.fillStyle = issues.length ? 'rgba(199,119,0,.10)' : 'rgba(23,114,74,.10)';
+    ctx.fill();
+  }
   ctx.strokeStyle = colour;
   ctx.lineWidth = 1.8;
   ctx.setLineDash([9, 6]);
   ctx.stroke();
   ctx.setLineDash([]);
+  if (issues.length) {
+    ctx.strokeStyle = '#e0321c';
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    for (const i of issues) { const a = S(st, i.a); const b = S(st, i.b); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+    ctx.lineCap = 'butt';
+  }
   // Edge labels with the required distance, only where a rule is loaded for the kind of edge.
   if (lot.setbacks) {
     const names = { front: 'FRONT', secondaryFront: 'SECONDARY FRONT', side: 'SIDE', rear: 'REAR' };

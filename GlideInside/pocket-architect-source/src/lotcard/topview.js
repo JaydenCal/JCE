@@ -10,6 +10,7 @@ import { h, clear } from '../ui/dom.js';
 import { snapMove, moveWarnings, turnRing, shiftRing, boxCentre, inside, turnSnap, turnStep, ringAngle } from './topview-move.js';
 import { lotOf, houseCentre } from '../model/placement.js';
 import { buildingRings, deriveDriveway } from '../site/lotplan.js';
+import { fitFacts } from '../site/fit-advice.js';
 import { schemeColours } from '../model/colour-schemes.js';
 import { createAerialToggle } from '../ui/aerial-toggle.js';
 
@@ -57,6 +58,12 @@ export function housingScene(project) {
   // The rings are the rooms and the garage of one house.
   const sc = baseScene(project, shapes, [], rings.length ? 'house placed' : 'no house placed');
   if (sc && rings.length) sc.movables = [{ id: 'house', label: 'House', rings, centre: houseCentre(project) }];
+  if (sc) {
+    // The buildable area is shaded and the side the house breaches is picked out (src/site/fit-advice.js).
+    sc.buildable = true;
+    try { sc.breach = (fitFacts(project)?.issues || []).map((i) => ({ a: i.a, b: i.b })); } catch { sc.breach = []; }
+    for (const t of project.site?.tanks || []) { const r = (t.diameter || 2000) / 2; const ring = []; for (let k = 0; k < 16; k++) ring.push({ x: t.x + r * Math.cos((k * Math.PI) / 8), y: t.y + r * Math.sin((k * Math.PI) / 8) }); sc.shapes.push({ kind: 'extra', ring, fill: '#9fb8c9' }); }
+  }
   return sc;
 }
 
@@ -208,6 +215,8 @@ export function sceneInner(scene, view, w, h, deco = null) {
   if (img) out.push(`<image data-part="aerial" href="${esc(scene.aerial.href)}" x="${f2(img.x0)}" y="${f2(img.y0)}" width="${f2(img.x1 - img.x0)}" height="${f2(img.y1 - img.y0)}" preserveAspectRatio="none"/>`);
   for (const n of scene.neighbours) out.push(img ? `<path d="${dPath(n.ring)}" fill="none" stroke="#ffffff" stroke-opacity=".6" stroke-width="1" ${NS}/>` : `<path d="${dPath(n.ring)}" fill="${n.isRoad ? '#cfd4d8' : '#f6f7f4'}" stroke="#3c4650" stroke-opacity=".4" stroke-width="1" ${NS}/>`);
   out.push(`<path data-part="boundary" d="${dPath(scene.boundary)}" ${img ? 'fill="none"' : 'fill="#ffffff" fill-opacity=".92"'} stroke="#e53935" stroke-width="2.4" stroke-linejoin="round" ${NS}/>`);
+  if (scene.envelope && scene.buildable) out.push(`<path data-part="buildable" d="${dPath(scene.envelope)}" fill="${scene.breach?.length ? '#f2b94b' : '#3fbf83'}" fill-opacity="${img ? '.26' : '.2'}" stroke="none"/>`);
+  for (const sd of scene.breach || []) out.push(`<line data-part="breach" x1="${f2(sd.a.x)}" y1="${f2(sd.a.y)}" x2="${f2(sd.b.x)}" y2="${f2(sd.b.y)}" stroke="#ffd23d" stroke-width="6" stroke-linecap="round" ${NS}/>`);
   if (scene.envelope) out.push(`<path data-part="setback" d="${dPath(scene.envelope)}" fill="none" stroke="${img ? '#ffffff' : '#28323c'}" stroke-opacity="${img ? '.95' : '.8'}" stroke-width="1.5" stroke-dasharray="7 5" ${NS}/>`);
   for (const kind of ORDER) for (const s of scene.shapes) if (s.kind === kind) out.push(`<path data-part="${esc(kind)}" d="${dPath(s.ring)}" ${styleOf(s)} stroke-linejoin="round" ${NS}/>`);
   // The selected movable: its outline (gold, red when it has a warning), and the turn handle above it.

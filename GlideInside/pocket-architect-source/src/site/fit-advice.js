@@ -64,7 +64,7 @@ function streetFrame(lot) {
 
 const COMPASS = ['north', 'north east', 'east', 'south east', 'south', 'south west', 'west', 'north west'];
 
-/** Plain words for a boundary edge: "at the front", "at the rear", "on the left side" (seen from the street), "on the side street side". */
+/** Plain words for a boundary edge: "at the front", "at the rear", "on the left side (looking from the street)", "on the side street side". */
 export function sideWords(lot, index) {
   const e = classifyEdges(lot)[index];
   if (!e) return 'on one side';
@@ -74,7 +74,7 @@ export function sideWords(lot, index) {
   const f = streetFrame(lot);
   if (f) {
     const s = G.dot(G.sub(G.lerp(e.a, e.b, 0.5), G.polygonCentroid(lot.boundary)), f.right);
-    return s >= 0 ? 'on the right side' : 'on the left side';
+    return s >= 0 ? 'on the right side (looking from the street)' : 'on the left side (looking from the street)';
   }
   const n = inwardNormalOf(lot, index);
   const deg = (((Math.atan2(-n.x, n.y) * 180) / Math.PI) + 360) % 360;

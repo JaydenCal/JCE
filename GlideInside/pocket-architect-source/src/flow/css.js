@@ -86,6 +86,15 @@ export const FLOW_CSS = `
 .gf-handle{cursor:crosshair}
 .gf-place{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) 300px;flex:1;min-height:0}
 .gf-side{display:flex;flex-direction:column;gap:12px}
+.gf-place--fit{grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"coach fit" "stage fit" "stage side"}
+.gf-place--fit>.gf-coachrow{grid-area:coach;min-width:0}
+.gf-place--fit>.gf-stage{grid-area:stage}
+.gf-place--fit>.gf-fitwrap{grid-area:fit;display:flex;flex-direction:column;gap:10px;min-width:0}
+.gf-place--fit>.gf-side{grid-area:side}
+.gf-coachrow:empty,.gf-coachrow:not(:has(.fitcoach:not([hidden]))){display:none}
+@keyframes gf-breach{0%,100%{stroke-opacity:1}50%{stroke-opacity:.35}}
+.gf-breach{animation:gf-breach 1.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.gf-breach{animation:none}}
 .gf-status{display:flex;gap:10px;align-items:flex-start;border-radius:10px;padding:10px 12px;font-weight:600}
 .gf-status[data-state="inside"]{background:var(--gf-ok-soft);color:var(--gf-ok)}
 .gf-status[data-state="outside"]{background:var(--gf-warn-soft);color:var(--gf-warn)}
@@ -120,6 +129,7 @@ export const FLOW_CSS = `
 .gf-typecard-s{color:var(--gf-muted);font-size:13px}
 @media (max-width:900px){
  .gf-grid,.gf-place,.gf-check{grid-template-columns:minmax(0,1fr)}
+ .gf-place--fit{grid-template-rows:auto;grid-template-areas:"coach" "fit" "stage" "side"}
  .gf-stage{min-height:300px;flex:none;height:46vh}
  .gf-3d{min-height:280px;height:38vh;flex:none}
 }

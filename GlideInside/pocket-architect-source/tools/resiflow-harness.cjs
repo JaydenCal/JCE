@@ -5,7 +5,8 @@ const SITE = path.resolve(__dirname, '../../website-live');
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.woff2': 'font/woff2' };
 const ADDRESS = '14 Sample Street, Westdale NSW';
 
-async function startServer(port = Number(process.env.PORT || 8821), { commercial = false } = {}) {
+// `lot` and `contours` (optional) replace the sample lot and levels: functions returning the /api/site/lot and /api/site/contours responses.
+async function startServer(port = Number(process.env.PORT || 8821), { commercial = false, lot = null, contours = null } = {}) {
   const ORIGIN = `http://127.0.0.1:${port}`;
   const { createApp } = await import('../server/lib/app.js');
   const { createMemoryStore } = await import('../server/lib/store.js');
@@ -22,9 +23,9 @@ async function startServer(port = Number(process.env.PORT || 8821), { commercial
   const server = http.createServer(async (req, res) => {
     const u = new URL(req.url, ORIGIN);
     if (u.pathname === '/api/site/search') return json(res, { results: [{ label: ADDRESS, state: 'NSW', lon: 150.930273, lat: -31.090267 }] });
-    if (u.pathname === '/api/site/lot') return json(res, lotResp());
+    if (u.pathname === '/api/site/lot') return json(res, lot ? lot(lotResp()) : lotResp());
     if (u.pathname === '/api/site/aerial') { res.writeHead(200, { 'content-type': 'image/jpeg', 'x-site-meta': encodeURIComponent(JSON.stringify(tam.aerial)) }); return res.end(jpg); }
-    if (u.pathname === '/api/site/contours') return json(res, tam.contours);
+    if (u.pathname === '/api/site/contours') return json(res, contours ? contours(tam.contours) : tam.contours);
     if (u.pathname.startsWith('/api/')) {
       const chunks = [];
       for await (const c of req) chunks.push(c);

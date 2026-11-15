@@ -133,6 +133,8 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
       titleEl.focus({ preventScroll: true });
     },
     close() { leave(); root.hidden = true; document.documentElement.classList.remove('gf-open'); },
+    /** Straight to the editor (step 5) without the step's own question: used by "Make it narrower". */
+    editor: () => toEditor(),
     go,
     refresh,
     destroy() { leave(); document.removeEventListener('keydown', onKey); root.remove(); },

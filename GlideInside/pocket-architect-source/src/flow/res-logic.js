@@ -30,9 +30,11 @@ export function designRows(list) {
   });
 }
 
-/** Filter rows by bedrooms (null for any, 4 means 4 or more), lot width (frontage, m) and storeys (null for any, 2 means 2 or more). */
-export function filterRows(rows, { bedrooms = null, storeys = null, frontage = null } = {}) {
+/** Filter rows by bedrooms (null for any, 4 means 4 or more), lot width (frontage, m), storeys (null for any, 2 means 2 or more) and fit. */
+export function filterRows(rows, { bedrooms = null, storeys = null, frontage = null, fitsOnly = false } = {}) {
   return rows.filter((r) => {
+    // "Fits this lot": only designs the fit ranking places inside the buildable area (any turn). Unranked rows stay out.
+    if (fitsOnly && !r.fits) return false;
     if (bedrooms != null && (bedrooms >= 4 ? r.stats.bedrooms < 4 : r.stats.bedrooms !== bedrooms)) return false;
     if (storeys != null && (storeys >= 2 ? r.stats.storeys < 2 : r.stats.storeys !== storeys)) return false;
     // Lot width: a design suits a lot of that width or wider; 18 means 18 m and wider designs. A design with no frontage stays in.
