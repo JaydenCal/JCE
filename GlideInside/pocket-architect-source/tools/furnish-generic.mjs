@@ -42,11 +42,14 @@ function furnish(spec) {
   // One item against a side of a room. `ats`: list of 'c' | 'start' | 'end' | absolute coordinate.
   const against = (item, room, sides, ats, o = {}) => {
     for (const side of sides) {
-      for (const at of ats) {
+      // Numeric positions run along the wall of this side, so they are worked out per side.
+      for (const at of typeof ats === 'function' ? ats(side) : ats) {
         let f;
         try {
           f = b.against(item, room, side, { ...o, at: typeof at === 'number' ? at : at, abs: typeof at === 'number' });
         } catch { continue; }
+        // The item must sit inside its own room, not outside a wall where nothing else would stop it.
+        if (!G.pointInPolygon({ x: f.x, y: f.y }, room.polygon)) { del(f); continue; }
         if (accept(f)) return { f, side, at };
       }
     }
@@ -105,9 +108,9 @@ function furnish(spec) {
     const wards = o.wardrobes ?? 1;
     for (let i = 0; i < wards; i++) {
       const w = o.wardW || 1800;
-      let r = against('wardrobe', room, SIDES.filter((s) => s !== done.side), sweep(room, 'n', w, ['start', 'end', 'c']), { w });
-      if (!r) r = against('wardrobe', room, SIDES.filter((s) => s !== done.side), sweep(room, 'n', 1200, ['start', 'end']), { w: 1200 });
-      if (!r) r = against('wardrobe', room, SIDES.filter((s) => s !== done.side), sweep(room, 'n', 900, ['start', 'end']), { w: 900 });
+      let r = against('wardrobe', room, SIDES.filter((s) => s !== done.side), (sd) => sweep(room, sd, w, ['start', 'end', 'c']), { w });
+      if (!r) r = against('wardrobe', room, SIDES.filter((s) => s !== done.side), (sd) => sweep(room, sd, 1200, ['start', 'end']), { w: 1200 });
+      if (!r) r = against('wardrobe', room, SIDES.filter((s) => s !== done.side), (sd) => sweep(room, sd, 900, ['start', 'end']), { w: 900 });
       base = lintN();
     }
     if (master) { against('chest_drawers', room, SIDES, ['c', 'start', 'end']); base = lintN(); }
@@ -116,7 +119,7 @@ function furnish(spec) {
   const wardrobes = (room, n = 2) => {
     for (let i = 0; i < n; i++) {
       for (const w of [1800, 1200, 900]) {
-        const r = against('wardrobe', room, SIDES, sweep(room, 'n', w, ['c', 'start', 'end']), { w });
+        const r = against('wardrobe', room, SIDES, (sd) => sweep(room, sd, w, ['c', 'start', 'end']), { w });
         if (r) break;
       }
       base = lintN();
@@ -128,24 +131,24 @@ function furnish(spec) {
     const order = o.order || (area >= 7.2 ? ['bath', 'shower_900', 'vanity_single', 'toilet'] : ['shower_900', 'vanity_single', 'toilet']);
     for (const item of order) {
       const w = get(item).w;
-      const r = against(item, room, SIDES, [...sweep(room, 'n', w, ['start', 'end', 'c'])]);
+      const r = against(item, room, SIDES, (sd) => sweep(room, sd, w, ['start', 'end', 'c']));
       if (!r && item === 'bath') continue;
       base = lintN();
     }
     if (/laundry/i.test(room.name)) {
-      for (const item of ['washer', 'dryer']) { against(item, room, SIDES, sweep(room, 'n', 600, ['start', 'end', 'c'])); base = lintN(); }
+      for (const item of ['washer', 'dryer']) { against(item, room, SIDES, (sd) => sweep(room, sd, 600, ['start', 'end', 'c'])); base = lintN(); }
     }
   };
 
   const laundry = (room) => {
     for (const item of ['laundry_tub', 'washer', 'dryer']) {
-      against(item, room, SIDES, sweep(room, 'n', get(item).w, ['start', 'end', 'c']));
+      against(item, room, SIDES, (sd) => sweep(room, sd, get(item).w, ['start', 'end', 'c']));
       base = lintN();
     }
   };
 
   const study = (room) => {
-    const r = against('desk', room, SIDES, sweep(room, 'n', 1500, ['c', 'start', 'end']));
+    const r = against('desk', room, SIDES, (sd) => sweep(room, sd, 1500, ['c', 'start', 'end']));
     if (r) {
       const [dx, dy] = inward(r.side);
       const d = get('desk').d;
@@ -153,7 +156,7 @@ function furnish(spec) {
       void f;
     }
     base = lintN();
-    against('bookshelf', room, SIDES, sweep(room, 'n', 900, ['start', 'end', 'c']));
+    against('bookshelf', room, SIDES, (sd) => sweep(room, sd, 900, ['start', 'end', 'c']));
     base = lintN();
   };
 
@@ -192,7 +195,7 @@ function furnish(spec) {
 
   const openPlan = (room, o = {}) => {
     const kSides = o.kitchen || ['n', 'w', 'e', 's'];
-    const bench = against('kitchen_bench', room, kSides, sweep(room, 'n', 3000, o.kAt || ['start', 'end', 'c']));
+    const bench = against('kitchen_bench', room, kSides, o.kAt ? sweep(room, 'n', 3000, o.kAt) : (sd) => sweep(room, sd, 3000));
     if (!bench) throw new Error(`${spec.id}: no kitchen bench fits in ${room.name}`);
     base = lintN();
     const horiz = bench.side === 'n' || bench.side === 's';
@@ -234,8 +237,11 @@ function furnish(spec) {
     const rot = horiz ? 0 : 90;
     const dist = get('kitchen_bench').d + 1150 + isl.d / 2;
     const pos = { x: bench.f.x + dx * dist, y: bench.f.y + dy * dist };
-    let ok = place('kitchen_island', pos.x, pos.y, rot);
-    if (!ok) ok = place('kitchen_island', pos.x, pos.y, rot, { w: 1800 });
+    // Small plans (granny flats) can skip the island so the living area keeps room for a sofa.
+    if (o.island !== false) {
+      const ok = place('kitchen_island', pos.x, pos.y, rot);
+      if (!ok) place('kitchen_island', pos.x, pos.y, rot, { w: 1800 });
+    }
     base = lintN();
     // dining table in the free middle, far from the bench.
     const inn = b.inner(room);
@@ -298,12 +304,12 @@ function furnish(spec) {
   const handlers = {
     bedroom: (r) => bedroom(r, hints[r.name] || {}),
     bathroom: bath, ensuite: bath,
-    wc: (r) => { against('toilet', r, SIDES, sweep(r, 'n', 400, ['c', 'start', 'end'])); base = lintN(); against('vanity_single', r, SIDES, sweep(r, 'n', 750, ['c', 'start', 'end'])); base = lintN(); },
+    wc: (r) => { against('toilet', r, SIDES, (sd) => sweep(r, sd, 400, ['c', 'start', 'end'])); base = lintN(); against('vanity_single', r, SIDES, (sd) => sweep(r, sd, 750, ['c', 'start', 'end'])); base = lintN(); },
     laundry, robe: (r) => wardrobes(r, 2), study, rumpus, media: rumpus, living: (r) => lounge(r, hints[r.name] || {}),
     garage: (r) => garage(r, hints[r.name] || {}), carport: (r) => garage(r, hints[r.name] || {}), alfresco,
     family: (r) => openPlan(r, hints[r.name] || {}),
     kitchen: (r) => openPlan(r, hints[r.name] || {}),
-    store: (r) => { against('shelving', r, SIDES, sweep(r, 'n', 1800, ['start', 'end', 'c'])); base = lintN(); },
+    store: (r) => { against('shelving', r, SIDES, (sd) => sweep(r, sd, 1800, ['start', 'end', 'c'])); base = lintN(); },
     workshop: (r) => { against('workbench', r, SIDES, ['c', 'start', 'end']); base = lintN(); },
   };
   const ghosts = [];

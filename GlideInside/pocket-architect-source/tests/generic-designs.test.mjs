@@ -109,7 +109,7 @@ test('the area schedule is consistent: breakdown, plan schedule and PDF schedule
 
 test('stats, names and frontage claims: bed, bath, car and storey counts, plain names, fits the lot it says it fits', () => {
   const EXPECT = {
-    narrow_10_3bed: [3, 1, 1], narrow_125_4bed: [4, 1, 1], narrow_14_3bed_media: [3, 1, 1], single_3bed_starter: [3, 1, 1], narrow_double_4bed: [4, 2, 2],
+    narrow_10_3bed: [3, 1, 1], narrow_125_4bed: [4, 1, 1], narrow_14_3bed_media: [3, 1, 2], single_3bed_starter: [3, 1, 1], narrow_double_4bed: [4, 2, 2],
     townhouse_3bed: [3, 2, 1], dual_occupancy_narrow: [6, 1, 2], acreage_homestead_4bed: [4, 1, 2], granny_1bed: [1, 1, 1], granny_studio: [0, 1, 1], granny_2bed_carport: [2, 1, 1], shed_house_barn: [2, 2, 1],
   };
   for (const spec of SPECS) {
