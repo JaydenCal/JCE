@@ -14,6 +14,7 @@
 
 import * as G from '../model/geometry.js';
 import { classifyEdges, requiredFor, setbackNotes, lotOf } from '../model/placement.js';
+import { manualDriveway } from './pavedways.js';
 
 const finite = (v) => typeof v === 'number' && Number.isFinite(v);
 const TOL_M = 0.005;
@@ -317,6 +318,9 @@ export function setStoredDriveway(project, value) {
 export function deriveDriveway(project, opts = {}) {
   const lot = lotOf(project);
   if (!lot) return null;
+  // A driveway drawn with the Driveway and road tool is the person's own: it stands in for the automatic one (same shape). The auto router
+  // asks for its own with { ignoreManual: true } and checks drivewayIsDrawn() from pavedways.js before it replaces anything.
+  if (!opts.ignoreManual) { const drawn = manualDriveway(project); if (drawn) return drawn; }
   const door = garageDoor(project);
   if (!door) return null;
   const reserves = roadReserve(lot);

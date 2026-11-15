@@ -187,6 +187,9 @@ export const HATCH = {
   hardstand: { angle: 135, spacing: 1.4, width: 0.08, colour: [90, 90, 90], cross: 45 },
   bitumen: { angle: 0, spacing: 1.9, width: 0.08, colour: [90, 92, 98], dots: true },
   concrete: { angle: 45, spacing: 2.4, width: 0.07, colour: [110, 110, 110], dots: true },
+  // Drawn driveways and roads (src/site/pavedways.js): gravel reads as stipple, pavers as a square grid, so the four materials differ on paper.
+  gravel: { angle: 0, spacing: 1.7, width: 0.05, colour: [138, 124, 98], dots: true, noLines: true },
+  pavers: { angle: 0, spacing: 1.5, width: 0.07, colour: [124, 98, 78], cross: 90 },
   // Road pavement: plain lines along the road alignment (the caller gives the angle), no stipple.
   road: { angle: 0, spacing: 2.6, width: 0.07, colour: [120, 124, 132] },
   roadAerial: { angle: 0, spacing: 4, width: 0.06, colour: [235, 235, 235] },
@@ -199,7 +202,7 @@ export function hatch(doc, poly, kind, over = {}) {
   doc.setLineWidth(h.width);
   doc.setDrawColor(...h.colour);
   doc.setLineDashPattern([], 0);
-  for (const [a, b] of hatchSegments(poly, h.angle, h.spacing)) doc.line(a.x, a.y, b.x, b.y);
+  if (!h.noLines) for (const [a, b] of hatchSegments(poly, h.angle, h.spacing)) doc.line(a.x, a.y, b.x, b.y);
   if (h.cross != null) for (const [a, b] of hatchSegments(poly, h.cross, h.spacing)) doc.line(a.x, a.y, b.x, b.y);
   if (h.dots) {
     // Stipple: small dots on a staggered grid, to read as bitumen or concrete rather than lines alone.

@@ -7,6 +7,7 @@ import { DEFAULT_SETBACKS } from '../site/default-setbacks.js';
 import { mirrorPlan } from '../model/ops.js';
 import { houseStats, sizeLabel } from '../portal/house-stats.js';
 import { buildingHull, clearances, deriveDriveway, garageDoor, garageStreetEdge, roadReserve } from '../site/lotplan.js';
+import { pavedSummary, extraPavedInLotM2 } from '../site/pavedways.js';
 import { chooseDesign, placeChoice, designPool } from '../ui/embed-viewer.js';
 import { setbackStatusLine } from '../site/lot-checks.js';
 import { rankFor } from '../lotcard/designs.js';
@@ -138,7 +139,8 @@ export function checkSummary(project) {
     garage = { has: true, facesStreet: !!(dw?.ok), distanceM: r ? Math.round(G.dot(G.sub(door.mid, r.lines.property[0]), { x: -r.outward.x, y: -r.outward.y })) / 1000 : null };
   }
   const driveway = !door ? { state: 'none' } : dw?.ok ? { state: 'ok', lengthM: Math.round(dw.lengthMm / 100) / 10, widthM: Math.round(dw.widthMm / 100) / 10 } : { state: 'blocked', reason: dw?.reason || 'no_street' };
-  const drivewayArea = dw?.ok ? G.polygonArea(dw.polygon) / 1e6 : 0;
+  const paved = pavedSummary(project); // driveways and roads drawn with the Driveway and road tool, by material
+  const drivewayArea = (dw?.ok ? G.polygonArea(dw.polygon) / 1e6 : 0) + extraPavedInLotM2(project);
   const open = lotArea > 0 ? Math.max(0, lotArea - cover - drivewayArea) : null;
   const verdict = st.state === 'inside' ? 'met' : st.state === 'outside' ? 'not-met' : 'unknown';
   const lines = [];
@@ -148,12 +150,13 @@ export function checkSummary(project) {
   lines.push(`The home covers about ${Math.round(cover)} m2 of the ${Math.round(lotArea)} m2 lot (${lotArea ? Math.round((cover / lotArea) * 100) : 0} percent).`);
   if (open != null) lines.push(`About ${Math.round(open)} m2 of open space is left (${Math.round((open / lotArea) * 100)} percent), after the home and the driveway.`);
   if (garage.has) lines.push(garage.facesStreet ? `The garage faces the street${garage.distanceM != null ? `, about ${garage.distanceM.toFixed(1)} m back from the boundary` : ''}.` : 'The garage door does not face the street, so there is no driveway to the frontage yet.');
+  if (paved.byMaterial.length) lines.push(`Drawn paving: ${paved.byMaterial.map((e) => `${e.label.toLowerCase()} ${Math.round(e.areaM2)} m2`).join(', ')}.`);
   if (driveway.state === 'ok') lines.push(`The driveway runs about ${driveway.lengthM.toFixed(1)} m to the street.`);
   if (lot.setbacksDefault) lines.push('Council setbacks could not be loaded for this lot, so a standard indicative envelope was used.');
   lines.push(INDICATIVE);
   return {
     ok: true, verdict, rows, hasSetbacks: c.hasSetbacks, lotAreaM2: lotArea, coverageM2: cover, coveragePct: lotArea ? (cover / lotArea) * 100 : null,
-    openSpaceM2: open, openSpacePct: open != null && lotArea ? (open / lotArea) * 100 : null, garage, driveway, status: setbackStatusLine(project), lines,
+    pavedByMaterial: paved.byMaterial, pavedTotalM2: paved.totalM2, openSpaceM2: open, openSpacePct: open != null && lotArea ? (open / lotArea) * 100 : null, garage, driveway, status: setbackStatusLine(project), lines,
   };
 }
 

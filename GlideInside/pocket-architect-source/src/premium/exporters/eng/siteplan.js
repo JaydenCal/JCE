@@ -9,6 +9,7 @@ import { terrainAt } from '../../../site/model.js';
 import {
   boundaryDims, roadReserve, buildingRings, buildingHull, orientedBox, deriveDriveway, clearances, lotLabelLines,
 } from '../../../site/lotplan.js';
+import { extraWays, pavedSummary, HATCH_KIND, MATERIALS as PAVE_MATERIALS } from '../../../site/pavedways.js';
 import { northArrow, scaleBar } from '../pdf.js';
 import {
   PEN, PHANTOM, PHANTOM_LEN, TXT, clean, wrap, fit, ink, polygon, hatch, clippedPolyline, clipPolygon, dimLine, placeCallouts, drawCallouts,
@@ -36,7 +37,7 @@ export function siteFacts(project) {
   const rings = buildingRings(project);
   const hull = buildingHull(project);
   const obox = orientedBox(hull);
-  return { lot, rings, hull, obox, reserve: roadReserve(lot), drive: deriveDriveway(project), clear: clearances(project) };
+  return { lot, rings, hull, obox, reserve: roadReserve(lot), drive: deriveDriveway(project), clear: clearances(project), paved: pavedSummary(project).byMaterial.map((e) => e.material) };
 }
 
 const ptsOf = (flat) => {
@@ -333,14 +334,24 @@ export function drawSitePlan(doc, ctx) {
   const drive = facts.drive;
   if (drive?.ok) {
     const dp = clipPolygon(drive.polygon.map(T), rect);
-    if (dp.length > 2) { doc.setFillColor(255, 255, 255); polygon(doc, dp, 'F'); hatch(doc, dp, 'hardstand'); }
+    if (dp.length > 2) { doc.setFillColor(255, 255, 255); polygon(doc, dp, 'F'); hatch(doc, dp, drive.manual ? HATCH_KIND[drive.material] || 'hardstand' : 'hardstand'); }
     ink(doc, PEN.proposed);
     doc.setLineWidth(0.4);
     stroke(drive.polygon);
     const cp = clipPolygon(drive.crossover.polygon.map(T), rect);
-    if (cp.length > 2) { doc.setFillColor(255, 255, 255); polygon(doc, cp, 'F'); hatch(doc, cp, 'concrete'); }
+    if (cp.length > 2) { doc.setFillColor(255, 255, 255); polygon(doc, cp, 'F'); hatch(doc, cp, drive.manual ? HATCH_KIND[drive.material] || 'concrete' : 'concrete'); }
     doc.setLineWidth(0.4);
     stroke(drive.crossover.polygon);
+  }
+  // Other driveways and roads drawn with the Driveway and road tool, each in the hatch of its material.
+  for (const { way, geom } of extraWays(project)) {
+    for (const pc of geom.pieces) {
+      const q = clipPolygon(pc.ring.map(T), rect);
+      if (q.length > 2) { doc.setFillColor(255, 255, 255); polygon(doc, q, 'F'); hatch(doc, q, HATCH_KIND[way.material] || 'concrete'); }
+      ink(doc, PEN.proposed);
+      doc.setLineWidth(0.4);
+      stroke(pc.ring);
+    }
   }
   const overhang = Math.max(...project.levels.map((l) => l.roof?.overhang || 0), 0);
   if (facts.hull.length > 2 && overhang > 0) {
@@ -684,8 +695,9 @@ export function drawSitePanel(doc, ctx, site) {
     ['Contour (minor, major)', sample((cx, cy) => { doc.setDrawColor(...PEN.contourMinor); doc.setLineWidth(0.12); doc.line(cx, cy - 0.9, cx + 6, cy - 0.9); doc.setDrawColor(...PEN.contourMajor); doc.setLineWidth(0.28); doc.line(cx + 7, cy + 0.9, cx + sw, cy + 0.9); })],
     ['Dimension to boundary', sample((cx, cy) => { doc.setDrawColor(...PEN.dim); doc.setLineWidth(0.13); doc.line(cx, cy, cx + sw, cy); doc.setLineWidth(0.25); doc.line(cx, cy - 1, cx, cy + 1); doc.line(cx + sw, cy - 1, cx + sw, cy + 1); })],
     ['Proposed works', sample((cx, cy) => { const p = rectP(cx, cy); hatch(doc, p, 'proposed'); doc.setDrawColor(...PEN.proposed); doc.setLineWidth(0.4); polygon(doc, p, 'S'); })],
-    ['Hardstand (driveway)', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'hardstand'))],
-    ['Concrete (crossover)', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'concrete'))],
+    ...(site?.facts?.paved?.length
+      ? site.facts.paved.map((mat) => [`${PAVE_MATERIALS[mat].label} (driveway or road)`, sample((cx, cy) => hatch(doc, rectP(cx, cy), HATCH_KIND[mat]))])
+      : [['Hardstand (driveway)', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'hardstand'))], ['Concrete (crossover)', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'concrete'))]]),
     ['Road pavement', sample((cx, cy) => { const q = rectP(cx, cy); hatch(doc, q, 'road', { angle: 0, width: 0.12, colour: [90, 94, 102] }); doc.setDrawColor(...PEN.road); doc.setLineWidth(0.3); doc.line(cx, cy - 1.8, cx + sw, cy - 1.8); doc.line(cx, cy + 1.8, cx + sw, cy + 1.8); })],
     ['Footpath', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'footpath'))],
   ];
