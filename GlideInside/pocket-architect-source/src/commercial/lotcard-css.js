@@ -95,4 +95,11 @@ export const COMMERCIAL_CARD_CSS = `
 .cc-fits{margin:4px 0 10px}
 .cc-root .lc-fit{font-size:11px}
 .cc-root .lc-card.is-min,.lc-embed:not(.is-compact).cc-root .lc-card.is-min{width:max-content!important;min-width:220px}
+
+/* Card never taller than the view: it scrolls inside, the title and Minimise stay in view (owner 15/11/2026) */
+.cc-root .lc-card{max-height:calc(100% - 84px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.cc-root .lc-card .lc-hd{position:sticky;top:-12px;z-index:2;margin:-12px -16px 0;padding:12px 16px 6px;background:rgba(14,14,16,.94);border-radius:12px 12px 0 0}
+.cc-root .lc-card.is-min{overflow:visible}
+.cc-root .lc-card.is-min .lc-hd{position:static;margin:0;padding:0;background:none}
+.cc-root .lc-stats{flex-wrap:nowrap;gap:12px}.cc-root .lc-stats b{font-size:16px}.cc-root .lc-stats i{font-size:8.5px}
 `;
