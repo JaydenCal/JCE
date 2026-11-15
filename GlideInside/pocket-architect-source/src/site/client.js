@@ -134,6 +134,8 @@ export const margin = () => Number(CONFIG.siteAerialMarginM) || 30;
 export const WIDE_MIN_M = 300;
 export const WIDE_MAX_M = 700;
 export const WIDE_PX = 2048;
+export const WIDE_PX_NSW = 3072; // NSW imagery can be asked for more pixels: the ground beside the lot stays sharp (about 0.2 m per pixel)
+export const INNER_RES = '0.05'; // finest the service allows; it lowers the pixel count itself to fit its size limit
 export function wideBbox(b, minM = WIDE_MIN_M) {
   const span = Math.max(b.maxE - b.minE, b.maxN - b.minN);
   const m = Math.min(WIDE_MAX_M, Math.max(minM, span * 0.75));
@@ -141,10 +143,10 @@ export function wideBbox(b, minM = WIDE_MIN_M) {
   const hi = (v) => Math.ceil(v / 50) * 50;
   return { minE: lo(b.minE - m), minN: lo(b.minN - m), maxE: hi(b.maxE + m), maxN: hi(b.maxN + m) };
 }
-export function wideAerialParams(b) {
+export function wideAerialParams(b, px = WIDE_PX) {
   const w = wideBbox(b);
-  const res = Math.min(2, Math.max(0.1, Math.max(w.maxE - w.minE, w.maxN - w.minN) / WIDE_PX));
-  return { bbox: `${w.minE},${w.minN},${w.maxE},${w.maxN}`, res: res.toFixed(3), maxpx: String(WIDE_PX) };
+  const res = Math.min(2, Math.max(0.1, Math.max(w.maxE - w.minE, w.maxN - w.minN) / px));
+  return { bbox: `${w.minE},${w.minN},${w.maxE},${w.maxN}`, res: res.toFixed(3), maxpx: String(px) };
 }
 
 export const CONTOURS_TIMEOUT_MS = 30000;
@@ -226,7 +228,7 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep, deferCon
   step('aerial');
   let aerial = null;
   try {
-    aerial = await fetchAerial({ ...common, bbox }, opts);
+    aerial = await fetchAerial({ ...common, bbox, res: INNER_RES }, opts);
   } catch (e) {
     if (e?.name === 'AbortError') throw e;
     warnings.push(`No aerial image: ${e.message}`);
@@ -235,7 +237,7 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep, deferCon
   let aerialWide = null;
   if (aerial) {
     try {
-      aerialWide = await fetchAerial({ ...common, ...wideAerialParams(b) }, opts);
+      aerialWide = await fetchAerial({ ...common, ...wideAerialParams(b, lot.state === 'NSW' ? WIDE_PX_NSW : WIDE_PX) }, opts);
     } catch (e) {
       if (e?.name === 'AbortError') throw e;
     }
