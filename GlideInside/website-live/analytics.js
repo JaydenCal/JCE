@@ -67,6 +67,51 @@
   }
   window.giTrack = send;
 
+  /* ---- CONCIERGE: AI booking assistant events (added 15/11/2026, marked so the block is easy to find or remove) ----
+     Fixed event names and a fixed parameter schema. Every value is checked against a list or a strict pattern, so no name, email, phone,
+     chat text or booking reference can be sent even by mistake. `dedupe` is used for once-per-session events and is never sent. */
+  var BK_ENUM = {
+    booking_type: ["homeowner", "builder", "developer", "agent"],
+    intent: ["homeowner", "builder", "developer", "agent"],
+    qualifier: ["house", "granny", "unsure", "custom", "volume", "other", "commercial", "subdivision", "both", "land", "homes"],
+    slot_count: ["none", "1_10", "11_30", "30_plus"],
+    target: ["enquiry", "demo", "tool"],
+    reason: ["slot_taken", "not_confirmed", "rate_limited", "expired", "other", "slots_calendar", "slots_error"]
+  };
+  var BK_EVENTS = {
+    booking_agent_opened: ["page_path"],
+    booking_agent_intent_selected: ["intent", "page_path"],
+    booking_agent_qualification_completed: ["intent", "qualifier", "page_path"],
+    booking_slots_viewed: ["booking_type", "slot_count"],
+    booking_agent_booking_attempt: ["booking_type"],
+    booking_agent_booking_confirmed: ["booking_type"],
+    booking_agent_booking_failed: ["booking_type", "reason"],
+    booking_agent_handoff_requested: ["target", "page_path"]
+  };
+  var bkSent = {};
+  window.giTrackBooking = function (name, params) {
+    var allowed = BK_EVENTS[name];
+    if (!allowed) return false;
+    params = params || {};
+    if (params.dedupe) {
+      var dk = "gi_ev_" + String(params.dedupe).slice(0, 80);
+      if (bkSent[dk] || get("sessionStorage", dk)) return false;
+      bkSent[dk] = 1; set("sessionStorage", dk, "1");
+    }
+    var out = {}, i, k, v;
+    for (i = 0; i < allowed.length; i++) {
+      k = allowed[i]; v = params[k];
+      if (v === undefined || v === null) continue;
+      v = String(v);
+      if (k === "page_path") { if (/^\/[a-z0-9\/_.-]{0,59}$/i.test(v)) out[k] = v; }
+      else if (BK_ENUM[k] && BK_ENUM[k].indexOf(v) !== -1) out[k] = v;
+    }
+    Object.keys(utm).forEach(function (u) { out[u] = utm[u]; }); // attribution only
+    send(name, out);
+    return true;
+  };
+  /* ---- end CONCIERGE ---- */
+
   function priceNumber(v, d) { var n = parseFloat(String(v == null ? "" : v).replace(/[^0-9.]/g, "")); return isFinite(n) && n > 0 ? n : d; }
   var PLAN_PRICE = priceNumber(cfg.planPackPrice, 30);
 

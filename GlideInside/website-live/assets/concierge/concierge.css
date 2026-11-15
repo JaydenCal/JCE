@@ -1,0 +1,55 @@
+/* Glide Inside AI booking assistant panel. Loaded on first open. Matches the site: night ink, gold accent, Manrope and Newsreader. */
+.gic-panel{--gic-ink:#0f1726;--gic-night:#0a111e;--gic-gold:#e9b66f;--gic-line:#dde0e7;--gic-muted:#596275;--gic-bg:#f3f4f6;--gic-blue:#4f8fe0;--gic-ok:#2f7a52;--gic-bad:#a3321f;
+  position:fixed;right:16px;bottom:16px;z-index:70;width:392px;max-width:calc(100vw - 32px);height:min(640px,calc(100vh - 32px));display:flex;flex-direction:column;background:#fff;color:var(--gic-ink);border-radius:18px;overflow:hidden;
+  box-shadow:0 40px 90px -30px rgba(6,11,22,.65),0 0 0 1px rgba(15,23,38,.08);font:400 15px/1.5 Manrope,'Segoe UI',Arial,sans-serif}
+.gic-panel *{box-sizing:border-box}
+.gic-head{display:flex;align-items:center;gap:10px;padding:14px 14px 12px 16px;background:var(--gic-night);color:#eef1f6}
+.gic-head h2{margin:0;font:600 19px/1.1 Newsreader,Georgia,serif;letter-spacing:-.01em;flex:1;color:#eef1f6}
+.gic-badge{font:700 10px/1 Manrope,sans-serif;letter-spacing:.06em;border:1px solid rgba(233,182,111,.7);color:var(--gic-gold);border-radius:5px;padding:3px 5px}
+.gic-x{background:transparent;border:0;color:#eef1f6;width:36px;height:36px;border-radius:9px;font-size:22px;line-height:1;cursor:pointer}
+.gic-x:hover{background:rgba(255,255,255,.1)}
+.gic-privacy{font-size:12.5px;color:var(--gic-muted);background:var(--gic-bg);padding:8px 16px;border-bottom:1px solid var(--gic-line);line-height:1.4}
+.gic-privacy a{color:var(--gic-ink)}
+.gic-body{flex:1;min-height:0;display:flex;flex-direction:column}
+.gic-log{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.gic-msg{max-width:88%;padding:9px 12px;border-radius:14px;white-space:pre-wrap;word-wrap:break-word}
+.gic-msg.bot{background:var(--gic-bg);border-bottom-left-radius:4px;align-self:flex-start}
+.gic-msg.you{background:var(--gic-night);color:#eef1f6;border-bottom-right-radius:4px;align-self:flex-end}
+.gic-msg .gic-who{display:block;font:700 11px/1 Manrope,sans-serif;letter-spacing:.04em;color:var(--gic-muted);margin-bottom:4px}
+.gic-chips{display:flex;flex-wrap:wrap;gap:8px;padding:2px 0}
+.gic-chip,.gic-btn,.gic-link{font:700 14px/1.2 Manrope,sans-serif;border-radius:11px;cursor:pointer;min-height:40px;padding:9px 14px;border:1px solid var(--gic-line);background:#fff;color:var(--gic-ink);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.gic-chip:hover,.gic-link:hover{border-color:var(--gic-ink);background:var(--gic-bg)}
+.gic-chip.gic-intent{flex:1 1 calc(50% - 8px);flex-direction:column;align-items:flex-start;text-align:left;min-height:64px}
+.gic-chip.gic-intent small{font:500 12px/1.3 Manrope,sans-serif;color:var(--gic-muted)}
+.gic-btn{background:var(--gic-gold);border-color:var(--gic-gold);color:#1c1407}
+.gic-btn:hover{background:#f3c98d}
+.gic-btn.gic-quiet{background:#fff;border-color:var(--gic-line);color:var(--gic-ink)}
+.gic-btn[disabled]{opacity:.55;cursor:not-allowed}
+.gic-panel :focus-visible{outline:3px solid var(--gic-blue);outline-offset:2px}
+.gic-compose{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--gic-line);background:#fff}
+.gic-compose input{flex:1;min-width:0;font:400 15px Manrope,sans-serif;padding:10px 12px;border:1px solid var(--gic-line);border-radius:11px;min-height:42px}
+.gic-foot{display:flex;flex-wrap:wrap;gap:6px 14px;padding:8px 14px 11px;border-top:1px solid var(--gic-line);font-size:12.5px;color:var(--gic-muted);background:var(--gic-bg)}
+.gic-foot a,.gic-foot button{color:var(--gic-ink);background:none;border:0;padding:0;font:600 12.5px Manrope,sans-serif;text-decoration:underline;cursor:pointer}
+.gic-screen{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.gic-screen h3{margin:0;font:600 20px/1.15 Newsreader,Georgia,serif}
+.gic-day{font:700 13px/1.2 Manrope,sans-serif;color:var(--gic-muted);margin:6px 0 2px}
+.gic-slots{display:flex;flex-wrap:wrap;gap:8px}
+.gic-slot{min-width:92px}
+.gic-field{display:flex;flex-direction:column;gap:5px;font:700 13px Manrope,sans-serif}
+.gic-field input[type=text],.gic-field input[type=email]{font:400 15px Manrope,sans-serif;padding:10px 12px;border:1px solid var(--gic-line);border-radius:11px;min-height:44px}
+.gic-check{display:flex;gap:10px;align-items:flex-start;font:400 13.5px/1.4 Manrope,sans-serif}
+.gic-check input{width:20px;height:20px;margin-top:1px;flex:none}
+.gic-summary{border:1px solid var(--gic-line);border-radius:13px;padding:12px 14px;background:var(--gic-bg);display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:14px}
+.gic-summary dt{color:var(--gic-muted)}.gic-summary dd{margin:0;font-weight:700;word-break:break-word}
+.gic-err{color:var(--gic-bad);font-size:13.5px;margin:0}
+.gic-note{font-size:13px;color:var(--gic-muted);margin:0}
+.gic-ok{color:var(--gic-ok);font-weight:700}
+.gic-test{border:1px dashed var(--gic-bad);color:var(--gic-bad);border-radius:10px;padding:8px 10px;font-size:13px;font-weight:700}
+.gic-row{display:flex;gap:8px;flex-wrap:wrap}
+.gic-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.gic-ts{min-height:0}
+@media (max-width:520px){
+  .gic-panel{right:0;left:0;bottom:0;width:100%;max-width:none;height:min(88vh,calc(100dvh - 12px));border-radius:18px 18px 0 0}
+  .gic-chip.gic-intent{flex:1 1 100%}
+}
+@media (prefers-reduced-motion:no-preference){.gic-panel{animation:gic-in .18s ease-out}@keyframes gic-in{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}}
