@@ -118,7 +118,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   const publicOrg = (o, role) => ({
     id: o.id, name: o.name, shortCode: o.shortCode, branding: { displayName: o.displayName || o.name, logoDataUrl: o.logoDataUrl || null, colours: coloursOf(o) },
     allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true,
-    showGlideLibrary: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap,
+    showGlideLibrary: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, showAerialDefault: o.showAerialDefault !== false, showAiAssistant: o.showAiAssistant !== false, aiMonthlyCap: o.aiMonthlyCap,
     ...(o.internal === true ? { internal: true } : {}),
     ...(role === 'admin' ? { billingContact: billingContact(o) } : {}),
   });
@@ -695,7 +695,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const { org, user } = await auth(r, { need: 'billing.write' });
     const b = await readJson(r.request, 2048);
     if (b.showGlideLibrary !== undefined && b.showGlideToClients === undefined) b.showGlideToClients = b.showGlideLibrary;
-    const map = { allowClientTopUps: 'allowClientTopUps', allowClientEnquiries: 'allowClientEnquiries', showGlideToClients: 'showGlideToClients', allowClientCadExports: 'allowClientCadExports', allowClientCad: 'allowClientCadExports' };
+    const map = { allowClientTopUps: 'allowClientTopUps', allowClientEnquiries: 'allowClientEnquiries', showGlideToClients: 'showGlideToClients', allowClientCadExports: 'allowClientCadExports', allowClientCad: 'allowClientCadExports', showAerialDefault: 'showAerialDefault', showAiAssistant: 'showAiAssistant' };
     const patch = {};
     for (const [from, to] of Object.entries(map)) {
       if (b[from] === undefined) continue;
@@ -721,7 +721,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     let slug = cleanSlug(slugify(name)) || 'builder';
     const slugBase = slug;
     for (let n = 2; await pstore.getOrgBySlug(slug); n += 1) slug = `${slugBase}-${n}`;
-    const org = { id: rid('org'), name, shortCode: code, slug, displayName: name, logoDataUrl: null, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso(), ...extra };
+    const org = { id: rid('org'), name, shortCode: code, slug, displayName: name, logoDataUrl: null, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, showAerialDefault: true, showAiAssistant: true, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso(), ...extra };
     if (!(await pstore.createOrg(org))) throw new HttpError('CONFLICT', 'That organisation already exists.');
     return org;
   }

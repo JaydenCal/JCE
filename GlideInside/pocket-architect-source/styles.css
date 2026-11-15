@@ -1005,7 +1005,18 @@ svg { display: block; }
 .ps-shell .ps-stage[data-commercial="1"] .ps-credit { bottom: 112px; }
 .ps-shell:is([data-view="3d"],[data-view="walk"]) .ps-stage[data-commercial="1"] .ps-credit { bottom: 50px; }
 .cm-short { display: none; }
-.cm-sheet-toggle { display: none; margin-left: auto; border: 1px solid var(--ps-border-strong, #c9ccd2); background: var(--ps-panel-2); color: inherit; border-radius: 8px; padding: 3px 12px; font: inherit; font-weight: 600; cursor: pointer; }
+.cm-sheet-toggle { display: inline-block; margin-left: auto; min-width: 30px; border: 1px solid var(--ps-border-strong, #c9ccd2); background: var(--ps-panel-2); color: inherit; border-radius: 8px; padding: 3px 12px; font: inherit; font-weight: 600; cursor: pointer; }
+/* Close, collapse and reopen (any width). The title is the drag handle on wide screens. */
+.cm-close { border: 1px solid var(--ps-border-strong, #c9ccd2); background: var(--ps-panel-2); color: inherit; border-radius: 8px; padding: 1px 9px; font: inherit; font-size: 16px; line-height: 1.2; cursor: pointer; }
+.cm-close:hover, .cm-sheet-toggle:hover { background: var(--ps-border, #e3e5e9); }
+.cm-link { border: 0; background: none; color: var(--ps-accent, #a3532d); text-decoration: underline; cursor: pointer; font: inherit; padding: 0; }
+.cm-reopen { position: absolute; left: 12px; top: 12px; z-index: 6; border: 1px solid var(--ps-border-strong, #c9ccd2); background: var(--ps-panel); color: var(--ps-text); border-radius: 18px; padding: 7px 14px; font: 600 13px var(--ps-font-ui, system-ui, sans-serif); box-shadow: 0 4px 16px rgba(0,0,0,.16); cursor: pointer; }
+.cm-reopen[hidden], .ps-shell:is([data-view="3d"],[data-view="walk"]) .cm-reopen { display: none; }
+.cm-title { cursor: grab; }
+.cm-dock[data-sheet="closed"] { overflow: hidden; max-height: none; padding-bottom: 8px; }
+.cm-dock[data-sheet="closed"] > :not(.cm-head) { display: none; }
+.cm-dock[data-sheet="closed"] .cm-head { margin-bottom: 0; }
+.cm-dock[data-sheet="closed"] .cm-head > :not(.cm-title) { display: none; }
 /* Phone width: the dock is a bottom sheet that collapses to its title bar, and the strip runs along the top of the plan, so neither covers the other or the Demo tips chip. */
 @media (max-width: 899.98px) {
   .cm-dock { left: 0; right: 0; bottom: 0; top: auto; width: auto; max-height: 58%; border-radius: 14px 14px 0 0; border-bottom: 0; padding-bottom: 14px; box-shadow: 0 -6px 24px rgba(0,0,0,.18); }
@@ -1026,3 +1037,27 @@ svg { display: block; }
   .ps-stage[data-commercial="1"] .pso-dock { bottom: 62px; }
   .ps-stage[data-commercial="1"][data-sheet="open"] .pso-dock, .ps-stage[data-commercial="1"][data-sheet="open"] .ps-credit { display: none; }
 }
+
+/* Hide / show the side panel ------------------------------------------------------------------------------------------------ */
+.ps-panel[hidden] { display: none; }
+.ps-shell[data-panel="hidden"] .ps-main { grid-template-columns: 54px minmax(0, 1fr) 0; }
+.ps-shell[data-panel="hidden"]:is([data-view="3d"], [data-view="walk"]) .ps-main { grid-template-columns: 0 minmax(0, 1fr) 0; }
+.ps-panel-tab {
+  position: absolute; right: 0; top: 46%; z-index: 6; display: inline-flex; flex-direction: column; align-items: center; gap: 4px;
+  min-width: 28px; min-height: 84px; padding: 8px 4px; border: 1px solid var(--ps-border-strong); border-right: 0; border-radius: 8px 0 0 8px;
+  background: var(--ps-panel); color: var(--ps-text); font: 600 12px/1 var(--ps-font); cursor: pointer; box-shadow: var(--ps-shadow, 0 2px 8px rgb(0 0 0 / 0.18));
+}
+.ps-panel-tab:hover { background: var(--ps-hover); color: var(--ps-accent); }
+.ps-panel-tab:focus-visible, .ps-panel-hide:focus-visible { outline: 2px solid var(--ps-accent); outline-offset: 2px; }
+.ps-panel-tab-text { writing-mode: vertical-rl; letter-spacing: 0.04em; }
+.ps-panel-tab[hidden] { display: none; }
+/* The builder turned the assistant off for clients: no tab, no section, nothing to open. */
+.ps-shell[data-ai="off"] .ps-tab[data-tab="ai"], .ps-shell[data-ai="off"] .ps-tab-ai { display: none !important; }
+@media (max-width: 899.98px) {
+  .ps-shell[data-panel="hidden"] .ps-main { grid-template-columns: none; }
+  .ps-panel-hide .ps-icon, .ps-panel-hide svg { transform: rotate(90deg); }
+  .ps-panel-tab { top: auto; bottom: 10px; right: 10px; min-height: 36px; min-width: 44px; flex-direction: row; padding: 6px 12px; border: 1px solid var(--ps-border-strong); border-radius: 999px; }
+  .ps-panel-tab svg { transform: rotate(90deg); }
+  .ps-panel-tab-text { writing-mode: horizontal-tb; }
+}
+@media print { .ps-panel-tab { display: none; } }

@@ -1058,7 +1058,7 @@ Object.assign(OPS, {
   set_drawing: {
     label: 'Drawing settings',
     description: 'Set the drawing scale (auto, 20, 50, 100, 200 or 500 meaning 1:n) and paper size (A3 or A1) for exported plans.',
-    params: { scale: P.str('auto or 1:n as a number'), paper: P.enm(S.PAPER_SIZES, 'Paper size') },
+    params: { scale: P.str('auto or 1:n as a number'), paper: P.enm(S.PAPER_SIZES, 'Paper size'), includeAerial: P.bool('Include the aerial underlay on exported plan sheets (default on)') },
     required: [],
     run(p, a) {
       p.drawing = { scale: 'auto', paper: 'A3', ...(p.drawing || {}) };
@@ -1068,6 +1068,7 @@ Object.assign(OPS, {
         p.drawing.scale = v;
       }
       if (a.paper != null) p.drawing.paper = oneOf(a.paper, S.PAPER_SIZES, 'paper');
+      if (a.includeAerial != null) p.drawing.includeAerial = a.includeAerial !== false;
       return {};
     },
   },

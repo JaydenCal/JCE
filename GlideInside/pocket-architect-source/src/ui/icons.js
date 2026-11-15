@@ -34,6 +34,8 @@ const PATHS = {
   link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
   save: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/>',
   close: '<path d="M6 6l12 12M18 6L6 18"/>',
+  chevR: '<path d="M9.5 6l6 6-6 6"/>',
+  chevL: '<path d="M14.5 6l-6 6 6 6"/>',
   up: '<path d="M6 14.5l6-6 6 6"/>',
   down: '<path d="M6 9.5l6 6 6-6"/>',
   warning: '<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.2v.1"/>',

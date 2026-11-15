@@ -25,7 +25,7 @@ import { sheetNotes } from '../../../site/upload/sheet-text.js';
 import { drawSite, siteView } from './site.js';
 import { drawHouseSheet, houseSheets } from './house.js';
 import { zoneMismatch, RESIDENTIAL_NOTE } from '../../../commercial/zones.js';
-import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, drawLayout, drawMezzanine, drawYield, coverThumbnail, COMMERCIAL_NOTES } from './commercial.js';
+import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, existingScale, drawLayout, drawMezzanine, drawYield, coverThumbnail, COMMERCIAL_NOTES } from './commercial.js';
 import { lotOf } from '../../../model/placement.js';
 
 void schemeColours;
@@ -93,10 +93,11 @@ function withoutScales(JsPDF) {
  * @param {Function} [o.fetchSite]  async ({ lot, request }) => { aerial?, lot?: { neighbours, roads } } | null: fetches a wider aerial and the cadastre
  *   within `request.radius` metres (GET /api/site/lot?radius=). A browser export asks the site service itself when this is omitted; pass null to never fetch.
  * @param {Function} [o.loadImage]  async (key) => Blob, reads the lot's stored aerial (defaults to the browser image store).
+ * @param {boolean} [o.includeAerial=true]  "Include aerial underlay": false prints the locality plan and the existing site sheet with no aerial (the cadastre and linework stay).
  * @param {Date} [o.date]
  * @returns {Promise<{ blob: Blob, filename: string, sheets: Array, pages: number }>}
  */
-export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, preview = false, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null } = {}) {
+export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null } = {}) {
   syncCurrency(project);
   if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Pocket Architect project');
   if (kind !== 'site' && kind !== 'house' && kind !== 'commercial') throw new Error("exportPlanSet kind must be 'site', 'house' or 'commercial'");
@@ -129,7 +130,13 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
   const base = { project: wp, client: builder || 'Glide Inside customer', projectTitle: title, address, lotDp, total: sheets.length, dateStr, jobId: id };
   const facts = {};
   // Real aerial and the wider cadastre for the cover locality plan. Never fatal: without them the sheet says so.
-  const locality = siteLot ? await resolveLocality({ lot: siteLot, aerial, fetchSite, loadImage, view: localityView(siteLot).view }) : { aerial: null };
+  const locality = siteLot ? await resolveLocality({ lot: siteLot, aerial, fetchSite, loadImage, view: localityView(siteLot).view, includeAerial }) : { aerial: null };
+
+  // The existing site sheet cannot be turned under an aerial (the image stays upright), so its scale label follows the aerial.
+  if (commercial && !preview && locality.aerial) {
+    const ex = sheets.find((x) => x.id === 'existing');
+    if (ex) ex.scale = existingScale(wp, siteLot, { aerial: true });
+  }
 
   sheets.forEach((s, i) => {
     if (i > 0) raw.addPage('a3', 'landscape');

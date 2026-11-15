@@ -2,6 +2,7 @@
 // The local path exists only for the development unlock on localhost: it loads the exporters on demand.
 // Nothing here imports the exporters statically, so a normal page load never carries them.
 
+import { withoutAerial } from '../site/aerial-pref.js';
 import { blobToDataUrl, downloadBlob } from './util.js';
 import { ApiError } from './api.js';
 
@@ -22,7 +23,9 @@ export const exportLabel = (type) => EXPORT_ITEMS.find((i) => i.type === type)?.
 
 /** The project as sent to the server: the tracing underlay (a large image) is not needed for any export. */
 export function exportPayload(project) {
-  return { ...project, site: { ...(project.site || {}), underlay: null } };
+  // "Include aerial underlay" (drawing setup, default on): unticked prints the sheets without the picture, everything else as it is.
+  const p = project.drawing?.includeAerial === false ? withoutAerial(project) : project;
+  return { ...p, site: { ...(p.site || {}), underlay: null } };
 }
 
 const DEFAULT_JSPDF = new URL('../../vendor/jspdf/dist/jspdf.umd.min.js', import.meta.url).href;

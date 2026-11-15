@@ -98,7 +98,8 @@ test('watermark and client field only with builderName', async () => {
 
 test('site plan carries bearings, lengths, setbacks and the lot label', async () => {
   const { text } = await run('site');
-  for (const want of ['90°00\'00" 36.00', 'LOT 12', 'DP 1234567', '6.00 SB', 'EXISTING ROAD', 'LEGEND', '1:300 @ A3']) assert.ok(text.includes(want), `missing ${want}`);
+  for (const want of ['90°00\'00" 36.00', 'LOT 12', 'DP 1234567', '6.00 SB', 'EXISTING ROAD', 'LEGEND', '1:250 @ A3']) assert.ok(text.includes(want), `missing ${want}`);
+  // 1:300 before the plan filled the drawing area (largest standard scale, turned a quarter turn when that allows a larger scale): see tests/siteplan-fill.test.mjs.
 });
 
 test('house plan: scale 1:100, totals', async () => {
