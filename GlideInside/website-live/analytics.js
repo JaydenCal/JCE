@@ -126,7 +126,7 @@
     var key = "gi_purchase_" + sid.slice(0, 80);
     if (get("localStorage", key) || get("sessionStorage", key)) return;
     set("localStorage", key, "1"); set("sessionStorage", key, "1");
-    var addon = q.get("addon"), value = PLAN_PRICE, name = "Pocket Architect Plan Pack", id = "plan_pack";
+    var addon = q.get("addon"), value = PLAN_PRICE, name = "Glide Inside Plan Pack", id = "plan_pack";
     var fly = priceNumber(cfg.addonFlyThroughPrice, 10), ren = priceNumber(cfg.addonRendersPrice, 10);
     if (addon === "fly") { value = fly; name = "3D fly-through"; id = "addon_fly_through"; }
     else if (addon === "renders") { value = ren; name = "Complex renderings"; id = "addon_renders"; }

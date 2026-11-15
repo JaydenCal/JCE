@@ -18,8 +18,8 @@
 <link rel="icon" href="assets/Glideinside_Favicon_v4.svg">
 <link rel="preload" href="assets/fonts/newsreader-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="framework.css?v=20261113a">
-<script src="site.config.js?v=20261113a"></script><script src="framework.js?v=20261113a" defer></script><script src="analytics.js" defer></script>
+<link rel="stylesheet" href="framework.css?v=20261115c">
+<script src="site.config.js?v=20261115c"></script><script src="framework.js?v=20261115c" defer></script><script src="analytics.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -35,13 +35,13 @@
     <div class="nav-logins">
       <a href="portal/" data-portal hidden>Builder login</a>
       <a href="portal/?client=1" data-portal hidden>Client login</a>
-      <a class="btn" data-cfg-href="toolUrl" href="plan-studio/app/">Open Pocket Architect</a>
+      <a class="btn" data-cfg-href="toolUrl" data-app-mode="residential" href="plan-studio/app/">Start residential</a>
     </div>
   </nav>
   <div class="head-end">
     <a class="login" href="portal/" data-portal hidden>Builder login</a>
     <a class="login" href="portal/?client=1" data-portal hidden>Client login</a>
-    <a class="btn btn-sm" data-cfg-href="toolUrl" href="plan-studio/app/">Open Pocket Architect</a>
+    <a class="btn btn-sm" data-cfg-href="toolUrl" data-app-mode="residential" href="plan-studio/app/">Start residential</a>
   </div>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
 </div></header>
@@ -53,10 +53,10 @@
 <section class="shell legal">
 <p class="updated">Last updated 15/11/2026</p>
 <h2>1. Who we are</h2>
-<p>JCE Infrastructure Pty Ltd trading as Glide Inside, ABN 29 699 165 663, provides Pocket Architect. Contact: <a class="link" href="mailto:hello@glideinside.com.au">hello@glideinside.com.au</a>.</p>
+<p>JCE Infrastructure Pty Ltd trading as Glide Inside, ABN 29 699 165 663, provides the Glide Inside software, sold as Glide Inside Residential and Glide Inside Commercial. Contact: <a class="link" href="mailto:hello@glideinside.com.au">hello@glideinside.com.au</a>.</p>
 <h2>2. What we collect</h2>
 <ul>
-<li>Pocket Architect plans: autosave stays in your browser on your device. Plan data is sent to our server only when you use an export (PDF, DXF, 3D model), the AI assistant or Save and share.</li>
+<li>Glide Inside plans: autosave stays in your browser on your device. Plan data is sent to our server only when you use an export (PDF, DXF, 3D model), the AI assistant or Save and share.</li>
 <li>Save and share: the design is stored on our server so the link works on any device, for up to 12 months after it was last saved. Anyone with the link can view it. If you add an email address there, we store it with the design and do not send emails to it.</li>
 <li>Free profiles: if you create one, the details in section 3 below.</li>
 <li>Purchases: your email address, used only to restore your purchase and send receipts. Stripe collects payment details. We do not see or store card numbers.</li>
@@ -83,7 +83,7 @@
 <h2>5. Who handles data for us</h2>
 <ul>
 <li>Stripe: payments.</li>
-<li>Cloudflare: hosting of the Pocket Architect service, storage and delivery of exports.</li>
+<li>Cloudflare: hosting of the Glide Inside service, storage and delivery of exports.</li>
 <li>Anthropic: AI assistant requests are processed in the United States. Plan data needed for the request is sent to it.</li>
 <li>VentraIP, an Australian provider: this website and our business mailbox.</li>
 <li>Google: website analytics and advertising measurement.</li>
@@ -98,7 +98,7 @@
 </main>
 <footer class="site-footer"><div class="shell">
   <div class="brand"><img src="assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"><p>Site planning and house design in 3D for regional New South Wales and Queensland.</p></div>
-  <nav aria-label="Product"><h4>Product</h4><a href="index.html">Pocket Architect</a><a href="commercial/">Commercial</a><a href="plan-studio/index.html">How it works</a><a href="pricing/">Pricing</a><a href="plan-studio/index.html#addons">Add-ons</a><a href="subdivision/">Subdivisions</a></nav>
+  <nav aria-label="Product"><h4>Product</h4><a href="index.html">Glide Inside Residential</a><a href="commercial/">Glide Inside Commercial</a><a href="plan-studio/index.html">How it works</a><a href="pricing/">Pricing</a><a href="plan-studio/index.html#addons">Add-ons</a><a href="subdivision/">Subdivisions</a></nav>
   <nav aria-label="Builders and plans"><h4>Builders and plans</h4><a href="for-builders/">For builders</a><a href="portal/" data-portal hidden>Builder login</a><a href="portal/?client=1" data-portal hidden>Client login</a><a href="plans/">Plan library</a><a href="granny-flat-designs/">Granny flat designs</a><a href="shed-with-living-quarters/">Shed with living quarters</a><a href="3d-floor-plan-maker/">3D floor plan maker</a></nav>
   <nav aria-label="Company"><h4>Glide Inside</h4><span>JCE Infrastructure Pty Ltd trading as Glide Inside, ABN <span data-cfg="abn">29 699 165 663</span></span><a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au"><span data-cfg="email">hello@glideinside.com.au</span></a><span data-cfg="phone">0477 207 027</span><a href="terms.html">Order terms</a><a href="plan-terms.html">Plan set terms</a><a href="privacy.html">Privacy</a></nav>
   <p class="legal-line">Glide Inside provides concept planning tools only. Setbacks and other planning controls shown are indicative, are not a planning or building approval, and must be checked with the relevant council and a suitably qualified person before you rely on them. Prices include GST.</p>

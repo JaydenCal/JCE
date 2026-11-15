@@ -8,18 +8,18 @@ window.GI_CONFIG = {
   stripeFlyThrough: "",           // A$10 link
   stripeRenders: "",              // A$10 link
   stripeBoth: "",                 // A$20 link (both add-ons)
-  toolUrl: "plan-studio/app/",      // Pocket Architect app: Open Pocket Architect goes straight to the editor
+  toolUrl: "plan-studio/app/",      // Glide Inside app: Open Glide Inside Residential goes straight to the editor
   heroVideoPlans: "assets/plan-creation-v2.mp4",             // e.g. "assets/plan-creation.mp4": plays muted on loop behind the button
   heroPoster: "assets/plan-creation-v2-poster.webp",
   premiumEnabled: true,
   orderUrl: "mailto:hello@glideinside.com.au?subject=Glide%20Inside%20enquiry",
-  planOrderUrl: "mailto:hello@glideinside.com.au?subject=Pocket%20Architect%20enquiry",
+  planOrderUrl: "mailto:hello@glideinside.com.au?subject=Glide%20Inside%20enquiry",
   // Builder accounts are open with a free 14 day trial (11/11/2026). The trial form is on /for-builders/#trial. The demo link goes to /book-a-demo/ (a form that posts to the enquiry endpoint).
   builderInterestUrl: "mailto:hello@glideinside.com.au?subject=Builder%20accounts%3A%20register%20interest", // no longer used by the pages; kept for old links
   trialUrl: "for-builders/#trial",
   builderDemoUrl: "book-a-demo/",
   portalLive: true,               // true shows the Builder login and Client login links (/portal/). LIVE from 11/11/2026 (the Worker needs PORTAL_ENABLED=1).
-  portalEnabled: true,            // the portal page and Pocket Architect client mode read this (src/config.js). REVIEW_BUILD stays false and the mock is off.
+  portalEnabled: true,            // the portal page and Glide Inside client mode read this (src/config.js). REVIEW_BUILD stays false and the mock is off.
   portalMock: false,              // never true on the live site: the real Worker routes are used
   subdivisionOrderUrl: "mailto:hello@glideinside.com.au?subject=Subdivision%20quote%20request", // or a quote form inside the app
   // Tracking (leave empty until the owner creates the accounts; see docs/marketing/TRACKING.md)

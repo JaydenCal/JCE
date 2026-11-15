@@ -4,7 +4,7 @@
   // data-cfg="key" fills text; data-cfg-href="key" sets links
   document.querySelectorAll("[data-cfg]").forEach(function (el) { var v = cfg[el.dataset.cfg]; if (v != null) el.textContent = v; });
   var fs = document.querySelector('script[src*="framework.js"]'), root = fs ? fs.src.replace(/framework\.js.*$/, "") : "";
-  document.querySelectorAll("[data-cfg-href]").forEach(function (el) { var v = cfg[el.dataset.cfgHref]; if (!v) return; if (!/^(https?:|mailto:|tel:|#)/.test(v)) v = new URL(v, root || location.href).href; if (el.dataset.template) { var u = new URL(v, location.href); u.searchParams.set("template", el.dataset.template); v = u.href; } el.setAttribute("href", v); el.removeAttribute("aria-disabled"); });
+  document.querySelectorAll("[data-cfg-href]").forEach(function (el) { var v = cfg[el.dataset.cfgHref]; if (!v) return; if (!/^(https?:|mailto:|tel:|#)/.test(v)) v = new URL(v, root || location.href).href; if (el.dataset.template) { var u = new URL(v, location.href); u.searchParams.set("template", el.dataset.template); v = u.href; } if (el.dataset.appMode) { var um = new URL(v, location.href); um.searchParams.set("mode", el.dataset.appMode); v = um.href; } el.setAttribute("href", v); el.removeAttribute("aria-disabled"); });
   // portal links (Builder login, Client login) show only when site.config.js sets portalLive: true
   document.querySelectorAll("[data-portal]").forEach(function (el) { el.hidden = !cfg.portalLive; });
   // mobile nav
@@ -19,7 +19,7 @@
     b.addEventListener("click", function () {
       var st = b.closest(".live-stage"); if (!st) return;
       var f = document.createElement("iframe");
-      f.title = b.dataset.liveTitle || "Pocket Architect";
+      f.title = b.dataset.liveTitle || "Glide Inside";
       f.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-pointer-lock");
       f.setAttribute("allow", "fullscreen; pointer-lock; clipboard-write");
       f.src = new URL(b.dataset.liveSrc, root || location.href).href;
@@ -89,7 +89,7 @@
   function syncEdit() {
     document.querySelectorAll(".lh-edit").forEach(function (a) {
       var u = new URL(APP, location.href);
-      if (liveMode) u.searchParams.set("mode", liveMode);
+      u.searchParams.set("mode", liveMode || "residential");
       if (live.last) u.searchParams.set("address", live.last);
       a.setAttribute("href", u.pathname + u.search);
     });

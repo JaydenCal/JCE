@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Launch Pocket Architect | Glide Inside</title>
+<title>Launch Glide Inside Residential | Glide Inside</title>
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#12231c">
 <link rel="icon" href="../../assets/Glideinside_Favicon_v4.svg">
 <link rel="preload" href="../../assets/fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../../framework.css?v=20261113a">
-<script src="../../site.config.js?v=20261113a"></script><script src="../../framework.js?v=20261113a" defer></script><script src="../../analytics.js" defer></script>
+<link rel="stylesheet" href="../../framework.css?v=20261115c">
+<script src="../../site.config.js?v=20261115c"></script><script src="../../framework.js?v=20261115c" defer></script><script src="../../analytics.js" defer></script>
 </head><body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header"><div class="shell">
@@ -22,20 +22,20 @@
     <div class="nav-logins">
       <a href="../../portal/" data-portal hidden>Builder login</a>
       <a href="../../portal/?client=1" data-portal hidden>Client login</a>
-      <a class="btn" data-cfg-href="toolUrl" href="../../plan-studio/launch/">Open Pocket Architect</a>
+      <a class="btn" data-cfg-href="toolUrl" data-app-mode="residential" href="../../plan-studio/launch/">Start residential</a>
     </div>
   </nav>
   <div class="head-end">
     <a class="login" href="../../portal/" data-portal hidden>Builder login</a>
     <a class="login" href="../../portal/?client=1" data-portal hidden>Client login</a>
-    <a class="btn btn-sm" data-cfg-href="toolUrl" href="../../plan-studio/launch/">Open Pocket Architect</a>
+    <a class="btn btn-sm" data-cfg-href="toolUrl" data-app-mode="residential" href="../../plan-studio/launch/">Start residential</a>
   </div>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
 </div></header>
 <main id="main">
 <section class="shell hero-centre" style="padding-bottom:12px">
   <p class="eyebrow">Before you start</p>
-  <h1>What Pocket Architect <em>does.</em></h1>
+  <h1>What Glide Inside <em>does.</em></h1>
   <p class="lead">Draw your plan on a grid and the 3D model builds as you go. Furnish it, walk through it, then unlock the deliverables below.</p>
 </section>
 <section class="shell" style="padding-bottom:28px">
@@ -55,13 +55,13 @@
 </main>
 <footer class="site-footer"><div class="shell">
   <div class="brand"><img src="../../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"><p>Site planning and house design in 3D for regional New South Wales and Queensland.</p></div>
-  <nav aria-label="Product"><h4>Product</h4><a href="../../index.html">Pocket Architect</a><a href="../../commercial/">Commercial</a><a href="../../plan-studio/index.html">How it works</a><a href="../../pricing/">Pricing</a><a href="../../plan-studio/index.html#addons">Add-ons</a><a href="../../subdivision/">Subdivisions</a></nav>
+  <nav aria-label="Product"><h4>Product</h4><a href="../../index.html">Glide Inside Residential</a><a href="../../commercial/">Glide Inside Commercial</a><a href="../../plan-studio/index.html">How it works</a><a href="../../pricing/">Pricing</a><a href="../../plan-studio/index.html#addons">Add-ons</a><a href="../../subdivision/">Subdivisions</a></nav>
   <nav aria-label="Builders and plans"><h4>Builders and plans</h4><a href="../../for-builders/">For builders</a><a href="../../portal/" data-portal hidden>Builder login</a><a href="../../portal/?client=1" data-portal hidden>Client login</a><a href="../../plans/">Plan library</a><a href="../../granny-flat-designs/">Granny flat designs</a><a href="../../shed-with-living-quarters/">Shed with living quarters</a><a href="../../3d-floor-plan-maker/">3D floor plan maker</a></nav>
   <nav aria-label="Company"><h4>Glide Inside</h4><span>JCE Infrastructure Pty Ltd trading as Glide Inside, ABN <span data-cfg="abn">29 699 165 663</span></span><a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au"><span data-cfg="email">hello@glideinside.com.au</span></a><span data-cfg="phone">0477 207 027</span><a href="../../terms.html">Order terms</a><a href="../../plan-terms.html">Plan set terms</a><a href="../../privacy.html">Privacy</a></nav>
   <p class="legal-line">Glide Inside provides concept planning tools only. Setbacks and other planning controls shown are indicative, are not a planning or building approval, and must be checked with the relevant council and a suitably qualified person before you rely on them. Prices include GST.</p>
   <p class="legal-line attrib">Cadastre and imagery &copy; NSW Spatial Services (CC BY 3.0 AU). Queensland cadastre &copy; State of Queensland (CC BY 4.0); Queensland aerial imagery and elevation data &copy; State of Queensland (CC BY-SA).</p>
 </div></footer>
-<div class="launch-stage" id="stage" role="dialog" aria-label="Pocket Architect"><div class="launch-bar"><strong>Pocket Architect</strong><button class="btn btn-sm btn-ghost" style="color:#fff;border-color:#fff" id="fs">⛶ Full screen</button><button class="btn btn-sm" id="exit">Close</button></div></div>
+<div class="launch-stage" id="stage" role="dialog" aria-label="Glide Inside"><div class="launch-bar"><strong>Glide Inside</strong><button class="btn btn-sm btn-ghost" style="color:#fff;border-color:#fff" id="fs">⛶ Full screen</button><button class="btn btn-sm" id="exit">Close</button></div></div>
 <script>
 (function(){
   var st=document.getElementById('stage'),fr=null;
@@ -69,7 +69,7 @@
   var tpl=(new URLSearchParams(location.search).get('template')||'').toLowerCase();if(!/^[a-z0-9_]{1,40}$/.test(tpl))tpl='';
   var trace=new URLSearchParams(location.search).get('start')==='trace';
   function open(){
-    if(!fr){fr=document.createElement('iframe');fr.title='Pocket Architect';
+    if(!fr){fr=document.createElement('iframe');fr.title='Glide Inside';
       // allow-top-navigation lets Stripe checkout and the return from checkout replace the page
       fr.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-pointer-lock allow-top-navigation');
       fr.setAttribute('allow','fullscreen; pointer-lock; clipboard-write');fr.src='../app/?v=20261112'+(trace?'&start=trace':(tpl?'&template='+tpl:''));st.appendChild(fr);}
