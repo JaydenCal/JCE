@@ -25,6 +25,7 @@ import { createFrontageBar } from './ui/frontage.js';
 import { saveDesign, pickDesignFile } from './ui/files.js';
 import { createEmbed } from './ui/embed.js';
 import { initShare } from './ui/share.js';
+import { initProfiles } from './profile/index.js';
 import { createViewManager } from './ui/views.js';
 import { createSampleProject, SAMPLE_TEMPLATE } from './ui/sample.js';
 import { setTool } from './ui/toolstate.js';
@@ -198,9 +199,11 @@ async function main() {
     });
   }
 
+  let profiles = null; // free user profiles, started after the first frame (below)
   function save() {
     saveDesign(store);
     track('ps_project_saved');
+    profiles?.promptSave(); // signed out: a friendly, non blocking offer of a free profile (the file save carries on)
   }
 
   // Chrome -------------------------------------------------------------------------------------------------------------------
@@ -473,6 +476,8 @@ async function main() {
   if (!demoMode()) await mountPremium();
   if (!demoMode() && !VIEWER && CONFIG.portalEnabled) await import('./portal/client-mode.js').then((m) => m.initPortalMode(window.__ps)).catch((e) => console.warn('[portal] client mode not available', e)).finally(() => window.__ps?.premium?.setPortalPending?.(false));
   else window.__ps?.premium?.setPortalPending?.(false);
+  // Free user profiles: save designs to an account. Hidden for builder and client logins, subscribers and internal accounts, and when the server has no profile service.
+  if (!demoMode() && !VIEWER) api.profilesReady = initProfiles(window.__ps, { refs }).then((p) => { profiles = p; window.__ps.profiles = p; return p; }).catch((e) => { console.warn('[profile] not available', e); return null; });
   if (!VIEWER) import('./ui/onboarding/index.js').then((m) => m.initOnboarding?.(window.__ps)).catch(() => {});
   return api;
 }

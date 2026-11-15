@@ -51,6 +51,10 @@ export const ERROR_STATUS = {
   TRIAL_EXPIRED: 403,
   FAIR_USE_LIMIT: 429,
   TRIAL_LIMIT: 429,
+  // Free user profiles (lib/profiles.js).
+  PROFILES_NOT_CONFIGURED: 503,
+  DESIGN_LIMIT_REACHED: 409,
+  SIGNUP_FAILED: 409,
 };
 
 export class HttpError extends Error {

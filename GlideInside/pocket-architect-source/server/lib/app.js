@@ -18,6 +18,8 @@ import { createSite } from './site.js';
 import { handleEnquiry } from './enquiry.js';
 import { createPortal } from './portal.js';
 import { createProjects } from './projects.js';
+import { createProfiles } from './profiles.js';
+import { createMemoryProfileStore } from './profile-store.js';
 import { createMemoryPortalStore } from './portal-store.js';
 import { createCommercial, COMMERCIAL_EXPORT_TYPES } from './commercial.js';
 
@@ -27,7 +29,7 @@ const randomId = (prefix) => `${prefix}_${[...crypto.getRandomValues(new Uint8Ar
 
 // `files` is the R2 bucket binding (env.FILES on the Worker): shared designs under projects/<id>.json and issued PDF sets under pdf/<entitlement>.pdf.
 // Without it Save and share answers 503 SHARING_UNAVAILABLE and the one-PDF-set rule is not enforced (hosts without R2).
-export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), catalogue = null, loadExporters = null, loadJsPDF = null, devGrant = false, portalStore = undefined, loadTemplates = undefined, files = null } = {}) {
+export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), catalogue = null, loadExporters = null, loadJsPDF = null, devGrant = false, portalStore = undefined, profileStore = undefined, loadTemplates = undefined, files = null } = {}) {
   if (!store) throw new Error('createApp needs a store');
   const config = readConfig(env);
   const doFetch = fetchImpl || ((...a) => globalThis.fetch(...a));
@@ -39,6 +41,14 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   // and local development. Other stores (Upstash) cannot hold it, so those hosts answer 503 PORTAL_NOT_CONFIGURED.
   const pstore = portalStore !== undefined ? portalStore : ['memory', 'file'].includes(store.kind) ? createMemoryPortalStore() : null;
   const portal = pstore ? createPortal({ store, pstore, config, fetchImpl: doFetch, env, now, ...(loadTemplates ? { loadTemplates } : {}) }) : null;
+
+  // Free user profiles (lib/profiles.js): D1 in production (the Worker passes one), memory in tests and local development. Other stores answer 503.
+  const profstore = profileStore !== undefined ? profileStore : ['memory', 'file'].includes(store.kind) ? createMemoryProfileStore() : null;
+  const profiles = profstore ? createProfiles({ store, pstore: profstore, config, now }) : null;
+  profiles?.setPackDeps({
+    authenticate: (request) => authenticate(request, { store, config, now }),
+    issueToken: (ent) => issueToken(ent, config, now()),
+  });
 
   // Commercial Developer subscription and the shared commercial trial login (lib/commercial.js). The trial login needs the portal store.
   const commercial = createCommercial({ store, pstore, config, fetchImpl: doFetch, now });
@@ -646,6 +656,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (path === '/entitlement/restore') return allow('POST'), restore(request);
     // Save and share (live Worker routes, no entitlement needed). Not under /portal/, so they never touch the portal tables.
     if (path === '/projects' || path.startsWith('/projects/')) return projects.handle(request, path);
+    // Free user profiles: sign up, saved designs, owner contacts. Not under /portal/, so they never touch the builder tables.
+    if (path === '/profile' || path.startsWith('/profile/')) {
+      if (!profiles) throw new HttpError('PROFILES_NOT_CONFIGURED', 'Free profiles are not available on this server.');
+      return profiles.route(request, url, path);
+    }
     if (path === '/credits') return allow('GET'), creditsGet(request, url);
     if (path === '/ai/estimate') return allow('POST'), aiEstimate(request);
     if (path === '/ai/edit') return allow('POST'), aiEdit(request);
@@ -683,7 +698,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
   }
 
-  return { fetch: handle, handle, config, portal, scheduled: async () => {
+  return { fetch: handle, handle, config, portal, profiles, scheduled: async () => {
       await commercial.sweepProjects()?.catch?.(() => null); // trial saved projects older than the keep period
       return portal ? portal.scheduled() : null;
     },

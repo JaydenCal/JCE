@@ -9,6 +9,7 @@
 import { createApp } from './lib/app.js';
 import { createD1Store } from './lib/store.js';
 import { createD1PortalStore } from './lib/portal-store.js';
+import { createD1ProfileStore } from './lib/profile-store.js';
 
 let cached = null;
 
@@ -19,6 +20,7 @@ function appFor(env) {
       app: createApp({
         store: createD1Store(env.DB),
         portalStore: createD1PortalStore(env.DB),
+        profileStore: createD1ProfileStore(env.DB), // free user profiles (migration 0015)
         env,
         // STAGING ONLY: the staging Worker (staging/wrangler.staging.toml sets STAGING=1) offers a free test Plan Pack so PDF, DXF, 3D and HTML
         // exports can be tried. Never on a Worker that holds a Stripe key, so it cannot exist on the live Worker.
