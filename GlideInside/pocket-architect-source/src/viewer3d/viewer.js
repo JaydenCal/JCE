@@ -326,7 +326,19 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   const vbAerial = mkBtn('Aerial', 'aerial', 'The whole lot from above');
   const vbSun = mkBtn('Warm light', 'sun', 'Switch between midday and late afternoon light');
   vbSun.setAttribute('aria-pressed', 'false');
-  viewBar.append(vbHero, vbFront, vbAerial, vbSun);
+  // Roof off / Roof on: a large, labelled toggle (the same switch as the Roof button in the top bar). Pressed means the roof is hidden.
+  const vbRoof = mkBtn('Roof off', 'roof', 'Hide the roof to see inside');
+  vbRoof.classList.add('ps3d-chip--roof');
+  vbRoof.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M3 12l9-7 9 7M6 10v9h12v-9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span></span>';
+  const syncRoofBtn = () => {
+    const hidden = store.ui.showRoof === false;
+    vbRoof.setAttribute('aria-pressed', String(hidden));
+    vbRoof.querySelector('span').textContent = hidden ? 'Roof on' : 'Roof off';
+    vbRoof.title = hidden ? 'Roof is hidden. Press to show it again' : 'Press to hide the roof and see inside';
+  };
+  vbRoof.addEventListener('click', () => store.setUI({ showRoof: store.ui.showRoof === false }));
+  syncRoofBtn();
+  viewBar.append(vbHero, vbFront, vbAerial, vbSun, vbRoof);
   rootEl.appendChild(viewBar);
   let sunKey = 'day';
   try {
@@ -944,6 +956,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       if (patch.view === 'walk') setMode('walk');
       else if (patch.view === '3d' || patch.view === 'split') setMode('orbit');
     }
+    if ('showRoof' in patch) syncRoofBtn();
     if ('levelFilter' in patch || 'showRoof' in patch || 'statusView' in patch) {
       scheduleRebuild(20);
       if (mode === 'walk') walk.refresh();
