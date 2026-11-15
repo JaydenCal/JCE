@@ -10,7 +10,8 @@ export const VIEWER_CSS = `
 .ps3d-hints[hidden]{display:none}
 .ps3d-roombar{position:absolute;left:170px;right:12px;bottom:12px;z-index:16;display:flex;gap:6px;flex-wrap:nowrap;justify-content:center;overflow-x:auto;scrollbar-width:none;pointer-events:none}.ps3d-roombar::-webkit-scrollbar{display:none}.ps3d-roombar[hidden]{display:none}
 .ps3d-roombar .ps3d-chip{pointer-events:auto;cursor:pointer;font-family:inherit;white-space:nowrap;flex:0 0 auto;padding:4px 10px}.ps3d-roombar .ps3d-chip:hover{border-color:var(--ps-accent,#1f6feb)}.ps3d-roombar .ps3d-chip[aria-pressed="true"]{background:var(--ps-accent,#1f6feb);border-color:var(--ps-accent,#1f6feb);color:var(--ps-accent-ink,#fff)}
-@container (max-width:760px){.ps3d-viewbar{left:12px;bottom:52px;max-width:calc(100% - 124px)}.ps3d-hints{left:12px;bottom:112px;max-width:calc(100% - 24px)}}
+/* Narrow: the bottom left stacks upward with no overlap: the Aerial switch (44 to 74 px), then the view chips from 84 px. */
+@container (max-width:760px){.ps3d-viewbar{left:12px;bottom:84px;max-width:calc(100% - 124px)}.ps3d-hints{left:12px;bottom:176px;max-width:calc(100% - 24px)}}
 .ps3d-hints.is-faded{opacity:0}
 .ps3d-chip{background:var(--ps-panel,#fff);color:var(--ps-text,#1c2430);border:1px solid var(--ps-border,#cfd6de);border-radius:999px;padding:5px 11px;font-size:12px;line-height:1.25;font-weight:500;box-shadow:0 1px 4px rgba(0,0,0,.14)}
 .ps3d-note{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-size:15px;color:var(--ps-muted,#5b6674);background:var(--ps-bg,#e8edf2)}

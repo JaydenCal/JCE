@@ -98,6 +98,8 @@ export const FLOW_CSS = `
 .gf-backpill:hover{border-color:var(--ps-accent,#1b4fd1)}
 /* Narrow screens: the pill moves up under the Back to plan button, clear of the 3D view chips (Street view, Front, Aerial) at the bottom left. */
 @media (max-width:599.98px){.gf-backpill{top:52px;bottom:auto;left:12px;padding:5px 12px;min-height:32px;font-size:12px}}
+/* With the lot card open over the 3D view the pill goes to the top left column too, so it never sits on the card's buttons. */
+.ps-stage:has(.lc-root:not([hidden])) .gf-backpill{top:108px;bottom:auto;left:12px}
 .gf-kinds{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 .gf-kind-ic{font-size:12px;color:var(--gf-muted)}
 
