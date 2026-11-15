@@ -22,8 +22,15 @@ export function shouldStart({ project, search = '', viewer = false, demo = false
   if (q.get('flow') === '0' || q.get('template')) return false;
   if (flowInProgress(project)) return true;
   if (flowOf(project)) return false; // already in the editor from the flow (step 5)
+  if (fromAutosave && commercialAddressAsked(search)) return true; // a commercial address link goes through the steps, never straight to a kept layout
   return !fromAutosave;
 }
+
+/** ?mode=commercial&address=...: the link asks for one lot in the commercial tool. */
+export const commercialAddressAsked = (search = '') => {
+  const q = new URLSearchParams(search);
+  return q.get('mode') === 'commercial' && !!(q.get('address') || '').trim();
+};
 
 export async function initGuidedFlow({ api, store, refs, catalogue, viewer = false, demo = false, shareId = null, fromAutosave = false, wantCommercial = false, hasAddress = false }) {
   const search = typeof location !== 'undefined' ? location.search : '';
@@ -35,7 +42,11 @@ export async function initGuidedFlow({ api, store, refs, catalogue, viewer = fal
   const flow = makeFlow({ api, store, refs, catalogue, kind });
   api.flow = flow;
   const f = flowOf(store.project);
-  await flow.open(f && f.kind === kind && f.step < EDIT_STEP ? f.step : 1);
+  // A kept design with its lot already found (a commercial address link over an autosave) opens at step 2; a fresh open starts at step 1.
+  const kept = fromAutosave && !f && kind === 'commercial' && !!store.project.site?.lot;
+  const step = f && f.kind === kind && f.step < EDIT_STEP ? f.step : kept ? 2 : 1;
+  if (kept) writeFlow(store, { kind, step });
+  await flow.open(step);
   attachBackPill({ api, store, refs, catalogue, wantCommercial });
   void hasAddress;
   return flow;
