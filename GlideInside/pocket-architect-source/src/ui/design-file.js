@@ -8,13 +8,13 @@ export function parseDesign(text) {
   try {
     raw = JSON.parse(text);
   } catch {
-    return { error: 'That file is not a Plan Studio design. It could not be read as JSON.' };
+    return { error: 'That file is not a Glide Inside design. It could not be read as JSON.' };
   }
   let project;
   try {
     project = migrate(raw);
   } catch (e) {
-    return { error: e?.message?.startsWith('Not a Plan Studio') || e?.message?.startsWith('This project') ? `${e.message}.` : 'That file is not a Plan Studio design.' };
+    return { error: e?.message?.startsWith('Not a Glide Inside') || e?.message?.startsWith('This project') ? `${e.message}.` : 'That file is not a Glide Inside design.' };
   }
   const problems = validate(project);
   if (problems.length) return { error: 'That design file has problems and cannot be opened.', problems };

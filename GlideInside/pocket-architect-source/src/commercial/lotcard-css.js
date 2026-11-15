@@ -12,6 +12,9 @@ export const COMMERCIAL_CARD_CSS = `
 .cc-feas-t i{font-style:normal;color:var(--lc-t2)}
 .cc-feas .lc-btn{height:32px;font-size:12px;padding:0 14px!important}
 .cc-feas[hidden]{display:none}
+.cc-summary{flex:1 1 100%;margin:2px 0 0;font:500 12px/1.4 var(--lc-sans);color:var(--lc-t1)}
+.cc-summary[data-tone="note"]{color:var(--lc-t2)}
+.cc-summary[hidden]{display:none}
 .cc-root .lc-sp .lc-k{width:68px}
 .cc-root .lc-fit,.lc-embed:not(.is-compact).cc-root .lc-fit{min-height:0;margin-top:0;padding:0;line-height:1.5}
 .cc-fits{margin:6px 0 14px;display:flex;flex-direction:column;gap:2px}

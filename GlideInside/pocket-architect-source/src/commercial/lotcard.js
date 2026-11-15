@@ -11,7 +11,7 @@ import { attachMiniView } from '../lotcard/mini-view.js';
 import { h, debounce } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { toast } from '../ui/toast.js';
-import { searchAddresses } from '../site/client.js';
+import { smartSearch } from '../site/address-search.js';
 import { downloadBlob } from '../premium/exporters/download.js';
 import { requirePlanTerms, planTermsLinkText, PLAN_TERMS_URL } from '../legal/terms-gate.js';
 import { lotOf } from '../model/placement.js';
@@ -35,7 +35,7 @@ import { stepLayout } from './layouts.js';
 import { activeTypeId, typeChoices, switcherList, switcherIndex, pagerText, chooseFor, applyChoice } from './catalogue/picker.js';
 import { STRATA_ID } from './catalogue/types/index.js';
 import { buildingsOf } from './catalogue/buildings.js';
-import { commercialCardStats, zoneLine, unitList, commercialStatus, feasibilityHeadline, exteriorPose, unitWalkPose } from './card-model.js';
+import { commercialCardStats, zoneLine, unitList, commercialStatus, feasibilityHeadline, commercialSummaryLine, exteriorPose, unitWalkPose } from './card-model.js';
 import { summaryRows, costRows, money, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT, DATA_DATE } from './feasibility.js';
 
 const STYLE_ID = 'lc-style';
@@ -74,8 +74,9 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   const sub = E('lc-sub');
   const stats = E('lc-stats', 'div', { dataset: { ps: 'cc-stats' } });
   const feasT = E('cc-feas-t', 'div');
+  const summ = E('cc-summary', 'p', { dataset: { ps: 'cc-summary' } });
   const feasBtn = h('button', { class: 'lc-btn', type: 'button', dataset: { ps: 'cc-feas-open' }, onclick: () => openPanel('feas') }, 'See details');
-  const feas = E('cc-feas', 'div', { dataset: { ps: 'cc-feas' } }, feasT, feasBtn);
+  const feas = E('cc-feas', 'div', { dataset: { ps: 'cc-feas' } }, feasT, feasBtn, summ);
   const cladChips = E('lc-strip', 'div', { role: 'group', 'aria-label': 'Cladding colours', dataset: { ps: 'cc-cladding' } });
   const doorChips = E('lc-strip', 'div', { role: 'group', 'aria-label': 'Roller door colours', dataset: { ps: 'cc-doors' } });
   const bPlan = h('button', { class: 'lc-btn lc-pri', type: 'button', dataset: { ps: 'cc-planset' }, onclick: () => planSet() }, PLAN_SET_LABEL);
@@ -196,7 +197,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     const q = findInput.value.trim();
     if (q.length < 3) { sugg = []; paintSugg(); return; }
     try {
-      const r = await searchAddresses(q, { onRetry: () => { findList.replaceChildren(h('li', { class: 'lc-find-item lc-find-busy', role: 'status' }, h('span', null, 'Busy, trying again'))); findList.hidden = false; } });
+      const r = await smartSearch(q, { onRetry: () => { findList.replaceChildren(h('li', { class: 'lc-find-item lc-find-busy', role: 'status' }, h('span', null, 'Busy, trying again'))); findList.hidden = false; } });
       if (findInput.value.trim() === q) { sugg = r || []; suggI = -1; paintSugg(); }
     } catch { sugg = []; paintSugg(); }
   }, 220);
@@ -206,7 +207,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   findInput.addEventListener('keydown', (e) => {
     const n = Math.min(6, sugg.length);
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { if (n) { suggI = (suggI + (e.key === 'ArrowDown' ? 1 : -1) + n) % n; paintSugg(); } e.preventDefault(); }
-    else if (e.key === 'Enter') { e.preventDefault(); const t = suggI >= 0 ? sugg[suggI]?.label : findInput.value.trim(); if (t && t.length >= 3) pickAddress(t); }
+    else if (e.key === 'Enter') { e.preventDefault(); const t = suggI >= 0 ? sugg[suggI]?.label : findInput.value.trim(); if (t && t.length >= 3) pickAddress(t); } // typed text: the search takes the top match (exact house number first)
     else if (e.key === 'Escape') { closeSugg(); findInput.blur(); }
   });
   document.addEventListener('pointerdown', (e) => {
@@ -440,6 +441,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     stats.replaceChildren(...commercialCardStats(p).map((c) => h('div', { dataset: { stat: c.key } }, h('b', null, c.value), h('i', null, c.label))));
     const hl = feasibilityHeadline(p);
     feas.hidden = !hl;
+    { const sl = commercialSummaryLine(p); summ.hidden = !sl; summ.textContent = sl?.text || ''; summ.dataset.tone = sl?.tone || ''; }
     if (hl) feasT.replaceChildren(h('div', null, h('b', null, hl.value), h('span', null, 'indicative gross realisation')), h('div', null, h('b', null, hl.rent), h('span', null, 'indicative gross rent per year')));
     const fin = finishesOf(p);
     for (const b of cladChips.children) b.setAttribute('aria-pressed', String(b.dataset.finish === fin.cladding));

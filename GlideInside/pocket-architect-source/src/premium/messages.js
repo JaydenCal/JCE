@@ -11,11 +11,11 @@ export function friendlyError(e, { area = 'general', dev = false } = {}) {
   const fallback = typeof e?.message === 'string' && e.message ? e.message : 'Something went wrong. Try again.';
   switch (code) {
     case 'NETWORK':
-      return 'Could not reach the Plan Studio server. Check your connection and try again. Nothing was charged.';
+      return 'Could not reach the Glide Inside server. Check your connection and try again. Nothing was charged.';
     case 'TIMEOUT':
       return area === 'ai' ? 'The assistant took too long to answer. Nothing was charged. Try again.' : 'The server took too long to answer. Try again.';
     case 'SERVER_UNAVAILABLE':
-      if (dev) return 'The Plan Studio server is not running at this address. See server/README.md to start it.';
+      if (dev) return 'The Glide Inside server is not running at this address. See server/README.md to start it.';
       return area === 'ai' ? 'The assistant is not available right now. Try again shortly.' : 'This is not available right now. Try again shortly.';
     case 'RATE_LIMITED': {
       const s = Number(e?.retryAfter);

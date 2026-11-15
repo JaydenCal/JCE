@@ -9,6 +9,7 @@ import { clearances } from '../site/lotplan.js';
 import { setbackStatusLine } from '../site/lot-checks.js';
 import { isCommercial } from '../commercial/schema.js';
 import { convertToCommercial } from '../commercial/mode.js';
+import { commercialSummaryLine } from '../commercial/card-model.js';
 import { effectiveClass, zoneClass, zoneMismatch, RESIDENTIAL_NOTE, ZONE_CLASS_LABEL } from '../commercial/zones.js';
 import { applyFinishes, finishesOf } from '../commercial/finishes.js';
 import { materialise } from '../commercial/materialise.js';
@@ -302,8 +303,9 @@ export function checkSummary(project) {
   if (truck.has) lines.push(truck.ok ? `Trucks reach the loading area through a ${truck.crossoverM ? truck.crossoverM.toFixed(0) : '6'} m crossover and apron (indicative, swept paths still to be checked).` : 'Check truck access: the loading area is not clearly linked to a crossover.');
   if (lot.setbacksDefault) lines.push('Council setbacks could not be loaded for this lot, so a standard indicative envelope was used.');
   lines.push(INDICATIVE);
+  const summary = commercialSummaryLine(project);
   return {
-    ok: true, verdict, rows, lotAreaM2: lotArea, status: st, lines,
+    ok: true, verdict, rows, lotAreaM2: lotArea, status: st, lines, summary,
     coverageM2: stats.groundGfaM2 || 0, coveragePct: stats.coveragePct ?? (lotArea ? ((stats.groundGfaM2 || 0) / lotArea) * 100 : null),
     gfaM2: stats.gfaM2 ?? null,
     parking: { required: park.required, provided: park.provided, accessibleRequired: park.accessible.required, accessibleProvided: park.accessible.provided, text: status.parking.text, state: status.parking.state },

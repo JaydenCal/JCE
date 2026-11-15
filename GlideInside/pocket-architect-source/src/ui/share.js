@@ -9,13 +9,21 @@ import { openModal, askConfirm } from './modal.js';
 import { toast } from './toast.js';
 import { track } from './analytics.js';
 import { migrate, validate } from '../model/schema.js';
-import { createCloud, readShare, saveShared, forkProject, saveErrorMessage, loadErrorMessage, ddmmyyyyOf, shareIdFromSearch } from './cloud.js';
+import { createCloud, readShare, saveShared, forkProject, saveErrorMessage, loadErrorMessage, ddmmyyyyOf, shareIdFromSearch, revokeShared } from './cloud.js';
+import { toolOfProject, toolMode, otherToolUrl, TOOL_INFO } from '../toolmode.js';
 
 const STYLE = `
 .ps-shared-banner{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:6;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:calc(100% - 24px);padding:6px 8px 6px 14px;background:var(--ps-panel);color:var(--ps-text);border:1px solid var(--ps-border-strong);border-radius:var(--ps-radius-lg);box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:14px}
 .ps-shared-banner .ps-btn{flex:0 0 auto}
 .ps-share-link{display:flex;gap:8px;align-items:center;margin-top:12px}
 .ps-share-link input{flex:1;min-width:0}
+.ps-shell[data-viewonly] .ps-toolbox,.ps-shell[data-viewonly] [data-action="new"],.ps-shell[data-viewonly] [data-action="open"],.ps-shell[data-viewonly] [data-action="save"],.ps-shell[data-viewonly] [data-action="share"],.ps-shell[data-viewonly] [data-action="find-block"],.ps-shell[data-viewonly] .ps-premium-slot,.ps-shell[data-viewonly] .ps-tab[data-tab="ai"],.ps-shell[data-viewonly] [data-ps^="profile"],.ps-shell[data-viewonly] .ps-prof-prompt,.ps-shell[data-viewonly] .gf-backpill{display:none!important}
+/* View only means no editing and no exports: the lot card's plan PDFs, send to engineer and edit buttons, the properties panel's controls and the Edit toggle are not shown. */
+.ps-shell[data-viewonly] [data-ps="lc-pdf"],.ps-shell[data-viewonly] [data-ps="lc-pdf-house"],.ps-shell[data-viewonly] [data-ps="lc-edit"],.ps-shell[data-viewonly] [data-ps="lc-send-engineer"],.ps-shell[data-viewonly] .lc-send,.ps-shell[data-viewonly] .ps-tab-props .ps-btn,.ps-shell[data-viewonly] .ps3d-editbar,.ps-shell[data-viewonly] .ps-undo-redo,.ps-shell[data-viewonly] [data-action="undo"],.ps-shell[data-viewonly] [data-action="redo"]{display:none!important}
+.ps-shell[data-viewonly] .ps-tab-props select,.ps-shell[data-viewonly] .ps-tab-props input:not([type=checkbox]){pointer-events:none;border-color:transparent;background:transparent;appearance:none;-webkit-appearance:none}
+.ps-shell[data-viewonly] .ps-backplan{top:52px!important}
+@media (max-width:700px){.ps-shell[data-viewonly] .ps-backplan{top:96px!important}}
+.ps-shell[data-viewonly] .ps-shared-banner{z-index:40;top:0;left:0;right:0;transform:none;max-width:none;border-radius:0;border-width:0 0 1px 0;padding:6px 12px}
 .ps-share-keep{margin:12px 0 0;padding:8px 10px;background:var(--ps-panel-2);border:1px solid var(--ps-border);border-radius:var(--ps-radius);font-size:13px;color:var(--ps-muted)}
 `;
 
@@ -66,6 +74,7 @@ export function initShare({ store, refs, config, replaceProject, hasEdits = () =
   }
 
   function leaveShared() {
+    delete refs.shell?.dataset.viewonly;
     state.id = null;
     state.owner = false;
     clearBanner();
@@ -109,15 +118,41 @@ export function initShare({ store, refs, config, replaceProject, hasEdits = () =
     }
   }
 
+  // The tool this design belongs to: "Make your own" goes back to the right one (Glide Inside Residential or Commercial).
+  const makeYourOwn = () => {
+    const tool = toolOfProject(store.project);
+    try { location.assign(otherToolUrl(tool, { pathname: location.pathname, search: '' })); } catch { /* the address bar is left as it is */ }
+  };
+
+  async function stopSharing() {
+    if (!state.owner) return;
+    const ok = await askConfirm({ title: 'Stop sharing this design?', message: 'The link will stop working for everyone who has it. Your design stays in this browser. You can share it again later with a new link.', confirmLabel: 'Stop sharing', danger: true });
+    if (!ok) return;
+    try {
+      await revokeShared(cloud, store.project);
+    } catch (e) {
+      toast(saveErrorMessage(e), { kind: 'error' });
+      return;
+    }
+    track('ps_share_revoke');
+    const project = store.project;
+    leaveShared();
+    if (replaceProject(project)) { store.saveNow?.(); toast('Sharing stopped. The old link no longer works.', { kind: 'ok', timeout: 9000 }); }
+  }
+
   function showBanner() {
     clearBanner();
-    const buttons = [];
-    if (state.owner) buttons.push(h('button', { class: 'ps-btn ps-btn--sm', type: 'button', dataset: { action: 'edit-shared' }, onclick: () => editShared() }, 'Edit this design'));
-    buttons.push(h('button', { class: 'ps-btn ps-btn--primary ps-btn--sm', type: 'button', dataset: { action: 'fork' }, onclick: () => forkShared() }, 'Make my own copy'));
-    state.banner = h('div', { class: 'ps-shared-banner', role: 'region', 'aria-label': 'Shared design' },
-      h('span', null, state.owner ? 'This is your shared design. It is read only here.' : 'You are looking at a shared design. It is read only.'),
+    const tool = TOOL_INFO[toolOfProject(store.project)];
+    const buttons = [h('button', { class: 'ps-btn ps-btn--primary ps-btn--sm', type: 'button', dataset: { action: 'make-your-own' }, onclick: () => makeYourOwn() }, 'Make your own')];
+    if (state.owner) {
+      buttons.push(h('button', { class: 'ps-btn ps-btn--sm', type: 'button', dataset: { action: 'edit-shared' }, onclick: () => editShared() }, 'Edit this design'));
+      buttons.push(h('button', { class: 'ps-btn ps-btn--sm', type: 'button', dataset: { action: 'stop-sharing' }, onclick: () => stopSharing() }, 'Stop sharing'));
+    } else buttons.push(h('button', { class: 'ps-btn ps-btn--sm', type: 'button', dataset: { action: 'fork' }, onclick: () => forkShared() }, 'Copy this design'));
+    state.banner = h('div', { class: 'ps-shared-banner', role: 'region', 'aria-label': 'Shared design', dataset: { ps: 'share-banner' } },
+      h('span', null, state.owner ? 'This is your shared design. It is view only here.' : `You are looking at a shared design. It is view only. Made in ${tool.name}.`),
       ...buttons);
     refs.stage.prepend(state.banner);
+    refs.shell.dataset.viewonly = '1';
   }
 
   /** Open a shared link. Read only; resolves true when the design is showing. */
@@ -130,6 +165,11 @@ export function initShare({ store, refs, config, replaceProject, hasEdits = () =
       loaded = await cloud.load(id);
       const project = migrate(loaded.project);
       if (validate(project).length) throw new Error('That shared design has problems and cannot be opened.');
+      // The link opens in the tool the design was made in.
+      if (toolOfProject(project) !== toolMode.current && !config.noToolRedirect) {
+        location.replace(otherToolUrl(toolOfProject(project), { pathname: location.pathname, search: location.search, keepShare: true }));
+        return false;
+      }
       if (!replaceProject(project)) throw new Error('That shared design could not be opened.');
       store.readOnly = true; // set once the design is in, so loading it is not refused
     } catch (e) {

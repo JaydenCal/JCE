@@ -121,6 +121,32 @@ export function feasibilityHeadline(project) {
   return { value: money(m.realisation), rent: money(m.grossRent), text: `Indicative gross realisation ${money(m.realisation)}, indicative gross rent ${money(m.grossRent)} per year`, f };
 }
 
+/**
+ * One plain line for the demo and the Check step: units, floor area, parking and the indicative margin, with the reason when the margin is
+ * negative. Indicative and ex GST. Returns { text, tone } ('ok' margin positive, 'note' negative and explained) or null.
+ */
+export function commercialSummaryLine(project) {
+  if (!isCommercial(project)) return null;
+  const s = commercialStats(project);
+  if (!(s.units || s.buildingCount)) return null;
+  let f = null;
+  try { f = feasibility(project.commercial, project.site?.lot); } catch { f = null; }
+  if (!f || !(f.gfa > 0)) return null;
+  const parts = [];
+  if (s.units) parts.push(`${fmt(s.units)} ${s.units === 1 ? 'unit' : 'units'}`);
+  if (s.buildingCount) parts.push(`${fmt(s.buildingCount)} ${s.buildingCount === 1 ? 'building' : 'buildings'}`);
+  parts.push(`${fmt(Math.round(s.gfaM2))} m² GFA`);
+  parts.push(`${s.parking.provided} parking bays (${s.parking.required} indicated)`);
+  const m = f.mid;
+  const pct = m.marginSalePct;
+  const head = parts.join(', ');
+  if (pct >= 0) return { tone: 'ok', text: `${head}. Indicative margin if sold: ${pct1(pct)} on cost, ex GST. Change any rate to test your own figures.` };
+  const why = m.land + m.siteWorks > m.build * 0.6
+    ? 'land and site works take a large share of the cost at this site size'
+    : 'build and site costs run above the sale rate in this area';
+  return { tone: 'note', text: `${head}. Indicative margin if sold: ${pct1(pct)} on cost, ex GST. It is negative because ${why}. Enter your own land price and rates to test it.` };
+}
+
 // Camera poses ---------------------------------------------------------------------------------------------------------------------
 // Metres in world space: X = plan x / 1000, Z = plan y / 1000, Y up. Same convention as src/viewer3d/room-logic.js.
 const unitPoints = (project) => [...layoutUnits(project.commercial).flatMap((u) => u.poly), ...buildingsOf(project.commercial).flatMap((b) => b.outline)];

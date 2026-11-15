@@ -6,7 +6,7 @@
 //
 //   const { blob, filename } = await exportPlanSet({ project, lot, kind: 'site', builderName: 'Hunter Homes', download: true });
 //
-// `project` is a Pocket Architect project (schema 2). `lot` is the lot the viewer holds: see the PlanSetLot typedef in ./lot.js (the schema 2
+// `project` is a Glide Inside project (schema 2). `lot` is the lot the viewer holds: see the PlanSetLot typedef in ./lot.js (the schema 2
 // site.lot in plan millimetres, or a plain metre lot). Omit `lot` to use project.site.lot. Text is vector text (standard PDF fonts).
 
 import { trialJsPDF } from '../watermark.js';
@@ -81,7 +81,7 @@ function withoutScales(JsPDF) {
 
 /**
  * @param {Object} o
- * @param {Object} o.project  Pocket Architect project (schema 2), the house design.
+ * @param {Object} o.project  Glide Inside project (schema 2), the house design.
  * @param {import('./lot.js').PlanSetLot} [o.lot]  The lot (see lot.js). Required for kind 'site'.
  * @param {'site'|'house'|'commercial'} o.kind
  * @param {string} [o.builderName]  Adds the diagonal watermark "Prepared for <builderName>" and the client field.
@@ -100,7 +100,7 @@ function withoutScales(JsPDF) {
  */
 export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null, terms = null } = {}) {
   syncCurrency(project);
-  if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Pocket Architect project');
+  if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Glide Inside project');
   if (kind !== 'site' && kind !== 'house' && kind !== 'commercial') throw new Error("exportPlanSet kind must be 'site', 'house' or 'commercial'");
   const commercial = kind === 'commercial';
   if (commercial && !(project.mode === 'commercial' && project.commercial)) throw new Error('A commercial plan set needs a project in commercial mode.');

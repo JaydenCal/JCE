@@ -1,5 +1,5 @@
 // House library ("Default layouts"): the builder's own designs. Add by saving the open design, importing a file,
-// or starting from the Glide Inside library. Duplicate, archive, edit in Pocket Architect.
+// or starting from the Glide Inside library. Duplicate, archive, edit in Glide Inside Residential.
 
 import { h, openDialog, field, busy, toast, chip, icon, errorMessage } from './kit.js';
 import { svgDataUri } from '../thumbnail.js';
@@ -19,7 +19,7 @@ export function houseCard(hs, actions) {
     h('div', { class: 'pp-house-body' },
       h('h3', null, hs.name, hs.archived ? chip('Archived', 'muted') : null),
       h('p', { class: 'pp-stats' }, statsLine(hs)),
-      hs.category || hs.source ? h('p', { class: 'pp-sub' }, hs.category || ({ glide: 'From the Glide Inside library', saved: 'Saved from Pocket Architect', import: 'Imported file' }[hs.source?.type] || '')) : null),
+      hs.category || hs.source ? h('p', { class: 'pp-sub' }, hs.category || ({ glide: 'From the Glide Inside library', saved: 'Saved from Glide Inside Residential', import: 'Imported file' }[hs.source?.type] || '')) : null),
     h('div', { class: 'pp-actions' }, ...actions));
 }
 
@@ -54,7 +54,7 @@ export function renderHouses(host, { api, me, appLinkFor = appLink, designHref =
     }
     const rename = canWrite ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => renameDialog(hs) }, 'Rename') : null;
     return houseCard(hs, [
-      h('a', { class: 'pp-btn pp-btn--sm pp-btn--primary', href: appLinkFor({ house: hs.id }), target: '_blank', rel: 'noopener' }, icon('open', 15), 'Edit in Pocket Architect'),
+      h('a', { class: 'pp-btn pp-btn--sm pp-btn--primary', href: appLinkFor({ house: hs.id }), target: '_blank', rel: 'noopener' }, icon('open', 15), 'Edit in Glide Inside Residential'),
       canWrite ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => busy(e.currentTarget, async () => { const c = await api.duplicateHouse(hs.id); toast(`Duplicated as "${c.name}".`, { kind: 'ok' }); await load(); }) }, 'Duplicate') : null,
       rename,
       canWrite ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => busy(e.currentTarget, async () => { await api.archiveHouse(hs.id, !hs.archived); toast(hs.archived ? 'Restored.' : 'Archived. Clients can no longer see it.', { kind: 'ok' }); await load(); }) }, hs.archived ? 'Restore' : 'Archive') : null,
@@ -75,11 +75,11 @@ export function renderHouses(host, { api, me, appLinkFor = appLink, designHref =
       saved = null;
     }
     if (!saved?.levels) {
-      openDialog({ title: 'Save the open design', size: 'sm', body: h('p', null, 'No design is open in Pocket Architect in this browser yet. Open Pocket Architect, draw or change a design, then come back. You can also import a design file or start from the Glide Inside library.'),
-        footer: (d) => [h('a', { class: 'pp-btn pp-btn--primary', href: appLinkFor(), target: '_blank', rel: 'noopener' }, 'Open Pocket Architect'), h('button', { class: 'pp-btn', type: 'button', onclick: () => d.close() }, 'Close')] });
+      openDialog({ title: 'Save the open design', size: 'sm', body: h('p', null, 'No design is open in Glide Inside Residential in this browser yet. Open Glide Inside Residential, draw or change a design, then come back. You can also import a design file or start from the Glide Inside library.'),
+        footer: (d) => [h('a', { class: 'pp-btn pp-btn--primary', href: appLinkFor(), target: '_blank', rel: 'noopener' }, 'Open Glide Inside Residential'), h('button', { class: 'pp-btn', type: 'button', onclick: () => d.close() }, 'Close')] });
       return;
     }
-    nameDialog({ title: 'Save the open design to your library', project: saved, defaultName: saved.name || 'My design', note: 'This is the design currently open in Pocket Architect in this browser.' });
+    nameDialog({ title: 'Save the open design to your library', project: saved, defaultName: saved.name || 'My design', note: 'This is the design currently open in Glide Inside Residential in this browser.' });
   }
   function importFile() {
     const input = h('input', { type: 'file', accept: 'application/json,.json', hidden: true });
@@ -104,7 +104,7 @@ export function renderHouses(host, { api, me, appLinkFor = appLink, designHref =
   }
   async function fromGlide() {
     const lib = await api.listGlideLibrary();
-    const list = h('div', { class: 'pp-pick' }, lib.map((g) => h('button', { class: 'pp-pick-item', type: 'button', onclick: (e) => busy(e.currentTarget, async () => { const r = await api.saveHouse({ fromGlideId: g.id, name: `${g.name} (${me.org.branding.displayName})` }); d.close(); toast(`Added "${r.name}". Edit it in Pocket Architect to make it your own.`, { kind: 'ok' }); await load(); }) },
+    const list = h('div', { class: 'pp-pick' }, lib.map((g) => h('button', { class: 'pp-pick-item', type: 'button', onclick: (e) => busy(e.currentTarget, async () => { const r = await api.saveHouse({ fromGlideId: g.id, name: `${g.name} (${me.org.branding.displayName})` }); d.close(); toast(`Added "${r.name}". Edit it in Glide Inside Residential to make it your own.`, { kind: 'ok' }); await load(); }) },
       h('img', { src: svgDataUri(g.thumbnail), alt: '', width: 96, height: 60 }), h('span', null, h('strong', null, g.name), h('small', null, statsLine(g))))));
     const d = openDialog({ title: 'Start from the Glide Inside library', size: 'lg', body: h('div', null, h('p', { class: 'pp-sub' }, 'Pick a model. A copy goes into your library, where you can edit it and rename it.'), list), footer: (x) => h('button', { class: 'pp-btn', type: 'button', onclick: () => x.close() }, 'Cancel') });
   }

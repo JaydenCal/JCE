@@ -1,6 +1,6 @@
 import { normaliseCommercial } from '../commercial/schema.js';
 
-// Plan Studio project schema, version 1. All lengths in millimetres, angles in degrees.
+// Glide Inside project schema, version 1. All lengths in millimetres, angles in degrees.
 // Plan coordinates: x to the right, y down the screen. See docs/SCOPE.md section 9.
 
 // Version 2 adds site.lot (the real block from "Find my block", or null). Version 1 projects load unchanged with site.lot = null.
@@ -218,10 +218,10 @@ export function createTank({ x, y, capacityL = 5000, colour, status = 'new' }) {
 
 // Bring an older or partial project up to the current schema. Throws on unusable input.
 export function migrate(input) {
-  if (!input || typeof input !== 'object') throw new Error('Not a Plan Studio project file');
+  if (!input || typeof input !== 'object') throw new Error('Not a Glide Inside project file');
   const p = structuredClone(input);
-  if (!p.schema) throw new Error('Not a Plan Studio project file (no schema version)');
-  if (p.schema > SCHEMA_VERSION) throw new Error('This project was saved by a newer version of Plan Studio');
+  if (!p.schema) throw new Error('Not a Glide Inside project file (no schema version)');
+  if (p.schema > SCHEMA_VERSION) throw new Error('This project was saved by a newer version of Glide Inside');
   p.settings = { ...createProject({ type: p.type }).settings, ...(p.settings || {}) };
   p.finishes = { ...structuredClone(p.type === 'shed' || p.type === 'commercial' ? DEFAULT_FINISHES_SHED : DEFAULT_FINISHES), ...(p.finishes || {}) };
   p.titleBlock = { ...defaultTitleBlock(), ...(p.titleBlock || {}) };

@@ -97,7 +97,7 @@ function nameMaterials(group) {
 }
 
 function mtlFor(materials) {
-  const out = ['# Plan Studio materials'];
+  const out = ['# Glide Inside materials'];
   for (const [name, m] of materials) {
     const c = hex(m);
     const r = (parseInt(c.slice(0, 2), 16) / 255).toFixed(4);
@@ -120,6 +120,6 @@ export function toOBJ(project, { catalogue = null } = {}) {
 export function toOBJBundle(project, { catalogue = null, trial = false } = {}) {
   const group = modelFor(project, catalogue, trial);
   const materials = nameMaterials(group);
-  const obj = `# Plan Studio, units metres, Y up\n${trial ? '# Glide Inside trial export. Contains a GI_TRIAL_WATERMARK object.\n' : ''}mtllib model.mtl\n${new OBJExporter().parse(group)}`;
+  const obj = `# Glide Inside, units metres, Y up\n${trial ? '# Glide Inside trial export. Contains a GI_TRIAL_WATERMARK object.\n' : ''}mtllib model.mtl\n${new OBJExporter().parse(group)}`;
   return { obj, mtl: mtlFor(materials) };
 }

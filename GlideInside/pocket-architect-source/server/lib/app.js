@@ -1,4 +1,4 @@
-// Plan Studio API (docs/SCOPE.md 11.2) as Web-standard handlers: Request in, Response out.
+// Glide Inside API (docs/SCOPE.md 11.2) as Web-standard handlers: Request in, Response out.
 //   const app = createApp({ store, env, fetchImpl, now });
 //   const response = await app.fetch(request);
 // Tests inject an in-memory store, a fake fetch and a clock. No vendor SDKs.

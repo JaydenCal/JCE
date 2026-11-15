@@ -1,4 +1,4 @@
-// Copies the Plan Studio server and the shared modules it needs into the Next.js site (frontend/src/lib/plan-studio-server).
+// Copies the Glide Inside server and the shared modules it needs into the Next.js site (frontend/src/lib/plan-studio-server).
 //
 //   node server/sync-to-site.mjs [path/to/frontend]
 //

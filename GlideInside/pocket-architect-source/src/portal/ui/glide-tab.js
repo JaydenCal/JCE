@@ -12,7 +12,7 @@ export async function renderGlide(host, { api, me, appLinkFor = appLink }) {
   const cats = [...new Set(lib.map((g) => g.category))];
   function paint() {
     grid.replaceChildren(...lib.filter((g) => !state.cat || g.category === state.cat).map((g) => houseCard(g, [
-      h('a', { class: 'pp-btn pp-btn--sm', href: appLinkFor({ glide: g.id }), target: '_blank', rel: 'noopener' }, icon('open', 15), 'Open in Pocket Architect'),
+      h('a', { class: 'pp-btn pp-btn--sm', href: appLinkFor({ glide: g.id }), target: '_blank', rel: 'noopener' }, icon('open', 15), 'Open in Glide Inside Residential'),
       canWrite ? h('button', { class: 'pp-btn pp-btn--sm pp-btn--primary', type: 'button', onclick: (e) => busy(e.currentTarget, async () => {
         try {
           const r = await api.saveHouse({ fromGlideId: g.id, name: `${g.name} (${me.org.branding.displayName})` });

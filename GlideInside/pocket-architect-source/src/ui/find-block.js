@@ -6,7 +6,8 @@ import { icon } from './icons.js';
 import { toast } from './toast.js';
 import { openModal } from './modal.js';
 import { CONFIG } from '../config.js';
-import { searchAddresses } from '../site/client.js';
+import { smartSearch, NOT_FOUND_TEXT } from '../site/address-search.js';
+import { demoSite } from '../site/demo-lot.js';
 import { applySiteLookup } from '../site/apply.js';
 import { runUpload } from '../site/upload/flow.js';
 
@@ -22,10 +23,13 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
   });
   const list = h('ul', { class: 'ps-find-list', id: `${id}-list`, role: 'listbox', hidden: true });
   const status = h('div', { class: 'ps-find-status', role: 'status', 'aria-live': 'polite' });
+  // Shown with the "not found" message: a sample lot is always a way forward, and the boundary upload sits beside it.
+  const sample = h('button', { class: 'ps-btn ps-btn--ghost ps-find-sample', type: 'button', hidden: true, dataset: { ps: 'find-sample' }, onclick: () => useSample() }, 'Try a sample lot');
   const wrap = h('div', { class: `ps-find${compact ? ' ps-find--compact' : ''}${large ? ' ps-find--large' : ''}`, dataset: { ps: 'find-block' } },
     h('div', { class: 'ps-find-box' }, icon('search', { size: large ? 22 : 16 }), input),
     list,
     status,
+    sample,
     h('button', { class: 'ps-btn ps-btn--ghost ps-find-upload', type: 'button', dataset: { ps: 'find-upload' }, title: 'Use your own lot boundary, in Australia or anywhere in the world', onclick: () => runUpload(store, { viewer: false, after: (lot) => onDone?.(lot) }) }, 'Upload your own boundary'),
     CONFIG.siteMock ? h('p', { class: 'ps-hint ps-find-mock' }, 'Sample mode: example lots are shown until the live address lookup is switched on.') : null);
 
@@ -75,11 +79,12 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     controller = new AbortController();
     say('Searching...'); // the previous suggestions stay up meanwhile
     try {
-      results = await searchAddresses(q, { signal: controller.signal, onRetry: () => say('Busy, trying again') });
+      results = await smartSearch(q, { signal: controller.signal, onRetry: () => say('Busy, trying again') });
       if (results.length) cache.set(ck, results);
       active = -1;
       paint();
-      say(results.length ? '' : 'No matching address found. Check the spelling, or try the street name and suburb.', results.length ? '' : 'warn');
+      say(results.length ? '' : NOT_FOUND_TEXT, results.length ? '' : 'warn');
+      sample.hidden = !!results.length;
     } catch (e) {
       if (e?.name === 'AbortError') return;
       results = [];
@@ -88,6 +93,30 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     }
   }
   const debounced = debounce(search, 150);
+
+  // Enter before any suggestion came back: search now and take the top match, or say it was not found.
+  async function enterSearch() {
+    await search();
+    if (results.length) choose(0);
+  }
+
+  async function useSample() {
+    if (busy) return;
+    busy = true;
+    closeList();
+    try {
+      const { lot, warnings } = await applySiteLookup(store, { label: '' }, { prefetched: demoSite({ commercial: store.project?.mode === 'commercial' }) });
+      say('');
+      sample.hidden = true;
+      toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' });
+      for (const w of warnings) toast(w, { kind: 'warn', timeout: 6000 });
+      if (!disposed) onDone?.(lot);
+    } catch (e) {
+      say(e?.message || 'The sample lot could not be loaded.', 'warn');
+    } finally {
+      busy = false;
+    }
+  }
 
   async function choose(i) {
     const pick = results[i];
@@ -126,8 +155,8 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (active >= 0) choose(active);
-      else if (results.length === 1) choose(0);
-      else search();
+      else if (results.length) choose(0); // Enter takes the top match (exact house number first)
+      else enterSearch();
     } else if (e.key === 'Escape' && !list.hidden) {
       e.preventDefault();
       closeList();

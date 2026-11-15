@@ -1,4 +1,4 @@
-// Plan Studio app shell. Renders into #app: top bar, tools, plan editor, 3D host, right panel and status bar.
+// Glide Inside app shell. Renders into #app: top bar, tools, plan editor, 3D host, right panel and status bar.
 // The catalogue, 3D viewer and Plan Pack are separate modules, loaded on demand and allowed to fail.
 
 import * as buildingOps from './commercial/catalogue/ops.js';
@@ -43,9 +43,11 @@ import { createAerialToggle } from './ui/aerial-toggle.js';
 import { mountPanelHide } from './ui/panel-hide.js';
 import { createCommercialCard } from './commercial/lotcard.js';
 import { createCommercialPanel } from './commercial/ui/panel-commercial.js';
-import { enterCommercial, offerCommercial, commercialUi } from './commercial/mode.js';
+import { enterCommercial, offerCommercial, commercialUi, convertToCommercial } from './commercial/mode.js';
+import { resolveTool, toolMode, toolName, toolOfProject, TOOL_INFO, PREV_AUTOSAVE_KEY } from './toolmode.js';
+import { offerSwitch, openInTool } from './ui/tool-switch.js';
 import { effectiveClass } from './commercial/zones.js';
-import { initGuidedFlow, shouldStart } from './flow/index.js';
+import { initGuidedFlow, shouldStart, openFlow } from './flow/index.js';
 import { flowInProgress } from './flow/state.js';
 import { viewerEmbedRequested, addressFromSearch, openFullEditor, initEmbedViewer, loadAddress, mountViewerChrome, takeHandoff } from './ui/embed-viewer.js';
 
@@ -79,13 +81,32 @@ function projectFromTemplate(catalogue, t) {
 
 const hasContent = (p) => p.levels.some((l) => l.rooms.length || l.walls.length);
 
+// A fresh commercial start is an empty commercial layout, never a house template.
+const freshCommercial = () => convertToCommercial(createProject({ name: 'Commercial units' }), { name: 'Commercial units' });
+
 function initialProject(catalogue) {
+  let loaded = null;
+  let switchFrom = null;
   if (!demoMode() && !VIEWER) {
     const handed = takeHandoff();
-    if (handed) return { project: handed.project, fromAutosave: true, previous: handed.previous };
-    const saved = loadAutosave(CONFIG.autosaveKey);
-    if (saved) return { project: saved, fromAutosave: true };
+    if (handed) loaded = { project: handed.project, fromAutosave: true, previous: handed.previous };
+    else {
+      const saved = loadAutosave(CONFIG.autosaveKey);
+      if (saved) loaded = { project: saved, fromAutosave: true };
+    }
   }
+  const res = resolveTool({ search: location.search, project: loaded?.project, fromSaved: !!loaded });
+  toolMode.current = res.tool;
+  if (loaded && res.mismatch) {
+    // The page asks for one tool and the design kept in this browser belongs to the other. It is not opened here and not lost: it stays in
+    // the autosave slot until the first edit here, is kept as the earlier design, and the person is offered the other tool.
+    const other = loaded.project;
+    try { localStorage.setItem(PREV_AUTOSAVE_KEY, JSON.stringify(other)); } catch { /* storage blocked */ }
+    loaded = null;
+    switchFrom = other;
+  }
+  if (loaded) return { ...loaded, tool: res.tool };
+  if (res.tool === 'commercial' && !demoMode() && !VIEWER) return { project: freshCommercial(), fromAutosave: false, tool: res.tool, switchFrom };
   const wanted = new URLSearchParams(location.search).get('template') || 'house_single';
   const list = templatesOf(catalogue);
   // The first frame must show a real plan, so empty templates are skipped.
@@ -97,12 +118,12 @@ function initialProject(catalogue) {
       if (!hasContent(project) && t.id !== wanted) continue;
       const problems = validate(project);
       if (problems.length) console.warn(`[template] ${t.id} has problems`, problems);
-      return { project, fromAutosave: false, templateId: t.id };
+      return { project, fromAutosave: false, templateId: t.id, tool: res.tool, switchFrom };
     } catch (e) {
       console.warn(`[template] ${t.id} could not be loaded`, e);
     }
   }
-  return { project: createProject({ name: 'Untitled design' }), fromAutosave: false };
+  return { project: createProject({ name: 'Untitled design' }), fromAutosave: false, tool: res.tool, switchFrom };
 }
 
 async function main() {
@@ -114,10 +135,15 @@ async function main() {
   mountModals(refs.modalRoot);
   refs.shell.dataset.mode = demoMode() ? 'demo' : 'full';
   if (VIEWER) refs.shell.dataset.embedViewer = '1';
-  commercialUi.enabled = !VIEWER && !demoMode();
-
   const catalogue = await loadCatalogue();
   const start = initialProject(catalogue);
+  // Two tools, one address: ?mode=residential or ?mode=commercial (src/toolmode.js). Each has its own name, tab title, start screen and price.
+  const TOOL = toolMode.current;
+  const COMMERCIAL_TOOL = TOOL === 'commercial' && !VIEWER && !demoMode();
+  commercialUi.enabled = COMMERCIAL_TOOL;
+  CONFIG.productName = toolName(TOOL);
+  refs.shell.dataset.tool = TOOL;
+  if (!VIEWER && !demoMode()) { try { document.title = TOOL_INFO[TOOL].tabTitle; } catch { /* no document title */ } }
   const state = { fromAutosave: start.fromAutosave };
   let earlierDesign = start.previous || null;
   const narrow = window.matchMedia?.('(max-width: 899.98px)').matches;
@@ -127,11 +153,19 @@ async function main() {
   const noAutosave = demoMode() || VIEWER;
   const store = createStore(start.project, { autosaveKey: noAutosave ? null : CONFIG.autosaveKey, opContext: { catalogue } });
 
+  // Undo floor: once a lot is loaded, undo can walk back to "lot loaded" and no further, so it can never remove the lot (and the house with it).
+  { const keyOf = (p) => { const l = p.site?.lot; return l ? `${l.address || ''}|${l.lotLabel || ''}|${l.boundary?.length || 0}` : null; };
+    let floorKey = keyOf(store.project);
+    store.on('project', () => { const k = keyOf(store.project); if (k && k !== floorKey) store.setUndoFloor(); floorKey = k; }); }
+
   // Indicative setbacks and building envelope for a looked-up lot, loaded per council (src/site/setback-stage.js).
   if (CONFIG.siteLookupEnabled) attachSetbacks(store);
 
   const editor = createEditor2D(refs.planHost, store, { catalogue });
-  const views = createViewManager({ store, refs, editor, catalogue });
+  // The 3D code waits for the start screen decision (below): behind the start screen it would only slow the first screen down.
+  let openStartGate = () => {};
+  const startGate = new Promise((r) => { openStartGate = r; setTimeout(r, 12000); });
+  const views = createViewManager({ store, refs, editor, catalogue, startGate });
   const getViewer = views.getViewer;
   const panel = createPanel(refs, store, { catalogue, editor });
   mountPanelHide(refs, { panel }); // hide or show the whole side panel (remembered per browser); also where the builder's "Show AI design assistant" setting lands
@@ -144,6 +178,8 @@ async function main() {
   let share = null; // Save and share, created below
   // Loading designs --------------------------------------------------------------------------------------------------------
   function replaceProject(project) {
+    // A design made in the other tool is not opened here: the person is offered the other tool (it carries the design across).
+    if (!VIEWER && !demoMode() && toolOfProject(project) !== TOOL) { offerSwitch(project, TOOL); return false; }
     if (share?.state.id) share.leave(); // another design replaces the shared one: the read only notice goes
     try {
       store.replace(project);
@@ -176,7 +212,20 @@ async function main() {
     toast('Blank design. Drag on the plan to draw your first room.', { kind: 'info' });
   }
 
+  // Commercial tool: "New" starts a fresh commercial layout at the first screen, with no house templates.
+  async function newCommercial() {
+    if (hasEdits()) {
+      const ok = await askConfirm({ title: 'Start a new commercial layout?', message: `Your current layout "${store.project.name}" has changes that will be replaced. Save a copy first if you want to keep it.`, confirmLabel: 'Start a new layout', danger: true });
+      if (!ok) return;
+    }
+    if (!replaceProject(freshCommercial())) return;
+    track('ps_new_commercial');
+    refs.shell.dataset.flow = '';
+    try { await openFlow({ api, store, refs, catalogue, kind: 'commercial', step: 1 }); } catch (e) { console.warn('[flow] could not start', e); }
+  }
+
   function openNew() {
+    if (COMMERCIAL_TOOL) { newCommercial(); return; }
     openTemplatePicker({
       templates: templatesOf(catalogue).filter((t) => t.id !== 'blank'),
       hasEdits: hasEdits(),
@@ -206,6 +255,7 @@ async function main() {
 
   let profiles = null; // free user profiles, started after the first frame (below)
   function save() {
+    if (store.readOnly) { toast('This shared design is view only. Use Make your own to start one of your own.', { kind: 'info' }); return; }
     saveDesign(store);
     track('ps_project_saved');
     profiles?.promptSave(); // signed out: a friendly, non blocking offer of a free profile (the file save carries on)
@@ -393,7 +443,7 @@ async function main() {
   const params = new URLSearchParams(location.search);
   const addressParam = addressFromSearch();
   // ?mode=commercial[&address=...]: the commercial landing page hands off here. The switch is the person's own request, so it is made without a toast.
-  const wantCommercial = new URLSearchParams(location.search).get('mode') === 'commercial' && !VIEWER && !demoMode();
+  const wantCommercial = COMMERCIAL_TOOL;
   const phone = window.matchMedia?.('(max-width: 599.98px)').matches;
   let owner = null;
   try {
@@ -446,7 +496,7 @@ async function main() {
     ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a) })
     : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
   api.lotCard = lotCard;
-  if (!VIEWER && !demoMode()) api.commercial = createCommercialPanel({ store, host: refs.stage, editor });
+  if (COMMERCIAL_TOOL) api.commercial = createCommercialPanel({ store, host: refs.stage, editor }); // the residential tool has no commercial panel
   createMapCredit(refs.stage, store);
   { const fab = createAerialToggle({ store, className: 'ps-aerial-fab', dataPs: 'aerial-toggle-stage' }); refs.stage.append(fab.el); } // Aerial on/off over the 2D plan and the 3D view (hidden while the lot card shows its own)
   // The guided start flow (src/flow/) replaces the welcome card for a fresh open and for a flow that was part way through.
@@ -462,7 +512,11 @@ async function main() {
     if (kept) toast('Your design was switched to a commercial layout. Undo brings it back.', { kind: 'info', timeout: 15000, action: { label: 'Undo', onClick: () => store.undo() } });
   };
   embed.ready();
-  if (earlierDesign) {
+  if (start.switchFrom) {
+    // The design kept in this browser belongs to the other tool: offer to carry on there.
+    const own = toolOfProject(start.switchFrom);
+    toast(`Your saved design was made in ${TOOL_INFO[own].name}.`, { kind: 'info', timeout: 20000, action: { label: `Open in ${TOOL_INFO[own].name}`, onClick: () => openInTool(start.switchFrom, own) } });
+  } else if (earlierDesign) {
     const prev = earlierDesign;
     earlierDesign = null;
     toast('Your earlier design is kept in this browser.', { kind: 'info', timeout: 12000, action: { label: 'Open earlier design', onClick: () => replaceProject(prev) } });
@@ -499,6 +553,7 @@ async function main() {
   if (startsFlow && !VIEWER && !demoMode()) {
     try { flowOpen = !!(await initGuidedFlow({ api, store, refs, catalogue, viewer: VIEWER, demo: demoMode(), shareId, fromAutosave: state.fromAutosave, wantCommercial, hasAddress: !!addressParam })); } catch (e) { console.warn('[flow] could not start', e); }
   } else if (!VIEWER && !demoMode()) initGuidedFlow({ api, store, refs, catalogue, viewer: VIEWER, demo: demoMode(), shareId, fromAutosave: state.fromAutosave, wantCommercial }).catch(() => {});
+  openStartGate();
   const startTour = () => import('./ui/onboarding/index.js').then((m) => m.initOnboarding?.(window.__ps)).catch(() => {});
   if (!VIEWER) {
     if (flowOpen && flowInProgress(store.project)) { const off = store.on('project', (e) => { if (e?.label === 'flow' && !flowInProgress(store.project)) { off(); startTour(); } }); }
@@ -513,7 +568,7 @@ main().catch((err) => {
   if (root) {
     root.replaceChildren(
       h('div', { style: { padding: '24px', maxWidth: '520px' } },
-        h('h1', { style: { fontSize: '20px', margin: '0 0 8px' } }, 'Plan Studio could not start'),
+        h('h1', { style: { fontSize: '20px', margin: '0 0 8px' } }, 'Glide Inside could not start'),
         h('p', null, 'Please reload the page. If this keeps happening, try another browser or clear this site\'s stored data.'),
         h('button', { class: 'ps-btn', type: 'button', onclick: () => location.reload() }, 'Reload')));
   }

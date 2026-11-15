@@ -1,4 +1,4 @@
-// Which Pocket Architect experience a portal login gets. Pure, so it is unit tested.
+// Which Glide Inside Residential experience a portal login gets. Pure, so it is unit tested.
 //   client login                           client mode always
 //   builder or staff login, ?design=...    "Design on a lot": the same client mode, plus the staff extras (full editor, exports, send)
 //   builder or staff login, no ?design     the full editor, as before

@@ -1,4 +1,4 @@
-// Browser client for the Plan Studio API (docs/SCOPE.md 11.2). Plain fetch. Every failure becomes an ApiError with a
+// Browser client for the Glide Inside API (docs/SCOPE.md 11.2). Plain fetch. Every failure becomes an ApiError with a
 // stable `code` so the UI can choose a friendly message: the server's own codes (NOT_ENTITLED, CREDITS_EXHAUSTED,
 // RATE_LIMITED, AI_PAUSED, ...) plus NETWORK, TIMEOUT and SERVER_UNAVAILABLE for failures before a reply.
 
@@ -13,7 +13,7 @@ export class ApiError extends Error {
   }
 }
 
-const NETWORK_MESSAGE = 'Could not reach the Plan Studio server. Check your connection and try again.';
+const NETWORK_MESSAGE = 'Could not reach the Glide Inside server. Check your connection and try again.';
 
 function filenameFrom(res, fallback) {
   const header = res.headers.get('content-disposition') || '';
@@ -67,7 +67,7 @@ export function createApi({ base = '/api', fetchImpl = null, timeoutMs = 45000 }
     if (type.includes('json')) data = await res.json().catch(() => null);
     if (!data || (!data.error && !data.code)) {
       // An HTML page or an empty reply: the API is not running behind this address.
-      throw new ApiError('SERVER_UNAVAILABLE', 'The Plan Studio server is not available.', { status: res.status });
+      throw new ApiError('SERVER_UNAVAILABLE', 'The Glide Inside server is not available.', { status: res.status });
     }
     const e = data.error && typeof data.error === 'object' ? data.error : data;
     const { code, message, ...details } = e;
@@ -83,7 +83,7 @@ export function createApi({ base = '/api', fetchImpl = null, timeoutMs = 45000 }
     const res = await send(method, path, options);
     if (!res.ok) return failure(res);
     const data = await res.json().catch(() => null);
-    if (data === null) throw new ApiError('SERVER_UNAVAILABLE', 'The Plan Studio server is not available.', { status: res.status });
+    if (data === null) throw new ApiError('SERVER_UNAVAILABLE', 'The Glide Inside server is not available.', { status: res.status });
     return data;
   }
 

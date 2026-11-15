@@ -4,7 +4,7 @@
 //   - MGA2020 (GDA2020 / MGA zone 54, 55, 56; EPSG 7854, 7855, 7856) is a transverse Mercator grid in metres.
 //     Easting grows to the east, northing grows to the north.
 //   - "Site coordinates" are [east, north] in metres relative to a site origin (an MGA point, normally the lot centroid).
-//   - Plan coordinates (Plan Studio) are millimetres with y growing DOWN the screen, so MGA northing maps to -y.
+//   - Plan coordinates (Glide Inside) are millimetres with y growing DOWN the screen, so MGA northing maps to -y.
 //     Grid north is up the screen, so site.northDeg is 0.
 
 export const MGA_ZONES = [54, 55, 56];

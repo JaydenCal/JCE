@@ -29,7 +29,7 @@ export async function initProfiles(app, { refs, fetchImpl = null, api = createPr
     status: () => (controller.state.status === 'in' ? 'in' : controller.state.status === 'out' ? 'out' : 'none'),
     otherAccount: () => hasOtherAccount(app),
     // Never mid drag (pointer is down), never over another dialog, never while walking through the 3D view.
-    isBusy: () => pointerDown || !!document.querySelector('.ps-modal, .pso-card, .pso-pop:not([hidden]), .gf-root:not([hidden])') || store.ui.view === 'walk', // also the first run tour
+    isBusy: () => pointerDown || !!document.querySelector('.ps-modal, .pso-card, .pso-pop:not([hidden]), .gf-root:not([hidden]):not([data-step="4"])') || store.ui.view === 'walk', // also the first run tour
     show: (reason) => ui.showPrompt(reason),
     session: safeSession(),
   });

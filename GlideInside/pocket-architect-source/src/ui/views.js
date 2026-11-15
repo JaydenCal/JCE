@@ -15,7 +15,7 @@ const ls = () => {
   }
 };
 
-export function createViewManager({ store, refs, editor, catalogue }) {
+export function createViewManager({ store, refs, editor, catalogue, startGate = null }) {
   const { shell, planHost, host3d, stageNote, stage } = refs;
   let viewer = null;
   let loading = null;
@@ -115,6 +115,8 @@ export function createViewManager({ store, refs, editor, catalogue }) {
     return loading;
   }
 
+  // The guided start screen sits over the editor until a lot is found or the flow closes. Loading the 3D code behind it would slow the first screen on a phone connection for nothing.
+  const startScreenCovers = () => typeof document !== 'undefined' && document.documentElement.classList.contains('gf-open') && !store.project.site?.lot && !(store.project.commercial?.buildings || []).length;
   async function apply() {
     const view = store.ui.view;
     const mine = ++seq;
@@ -133,6 +135,8 @@ export function createViewManager({ store, refs, editor, catalogue }) {
     if (!viewer) {
       showNote(h('div', { class: 'ps-spinner', role: 'progressbar', 'aria-label': 'Loading' }), h('p', null, 'Loading the 3D view'));
     }
+    if (!viewer && startGate) { await startGate; if (mine !== seq || !has3d(store.ui.view)) return; }
+    if (!viewer && startScreenCovers()) return; // the start screen covers the editor: the 3D code (about 230 KB compressed) loads when a lot or a design appears, or the flow closes
     try {
       const v = await ensureViewer();
       if (mine !== seq || !has3d(store.ui.view)) return;
@@ -169,9 +173,13 @@ export function createViewManager({ store, refs, editor, catalogue }) {
     }
     writeLastView(globalThis.sessionStorage || null, store.ui.view, owner); // the choice lasts for this session only; a new session opens in Split
   });
+  const wake = () => { if (!viewer && has3d(store.ui.view) && !startScreenCovers()) apply(); };
+  const offProject = store.on('project', wake);
+  let mo = null;
+  try { if (typeof MutationObserver !== 'undefined') { mo = new MutationObserver(wake); mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] }); } } catch { mo = null; }
   apply();
 
   const getViewer = () => viewer;
   getViewer.ensure = ensureViewer;
-  return { getViewer, ensureViewer, apply, dispose: () => { off(); window.removeEventListener('keydown', onEscape, true); bar.remove(); backBtn.remove(); } };
+  return { getViewer, ensureViewer, apply, dispose: () => { off(); offProject?.(); mo?.disconnect(); window.removeEventListener('keydown', onEscape, true); bar.remove(); backBtn.remove(); } };
 }

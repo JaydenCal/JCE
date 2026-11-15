@@ -3,6 +3,7 @@
 //   POST /api/projects            { project, email? }  -> { id, editKey, url, expiresAt }
 //   GET  /api/projects/:id                              -> { id, project, updatedAt, expiresAt }
 //   PUT  /api/projects/:id        header x-edit-key     -> { id, url, updatedAt, expiresAt }
+//   DELETE /api/projects/:id      header x-edit-key     -> { id, revoked: true }   (the owner stops sharing)
 // The link is <app page>?share=<id>. The edit key never leaves the browser that saved: it is kept in localStorage under
 // "ps.share.<project id>" as { id, editKey, url, savedAt, expiresAt }. Whoever has the link can look; only the saver can update.
 
@@ -101,6 +102,7 @@ export function createCloud({ base = '/api', fetchImpl = null, timeoutMs = 30000
     create: (project, { email } = {}) => call('POST', '/projects', { body: { project: forUpload(project), ...(email ? { email } : {}) } }),
     update: (id, editKey, project, { email } = {}) => call('PUT', `/projects/${encodeURIComponent(id)}`, { editKey, body: { project: forUpload(project), ...(email ? { email } : {}) } }),
     load: (id) => call('GET', `/projects/${encodeURIComponent(id)}`),
+    revoke: (id, editKey) => call('DELETE', `/projects/${encodeURIComponent(id)}`, { editKey }),
   };
 }
 
@@ -151,9 +153,22 @@ export function saveErrorMessage(err) {
 }
 
 /** Plain words for a failed open of a shared link. */
+/** The owner stops sharing: the link stops working for everyone. Needs the edit key this browser holds. Resolves true when the link is gone. */
+export async function revokeShared(cloud, project, { storage = defaultStorage() } = {}) {
+  const own = readShare(project?.id, storage);
+  if (!own) return false;
+  try {
+    await cloud.revoke(own.id, own.editKey);
+  } catch (e) {
+    if (!(e instanceof CloudError) || e.code !== 'NOT_FOUND') throw e; // already gone counts as revoked
+  }
+  forgetShare(project.id, storage);
+  return true;
+}
+
 export function loadErrorMessage(err) {
   if (err?.code === 'EXPIRED') return 'That shared link has expired.';
-  if (err?.code === 'NOT_FOUND') return 'That shared design was not found. Check that the link was copied in full.';
+  if (err?.code === 'NOT_FOUND') return 'That shared design was not found. Check that the link was copied in full, or ask the owner whether they stopped sharing it.';
   if (err?.code === 'RATE_LIMITED') return 'Too many people have opened shared links from this connection. Try again in a little while.';
   if (err?.code === 'NETWORK' || err?.code === 'TIMEOUT') return err.message;
   return err?.message || 'That shared design could not be opened.';

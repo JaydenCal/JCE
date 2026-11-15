@@ -110,7 +110,7 @@ export function deriveTheme(colours) {
   if (link.changed) adjusted.push('Links and tab text use a darker shade of your accent so they stay readable on white.');
   const accentSoft = mix(accent, WHITE, 0.82);
   const accentSoftLine = mix(accent, WHITE, 0.55);
-  // Dark mode (Pocket Architect only): readable accent on the dark panel, optional own text and background colours.
+  // Dark mode (Glide Inside Residential only): readable accent on the dark panel, optional own text and background colours.
   const darkBg = normaliseHex(colours.darkBg);
   const darkInk = normaliseHex(colours.darkInk);
   const panel = darkBg ? lighten(darkBg, 0.06) : PANEL_DARK;

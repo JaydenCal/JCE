@@ -2,9 +2,10 @@
 // the setbacks status. The commercial flow adds a zone warning through `extra(project)`.
 
 import { h } from '../ui/dom.js';
-import { searchAddresses } from '../site/client.js';
+import { smartSearch, NOT_FOUND_TEXT } from '../site/address-search.js';
 import { applySiteLookup } from '../site/apply.js';
 import { demoSite } from '../site/demo-lot.js';
+import { runUpload } from '../site/upload/flow.js';
 import { confirmFrontage, waitForEnvelope } from '../ui/embed-viewer.js';
 import { lotOf } from '../model/placement.js';
 import { lotMapSvg, frontageM, aerialOf, setbacksText } from './lot-map.js';
@@ -20,6 +21,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
   let error = '';
   let list = [];
   let timer = 0;
+  let notFound = false;
   let disposed = false;
   const app = typeof window !== 'undefined' ? window.__ps : null;
 
@@ -28,10 +30,12 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
   const sugg = h('ul', { class: 'gf-suggest', role: 'listbox', hidden: true, dataset: { ps: 'flow-suggest' } });
   const status = h('p', { class: 'gf-note', role: 'status', 'aria-live': 'polite', dataset: { ps: 'flow-lot-status' } });
   const sample = h('button', { class: 'gf-skip', type: 'button', style: { marginLeft: '0', padding: '0' }, dataset: { ps: 'flow-sample' }, onclick: () => useSample() }, 'No address? Try a sample lot');
+  // Not found: the sample lot and the boundary upload are always offered side by side, so the person is never stuck.
+  const upload = h('button', { class: 'gf-skip', type: 'button', hidden: true, style: { marginLeft: '12px', padding: '0' }, dataset: { ps: 'flow-upload' }, onclick: () => useUpload() }, 'Upload your own boundary');
   const confirm = h('div', { dataset: { ps: 'flow-lot-confirm' } });
   const search = h('div', { class: 'gf-card' },
     h('label', { class: 'gf-note', style: { margin: '0 0 6px', display: 'block', fontWeight: '600' } }, 'Street address'),
-    h('div', { class: 'gf-field' }, input, findBtn, sugg), status, h('p', { class: 'gf-note' }, sample));
+    h('div', { class: 'gf-field' }, input, findBtn, sugg), status, h('p', { class: 'gf-note' }, sample, upload));
   const el = h('div', { class: 'gf-grid', style: { alignItems: 'start' } }, h('div', null, search), confirm);
 
   const setSugg = (items) => {
@@ -45,7 +49,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     const q = input.value.trim();
     if (q.length < 4) { setSugg([]); return; }
     try {
-      const r = await searchAddresses(q, {});
+      const r = await smartSearch(q, {});
       if (!disposed && input.value.trim() === q) setSugg(r.slice(0, 5));
     } catch { /* the Find button reports a failed search */ }
   }
@@ -70,12 +74,17 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
   async function find() {
     const q = input.value.trim();
     if (q.length < 3) { error = 'Type a street address first.'; paint(); return; }
-    loading = true; error = ''; paint();
+    loading = true; error = ''; notFound = false; paint();
     let pick = null;
-    try { pick = (await searchAddresses(q, {}))[0]; } catch (e) { error = e?.message || 'The address search is not available right now.'; }
+    try { pick = (await smartSearch(q, {}))[0]; } catch (e) { error = e?.message || 'The address search is not available right now.'; }
     loading = false;
-    if (!pick && !error) error = 'No matching address found. Check the spelling, or try the street name and suburb.';
+    if (!pick && !error) { error = NOT_FOUND_TEXT; notFound = true; }
     if (pick) await choose(pick); else paint();
+  }
+
+  async function useUpload() {
+    if (loading) return;
+    await runUpload(store, { viewer: false, after: async () => { try { confirmFrontage(store); await waitForEnvelope(store, 8000); } catch { /* the confirm card shows what is there */ } error = ''; notFound = false; if (!disposed) { paint(); ctx.refresh(); } } });
   }
 
   async function useSample() {
@@ -117,6 +126,8 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
 
   function paint() {
     findBtn.disabled = loading;
+    upload.hidden = !notFound;
+    sample.textContent = notFound ? 'Try a sample lot' : 'No address? Try a sample lot';
     status.textContent = loading ? 'Finding your lot' : error;
     status.className = `gf-note${error && !loading ? ' gf-note--bad' : ''}`;
     paintConfirm();

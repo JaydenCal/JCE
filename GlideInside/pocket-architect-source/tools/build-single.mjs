@@ -1,4 +1,4 @@
-// Build Plan Studio as one self-contained HTML file: dist/plan-studio.html
+// Build Glide Inside as one self-contained HTML file: dist/plan-studio.html
 // Usage: node tools/build-single.mjs [--out path] [--inline] [--brand name]
 // Default: the page (HTML, CSS and the app's first-load code, inlined) plus a few sibling files in the same folder, all loaded on demand:
 //   ps-<name>-<hash>.js   dynamic import chunks (3D viewer, exporters, portal, pdf import, mock data ...)
@@ -13,7 +13,7 @@ import { dirname, resolve, join } from 'node:path';
 
 const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
 const brandArg = process.argv.indexOf('--brand');
-const brand = brandArg > 0 ? process.argv[brandArg + 1] : null; // e.g. 'Pocket Architect': renames the product in the page and its messages
+const brand = brandArg > 0 ? process.argv[brandArg + 1] : null; // e.g. 'Glide Inside': renames the product in the page and its messages
 const outArg = process.argv.indexOf('--out');
 const out = outArg > 0 ? resolve(process.argv[outArg + 1]) : resolve(root, 'dist/plan-studio.html');
 
@@ -48,6 +48,13 @@ try { window.__PS_PDF_WORKER__ = URL.createObjectURL(new Blob([document.getEleme
 </script>
 <script>${jspdf}</script>`;
 
+// Chunks the first screen needs (the entry's static imports, followed through): preloaded so the browser fetches them side by side rather than one level at a time.
+const byName = new Map(chunkFiles.map((f) => [f.path.split('/').pop(), f.text]));
+const preload = new Set();
+const walkStatic = (text) => { for (const m of text.matchAll(/(?:from|import)\s*"\.\/(ps-[^"]+\.js)"/g)) { if (!preload.has(m[1]) && byName.has(m[1])) { preload.add(m[1]); walkStatic(byName.get(m[1])); } } };
+if (!inline) walkStatic(entryFile.text);
+const preloadTags = [...preload].map((n) => `<link rel="modulepreload" href="./${n}">`).join('\n');
+
 // Mapbox PUBLIC token for the worldwide aerial: read from the environment at build time, never stored in the source. Only a public token (pk.)
 // is accepted; a secret token (sk.) or anything else is refused and the build carries no token (a grey ground is shown instead).
 const mbToken = (process.env.MAPBOX_PUBLIC_TOKEN || '').trim();
@@ -62,21 +69,22 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pocket Architect</title>
+<title>Glide Inside</title>
 <meta name="description" content="Draw a floor plan, see it in 3D and walk through it. Houses, granny flats, units, sheds and extensions.">
 <!-- GI_CONFIG (portalEnabled, portalMock) comes from the site config; the portal stays closed if this file is missing -->
 <script src="../../site.config.js?v=20261111"></script>
-${mapboxTag}
+${mapboxTag}${preloadTags}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 <style>
 ${css}
 </style>
 </head>
 <body>
-<div id="app" class="ps-app"><p class="ps-boot">Loading Plan Studio</p></div>
-<noscript>Plan Studio needs JavaScript to run.</noscript>
+<div id="app" class="ps-app"><p class="ps-boot">Loading Glide Inside</p></div>
+<noscript>Glide Inside needs JavaScript to run.</noscript>
 ${inline ? inlineTags : siblingTags}
 <script type="module">
 ${js}
@@ -85,7 +93,7 @@ ${js}
 </html>
 `;
 mkdirSync(dirname(out), { recursive: true });
-writeFileSync(out, brand ? html.replaceAll('Plan Studio', brand) : html);
+writeFileSync(out, brand ? html.replaceAll('Glide Inside', brand) : html);
 let sib = 0;
 if (!inline) {
   // Replace the previous build's siblings (hashed names change) so no stale chunk is uploaded.

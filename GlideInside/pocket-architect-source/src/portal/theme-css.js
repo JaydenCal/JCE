@@ -28,7 +28,7 @@ export function themeCss(colours) {
     `${R} .pp-btn:focus-visible,${R} .pp-tab:focus-visible,${R} .pp-link:focus-visible,${R} .pp-pick-item:focus-visible{outline-color:var(--accent)}`,
     `${R} .pp-notice,${R} .pp-trial:not(.pp-trial--ended){background:var(--bt-soft);color:var(--ink)}`,
     `${R} .pp-trial:not(.pp-trial--ended) .pp-trial-text p{color:var(--ink)}`,
-    // Pocket Architect: primary buttons, selected segments, chips and the builder strip.
+    // Glide Inside Residential: primary buttons, selected segments, chips and the builder strip.
     `${R} .ps-btn--primary,${R} .ps-seg-btn[aria-selected="true"],${R} .ps-seg-btn[aria-pressed="true"],${R} .ps-cat[aria-pressed="true"],${R} .ps-chip[aria-pressed="true"],${R} .pas-btn--primary{background:var(--bt-button);border-color:var(--bt-button);color:var(--bt-button-ink)}`,
     `${R} .ps-topbar{box-shadow:inset 0 3px 0 var(--bt-button)}`,
     `${R} .pas-strip{background:var(--bt-primary);color:var(--bt-primary-ink);border-bottom-color:var(--bt-primary-deep)}`,
@@ -53,8 +53,23 @@ export function applyBrandTheme(colours, doc = typeof document !== 'undefined' ?
   doc.documentElement.setAttribute('data-brand-theme', '1');
   return true;
 }
+const WL_ID = 'gi-white-label';
+/** Signed in as a builder or one of their clients: the Glide Inside site header and footer (Pricing, For builders, trial and login links) are not shown, so the page is the builder's own. */
+export function applyWhiteLabel(doc = typeof document !== 'undefined' ? document : null) {
+  if (!doc) return false;
+  if (!doc.getElementById(WL_ID)) {
+    const style = doc.createElement('style');
+    style.id = WL_ID;
+    style.textContent = ':root[data-white-label] .site-header,:root[data-white-label] .site-footer{display:none!important}';
+    doc.head.append(style);
+  }
+  doc.documentElement.setAttribute('data-white-label', '1');
+  return true;
+}
 export function clearBrandTheme(doc = typeof document !== 'undefined' ? document : null) {
   if (!doc) return;
+  doc.getElementById(WL_ID)?.remove();
+  doc.documentElement.removeAttribute('data-white-label');
   doc.getElementById(STYLE_ID)?.remove();
   doc.documentElement.removeAttribute('data-brand-theme');
 }

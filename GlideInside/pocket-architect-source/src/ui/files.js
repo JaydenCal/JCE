@@ -9,7 +9,7 @@ export function saveDesign(store) {
   store.saveNow?.();
   const text = JSON.stringify(store.project, null, 2);
   const blob = new Blob([text], { type: 'application/json' });
-  const name = `${slug(store.project.name)}.planstudio.json`;
+  const name = `${slug(store.project.name)}.glideinside.json`;
   downloadBlob(blob, name);
   toast(`Saved ${name}. Keep the file safe: it is your copy of this design.`, { kind: 'ok' });
   return name;

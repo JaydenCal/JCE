@@ -61,7 +61,7 @@ export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 
 export function summaryText(e, reference) {
   const lot = e.lot || {};
   return [
-    `New engineering / DA enquiry from Glide Inside (Pocket Architect)`,
+    `New engineering / DA enquiry from Glide Inside`,
     `Reference: ${reference}`,
     '',
     `Name: ${e.name}`, `Phone: ${e.phone}`, `Email: ${e.email}`,
@@ -74,7 +74,7 @@ export function summaryText(e, reference) {
     e.orgName ? `Sent from the builder portal of: ${e.orgName} (${e.source})` : `Sent by: ${e.source === 'public' ? 'a Plan Pack user' : e.source}`,
     '',
     'The person ticked: "I agree to my plans and details being sent to JCE Infrastructure Pty Ltd to prepare a quote".',
-    'Attached: the PDF plan set and the design file (.json, opens in Pocket Architect).',
+    'Attached: the PDF plan set and the design file (.json, opens in Glide Inside).',
   ].filter((l) => l !== null).join('\n');
 }
 
@@ -87,7 +87,7 @@ export async function sendViaResend({ config, fetchImpl, enquiry, reference }) {
     const bytes = new TextEncoder().encode(JSON.stringify(enquiry.project));
     let bin = '';
     for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-    attachments.push({ filename: `${safe}.planstudio.json`, content: btoa(bin) });
+    attachments.push({ filename: `${safe}.glideinside.json`, content: btoa(bin) });
   }
   let res;
   try {

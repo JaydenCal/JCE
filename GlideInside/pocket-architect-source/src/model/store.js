@@ -7,6 +7,7 @@ import { applyOp, findEntity, OPS } from './ops.js';
 export function createStore(project, opts = {}) {
   const listeners = new Map();
   const undoStack = [];
+  let floor = 0; // undo cannot go below this many steps (set when a lot is loaded)
   const redoStack = [];
   const limit = opts.historyLimit ?? 100;
   let saveTimer = null;
@@ -54,7 +55,7 @@ export function createStore(project, opts = {}) {
     // Mutate the project with fn(project). One undo step. Restores on error and rethrows.
     apply(label, fn) {
       if (store.readOnly) {
-        const err = new Error('This is a shared design and it is read only. Choose "Make my own copy" to change it.');
+        const err = new Error('This is a shared design and it is read only. Use "Copy this design" or "Make your own" to change it.');
         err.name = 'ReadOnlyError';
         throw err;
       }
@@ -67,7 +68,7 @@ export function createStore(project, opts = {}) {
         throw e;
       }
       undoStack.push({ label, snapshot: before });
-      if (undoStack.length > limit) undoStack.shift();
+      if (undoStack.length > limit) { undoStack.shift(); if (floor > 0) floor -= 1; }
       redoStack.length = 0;
       store.project.updatedAt = new Date().toISOString();
       changed(label);
@@ -93,7 +94,15 @@ export function createStore(project, opts = {}) {
       );
     },
 
+    // Nothing below the floor can be undone. The app sets it when a lot is loaded, so undo can never take the lot away.
+    setUndoFloor() {
+      floor = undoStack.length;
+      store.emit('history', { canUndo: store.canUndo(), canRedo: store.canRedo() });
+    },
+    undoFloor: () => floor,
+
     undo() {
+      if (undoStack.length <= floor) return false;
       const e = undoStack.pop();
       if (!e) return false;
       redoStack.push({ label: e.label, snapshot: structuredClone(store.project) });
@@ -109,14 +118,15 @@ export function createStore(project, opts = {}) {
       changed(`Redo ${e.label}`);
       return true;
     },
-    canUndo: () => undoStack.length > 0,
+    canUndo: () => undoStack.length > floor,
     canRedo: () => redoStack.length > 0,
-    undoLabel: () => undoStack.at(-1)?.label || null,
+    undoLabel: () => (undoStack.length > floor ? undoStack.at(-1)?.label || null : null),
     redoLabel: () => redoStack.at(-1)?.label || null,
 
     replace(next) {
       store.project = migrate(next);
       undoStack.length = 0;
+      floor = 0;
       redoStack.length = 0;
       store.ui.selection = null;
       store.ui.activeLevelId = store.project.levels[0].id;

@@ -1,5 +1,5 @@
 // In-memory mock of the portal API with realistic sample data (docs/PORTAL_API.md). The state lives in localStorage so the
-// dashboard page and Pocket Architect (same origin) see the same builder, clients and designs. Every storage access is wrapped.
+// dashboard page and Glide Inside Residential (same origin) see the same builder, clients and designs. Every storage access is wrapped.
 // Passwords are kept in plain text HERE ONLY, because this is a review mock. The real server uses PBKDF2 (docs/PORTAL_API.md 6).
 //
 //   const api = createMockApi({ now, storage, latency });   // tests pass a controllable clock and an in-memory storage
@@ -376,7 +376,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
         try {
           p = migrate(project);
         } catch (e) {
-          throw err('BAD_REQUEST', e.message || 'That is not a Pocket Architect design.');
+          throw err('BAD_REQUEST', e.message || 'That is not a Glide Inside design.');
         }
         const problems = validate(p);
         if (problems.length) throw err('BAD_REQUEST', `That design has problems: ${problems.slice(0, 3).join('; ')}.`);
@@ -547,7 +547,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       try {
         proj = migrate(project);
       } catch (e) {
-        throw err('BAD_REQUEST', e.message || 'That is not a Pocket Architect design.');
+        throw err('BAD_REQUEST', e.message || 'That is not a Glide Inside design.');
       }
       if (JSON.stringify(proj).length > 4_000_000) throw err('PAYLOAD_TOO_LARGE', 'That design is too large to save.', 413);
       if (!p) {

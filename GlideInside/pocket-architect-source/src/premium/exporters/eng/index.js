@@ -137,7 +137,7 @@ export async function toEngineeringPDF(project0, options = {}) {
     title: `${ascii(projectTitle(project)) || 'Design'} concept plan set`,
     subject: 'Concept design plans, to be verified by a suitably qualified person',
     author: brand.mode === 'builder' ? brand.name || 'Glide Inside' : ascii(tb.company) || 'Glide Inside',
-    creator: 'Glide Inside Pocket Architect',
+    creator: 'Glide Inside Residential',
   });
   const doc = withSuperscripts(scaledDoc(raw, p.k));
   const total = plan.list.length;

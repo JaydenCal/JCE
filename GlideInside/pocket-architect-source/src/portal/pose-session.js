@@ -1,4 +1,4 @@
-// The builder's lot planner controls for Pocket Architect: drag the whole house on the lot, turn it with a ring handle (1 degree
+// The builder's lot planner controls for Glide Inside Residential: drag the whole house on the lot, turn it with a ring handle (1 degree
 // steps, 15 with Shift), mirror it, face the garage to the street, and read the clearance to every boundary live (green inside
 // the indicative setback envelope, red outside, grey when no setback is loaded). The lot, setbacks, road and driveway are drawn
 // by the 2D editor from the project being previewed (src/editor2d/draw-lotplan.js), so they stay in step as the house moves.
@@ -275,12 +275,16 @@ export function runPoseSession({ store, editor, host = document.getElementById('
     catcher.remove();
     panel.remove();
   }
-  function commit({ anyway = false } = {}) {
-    // A house over the lot boundary can never be placed. Outside the setback envelope needs an explicit Place anyway.
+  async function commit({ anyway = false } = {}) {
+    // A house over the lot boundary can never be placed. Outside the setback envelope needs an explicit Place anyway, confirmed with the distance.
     if (hasLot() && preview) {
       const c = lotChecks(preview);
       if (c.crossesBoundary) { live.textContent = blockLine.textContent = `Cannot place here: ${c.messages.find((m) => m.kind === 'boundary').text}`; return; }
       if (c.messages.length && !anyway) { live.textContent = c.messages.map((m) => m.text).join(' '); return; }
+      if (c.messages.length && anyway) {
+        const { confirmBreach, statusFromMessages } = await import('../flow/breach.js');
+        if (!(await confirmBreach(statusFromMessages(c.messages), { what: 'house' }))) return;
+      }
     }
     teardown();
     let record = null;

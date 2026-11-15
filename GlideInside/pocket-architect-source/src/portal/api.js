@@ -1,4 +1,4 @@
-// Portal client API. Every call the dashboard and Pocket Architect need (docs/PORTAL_API.md 3).
+// Portal client API. Every call the dashboard and Glide Inside Residential need (docs/PORTAL_API.md 3).
 // CONFIG.portalMock = true uses the in-browser mock (mock-api.js). Otherwise the same calls go to {apiBase}/portal/... over fetch
 // with the HttpOnly session cookie (gi_session, Path=/api) and the CSRF header X-GI-Request: 1 on every call. Both resolve plain data and reject with ApiError (src/premium/api.js).
 

@@ -1,6 +1,7 @@
 // The commercial guided flow: 1 Find your lot, 2 Choose what to build, 3 Place it, 4 Check it, then the full editor (step 5).
 // Works on the real project, so the editor opens with exactly the buildings and site that were laid out. Wording: building, layout, site.
 
+import { confirmBreach } from './breach.js';
 import { h } from '../ui/dom.js';
 import * as G from '../model/geometry.js';
 import { lotOf } from '../model/placement.js';
@@ -271,6 +272,7 @@ function mountPlaceStep(ctx) {
     el,
     nextLabel: 'Check it',
     canNext: () => !busy && !!lotNow() && isCommercial(store.project) && placeables(store.project).length > 0,
+    beforeNext: () => confirmBreach(placementStatus(store.project), { what: 'building' }),
     async onEnter() {
       const lot = lotNow();
       if (!lot) return;
@@ -305,6 +307,7 @@ function mountCheckStep(ctx, { catalogue }) {
     const chip = s.verdict === 'met' ? h('span', { class: 'gf-chip gf-chip--ok' }, 'Setbacks met') : s.verdict === 'not-met' ? h('span', { class: 'gf-chip gf-chip--warn' }, 'Setbacks not met') : h('span', { class: 'gf-chip' }, 'Setbacks to check');
     card.replaceChildren(
       h('div', { class: 'gf-row', style: { justifyContent: 'space-between' } }, h('strong', { style: { fontSize: '18px' } }, s.typeLabel), chip),
+      s.summary ? h('p', { class: `gf-note gf-note--${s.summary.tone === 'ok' ? 'ok' : 'plain'}`, style: { fontWeight: '600' }, dataset: { ps: 'flow-summary-line' } }, s.summary.text) : null,
       h('table', { class: 'gf-table', dataset: { ps: 'flow-setback-table' } },
         h('thead', null, h('tr', null, h('th', null, 'Boundary'), h('th', null, 'Distance'), h('th', null, 'Needed'), h('th', null, ''))),
         h('tbody', null, ...s.rows.map((r) => h('tr', { dataset: { met: String(r.met) } }, h('td', null, r.label), h('td', null, `${r.clearanceM.toFixed(2)} m`), h('td', null, r.requiredM != null ? `${r.requiredM.toFixed(1)} m` : 'Not set'), h('td', null, r.met === true ? 'Met' : r.met === false ? 'Not met' : 'Check'))))),

@@ -1,4 +1,4 @@
-// Plan Studio catalogue: furniture, finishes, opening presets, tanks and design templates.
+// Glide Inside catalogue: furniture, finishes, opening presets, tanks and design templates.
 //
 //   catalogue.FURNITURE, CATEGORIES, getFurniture(id)
 //   catalogue.finishes   { MATERIALS, COLOURS, getMaterial, getColour, materialsFor, coloursFor, findColour, validateFinish }

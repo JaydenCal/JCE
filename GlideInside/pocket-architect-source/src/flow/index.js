@@ -41,6 +41,16 @@ export async function initGuidedFlow({ api, store, refs, catalogue, viewer = fal
   return flow;
 }
 
+/** Open the flow of `kind` at `step` on the current design (the commercial tool's New, the switch offers). */
+export async function openFlow({ api, store, refs, catalogue, kind, step = 1 }) {
+  writeFlow(store, { kind, step });
+  const flow = makeFlow({ api, store, refs, catalogue, kind });
+  api.flow = flow;
+  await flow.open(step);
+  attachBackPill({ api, store, refs, catalogue, wantCommercial: kind === 'commercial' });
+  return flow;
+}
+
 function makeFlow({ api, store, refs, catalogue, kind }) {
   if (api.flows?.[kind]) return api.flows[kind];
   const steps = kind === 'commercial' ? commercialSteps({ catalogue, store, api }) : residentialSteps({ catalogue, store });
