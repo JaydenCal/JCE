@@ -136,3 +136,15 @@ test('anonymous commercial export says Commercial Developer, not Plan Pack', asy
   const p = commercialProject({ plain: false });
   await assert.rejects(runExport('pdf', p, { api: {}, token: null, config: {}, catalogue: null }), /Commercial Developer/);
 });
+
+test('sample lot: example inputs give a modest positive margin, are labelled, and yield to the person\'s own values', () => {
+  const p = commercialProject({ plain: false });
+  const lot = { ...p.site.lot, demo: true, lotLabel: 'Sample lot' };
+  const f = feasibility(p.commercial, lot);
+  assert.equal(f.inputs.saleRate.chip, 'Example figures, enter your own');
+  const q = feasibility({ ...p.commercial, feasibility: { area: null, v: { saleRate: 1000 } } }, lot);
+  assert.equal(q.inputs.saleRate.value, 1000);
+  assert.equal(q.inputs.rentRate.chip, 'Example figures, enter your own');
+  const n = feasibility(p.commercial, p.site.lot);
+  assert.notEqual(n.inputs.saleRate.chip, 'Example figures, enter your own');
+});

@@ -229,6 +229,10 @@ export function effectiveInputs(defaults, overrides = {}) {
   return out;
 }
 
+/** The Commercial sample lot (lot.demo) shows these example figures so its first look is a plausible regional NSW case. Every input stays visible and editable. */
+export const SAMPLE_INPUTS = Object.freeze({ saleRate: 2700, rentRate: 175, yieldPct: 6.5, landRate: 60, outgoingsPct: 8 });
+export const SAMPLE_CHIP = 'Example figures, enter your own';
+
 const r0 = (v) => Math.round(v);
 
 /** One scenario. side: 'mid' (the values in use), 'low' (low revenue, high cost) or 'high' (high revenue, low cost). */
@@ -295,7 +299,14 @@ export function feasibility(commercial, lot, opts = {}) {
   const lotM2 = lotAreaM2(lot) || 0;
   const count = units.length + buildings.length;
   const defaults = areaDefaults(areaKey, { avgUnitGfaM2: count ? gfa / count : 0 });
-  const inputs = effectiveInputs(defaults, opts.overrides || fz.v || {});
+  const userV = opts.overrides || fz.v || {};
+  const inputs = effectiveInputs(defaults, userV);
+  if (lot?.demo && lot.lotLabel === 'Sample lot') {
+    for (const [k, v] of Object.entries(SAMPLE_INPUTS)) {
+      if (inputs[k].edited) continue;
+      inputs[k] = { ...inputs[k], value: v, defaultValue: v, status: 'EXAMPLE', chip: SAMPLE_CHIP, note: 'An example for the sample lot only. Enter your own value.' };
+    }
+  }
   const devM2 = developedAreaM2(commercial, lot);
   const restM2 = Math.max(0, lotM2 - devM2);
   const mezzM2 = units.reduce((s, u) => s + u.mezz, 0);
