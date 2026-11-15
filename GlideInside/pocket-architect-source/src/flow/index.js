@@ -84,6 +84,20 @@ export function attachBackPill({ api, store, refs, catalogue, wantCommercial }) 
     pill.hidden = !(f && f.step >= EDIT_STEP && lot);
   };
   refs.stage.append(pill);
+  // Sit just above the lot card (never over its links), at the card's left edge; the CSS default applies when there is no card.
+  const place = () => {
+    if (pill.hidden) return;
+    const card = refs.stage.querySelector('.lc-card');
+    const sr = refs.stage.getBoundingClientRect();
+    const cr = card && !card.hidden && getComputedStyle(card).display !== 'none' ? card.getBoundingClientRect() : null;
+    if (!cr || cr.width < 2 || sr.height < 2) { pill.style.bottom = ''; pill.style.left = ''; return; }
+    pill.style.left = `${Math.max(12, Math.round(cr.left - sr.left))}px`;
+    pill.style.bottom = `${Math.max(12, Math.round(sr.bottom - cr.top + 10))}px`;
+  };
+  try { const ro = new ResizeObserver(place); ro.observe(refs.stage); const c = refs.stage.querySelector('.lc-card'); if (c) ro.observe(c); } catch { /* no ResizeObserver */ }
+  store.on('ui', () => requestAnimationFrame(place));
+  store.on('project', () => requestAnimationFrame(place));
+  setTimeout(place, 600);
   store.on('project', sync);
   store.on('ui', sync);
   sync();

@@ -680,6 +680,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       if (el.classList.contains('ps-credit')) { inset.bottom = Math.max(inset.bottom, vr.bottom - r.top + 10); continue; } // the Map data chip only lifts the bottom
       const cx = (r.left + r.right) / 2 - vr.left;
       const nearTop = (r.top + r.bottom) / 2 - vr.top < vr.height / 3; // by its middle: a tall card whose top edge is high is still a side card
+      if (!nearTop && r.height < vr.height * 0.12 && r.width < vr.width * 0.4 && cx > vr.width * 0.3) { inset.bottom = Math.max(inset.bottom, vr.bottom - r.top + 8); continue; } // a low bar (the pager) only lifts the bottom, it does not take a column of the plan
       if (nearTop) inset.top = Math.max(inset.top, r.bottom - vr.top + 6);
       else if (cx < vr.width * 0.3 && r.width < vr.width * 0.6) inset.left = Math.max(inset.left, r.right - vr.left + 16);
       else if (cx > vr.width * 0.75 && r.width < vr.width * 0.4) inset.right = Math.max(inset.right, vr.right - r.left + 16);
