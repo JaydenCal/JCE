@@ -1,4 +1,4 @@
-// Plan Studio onboarding: first-use tour, tool hint animations and the demo tips switch.
+// Glide Inside onboarding: first-use tour, tool hint animations and the demo tips switch.
 
 import { injectCss } from './css.js';
 import { createHints } from './hints.js';

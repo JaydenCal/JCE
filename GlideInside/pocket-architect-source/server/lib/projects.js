@@ -1,8 +1,9 @@
-// Save and share, carried over from the live Pocket Architect API (Worker "pocket-architect-api", deployed 15/10/2026).
+// Save and share, carried over from the live Glide Inside API (Worker "pocket-architect-api", deployed 15/10/2026).
 // Same paths, same request and response bodies, same error codes, same storage, so every share link already handed out keeps working:
 //   POST /api/projects            { project, email? }   -> 201 { id, editKey, url, expiresAt, bytes }        (creates)
 //   GET  /api/projects/:id                              -> { id, project, name, createdAt, updatedAt, expiresAt }  (public, read only)
 //   PUT  /api/projects/:id        header x-edit-key     -> { id, url, updatedAt, expiresAt, bytes }        (updates, extends the expiry)
+//   DELETE /api/projects/:id      header x-edit-key     -> { id, revoked: true }                            (the owner stops sharing: the link stops working)
 // The design is JSON in R2 under projects/<id>.json (the FILES binding, passed in as `files`). The D1 table "projects" holds the lookup,
 // the SHA-256 of the edit key, the optional lead email and the expiry. No account is needed. Nothing here sends email.
 //
@@ -74,7 +75,7 @@ export function createProjects({ store, files, config, now = () => Date.now() })
     }
     const p = body?.project;
     if (!p || typeof p !== 'object' || Array.isArray(p) || typeof p.schema !== 'number' || !Array.isArray(p.levels) || !p.levels.length || (p.id != null && typeof p.id !== 'string')) {
-      throw new HttpError('BAD_PROJECT', 'That is not a Pocket Architect design.');
+      throw new HttpError('BAD_PROJECT', 'That is not a Glide Inside design.');
     }
     // The tracing underlay is an image kept in the browser. It is never stored online.
     if (p.site && typeof p.site === 'object') p.site.underlay = null;
@@ -139,7 +140,7 @@ export function createProjects({ store, files, config, now = () => Date.now() })
   async function read(request, id) {
     await limit(request, 'projget', config.projectReadRateMax, 3600);
     const row = await store.getSharedProject(id);
-    if (!row) throw new HttpError('NOT_FOUND', 'That shared design was not found. The link may be wrong.');
+    if (!row) throw new HttpError('NOT_FOUND', 'That shared design was not found. The link may be wrong, or its owner stopped sharing it.');
     if (row.expiresAt <= iso()) {
       await drop(id).catch(() => null);
       throw new HttpError('EXPIRED', 'That shared link has expired.');
@@ -184,6 +185,17 @@ export function createProjects({ store, files, config, now = () => Date.now() })
     throw new HttpError('CONFLICT', 'That design is being saved from another place. Try again in a moment.');
   }
 
+  // The owner stops sharing: the design and its link are deleted. Needs the edit key the saving browser holds.
+  async function revoke(request, id) {
+    await limit(request, 'projsave', config.projectSaveRateMax, 3600);
+    const row = await store.getSharedProject(id);
+    if (!row) throw new HttpError('NOT_FOUND', 'That shared design was not found. It may already have been removed.');
+    const given = request.headers.get('x-edit-key') || '';
+    if (!given || !same(await sha(given), row.editKeyHash)) throw new HttpError('BAD_EDIT_KEY', 'This browser does not have permission to change that design.');
+    await drop(id);
+    return json({ id, revoked: true });
+  }
+
   return {
     available,
     async handle(request, path) {
@@ -193,6 +205,7 @@ export function createProjects({ store, files, config, now = () => Date.now() })
       if (id === null && request.method === 'POST') return create(request);
       if (id !== null && request.method === 'GET') return read(request, id);
       if (id !== null && request.method === 'PUT') return update(request, id);
+      if (id !== null && request.method === 'DELETE') return revoke(request, id);
       throw new HttpError('BAD_REQUEST', 'Not supported.', {}, 405);
     },
   };

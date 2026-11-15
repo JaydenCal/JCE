@@ -20,7 +20,7 @@ export function renderBlock(t = PLAN_TERMS) {
     `<p class="updated">Version <span data-plan-terms-version>${esc(t.version)}</span>, effective ${esc(t.effectiveDate)}</p>`,
     isDraft(t) ? '<p class="updated" role="note"><strong>Draft wording, pending legal review.</strong></p>' : '',
     `<div class="plan-terms-body">${t.bodyHtml}</div>`,
-    '<p>These terms apply to every plan set PDF and DXF file made with Pocket Architect. They are shown and accepted before a file is generated. The same version is printed on the plan set.</p>',
+    '<p>These terms apply to every plan set PDF and DXF file made with Glide Inside. They are shown and accepted before a file is generated. The same version is printed on the plan set.</p>',
     '<p><a class="link" href="terms.html">Order terms</a> &nbsp; <a class="link" href="privacy.html">Privacy policy</a></p>',
     '</section>',
     END,

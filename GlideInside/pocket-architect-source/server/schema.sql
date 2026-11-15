@@ -1,4 +1,4 @@
--- Glide Inside / Plan Studio API: the whole database in its FINAL shape, for a FRESH database (and for the tests).
+-- Glide Inside / Glide Inside API: the whole database in its FINAL shape, for a FRESH database (and for the tests).
 --
 -- *** An existing database (the live "pocket-architect" D1) is changed by the migrations, not by this file: ***
 --       npx wrangler d1 migrations apply pocket-architect --remote

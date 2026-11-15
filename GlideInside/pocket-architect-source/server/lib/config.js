@@ -89,7 +89,7 @@ export function readConfig(env = {}) {
     stripeGstTaxRateId: str(env.STRIPE_GST_TAX_RATE_ID),
     // Printed on the PDF title block. Defaults come from src/config.js (decision 17.1).
     disclaimer: str(env.DISCLAIMER),
-    // Carried over from the live Pocket Architect API (Worker "pocket-architect-api", 15/10/2026).
+    // Carried over from the live Glide Inside API (Worker "pocket-architect-api", 15/10/2026).
     // Save and share (lib/projects.js): designs live in R2 under projects/<id>.json, a small row in D1 holds the lookup.
     ipHashSalt: str(env.IP_HASH_SALT),
     // Plan set terms (lib/terms.js): paid PDF and DXF exports are refused with 409 TERMS_REQUIRED until the account has accepted the current version.

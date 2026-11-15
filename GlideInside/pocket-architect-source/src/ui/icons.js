@@ -1,4 +1,4 @@
-// Line icons drawn for Plan Studio. 24 px grid, 1.6 px stroke, currentColor.
+// Line icons drawn for Glide Inside. 24 px grid, 1.6 px stroke, currentColor.
 
 const PATHS = {
   'bt-strata': '<path d="M3 19.5h18M4 19.5V9h5v10.5M9.5 19.5V9h5v10.5M15 19.5V9h5v10.5"/><path d="M4 9l2.5-2.5L9 9M9.5 9L12 6.5 14.5 9M15 9l2.5-2.5L20 9"/>',

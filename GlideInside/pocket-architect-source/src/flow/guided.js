@@ -2,7 +2,7 @@
 // (five numbered steps), Back and Next, a skip to the editor, and the step saved on the project so a refresh resumes at the same step.
 //
 //   const flow = createGuidedFlow({ store, kind, brand, steps: [{ id, title, intro, mount(ctx) -> step }], onEditor })
-//   step = { el, canNext?(), nextLabel?, hideNext?, onEnter?(), dispose?() }      (mount runs on every entry to the step)
+//   step = { el, canNext?(), beforeNext?() -> Promise<boolean>, nextLabel?, hideNext?, onEnter?(), dispose?() }      (mount runs on every entry to the step)
 //   ctx  = { store, flow, refresh(), go(n), next(), back() }                       refresh() re-reads canNext after the step's state changed
 //   flow.open(step?) / flow.close() / flow.step / flow.go(n) / flow.root / flow.destroy()
 
@@ -96,6 +96,8 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
 
   async function go(n) {
     const target = clampStep(n);
+    // A step can ask a question before the person moves on (the setback breach confirmation).
+    if (target > current + 1 && live?.beforeNext && !(await live.beforeNext())) return;
     if (target === EDIT_STEP) { await toEditor(); return; }
     await show(target);
   }

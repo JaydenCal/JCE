@@ -475,7 +475,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     }
     if (!st.token) {
       add({ role: 'system', error: true, text: dev()
-        ? 'Developer unlock builds the exports in this browser, but the assistant needs the Plan Studio server running and a Plan Pack for this design. See server/README.md to start the server, then make a test purchase or restore one.'
+        ? 'Developer unlock builds the exports in this browser, but the assistant needs the Glide Inside server running and a Plan Pack for this design. See server/README.md to start the server, then make a test purchase or restore one.'
         : st.session && (st.session.kind === 'builder' || st.session.kind === 'client') || st.portal
           ? 'Your sign-in could not be verified. Sign in again to use the AI design assistant.'
           : 'Your Plan Pack could not be verified. Restore your purchase to use the assistant.' });

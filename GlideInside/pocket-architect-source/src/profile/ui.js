@@ -17,6 +17,7 @@ const STYLE = `
 .ps-prof-btn[data-state="in"] .ps-prof-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ps-ok);margin-left:2px}
 .ps-prof-save-text{display:none}
 @media (min-width:1700px){.ps-shell .ps-topbar .ps-prof-save .ps-prof-save-text{display:inline}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}}
+.gf-open .ps-prof-prompt{position:fixed;z-index:950;bottom:92px}
 .ps-prof-prompt{position:absolute;right:16px;bottom:44px;z-index:40;width:min(360px,calc(100% - 32px));padding:14px 14px 12px;background:var(--ps-panel);color:var(--ps-text);border:1px solid var(--ps-border-strong);border-left:4px solid var(--ps-accent);border-radius:var(--ps-radius-lg);box-shadow:var(--ps-shadow,0 6px 24px rgba(0,0,0,.2));animation:ps-toast-in .18s ease-out}
 .ps-prof-prompt h2{margin:0 0 4px;font-size:16px;font-weight:600}
 .ps-prof-prompt p{margin:0 0 10px;font-size:14px;color:var(--ps-muted)}
@@ -211,7 +212,8 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
         h('button', { class: 'ps-btn ps-btn--primary', type: 'button', dataset: { action: 'prompt-create' }, onclick: () => { closePrompt(); openAuth('create'); } }, 'Create profile'),
         h('button', { class: 'ps-btn', type: 'button', dataset: { action: 'prompt-signin' }, onclick: () => { closePrompt(); openAuth('signin'); } }, 'Sign in'),
         h('button', { class: 'ps-btn ps-btn--ghost', type: 'button', dataset: { action: 'prompt-notnow' }, onclick: () => notNow() }, 'Not now')));
-    (refs.shell || document.body).append(prompt);
+    // Inside the guided flow (Check it step) the prompt stands above the flow, in the page itself.
+    (document.documentElement.classList.contains('gf-open') ? document.body : refs.shell || document.body).append(prompt);
     document.addEventListener('keydown', onPromptKey, true);
   }
   // Escape closes the prompt like Not now (unless a dialog is open on top of it, which takes Escape for itself).

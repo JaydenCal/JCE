@@ -1,6 +1,7 @@
 // ASCII DXF R12 (AC1009) export. Pure function, Node compatible. See docs/SCOPE.md 8.2 and Appendix B.
 // Units millimetres. DXF Y = minus plan y so the plan reads the same way up. Levels sit side by side.
 
+import { toolName } from '../../toolmode.js';
 import { termsLines } from '../../legal/sheet-note.js';
 import { furnitureStrokes } from './symbols.js';
 import { dxfTrialEntities, TRIAL_DXF_LAYER } from './watermark.js';
@@ -255,7 +256,7 @@ function emitLevel(w, project, level, dx, { catalogue, withSite, sheet }) {
   // Title block text for this sheet. Empty fields keep their label so they can be filled by hand.
   const v = titleBlockValues(project, { date: sheet.date, sheetNo: sheet.no, total: sheet.total, sheetTitle: levelTitle(level).toUpperCase(), scaleLabel: `1:${sheet.scale} at ${sheet.paper}`, paper: sheet.paper });
   const rows = [
-    ['PREPARED WITH', `${BRAND.name} Plan Studio`],
+    ['PREPARED WITH', toolName()],
     ['PROJECT', v.project], ['CLIENT', v.client], ['SITE ADDRESS', v.address], ['LOT AND DP', v.lotDp], ['COUNCIL', v.council],
     ['PREPARED BY', v.company], ['DRAWN', v.drawn], ['CHECKED', v.checked], ['JOB NO.', v.job], ['DRAWING NO.', v.drawingNo],
     ['REVISION', v.revision], ['ISSUE PURPOSE', v.issue], ['DATE', v.date], ['SHEET TITLE', v.sheetTitle],

@@ -11,6 +11,10 @@ import { ProfileError } from './api.js';
 const TRIVIAL_LABELS = /^(Open project|Undo|Redo|Project details|Title block|Drawing settings|Site settings|Check setbacks|Suggest site position)/;
 export const isMeaningfulLabel = (label) => !!label && !TRIVIAL_LABELS.test(String(label));
 
+/** Setting up the lot is not yet value: the person has only found their block. The first moment of value is the first design placed or drawn. */
+const SETUP_LABELS = /^(Find my block|Upload|Boundary|Set lot|Set the lot|Confirm frontage|Frontage|Contours|Setbacks|Custom rules|Site rules|Change layout default)/i;
+export const isValueLabel = (label) => isMeaningfulLabel(label) && !SETUP_LABELS.test(String(label));
+
 /** True when the design has something worth keeping: a room or wall, a commercial row, or a looked up lot. */
 export function hasWork(project) {
   if (!project) return false;

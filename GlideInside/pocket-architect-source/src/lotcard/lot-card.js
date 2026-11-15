@@ -10,7 +10,7 @@
 import { attachMiniView } from './mini-view.js';
 import { zoneDwellingNote } from '../site/default-setbacks.js';
 import { h, debounce } from '../ui/dom.js';
-import { searchAddresses } from '../site/client.js';
+import { smartSearch } from '../site/address-search.js';
 import { downloadBlob } from '../premium/exporters/download.js';
 import { requirePlanTerms, planTermsLinkText, PLAN_TERMS_URL } from '../legal/terms-gate.js';
 import { toast } from '../ui/toast.js';
@@ -182,7 +182,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     const ask = debounce(async () => {
       const q = findInput.value.trim();
       if (q.length < 3) { sugg = []; paintSugg(); return; }
-      try { const r = await searchAddresses(q, { onRetry: () => { findList.replaceChildren(h('li', { class: 'lc-find-item lc-find-busy', role: 'status' }, h('span', null, 'Busy, trying again'))); findList.hidden = false; } }); if (findInput.value.trim() === q) { sugg = Array.isArray(r) ? r : []; suggI = -1; paintSugg(); } } catch { sugg = []; paintSugg(); }
+      try { const r = await smartSearch(q, { onRetry: () => { findList.replaceChildren(h('li', { class: 'lc-find-item lc-find-busy', role: 'status' }, h('span', null, 'Busy, trying again'))); findList.hidden = false; } }); if (findInput.value.trim() === q) { sugg = Array.isArray(r) ? r : []; suggI = -1; paintSugg(); } } catch { sugg = []; paintSugg(); }
     }, 220);
     findInput.addEventListener('input', ask);
     findInput.addEventListener('focus', () => findInput.select());
@@ -190,7 +190,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     findInput.addEventListener('keydown', (e) => {
       const n = Math.min(6, sugg.length);
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { if (n) { suggI = (suggI + (e.key === 'ArrowDown' ? 1 : -1) + n) % n; paintSugg(); } e.preventDefault(); }
-      else if (e.key === 'Enter') { e.preventDefault(); const t = suggI >= 0 ? sugg[suggI]?.label : findInput.value.trim(); if (t && t.length >= 3) pickAddress(t); }
+      else if (e.key === 'Enter') { e.preventDefault(); const t = suggI >= 0 ? sugg[suggI]?.label : findInput.value.trim(); if (t && t.length >= 3) pickAddress(t); } // typed text: the search takes the top match (exact house number first)
       else if (e.key === 'Escape') { closeSugg(); findInput.blur(); }
     });
   }

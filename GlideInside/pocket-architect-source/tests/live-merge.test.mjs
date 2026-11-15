@@ -395,9 +395,22 @@ test('share: read returns the project read only, with the underlay stripped', op
   assert.equal(b.project.site.underlay, null);
   assert.equal(r.headers.get('cache-control'), 'no-store');
   assert.deepEqual(Object.keys(b).sort(), ['createdAt', 'expiresAt', 'id', 'name', 'project', 'updatedAt'], 'the live response body');
-  assert.equal((await m.call(`/projects/${id}`, { method: 'DELETE' })).status, 405, 'no delete route');
+  assert.equal((await m.call(`/projects/${id}`, { method: 'DELETE' })).status, 403, 'revoking a shared link needs the edit key');
   assert.equal((await m.call('/projects/nope')).status, 404);
   assert.equal((await m.call(`/projects/${'a'.repeat(20)}`)).status, 404);
+});
+
+test('share: the owner can revoke the link with the edit key, and it stops working', opts, async () => {
+  const m = share();
+  const { id, editKey } = await j(await m.post({ project: project() }));
+  const del = (key) => m.call(`/projects/${id}`, { method: 'DELETE', headers: key ? { 'x-edit-key': key } : {} });
+  assert.equal((await del('wrong-key')).status, 403, 'a wrong key cannot revoke');
+  assert.equal((await m.call(`/projects/${id}`)).status, 200, 'still shared after the refused attempt');
+  const r = await del(editKey);
+  assert.equal(r.status, 200);
+  assert.equal((await j(r)).revoked, true);
+  assert.equal((await m.call(`/projects/${id}`)).status, 404, 'the link no longer opens');
+  assert.equal(m.files.has(`projects/${id}.json`), false, 'the design is removed from storage');
 });
 
 test('share: update needs the edit key', opts, async () => {

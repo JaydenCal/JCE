@@ -7,6 +7,7 @@
 // The exporters are never imported here. Only the localhost development unlock loads them, on demand.
 
 import { CONFIG as DEFAULT_CONFIG } from '../config.js';
+import { isCommercialTool } from '../toolmode.js';
 import { injectStyles } from './styles.js';
 import { createApi } from './api.js';
 import { createMockApi } from './ai/mock.js';
@@ -80,7 +81,7 @@ export function createPremium(store, options = {}) {
     }
   };
   const state = { portalPending: !!cfg.portalEnabled && !cfg.portalMock, projectId: store.project.id, token: null, credits: null, creditsError: false, notice: null, exporting: null, portal: null, csub: readCsub() };
-  const commercialNow = () => store.project?.mode === 'commercial';
+  const commercialNow = () => store.project?.mode === 'commercial' || isCommercialTool(); // the commercial tool always shows the subscription, never the Plan Pack
   const csubOn = () => !!state.csub?.token && commercialNow();
   // The token the server should see: the commercial login in commercial mode, otherwise the Plan Pack or portal token.
   const bearer = () => (csubOn() ? state.csub.token : state.token || state.portal?.token || null);
@@ -123,7 +124,7 @@ export function createPremium(store, options = {}) {
   // client login whose builder has turned sending off (allowClientEnquiries).
   const canSendPlans = () => (portalOn() ? state.portal.enquiry !== false : true);
   const isEntitled = () => dev() || !!state.token || portalOn() || csubOn();
-  const view = () => ({ entitled: isEntitled(), token: bearer(), csub: csubOn() ? { kind: state.csub.kind } : null, devUnlock: dev(), portalPending: !!state.portalPending, credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire(), commercial: store.project?.mode === 'commercial' });
+  const view = () => ({ entitled: isEntitled(), token: bearer(), csub: csubOn() ? { kind: state.csub.kind } : null, devUnlock: dev(), portalPending: !!state.portalPending, credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire(), commercial: commercialNow() });
   // Builder and client logins have the AI included; mock mode lets the owner review it for any session.
   const aiEntitled = () => isEntitled() || orgSession || mockOn;
   const aiView = () => ({ ...view(), entitled: aiEntitled(), token: aiToken(), session: effSession });
@@ -246,6 +247,7 @@ export function createPremium(store, options = {}) {
 
   async function exportAs(type) {
     if (!EXPORT_ITEMS.some((i) => i.type === type)) return null;
+    if (store.readOnly) { layer.notify('This shared design is view only, so nothing can be exported from it. Use Make your own to start a design of your own.', 'info', 6000); return null; } // a view only share link never exports
     if (!allowedExports().includes(type)) {
       layer.notify('Your builder provides the PDF plans. Ask them if you need other file types.', 'info', 6000);
       return null;
@@ -326,6 +328,7 @@ export function createPremium(store, options = {}) {
   // PDF plans: everyone sees the sheets first (watermarked and low resolution when free). Download is the paid path.
   let previewing = null;
   function previewPdf(hooks = {}) {
+    if (store.readOnly) { layer.notify('This shared design is view only, so plans cannot be made from it.', 'info', 6000); return null; }
     if (previewing && !previewing.el.isConnected) previewing = null;
     if (previewing) return previewing;
     // The free preview builds a plan PDF in this browser too, so it is behind the terms (remembered after the first time).

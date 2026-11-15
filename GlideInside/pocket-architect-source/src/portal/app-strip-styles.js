@@ -1,4 +1,4 @@
-// Styles for the signed in strip in Pocket Architect (builder staff and client logins). Prefix pas-, colours from --ps-* tokens.
+// Styles for the signed in strip in Glide Inside Residential (builder staff and client logins). Prefix pas-, colours from --ps-* tokens.
 
 const CSS = `
 .pas-badge{display:inline-block;font:700 11px var(--ps-font-ui,system-ui,sans-serif);border-radius:99px;padding:1px 8px;margin-right:6px;border:1px solid var(--ps-border,#dcdde0);background:var(--ps-panel,#fff)}

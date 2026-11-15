@@ -322,8 +322,8 @@ test('design files: a valid file opens, bad files give plain messages', () => {
   assert.equal(ok.project.levels[0].rooms.length, 2);
 
   assert.match(parseDesign('not json at all').error, /could not be read as JSON/);
-  assert.match(parseDesign('{"hello":1}').error, /Not a Plan Studio project file/);
-  assert.match(parseDesign('[]').error, /Plan Studio/);
+  assert.match(parseDesign('{"hello":1}').error, /Not a Glide Inside project file/);
+  assert.match(parseDesign('[]').error, /Glide Inside/);
   assert.match(parseDesign(JSON.stringify({ ...p, schema: 99 })).error, /newer version/);
 
   // structural problems are listed, not thrown

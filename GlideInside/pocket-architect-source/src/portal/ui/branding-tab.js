@@ -34,7 +34,7 @@ export function renderBranding(host, { api, me, refreshMe }) {
       h('div', { class: 'gi-prev-bar' }, logo ? h('img', { src: logo, alt: '' }) : null, h('strong', null, name.value || 'Your name'), h('small', null, 'Builder dashboard')),
       h('div', { class: 'gi-prev-body' },
         h('div', { class: 'gi-prev-tabs' }, h('span', null, 'House designs'), h('span', null, 'Clients'), h('span', null, 'Billing')),
-        h('div', { class: 'gi-prev-row' }, h('span', { class: 'gi-prev-btn' }, 'Open Pocket Architect'), h('span', { class: 'gi-prev-link' }, 'View client list')),
+        h('div', { class: 'gi-prev-row' }, h('span', { class: 'gi-prev-btn' }, 'Open Glide Inside Residential'), h('span', { class: 'gi-prev-link' }, 'View client list')),
         h('div', { class: 'gi-prev-note' }, 'Notices and highlights use a soft tint of your accent.')),
       h('div', { class: 'gi-prev-foot' }, 'Powered by Glide Inside'));
     adjustNote.replaceChildren(...(useDefault ? [h('li', null, 'Using the Glide Inside default colours.')] : t.adjusted.map((x) => h('li', null, x))));
@@ -73,7 +73,7 @@ export function renderBranding(host, { api, me, refreshMe }) {
   }
   const resetBtn = h('button', { class: 'pp-btn pp-btn--sm', type: 'button', disabled: !canWrite, onclick: () => { useDefault = true; cols.darkInk = ''; cols.darkBg = ''; swatchHost.replaceChildren(); syncInputs(); paintColours(); } }, 'Reset to Glide Inside default');
   const colourSection = h('section', { class: 'gi-colours', 'aria-labelledby': 'gi-col-h' },
-    h('div', null, h('h3', { id: 'gi-col-h' }, 'Colour scheme'), h('p', { class: 'pp-hint' }, 'When your team or clients sign in, the dashboard and Pocket Architect switch to these colours, with a small "Powered by Glide Inside" credit. The public site and the free app keep the Glide Inside look.')),
+    h('div', null, h('h3', { id: 'gi-col-h' }, 'Colour scheme'), h('p', { class: 'pp-hint' }, 'When your team or clients sign in, the dashboard and Glide Inside Residential switch to these colours, with a small "Powered by Glide Inside" credit. The public site and the free app keep the Glide Inside look.')),
     h('div', { class: 'gi-col-grid' },
       colourField('primary', 'Primary colour', 'Top bar and headers.'),
       colourField('accent', 'Accent colour', 'Buttons, links, tabs and highlights. Defaults to your primary.')),
@@ -87,7 +87,7 @@ export function renderBranding(host, { api, me, refreshMe }) {
       h('div', { class: 'pp-tb-brand' }, logo ? h('img', { src: logo, alt: '' }) : h('span', { class: 'pp-tb-nologo' }, 'No logo'), h('strong', null, name.value || 'Your name')),
       h('div', { class: 'pp-tb-cell' }, h('small', null, 'Project'), 'Lot 14, 22 Banksia Rise'),
       h('div', { class: 'pp-tb-cell' }, h('small', null, 'Sheet'), 'A-101 Ground floor plan'),
-      h('div', { class: 'pp-tb-credit' }, 'Made with Pocket Architect by Glide Inside'));
+      h('div', { class: 'pp-tb-credit' }, 'Made with Glide Inside'));
   }
   const save = h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: () => busy(save, async () => {
     let colours = null;
@@ -101,7 +101,7 @@ export function renderBranding(host, { api, me, refreshMe }) {
     refreshMe?.();
   }) }, 'Save branding');
   host.append(
-    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'Branding'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Your logo and name appear in Pocket Architect for your clients and in the title block of every plan they produce. Glide Inside keeps a small credit line on the sheet.'))),
+    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'Branding'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Your logo and name appear in Glide Inside Residential for your clients and in the title block of every plan they produce. Glide Inside keeps a small credit line on the sheet.'))),
     h('div', { class: 'pp-two' },
       h('div', { class: 'pp-form' }, field('Name shown on plans', () => name, { required: true }),
         field('Logo (PNG or JPG)', () => fileInput, { hint: 'Scaled to 600 px wide. A wide logo on a plain background works best.' }),

@@ -968,7 +968,7 @@ test('UI, assistant: 11 roof colour as one undo step, 14 confirmation, friendly 
   assert.equal(r.partialLabel, 'AI: Roof colour set to Charcoal and 1 more');
   assert.match(r.errs.paused, /paused.*credits are untouched/);
   assert.match(r.errs.rate, /Wait about 12 seconds/);
-  assert.match(r.errs.offline, /Could not reach the Plan Studio server.*Nothing was charged/);
+  assert.match(r.errs.offline, /Could not reach the Glide Inside server.*Nothing was charged/);
   assert.equal(r.errorStyle, true);
   assert.match(r.confirmText, /This change may use about 14 credits\. \d+ credits remain\. Continue\?/);
   assert.equal(r.cancelEdits, 0, 'cancelling sends nothing');
@@ -1166,7 +1166,7 @@ test('7. UI, developer unlock (localhost only): exports are built in the browser
   assert.match(r.scriptAfter, /vendor\/jspdf\/dist\/jspdf\.umd\.min\.js$/);
   assert.equal(r.jspdf, 'function');
   assert.equal(r.serverExports, 0);
-  assert.match(r.ai, /needs the Plan Studio server.*server\/README\.md/);
+  assert.match(r.ai, /needs the Glide Inside server.*server\/README\.md/);
   assert.equal(r.aiCalls, 0);
 });
 

@@ -1,6 +1,7 @@
 // The residential guided flow: 1 Find your lot, 2 Choose a home, 3 Place it, 4 Check it, then the full editor (step 5).
 // The steps work on the real project, so the editor opens with exactly the home that was placed.
 
+import { confirmBreach } from './breach.js';
 import { h } from '../ui/dom.js';
 import * as G from '../model/geometry.js';
 import { lotOf, translateHouse, rotateHouse, houseCentre } from '../model/placement.js';
@@ -284,6 +285,7 @@ function mountPlaceStep(ctx, { getHomes }) {
     el,
     nextLabel: 'Check it',
     canNext: () => !busy && !!lotNow() && !!store.project.placedHouse,
+    beforeNext: () => confirmBreach(placementStatus(store.project), { what: 'home' }),
     async onEnter() {
       const lot = lotNow();
       if (!lot) return;

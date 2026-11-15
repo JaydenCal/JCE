@@ -13,7 +13,7 @@ import { renderBranding } from './branding-tab.js';
 import { ddmmyyyy } from '../billing.js';
 import { trialBanner, handleBillingReturn } from './trial-ui.js';
 import { CONFIG } from '../../config.js';
-import { applyBrandTheme, clearBrandTheme } from '../theme-css.js';
+import { applyBrandTheme, clearBrandTheme, applyWhiteLabel } from '../theme-css.js';
 import { readPick } from '../builders.js';
 
 const TABS = [
@@ -39,7 +39,7 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
   // Launch gating: builder features stay closed until CONFIG.portalEnabled (or GI_CONFIG.portalEnabled) is true.
   if (!CONFIG.portalEnabled) {
     clear(root);
-    root.append(h('section', { class: 'pp-card', style: { maxWidth: '520px', margin: '48px auto' } }, h('h2', null, 'Builder and client logins are not open yet'), h('p', null, 'Glide Inside accounts for builders and their clients are coming soon. Pocket Architect is still free to use without a login.')));
+    root.append(h('section', { class: 'pp-card', style: { maxWidth: '520px', margin: '48px auto' } }, h('h2', null, 'Builder and client logins are not open yet'), h('p', null, 'Glide Inside accounts for builders and their clients are coming soon. Glide Inside Residential is still free to use without a login.')));
     return;
   }
 
@@ -71,6 +71,7 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
     } else me = next;
     if (!me) return toSignIn();
     applyBrandTheme(me.org.branding.colours); // builder colour scheme for staff and clients; the sign in page keeps the Glide Inside look
+    if (me.org?.internal !== true) applyWhiteLabel(); // no Glide Inside header, footer or pricing links once signed in
     if (me.user.mustChangePassword) return setView(changePasswordView({ api, me, onDone: start, onSignOut: signOut }));
     if (me.user.role === 'client') return setView(clientHome());
     setView(dashboard());
@@ -84,12 +85,12 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
   // Client home: normally a client goes straight into the app; this page lists their projects and links in.
   function clientHome() {
     const list = h('ul', { class: 'pp-list' });
-    api.listProjects().then((ps) => list.replaceChildren(...(ps.length ? ps.map((p) => h('li', null, h('div', null, h('strong', null, p.name), h('div', { class: 'pp-sub' }, `${p.lotAddress || 'No lot address'} · updated ${ddmmyyyy(p.updatedAt)}`)), h('a', { class: 'pp-btn pp-btn--sm', href: appLink({ project: p.id }) }, 'Open'))) : [h('li', { class: 'pp-empty' }, 'No saved projects yet. Open Pocket Architect to start your first.')]))).catch((e) => toast(errorMessage(e), { kind: 'error' }));
+    api.listProjects().then((ps) => list.replaceChildren(...(ps.length ? ps.map((p) => h('li', null, h('div', null, h('strong', null, p.name), h('div', { class: 'pp-sub' }, `${p.lotAddress || 'No lot address'} · updated ${ddmmyyyy(p.updatedAt)}`)), h('a', { class: 'pp-btn pp-btn--sm', href: appLink({ project: p.id }) }, 'Open'))) : [h('li', { class: 'pp-empty' }, 'No saved projects yet. Open Glide Inside Residential to start your first.')]))).catch((e) => toast(errorMessage(e), { kind: 'error' }));
     const ai = me.ai;
     return h('div', { dataset: { title: 'My designs' } }, brandBar(), h('main', { class: 'pp-main pp-main--narrow' },
       h('h1', null, `Welcome, ${me.user.name}`),
-      h('p', { class: 'pp-lead' }, `${me.org.branding.displayName} has set you up with Pocket Architect. Find your block, place one of their house designs on it and produce plans, with no charge to you.`),
-      h('p', null, h('a', { class: 'pp-btn pp-btn--primary pp-btn--lg', href: appLink({ signin: 1 }) }, 'Open Pocket Architect')),
+      h('p', { class: 'pp-lead' }, `${me.org.branding.displayName} has set you up with Glide Inside Residential. Find your block, place one of their house designs on it and produce plans, with no charge to you.`),
+      h('p', null, h('a', { class: 'pp-btn pp-btn--primary pp-btn--lg', href: appLink({ signin: 1 }) }, 'Open Glide Inside Residential')),
       h('section', { class: 'pp-card' }, h('h2', null, 'My projects'), list),
       h('section', { class: 'pp-card' }, h('h2', null, 'AI design assistant'), h('p', null, `${ai.remaining} credits left this month (${ai.used} of ${ai.monthlyCap} used${ai.topUpBalance ? `, plus ${ai.topUpBalance} top-up` : ''}).`))));
   }
@@ -160,7 +161,7 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
       route();
     });
     return h('div', { dataset: { title: 'Dashboard' } }, brandBar([
-      h('a', { class: 'pp-btn pp-btn--primary', id: 'design-on-lot', href: designLink(), target: '_blank', rel: 'noopener', title: 'Open Pocket Architect the way your clients see it: your branding and your house designs, on a lot' }, icon('open', 15), 'Design on a lot'),
+      h('a', { class: 'pp-btn pp-btn--primary', id: 'design-on-lot', href: designLink(), target: '_blank', rel: 'noopener', title: 'Open Glide Inside Residential the way your clients see it: your branding and your house designs, on a lot' }, icon('open', 15), 'Design on a lot'),
       h('a', { class: 'pp-btn pp-btn--sm', href: appLink(), target: '_blank', rel: 'noopener' }, 'Open full editor')]),
       h('main', { class: 'pp-main' }, bannerSlot, tablist, panel));
   }

@@ -1,5 +1,6 @@
 // When to offer "Create a free profile to save your design". No DOM here (covered by tests/free-profile.test.mjs); ui.js supplies the pieces.
-//   a. once per session, after the first meaningful edit (a house placed or the layout changed)
+//   a. once per session, at the first moment of value: after the first design is placed (in the guided flow, when the person reaches the
+//      Check it step) or drawn. Finding the lot alone is not value, so it never starts the prompt
 //   b. when the person tries to leave with work that is not saved to a profile (only where the browser allows a leave prompt)
 //   c. when they use Save or Share while signed out
 //   d. the small Save to profile button, which always opens it
@@ -7,13 +8,13 @@
 // Never mid drag, never over another dialog, never to someone who already has an account here (builder or client login, Commercial
 // subscriber or trial login, internal account) and never when the server has no profile service.
 
-import { isMeaningfulLabel } from './controller.js';
+import { isValueLabel } from './controller.js';
 
 const SESSION_KEY = 'ps.profile.prompt';
 
 export function createPromptPolicy({
   status = () => 'out', otherAccount = () => false, isBusy = () => false, show = () => {}, session = null,
-  setTimer = (fn, ms) => setTimeout(fn, ms), clearTimer = (t) => clearTimeout(t), idleMs = 1000, maxIdleTries = 180,
+  setTimer = (fn, ms) => setTimeout(fn, ms), clearTimer = (t) => clearTimeout(t), idleMs = 1000, maxIdleTries = 1800,
 } = {}) {
   // sessionStorage can be blocked: the flags then live in memory for this page.
   const memory = new Map();
@@ -64,7 +65,7 @@ export function createPromptPolicy({
   return {
     /** Wire to the store 'project' event. */
     noteEdit(label) {
-      if (!isMeaningfulLabel(label)) return;
+      if (!isValueLabel(label)) return;
       edited = true;
       if (read('edit') === '1' || !eligible()) return;
       write('edit', '1'); // once per session, whether or not it was shown

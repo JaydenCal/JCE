@@ -15,8 +15,9 @@ import { lotOf } from '../model/placement.js';
  * initialPose, the house starts turned so its garage faces the street, centred on the frontage behind the front setback
  * (auto-place.js). `fit` is the ranking entry from fit.js ({ badge, reason }) shown in the panel: rank first, then fine tune.
  */
-export function startPlacement({ store, editor, house, lot = null, host = document.getElementById('ps-stage'), onDone, onCancel, initialPose = null, fit = null, design = null } = {}) {
+export function startPlacement({ store, editor, house, lot = null, host = document.getElementById('ps-stage'), onDone, onCancel, initialPose = null, fit = null, design = null, replace = false } = {}) {
   const base = structuredClone(store.project);
+  if (replace) { base.levels = []; base.site.tanks = []; } // the house being replaced is not there to place around
   let pose = initialPose || null;
   let note = '';
   if (!pose && lotOf(base)) {
@@ -42,6 +43,6 @@ export function startPlacement({ store, editor, house, lot = null, host = docume
   const describe = `${(b.width / 1000).toFixed(1)} x ${(b.depth / 1000).toFixed(1)} m. Drag the house to move it. Drag the gold handle to turn it, Shift for 15 degree steps. Arrow keys nudge 0.5 m (Shift 0.1 m). Q and E turn 15 degrees (Shift 1 degree).${tooBig ? ' This house is larger than the lot.' : ''}${note}`;
   return runPoseSession({
     store, editor, host, reposeOnLot: (p) => (lotOf(p) ? autoPose(structuredClone(p), house).pose || null : null), title: `Place ${house.name || 'house'}`, describe, fit, initialPose: pose,
-    apply: (p, ps) => { placeHouse(p, house, ps); if (design) p.placedHouse = { id: design.id ?? null, name: design.name || house.name || '' }; }, commitLabel: 'Place house', commitText: 'Place house', onDone, onCancel,
+    apply: (p, ps) => { if (replace) { p.levels = []; p.site.tanks = []; delete p.placedHouse; } placeHouse(p, house, ps); if (design) p.placedHouse = { id: design.id ?? null, name: design.name || house.name || '' }; }, commitLabel: 'Place house', commitText: 'Place house', onDone, onCancel,
   });
 }

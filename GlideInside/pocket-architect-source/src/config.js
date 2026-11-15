@@ -9,7 +9,7 @@ const isLocal = hasWindow && ['localhost', '127.0.0.1', '[::1]'].includes(window
 const REVIEW_BUILD = false;
 
 export const CONFIG = {
-  productName: 'Pocket Architect',
+  productName: 'Glide Inside',
   // Selling entity printed on paid exports. Placeholder until decision 17.1 is made.
   seller: { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' },
   // Same origin: the Cloudflare Worker is routed at glideinside.com.au/api/* (one site, no CORS, cookie sessions stay same-site).
@@ -43,17 +43,17 @@ export const CONFIG = {
   // portalMock true runs the screens on the in-browser mock; false calls the real Worker routes (docs/PORTAL_API.md).
   // The host page can pick with GI_CONFIG.portalMock. Default: the mock only in the review build.
   portalMock: hasWindow && typeof window.GI_CONFIG?.portalMock === 'boolean' ? window.GI_CONFIG.portalMock : REVIEW_BUILD,
-  // Builder and client features (portal page, client mode in Pocket Architect). Off in the production config until launch;
+  // Builder and client features (portal page, client mode in Glide Inside). Off in the production config until launch;
   // on in the mock/review build. The host site can set GI_CONFIG.portalEnabled = true to open it.
   portalEnabled: hasWindow && typeof window.GI_CONFIG?.portalEnabled === 'boolean' ? window.GI_CONFIG.portalEnabled : REVIEW_BUILD,
   portal: {
-    appUrl: './', // Pocket Architect, relative to the portal page; the site sets GI_CONFIG.portalAppUrl
-    signInUrl: '../../portal/', // the portal sign in page, relative to Pocket Architect; the site sets GI_CONFIG.portalSignInUrl
+    appUrl: './', // Glide Inside, relative to the portal page; the site sets GI_CONFIG.portalAppUrl
+    signInUrl: '../../portal/', // the portal sign in page, relative to Glide Inside; the site sets GI_CONFIG.portalSignInUrl
     clientLoginFeeAud: 30, // per NEW client login in a calendar month, incl. GST
     aiTopUp: { credits: 300, priceAud: 10 }, // incl. GST, charged on the end of month invoice
     aiMonthlyCredits: 300, // per login per month, hard stop at zero
   },
-  // The Glide Inside home page, relative to Pocket Architect: where Back goes when nothing else is known. The site can set GI_CONFIG.homeUrl.
+  // The Glide Inside home page, relative to Glide Inside: where Back goes when nothing else is known. The site can set GI_CONFIG.homeUrl.
   homeUrl: (hasWindow && typeof window.GI_CONFIG?.homeUrl === 'string' && window.GI_CONFIG.homeUrl) || '../../index.html',
   autosaveKey: 'ps.autosave.v1',
   embedMode: params.get('embed') === 'demo' ? 'demo' : 'full',

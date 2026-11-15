@@ -10,7 +10,7 @@ import { h } from './dom.js';
 import { toast } from './toast.js';
 import { CONFIG } from '../config.js';
 import { migrate } from '../model/schema.js';
-import { searchAddresses } from '../site/client.js';
+import { smartSearch, NOT_FOUND_TEXT } from '../site/address-search.js';
 import { applySiteLookup } from '../site/apply.js';
 import { demoSite } from '../site/demo-lot.js';
 import { publicDesigns } from '../lotcard/designs.js';
@@ -201,9 +201,9 @@ export async function placeBestDesign(store, catalogue, wantId = null, { after =
 export async function loadAddress(store, catalogue, address, { onStep, viewer = false, after = null, place = true } = {}) {
   const q = String(address || '').trim();
   if (q.length < 3) throw new Error('Type a street address first.');
-  const results = await searchAddresses(q, { onRetry: () => onStep?.('busy') });
+  const results = await smartSearch(q, { onRetry: () => onStep?.('busy') });
   const pick = results[0];
-  if (!pick) throw new Error('No matching address found. Check the spelling, or try the street name and suburb.');
+  if (!pick) throw Object.assign(new Error(NOT_FOUND_TEXT), { notFound: true });
   const wantId = store.ui.placedDesign?.id || null;
   const { lot, warnings } = await applySiteLookup(store, pick, { onStep });
   confirmFrontage(store, viewer);
@@ -215,9 +215,9 @@ export async function loadAddress(store, catalogue, address, { onStep, viewer = 
 export async function loadAddressCommercial(store, address, { onStep } = {}) {
   const q = String(address || '').trim();
   if (q.length < 3) throw new Error('Type a street address first.');
-  const results = await searchAddresses(q, { onRetry: () => onStep?.('busy') });
+  const results = await smartSearch(q, { onRetry: () => onStep?.('busy') });
   const pick = results[0];
-  if (!pick) throw new Error('No matching address found. Check the spelling, or try the street name and suburb.');
+  if (!pick) throw Object.assign(new Error(NOT_FOUND_TEXT), { notFound: true });
   const { lot, warnings } = await applySiteLookup(store, pick, { onStep });
   confirmFrontage(store, true);
   const { placeCommercial } = await import('../commercial/place.js');
@@ -282,7 +282,8 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
     } catch (e) {
       const message = e?.message || 'The address could not be loaded.';
       postToParent({ type: 'gi:status', state: 'error', message, address });
-      if (notify) toast(message, { kind: 'error' });
+      // Not found: a sample lot is always offered, so the pill never just reverts.
+      if (notify) toast(message, e?.notFound ? { kind: 'warn', timeout: 14000, action: { label: 'Try a sample lot', onClick: () => startDemo() } } : { kind: 'error' });
       return false;
     } finally {
       settle();
@@ -346,10 +347,10 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
 }
 
 /** One-shot handoff slot: the viewer leaves the design here and the editor reads it once and clears it (src/app.js). The visitor's own autosave is never touched. */
-export const HANDOFF_KEY = 'ps.handoff.v1';
+import { HANDOFF_KEY, PREV_AUTOSAVE_KEY } from '../toolmode.js';
+export { HANDOFF_KEY };
 
 const HANDOFF_MAX_AGE_MS = 10 * 60 * 1000;
-const PREV_AUTOSAVE_KEY = 'ps.autosave.prev.v1';
 
 /**
  * The design the home page viewer left for this editor (Edit floor plan, Open full editor). Read once and cleared. It never replaces the

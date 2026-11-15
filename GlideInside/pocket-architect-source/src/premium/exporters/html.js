@@ -281,7 +281,7 @@ ${tabs}
 <div data-panel="plan">${sections.join('\n')}</div>
 ${view3d}
 </div></main>
-<footer><div class="pa-wrap"><p>${esc(disclaimer)}</p><p>${esc(product)} | ${esc(config.productName || 'Pocket Architect')}${company ? ` | ${esc(company)}` : ''} | Prepared ${esc(when)}</p></div></footer>
+<footer><div class="pa-wrap"><p>${esc(disclaimer)}</p><p>${esc(config.productName && config.productName !== product ? config.productName : product)}${company ? ` | ${esc(company)}` : ''} | Prepared ${esc(when)}</p></div></footer>
 ${scripts}<script>${TAB_JS}</script>
 </body>
 </html>

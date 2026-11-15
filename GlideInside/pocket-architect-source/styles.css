@@ -581,7 +581,7 @@ svg { display: block; }
 .ps-modal-root > * { pointer-events: auto; }
 .ps-scrim {
   position: absolute; inset: 0; background: var(--ps-scrim);
-  display: grid; place-items: center; padding: 16px;
+  display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 16px;
 }
 .ps-modal {
   width: min(760px, 100%); max-height: min(640px, 100%);
@@ -593,7 +593,7 @@ svg { display: block; }
 .ps-modal-head { display: flex; align-items: center; gap: 8px; padding: 14px 16px 10px; }
 .ps-modal-head h2 { margin: 0; flex: 1; font-size: 18px; font-weight: 600; }
 .ps-modal-body { padding: 0 16px 16px; overflow-y: auto; min-height: 0; }
-.ps-modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--ps-border); }
+.ps-modal-foot { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--ps-border); }
 .ps-confirm {
   display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between;
   margin-bottom: 12px; padding: 10px 12px;

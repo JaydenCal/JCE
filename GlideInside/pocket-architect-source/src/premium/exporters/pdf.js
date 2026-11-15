@@ -13,6 +13,7 @@ import {
 } from './drawing.js';
 import { creditsOneLine, INDICATIVE as SITE_INDICATIVE } from '../../site/credits.js';
 import { furnitureStrokes, placeLabel, placeBeside, boxOf } from './symbols.js';
+import { toolName } from '../../toolmode.js';
 import { termsLines } from '../../legal/sheet-note.js';
 
 export { ddmmyyyy, AREA };
@@ -223,7 +224,7 @@ function frame(doc, ctx, { title, scaleLabel, sheet }) {
     ink(doc, GREY);
     doc.text('Prepared with', x0 + w1 / 2, y0 + h - 10, { align: 'center' });
     if (ctx.brand) placeImage(doc, ctx.brand, { x: x0 + w1 / 2 - 10, y: y0 + h - 9, w: 20, h: 7 });
-    else doc.text(BRAND.name, x0 + w1 / 2, y0 + h - 5, { align: 'center' });
+    else doc.text(toolName(), x0 + w1 / 2, y0 + h - 5, { align: 'center' });
   } else {
     if (ctx.brand) {
       const lw = w1 - 8;
@@ -846,7 +847,7 @@ export function toPDF(project, options = {}) {
     title: `${ascii(tb.projectName || project.name) || 'Design'} plan set`,
     subject: 'Concept design plans',
     author: ascii(tb.company) || BRAND.name,
-    creator: 'Plan Studio',
+    creator: 'Glide Inside',
   });
   const doc = scaledDoc(raw, p.k);
   const total = plan.pages.length;

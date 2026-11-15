@@ -1,4 +1,4 @@
-// Pocket Architect when someone is signed in through the builder portal (builder staff or a client login).
+// Glide Inside Residential when someone is signed in through the builder portal (builder staff or a client login).
 // app.js calls initPortalMode(window.__ps) after the Plan Pack layer has mounted. With no portal session, or with
 // CONFIG.portalEnabled false, it does nothing at all and the public app is untouched.
 //
@@ -16,7 +16,7 @@ import { h, clear } from '../ui/dom.js';
 import { toast } from '../ui/toast.js';
 import { getPortalApi } from './api.js';
 import { injectStripStyles } from './app-strip-styles.js';
-import { applyBrandTheme, clearBrandTheme } from './theme-css.js';
+import { applyBrandTheme, clearBrandTheme, applyWhiteLabel } from './theme-css.js';
 import { signInUrl, portalUrl } from './links.js';
 import { designMode as isDesignMode, clientLike as isClientLike, wantsGlide, fullEditorHref, designNewHref } from './design-mode.js';
 import { SAMPLE_LOT, lotEnvelope, portalLotToSiteLot } from './envelope.js';
@@ -74,6 +74,19 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   setAssistantAllowed(!(me.user.role === 'client' && me.org?.showAiAssistant === false));
   if (readAerialChoice() === null) setAerial(store, aerialDefault(), { remember: false }); // a lot already open follows the builder default
   applyBrandTheme(brand.colours); // builder colour scheme over the app chrome; the 3D scene, aerial and setback states keep their own colours
+  // White label: the builder's name (and logo) replace the Glide Inside name in the top bar and the tab. The owner's internal test account keeps the product name.
+  if (clientLike && me.org?.internal !== true) {
+    const bname = brand.displayName || me.org.name || '';
+    applyWhiteLabel();
+    const prod = document.querySelector('.ps-brand .ps-product');
+    if (prod && bname) prod.textContent = bname;
+    const mark = document.querySelector('.ps-brand .ps-logo');
+    if (mark) {
+      if (brand.logoDataUrl) { mark.style.backgroundImage = `url("${brand.logoDataUrl}")`; mark.style.backgroundSize = 'contain'; mark.style.backgroundRepeat = 'no-repeat'; mark.style.backgroundPosition = 'center'; mark.style.backgroundColor = 'transparent'; mark.style.width = '28px'; mark.style.height = '28px'; }
+      else mark.style.display = 'none';
+    }
+    if (bname) { try { document.title = `${bname} | Home design`; } catch { /* no title */ } }
+  }
   // A real client starts with no lot: the sample lot only exists in the review (mock) build, so designs are never ranked against it.
   let lot = CONFIG.portalMock ? { ...SAMPLE_LOT, address: me.lotAddress || '' } : null;
   let lotIsSample = !!lot;
@@ -274,7 +287,12 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     if (sl) return sl.envelope?.length >= 3 ? sl.envelope : null; // a found lot is never ranked against the sample lot
     return envelope;
   };
-  function choose(d) {
+  async function choose(d) {
+    // A lot that already has a house: Replace house or Add another building, never two stacked by accident.
+    const { askPlaceChoice } = await import('../ui/place-choice.js');
+    const mode = await askPlaceChoice(store.project, d.name);
+    if (!mode) return;
+    const replace = mode === 'replace';
     const house = structuredClone(d.project);
     house.name = d.name;
     const fit = d.fit;
@@ -296,19 +314,45 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     const hull = sl0?.boundary?.length >= 3 ? orientedBox(sl0.boundary) : null;
     const lotBox = hull ? { widthMm: hull.w, depthMm: hull.d } : env ? { widthMm: Math.max(...env.map((p) => p.x)) - Math.min(...env.map((p) => p.x)), depthMm: Math.max(...env.map((p) => p.y)) - Math.min(...env.map((p) => p.y)) } : null;
     startPlacement({
-      store, editor, house, lot: lotBox, initialPose, fit, design: { id: d.id, name: d.name },
+      store, editor, house, lot: lotBox, initialPose, fit, design: { id: d.id, name: d.name }, replace,
       onDone: () => { store.setUI({ placedDesign: { id: d.id, name: d.name } }); toast(`${d.name} placed. Every wall, room and opening is editable.`, { kind: 'ok' }); },
     });
   }
 
   // Projects ----------------------------------------------------------------------------------------------------------------------
-  async function saveProject() {
+  async function saveProject({ quiet = false } = {}) {
     try {
       const saved = await api.saveProject({ id: currentProjectId || undefined, name: store.project.name, project: store.project, lotAddress: lotOf(store.project)?.address || lot?.address || '' });
       currentProjectId = saved.id;
+      if (quiet) { const d = new Date(); autoNote = `Saved to your account at ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; statusLine.textContent = autoNote; return true; }
       toast(reviewOwner ? `Saved to ${reviewOwner}'s project. It is recorded as edited by staff.` : 'Project saved to your account.', { kind: 'ok' });
-    } catch (e) { toast(e.message || 'Could not save.', { kind: 'error' }); }
+      return true;
+    } catch (e) {
+      if (quiet) { statusLine.textContent = 'Could not save to your account yet. Trying again soon.'; return false; }
+      toast(e.message || 'Could not save.', { kind: 'error' });
+      return false;
+    }
   }
+  // A client's work saves to their account by itself, a few seconds after each change, so "My projects" is never empty after a design.
+  // Staff looking at a client's project, a read only view and a design with nothing in it are left alone.
+  let autoNote = '';
+  let autoTimer = 0;
+  let autoBusy = false;
+  const worthSaving = () => !!lotOf(store.project) || store.project.levels.some((l) => l.rooms.length || l.walls.length);
+  async function autoSave() {
+    autoTimer = 0;
+    if (autoBusy) { scheduleAuto('retry'); return; }
+    if (!isClient || reviewOwner || store.readOnly || !worthSaving()) return;
+    autoBusy = true;
+    try { await saveProject({ quiet: true }); } finally { autoBusy = false; }
+  }
+  function scheduleAuto(label) {
+    if (!isClient || reviewOwner || store.readOnly || /^(Open project|Undo|Redo)/.test(String(label || ''))) return;
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(autoSave, 3000);
+  }
+  store.on('project', (e) => scheduleAuto(e?.label));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && autoTimer) { clearTimeout(autoTimer); autoSave(); } });
   async function saveToLibrary() {
     try {
       await api.saveHouse({ name: store.project.name || 'Untitled house', project: store.project });

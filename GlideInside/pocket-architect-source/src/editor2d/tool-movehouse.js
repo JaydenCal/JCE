@@ -3,6 +3,8 @@
 // 15 degrees). Arrow keys nudge 0.1 m (Shift 1 m), Q and E turn 1 degree. Clearances to the boundaries and the breach colouring come
 // from the lot plan drawing and follow the preview live. One undo step per drag. Walls and rooms are reshaped with the Select tool.
 
+import { lotChecks } from '../site/lot-checks.js';
+import { confirmBreach, statusFromMessages } from '../flow/breach.js';
 import * as G from '../model/geometry.js';
 import { translateHouse, rotateHouse, houseCentre, lotOf, footprint } from '../model/placement.js';
 import { ringOf } from './draw-lotplan.js';
@@ -83,6 +85,15 @@ export function createMoveHouseTool(ed) {
     }
   }
 
+  // Dropping the house outside the setbacks asks first, with the distance. "Go back" undoes the move. A house that was already outside is only asked when the move made it worse.
+  const worstShort = (project) => Math.max(0, ...lotChecks(project).messages.filter((m) => m.kind === 'envelope').map((m) => Number(m.shortByM) || 0));
+  async function confirmIfBreach(before) {
+    const checks = lotChecks(store.project);
+    const status = statusFromMessages(checks.messages);
+    if (!status || worstShort(store.project) <= before + 0.05) return;
+    if (!(await confirmBreach(status, { what: store.project.mode === 'commercial' ? 'building' : 'house' }))) store.undo();
+  }
+
   function commit(d) {
     if (d.mode === 'move' && (d.dx || d.dy)) ed.apply('Move house', (p) => translateHouse(p, d.dx, d.dy));
     else if (d.mode === 'turn' && d.deg) {
@@ -147,7 +158,9 @@ export function createMoveHouseTool(ed) {
       const d = drag;
       drag = null;
       if (d.moved) {
+        const before = worstShort(store.project);
         try { commit(d); } finally { ed.clearPreview(); }
+        confirmIfBreach(before);
       }
       ed.canvas.style.cursor = tool.cursor();
       ed.draw();

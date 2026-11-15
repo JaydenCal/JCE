@@ -191,11 +191,11 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
   }
 
   const lockedNotice = acct.status === 'trial'
-    ? h('div', { class: 'pp-notice pp-notice--lock', id: 'clients-locked' }, icon('lock', 18), h('div', null, h('strong', null, 'Client logins unlock when you add billing details.'), h('p', null, 'During your free trial your staff can use the whole portal, including the house library, branding, Pocket Architect and exports. Client logins are charged at A$30 incl. GST each (A$25 each after 15 in a month), once, when the client first signs in. Nothing is charged for a login that is never used.')), addBillingButton(api, { goBilling }))
+    ? h('div', { class: 'pp-notice pp-notice--lock', id: 'clients-locked' }, icon('lock', 18), h('div', null, h('strong', null, 'Client logins unlock when you add billing details.'), h('p', null, 'During your free trial your staff can use the whole portal, including the house library, branding, Glide Inside Residential and exports. Client logins are charged at A$30 incl. GST each (A$25 each after 15 in a month), once, when the client first signs in. Nothing is charged for a login that is never used.')), addBillingButton(api, { goBilling }))
     : h('div', { class: 'pp-notice pp-notice--lock', id: 'clients-locked' }, icon('lock', 18), h('div', null, h('strong', null, 'This account is read only.'), h('p', null, 'Add billing details to issue and manage client logins again.')), addBillingButton(api, { goBilling }));
   host.append(
     h('div', { class: 'pp-head' },
-      h('div', null, h('h2', null, 'Clients'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Give each client a login to Pocket Architect with your branding and your house designs. The system sends no email, so you pass the username and password on yourself.')),
+      h('div', null, h('h2', null, 'Clients'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Give each client a login to Glide Inside Residential with your branding and your house designs. The system sends no email, so you pass the username and password on yourself.')),
       canGenerate ? h('button', { class: 'pp-btn pp-btn--primary pp-btn--lg', type: 'button', id: 'generate-account', onclick: generateDialog }, icon('plus', 18), 'Generate account') : null),
     locked ? lockedNotice : h('p', { class: 'pp-notice' }, icon('info', 18), CHARGE_NOTICE),
     h('div', { class: 'pp-table-wrap' }, table), empty,

@@ -312,7 +312,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     try {
       p = migrate(raw);
     } catch (e) {
-      throw new HttpError('BAD_REQUEST', e.message || 'That is not a Pocket Architect design.');
+      throw new HttpError('BAD_REQUEST', e.message || 'That is not a Glide Inside design.');
     }
     if (JSON.stringify(p).length > config.portalProjectMaxBytes) throw new HttpError('PAYLOAD_TOO_LARGE', 'That design is too large to save. Remove the underlay image and try again.');
     return p;

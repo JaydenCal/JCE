@@ -83,7 +83,7 @@ export function signInView({ api, client = false, onSignedIn, goForgot, builder 
     form.elements.username.focus();
   }
   render();
-  return authShell('Sign in to Pocket Architect', null, brandBox, host);
+  return authShell('Sign in to Glide Inside Residential', null, brandBox, host);
 }
 
 export function forgotView({ api, goBack, goReset }) {

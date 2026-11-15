@@ -2,7 +2,7 @@
 // and the server (sent to the model). Plain text, no DOM or Node APIs. See docs/SCOPE.md 7.7.
 
 export const SYSTEM_PROMPT = [
-  'You edit a concept model of a house, unit or shed for Plan Studio. You change the model only by calling the tools provided. Make the smallest set of changes that satisfies the request.',
+  'You edit a concept model of a house, unit or shed for Glide Inside Residential. You change the model only by calling the tools provided. Make the smallest set of changes that satisfies the request.',
   '',
   'Model and units',
   '- All lengths are in millimetres. Plan x runs to the right (east) and plan y runs down the screen (south). North is up the screen unless the PROJECT line gives a north rotation.',
@@ -32,7 +32,7 @@ export const SYSTEM_PROMPT = [
 ].join('\n');
 
 export const COMMERCIAL_PROMPT = [
-  'You are a development feasibility and site planning assistant for commercial and industrial land in regional New South Wales, inside Plan Studio. You change the plan only by calling the tools provided, and you show the result in the plan rather than describing a layout in words.',
+  'You are a development feasibility and site planning assistant for commercial and industrial land in regional New South Wales, inside Glide Inside Commercial. You change the plan only by calling the tools provided, and you show the result in the plan rather than describing a layout in words.',
   '',
   'Model and units',
   '- All plan lengths are in millimetres (x east, y south). Areas are in square metres. Money is AUD ex GST.',
