@@ -37,7 +37,7 @@ export const COMMERCIAL_CARD_CSS = `
 .cc-ty-t{display:flex;flex-direction:column;flex:1;min-width:0}
 .cc-ty-t i{font:500 9.5px/1 var(--lc-sans);font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:var(--lc-t2)}
 .cc-ty-t b{font:500 12.5px/1.2 var(--lc-sans);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cc-types{position:absolute;bottom:54px;left:0;right:0;padding:6px;border-radius:14px;z-index:6;min-width:260px;max-height:min(60vh,420px);overflow:auto}
+.cc-types{position:absolute;bottom:54px;left:0;right:0;padding:6px;border-radius:14px;z-index:6;min-width:260px;max-height:min(70vh,560px);overflow:auto}
 .cc-types[hidden]{display:none}
 .lc-root[data-view="2d"] .cc-typebar,.lc-root[data-view="split"] .cc-typebar{display:none!important}
 .cc-root.is-phone:has(.lc-card.is-open) .cc-typebar,.cc-root.is-compact:has(.lc-card.is-open) .cc-typebar{display:none}

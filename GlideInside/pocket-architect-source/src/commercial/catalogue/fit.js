@@ -9,8 +9,11 @@ import { newBuilding, presetsOf } from './buildings.js';
 import { buildingParking } from './bays.js';
 import { buildingsOf } from './buildings.js';
 import { toWorld } from './frame.js';
+import { layoutUnits } from '../layout.js';
+import { parkingLayout } from '../parking.js';
 
 export const BEST_PRESET = 'best';
+const EMPTY = { solid: [], loose: [] }; // choosing a type replaces whatever is on the lot
 const TOL = 60;
 
 const distSeg = (p, a, b) => {
@@ -38,6 +41,30 @@ export function frontRotation(lot) {
   return Math.round(deg * 100) / 100;
 }
 
+const segX = (p, q, a, b) => {
+  const d = (q.x - p.x) * (b.y - a.y) - (q.y - p.y) * (b.x - a.x);
+  if (Math.abs(d) < 1e-9) return false;
+  const t = ((a.x - p.x) * (b.y - a.y) - (a.y - p.y) * (b.x - a.x)) / d;
+  const u = ((a.x - p.x) * (q.y - p.y) - (a.y - p.y) * (q.x - p.x)) / d;
+  return t > 0 && t < 1 && u > 0 && u < 1;
+};
+/** True when two closed polygons overlap (a vertex of one inside the other, or edges cross). */
+export function polysOverlap(A, B) {
+  if (A.some((p) => G.pointInPolygon(p, B)) || B.some((p) => G.pointInPolygon(p, A))) return true;
+  for (let i = 0; i < A.length; i++) for (let j = 0; j < B.length; j++) if (segX(A[i], A[(i + 1) % A.length], B[j], B[(j + 1) % B.length])) return true;
+  return false;
+}
+
+/** The solid and paved polygons of the buildings already on the lot (world mm): { solid: [outlines], loose: [extras and bays] }. */
+export function occupiedBy(project, exceptId = null) {
+  const c = project.commercial;
+  const bs = buildingsOf({ ...c, buildings: (c.buildings || []).filter((b) => b.id !== exceptId) });
+  const bays = buildingParking({ ...c, buildings: (c.buildings || []).filter((b) => b.id !== exceptId) }).rows.flatMap((r) => r.slots.map((x) => x.poly));
+  const rowsSolid = layoutUnits(c).map((u) => u.poly);
+  const rowsLoose = parkingLayout(c).rows.flatMap((r) => r.slots.map((x) => x.poly));
+  return { solid: [...bs.map((b) => b.outline), ...rowsSolid], loose: [...bs.flatMap((b) => b.extras.map((e) => e.polygon)), ...bays, ...rowsLoose] };
+}
+
 const bboxOfLocal = (pts) => ({ minX: Math.min(...pts.map((p) => p.x)), maxX: Math.max(...pts.map((p) => p.x)), minY: Math.min(...pts.map((p) => p.y)), maxY: Math.max(...pts.map((p) => p.y)) });
 
 /** The local-frame shapes of one building record: outline, the roofed/paved extras and every bay polygon (at place 0,0,0 world == local). */
@@ -50,12 +77,13 @@ function localShapes(project, rec) {
 }
 
 /** The first pose in order of preference where the outline is in the envelope and everything else is in the lot. Null when none. */
-export function placeBuilding(project, rec) {
+export function placeBuilding(project, rec, occ = null) {
   const lot = lotOf(project);
   if (!lot || !Array.isArray(lot.boundary) || lot.boundary.length < 3) return null;
   const env = envelopeOf(lot);
   const sh = localShapes(project, rec);
   if (!sh) return null;
+  const others = occ || ((project.commercial?.buildings?.length || project.commercial?.rows?.length) ? occupiedBy(project, rec.id) : { solid: [], loose: [] });
   const ub = bboxOfLocal(sh.outline);
   const ab = bboxOfLocal([...sh.outline, ...sh.extras.flat(), ...sh.bays.flat()]);
   const front = frontRotation(lot);
@@ -82,6 +110,12 @@ export function placeBuilding(project, rec) {
       const w = (p) => toWorld(place, p);
       if (!sh.outline.every((p) => inside(w(p), env))) continue;
       if (![...sh.extras.flat(), ...sh.bays.flat()].every((p) => inside(w(p), lot.boundary))) continue;
+      if (others.solid.length || others.loose.length) {
+        const out = sh.outline.map(w);
+        const mine = [...sh.extras, ...sh.bays].map((q) => q.map(w));
+        if (others.solid.some((o) => polysOverlap(out, o) || mine.some((m) => polysOverlap(m, o)))) continue;
+        if (others.loose.some((o) => polysOverlap(out, o))) continue;
+      }
       return place;
     }
   }
@@ -125,7 +159,7 @@ export function chooseBuilding(project, typeId, presetId = BEST_PRESET) {
   if (!list.length) return null;
   for (const preset of list) {
     const rec = newBuilding(typeId, { presetId: preset.id });
-    const place = placeBuilding(project, rec);
+    const place = placeBuilding(project, rec, EMPTY);
     if (place) return { id: `${typeId}:${preset.id}`, label: `${def.label}, ${preset.label}`, typeId, presetId: preset.id, buildings: [{ ...rec, place, presetId: preset.id }], tooBig: false };
   }
   const small = list[list.length - 1];

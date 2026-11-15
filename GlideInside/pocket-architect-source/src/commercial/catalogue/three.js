@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { GeoBuilder, addOrientedBox, addCylinder } from '../../viewer3d/mesh-builder.js';
 import { makeMesh } from '../../viewer3d/model-util.js';
 import { addFloorPoly } from '../../viewer3d/site.js';
+import { buildingParking } from './bays.js';
 import { buildingsOf } from './buildings.js';
 import { runBuilding } from './materialise.js';
 import { toWorld, dirToWorld, toLocal, bboxOf } from './frame.js';
@@ -18,6 +19,7 @@ export const SLOT_STYLE = {
   canopy: { colour: '#e9ecef' }, steel: { colour: '#6b7480' }, concrete: { colour: '#b9bcc0' }, asphalt: { colour: '#3a3d42' }, panel: { colour: '#dfe4e8' },
   pump: { colour: '#c9ced4' }, board: { colour: '#2b2f36', unlit: true }, sign: { colour: '#dcdcd6' }, glass: { colour: '#9fc3d6', unlit: true, alpha: 0.55 },
   furniture: { colour: '#8a6d4e' }, plant: { colour: '#7d858f' }, foliage: { colour: '#4f8a4a', unlit: true }, seal: { colour: '#2b2f33' }, bumper: { colour: '#141414' },
+  marking: { colour: '#f2f2ee', unlit: true }, accessible: { colour: '#2f6fd0', unlit: true }, zone: { colour: '#cfe0f5', unlit: true },
   roof: { colour: '#8a8f94' }, wall: { colour: '#aab0b5' }, vehicle: { colour: '#d8d8d2' }, pit: { colour: '#2b2f33' },
 };
 
@@ -191,11 +193,41 @@ function typeExtras(b, project, builder) {
 }
 
 /** Add every catalogue building's roofs and extras to the model group. ctx is the build ctx of build.js. */
+/** Bay rows of a building on the ground: asphalt for the aisle and bays, white side lines, blue accessible bays and shared zones. */
+function bays3D(rows, builder) {
+  const thin = (p, q, w) => {
+    const dx = q.x - p.x; const dy = q.y - p.y; const L = Math.hypot(dx, dy) || 1;
+    const nx = (-dy / L) * (w / 2); const ny = (dx / L) * (w / 2);
+    return [{ x: p.x + nx, y: p.y + ny }, { x: q.x + nx, y: q.y + ny }, { x: q.x - nx, y: q.y - ny }, { x: p.x - nx, y: p.y - ny }];
+  };
+  rows.forEach((r) => {
+    const sl = r.slots;
+    if (!sl.length) return;
+    const a = sl[0].poly; const z = sl[sl.length - 1].poly;
+    addFloorPoly(builder, 'asphalt', [a[0], z[1], z[2], a[3]], 0.024, true);
+    if (r.rowId.endsWith(':0')) {
+      const v = r.frame.v;
+      const off = r.offsetMm;
+      const ext = (p) => ({ x: p.x + v.x * off, y: p.y + v.y * off });
+      addFloorPoly(builder, 'asphalt', [ext(a[0]), ext(z[1]), z[1], a[0]], 0.024, true);
+    }
+    for (const s of sl) {
+      const p = s.poly;
+      if (s.kind === 'accessible') addFloorPoly(builder, 'accessible', p, 0.034, true);
+      else if (s.kind === 'zone') addFloorPoly(builder, 'zone', p, 0.034, true);
+      addFloorPoly(builder, 'marking', thin(p[0], p[3], 100), 0.04, true);
+      addFloorPoly(builder, 'marking', thin(p[1], p[2], 100), 0.04, true);
+      addFloorPoly(builder, 'marking', thin(p[3], p[2], 100), 0.04, true);
+    }
+  });
+}
+
 export function addCatalogue3D(ctx, root, project) {
   const c = project.commercial;
   if (!c?.buildings?.length || project.mode !== 'commercial') return 0;
   const lib = ctx.lib;
   let n = 0;
+  const parkingRows = buildingParking(c).rows;
   for (const b of buildingsOf(c)) {
     // Roofs: wall material for gable ends, roof sheet and fascia as the project finishes.
     const rb = new GeoBuilder();
@@ -209,6 +241,7 @@ export function addCatalogue3D(ctx, root, project) {
     }
     const eb = new GeoBuilder();
     genericExtras(b, eb);
+    bays3D(parkingRows.filter((r) => r.buildingId === b.id), eb);
     typeExtras(b, project, eb);
     const em = meshFromBuilder(ctx, eb, `extras:${b.id}`, { building: b.id });
     if (em) { root.add(em); n += 1; }

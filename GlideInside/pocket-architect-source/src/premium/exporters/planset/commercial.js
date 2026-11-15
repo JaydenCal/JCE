@@ -1011,7 +1011,7 @@ export function drawLayout(doc, model) {
   const ratio = stats.parking;
   const kv = [
     ['Lot area', `${m2f(stats.lotM2 ?? 0)} m²`],
-    ['Units', `${stats.units} (${stats.mix.map((x) => `${x.count} x ${x.label}`).join(', ')})`],
+    ['Units', stats.units ? `${stats.units} (${stats.mix.map((x) => `${x.count} x ${x.label}`).join(', ')})` : 'None'],
     ...(stats.buildingCount ? [['Buildings', `${stats.buildingCount} (${(stats.buildings || []).map((b) => b.label).join(', ')})`]] : []),
     ['GFA incl. mezzanine', `${m2f(stats.gfaM2)} m²`],
     ['Site coverage', stats.coveragePct != null ? `${stats.coveragePct} %` : 'n/a'],
@@ -1291,14 +1291,13 @@ export function drawYield(doc, model) {
   const rh = shown.length > 34 ? 3.3 : big ? 4.8 : 4.1;
   const fs = shown.length > 34 ? 5.8 : big ? 7.4 : 6.6;
   let yL = 20;
-  yL = sectionTitle(doc, 'UNIT SCHEDULE (AREAS IN m²)', X0, yL, 162);
+  if (rows.length || !bsch.rows.length) yL = sectionTitle(doc, 'UNIT SCHEDULE (AREAS IN m²)', X0, yL, 162);
   const cols = [{ w: 30 }, { w: 9, align: 'right' }, { w: 22 }, { w: 18, align: 'right' }, { w: 17, align: 'right' }, { w: 17, align: 'right' }, { w: 17, align: 'right' }, { w: 32 }];
   const body = shown.map((r) => [`PROPOSED UNIT ${r.n}`, String(r.row), r.size, r.ground.toFixed(1), r.mz ? r.mz.toFixed(1) : '0.0', r.total.toFixed(1), r.office.toFixed(1), r.doors]);
   body.push([`TOTAL, ${rows.length} UNITS`, '', '', tot.ground.toFixed(1), tot.mz.toFixed(1), tot.total.toFixed(1), tot.office.toFixed(1), '']);
   if (rows.length) yL = table(doc, X0, yL, cols, ['UNIT', 'ROW', 'SIZE (m)', 'GROUND', 'MEZZ.', 'TOTAL', 'OFFICE', 'ROLLER DOOR (m)'], body, { rh, size: fs, boldLast: true });
-  else if (!bsch.rows.length) yL = sectionTitle(doc, 'NO UNITS OR BUILDINGS ON THIS LOT', X0, yL, 162);
   if (bsch.rows.length) {
-    yL += 3;
+    yL += rows.length ? 3 : 0;
     yL = sectionTitle(doc, 'BUILDING SCHEDULE, GFA BY USE (AREAS IN m²)', X0, yL, 162);
     const bcols = [{ w: 44 }, { w: 22 }, { w: 16, align: 'right' }, { w: 14, align: 'right' }, { w: 16, align: 'right' }, { w: 50 }];
     const bbody = bsch.rows.map((r) => [r.name, r.size, r.ground.toFixed(1), r.upper ? r.upper.toFixed(1) : '0.0', r.total.toFixed(1), r.text || 'n/a']);
@@ -1327,20 +1326,20 @@ export function drawYield(doc, model) {
   const summary = [
     ['Lot area', `${m2f(stats.lotM2 ?? 0)} m²`],
     ['Zone', `${zoneTxt}${lot.lga ? `, ${lot.lga}` : ''}`],
-    ['Units', `${stats.units} (${stats.mix.map((x) => `${x.count} x ${x.label}`).join(', ')})`],
+    ['Units', stats.units ? `${stats.units} (${stats.mix.map((x) => `${x.count} x ${x.label}`).join(', ')})` : 'None'],
     ...(stats.buildingCount ? [['Buildings', `${stats.buildingCount} (${(stats.buildings || []).map((b) => b.label).join(', ')})`]] : []),
     ['Ground floor area', `${m2f(stats.groundGfaM2)} m²`],
     ['Mezzanine area', `${m2f(stats.mezzGfaM2)} m²`],
     ['GFA (ground plus mezzanine)', `${m2f(stats.gfaM2)} m²`],
     ['Site coverage', stats.coveragePct != null ? `${stats.coveragePct} % of the lot (indicative maximum ${rules.coverageMaxPct} %, check with council)` : 'n/a'],
     ['Landscaping (not built or paved, excluding the OSD placeholder)', model.land.pct != null ? `${model.land.pct} % of the lot, about ${m2f(model.land.areaM2)} m² (indicative minimum ${landMin} %, check with council)` : 'n/a'],
-    ['Parking required', par.officeSplit
+    ['Parking required', stats.buildingCount ? `${par.required} bays: ${stats.units ? `${par.required - par.buildingRequired} for the strata units plus ` : ''}${par.buildingRequired} for the ${stats.buildingCount === 1 ? 'building' : 'buildings'} at the rates per use shown on the building schedule, each rounded up once, check with council` : par.officeSplit
       ? `${par.required} bays: workshop and other ${m2f(par.split.otherM2)} m² at 1 per ${Math.round(1 / par.ratePerM2)} m² (${par.split.otherSpaces.toFixed(2)}) plus office ${m2f(par.split.officeM2)} m² at 1 per ${Math.round(1 / par.officeRatePerM2)} m² (${par.split.officeSpaces.toFixed(2)}), rounded up once`
       : `${par.required} bays at 1 per ${Math.round(1 / par.ratePerM2)} m² of GFA, rounded up`],
     ['Rate source and status', `${rateSource}. Status: ${statusText(rateStatus)}`],
-    ['Bays provided', `${par.provided} (${a.parking.accessible.provided} accessible), ${par.provided >= par.required ? 'at or above' : 'below'} the ${par.required} indicated`],
-    ['Accessible bays', `${a.parking.accessible.required} indicated for ${accCls} (NCC D4D6), ${a.parking.accessible.provided} provided, each with a ${m1(ACCESSIBLE_BAY.sharedZoneMm)} m shared zone and a central bollard`],
-    ['Truck apron and car aisle', `${m1(model.off)} m clear from the roller doors to the bays, car aisle ${m1(c.parking.aisleMm)} m`],
+    ['Bays provided', `${par.provided} (${par.accessible.provided} accessible), ${par.provided >= par.required ? 'at or above' : 'below'} the ${par.required} indicated`],
+    ['Accessible bays', `${par.accessible.required} indicated for ${accCls} (NCC D4D6), ${par.accessible.provided} provided, each with a ${m1(ACCESSIBLE_BAY.sharedZoneMm)} m shared zone and a central bollard`],
+    ['Truck apron and car aisle', stats.buildingCount && !stats.units ? bsch.rows.map((r) => `B${r.n} ${m1(buildingsOf(c)[r.n - 1].site?.vehicles?.apronDepthMm || 0)} m`).join(', ') + ` apron from the front edge, car aisle ${m1(c.parking.aisleMm)} m` : `${m1(model.off)} m clear from the roller doors to the bays, car aisle ${m1(c.parking.aisleMm)} m`],
     ['Bollards (indicative)', `${a.schedule.total}`],
   ];
   yR = kvTable(doc, XR, yR, WR, summary, { size: big ? 7 : 6.4, split: 0.36 });
@@ -1357,7 +1356,8 @@ export function drawYield(doc, model) {
     door.set(key, e);
   }
   const dr = [...door].map(([k, e]) => [k, String(e.n), `${e.units.size} units`]);
-  dr.push(['Total', String(dr.reduce((s, r) => s + Number(r[1]), 0)), `${rows.length} units`]);
+  for (const b of buildingsOf(c)) { const n = (b.q.doors?.roller || 0) + (b.q.doors?.dock || 0); if (n > 0) dr.push([`B${b.n} roller and dock doors`, String(n), b.label]); }
+  dr.push(['Total', String(dr.reduce((s, r) => s + Number(r[1]), 0)), `${rows.length} units, ${c.buildings?.length || 0} buildings`]);
   yR = table(doc, XR, yR, [{ w: 36 }, { w: 14, align: 'right' }, { w: WR - 50 }], ['DOOR (W x H)', 'COUNT', 'SERVES'], dr, { rh: 4, size: 6.4, boldLast: true });
   yR += 2;
   yR = sectionTitle(doc, 'BOLLARD SCHEDULE (INDICATIVE)', XR, yR, WR);

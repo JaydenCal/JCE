@@ -86,7 +86,7 @@ test('fit: best fit stands inside the envelope, a too big type says so', () => {
   for (const t of typed) {
     const c = chooseBuilding(p, t.id);
     assert.ok(c, t.id);
-    if (!c.tooBig) assert.ok(placeBuilding(p, c.buildings[0]), t.id);
+    if (!c.tooBig) assert.ok(placeBuilding(p, c.buildings[0], { solid: [], loose: [] }), t.id);
   }
   const small = lotProject({ width: 12000, depth: 20000 });
   assert.equal(chooseBuilding(small, 'warehouse').tooBig, true);

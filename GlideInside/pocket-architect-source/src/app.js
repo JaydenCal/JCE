@@ -1,6 +1,7 @@
 // Plan Studio app shell. Renders into #app: top bar, tools, plan editor, 3D host, right panel and status bar.
 // The catalogue, 3D viewer and Plan Pack are separate modules, loaded on demand and allowed to fail.
 
+import * as buildingOps from './commercial/catalogue/ops.js';
 import { canMoveHouse } from './editor2d/tool-movehouse.js';
 import { CONFIG } from './config.js';
 import { createStore, loadAutosave } from './model/store.js';
@@ -377,7 +378,7 @@ async function main() {
     ...DOOR_FAMILY.filter((id) => id !== 'door').map((id) => ({ id, label: KIND_LABEL[id], keys: [] })),
   ];
   const keys = { wheel: 'Q', inventory: 'I', rotateLeft: ',', rotateRight: '.', rotateFine: 'Shift', pan: 'Right drag', quickMeasure: 'Right click' };
-  const api = { changeDesignType: (id, opts) => changeDesignType(store, id, catalogue, opts), share, applyDesignType: (id) => applyDesignType(store, id, catalogue), designTypeOf: () => designTypeOf(store.project), tools, keys, setTool: (id, arg) => setTool(store, id, arg), wheel, inventory, openInventory, openTitleBlock: () => openTitleBlockForm(store), getLogo, store, editor, getViewer, premium: null, catalogue, CONFIG, embed, panel, topbar, toolbox, drawer, statusbar, chips, views, openNew, loadTemplate, loadBlank, replaceProject, setMode };
+  const api = { changeDesignType: (id, opts) => changeDesignType(store, id, catalogue, opts), share, applyDesignType: (id) => applyDesignType(store, id, catalogue), designTypeOf: () => designTypeOf(store.project), tools, keys, setTool: (id, arg) => setTool(store, id, arg), wheel, inventory, openInventory, openTitleBlock: () => openTitleBlockForm(store), getLogo, store, editor, getViewer, premium: null, catalogue, CONFIG, embed, panel, topbar, toolbox, drawer, statusbar, chips, views, openNew, loadTemplate, loadBlank, replaceProject, setMode, buildingOps };
   window.__ps = api;
 
   // Start state ------------------------------------------------------------------------------------------------------------------

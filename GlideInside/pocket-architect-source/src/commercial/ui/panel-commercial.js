@@ -53,15 +53,15 @@ export function createCommercialPanel({ store, host, editor }) {
     const bs = buildingsOf(c);
     const sel = bldOf();
     const types = typesForPicker().filter((t) => t.id !== STRATA_ID);
-    const typeSel = h('select', { 'aria-label': 'Building type', dataset: { ps: 'add-building-type' }, onchange: () => { addType = typeSel.value; } },
+    const typeSel = h('select', { 'aria-label': 'Building type', style: { flex: '1 1 100%', minWidth: '0' }, dataset: { ps: 'add-building-type' }, onchange: () => { addType = typeSel.value; } },
       ...types.map((t) => h('option', { value: t.id }, t.label)));
     typeSel.value = addType && types.some((t) => t.id === addType) ? addType : types[0]?.id;
     const list = h('div', { class: 'cm-rows', role: 'tablist', 'aria-label': 'Buildings', dataset: { ps: 'building-list' } },
       ...bs.map((b) => h('button', { type: 'button', role: 'tab', class: 'cm-chip', 'aria-selected': String(b.id === sel?.id), dataset: { building: b.id }, onclick: () => store.setUI({ commercialBuilding: b.id, commercialRow: null }) }, icon(typeIconName(b.def), { size: 16 }), `B${b.n} ${b.label}`, h('i', null, `${Math.round(b.gfaM2).toLocaleString('en-AU')} m²`))));
-    const add = h('div', { class: 'cm-actions' }, typeSel,
+    const add = h('div', { class: 'cm-actions' },
       h('button', { type: 'button', class: 'cm-btn', dataset: { action: 'add-building' }, onclick: () => { try { const id = addBuilding(store, typeSel.value); store.setUI({ commercialBuilding: id, commercialRow: null }); } catch (e) { console.warn(e); } } }, 'Add building'),
       h('button', { type: 'button', class: 'cm-btn cm-danger', dataset: { action: 'delete-building' }, disabled: !sel, onclick: () => { deleteBuilding(store, sel.id); store.setUI({ commercialBuilding: null }); } }, 'Delete building'));
-    const kids = [list, add];
+    const kids = [list, field('Building type', typeSel), add];
     if (sel) {
       const def = sel.def;
       const control = (p) => {

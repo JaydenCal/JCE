@@ -42,6 +42,7 @@ export const defaultCommercial = (useClass = 'industrial') => ({
   useClass,
   zoneClass: null, // the person's choice (needed for Queensland lots); null follows the looked up zone
   rows: [],
+  buildings: [],
   // aisleMm is the car aisle in front of the bays (5.8 m for 90 degree bays, AS/NZS 2890.1); apronMm is the truck apron in front of the roller
   // doors, the clear depth from the facade to the bays (12 m, editable).
   parking: { enabled: true, bayW: 2400, bayL: 5400, aisleMm: 5800, apronMm: 12000, accessibleOverride: null },
@@ -102,6 +103,13 @@ export function normaliseCommercial(c) {
     u.heightMm = num(u.heightMm, 3000, 15000, 6000);
     return row;
   });
+  out.buildings = (Array.isArray(c?.buildings) ? c.buildings : []).filter((b) => b && typeof b.type === 'string').map((b, i) => ({
+    id: b.id || `bld_${Date.now().toString(36)}${i.toString(36)}`,
+    type: b.type,
+    presetId: b.presetId || null,
+    params: isObj(b.params) ? b.params : {},
+    place: { x: Number(b.place?.x) || 0, y: Number(b.place?.y) || 0, rotationDeg: Number(b.place?.rotationDeg) || 0 },
+  }));
   return out;
 }
 

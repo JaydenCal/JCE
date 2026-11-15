@@ -405,7 +405,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     const ct = typeChoices(p).find((t) => t.active);
     tyIcon.replaceChildren(icon(ct?.icon || 'bt-strata', { size: 20 }));
     tyName.textContent = ct?.label || 'Strata units';
-    title.textContent = pg.name;
+    title.textContent = pg.title;
     const z = zoneClass(lot);
     sub.replaceChildren(h('span', null, lotLine(lot)), h('span', { class: 'lc-sc', title: finishLine(p) }, zoneLine(lot)));
     stats.replaceChildren(...commercialCardStats(p).map((c) => h('div', { dataset: { stat: c.key } }, h('b', null, c.value), h('i', null, c.label))));
@@ -579,7 +579,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   window.addEventListener('ps:room-aerial', onAerial);
   schedule();
   return {
-    el: root, render, step, setLayout, setFinish, planSet, openPanel, closePanel, pickView,
+    el: root, render, step, setLayout, setType, setFinish, planSet, openPanel, closePanel, pickView,
     dispose() { disposed = true; window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); ro?.disconnect(); root.remove(); },
   };
 }

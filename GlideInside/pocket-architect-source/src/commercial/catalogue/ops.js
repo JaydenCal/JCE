@@ -70,7 +70,7 @@ export function applyBuildingChoice(store, choice) {
     p.commercial.parking = { ...p.commercial.parking, extra: [] };
     p.commercial.layout = { id: choice.id, label: choice.label, tooBig: !!choice.tooBig, typeId: choice.typeId, presetId: choice.presetId };
     redo(p);
-    p.name = choice.label;
+    p.name = typeById(choice.typeId)?.label || choice.label;
   });
   return true;
 }

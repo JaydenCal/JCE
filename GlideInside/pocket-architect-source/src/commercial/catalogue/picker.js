@@ -32,13 +32,22 @@ export function switcherIndex(project) {
   return list.findIndex((x) => x.id === l?.presetId);
 }
 
-/** { name, n, of } for the pager, for any type. */
+/** { title, name, n, of } for the card: the title (the type, or the layout of strata units), the switcher name (preset, "edited" once params differ). */
 export function pagerText(project) {
   const t = activeTypeId(project);
   const list = switcherList(t);
   const i = switcherIndex(project);
-  const name = project?.commercial?.layout?.label || (i >= 0 ? list[i].label : (typeById(t)?.label || 'Layout'));
-  return { name, n: i < 0 ? null : i + 1, of: list.length };
+  const lay = project?.commercial?.layout;
+  if (t === STRATA_ID) {
+    const name = lay?.label || (i >= 0 ? list[i].label : 'Layout');
+    return { title: name, name, n: i < 0 ? null : i + 1, of: list.length };
+  }
+  const def = typeById(t);
+  const preset = presetsOf(def).find((p) => p.id === lay?.presetId);
+  const b = project.commercial?.buildings?.[0];
+  const edited = !!(preset && b && Object.entries(preset.params || {}).some(([k, v]) => b.params?.[k] !== undefined && b.params[k] !== v));
+  const name = lay?.presetId === undefined ? def.label : `${preset?.label || def.label}${edited ? ' (edited)' : ''}`;
+  return { title: def.label, name, n: i < 0 ? null : i + 1, of: list.length };
 }
 
 /** Choose a layout (strata) or a building (other types) by switcher id. */
