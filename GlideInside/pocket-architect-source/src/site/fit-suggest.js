@@ -127,10 +127,11 @@ export function shrinkSuggestions(project, { needWideM = 0, needDeepM = 0 } = {}
 
 /** "A narrower lot width design": the last suggestion, pointing at the best alternative that fits. Null when there is none. */
 export function narrowerDesignSuggestion(project, alternatives) {
-  const best = alternatives?.list?.find((a) => a.fit > 0);
-  if (!best) return null;
   const ax = houseAxes(project);
   const now = sizeWithout(project, ax).w / 1000;
+  // The first fitting design that is actually narrower (a wide acreage home can fit a deep lot without saving width).
+  const best = alternatives?.list?.find((a) => a.fit > 0 && now - a.widthM >= 0.2);
+  if (!best) return null;
   const save = now - best.widthM;
   if (!(save >= 0.2)) return null;
   return { id: 'narrower-design', text: `A narrower design: ${best.name} is ${m1(best.widthM)} m wide and saves about ${m1(save)} m of width.`, saveWideM: save, saveDeepM: 0, oneTap: false, guide: '', designId: best.id };
@@ -208,9 +209,9 @@ export function sizeAlternatives(project, designs, { placedId = project?.placedH
         placeHouse(t, d.project, kp.pose);
         const mg = marginIn(buildingHull(t), area.polygon);
         if (mg >= 0) fit = 2;
-        else if (d.fit && d.fit.status && d.fit.status !== 'unknown') fit = d.fit.status === 'too-big' ? 0 : 1;
-        else fit = fitPlan(t)?.auto?.fits ? 1 : 0;
-      } else if (d.fit && d.fit.status && d.fit.status !== 'unknown') fit = d.fit.status === 'too-big' ? 0 : 1;
+        else if (d.fit && d.fit.status === 'too-big') fit = 0;
+        else fit = fitPlan(t)?.auto?.fits ? 1 : 0; // confirmed by an actual auto fit, never promised on the card's rough check alone
+      } else if (d.fit && d.fit.status === 'too-big') fit = 0;
       else {
         const t = structuredClone({ ...project, levels: [], site: { ...project.site, tanks: [] } });
         const c = G.polygonCentroid(hull);
