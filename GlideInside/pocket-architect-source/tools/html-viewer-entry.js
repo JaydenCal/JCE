@@ -5,7 +5,7 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, HemisphereLight, DirectionalLight, Box3, Vector3, Mesh, Group,
   CircleGeometry, PlaneGeometry, BoxGeometry, CylinderGeometry, IcosahedronGeometry, MeshStandardMaterial, MeshBasicMaterial,
-  CanvasTexture, RepeatWrapping, LinearMipmapLinearFilter, Color, SRGBColorSpace, PCFSoftShadowMap, NeutralToneMapping,
+  CanvasTexture, RepeatWrapping, LinearMipmapLinearFilter, Color, SRGBColorSpace, PCFSoftShadowMap, NeutralToneMapping, Raycaster, Vector2,
 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -146,6 +146,18 @@ async function start(container, base64, encoding) {
   controls.dampingFactor = 0.08;
   controls.maxPolarAngle = Math.PI * 0.495;
   controls.screenSpacePanning = true;
+  controls.zoomToCursor = true;
+  // Orbit about the point under the cursor for each drag; the camera stays where it is.
+  const ray = new Raycaster();
+  const ndc = new Vector2();
+  renderer.domElement.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 || !home) return;
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObjects(scene.children, true).find((h) => h.object.isMesh && h.object.visible);
+    if (hit) { controls.target.copy(hit.point); controls.update(); }
+  }, true);
 
   const roofParts = [];
   let home = null;

@@ -767,6 +767,11 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   let lastClick = null;
   const dblHandlers = [];
   function onPointerDown(e) {
+    // Orbit about the point under the cursor: move the target there for this drag and keep the camera where it is.
+    if (e.button === 0 && !turntable && mode === 'orbit' && !edit.enabled && !ahead.isArmed) {
+      const h = pickAt(e.clientX, e.clientY);
+      if (h?.point) { controls.target.copy(h.point); controls.update(); }
+    }
     downInfo = e.button === 0 ? { x: e.clientX, y: e.clientY, t: performance.now() } : null;
   }
   function onPointerUp(e) {
@@ -804,7 +809,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     const r = rootEl.getBoundingClientRect();
     if (picker.open(hit, e.clientX - r.left, e.clientY - r.top)) fadeHints();
   }
-  canvas.addEventListener('pointerdown', onPointerDown);
+  canvas.addEventListener('pointerdown', onPointerDown, true); // capture: runs before the orbit controls read the target
   canvas.addEventListener('pointerup', onPointerUp);
   const onContextLost = (e) => e.preventDefault();
   const onContextRestored = () => invalidate();
