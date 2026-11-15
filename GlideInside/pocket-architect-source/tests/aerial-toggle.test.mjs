@@ -129,7 +129,7 @@ test('builder portal: "Show aerial by default" is on by default, saved by the mo
   const src = read('../src/portal/ui/clients-tab.js');
   assert.match(src, /'showAerialDefault', 'Show aerial by default'/);
   assert.match(read('../src/portal/client-mode.js'), /setAerialDefault\(me\.org\?\.showAerialDefault !== false\)/);
-  assert.match(read('../server/migrations/0015_org_show_aerial_default.sql'), /ADD COLUMN show_aerial_default INTEGER NOT NULL DEFAULT 1/);
+  assert.match(read('../server/migrations/0017_org_show_aerial_default.sql'), /ADD COLUMN show_aerial_default INTEGER NOT NULL DEFAULT 1/);
   assert.match(read('../server/schema.sql'), /show_aerial_default INTEGER NOT NULL DEFAULT 1/);
   assert.match(read('../server/lib/portal-store.js'), /showAerialDefault: 'show_aerial_default:b'/);
 });

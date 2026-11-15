@@ -206,8 +206,8 @@ CREATE TABLE IF NOT EXISTS orgs (
   allow_client_enquiries INTEGER NOT NULL DEFAULT 1,
   show_glide_to_clients INTEGER NOT NULL DEFAULT 1,
   allow_client_cad_exports INTEGER NOT NULL DEFAULT 0,
-  show_ai_assistant INTEGER NOT NULL DEFAULT 1,  -- builder setting: clients are offered the AI design assistant (migration 0016)
-  show_aerial_default INTEGER NOT NULL DEFAULT 1,  -- builder setting: new lots open with the aerial imagery on (migration 0015)
+  show_ai_assistant INTEGER NOT NULL DEFAULT 1,  -- builder setting: clients are offered the AI design assistant (migration 0018)
+  show_aerial_default INTEGER NOT NULL DEFAULT 1,  -- builder setting: new lots open with the aerial imagery on (migration 0017)
   ai_monthly_cap INTEGER NOT NULL DEFAULT 300,
   legal_name TEXT,                   -- buyer on tax invoices
   abn TEXT,
@@ -382,4 +382,89 @@ CREATE TABLE IF NOT EXISTS org_accounts (
   card_added_at TEXT,
   owner_note TEXT,
   internal INTEGER NOT NULL DEFAULT 0        -- 1 = owner's internal test account: no charges, no trial, not in reports (migration 0014)
+);
+
+-- ===== 15. Plan set terms acceptance (migration 0017_terms_acceptance.sql) =====
+-- One row per (account or entitlement, terms version). ip_hash = SHA-256 of IP_HASH_SALT + address; the raw address is never stored.
+CREATE TABLE IF NOT EXISTS terms_acceptance (
+  id TEXT PRIMARY KEY,
+  subject_id TEXT NOT NULL,
+  subject_kind TEXT NOT NULL,
+  version TEXT NOT NULL,
+  context TEXT,
+  accepted_at TEXT NOT NULL,
+  ip_hash TEXT,
+  user_agent TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_terms_subject_version ON terms_acceptance(subject_id, version);
+CREATE INDEX IF NOT EXISTS idx_terms_version ON terms_acceptance(version, accepted_at);
+-- =====================================================================================================================
+-- Free user profiles (migration 0018_free_profiles.sql, lib/profiles.js)
+-- =====================================================================================================================
+CREATE TABLE IF NOT EXISTS profiles (
+  id TEXT PRIMARY KEY,
+  email TEXT NOT NULL,                     -- lower case, unique
+  name TEXT NOT NULL,
+  phone TEXT,                              -- optional
+  postcode TEXT,                           -- optional, a postcode or a suburb as typed
+  role TEXT,                               -- optional "I am a": homeowner | builder | developer | other
+  password_hash TEXT NOT NULL,
+  terms_version TEXT NOT NULL,             -- the site terms and privacy policy version accepted at sign up
+  terms_accepted_at TEXT NOT NULL,
+  marketing_consent INTEGER NOT NULL DEFAULT 0,   -- 1 only while the person has opted in (Spam Act 2003)
+  marketing_consent_at TEXT,
+  marketing_text_version TEXT,             -- version of the exact wording shown beside the tick box when consent was given
+  unsubscribed INTEGER NOT NULL DEFAULT 0, -- 1 = never market to this contact (the export leaves them out)
+  unsubscribed_at TEXT,
+  last_sign_in_at TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_profiles_email ON profiles(email);
+CREATE INDEX IF NOT EXISTS idx_profiles_created ON profiles(created_at);
+
+CREATE TABLE IF NOT EXISTS profile_sessions (
+  id_hash TEXT PRIMARY KEY,                -- SHA-256 of the cookie token; the token itself is never stored
+  profile_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  created_at TEXT NOT NULL,
+  last_seen_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_profile_sessions_profile ON profile_sessions(profile_id);
+
+-- Every change to marketing consent: when, on or off, which wording version and the exact words shown. Deleted with the profile.
+CREATE TABLE IF NOT EXISTS profile_consent_events (
+  id TEXT PRIMARY KEY,
+  profile_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  at TEXT NOT NULL,
+  consent INTEGER NOT NULL,
+  text_version TEXT,
+  text TEXT,
+  source TEXT NOT NULL                     -- signup | preferences | admin
+);
+CREATE INDEX IF NOT EXISTS idx_profile_consent_profile ON profile_consent_events(profile_id, at);
+
+CREATE TABLE IF NOT EXISTS profile_designs (
+  id TEXT PRIMARY KEY,
+  profile_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  project_id TEXT NOT NULL,                -- the design's own id inside the project JSON
+  name TEXT NOT NULL,
+  address TEXT,
+  kind TEXT NOT NULL DEFAULT 'residential',-- residential | commercial
+  thumbnail TEXT,                          -- small PNG, JPEG or WebP data URL
+  project_json TEXT NOT NULL,              -- capped below the 2 MB D1 row limit (PORTAL_PROJECT_MAX_BYTES)
+  bytes INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_profile_designs_profile ON profile_designs(profile_id, updated_at);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_profile_designs_project ON profile_designs(profile_id, project_id);
+
+-- A Plan Pack bought while signed in, linked to the profile so it can be restored on another device.
+CREATE TABLE IF NOT EXISTS profile_packs (
+  profile_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  entitlement_id TEXT NOT NULL,
+  project_id TEXT NOT NULL,
+  linked_at TEXT NOT NULL,
+  PRIMARY KEY (profile_id, entitlement_id)
 );

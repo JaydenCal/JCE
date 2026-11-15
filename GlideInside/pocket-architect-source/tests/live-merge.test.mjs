@@ -76,7 +76,7 @@ function mk(over = {}, { db = liveDb(), migrate = true } = {}) {
   const env = {
     DB: d1Of(db, hooks), FILES, SITE_URL: 'https://x.test', APP_URL: 'https://x.test/plan-studio/app/', IP_HASH_SALT: 'salt',
     STRIPE_WEBHOOK_SECRET: WHSEC, STRIPE_SECRET_KEY: 'sk_test_x', ENTITLEMENT_SECRET: SECRET, ANTHROPIC_API_KEY: 'sk-ant-test',
-    EXPORT_PDF_WAIT_MS: '0', ...over,
+    EXPORT_PDF_WAIT_MS: '0', TERMS_REQUIRED: '0', ...over,
   };
   const call = (p, o = {}) => worker.fetch(new Request('https://x.test/api' + p, o), env);
   const sign = (raw, t = Math.floor(Date.now() / 1e3), secret = WHSEC) => crypto.createHmac('sha256', secret).update(`${t}.${raw}`).digest('hex');
@@ -172,7 +172,7 @@ test('migrations: a fresh database built by the migrations has the same shape as
   live.exec(rd('../server/schema.sql'));
   assert.equal(JSON.stringify([columns(live), indexes(live)]), shape);
   // 0001 to 0005 and 0007 are repeatable (the live database has run 0001 to 0005 already); 0006 and 0008 add a column, so each is applied once
-  for (const f of migrationFiles()) if (!['0006_release.sql', '0008_trial_volume.sql', '0010_org_brand_colours.sql', '0011_org_slug.sql', '0012_project_staff_edits.sql', '0014_internal_org.sql', '0015_org_show_aerial_default.sql', '0016_org_show_ai_assistant.sql'].includes(f)) live.exec(rd(MIG + f));
+  for (const f of migrationFiles()) if (!['0006_release.sql', '0008_trial_volume.sql', '0010_org_brand_colours.sql', '0011_org_slug.sql', '0012_project_staff_edits.sql', '0014_internal_org.sql', '0017_org_show_aerial_default.sql', '0018_org_show_ai_assistant.sql'].includes(f)) live.exec(rd(MIG + f));
   assert.equal(JSON.stringify([columns(live), indexes(live)]), shape);
   assert.throws(() => live.exec(rd(`${MIG}0006_release.sql`)), /duplicate column/i, '0006 is not repeatable, which is why it is applied with "d1 migrations apply"');
   assert.throws(() => live.exec(rd(`${MIG}0008_trial_volume.sql`)), /duplicate column/i, '0008 adds orgs.custom_login_cents once');
@@ -180,10 +180,10 @@ test('migrations: a fresh database built by the migrations has the same shape as
   assert.throws(() => live.exec(rd(`${MIG}0011_org_slug.sql`)), /duplicate column/i, '0011 adds orgs.slug once');
   assert.throws(() => live.exec(rd(`${MIG}0014_internal_org.sql`)), /duplicate column/i, '0014 adds org_accounts.internal once');
   assert.throws(() => live.exec(rd(`${MIG}0012_project_staff_edits.sql`)), /duplicate column/i, '0012 adds the portal_projects.edited_by_* columns once');
-  assert.throws(() => live.exec(rd(`${MIG}0015_org_show_aerial_default.sql`)), /duplicate column/i, '0015 adds orgs.show_aerial_default once');
-  assert.throws(() => live.exec(rd(`${MIG}0016_org_show_ai_assistant.sql`)), /duplicate column/i, '0016 adds orgs.show_ai_assistant once');
+  assert.throws(() => live.exec(rd(`${MIG}0017_org_show_aerial_default.sql`)), /duplicate column/i, '0017 adds orgs.show_aerial_default once');
+  assert.throws(() => live.exec(rd(`${MIG}0018_org_show_ai_assistant.sql`)), /duplicate column/i, '0018 adds orgs.show_ai_assistant once');
   // numbering is continuous, so "d1 migrations apply" runs them in the intended order
-  assert.deepEqual(migrationFiles().map((f) => f.slice(0, 4)), ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014', '0015', '0016']);
+  assert.deepEqual(migrationFiles().map((f) => f.slice(0, 4)), ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014', '0015', '0016', '0017', '0018']);
 });
 
 test('migrations: nothing destructive in any release migration', opts, () => {
@@ -717,7 +717,7 @@ test('exports: a paid job can re-export its PDF as often as the hourly limit all
       return { bytes: new TextEncoder().encode(`%PDF-build-${builds}`), mime: 'application/pdf', filename: 'plans.pdf' };
     },
   });
-  const app = createApp({ store: createD1Store(d1Of(db)), env: { ENTITLEMENT_SECRET: SECRET, SITE_URL: 'https://x.test', EXPORT_PDF_WAIT_MS: '0', EXPORT_RATE_PER_HOUR: '4' }, files, loadExporters });
+  const app = createApp({ store: createD1Store(d1Of(db)), env: { ENTITLEMENT_SECRET: SECRET, SITE_URL: 'https://x.test', EXPORT_PDF_WAIT_MS: '0', EXPORT_RATE_PER_HOUR: '4', TERMS_REQUIRED: '0' }, files, loadExporters });
   const store = createD1Store(d1Of(db));
   const { entitlement } = await store.createEntitlement({ id: 'ent_pdf000002', projectId: 'p_pdf0002', email: 'a@b.co', stripeSessionId: 'cs_pdf2', creditsTotal: 500, status: 'active', createdAt: new Date().toISOString(), expiresAt: '2099-01-01T00:00:00.000Z' });
   const A = { authorization: `Bearer ${liveToken(entitlement.id, 'p_pdf0002')}`, 'content-type': 'application/json' };
@@ -755,7 +755,7 @@ test('exports: PDF_SET_LIMIT=1 restores ONE PDF plan set per job, the same file 
       return { bytes: new TextEncoder().encode(`%PDF-build-${builds}`), mime: 'application/pdf', filename: 'plans.pdf' };
     },
   });
-  const app = createApp({ store: createD1Store(d1Of(db)), env: { ENTITLEMENT_SECRET: SECRET, SITE_URL: 'https://x.test', EXPORT_PDF_WAIT_MS: '0', EXPORT_RATE_PER_HOUR: '50', PDF_SET_LIMIT: '1' }, files, loadExporters });
+  const app = createApp({ store: createD1Store(d1Of(db)), env: { ENTITLEMENT_SECRET: SECRET, SITE_URL: 'https://x.test', EXPORT_PDF_WAIT_MS: '0', EXPORT_RATE_PER_HOUR: '50', PDF_SET_LIMIT: '1', TERMS_REQUIRED: '0' }, files, loadExporters });
   const store = createD1Store(d1Of(db));
   const { entitlement } = await store.createEntitlement({ id: 'ent_pdf000001', projectId: 'p_pdf0001', email: 'a@b.co', stripeSessionId: 'cs_pdf', creditsTotal: 500, status: 'active', createdAt: new Date().toISOString(), expiresAt: '2099-01-01T00:00:00.000Z' });
   const A = { authorization: `Bearer ${liveToken(entitlement.id, 'p_pdf0001')}`, 'content-type': 'application/json' };
@@ -785,7 +785,7 @@ test('exports: PDF_SET_LIMIT=1 restores ONE PDF plan set per job, the same file 
 test('exports: rate limit per Plan Pack, as on the live Worker', opts, async () => {
   const store = createMemoryStore();
   const loadExporters = async () => ({ buildExport: async () => ({ bytes: new Uint8Array([1, 2]), mime: 'application/dxf', filename: 'a.dxf' }) });
-  const app = createApp({ store, env: { ENTITLEMENT_SECRET: SECRET, SITE_URL: 'https://x.test', EXPORT_RATE_PER_HOUR: '3' }, loadExporters });
+  const app = createApp({ store, env: { ENTITLEMENT_SECRET: SECRET, SITE_URL: 'https://x.test', EXPORT_RATE_PER_HOUR: '3', TERMS_REQUIRED: '0' }, loadExporters });
   const { entitlement } = await store.createEntitlement({ id: 'ent_rate00001', projectId: 'p_rate0001', stripeSessionId: 'cs_r', creditsTotal: 500, status: 'active', createdAt: new Date().toISOString(), expiresAt: '2099-01-01T00:00:00.000Z' });
   const A = { authorization: `Bearer ${liveToken(entitlement.id, 'p_rate0001')}`, 'content-type': 'application/json' };
   const post = () => app.fetch(new Request('https://x.test/api/export/dxf', { method: 'POST', headers: A, body: JSON.stringify({ project: sampleProject('p_rate0001') }) }));

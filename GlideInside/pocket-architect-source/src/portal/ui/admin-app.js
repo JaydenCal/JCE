@@ -2,7 +2,7 @@
 // kept in sessionStorage for the tab. Lists trial requests and builder orgs; approving creates the org and its first admin login,
 // shown once with Copy so the owner can pass it on himself. Nothing is emailed to the builder from here.
 
-import { h, clear, openDialog, confirmDialog, field, busy, toast, chip, icon, errorMessage } from './kit.js';
+import { h, clear, openDialog, confirmDialog, field, busy, toast, chip, icon, errorMessage, downloadText } from './kit.js';
 import { credentialsCard } from './credentials-card.js';
 import { createAdminApi } from '../admin-api.js';
 import { ddmmyyyy, formatAud } from '../billing.js';
@@ -23,6 +23,9 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
   let filter = 'pending';
   let trial = null; // the shared commercial trial login, or null
   let usage = null; // commercial AI usage and cost
+  let termsStats = null; // plan set terms acceptances per version
+  let contacts = null; // free profile contacts: { contacts, total, matching, marketable }
+  const contactFilters = { consent: '', type: '', from: '', to: '', designs: '', mode: '', suburb: '' };
 
   function gate(message = '') {
     clear(root);
@@ -53,7 +56,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
   async function load() {
     [requests, orgs] = await Promise.all([api.listRequests(), api.listOrgs()]);
     // The commercial sections are extras: a failure there must not lock the owner out of trial requests.
-    [trial, usage] = await Promise.all([api.commercialTrial?.().catch(() => null) ?? null, api.commercialUsage?.().catch(() => null) ?? null]);
+    [trial, usage, termsStats, contacts] = await Promise.all([api.commercialTrial?.().catch(() => null) ?? null, api.commercialUsage?.().catch(() => null) ?? null, api.termsCounts?.().catch(() => null) ?? null, api.profileContacts?.(contactFilters).catch(() => null) ?? null]);
   }
   async function reload() {
     try {
@@ -306,6 +309,68 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
       h('thead', null, h('tr', null, ...['Month', 'Account', 'Messages', 'Input tokens', 'Cache read tokens', 'Output tokens', 'Cost'].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', null, ...rows))));
   }
 
+
+  // Plan set terms: how many accounts have accepted each version (signed in accounts only; free previews are recorded in the browser).
+  function termsSection() {
+    const head = h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Plan set terms acceptances'), h('p', { class: 'pp-lead pp-lead--sm' }, termsStats ? `Current version ${termsStats.currentVersion}. Counts are accounts that accepted each version (signed in accounts and Plan Packs; anonymous free previews are recorded in the browser only).` : 'Acceptances could not be loaded.')));
+    if (!termsStats || !termsStats.versions.length) return h('div', { dataset: { ps: 'terms-admin' } }, head, h('p', { class: 'pp-empty' }, 'No acceptances recorded yet.'));
+    const day = (iso) => (iso ? ddmmyyyy(iso) : '');
+    return h('div', { dataset: { ps: 'terms-admin' } }, head, h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table' },
+      h('thead', null, h('tr', null, ...['Version', 'Acceptances', 'First', 'Latest'].map((t) => h('th', { scope: 'col' }, t)))),
+      h('tbody', null, ...termsStats.versions.map((v) => h('tr', null, h('td', null, v.version === termsStats.currentVersion ? `${v.version} (current)` : v.version), h('td', null, String(v.count)), h('td', null, day(v.firstAt)), h('td', null, day(v.lastAt))))))));
+  }
+
+  // Free profile contacts -------------------------------------------------------------------------------------------------------
+  // Everyone who made a free profile. Only contacts who ticked the marketing box (and have not unsubscribed) can be exported for marketing.
+  async function refreshContacts() {
+    try {
+      contacts = await api.profileContacts(contactFilters);
+      paint();
+    } catch (e) {
+      toast(errorMessage(e), { kind: 'error' });
+    }
+  }
+  async function exportContacts(scope, btn) {
+    await busy(btn, async () => {
+      const out = await api.profileCsv(scope, contactFilters);
+      downloadText(out.text, out.filename, 'text/csv');
+      toast(`${out.count} ${out.count === 1 ? 'contact' : 'contacts'} exported to ${out.filename}.`, { kind: 'ok', timeout: 8000 });
+    });
+  }
+  function contactsSection() {
+    const head = h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Contacts'),
+      h('p', { class: 'pp-lead pp-lead--sm' }, contacts ? `${contacts.total} free ${contacts.total === 1 ? "profile" : "profiles"}, ${contacts.marketable} can be marketed to (ticked the box and not unsubscribed). Marketing is opt in. Nothing is emailed from here.` : 'Free profile contacts could not be loaded. The profile service may not be switched on yet.')));
+    if (!contacts) return h('div', { id: 'contacts-section' }, head);
+    const sel = (key, label, options) => h('label', { class: 'pp-sub', style: { display: 'grid', gap: '2px', fontSize: '12px' } }, label,
+      h('select', { 'aria-label': label, dataset: { filter: key }, onchange: (e) => { contactFilters[key] = e.target.value; refreshContacts(); } },
+        ...options.map(([v, t]) => h('option', { value: v, selected: contactFilters[key] === v ? true : null }, t))));
+    const txt = (key, label, type = 'text') => h('label', { class: 'pp-sub', style: { display: 'grid', gap: '2px', fontSize: '12px' } }, label,
+      h('input', { type, 'aria-label': label, value: contactFilters[key], dataset: { filter: key }, style: { minHeight: '40px' }, onchange: (e) => { contactFilters[key] = e.target.value.trim(); refreshContacts(); } }));
+    const filters = h('div', { class: 'pp-actions pp-actions--tight', style: { alignItems: 'end', flexWrap: 'wrap', gap: '10px' } },
+      sel('consent', 'Marketing', [['', 'Any'], ['yes', 'Can market (consented)'], ['no', 'Cannot market']]),
+      sel('type', 'I am a', [['', 'Any'], ['homeowner', 'Homeowner'], ['builder', 'Builder'], ['developer', 'Developer'], ['other', 'Other'], ['unspecified', 'Not said']]),
+      txt('from', 'Joined from', 'date'), txt('to', 'Joined to', 'date'),
+      sel('designs', 'Designs saved', [['', 'Any'], ['none', 'None'], ['some', 'One or more']]),
+      sel('mode', 'Design type', [['', 'Any'], ['residential', 'Residential'], ['commercial', 'Commercial'], ['both', 'Both']]),
+      txt('suburb', 'Suburb or postcode'));
+    const buttons = h('div', { class: 'pp-actions pp-actions--tight', style: { margin: '12px 0' } },
+      h('button', { class: 'pp-btn pp-btn--primary pp-btn--sm', type: 'button', id: 'export-marketing', onclick: (e) => exportContacts('marketing', e.currentTarget) }, icon('check', 15), 'Export for marketing (consenting contacts only)'),
+      h('button', { class: 'pp-btn pp-btn--sm', type: 'button', id: 'export-all', onclick: (e) => exportContacts('all', e.currentTarget) }, 'Export everyone (not for marketing)'));
+    const flag = (c, btn) => busy(btn, async () => {
+      await api.profileUnsubscribe(c.id, !c.unsubscribed);
+      toast(c.unsubscribed ? 'Unsubscribe flag cleared. They are not marketable until they opt in again.' : 'Marked unsubscribed. They are left out of the marketing export.', { kind: 'ok' });
+      await refreshContacts();
+    });
+    const status = (c) => (c.unsubscribed ? chip('Unsubscribed', 'warn') : c.marketingConsent ? chip('Consented', 'ok') : chip('No consent', 'muted'));
+    const rows = contacts.contacts.map((c) => h('tr', { dataset: { contact: c.id } },
+      td('Name', c.name), td('Email', c.email), td('Phone', c.phone), td('Suburb or postcode', c.postcode), td('I am a', c.role), td('Joined', when(c.createdAt)),
+      td('Designs', `${c.designs}${c.commercialDesigns ? ` (${c.commercialDesigns} commercial)` : ''}`), td('Marketing', status(c), c.marketingConsentAt ? h('small', { style: { display: 'block' } }, `${when(c.marketingConsentAt)} ${c.marketingTextVersion || ''}`) : null),
+      td('Actions', h('button', { class: 'pp-btn pp-btn--sm', type: 'button', dataset: { action: 'flag-unsub' }, onclick: (e) => flag(c, e.currentTarget) }, c.unsubscribed ? 'Clear flag' : 'Mark unsubscribed'))));
+    return h('div', { id: 'contacts-section' }, head, filters, h('p', { class: 'pp-sub', style: { marginTop: '8px' } }, `${contacts.matching} shown`), buttons,
+      contacts.contacts.length ? h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table pp-table--stack' }, h('thead', null, h('tr', null, ...['Name', 'Email', 'Phone', 'Suburb or postcode', 'I am a', 'Joined', 'Designs', 'Marketing', 'Actions'].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', null, ...rows)))
+        : h('p', { class: 'pp-empty' }, 'No contacts match.'));
+  }
+
   function paint() {
     clear(root);
     const count = (s) => requests.filter((r) => r.status === s).length;
@@ -325,7 +390,9 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
         skipNote, orgTable,
         h('div', { class: 'pp-actions pp-actions--tight', style: { marginTop: '12px' } }, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', id: 'create-internal', onclick: openInternalForm }, 'Create internal test account')),
         trialSection(),
-        usageSection()));
+        usageSection(),
+        termsSection(),
+        contactsSection()));
   }
 
   const saved = store.get();

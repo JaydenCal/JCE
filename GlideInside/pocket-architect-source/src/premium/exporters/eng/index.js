@@ -141,7 +141,7 @@ export async function toEngineeringPDF(project0, options = {}) {
   });
   const doc = withSuperscripts(scaledDoc(raw, p.k));
   const total = plan.list.length;
-  const ctx = { colours: schemeColours(project), project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, extraCredit: options.aerialCredit || '', analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
+  const ctx = { colours: schemeColours(project), project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, terms: options.terms || null, extraCredit: options.aerialCredit || '', analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
   // The aerial is composited once per view (the site plan, the key plan and the cover locality), turned and cropped as each is drawn.
   const bytes0 = await resolveAerial(project, { aerial });
   const lotA = project.site?.lot;

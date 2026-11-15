@@ -3,6 +3,7 @@
 //
 //   createCommercialBilling({ layer, api, store, config, getCsub, setCsub, clearCsub, getCredits, refreshCredits, navigate, onReplace })
 
+import { createCheckoutTick } from '../../legal/checkout-tick.js';
 import { el, ddmmyyyy, formatAud, track, sleep as realSleep } from '../util.js';
 import { icon } from '../icons.js';
 import { friendlyError } from '../messages.js';
@@ -57,7 +58,10 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
     const subscribeBtn = el('button', { class: 'psp-btn psp-btn--primary', type: 'button', disabled: true }, 'Subscribe');
     let modal;
     const email = el('input', { class: 'psp-input', type: 'email', name: 'email', autocomplete: 'email', placeholder: 'you@example.com (for your receipt)', 'aria-label': 'Email address for your receipt' });
+    let subscribable = false;
+    const tick = createCheckoutTick({ onChange: (on) => { subscribeBtn.disabled = !(on && subscribable); } });
     subscribeBtn.addEventListener('click', async () => {
+      if (!tick.checked() || !subscribable) return;
       show(err, '');
       subscribeBtn.disabled = true;
       subscribeBtn.replaceChildren(el('span', { class: 'psp-spin', 'aria-hidden': 'true' }), 'Opening secure checkout');
@@ -69,13 +73,14 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
         navigate(url);
       } catch (e) {
         show(err, e?.code === 'SUBSCRIPTION_COMING_SOON' ? 'The subscription is coming soon.' : friendlyError(e, { area: 'checkout' }));
-        subscribeBtn.disabled = false;
+        subscribeBtn.disabled = !tick.checked();
         subscribeBtn.replaceChildren('Subscribe');
       }
     });
     checkSubscribable().then((ok) => {
       if (modal?.closed) return;
-      subscribeBtn.disabled = !ok;
+      subscribable = !!ok;
+      subscribeBtn.disabled = !(ok && tick.checked());
       subscribeBtn.replaceChildren(ok ? 'Subscribe' : 'Coming soon');
       email.hidden = !ok;
     });
@@ -93,6 +98,7 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
             'Monthly subscription. Cancel anytime from Manage billing.']
             .map((t) => el('li', null, icon('check', 16), el('span', null, t)))),
         el('div', { class: 'psp-field' }, email),
+        tick.el,
         el('p', { class: 'psp-fine' }, 'Plans are indicative concept documents for developers. ', config.disclaimer || ''),
         links(),
         el('p', { class: 'psp-fine' },
@@ -298,14 +304,27 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
   async function buyMore() {
     const csub = getCsub();
     if (!csub || csub.kind !== 'subscription') return;
-    try {
-      store.saveNow?.();
-      const { url } = await api.commercialAiTopup(csub.token);
-      if (!isSafeUrl(url)) throw new Error('bad url');
-      navigate(url);
-    } catch (e) {
-      layer.notify(e?.code === 'SUBSCRIPTION_COMING_SOON' ? 'Extra AI messages are coming soon.' : friendlyError(e, { area: 'checkout' }), e?.code === 'SUBSCRIPTION_COMING_SOON' ? 'info' : 'error', 8000);
-    }
+    const go = el('button', { class: 'psp-btn psp-btn--primary', type: 'button', disabled: true }, 'Continue to secure checkout');
+    const tick = createCheckoutTick({ onChange: (on) => { go.disabled = !on; } });
+    const m = layer.openModal({
+      title: 'Buy more AI messages',
+      body: el('div', null, el('p', null, 'A$15 including GST for 100 more AI messages.'), tick.el),
+      footer: (close) => [el('button', { class: 'psp-btn', type: 'button', onclick: () => close('cancel') }, 'Not now'), go],
+    });
+    go.addEventListener('click', async () => {
+      if (!tick.checked()) return;
+      go.disabled = true;
+      try {
+        store.saveNow?.();
+        const { url } = await api.commercialAiTopup(csub.token);
+        if (!isSafeUrl(url)) throw new Error('bad url');
+        navigate(url);
+      } catch (e) {
+        go.disabled = false;
+        layer.notify(e?.code === 'SUBSCRIPTION_COMING_SOON' ? 'Extra AI messages are coming soon.' : friendlyError(e, { area: 'checkout' }), e?.code === 'SUBSCRIPTION_COMING_SOON' ? 'info' : 'error', 8000);
+      }
+    });
+    return m;
   }
 
   // Return from Stripe: ?csub=success|topup|cancel&session_id=... ------------------------------------------------------------------

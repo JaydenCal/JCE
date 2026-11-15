@@ -3,6 +3,7 @@
 // The enquiry is saved by the server before any email is attempted (server/lib/enquiry.js), so a request is never lost.
 
 import { toast as defaultToast } from '../ui/toast.js';
+import { requirePlanTerms, termsForExport } from '../legal/terms-gate.js';
 
 export const SEND_LABEL = 'Send plans to a registered engineer';
 export const AFTER_EXPORT_TEXT = 'Need engineering or DA plans? Send these plans to a registered engineer';
@@ -16,8 +17,11 @@ export function bytesToBase64(bytes) {
 }
 
 /** Builds the site plan set PDF and resolves it as base64, or null when it is over the size the server accepts. */
-export async function planSetBase64({ project, lot, builderName = '', exportPlanSet, kind = 'site' }) {
-  const out = await exportPlanSet({ project, lot, kind, builderName, download: false });
+export async function planSetBase64({ project, lot, builderName = '', exportPlanSet, kind = 'site', requireTerms = requirePlanTerms, terms = null }) {
+  // The PDF attached to the request is a plan PDF: the terms come first. Declined, the request goes without the PDF (null).
+  const accepted = terms || (await requireTerms({ context: 'send-to-engineer' }));
+  if (!accepted) return null;
+  const out = await exportPlanSet({ project, lot, kind, builderName, download: false, terms: accepted });
   const blob = out?.blob || out?.bytes || out?.data || out;
   const bytes = blob instanceof Blob ? new Uint8Array(await blob.arrayBuffer()) : blob instanceof Uint8Array ? blob : blob instanceof ArrayBuffer ? new Uint8Array(blob) : null;
   if (!bytes || bytes.length > MAX_PDF_BYTES) return null;
@@ -30,7 +34,7 @@ export async function planSetBase64({ project, lot, builderName = '', exportPlan
  *   open()                 opens the enquiry form with the lot filled in and the plan set PDF attached when they press Send
  *   offerAfterExport(kind) after a Site plan PDF or House plan PDF download: a toast with the same button
  */
-export function createSendToEngineer({ getApp, getProject, getLot, getBuilderName = () => '', kind = 'site', toast = defaultToast, loadExporter = () => import('../premium/exporters/planset/index.js').then((m) => m.exportPlanSet) }) {
+export function createSendToEngineer({ getApp, getProject, getLot, getBuilderName = () => '', kind = 'site', toast = defaultToast, requireTerms = requirePlanTerms, loadExporter = () => import('../premium/exporters/planset/index.js').then((m) => m.exportPlanSet) }) {
   const premium = () => getApp()?.premium || null;
   const available = () => { const p = premium(); return !!p?.openEnquiry && (typeof p.canSendPlans === 'function' ? !!p.canSendPlans() : true); };
   function open() {
@@ -38,7 +42,7 @@ export function createSendToEngineer({ getApp, getProject, getLot, getBuilderNam
     if (!available()) return null;
     return p.openEnquiry({
       anyone: true,
-      buildPdf: async () => planSetBase64({ project: getProject(), lot: getLot(), builderName: getBuilderName(), exportPlanSet: await loadExporter(), kind: typeof kind === 'function' ? kind() : kind }),
+      buildPdf: async () => planSetBase64({ project: getProject(), lot: getLot(), builderName: getBuilderName(), exportPlanSet: await loadExporter(), requireTerms, kind: typeof kind === 'function' ? kind() : kind }),
     });
   }
   function offerAfterExport() {

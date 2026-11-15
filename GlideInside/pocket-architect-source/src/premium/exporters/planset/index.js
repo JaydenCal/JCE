@@ -93,11 +93,12 @@ function withoutScales(JsPDF) {
  * @param {Function} [o.fetchSite]  async ({ lot, request }) => { aerial?, lot?: { neighbours, roads } } | null: fetches a wider aerial and the cadastre
  *   within `request.radius` metres (GET /api/site/lot?radius=). A browser export asks the site service itself when this is omitted; pass null to never fetch.
  * @param {Function} [o.loadImage]  async (key) => Blob, reads the lot's stored aerial (defaults to the browser image store).
+ * @param {Object} [o.terms]  { version, acceptedAt }: the plan terms acceptance printed in every sheet's title block with the sheet note (src/legal).
  * @param {boolean} [o.includeAerial=true]  "Include aerial underlay": false prints the locality plan and the existing site sheet with no aerial (the cadastre and linework stay).
  * @param {Date} [o.date]
  * @returns {Promise<{ blob: Blob, filename: string, sheets: Array, pages: number }>}
  */
-export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null } = {}) {
+export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null, terms = null } = {}) {
   syncCurrency(project);
   if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Pocket Architect project');
   if (kind !== 'site' && kind !== 'house' && kind !== 'commercial') throw new Error("exportPlanSet kind must be 'site', 'house' or 'commercial'");
@@ -127,7 +128,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
   const doc = withSuperscripts(cleanedDoc(raw));
   const address = clean(wp.titleBlock?.address || siteLot?.address || '');
   const lotDp = clean(siteLot ? titleLotDp(wp) || siteLot.lotLabel || '' : '');
-  const base = { project: wp, client: builder || 'Glide Inside customer', projectTitle: title, address, lotDp, total: sheets.length, dateStr, jobId: id };
+  const base = { project: wp, client: builder || 'Glide Inside customer', projectTitle: title, address, lotDp, total: sheets.length, dateStr, jobId: id, terms };
   const facts = {};
   // Real aerial and the wider cadastre for the cover locality plan. Never fatal: without them the sheet says so.
   const locality = siteLot ? await resolveLocality({ lot: siteLot, aerial, fetchSite, loadImage, view: localityView(siteLot).view, includeAerial }) : { aerial: null };
@@ -146,7 +147,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
       let r = null;
       if (s.id === 'cover') {
         const z = siteLot.zoning ? [siteLot.zoning.code && `Zone ${siteLot.zoning.code}`, siteLot.zoning.name].filter(Boolean).join(' ') : '';
-        drawCover(doc, { project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes([...(zoneMismatch(siteLot) ? [`${RESIDENTIAL_NOTE}.`] : []), ...COMMERCIAL_NOTES], siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
+        drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes([...(zoneMismatch(siteLot) ? [`${RESIDENTIAL_NOTE}.`] : []), ...COMMERCIAL_NOTES], siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
         strip = { ...strip, subtitle: 'Commercial unit layout', kvTitle: 'SITE DATA', kv: [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`], ['Units', String(cmodel.stats.units)]], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
       } else {
         if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null });
@@ -156,7 +157,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
         strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' ? 'SITE DATA' : s.id === 'yield' ? 'KEY FIGURES' : s.id === 'mezz' ? 'MEZZANINE DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
       }
     } else if (s.id === 'cover') {
-      drawCover(doc, { project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
+      drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
       strip = { ...strip, subtitle: kind === 'site' ? 'Site plan and house plan' : 'House plan', kvTitle: 'SITE DATA', kv: siteLot ? [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`]] : [], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
     } else if (s.id === 'site') {
       Object.assign(facts, drawSite(doc, wp, siteLot));

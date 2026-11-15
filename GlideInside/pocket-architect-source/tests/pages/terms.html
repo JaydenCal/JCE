@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan terms modal test page</title><link rel="stylesheet" href="../../styles.css">
+</head><body>
+<main style="padding:24px"><h1>Plan terms modal</h1><p>Lorem ipsum page content behind the dialog.</p><button id="open" type="button">Generate</button></main>
+<script type="module">
+  import { createTermsGate, createAcceptanceMemory } from '../../src/legal/terms-gate.js';
+  import { openTermsModal } from '../../src/legal/terms-modal.js';
+  import { PLAN_TERMS } from '../../src/legal/plan-terms.js';
+  const mem = createAcceptanceMemory({ storage: { getItem: (k) => localStorage.getItem('t.' + k), setItem: (k, v) => localStorage.setItem('t.' + k, v) } });
+  const recorded = [];
+  const gate = createTermsGate({ terms: { ...PLAN_TERMS }, memory: mem, openDialog: openTermsModal, getIdentity: () => ({ subject: 'anon', record: false }) });
+  window.__t = { gate, recorded, mem, PLAN_TERMS, createTermsGate, openTermsModal };
+  document.getElementById('open').addEventListener('click', () => gate.require({ context: 'test' }));
+</script></body></html>

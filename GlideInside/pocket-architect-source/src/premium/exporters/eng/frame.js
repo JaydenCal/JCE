@@ -4,6 +4,7 @@
 import { clean, PEN, fit, ink, wrap } from './kit.js';
 import { placeImage } from '../pdf.js';
 import { titleLotDp } from '../../../site/lotplan.js';
+import { termsLines } from '../../../legal/sheet-note.js';
 import { DISCLAIMER, ddmmyyyy, normDate, drawingNo, attribution, projectTitle } from './brand.js';
 
 export const SW = 420;
@@ -186,6 +187,16 @@ export function drawFrame(doc, ctx, sheet) {
   cell(doc, x4, y0 + hA + hB, c3, hB, 'SCALE', sheet.scaleLabel || 'NTS', { size: 9.5 });
   cell(doc, x4 + c3, y0 + hA + hB, c3, hB, 'SHEET', `${sheet.n} OF ${total}`, { size: 9.5 });
   cell(doc, x4 + 2 * c3, y0 + hA + hB, c3, hB, 'SIZE', paper, { size: 9.5 });
+
+  // Terms of use: the sheet note and the version accepted, small type in the gap above the title block (wrapped, never cut).
+  {
+    const [note, stamp] = termsLines(ctx.terms);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(3.5);
+    ink(doc, PEN.ink2 || [58, 62, 70]);
+    const rows = wrap(doc, clean(`${note} ${stamp}.`), SW - 2 * M - 4);
+    rows.forEach((l, i) => doc.text(l, x0 + 2, TB_TOP - 0.7 - (rows.length - 1 - i) * 1.3));
+  }
 
   // Footer band: concept statement, then attribution.
   doc.setFont('helvetica', 'bold');

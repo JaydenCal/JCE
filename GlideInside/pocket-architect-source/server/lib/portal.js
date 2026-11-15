@@ -1178,6 +1178,13 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     return { user, org, allowed, watermark: state.isTrial, internalTest: org.internal === true };
   }
 
+  /** For POST /api/terms/accept: the signed in portal user and org (cookie session), or throws UNAUTHORISED. No export permission is needed. */
+  async function identity(request, url) {
+    checkCsrf(request, url);
+    const { user, org } = await auth({ request, url, setCookie: null }, { allowReadOnly: true, allowChange: true });
+    return { user, org };
+  }
+
   const isInternal = async (orgId) => !!orgId && (await pstore.getOrg(orgId))?.internal === true;
-  return { route, scheduled, exportContext, gate, isInternal, completeCardSetup, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
+  return { route, scheduled, exportContext, identity, gate, isInternal, completeCardSetup, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
 }

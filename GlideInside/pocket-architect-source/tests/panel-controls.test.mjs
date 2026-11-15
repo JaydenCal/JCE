@@ -105,7 +105,7 @@ test('AI assistant hide wiring: header button, edge tab, shortcut, phones, porta
   // The assistant's own logic is untouched.
   assert.doesNotMatch(read('../src/premium/ui/assistant.js'), /panel-hide|showAiAssistant/);
   // Portal setting end to end.
-  assert.match(read('../server/migrations/0016_org_show_ai_assistant.sql'), /ADD COLUMN show_ai_assistant INTEGER NOT NULL DEFAULT 1/);
+  assert.match(read('../server/migrations/0018_org_show_ai_assistant.sql'), /ADD COLUMN show_ai_assistant INTEGER NOT NULL DEFAULT 1/);
   assert.match(read('../server/schema.sql'), /show_ai_assistant INTEGER NOT NULL DEFAULT 1/);
   assert.match(read('../server/lib/portal-store.js'), /showAiAssistant: 'show_ai_assistant:b'/);
   assert.match(read('../server/lib/portal.js'), /showAiAssistant: o\.showAiAssistant !== false/);

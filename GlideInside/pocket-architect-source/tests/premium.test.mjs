@@ -2,6 +2,8 @@
 // tests/server.test.mjs). Pure modules run in Node. The UI runs in Chromium through tools/smoke.py against
 // tests/pages/premium.html and is skipped when Playwright is not installed.
 
+import { sheetNote } from '../src/legal/plan-terms.js';
+const TERMS_TEXT = `${sheetNote} Terms of use v1.1.`;
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -526,7 +528,7 @@ test('9. PDF: A3 landscape, 1:100 means 10,000 mm is 100 mm on the sheet, auto s
   assert.ok(calls.texts.includes('PS-1001') && calls.texts.includes('2 OF 3'));
   assert.ok(calls.texts.some((t) => /^GROUND FLOOR PLAN  1:100 at A3$/.test(t)), 'plan title with scale and paper');
   assert.ok(!calls.texts.includes('Glide Inside'), 'the logo image carries the name; no duplicate text line');
-  assert.ok(!calls.texts.some((t) => /JCE/i.test(t)), 'no JCE text');
+  assert.ok(!calls.texts.some((t) => !TERMS_TEXT.includes(t.trim()) && /JCE/i.test(t)), 'no JCE text (the legal plan terms note names the company and is the one exception)');
   assert.ok(calls.texts.some((t) => t.includes('Concept design only. Not for construction.')));
   assert.ok(!calls.texts.some((t) => /[–—]/.test(t)), 'no dashes in the document text');
 
@@ -619,7 +621,7 @@ test('9. drawing set: scale bar length, cover and register, fallback note, A1, D
   assert.ok(anno.some((t) => /^PROJECT: SMITH RESIDENCE/i.test(t)) || anno.some((t) => /^PROJECT: Smith residence/.test(t)), anno.join('|'));
   assert.ok(anno.some((t) => /^CLIENT: A Smith/.test(t)) && anno.some((t) => /^DRAWING NO\.: XY-1001/.test(t)));
   assert.ok(anno.includes('5') || anno.includes('10'), 'scale bar labels in metres');
-  assert.ok(!/JCE/i.test(dxf));
+  assert.ok(!/JCE/i.test(dxf.split(sheetNote).join('')));
   assert.ok(ents.some((e) => e.type === 'TEXT' && e.g[8][0] === 'PS-TITLE' && /^PREPARED WITH: Glide Inside/.test(e.g[1].join(' '))), 'title block layer carries the Glide Inside name');
 });
 
@@ -645,7 +647,7 @@ test('9. drawing set: Glide Inside logo on cover and every sheet, a user or buil
   assert.ok(calls.texts.includes('Prepared with'), 'small Prepared with Glide Inside credit (text plus the Glide Inside logo)');
   assert.equal(calls.texts.filter((t) => t === 'Glide Inside').length, 0, 'no duplicate name under the logo');
   assert.ok(calls.texts.includes('CONCEPT'), 'status box');
-  assert.ok(!calls.texts.some((t) => /JCE/i.test(t)));
+  assert.ok(!calls.texts.some((t) => !TERMS_TEXT.includes(t.trim()) && /JCE/i.test(t)));
   calls.images.length = 0;
   toPDF(store.project, { jsPDF: Rec, catalogue, logo: null });
   assert.ok(!calls.images.includes('user'));
@@ -729,6 +731,7 @@ const PRELUDE = String.raw`
   const lastMsg = () => msgs().at(-1);
   const editCalls = () => T.bodies.filter((b) => b.path === '/ai/edit');
   const button = (root, label) => $$('.psp-btn', root).find((b) => b.textContent.trim() === label);
+  const acceptTerms = async () => { const d = await until(() => $('[data-ps=terms-dialog]'), 1500); if (d) { $('[data-ps=terms-check]').click(); await sleep(20); $('[data-ps=terms-generate]').click(); await sleep(150); } };
   const out = {};
 `;
 
@@ -808,6 +811,8 @@ test('UI, locked by default: Unlock button, locked Exports menu, locked assistan
     out.modalTitle = text(modal.querySelector('h2'));
     out.modalText = modal.textContent;
     out.menuClosed = $('.psp-menu').hidden === true;
+    out.checkoutDisabledUntilTick = button(modal, 'Continue to secure checkout').disabled;
+    modal.querySelector('[data-ps=checkout-terms]').click();
     button(modal, 'Continue to secure checkout').click();
     await until(() => window.__navigated);
     out.navigated = window.__navigated;
@@ -1015,7 +1020,7 @@ test('UI, warnings: the 95% banner shows once and is remembered; 13 the panel is
     out.manual = S.project.finishes.roof.colour;
     $('.psp-menu-wrap > .psp-btn').click();
     await sleep(60);
-    $('.psp-menu-item[data-type=dxf]').click();
+    $('.psp-menu-item[data-type=dxf]').click(); await acceptTerms();
     await until(() => T.downloads.length);
     out.downloads = T.downloads.map((d) => d.name);
     out.aiCalls = T.requests.filter((r) => r.path.startsWith('/ai')).length;
@@ -1037,6 +1042,7 @@ test('UI, exports with a Plan Pack: all four files come from the server with the
       $('.psp-menu-wrap > .psp-btn').click();
       await sleep(60);
       $('.psp-menu-item[data-type=' + type + ']').click();
+      if (type === 'pdf' || type === 'dxf') await acceptTerms();
       if (type === 'pdf') { await sleep(150); $('.psp-btn[data-act=download]').click(); }
       await until(() => T.downloads.length === ['pdf', 'dxf', 'glb', 'obj'].indexOf(type) + 1);
     }
@@ -1140,6 +1146,7 @@ test('7. UI, developer unlock (localhost only): exports are built in the browser
       $('.psp-menu-wrap > .psp-btn').click();
       await sleep(60);
       $('.psp-menu-item[data-type=' + type + ']').click();
+      if (type === 'pdf' || type === 'dxf') await acceptTerms();
       if (type === 'pdf') { await sleep(150); $('.psp-btn[data-act=download]').click(); }
       await until(() => T.downloads.length === ['dxf', 'glb', 'obj', 'pdf'].indexOf(type) + 1, 30000);
     }
@@ -1315,12 +1322,15 @@ test('UI, back end present: a healthy /api/health turns checkout on for the sess
     out.aiButton = text($('.psp-locked-box .psp-btn'));
     T.premium.openUpgrade();
     await sleep(100);
+    out.checkoutDisabledUntilTick = button($('.psp-modal'), 'Continue to secure checkout').disabled;
+    $('.psp-modal [data-ps=checkout-terms]').click();
     out.checkoutEnabled = !button($('.psp-modal'), 'Continue to secure checkout').disabled;
     out.paths = T.requests.map((x) => x.path);
   `);
   assert.equal(r.topbar, 'Unlock plans, A$30');
   assert.equal(r.topbarDisabled, false);
   assert.match(r.aiButton, /Unlock plans/);
+  assert.equal(r.checkoutDisabledUntilTick, true, 'the terms box is required before checkout');
   assert.equal(r.checkoutEnabled, true);
   assert.deepEqual(r.paths, ['/health']);
 });

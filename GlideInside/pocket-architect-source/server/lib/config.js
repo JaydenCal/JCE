@@ -91,6 +91,9 @@ export function readConfig(env = {}) {
     // Carried over from the live Pocket Architect API (Worker "pocket-architect-api", 15/10/2026).
     // Save and share (lib/projects.js): designs live in R2 under projects/<id>.json, a small row in D1 holds the lookup.
     ipHashSalt: str(env.IP_HASH_SALT),
+    // Plan set terms (lib/terms.js): paid PDF and DXF exports are refused with 409 TERMS_REQUIRED until the account has accepted the current version.
+    // On unless TERMS_REQUIRED is 0, false, off or no (only the legacy export tests turn it off).
+    termsRequired: !['0', 'false', 'off', 'no'].includes(str(env.TERMS_REQUIRED, '1').toLowerCase()),
     projectMaxBytes: num(env.PROJECT_MAX_BYTES, 0) > 0 ? Math.round(num(env.PROJECT_MAX_BYTES, 0)) : 2000000,
     projectTtlDays: num(env.PROJECT_TTL_DAYS, 0) > 0 ? num(env.PROJECT_TTL_DAYS, 0) : 365,
     projectSaveRateMax: num(env.PROJECT_SAVE_RATE_MAX, 0) > 0 ? Math.round(num(env.PROJECT_SAVE_RATE_MAX, 0)) : 20,
@@ -125,6 +128,12 @@ export function readConfig(env = {}) {
     commercialTrialAiTotal: Math.max(0, Math.round(num(env.COMMERCIAL_TRIAL_AI_TOTAL, 50))), // assistant messages for the whole trial login, owner can reset
     commercialTrialWatermark: !['0', 'false', 'off', 'no'].includes(str(env.COMMERCIAL_TRIAL_WATERMARK, '1').toLowerCase()), // on by default
     commercialTrialKeepDays: Math.max(1, num(env.COMMERCIAL_TRIAL_KEEP_DAYS, 30)), // trial saved projects are cleared after this
+    // Free user profiles (lib/profiles.js): sign up with name and email to keep designs. Nothing here sends email.
+    freeProfileMaxDesigns: Math.max(1, Math.round(num(env.FREE_PROFILE_MAX_DESIGNS, 10))), // saved designs per free profile
+    profileSignupRateMax: Math.max(1, Math.round(num(env.PROFILE_SIGNUP_RATE_MAX, 5))), // sign ups per IP address per hour
+    profileSigninIpMax: Math.max(1, Math.round(num(env.PROFILE_SIGNIN_IP_MAX, 30))), // sign in attempts per IP address per 10 minutes
+    profileSigninEmailMax: Math.max(1, Math.round(num(env.PROFILE_SIGNIN_EMAIL_MAX, 8))), // sign in attempts per email per 15 minutes
+    profileSaveRateMax: Math.max(1, Math.round(num(env.PROFILE_SAVE_RATE_MAX, 1200))), // design saves per profile per hour (autosave is debounced in the browser)
     commercialTrialSessionHours: Math.max(1, num(env.COMMERCIAL_TRIAL_SESSION_HOURS, 168)),
   };
 }
