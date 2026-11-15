@@ -411,7 +411,8 @@ export function drawCover(doc, ctx) {
     `${ENTITY}, ${ABN}, ${EMAIL}.`,
   ], ctx.lot, { aerialShown: !!ctx.locality?.aerial, aerial: ctx.locality?.aerial });
   // The plan set terms note (src/legal) closes the general notes, with the version and the acceptance date.
-  notes.push(termsLines(ctx.terms).join(' '));
+  // The note already names the version it was issued under; the acceptance stamp follows only when an acceptance date is known.
+  notes.push(ctx.terms?.acceptedAt ? termsLines(ctx.terms).join(' ') : termsLines(ctx.terms)[0]);
   let yy = ny + 6;
   notes.forEach((n, i) => {
     wrap(doc, `${i + 1}. ${n}`, 185).forEach((l, j) => { doc.text(j ? `   ${l}` : l, X, yy); yy += 3.6; });

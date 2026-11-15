@@ -27,18 +27,17 @@ import { pavementById } from '../../../commercial/catalogue/pavements/index.js';
 import { buildingPolys, buildingScheduleRows, dockLines, extraLabel } from '../../../commercial/catalogue/planset.js';
 import { scaleBar } from '../pdf.js';
 import { PEN, PHANTOM, clipSegment, hatch, hatchSegments, dimLine, haloText, alongLabel, LabelField, boxOfPts, clean, wrap, polygon } from '../eng/kit.js';
+import { COMMERCIAL_SHEET_LIST } from '../../../commercial/sheet-list.js';
 import { AREA, fit } from './frame.js';
 import { drawSite, roadModel, siteView, fitView, northPoint, northDegOf, SITE_SCALES, SCALES_BEYOND, VP } from './site.js';
 import { hasGround, groundLevelFn } from './contours.js';
 import { envelopePoly } from './lot.js';
 
-export const COMMERCIAL_SHEETS = Object.freeze([
-  { id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX' },
-  { id: 'existing', code: 'C100', title: 'EXISTING SITE' },
-  { id: 'layout', code: 'C101', title: 'PROPOSED LAYOUT' },
-  { id: 'mezz', code: 'C102', title: 'MEZZANINE LEVEL PLAN' },
-  { id: 'yield', code: 'C103', title: 'YIELD SUMMARY' },
-]);
+export const COMMERCIAL_SHEETS = COMMERCIAL_SHEET_LIST;
+
+/** What the set shows, in words that fit the project: strata units, or a building and its site. */
+export const layoutKind = (stats) => (stats?.units > 0 && !(stats?.buildingCount > 0) ? 'commercial unit layout' : 'commercial site layout');
+export const cap1 = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 
 export const COMMERCIAL_NOTES = Object.freeze([
   'Concept only. This set shows a commercial unit layout sited on a lot for discussion. It is not a development application or construction drawing set.',
@@ -48,6 +47,12 @@ export const COMMERCIAL_NOTES = Object.freeze([
   'Parking, truck apron, car aisle, bollards, landscaping and the OSD placeholder are indicative. Swept paths and stormwater design are not part of this set.',
   'Values that could not be verified against the source standard are listed on C103 and must be confirmed before they are relied on.',
 ]);
+
+/** The general notes, with the first one worded for the project (units, or a building and its site) and the unit note only when there are units. */
+export function commercialNotes(stats) {
+  const kind = layoutKind(stats);
+  return COMMERCIAL_NOTES.filter((n) => stats?.units > 0 || !/^Unit areas are measured/.test(n)).map((n) => n.replace('a commercial unit layout', `a ${kind}`).replace(/^Unit areas are measured to the outside of the walls\. GFA includes the mezzanine floors\./, 'Unit areas are measured to the outside of the walls. GFA includes the mezzanine floors.'));
+}
 
 const GREYLINE = [120, 124, 132];
 const RED = [196, 28, 28];
@@ -74,7 +79,7 @@ export function withLotIds(lot) {
 export function commercialTitle(project) {
   const tb = project?.titleBlock || {};
   const t = clean(tb.projectName) || clean(project?.name) || '';
-  return t && /[A-Za-z0-9]/.test(t) && !/^untitled( design)?$/i.test(t) && !/^lot$/i.test(t) ? t : 'Commercial unit concept';
+  return t && /[A-Za-z0-9]/.test(t) && !/^untitled( design)?$/i.test(t) && !/^lot$/i.test(t) ? t : 'Commercial site concept';
 }
 
 // Model ---------------------------------------------------------------------------------------------------------------------
@@ -638,7 +643,7 @@ function layoutLegend(model = null) {
     ['Adjoining lot (DCDB)', lineSw(GREYLINE, 0.18)],
     ['Road centreline', lineSw(PEN.phantom, 0.3, [3, 0.8, 0.6, 0.8])],
     ['Building setback line', lineSw(GREYLINE, 0.2, [1.6, 1])],
-    ['PROPOSED UNIT', swatch(UNIT_FILL, PEN.ink)],
+    [model?.stats?.units > 0 ? 'PROPOSED UNIT' : 'PROPOSED BUILDING', swatch(UNIT_FILL, PEN.ink)],
     ['Mezzanine outline', lineSw(PEN.ink, 0.25, [1.6, 0.9])],
     ['Roller door', lineSw(RED, 0.9)],
     ['Personnel door', lineSw(BLUE, 0.9)],
@@ -764,18 +769,15 @@ export function drawLayout(doc, model) {
   const { aisleMm, bayW, bayL } = c.parking;
   for (const s of doorStrips(c, a.parking)) { doc.setFillColor(...PAVE_FILL); polygon(doc, s.poly.map(T), 'F'); } // bayless rows: apron in front of the roller doors
   const access = siteAccess(c, model.lot);
+  let accessAnchor = null;
   if (access) {
     // Site access: the driveway from the boundary to the paving, and the crossover pad across the verge (always drawn).
     doc.setFillColor(...AISLE_FILL);
     if (access.driveway) polygon(doc, access.driveway.map(T), 'F');
     doc.setFillColor(...PAVE_FILL);
     polygon(doc, access.crossover.map(T), 'F');
-    const ca = T(access.crossover[3]);
-    const cb = T(access.crossover[2]);
-    const mid = { x: (ca.x + cb.x) / 2, y: (ca.y + cb.y) / 2 };
-    setText(doc, 5.4, true);
-    doc.setTextColor(70, 74, 82);
-    doc.text('SITE ACCESS AND CROSSOVER (INDICATIVE)', mid.x, mid.y + 2.4, { align: 'center' });
+    // The label is placed later, with the other call outs, so it avoids the lot boundary and the dimensions.
+    accessAnchor = T({ x: (access.crossover[2].x + access.crossover[3].x) / 2, y: (access.crossover[2].y + access.crossover[3].y) / 2 });
   }
   for (const pr of a.parking.rows) {
     if (!pr.slots.length) continue;
@@ -966,7 +968,7 @@ export function drawLayout(doc, model) {
       const probe = alongLabel(doc, 'X', p0, odir, 0, { size: 6.8 });
       const sign = G.dot(probe.up, back) > 0 ? 1 : -1;
       const h = 6.8 * MM;
-      return alongLabel(doc, `${bays} BAYS ${m1(bayW)} x ${m1(bayL)} m`, p0, odir, sign > 0 ? 1.2 : -(1.2 + h), { size: 6.8, bold: true, colour: [70, 74, 82], halo: 0.9 });
+      return alongLabel(doc, `${bays} ${bays === 1 ? 'BAY' : 'BAYS'} ${m1(bayW)} x ${m1(bayL)} m`, p0, odir, sign > 0 ? 1.2 : -(1.2 + h), { size: 6.8, bold: true, colour: [70, 74, 82], halo: 0.9 });
     });
     field.place(cand, { lines: false });
   }
@@ -1057,9 +1059,10 @@ export function drawLayout(doc, model) {
       const rad = (ang * Math.PI) / 180;
       tried.push({ x: anchor.x + Math.cos(rad) * (r + w / 2 * Math.abs(Math.cos(rad))), y: anchor.y + Math.sin(rad) * (r + h / 2 * Math.abs(Math.sin(rad))) });
     }
-    for (const cc of tried) {
+    // First a spot clear of every line (lot boundary, dimensions), then one clear of other labels only.
+    for (const cc of [...tried.map((t) => ({ ...t, lines: true })), ...tried.map((t) => ({ ...t, lines: false }))]) {
       const box = { x0: cc.x - w / 2, y0: cc.y - h / 2, x1: cc.x + w / 2, y1: cc.y + h / 2 };
-      if (!field.free(box, { lines: false })) continue;
+      if (!field.free(box, { lines: cc.lines, soft: !cc.lines })) continue;
       doc.setFillColor(255, 255, 255);
       doc.setDrawColor(...colour);
       doc.setLineWidth(0.18);
@@ -1077,6 +1080,7 @@ export function drawLayout(doc, model) {
   if (zone) callout(T(zone.centre), `ACCESSIBLE BAYS (${a.parking.accessible.provided}) AND SHARED ZONE\nAS/NZS 2890.6, CENTRAL BOLLARD, INDICATIVE`, BLUE);
   if (osd) callout(T(osd.centre), `OSD BASIN PLACEHOLDER, NOT SIZED\n${osd.basis === 'levels' ? 'AT THE LOWEST GROUND (INDICATIVE LEVELS)' : 'LOW POINT ASSUMED, NO LEVELS'}`, BLUE, lenOf(T(osd.poly[0]), T(osd.poly[2])) / 2);
   if (c.waste) callout(T({ x: c.waste.x, y: c.waste.y }), 'WASTE ENCLOSURE', [70, 74, 82]);
+  if (accessAnchor) callout(accessAnchor, 'SITE ACCESS AND CROSSOVER\n(INDICATIVE)', [70, 74, 82]);
   if (model.land.pct != null) {
     const lpts = lot.boundary.map(T);
     const front = edges.find((e) => e.kind === 'front');
@@ -1096,7 +1100,7 @@ export function drawLayout(doc, model) {
   const ratio = stats.parking;
   const kv = [
     ['Lot area', `${m2f(stats.lotM2 ?? 0)} m²`],
-    ['Units', stats.units ? `${stats.units} (${stats.mix.map((x) => `${x.count} x ${x.label}`).join(', ')})` : 'None'],
+    ...(stats.units ? [['Units', `${stats.units} (${stats.mix.map((x) => `${x.count} x ${x.label}`).join(', ')})`]] : []),
     ...(stats.buildingCount ? [['Buildings', `${stats.buildingCount} (${(stats.buildings || []).map((b) => b.label).join(', ')})`]] : []),
     ['GFA incl. mezzanine', `${m2f(stats.gfaM2)} m²`],
     ['Site coverage', stats.coveragePct != null ? `${stats.coveragePct} %` : 'n/a'],
@@ -1345,11 +1349,12 @@ export function drawFeasibility(doc, model, x, y, w) {
   const f = feasibility(model.c, model.lot);
   y = sectionTitle(doc, 'INDICATIVE YIELD AND VALUE', x, y, w);
   setText(doc, 6.4, true);
-  doc.text(clean(CAVEAT), x, y);
-  y += 4;
+  for (const ln of wrap(doc, clean(CAVEAT), w)) { doc.text(ln, x, y); y += 2.9; } // wrapped to the column so it never runs into the schedules beside it
+  y += 1.2;
   setText(doc, 6.2, false, [90, 94, 102]);
-  doc.text(clean(`Area: ${f.areaLabel}${f.areaKey === f.detectedKey ? ' (from the lot)' : ' (chosen)'}. Data as at ${f.dataDate}. ${GST_NOTE}`), x, y);
-  y += 4.4;
+  for (const ln of wrap(doc, clean(`Area: ${f.areaLabel}, ${f.areaState}${f.areaKey !== f.detectedKey ? ' (chosen)' : f.detectedVia === 'default' ? ' (state default)' : ' (from the lot)'}. ${Object.values(f.inputs).some((i) => i?.status === 'PORTAL') ? `Portal data as at ${f.dataDate}, market data as at ${f.marketDate}.` : `Market data as at ${f.marketDate}.`} ${GST_NOTE}`), w)) { doc.text(ln, x, y); y += 2.9; }
+  y += 1.5;
+  if (f.mid.yieldOk === false) { setText(doc, 6.2, true, [160, 30, 30]); doc.text('Enter a yield to see the end value and the margin if the units are held and leased.', x, y); y += 4; }
   const cols = [{ w: 62 }, { w: 46, align: 'right' }, { w: w - 108, align: 'right' }];
   y = table(doc, x, y, cols, ['ITEM', 'AT THE VALUES IN USE', 'LOW TO HIGH'], summaryRows(f).map(([k, v, b]) => [k, v, b]), { rh: 4.1, size: 6.4 });
   y += 1.5;
@@ -1411,16 +1416,16 @@ export function drawYield(doc, model) {
   const summary = [
     ['Lot area', `${m2f(stats.lotM2 ?? 0)} m²`],
     ['Zone', `${zoneTxt}${lot.lga ? `, ${lot.lga}` : ''}`],
-    ['Units', stats.units ? `${stats.units} (${stats.mix.map((x) => `${x.count} x ${x.label}`).join(', ')})` : 'None'],
+    ...(stats.units ? [['Units', `${stats.units} (${stats.mix.map((x) => `${x.count} x ${x.label}`).join(', ')})`]] : []),
     ...(stats.buildingCount ? [['Buildings', `${stats.buildingCount} (${(stats.buildings || []).map((b) => b.label).join(', ')})`]] : []),
     ['Ground floor area', `${m2f(stats.groundGfaM2)} m²`],
     ['Mezzanine area', `${m2f(stats.mezzGfaM2)} m²`],
     ['GFA (ground plus mezzanine)', `${m2f(stats.gfaM2)} m²`],
     ['Site coverage', stats.coveragePct != null ? `${stats.coveragePct} % of the lot (${rules.custom ? 'maximum set by you' : 'indicative maximum'} ${rules.coverageMaxPct} %${rules.custom ? '' : ', check with council'})` : 'n/a'],
     ['Landscaping (not built or paved, excluding the OSD placeholder)', model.land.pct != null ? `${model.land.pct} % of the lot, about ${m2f(model.land.areaM2)} m² (${rules.custom ? 'minimum set by you' : 'indicative minimum'} ${landMin} %${rules.custom ? '' : ', check with council'})` : 'n/a'],
-    ['Parking required', stats.buildingCount ? `${par.required} bays: ${stats.units ? `${par.required - par.buildingRequired} for the strata units plus ` : ''}${par.buildingRequired} for the ${stats.buildingCount === 1 ? 'building' : 'buildings'} at the rates per use shown on the building schedule, each rounded up once, check with council` : par.officeSplit
-      ? `${par.required} bays: workshop and other ${m2f(par.split.otherM2)} m² at 1 per ${Math.round(1 / par.ratePerM2)} m² (${par.split.otherSpaces.toFixed(2)}) plus office ${m2f(par.split.officeM2)} m² at 1 per ${Math.round(1 / par.officeRatePerM2)} m² (${par.split.officeSpaces.toFixed(2)}), rounded up once`
-      : `${par.required} bays at 1 per ${Math.round(1 / par.ratePerM2)} m² of GFA, rounded up`],
+    ['Parking required', stats.buildingCount ? `${par.required} ${par.required === 1 ? 'bay' : 'bays'}: ${stats.units ? `${par.required - par.buildingRequired} for the strata units plus ` : ''}${par.buildingRequired} for the ${stats.buildingCount === 1 ? 'building' : 'buildings'} at the rates per use shown on the building schedule, each rounded up once, check with council` : par.officeSplit
+      ? `${par.required} ${par.required === 1 ? 'bay' : 'bays'}: workshop and other ${m2f(par.split.otherM2)} m² at 1 per ${Math.round(1 / par.ratePerM2)} m² (${par.split.otherSpaces.toFixed(2)}) plus office ${m2f(par.split.officeM2)} m² at 1 per ${Math.round(1 / par.officeRatePerM2)} m² (${par.split.officeSpaces.toFixed(2)}), rounded up once`
+      : `${par.required} ${par.required === 1 ? 'bay' : 'bays'} at 1 per ${Math.round(1 / par.ratePerM2)} m² of GFA, rounded up`],
     ['Rate source', `${rateSource}. Indicative, check with council.`],
     ['Bays provided', `${par.provided} (${par.accessible.provided} accessible), ${par.provided >= par.required ? 'at or above' : 'below'} the ${par.required} indicated`],
     ['Accessible bays', `${par.accessible.required} indicated for ${accCls} (NCC D4D6), ${par.accessible.provided} provided, each with a ${m1(ACCESSIBLE_BAY.sharedZoneMm)} m shared zone and a central bollard`],
@@ -1440,9 +1445,9 @@ export function drawYield(doc, model) {
     e.units.add(r.n);
     door.set(key, e);
   }
-  const dr = [...door].map(([k, e]) => [k, String(e.n), `${e.units.size} units`]);
+  const dr = [...door].map(([k, e]) => [k, String(e.n), `${e.units.size} ${e.units.size === 1 ? 'unit' : 'units'}`]);
   for (const b of buildingsOf(c)) { const n = (b.q.doors?.roller || 0) + (b.q.doors?.dock || 0); if (n > 0) dr.push([`B${b.n} roller and dock doors`, String(n), b.label]); }
-  dr.push(['Total', String(dr.reduce((s, r) => s + Number(r[1]), 0)), `${rows.length} units, ${c.buildings?.length || 0} buildings`]);
+  dr.push(['Total', String(dr.reduce((s, r) => s + Number(r[1]), 0)), [rows.length ? `${rows.length} ${rows.length === 1 ? 'unit' : 'units'}` : null, c.buildings?.length ? `${c.buildings.length} ${c.buildings.length === 1 ? 'building' : 'buildings'}` : null].filter(Boolean).join(', ')]);
   yR = table(doc, XR, yR, [{ w: 36 }, { w: 14, align: 'right' }, { w: WR - 50 }], ['DOOR (W x H)', 'COUNT', 'SERVES'], dr, { rh: 4, size: 6.4, boldLast: true });
   yR += 2;
   yR = sectionTitle(doc, 'BOLLARD SCHEDULE (INDICATIVE)', XR, yR, WR);
@@ -1474,7 +1479,7 @@ export function drawYield(doc, model) {
 
   const kv = [
     ['GFA incl. mezzanine', `${m2f(stats.gfaM2)} m²`],
-    ['Units', String(stats.units)],
+    ...(stats.units ? [['Units', String(stats.units)]] : []),
     ['Site coverage', stats.coveragePct != null ? `${stats.coveragePct} %` : 'n/a'],
     ['Landscaping', model.land.pct != null ? `${model.land.pct} %` : 'n/a'],
     ['Bays, shown / required', `${par.provided} / ${par.required}`],
@@ -1513,7 +1518,7 @@ export function coverThumbnail(model) {
       void c;
       const s = model.stats;
       setText(doc, 7, false);
-      [`${s.units} units`, `GFA ${m2f(s.gfaM2)} m²`, `Coverage ${s.coveragePct ?? 'n/a'} %`, `${s.parking.provided} bays`].forEach((t, i) => doc.text(clean(t), rect.x0 + 4 + i * 28, rect.y1 - 4));
+      [...(s.units ? [`${s.units} ${s.units === 1 ? 'unit' : 'units'}`] : []), `GFA ${m2f(s.gfaM2)} m²`, `Coverage ${s.coveragePct ?? 'n/a'} %`, `${s.parking.provided} ${s.parking.provided === 1 ? 'bay' : 'bays'}`].forEach((t, i) => doc.text(clean(t), rect.x0 + 4 + i * 28, rect.y1 - 4));
       setText(doc, 6, false, [90, 94, 102]);
       doc.text(`Outline at 1:${ds} @ A3`, rect.x1 - 4, rect.y0 + 5.5, { align: 'right' });
     },
@@ -1521,5 +1526,5 @@ export function coverThumbnail(model) {
 }
 
 export const COMMERCIAL_STRIP = Object.freeze({
-  cover: { subtitle: 'Commercial unit layout', notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] },
+  cover: { subtitle: 'Commercial site layout', notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] },
 });

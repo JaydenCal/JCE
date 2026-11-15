@@ -16,8 +16,9 @@ import { materialise } from '../commercial/materialise.js';
 import { normaliseCommercial } from '../commercial/schema.js';
 import { rowFrame, rowLength, rowPoly, layoutUnits } from '../commercial/layout.js';
 import { commercialStats } from '../commercial/stats.js';
-import { feasibility, summaryRows, CAVEAT } from '../commercial/feasibility.js';
+import { feasibility, summaryRows, headlineRows, CAVEAT } from '../commercial/feasibility.js';
 import { commercialStatus } from '../commercial/card-model.js';
+import { siteAccess } from '../commercial/access.js';
 import { buildingsOf } from '../commercial/catalogue/buildings.js';
 import { typesForPicker, typeById, typeIconName, STRATA_ID } from '../commercial/catalogue/types/index.js';
 import { switcherList, chooseFor, applyChoice, activeTypeId, switcherIndex } from '../commercial/catalogue/picker.js';
@@ -274,7 +275,7 @@ export function checkSummary(project) {
     const met = r.clearanceM < -0.005 ? false : r.status === 'inside' ? true : r.status === 'outside' ? false : null;
     return { edge: r.edge, kind: r.kind, label: `${KIND_TITLE[r.kind] || 'Edge'} boundary`, clearanceM: r.clearanceM, requiredM: req, met };
   });
-  const verdict = st.state === 'inside' ? 'met' : st.state === 'outside' ? 'not-met' : 'unknown';
+  const verdict = project.commercial.siteWorks?.notFit ? 'not-met' : st.state === 'inside' ? 'met' : st.state === 'outside' ? 'not-met' : 'unknown';
   const lotArea = Number(lot.areaM2) || G.polygonArea(lot.boundary) / 1e6;
   const sw = project.commercial.siteWorks;
   const park = stats.parking;
@@ -283,18 +284,24 @@ export function checkSummary(project) {
   const truckBuildings = bs.filter((b) => (b.site?.vehicles?.docks || 0) > 0 || b.extras.some((e) => e.kind === 'apron'));
   const rowsTruck = layoutUnits(project.commercial).length > 0;
   const xo = sw?.crossovers || [];
+  const rowsAccess = rowsTruck && !xo.length ? siteAccess(project.commercial, lot) : null;
   const truck = truckBuildings.length || rowsTruck
-    ? { has: true, ok: !!xo.length && xo.every((x) => x.widthMm >= 6000) && (!sw?.summary || Object.values(sw.summary.reachable || {}).every(Boolean)), crossoverM: xo.length ? Math.max(...xo.map((x) => x.widthMm)) / 1000 : null }
+    ? { has: true, ok: (!!xo.length || !!rowsAccess) && xo.every((x) => x.widthMm >= 6000) && (!sw?.summary || Object.values(sw.summary.reachable || {}).every(Boolean)), crossoverM: xo.length ? Math.max(...xo.map((x) => x.widthMm)) / 1000 : rowsAccess ? rowsAccess.widthMm / 1000 : null }
     : { has: false, ok: true, crossoverM: null };
   let feas = null;
   try { feas = feasibility(project.commercial, lot); } catch { feas = null; }
   const rowsF = feas ? summaryRows(feas) : [];
   const pick = (label) => rowsF.find((r) => r[0].startsWith(label));
   const yieldRow = pick('Gross yield on cost');
+  const headline = feas ? headlineRows(feas) : [];
+  const yieldOk = feas ? feas.mid.yieldOk !== false : true;
   const valueRow = pick('End value by capitalisation');
   const costRow = pick('Total development cost');
   const rentRow = pick('Gross rent per year');
   const lines = [];
+  for (const w of sw?.warnings || []) lines.push(w);
+  const zw = zoneWarning(project);
+  if (zw) lines.push(zw.text);
   if (verdict === 'met') lines.push('Every building sits inside the setbacks on every boundary.');
   else if (verdict === 'not-met') lines.push(`${st.text} Move or turn a building, or try another layout.`);
   else lines.push(st.text || 'Setbacks are not confirmed. Check with council.');
@@ -310,12 +317,20 @@ export function checkSummary(project) {
     gfaM2: stats.gfaM2 ?? null,
     parking: { required: park.required, provided: park.provided, accessibleRequired: park.accessible.required, accessibleProvided: park.accessible.provided, text: status.parking.text, state: status.parking.state },
     truck,
-    yield: yieldRow ? { cost: costRow?.[1] || null, grossRent: rentRow?.[1] || null, rentBand: rentRow?.[2] || '', value: valueRow?.[1] || null, valueBand: valueRow?.[2] || '', yieldPct: yieldRow[1], yieldBand: yieldRow[2] || '' } : null,
+    yield: yieldRow ? { headline, profitSell: headline[0]?.[1] || null, profitHold: headline[1]?.[1] || null, loss: feas ? feas.mid.marginSale < 0 : false, yieldOk, cost: costRow?.[1] || null, grossRent: rentRow?.[1] || null, rentBand: rentRow?.[2] || '', value: yieldOk ? valueRow?.[1] || null : 'Enter a yield', valueBand: valueRow?.[2] || '', yieldPct: yieldRow[1], yieldBand: yieldRow[2] || '' } : null,
     caveat: ESTIMATES,
     feasibilityCaveat: CAVEAT,
     wallSystem: wallSystemOf(project),
     typeLabel: project.commercial.layout?.label || project.name || 'Your site',
   };
+}
+
+/** Singular or plural: 1 bay, 2 bays. */
+export const bayWord = (n) => `${n} ${n === 1 ? 'bay' : 'bays'}`;
+/** One sentence for step 3, from the same parking numbers step 4 shows (stats.parking). */
+export function baysText(park) {
+  if (!park || (!park.provided && !park.required)) return '';
+  return `${bayWord(park.provided)} laid out for ${park.required} indicated, ${park.accessible?.provided ?? 0} accessible${park.provided < park.required ? '. Space is short, so check with council.' : '.'}`;
 }
 
 export { typeById, activeTypeId, switcherList };

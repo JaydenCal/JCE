@@ -6,6 +6,7 @@
 import { createCheckoutTick } from '../../legal/checkout-tick.js';
 import { el, ddmmyyyy, formatAud, track, sleep as realSleep } from '../util.js';
 import { icon } from '../icons.js';
+import { sheetListText } from '../../commercial/sheet-list.js';
 import { friendlyError } from '../messages.js';
 import { buyMessagesLabel, canBuyMessages, topUpOfferText, graceText } from '../credits.js';
 
@@ -93,7 +94,7 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
           el('span', { class: 'psp-price-note' }, 'per month, GST inclusive')),
         el('p', null, el('strong', null, GATE_LINE), '.'),
         el('ul', { class: 'psp-includes' },
-          ['Unlimited commercial plan set PDFs (sheets C000 to C103) and DXF drawings.',
+          [`Unlimited commercial plan set PDFs (sheets ${sheetListText()}) and DXF drawings.`,
             'AI design assistant with a monthly allowance of messages. Buy more AI messages when you need them, A$15 for 100 more.',
             'Monthly subscription. Cancel anytime from Manage billing.']
             .map((t) => el('li', null, icon('check', 16), el('span', null, t)))),
@@ -102,8 +103,8 @@ export function createCommercialBilling({ layer, api, store, config = {}, getCsu
         el('p', { class: 'psp-fine' }, 'Plans are indicative concept documents for developers. ', config.disclaimer || ''),
         links(),
         el('p', { class: 'psp-fine' },
-          'Already subscribed? ', el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => openRestore({ back: () => openGate({ source }) }) }, 'Restore subscription'),
-          '. Have a trial login? ', el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => openTrialLogin({ back: () => openGate({ source }) }) }, 'Sign in'), '.'),
+          'Already subscribed? ', el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { modal.close('sub'); openRestore({ back: () => openGate({ source }) }); } }, 'Restore subscription'),
+          '. Have a trial login? ', el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { modal.close('sub'); openTrialLogin({ back: () => openGate({ source }) }); } }, 'Sign in'), '.'),
         err),
       footer: (close) => [el('button', { class: 'psp-btn', type: 'button', onclick: () => close('cancel') }, 'Not now'), subscribeBtn],
     });

@@ -77,9 +77,9 @@ export function commercialStatus(project) {
   const acc = s.parking.accessible;
   let parking;
   if (!s.units && !s.buildingCount) parking = { state: 'none', text: '' };
-  else if (got < need) parking = { state: 'check', text: `Parking short: ${got} bays shown, ${need} indicated, check with council` };
+  else if (got < need) parking = { state: 'check', text: `Parking short: ${got} ${got === 1 ? 'bay' : 'bays'} shown, ${need} indicated, check with council` };
   else if (acc.provided < acc.required) parking = { state: 'check', text: `Accessible bays short: ${acc.provided} of ${acc.required}, check with council` };
-  else parking = { state: 'inside', text: `Parking: ${got} bays shown, ${need} indicated` };
+  else parking = { state: 'inside', text: `Parking: ${got} ${got === 1 ? 'bay' : 'bays'} shown, ${need} indicated` };
   // The parking row must lie inside the lot.
   const lot = lotOf(project);
   if (lot && (s.units || s.buildingCount)) {

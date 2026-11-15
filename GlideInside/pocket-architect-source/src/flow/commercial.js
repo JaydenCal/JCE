@@ -21,6 +21,10 @@ import {
   duplicateBuilding, deleteBuilding, rerunSiteLayout, placementStatus, checkSummary, zoneWarning, zoneLabel, activeTypeId, INDICATIVE,
 } from './com-logic.js';
 import { moveBuilding } from '../commercial/catalogue/ops.js';
+import { parkingLayout, doorStrips } from '../commercial/parking.js';
+import { siteAccess } from '../commercial/access.js';
+import { commercialStats } from '../commercial/stats.js';
+import { baysText } from './com-logic.js';
 
 export const COMMERCIAL_BRAND = 'Glide Inside Commercial';
 const STATUS_COLOUR = { inside: '#17724a', outside: '#c77700', unknown: '#1b4fd1', none: '#1b4fd1' };
@@ -157,6 +161,14 @@ function mountPlaceStep(ctx) {
       }
       for (const a of sw.aisles || []) svg.append(line(a.centre[0], a.centre[1], { stroke: 'rgba(255,255,255,.8)', 'stroke-width': Math.round(1.4 * px), 'stroke-dasharray': `${Math.round(8 * px)} ${Math.round(6 * px)}` }));
     }
+    if (c?.rows?.length && !(sw?.bayRows || []).length) {
+      // Strata rows carry their own bays and truck aprons (parking.js), the same result step 4 and the editor count.
+      const acc = siteAccess(c, lot);
+      for (const q of [acc?.driveway, acc?.crossover]) if (q) svg.append(poly(q, { fill: '#6b6f76', opacity: '0.55', stroke: 'none', 'data-ps': 'flow-crossover' }));
+      const park = parkingLayout(c);
+      for (const d of doorStrips(c, park)) svg.append(poly(d.poly, { fill: '#a9a69b', stroke: 'none', 'data-ps': 'flow-paved-apron' }));
+      for (const r of park.rows) for (const sl of r.slots) svg.append(poly(sl.poly, { fill: sl.kind === 'accessible' ? 'rgba(27,95,191,.55)' : sl.kind === 'zone' ? 'rgba(27,95,191,.2)' : 'rgba(255,255,255,.35)', stroke: '#ffffff', 'stroke-width': Math.round(1.2 * px), 'data-ps': 'flow-bay' }));
+    }
     for (const it of placeables(project)) {
       const isSel = selected && selected.kind === it.kind && selected.id === it.id;
       const g = group({ class: 'gf-bld', 'data-ps': 'flow-building', 'data-kind': it.kind, 'data-id': it.id });
@@ -191,15 +203,14 @@ function mountPlaceStep(ctx) {
     statusEl.dataset.state = st.state;
     statusEl.replaceChildren(h('span', { 'aria-hidden': 'true' }, st.state === 'inside' ? '✓' : st.state === 'outside' ? '!' : 'i'), h('span', null, st.state === 'inside' ? 'Inside the setbacks. Good position.' : st.text));
     const c = store.project.commercial;
-    const s = c?.siteWorks?.summary;
-    parkEl.textContent = s ? `${s.provided} bays laid out for ${s.required} indicated, ${s.accessibleProvided} accessible${s.limited ? '. Space is short, so check with council.' : '.'}` : '';
+    parkEl.textContent = baysText(commercialStats(store.project).parking);
     const sel = selectedItem();
     nameEl.textContent = sel ? `Selected: ${sel.label}` : 'Select a building to turn or duplicate it.';
     dupBtn.disabled = !sel || sel.kind !== 'building';
     delBtn.disabled = !sel || sel.kind !== 'building' || (c?.buildings || [])[0]?.id === sel.id && activeTypeId(store.project) !== STRATA_ID;
     const pg = layoutPager(store.project);
     pagerEl.textContent = `${pg.name}${pg.n ? `  ${pg.n} of ${pg.of}` : ''}`;
-    noticeEl.textContent = notice;
+    noticeEl.textContent = [notice, ...(c?.siteWorks?.warnings || [])].filter(Boolean).join(' ');
   }
   const selectedItem = () => (selected ? placeables(store.project).find((x) => x.kind === selected.kind && x.id === selected.id) || null : null);
   const ensureSelected = () => { if (!selectedItem()) { const first = placeables(store.project)[0]; selected = first ? { kind: first.kind, id: first.id } : null; } return selectedItem(); };
@@ -317,6 +328,8 @@ function mountCheckStep(ctx, { catalogue }) {
         stat(`${s.parking.accessibleProvided} of ${s.parking.accessibleRequired}`, 'Accessible bays'),
         stat(s.truck.has ? (s.truck.ok ? 'Linked' : 'Check') : 'None', 'Truck access to loading')),
       s.yield ? h('div', { class: 'gf-stats', dataset: { ps: 'flow-yield' } },
+        stat(s.yield.profitSell || 'n/a', 'Indicative profit, sell the units'),
+        stat(s.yield.profitHold || 'n/a', 'Indicative profit, hold and lease'),
         stat(s.yield.value || 'n/a', 'Indicative end value'),
         stat(s.yield.grossRent || 'n/a', 'Indicative gross rent a year'),
         stat(s.yield.yieldPct || 'n/a', 'Indicative gross yield on cost')) : null,

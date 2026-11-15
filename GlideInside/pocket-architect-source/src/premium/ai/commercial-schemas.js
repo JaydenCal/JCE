@@ -15,7 +15,7 @@ const P = {
 
 export const LAYOUT_IDS = Object.freeze(['best', 'row-6', 'row-10', 'b2b-12', 'b2b-16', 'court-20', 'large-6']);
 export const GOALS = Object.freeze(['max_gfa', 'max_units', 'max_margin', 'min_cost']);
-export const FEASIBILITY_KEYS = Object.freeze(['saleRate', 'rentRate', 'yieldPct', 'landRate', 'buildRate', 'siteRate', 'landscapeRate', 'feesPct', 'contPct', 'outgoingsPct', 'mezzFactor', 'landPrice']);
+export const FEASIBILITY_KEYS = Object.freeze(['saleRate', 'rentRate', 'yieldPct', 'landRate', 'buildRate', 'siteRate', 'landscapeRate', 'feesPct', 'contPct', 'outgoingsPct', 'mezzFactor', 'costFactor', 'councilCharges', 'landPrice']);
 
 const PLACE = P.obj('Position of the building origin in plan mm and the turn in degrees. Leave out to place it automatically inside the setbacks.', {
   x: P.num('Plan x, mm'), y: P.num('Plan y, mm'), rotationDeg: P.num('Turn in degrees'),

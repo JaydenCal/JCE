@@ -14,6 +14,8 @@ import { bayDemand } from './catalogue/bays.js';
 import { layoutUnits } from './layout.js';
 import { parkingLayout } from './parking.js';
 import { accessibleRequired } from './rules.js';
+import { clipTo } from './catalogue/pavements/polybool.js';
+import { polyArea } from './catalogue/pavements/geom.js';
 
 export const SITEWORKS_VERSION = 1;
 export const AISLE_MM = 6000;
@@ -112,6 +114,30 @@ function sources(project) {
   const waste = c.waste;
   void waste;
   return { bs, units, solids, obstacles, reserved };
+}
+
+const OUTSIDE_SHARE = 0.05; // a building with more than 5 percent of its footprint over the boundary does not fit the lot (a small overhang is left to the setback check)
+/** The share of a building's footprint (sampled on a grid) that lies outside the lot, 0 to 1. */
+function shareOutside(outline, lot) {
+  const bb = G.bbox(outline);
+  let n = 0; let out = 0;
+  for (let i = 0; i < 24; i++) for (let j = 0; j < 24; j++) {
+    const q = { x: bb.minX + ((i + 0.5) / 24) * (bb.maxX - bb.minX), y: bb.minY + ((j + 0.5) / 24) * (bb.maxY - bb.minY) };
+    if (!G.pointInPolygon(q, outline)) continue;
+    n++;
+    if (!G.pointInPolygon(q, lot.boundary)) out++;
+  }
+  return n ? out / n : 0;
+}
+const edgeDist = (q, poly) => Math.min(...poly.map((a, i) => distSeg(q, a, poly[(i + 1) % poly.length])));
+/** Keep the part of a paving polygon that lies inside the lot (the largest piece). { polygon, clipped, lost } */
+function fitToLot(polygon, lot) {
+  if (polygon.every((q) => G.pointInPolygon(q, lot.boundary) || edgeDist(q, lot.boundary) <= 5)) return { polygon, clipped: false, lost: false };
+  let pieces = [];
+  try { pieces = clipTo(polygon, lot.boundary); } catch { pieces = []; }
+  const best = pieces.filter((r) => r.length >= 3).sort((a, b) => polyArea(b) - polyArea(a))[0];
+  if (!best || polyArea(best) < 1e6) return { polygon: null, clipped: true, lost: true };
+  return { polygon: best, clipped: true, lost: false };
 }
 
 const isStation = (bs) => bs.some((b) => b.type === 'service-station');
@@ -251,6 +277,12 @@ export function generateSiteWorks(project, opts = {}) {
   if (!src.bs.length && !src.units.length) return null;
   const f = frameOfLot(lot);
   if (!src.bs.length) return rowsOnlyWorks(c, lot, f);
+  // A building that is wider or deeper than the lot does not fit: say so and lay out no car park around it.
+  const spill = src.bs.filter((b) => shareOutside(b.outline, lot) > OUTSIDE_SHARE);
+  if (spill.length) {
+    const names = spill.map((b) => b.type.replace(/-/g, ' ')).join(', ');
+    return { ...rowsOnlyWorks(c, lot, f), kind: 'does-not-fit', landscape: [], notFit: true, warnings: [`The ${names} does not fit inside the lot boundary, so no car park is laid out. Use a smaller building or a larger lot.`] };
+  }
   const g = makeGrid(f, lot);
   const station = isStation(src.bs);
   const truck = wantsTruck(src.bs);
@@ -618,15 +650,22 @@ export function generateSiteWorks(project, opts = {}) {
   const forecourts = [];
   const aprons = [];
   const footpaths = [];
+  const warnings = [];
+  const trim = (list, id, buildingId, polygon, label) => {
+    const r = fitToLot(polygon, lot);
+    if (r.clipped) warnings.push(r.lost ? `The ${label} does not fit inside the lot.` : `The ${label} was cut back to the lot boundary.`);
+    if (r.polygon) list.push({ id, buildingId, polygon: r.polygon });
+    return !!r.polygon;
+  };
   for (const b of src.bs) {
     for (const e of b.extras) {
       if (e.kind === 'fuel-canopy' || e.kind === 'truck-canopy') {
         const ptsF = e.polygon.map((q) => toFrame(f, q));
         const s0 = Math.min(...ptsF.map((q) => q.s)) - 1500; const s1 = Math.max(...ptsF.map((q) => q.s)) + 1500;
         const t0 = Math.min(...ptsF.map((q) => q.t)) - 1500; const t1 = Math.max(...ptsF.map((q) => q.t)) + 1500;
-        forecourts.push({ id: `sw:forecourt:${forecourts.length}`, buildingId: b.id, polygon: rectWorld(f, s0, s1, t0, t1) });
+        trim(forecourts, `sw:forecourt:${forecourts.length}`, b.id, rectWorld(f, s0, s1, t0, t1), 'forecourt');
       }
-      if (e.kind === 'apron') aprons.push({ id: `sw:apron:${aprons.length}`, buildingId: b.id, polygon: e.polygon });
+      if (e.kind === 'apron') trim(aprons, `sw:apron:${aprons.length}`, b.id, e.polygon, 'truck apron');
     }
     // The footpath along the front face of the building, from the door out to the aisle side.
     const xs = b.local.outline.map((q) => q.x); const ys = b.local.outline.map((q) => q.y);
@@ -673,6 +712,7 @@ export function generateSiteWorks(project, opts = {}) {
     aprons,
     footpaths,
     landscape,
+    warnings: [...new Set(warnings)],
     bayRows: rows,
     summary: {
       required, provided: providedBays, accessibleRequired: accReq, accessibleProvided: accProvided,
