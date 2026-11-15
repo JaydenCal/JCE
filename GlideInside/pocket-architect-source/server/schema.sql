@@ -206,6 +206,8 @@ CREATE TABLE IF NOT EXISTS orgs (
   allow_client_enquiries INTEGER NOT NULL DEFAULT 1,
   show_glide_to_clients INTEGER NOT NULL DEFAULT 1,
   allow_client_cad_exports INTEGER NOT NULL DEFAULT 0,
+  show_ai_assistant INTEGER NOT NULL DEFAULT 1,  -- builder setting: clients are offered the AI design assistant (migration 0016)
+  show_aerial_default INTEGER NOT NULL DEFAULT 1,  -- builder setting: new lots open with the aerial imagery on (migration 0015)
   ai_monthly_cap INTEGER NOT NULL DEFAULT 300,
   legal_name TEXT,                   -- buyer on tax invoices
   abn TEXT,

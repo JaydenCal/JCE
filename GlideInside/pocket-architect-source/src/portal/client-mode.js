@@ -9,6 +9,8 @@
 //   window.__ps.portal.setLot(lot)          { name, polygonMm, frontEdgeIndices, picked, address, lot, dp, lga, zone }: the lot and its setbacks
 //   window.__ps.portal.getLot()             the lot details for the JCE enquiry form
 
+import { setAerialDefault, readAerialChoice, setAerial, aerialDefault } from '../site/aerial-pref.js';
+import { setAssistantAllowed } from '../ui/panel-hide.js';
 import { CONFIG } from '../config.js';
 import { h, clear } from '../ui/dom.js';
 import { toast } from '../ui/toast.js';
@@ -67,6 +69,10 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   if (clientLike && me.org?.internal !== true) commercialUi.enabled = false;
   let reviewOwner = null; // the client whose saved project staff opened as that client sees it
   const brand = me.org.branding || {};
+  setAerialDefault(me.org?.showAerialDefault !== false); // the builder's "Show aerial by default" (a person's own remembered choice still wins)
+  // The builder's "Show AI design assistant to clients": off hides the assistant entirely for that builder's client logins (staff keep it).
+  setAssistantAllowed(!(me.user.role === 'client' && me.org?.showAiAssistant === false));
+  if (readAerialChoice() === null) setAerial(store, aerialDefault(), { remember: false }); // a lot already open follows the builder default
   applyBrandTheme(brand.colours); // builder colour scheme over the app chrome; the 3D scene, aerial and setback states keep their own colours
   // A real client starts with no lot: the sample lot only exists in the review (mock) build, so designs are never ranked against it.
   let lot = CONFIG.portalMock ? { ...SAMPLE_LOT, address: me.lotAddress || '' } : null;

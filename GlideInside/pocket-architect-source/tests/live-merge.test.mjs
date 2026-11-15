@@ -172,7 +172,7 @@ test('migrations: a fresh database built by the migrations has the same shape as
   live.exec(rd('../server/schema.sql'));
   assert.equal(JSON.stringify([columns(live), indexes(live)]), shape);
   // 0001 to 0005 and 0007 are repeatable (the live database has run 0001 to 0005 already); 0006 and 0008 add a column, so each is applied once
-  for (const f of migrationFiles()) if (!['0006_release.sql', '0008_trial_volume.sql', '0010_org_brand_colours.sql', '0011_org_slug.sql', '0012_project_staff_edits.sql', '0014_internal_org.sql'].includes(f)) live.exec(rd(MIG + f));
+  for (const f of migrationFiles()) if (!['0006_release.sql', '0008_trial_volume.sql', '0010_org_brand_colours.sql', '0011_org_slug.sql', '0012_project_staff_edits.sql', '0014_internal_org.sql', '0015_org_show_aerial_default.sql', '0016_org_show_ai_assistant.sql'].includes(f)) live.exec(rd(MIG + f));
   assert.equal(JSON.stringify([columns(live), indexes(live)]), shape);
   assert.throws(() => live.exec(rd(`${MIG}0006_release.sql`)), /duplicate column/i, '0006 is not repeatable, which is why it is applied with "d1 migrations apply"');
   assert.throws(() => live.exec(rd(`${MIG}0008_trial_volume.sql`)), /duplicate column/i, '0008 adds orgs.custom_login_cents once');
@@ -180,6 +180,8 @@ test('migrations: a fresh database built by the migrations has the same shape as
   assert.throws(() => live.exec(rd(`${MIG}0011_org_slug.sql`)), /duplicate column/i, '0011 adds orgs.slug once');
   assert.throws(() => live.exec(rd(`${MIG}0014_internal_org.sql`)), /duplicate column/i, '0014 adds org_accounts.internal once');
   assert.throws(() => live.exec(rd(`${MIG}0012_project_staff_edits.sql`)), /duplicate column/i, '0012 adds the portal_projects.edited_by_* columns once');
+  assert.throws(() => live.exec(rd(`${MIG}0015_org_show_aerial_default.sql`)), /duplicate column/i, '0015 adds orgs.show_aerial_default once');
+  assert.throws(() => live.exec(rd(`${MIG}0016_org_show_ai_assistant.sql`)), /duplicate column/i, '0016 adds orgs.show_ai_assistant once');
   // numbering is continuous, so "d1 migrations apply" runs them in the intended order
   assert.deepEqual(migrationFiles().map((f) => f.slice(0, 4)), ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014', '0015', '0016']);
 });

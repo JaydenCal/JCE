@@ -166,17 +166,18 @@ async function storedAerial(lot, loadImage) {
  * Settles what the locality plan shows: { aerial | null, neighbours?, roads? }. Order: the aerial given, the lot's stored aerial when it
  * covers the view, the fetch hook (or the browser default), then whatever partial picture exists. `view` is the plan mm rectangle drawn.
  */
-export async function resolveLocality({ lot, aerial = null, fetchSite = undefined, loadImage = null, view }) {
+export async function resolveLocality({ lot, aerial = null, fetchSite = undefined, loadImage = null, view, includeAerial = true }) {
   const result = { aerial: null };
+  if (includeAerial === false) { aerial = null; loadImage = () => null; } // "Include aerial underlay" off: no picture, the cadastre still comes from the hook
   const good = (a) => a && coverage(a, view) >= 0.8;
   const given = aerial ? await prepAerial(aerial) : null;
-  const stored = given ? [] : await storedAerial(lot, loadImage);
+  const stored = given || includeAerial === false ? [] : await storedAerial(lot, loadImage);
   const have = [given, ...stored].find(good) || null;
   if (have) result.aerial = have;
   const hook = fetchSite === undefined ? browserFetchSite : fetchSite;
   // The hook always gets the chance to supply the wider cadastre; `need.aerial` says whether it should also fetch a picture.
   const base = localityRequest(lot);
-  const request = base && { ...base, need: { aerial: !have, cadastre: true } };
+  const request = base && { ...base, need: { aerial: !have && includeAerial !== false, cadastre: true } };
   let got = null;
   if (typeof hook === 'function') {
     try { got = await hook({ lot, request }); } catch { got = null; }
@@ -185,7 +186,7 @@ export async function resolveLocality({ lot, aerial = null, fetchSite = undefine
     if (Array.isArray(got.lot.neighbours)) result.neighbours = got.lot.neighbours;
     if (Array.isArray(got.lot.roads)) result.roads = got.lot.roads;
   }
-  if (!result.aerial && got?.aerial) {
+  if (!result.aerial && got?.aerial && includeAerial !== false) {
     const a = await prepAerial(got.aerial);
     if (a) result.aerial = a;
   }

@@ -108,7 +108,8 @@ test('viewer wiring (review fixes): no double download, one PDF row, search feed
   const app = read('../src/app.js');
   assert.match(lc, /exportPlanSet\(\{[^}]*download: false/, 'the exporter must not download as well');
   assert.match(lc, /Enlarge top view/);
-  assert.match(lc, /Shrink top view/);
+  assert.match(lc, /Close top view/, 'the menu item closes the enlarged top view (it was Shrink top view when the mini map only grew)');
+  assert.match(lc, /createTopView\(/);
   assert.match(lc, /lc-links/);
   assert.match(lc, /requestAnimationFrame\(\(\) => setTimeout\(run/, 'poseFor runs a frame later');
   assert.match(lc, /Placing design/);

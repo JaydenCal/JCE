@@ -1,5 +1,6 @@
 // Site section of the summary panel: find a block by address, or show and adjust the lot already in the project.
 
+import { writeAerialChoice } from '../site/aerial-pref.js';
 import { h, clear } from './dom.js';
 import { icon } from './icons.js';
 import { section, numberField, checkField, selectField, button, formBuilder } from './panel-forms.js';
@@ -72,7 +73,7 @@ export function buildSiteSection(ctx) {
       if (id === 'aerial' && !lot.aerial) continue;
       if (id === 'contours' && !lot.contours?.length) continue;
       if (id === 'setbacks' && !lot.envelope) continue;
-      layers.append(fb.add(checkField({ label, get: () => (id === 'houses' && lotOf()?.source !== 'sample' ? lotOf()?.layers?.houses === true : lotOf()?.layers?.[id] !== false), commit: (v) => ctx.apply(`${v ? 'Show' : 'Hide'} ${label.toLowerCase()}`, (p) => { p.site.lot.layers[id] = v; }) })));
+      layers.append(fb.add(checkField({ label, get: () => (id === 'houses' && lotOf()?.source !== 'sample' ? lotOf()?.layers?.houses === true : lotOf()?.layers?.[id] !== false), commit: (v) => { if (id === 'aerial') writeAerialChoice(v); ctx.apply(`${v ? 'Show' : 'Hide'} ${label.toLowerCase()}`, (p) => { p.site.lot.layers[id] = v; }); } })));
     }
     sec.append(layers);
     sec.append(setbackBlock(lot));

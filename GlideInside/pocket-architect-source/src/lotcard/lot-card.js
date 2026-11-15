@@ -7,6 +7,7 @@
 // edits the design except through store.apply (colour scheme, change of design), so every change is one undo step and saves with
 // the project. The camera is inset so the card does not sit over the lot (viewer.setInset).
 
+import { attachMiniView } from './mini-view.js';
 import { zoneDwellingNote } from '../site/default-setbacks.js';
 import { h, debounce } from '../ui/dom.js';
 import { searchAddresses } from '../site/client.js';
@@ -29,6 +30,9 @@ import { listRoomTabs } from '../viewer3d/rooms.js';
 import { roomsPlanModel } from './rooms-plan.js';
 import { createSendToEngineer, SEND_LABEL } from './send-engineer.js';
 import { runUpload, creditText, FOOT_BASE } from '../site/upload/flow.js';
+import { createTopView, expandButton, housingScene } from './topview.js';
+import { createAerialToggle } from '../ui/aerial-toggle.js';
+import { aerialOn } from '../site/aerial-pref.js';
 import { injectUploadCss } from '../site/upload/css.js';
 
 const STYLE_ID = 'lc-style';
@@ -98,7 +102,12 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     return svg;
   })();
   const northLabel = E('lc-nlabel', 'i', null, 'N');
-  const mini = h('button', { class: 'lc-mini', type: 'button', title: 'Show or hide the 2D plan', 'aria-label': 'Top view. Click to show or hide the 2D plan', dataset: { ps: 'lc-mini' }, onclick: () => { if (suppressClick) { suppressClick = false; return; } toggle2d(); } }, cv, h('span', { class: 'lc-mini-t' }, 'TOP VIEW'), north, northLabel, h('span', { class: 'lc-mini-hint', 'aria-hidden': 'true' }, 'Drag to move, handle to rotate'));
+  // The mini map is a plain box (not a button) so the expand button can be a real button on it. A click on the map, or the expand button, opens
+  // the large top view (src/lotcard/topview.js).
+  const miniX = expandButton(() => topView.open());
+  const mini = h('div', { class: 'lc-mini', role: 'group', title: 'Top view. Click to enlarge', 'aria-label': 'Top view of the lot', dataset: { ps: 'lc-mini' }, onclick: (e) => { if (e.target.closest?.('.lc-mini-x')) return; if (suppressClick) { suppressClick = false; return; } if (mv?.consumeClick()) return; if (embed) topView.open(); else toggle2d(); } }, cv, h('span', { class: 'lc-mini-t' }, 'TOP VIEW'), north, northLabel, h('span', { class: 'lc-mini-hint', 'aria-hidden': 'true' }, 'Drag the house to move it, drag the map to pan, scroll to zoom, right-drag to rotate. Click to enlarge'), miniX);
+  const aerialT = createAerialToggle({ store, className: 'lc-aerial lc-glass' });
+  const topView = createTopView({ root: () => root, getScene: () => housingScene(store.project), store, trigger: miniX, onChange: () => paintMenu(), movers: { can: (p) => canMoveHouse(p), move: (id, dx, dy) => store.apply('Move house', (q) => translateHouse(q, dx, dy)), turn: (id, deg, c) => store.apply('Rotate house', (q) => rotateHouse(q, deg, c)) } });
   let suppressClick = false;
 
   // The search pill. In the embedded viewer it is the real address search (NSW and QLD, /api/site/search) as an input with suggestions; in the
@@ -122,7 +131,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     [planTermsLinkText(), () => window.open(PLAN_TERMS_URL, '_blank', 'noopener')],
     ['Upload boundary', () => runUpload(store, { viewer: true, catalogue })],
     ['Site rules', () => import('../site/upload/rules-panel.js').then((m) => m.openRulesPanel(store))],
-    ['Enlarge top view', () => toggle2d()],
+    ['Enlarge top view', () => topView.toggle()],
   ] : [];
   injectUploadCss();
   const uploadBtn = embed ? h('button', { class: 'lc-upload lc-glass', type: 'button', dataset: { ps: 'lc-upload' }, title: 'Use your own lot boundary, anywhere in the world', onclick: () => runUpload(store, { viewer: true, catalogue }) }, 'Upload boundary') : null;
@@ -133,9 +142,9 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     return b;
   })() : null;
   // The last menu item names what it will do: "Enlarge top view" or "Shrink top view".
-  function paintMenu() { const it = menuList?.lastElementChild; if (it) it.textContent = mini.classList.contains('is-big') ? 'Shrink top view' : 'Enlarge top view'; }
+  function paintMenu() { const it = menuList?.lastElementChild; if (it) it.textContent = topView.isOpen() ? 'Close top view' : 'Enlarge top view'; }
   const foot = embed ? E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, FOOT_BASE) : null;
-  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, ...(compass ? [compass] : []), findPill, ...(uploadBtn ? [uploadBtn] : []), ...(menuBtn ? [menuBtn, menuList] : []), card, rooms, pager, mini, ...(foot ? [foot] : []));
+  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, ...(compass ? [compass] : []), findPill, ...(uploadBtn ? [uploadBtn] : []), ...(menuBtn ? [menuBtn, menuList] : []), card, rooms, pager, ...(embed ? [aerialT.el] : []), mini, ...(foot ? [foot] : []));
   if (embed) root.classList.add('lc-embed');
   host.append(root);
 
@@ -290,7 +299,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       // Everyone else, including the free embed viewer, gets the stamped "PREVIEW, NOT TO SCALE" version.
       const a = app();
       const full = !!(a.premium?.isEntitled?.() || a.builder);
-      const out = await exportPlanSet({ project: store.project, lot, kind, builderName: builderName() || '', download: false, preview: !full, terms });
+      const out = await exportPlanSet({ project: store.project, lot, kind, builderName: builderName() || '', download: false, preview: !full, terms, includeAerial: aerialOn(store.project) && store.project.drawing?.includeAerial !== false });
       if (!full) toast('This is a preview, not to scale. A Plan Pack gives you the to-scale plan set.', { kind: 'info' });
       const bytes = out?.bytes || out?.blob || out?.data || out;
       if (bytes instanceof Blob || bytes instanceof Uint8Array || bytes instanceof ArrayBuffer) {
@@ -342,7 +351,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     else { selTab = 'aerial'; schedule(); go(roomId); }
   }
 
-  function toggle2d() { if (embed) { mini.classList.toggle('is-big'); setTimeout(sizeInset, 50); return; } if (onMini) { onMini(); return; } store.setUI({ view: store.ui.view === 'split' ? '3d' : 'split' }); }
+  function toggle2d() { if (embed) { topView.toggle(); return; } if (onMini) { onMini(); return; } store.setUI({ view: store.ui.view === 'split' ? '3d' : 'split' }); }
 
   // Rendering ---------------------------------------------------------------------------------------------------------------------
   const schemeChip = (s) => {
@@ -462,6 +471,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   }
 
   function drawMini(p, lot) {
+    mv?.apply();
     const ctx = cv.getContext('2d');
     if (!ctx) return;
     const W = cv.width;
@@ -541,12 +551,14 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   // The 3D view follows live: each step replaces the previous one, so the whole drag is one undo step. Same moves as the 2D Move house tool.
   let miniT = null;
   let miniRot = 0;
+  let mv = null; // the corner view (pan, zoom, rotate), attached below
   const ptrs = new Map();
   let md = null;
   const canvasPt = (e) => {
-    const r = cv.getBoundingClientRect();
-    const sx = ((e.clientX - r.left) * cv.width) / Math.max(1, r.width);
-    const sy = ((e.clientY - r.top) * cv.height) / Math.max(1, r.height);
+    // With the corner view moved, zoomed or turned the canvas is transformed, so go through the view's own inverse.
+    const l = mv.toLocal(e.clientX, e.clientY);
+    const sx = (l.x * cv.width) / Math.max(1, cv.offsetWidth) + cv.width / 2;
+    const sy = (l.y * cv.height) / Math.max(1, cv.offsetHeight) + cv.height / 2;
     return miniT ? { sx, sy, x: (sx - miniT.ox) / miniT.k, y: (sy - miniT.oy) / miniT.k } : null;
   };
   const handleHit = (pt) => {
@@ -599,7 +611,6 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     if (e.button > 0 || !miniT || !canMoveHouse(store.project)) return;
     const pt = canvasPt(e);
     ptrs.set(e.pointerId, pt);
-    if (ptrs.size === 2 && e.pointerType === 'touch') { beginTwist(); e.preventDefault(); return; }
     if (ptrs.size > 1) return;
     const ring = handleHit(pt);
     if (ring) md = { mode: 'turn', centre: ring.centre, a0: (Math.atan2(pt.sy - (ring.centre.y * miniT.k + miniT.oy), pt.sx - (ring.centre.x * miniT.k + miniT.ox)) * 180) / Math.PI, total: 0, prev: null, deg: 0, moved: false, sx: pt.sx, sy: pt.sy, key: '', applied: false, raf: 0 };
@@ -653,6 +664,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const up = (e) => { ptrs.delete(e.pointerId); if (!md || !(md.twist ? ptrs.size < 2 : true)) return; endDrag(); mini.style.cursor = ''; };
   mini.addEventListener('pointerup', up);
   mini.addEventListener('pointercancel', up);
+  mv = attachMiniView({ mini, cv, north, northDeg: () => Number(store.project?.site?.northDeg) || 0, yielding: () => !!md }); // drag the map to pan, scroll to zoom, right-drag or twist to rotate
 
 
   // The camera frames the lot in the clear area: card on the left and minimap on the right when there is room, else the card height
@@ -706,6 +718,6 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     /** Reload the designs (a sign-in finished after the card was drawn). */
     refresh() { designsKey = null; schedule(); },
     get designs() { return designs; },
-    dispose() { disposed = true; window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); ro?.disconnect(); mo?.disconnect(); root.remove(); },
+    dispose() { disposed = true; window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); topView.dispose(); aerialT.dispose(); ro?.disconnect(); mo?.disconnect(); root.remove(); },
   };
 }

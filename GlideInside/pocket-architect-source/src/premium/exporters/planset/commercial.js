@@ -26,7 +26,7 @@ import { buildingPolys, buildingScheduleRows, dockLines, extraLabel } from '../.
 import { scaleBar } from '../pdf.js';
 import { PEN, PHANTOM, clipSegment, hatch, hatchSegments, dimLine, haloText, alongLabel, LabelField, boxOfPts, clean, wrap, polygon } from '../eng/kit.js';
 import { AREA, fit } from './frame.js';
-import { drawSite, roadModel, siteView, northPoint, SITE_SCALES, VP } from './site.js';
+import { drawSite, roadModel, siteView, fitView, northPoint, northDegOf, SITE_SCALES, SCALES_BEYOND, VP } from './site.js';
 import { hasGround, groundLevelFn } from './contours.js';
 import { envelopePoly } from './lot.js';
 
@@ -197,7 +197,7 @@ export function layoutView(model) {
   if (c.waste) pts.push(...wastePoly(c.waste));
   const roads = roadModel(lot);
   for (const r of roads) pts.push(...r.lines.centreline.slice(1, -1));
-  return makeView(pts, VP, [9000, 3000], roads);
+  return { ...fitView(pts, VP), roads };
 }
 
 function makeView(pts, vp, margin, roads = []) {
@@ -227,6 +227,11 @@ export function blankProject(project, lot) {
   q.site = { ...q.site, lot };
   q.levels = [{ ...(q.levels[0] || {}), walls: [], rooms: [], openings: [], stairs: [], furniture: [] }];
   return q;
+}
+
+/** The scale label of the existing site sheet (C100): the plan is turned only when there is no aerial under it. */
+export function existingScale(project, lot, { aerial = false } = {}) {
+  return `1:${siteView(blankProject(project, lot), lot, { turn: !aerial }).scale} @ A3`;
 }
 
 /** [{ id, code, title, scale }] for the commercial plan set, without drawing anything. `lot` is the site lot (plan mm) or null. */
@@ -285,7 +290,7 @@ function drawRoads(doc, view, lot, field, roadName) {
   for (const chain of view.roads) {
     label(chain, 'footpathNear', 'FOOTPATH');
     label(chain, 'kerb', 'KERB AND GUTTER');
-    label(chain, 'centreline', (roadName || 'EXISTING ROAD').toUpperCase(), { size: 8, bold: true, offset: 2.6, colour: PEN.ink });
+    label(chain, 'centreline', (roadName || 'EXISTING ROAD').toUpperCase(), { size: 9.5, bold: true, offset: 2.6, colour: PEN.ink });
   }
 }
 
@@ -333,12 +338,12 @@ function aerialUnder(doc, aerial, T) {
   return true;
 }
 
-function northAndScale(doc, field, project, scale) {
+function northAndScale(doc, field, project, scale, view) {
   const r = 15;
   const corners = [{ x: VP.x1 - r - 2, y: VP.y0 + r + 2 }, { x: VP.x0 + r + 2, y: VP.y0 + r + 2 }, { x: VP.x1 - r - 2, y: VP.y1 - r - 2 }, { x: VP.x0 + r + 2, y: VP.y1 - r - 2 }];
   const free = (cc, soft) => field.free({ x0: cc.x - r, y0: cc.y - r, x1: cc.x + r, y1: cc.y + r }, soft);
   const nc = corners.find((cc) => free(cc, { soft: false })) || corners.find((cc) => free(cc, { lines: false })) || corners[0];
-  northPoint(doc, nc.x, nc.y, Number(project.site?.northDeg) || 0);
+  northPoint(doc, nc.x, nc.y, northDegOf(project, view));
   field.addBox({ x0: nc.x - r, y0: nc.y - r, x1: nc.x + r, y1: nc.y + r });
   doc.setDrawColor(...PEN.ink);
   const spec = scaleBar(doc, VP.x0 + 6, VP.y1 + 4.2, scale, scale);
@@ -359,6 +364,8 @@ function labelInLocal(doc, field, { frame, T, scale, x0, x1, a0, a1, variants, m
   const C = T(cl);
   const eu = G.norm(G.sub(T(rowPoint(frame, (x0 + x1) / 2 + 1000, (a0 + a1) / 2)), C));
   const ef = G.norm(G.sub(T(rowPoint(frame, (x0 + x1) / 2, (a0 + a1) / 2 + 1000)), C));
+  // Text reads horizontally where it fits: the row direction first when it runs across the sheet, else the depth direction.
+  const horizontalFirst = Math.abs(eu.x) >= Math.abs(ef.x) ? ['u', 'f'] : ['f', 'u'];
   const tryOne = (size, lines, along) => {
     const lh = size * MM * 1.22;
     let bw = 0;
@@ -379,7 +386,7 @@ function labelInLocal(doc, field, { frame, T, scale, x0, x1, a0, a1, variants, m
   };
   for (let size = maxSize; size >= TXT_MIN - 1e-6; size -= 0.4) {
     for (const lines of variants) {
-      for (const along of ['u', 'f']) {
+      for (const along of horizontalFirst) {
         const r = tryOne(size, lines, along);
         if (r) { r.items.forEach((it) => it.draw()); r.boxes.forEach((b) => field.addBox(b)); return r.boxes; }
       }
@@ -506,9 +513,11 @@ function existingLegend(aerial) {
 
 export function drawExisting(doc, project, lot, { aerial = null } = {}) {
   const q = blankProject(project, lot);
-  const view = siteView(q, lot);
+  // An aerial is placed as an upright image, so the sheet keeps north up when there is one (see existingScale in the set).
+  const turn = !aerial;
+  const view = siteView(q, lot, { turn });
   const over = aerialUnder(doc, aerial, view.T);
-  const r = drawSite(doc, q, lot, { overAerial: over });
+  const r = drawSite(doc, q, lot, { overAerial: over, turn });
   const zone = lot.zoning ? [lot.zoning.code, lot.zoning.name].filter(Boolean).join(' ') : 'Not known';
   const sb = lot.setbacks || {};
   const mv = (v) => (typeof v === 'number' ? v : v?.minM);
@@ -827,7 +836,7 @@ export function drawLayout(doc, model) {
     const fb = Math.max(of.fits ? of.depthMm : 0, m.enabled && m.position === 'front' ? m.depthMm : 0);
     const a1 = Math.max(u.d / 2, u.d - fb - 300);
     const area = (u.w * u.d) / 1e6;
-    const placed = labelInLocal(doc, field, { frame: u.frame, T, scale, x0: u.x0 + 200, x1: u.x0 + u.w - 200, a0: 300, a1, variants: unitLines(u, area), maxSize: 7 });
+    const placed = labelInLocal(doc, field, { frame: u.frame, T, scale, x0: u.x0 + 200, x1: u.x0 + u.w - 200, a0: 300, a1, variants: unitLines(u, area), maxSize: 8.4 });
     if (!placed) {
       const cc = T(rowPoint(u.frame, u.x0 + u.w / 2, a1 / 2));
       setText(doc, 5, true);
@@ -850,7 +859,7 @@ export function drawLayout(doc, model) {
     const pb = { x: B.x + fdir.x * 5, y: B.y + fdir.y * 5 };
     const nrm = G.norm({ x: -(pb.y - pa.y), y: pb.x - pa.x });
     void nrm;
-    const box = dimLine(doc, pa, pb, `${m1(L)} m`, { colour: PEN.dim, size: 6, textSide: G.dot({ x: -(pb.y - pa.y), y: pb.x - pa.x }, fdir) > 0 ? 1 : -1, field });
+    const box = dimLine(doc, pa, pb, `${m1(L)} m`, { colour: PEN.dim, size: 7.5, textSide: G.dot({ x: -(pb.y - pa.y), y: pb.x - pa.x }, fdir) > 0 ? 1 : -1, field });
     if (box) field.addBox(box);
     field.addSeg(pa, pb);
     // Depth: at the left end, outside the row.
@@ -859,7 +868,7 @@ export function drawLayout(doc, model) {
     const udir = G.norm(G.sub(T(rowPoint(fr, -1000, 0)), e0));
     const qa = { x: e0.x + udir.x * 4, y: e0.y + udir.y * 4 };
     const qb = { x: e1.x + udir.x * 4, y: e1.y + udir.y * 4 };
-    const box2 = dimLine(doc, qa, qb, `${m1(d)} m`, { colour: PEN.dim, size: 6, textSide: G.dot({ x: -(qb.y - qa.y), y: qb.x - qa.x }, udir) > 0 ? 1 : -1, field });
+    const box2 = dimLine(doc, qa, qb, `${m1(d)} m`, { colour: PEN.dim, size: 7.5, textSide: G.dot({ x: -(qb.y - qa.y), y: qb.x - qa.x }, udir) > 0 ? 1 : -1, field });
     if (box2) field.addBox(box2);
     field.addSeg(qa, qb);
   }
@@ -875,7 +884,7 @@ export function drawLayout(doc, model) {
     const A = T(rowPoint(fr, along, pr.depth));
     const B = T(rowPoint(fr, along, pr.depth + off));
     if (lenOf(A, B) > 6) {
-      const box = dimLine(doc, A, B, `${m1(off)} m`, { colour: PEN.dim, size: 6, textSide: 1, field });
+      const box = dimLine(doc, A, B, `${m1(off)} m`, { colour: PEN.dim, size: 7.5, textSide: 1, field });
       if (box) field.addBox(box);
       field.addSeg(A, B);
     }
@@ -883,7 +892,7 @@ export function drawLayout(doc, model) {
       const p = T(rowPoint(fr, 0, (d0 + d1) / 2));
       const q = T(rowPoint(fr, L, (d0 + d1) / 2));
       const dir = G.norm(G.sub(q, p));
-      const cands = (fs || [t]).map((f) => () => alongLabel(doc, txt, G.lerp(p, q, f), dir, -5.4 * MM / 2, { size: 5.4, bold: true, colour: [70, 74, 82], halo: 0.9 }));
+      const cands = (fs || [t]).map((f) => () => alongLabel(doc, txt, G.lerp(p, q, f), dir, -6.8 * MM / 2, { size: 6.8, bold: true, colour: [70, 74, 82], halo: 0.9 }));
       field.place(cands, { lines: false });
     };
     const apron = Math.max(0, off - aisleMm);
@@ -897,16 +906,16 @@ export function drawLayout(doc, model) {
     const back = G.norm(G.sub(T(rowPoint(fr, 0, pr.depth + off + bayL + 1000)), kb0));
     const cand = [0.5, 0.3, 0.7].map((f) => () => {
       const p0 = G.lerp(kb0, kb1, f);
-      const probe = alongLabel(doc, 'X', p0, odir, 0, { size: 5.4 });
+      const probe = alongLabel(doc, 'X', p0, odir, 0, { size: 6.8 });
       const sign = G.dot(probe.up, back) > 0 ? 1 : -1;
-      const h = 5.4 * MM;
-      return alongLabel(doc, `${bays} BAYS ${m1(bayW)} x ${m1(bayL)} m`, p0, odir, sign > 0 ? 1.2 : -(1.2 + h), { size: 5.4, bold: true, colour: [70, 74, 82], halo: 0.9 });
+      const h = 6.8 * MM;
+      return alongLabel(doc, `${bays} BAYS ${m1(bayW)} x ${m1(bayL)} m`, p0, odir, sign > 0 ? 1.2 : -(1.2 + h), { size: 6.8, bold: true, colour: [70, 74, 82], halo: 0.9 });
     });
     field.place(cand, { lines: false });
   }
 
   // Setback labels and clearance dimensions (same method as the site plan).
-  const sbSize = 5.6;
+  const sbSize = 7;
   for (const kind of ['front', 'secondaryFront', 'side', 'rear']) {
     const es = edges.filter((e) => e.kind === kind && requiredFor(kind, lot.setbacks) != null);
     if (!es.length) continue;
@@ -938,7 +947,7 @@ export function drawLayout(doc, model) {
     if (lenOf(A, B) < 4) continue;
     if (row.requiredM != null && Math.abs(row.clearanceM - row.requiredM) < 0.005) continue;
     const over = row.status === 'outside';
-    const box = dimLine(doc, A, B, `${Math.abs(row.clearanceM).toFixed(2)} m`, { colour: over ? RED : PEN.dim, size: 5.6, textSide: -1, field });
+    const box = dimLine(doc, A, B, `${Math.abs(row.clearanceM).toFixed(2)} m`, { colour: over ? RED : PEN.dim, size: 7, textSide: -1, field });
     if (box) field.addBox(box);
     field.addSeg(A, B);
   }
@@ -949,8 +958,8 @@ export function drawLayout(doc, model) {
     const w = Math.max(doc.getTextWidth(`LOT ${n.lotNumber || ''}`), doc.getTextWidth(String(n.planLabel || ''))) + 1;
     const box = { x0: cc.x - w / 2, y0: cc.y - 3.2, x1: cc.x + w / 2, y1: cc.y + 3 };
     if (!field.free(box, { lines: false })) continue;
-    if (n.lotNumber) haloText(doc, `LOT ${n.lotNumber}`, cc.x, cc.y - 0.6, { size: 5.6, colour: GREYLINE, align: 'center', halo: 1 });
-    if (n.planLabel) haloText(doc, String(n.planLabel), cc.x, cc.y + 2.2, { size: 5.6, colour: GREYLINE, align: 'center', halo: 1 });
+    if (n.lotNumber) haloText(doc, `LOT ${n.lotNumber}`, cc.x, cc.y - 0.6, { size: 7, colour: GREYLINE, align: 'center', halo: 1 });
+    if (n.planLabel) haloText(doc, String(n.planLabel), cc.x, cc.y + 2.2, { size: 7, colour: GREYLINE, align: 'center', halo: 1 });
     field.addBox(box);
   }
   const lotFirst = lot.lotNumber ? `${lot.proposed ? 'PROPOSED LOT' : 'LOT'} ${lot.lotNumber}` : 'SUBJECT LOT';
@@ -1022,10 +1031,10 @@ export function drawLayout(doc, model) {
       if (G.pointInPolygon(p, lpts) && !model.covered(view.Ti(p))) spots.push({ x, y, d: Math.hypot(x - target.x, y - target.y) });
     }
     spots.sort((p, q) => p.d - q.d);
-    placeNote(doc, field, 'LANDSCAPING', spots.slice(0, 120), { size: 6, bold: true, colour: [40, 100, 52] });
+    placeNote(doc, field, 'LANDSCAPING', spots.slice(0, 120), { size: 7.5, bold: true, colour: [40, 100, 52] });
   }
 
-  northAndScale(doc, field, project, scale);
+  northAndScale(doc, field, project, scale, view);
 
   const ratio = stats.parking;
   const kv = [
@@ -1166,11 +1175,11 @@ export function drawMezzanine(doc, model) {
     const out = G.norm(G.sub(T(rowPoint(fr, mp.x0, m.position === 'front' ? u.d + 1000 : -1000)), A));
     const pa = { x: A.x + out.x * 4, y: A.y + out.y * 4 };
     const pb = { x: B.x + out.x * 4, y: B.y + out.y * 4 };
-    const box = dimLine(doc, pa, pb, `${(m.widthMm / 1000).toFixed(2)} m`, { colour: PEN.dim, size: 5.8, textSide: G.dot({ x: -(pb.y - pa.y), y: pb.x - pa.x }, out) > 0 ? 1 : -1, field });
+    const box = dimLine(doc, pa, pb, `${(m.widthMm / 1000).toFixed(2)} m`, { colour: PEN.dim, size: 7.2, textSide: G.dot({ x: -(pb.y - pa.y), y: pb.x - pa.x }, out) > 0 ? 1 : -1, field });
     if (box) field.addBox(box);
     field.addSeg(pa, pb);
   }
-  northAndScale(doc, field, project, scale);
+  northAndScale(doc, field, project, scale, view);
   const mz = model.stats;
   const levels = [...new Set(mezzUnits.map(({ m }) => m.level))];
   const kv = [
@@ -1428,7 +1437,7 @@ export function coverThumbnail(model) {
       const bb = G.bbox(pts);
       const bw = rect.x1 - rect.x0 - 10;
       const bh = rect.y1 - rect.y0 - 26;
-      const ds = SITE_SCALES.concat([7500, 10000]).find((n) => bb.w / n <= bw && bb.h / n <= bh) || 10000;
+      const ds = [...SITE_SCALES, ...SCALES_BEYOND].find((n) => bb.w / n <= bw && bb.h / n <= bh) || 10000;
       const ox = rect.x0 + (rect.x1 - rect.x0 - bb.w / ds) / 2;
       const oy = rect.y0 + 8 + (bh - bb.h / ds) / 2;
       const T = (p) => ({ x: ox + (p.x - bb.minX) / ds, y: oy + (p.y - bb.minY) / ds });

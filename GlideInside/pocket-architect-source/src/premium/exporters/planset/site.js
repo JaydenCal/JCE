@@ -16,7 +16,11 @@ import { PEN, PHANTOM, clipSegment, hatch, dimLine, haloText, alongLabel, LabelF
 import { AREA } from './frame.js';
 import { groundLevel, envelopePoly, groundFootprintM2 } from './lot.js';
 
-export const SITE_SCALES = [100, 150, 200, 250, 300, 400, 500, 750, 1000, 1500, 2000, 3000, 5000];
+/** The standard drawing scales a site plan may use, largest first. Lots beyond 1:2500 go through SCALES_BEYOND, then keep doubling. */
+export const SITE_SCALES = [100, 200, 250, 300, 400, 500, 750, 1000, 1250, 1500, 2000, 2500];
+export const SCALES_BEYOND = [3000, 5000, 7500, 10000, 15000, 20000];
+/** Paper margin (mm, left and right, top and bottom) kept clear between the lot, house and road frontage and the edge of the viewport. */
+export const SITE_MARGIN = [9, 7];
 const BAND = 16;
 export const VP = { x0: AREA.x0 + 2, y0: AREA.y0 + 2, x1: AREA.x1 - 2, y1: AREA.y1 - 7 - BAND };
 const GREYLINE = [120, 124, 132];
@@ -127,23 +131,48 @@ export function roadModel(lot) {
   });
 }
 
-/** Scale and transform for the lot: the largest standard scale at which lot, road frontage and house fit the viewport. */
-export function siteView(project, lot) {
+/**
+ * The largest standard scale at which the points fit the viewport with a paper margin, trying the plan as it is and turned a quarter turn
+ * clockwise on the sheet (street along the left); the turned plan only wins when it allows a larger scale. Returns
+ * { scale, turnDeg, rot, T, Ti, bb, rbb, vp }: rot is the plan to plan quarter turn, T maps plan mm to sheet mm, Ti is its inverse.
+ */
+export function fitView(pts, vp, { margin = SITE_MARGIN, turn = true } = {}) {
+  const vw = vp.x1 - vp.x0;
+  const vh = vp.y1 - vp.y0;
+  const all = [...SITE_SCALES, ...SCALES_BEYOND];
+  const pick = (b) => {
+    let n = all.find((q) => b.w / q + 2 * margin[0] <= vw && b.h / q + 2 * margin[1] <= vh);
+    if (!n) { n = all.at(-1); while (b.w / n + 2 * margin[0] > vw || b.h / n + 2 * margin[1] > vh) n *= 2; }
+    return n;
+  };
+  const bb = G.bbox(pts);
+  const turns = turn ? [0, 90] : [0];
+  let best = null;
+  for (const turnDeg of turns) {
+    const rot = turnDeg === 90 ? (p) => ({ x: -p.y, y: p.x }) : (p) => ({ x: p.x, y: p.y });
+    const rbb = turnDeg === 90 ? G.bbox(pts.map(rot)) : bb;
+    const n = pick(rbb);
+    if (!best || n < best.n) best = { n, turnDeg, rot, rbb };
+  }
+  const { n: scale, turnDeg, rot, rbb } = best;
+  const cx = rbb.minX + rbb.w / 2;
+  const cy = rbb.minY + rbb.h / 2;
+  const mx = (vp.x0 + vp.x1) / 2;
+  const my = (vp.y0 + vp.y1) / 2;
+  const unrot = turnDeg === 90 ? (q) => ({ x: q.y, y: -q.x }) : (q) => q;
+  return {
+    scale, turnDeg, rot, bb, rbb, vp,
+    T: (p) => { const r = rot(p); return { x: mx + (r.x - cx) / scale, y: my + (r.y - cy) / scale }; },
+    Ti: (q) => unrot({ x: cx + (q.x - mx) * scale, y: cy + (q.y - my) * scale }),
+  };
+}
+
+/** Scale and transform for the lot: the largest standard scale at which lot, road frontage and house fit the viewport (turned when that helps). */
+export function siteView(project, lot, { turn = true } = {}) {
   const pts = [...lot.boundary, ...buildingHull(project)];
   const roads = roadModel(lot);
   for (const r of roads) pts.push(...r.lines.centreline.slice(1, -1));
-  const bb = G.bbox(pts);
-  const w = bb.w + 2 * 9000;
-  const h = bb.h + 2 * 3000;
-  const vw = VP.x1 - VP.x0;
-  const vh = VP.y1 - VP.y0;
-  let scale = SITE_SCALES.find((n) => w / n <= vw && h / n <= vh);
-  if (!scale) { scale = SITE_SCALES.at(-1); while (w / scale > vw || h / scale > vh) scale *= 2; }
-  const cx = bb.minX + bb.w / 2;
-  const cy = bb.minY + bb.h / 2;
-  const mx = (VP.x0 + VP.x1) / 2;
-  const my = (VP.y0 + VP.y1) / 2;
-  return { scale, T: (p) => ({ x: mx + (p.x - cx) / scale, y: my + (p.y - cy) / scale }), roads, bb };
+  return { ...fitView(pts, VP, { turn }), roads };
 }
 
 // Drawing helpers -----------------------------------------------------------------------------------------------------------------
@@ -152,6 +181,9 @@ const polyLine = (doc, pts, closed = true) => { const n = closed ? pts.length : 
 const inVP = (p) => p.x >= VP.x0 && p.x <= VP.x1 && p.y >= VP.y0 && p.y <= VP.y1;
 const lenOf = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const regRing = (field, pts, closed = true, soft = false) => field.addRing(pts, closed, soft);
+
+/** The angle the north arrow turns on a sheet: the lot's north bearing plus the quarter turn the plan was given. */
+export const northDegOf = (project, view) => (Number(project?.site?.northDeg) || 0) + (view?.turnDeg || 0);
 
 export function northPoint(doc, cx, cy, deg) {
   const r = 8.5;
@@ -224,8 +256,8 @@ function scheduleBlock(rows) {
 
 // The sheet ---------------------------------------------------------------------------------------------------------------------
 /** Draws the site plan; returns { scale, scaleLabel, kv, blocks, notes, clearance, tooBig }. */
-export function drawSite(doc, project, lot, { overAerial = false } = {}) {
-  const view = siteView(project, lot);
+export function drawSite(doc, project, lot, { overAerial = false, turn = true } = {}) {
+  const view = siteView(project, lot, { turn });
   const { T: S, scale } = view;
   const field = new LabelField(VP);
   const bd = boundaryDims(lot);
@@ -347,11 +379,11 @@ export function drawSite(doc, project, lot, { overAerial = false } = {}) {
     const sc = S(c);
     const nm = String(r.name || r.type || '').toUpperCase();
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(5.4);
+    doc.setFontSize(6.6);
     const w = doc.getTextWidth(nm);
     const rb = G.bbox(r.polygon.map(S));
     if (w + 1 > rb.w || scale > 500) continue;
-    haloText(doc, nm, sc.x, sc.y + 0.8, { size: 5.4, bold: true, align: 'center', halo: 0.9 });
+    haloText(doc, nm, sc.x, sc.y + 0.8, { size: 6.6, bold: true, align: 'center', halo: 0.9 });
     field.addBox({ x0: sc.x - w / 2 - 0.5, y0: sc.y - 2, x1: sc.x + w / 2 + 0.5, y1: sc.y + 1.4 });
   }
 
@@ -366,7 +398,7 @@ export function drawSite(doc, project, lot, { overAerial = false } = {}) {
 
   // Bearings and lengths. An edge shorter than its label is tagged and listed in the boundary schedule instead.
   const short = [];
-  const bsize = 6.4;
+  const bsize = 8;
   const bh = bsize * 0.3528;
   for (const d of bd) {
     const a = S(d.a);
@@ -397,15 +429,15 @@ export function drawSite(doc, project, lot, { overAerial = false } = {}) {
     const cands = [2.4, 3.6, 5].map((k) => () => {
       const c = { x: mid.x + out.x * k, y: mid.y + out.y * k };
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(5.2);
+      doc.setFontSize(6.4);
       const w = doc.getTextWidth(tag);
-      return { box: { x0: c.x - w / 2 - 0.4, y0: c.y - 2.2, x1: c.x + w / 2 + 0.4, y1: c.y + 1 }, draw: () => haloText(doc, tag, c.x, c.y + 0.4, { size: 5.2, bold: true, align: 'center', halo: 0.9 }) };
+      return { box: { x0: c.x - w / 2 - 0.4, y0: c.y - 2.2, x1: c.x + w / 2 + 0.4, y1: c.y + 1 }, draw: () => haloText(doc, tag, c.x, c.y + 0.4, { size: 6.4, bold: true, align: 'center', halo: 0.9 }) };
     });
     field.place(cands, { lines: false });
     schedule.push({ tag, bearing: d.bearing, length: d.length });
   }
   // One setback label per edge kind, on its longest edge.
-  const sbSize = 5.6;
+  const sbSize = 7;
   for (const kind of ['front', 'secondaryFront', 'side', 'rear']) {
     const es = edges.filter((e) => e.kind === kind && requiredFor(kind, lot.setbacks) != null);
     if (!es.length) continue;
@@ -446,7 +478,7 @@ export function drawSite(doc, project, lot, { overAerial = false } = {}) {
     if (lenOf(a, b) < 4) continue;
     if (row.requiredM != null && Math.abs(row.clearanceM - row.requiredM) < 0.005) continue;
     const over = row.status === 'outside';
-    const box = dimLine(doc, a, b, Math.abs(row.clearanceM).toFixed(2), { colour: over ? RED : PEN.dim, size: 5.6, textSide: -1, field });
+    const box = dimLine(doc, a, b, Math.abs(row.clearanceM).toFixed(2), { colour: over ? RED : PEN.dim, size: 7, textSide: -1, field });
     if (box) field.addBox(box);
     field.addSeg(a, b);
     clearDims.push(row);
@@ -455,7 +487,7 @@ export function drawSite(doc, project, lot, { overAerial = false } = {}) {
   regRing(field, lot.boundary.map(S));
 
   // Road labels, once per chain, on the stretches that run off to either side of the lot.
-  const lineLabels = (chain, key, text, { size = 5.8, bold = false, offset = null, colour = [70, 74, 82] } = {}) => {
+  const lineLabels = (chain, key, text, { size = 7.2, bold = false, offset = null, colour = [70, 74, 82] } = {}) => {
     const L = chain.lines[key].map(S);
     const segs = [[L[0], L[1]], [L.at(-1), L.at(-2)]];
     const h = size * 0.3528;
@@ -472,7 +504,7 @@ export function drawSite(doc, project, lot, { overAerial = false } = {}) {
     lineLabels(chain, 'footpathNear', 'FOOTPATH');
     lineLabels(chain, 'kerb', 'VERGE', { offset: -3.6 });
     lineLabels(chain, 'kerb', 'KERB AND GUTTER');
-    lineLabels(chain, 'centreline', (roadName || 'EXISTING ROAD').toUpperCase(), { size: 8, bold: true, offset: 2.6, colour: PEN.ink });
+    lineLabels(chain, 'centreline', (roadName || 'EXISTING ROAD').toUpperCase(), { size: 9.5, bold: true, offset: 2.6, colour: PEN.ink });
     const L = chain.lines.centreline.map(S);
     for (const [p, q] of [[L.at(-1), L.at(-2)], [L[0], L[1]]]) {
       const c = clipSegment(p, q, VP);
@@ -480,7 +512,7 @@ export function drawSite(doc, project, lot, { overAerial = false } = {}) {
       const dir = G.norm(G.sub(c[1], c[0]));
       const at = { x: c[0].x + dir.x * 6, y: c[0].y + dir.y * 6 };
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(6.5);
+      doc.setFontSize(8);
       doc.setTextColor(...PEN.phantom);
       doc.text('CL', at.x, at.y - 1.2, { align: 'center' });
       field.addBox({ x0: at.x - 3, y0: at.y - 4, x1: at.x + 3, y1: at.y });
@@ -496,18 +528,18 @@ export function drawSite(doc, project, lot, { overAerial = false } = {}) {
       const p = driveCentre[i];
       const q = driveCentre[i + 1];
       if (lenOf(p, q) < 0.01) continue;
-      cands.push(() => alongLabel(doc, 'CONC. DRIVEWAY', G.lerp(p, q, 0.5), G.norm(G.sub(q, p)), -5.4 * 0.3528 / 2, { size: 5.4, colour: [70, 74, 82], halo: 0.9 }));
+      cands.push(() => alongLabel(doc, 'CONC. DRIVEWAY', G.lerp(p, q, 0.5), G.norm(G.sub(q, p)), -6.8 * 0.3528 / 2, { size: 6.8, colour: [70, 74, 82], halo: 0.9 }));
     }
     field.place(cands, { lines: false });
   }
   for (const { c, n } of neighbourLabels) {
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(5.6);
+    doc.setFontSize(7);
     const w = Math.max(doc.getTextWidth(`LOT ${n.lotNumber || ''}`), doc.getTextWidth(String(n.planLabel || ''))) + 1;
     const box = { x0: c.x - w / 2, y0: c.y - 3.2, x1: c.x + w / 2, y1: c.y + 3 };
     if (!field.free(box, { lines: false })) continue;
     doc.setTextColor(...GREYLINE);
-    const nt = (t, yy) => (ground0 ? haloText(doc, t, c.x, yy, { size: 5.6, colour: GREYLINE, align: 'center', halo: 1 }) : doc.text(t, c.x, yy, { align: 'center' }));
+    const nt = (t, yy) => (ground0 ? haloText(doc, t, c.x, yy, { size: 7, colour: GREYLINE, align: 'center', halo: 1 }) : doc.text(t, c.x, yy, { align: 'center' }));
     if (n.lotNumber) nt(`LOT ${n.lotNumber}`, c.y - 0.6);
     if (n.planLabel) nt(String(n.planLabel), c.y + 2.2);
     field.addBox(box);
@@ -592,7 +624,7 @@ export function drawSite(doc, project, lot, { overAerial = false } = {}) {
 
   // Enlarged house at 1:200 when the plan is too small to read the house (scale above 1:500).
   if (scale > 500 && hullPoly.length) {
-    const hbm = G.bbox(hullPoly);
+    const hbm = G.bbox(hullPoly.map(view.rot));
     let k = 200;
     let w = 0;
     let h = 0;
@@ -615,7 +647,7 @@ export function drawSite(doc, project, lot, { overAerial = false } = {}) {
     doc.setFontSize(6.8);
     doc.setTextColor(...PEN.ink);
     doc.text(`HOUSE AT 1:${k}`, spot.x + 3, spot.y + 5);
-    const T2 = (p) => ({ x: spot.x + 4 + (p.x - hbm.minX) / k, y: spot.y + 8 + (p.y - hbm.minY) / k });
+    const T2 = (p) => { const r = view.rot(p); return { x: spot.x + 4 + (r.x - hbm.minX) / k, y: spot.y + 8 + (r.y - hbm.minY) / k }; };
     doc.setFillColor(238, 241, 246);
     for (const r of ground.rooms.filter((q) => q.status !== 'demolish' && (!q.outdoor || q.roofed) && q.polygon?.length >= 3)) {
       const sp = r.polygon.map(T2);
@@ -629,7 +661,7 @@ export function drawSite(doc, project, lot, { overAerial = false } = {}) {
   const r = 15;
   const corners = [{ x: VP.x1 - r - 2, y: VP.y0 + r + 2 }, { x: VP.x0 + r + 2, y: VP.y0 + r + 2 }, { x: VP.x1 - r - 2, y: VP.y1 - r - 2 }, { x: VP.x0 + r + 2, y: VP.y1 - r - 2 }];
   const nc = corners.find((c) => field.free({ x0: c.x - r, y0: c.y - r, x1: c.x + r, y1: c.y + r }, { soft: false })) || corners.find((c) => field.free({ x0: c.x - r, y0: c.y - r, x1: c.x + r, y1: c.y + r }, { lines: false })) || corners[0];
-  northPoint(doc, nc.x, nc.y, Number(project.site?.northDeg) || 0);
+  northPoint(doc, nc.x, nc.y, northDegOf(project, view));
   field.addBox({ x0: nc.x - r, y0: nc.y - r, x1: nc.x + r, y1: nc.y + r });
   doc.setDrawColor(...PEN.ink);
   const spec = scaleBar(doc, VP.x0 + 6, VP.y1 + 4.2, scale, scale);

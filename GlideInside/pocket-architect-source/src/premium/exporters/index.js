@@ -46,7 +46,7 @@ export async function buildPdfBytes(project, o) {
   if (project?.mode === 'commercial' && project.commercial) {
     // Commercial layouts: the commercial plan set (C000 to C103). The same gating applies as for any PDF (trial watermark via o.jsPDF, Plan Pack on the server).
     const { exportPlanSet } = await import('./planset/index.js');
-    const out = await exportPlanSet({ project, kind: 'commercial', download: false, jsPDF: o.jsPDF, aerial: o.aerial || null, builderName: o.builder?.name || '', terms: o.terms || null });
+    const out = await exportPlanSet({ project, kind: 'commercial', download: false, jsPDF: o.jsPDF, aerial: o.aerial || null, includeAerial: o.includeAerial !== false && project.drawing?.includeAerial !== false, builderName: o.builder?.name || '', terms: o.terms || null });
     return new Uint8Array(await out.blob.arrayBuffer());
   }
   if (o.style !== 'legacy') {

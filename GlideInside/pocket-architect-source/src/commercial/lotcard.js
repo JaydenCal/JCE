@@ -7,6 +7,7 @@
 // Everything is derived from the project (src/commercial/card-model.js, layouts.js, finishes.js). The card edits the project only through
 // store.apply (a layout, a colour), so each change is one undo step and the full editor ("Customise") opens the same project.
 
+import { attachMiniView } from '../lotcard/mini-view.js';
 import { h, debounce } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { toast } from '../ui/toast.js';
@@ -18,6 +19,10 @@ import { lotHeading, lotLine } from '../lotcard/stats.js';
 import { LOT_CARD_CSS } from '../lotcard/lot-card-css.js';
 import { createSendToEngineer, SEND_LABEL } from '../lotcard/send-engineer.js';
 import { runUpload, creditText, FOOT_BASE } from '../site/upload/flow.js';
+import { createTopView, expandButton } from '../lotcard/topview.js';
+import { commercialScene, commercialMovers } from './topview-scene.js';
+import { createAerialToggle } from '../ui/aerial-toggle.js';
+import { aerialOn } from '../site/aerial-pref.js';
 import { injectUploadCss } from '../site/upload/css.js';
 import { syncCurrency, activeSymbol } from '../site/custom-rules.js';
 import { COMMERCIAL_CARD_CSS } from './lotcard-css.js';
@@ -116,7 +121,13 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
 
   const cv = h('canvas', { width: 300, height: 400, 'aria-hidden': 'true' });
   const northLabel = E('lc-nlabel', 'i', null, 'N');
-  const mini = h('button', { class: 'lc-mini', type: 'button', title: 'Show or hide the 2D plan', 'aria-label': 'Top view. Click to enlarge', dataset: { ps: 'lc-mini' }, onclick: () => toggleMini() }, cv, northLabel, E('lc-mini-t', 'span', null, 'TOP VIEW'));
+  // The mini map is a plain box so the expand button can be a real button on it; a click on the map or the button opens the large top view.
+  let miniView = null;
+  const cm = commercialMovers();
+  const miniX = expandButton(() => topView.open());
+  const mini = h('div', { class: 'lc-mini', role: 'group', title: 'Top view. Click to enlarge', 'aria-label': 'Top view of the lot', dataset: { ps: 'lc-mini' }, onclick: (e) => { if (e.target.closest?.('.lc-mini-x')) return; if (miniView?.consumeClick()) return; topView.open(); } }, cv, northLabel, E('lc-mini-t', 'span', null, 'TOP VIEW'), miniX);
+  const aerialT = createAerialToggle({ store, className: 'lc-aerial lc-glass' });
+  const topView = createTopView({ root: () => root, getScene: () => commercialScene(store.project), store, trigger: miniX, onChange: () => paintMenu(), movers: { can: cm.can, move: (id, dx, dy, label) => cm.move(store, id, dx, dy, label), turn: (id, deg, c, label) => cm.turn(store, id, deg, c, label) } });
 
   // The search pill: the real address search (NSW and QLD) with suggestions, as in the housing viewer.
   const findInput = h('input', { class: 'lc-find-in', type: 'search', placeholder: 'Search a NSW or QLD address', 'aria-label': 'Street address in NSW or QLD', 'aria-autocomplete': 'list', autocomplete: 'off', spellcheck: 'false', maxlength: '120', dataset: { ps: 'lc-find-input' } });
@@ -137,7 +148,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     [planTermsLinkText(), () => window.open(PLAN_TERMS_URL, '_blank', 'noopener')],
     ['Upload boundary', () => openUpload()],
     ['Site rules', () => import('../site/upload/rules-panel.js').then((m) => m.openRulesPanel(store))],
-    ['Enlarge top view', () => toggleMini()],
+    ['Enlarge top view', () => topView.toggle()],
   ];
   const menuList = h('div', { class: 'lc-menu-list lc-glass', role: 'menu', hidden: true }, ...menuItems.map(([label, fn]) => h('button', { class: 'lc-menu-item', type: 'button', role: 'menuitem', onclick: () => { menuList.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); fn(); } }, label)));
   const menuBtn = (() => {
@@ -145,9 +156,10 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     b.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>';
     return b;
   })();
-  function paintMenu() { const it = menuList.lastElementChild; if (it) it.textContent = mini.classList.contains('is-big') ? 'Shrink top view' : 'Enlarge top view'; }
+  function paintMenu() { const it = menuList.lastElementChild; if (it) it.textContent = topView.isOpen() ? 'Close top view' : 'Enlarge top view'; }
   const foot = E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, FOOT_BASE);
-  const root = E('lc-root lc-embed cc-root', 'div', { dataset: { ps: 'lot-card-root', mode: 'commercial' } }, head, compass, findPill, uploadBtn, menuBtn, menuList, card, rooms, panel, typeBar, pager, mini, foot);
+  miniView = attachMiniView({ mini, cv, northDeg: () => Number(store.project?.site?.northDeg) || 0 });
+  const root = E('lc-root lc-embed cc-root', 'div', { dataset: { ps: 'lot-card-root', mode: 'commercial' } }, head, compass, findPill, uploadBtn, menuBtn, menuList, card, rooms, panel, typeBar, pager, aerialT.el, mini, foot);
   host.append(root);
 
   // Address search -------------------------------------------------------------------------------------------------------------
@@ -335,7 +347,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
       bPlan.textContent = 'Preparing plan set';
       bPlan.disabled = true;
       const { exportPlanSet } = await import('../premium/exporters/planset/index.js');
-      const out = await exportPlanSet({ project: store.project, lot: lotOf(store.project), kind: 'commercial', builderName: builderName() || '', download: false, terms });
+      const out = await exportPlanSet({ project: store.project, lot: lotOf(store.project), kind: 'commercial', builderName: builderName() || '', download: false, terms, includeAerial: aerialOn(store.project) && store.project.drawing?.includeAerial !== false });
       const bytes = out?.bytes || out?.blob || out?.data || out;
       if (bytes instanceof Blob || bytes instanceof Uint8Array || bytes instanceof ArrayBuffer) {
         downloadBlob(bytes instanceof Blob ? bytes : new Blob([bytes], { type: 'application/pdf' }), out?.filename || 'Commercial_Plan_Set.pdf');
@@ -469,7 +481,6 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     viewerHost.classList.toggle('lc-compact', compact);
   }
   function schedule() { if (!raf) raf = requestAnimationFrame(render); }
-  function toggleMini() { mini.classList.toggle('is-big'); paintMenu(); setTimeout(sizeInset, 50); }
 
   // The top view: the aerial under the lot when it is stored in the browser, the lot, the setback line, bays and the units in the cladding colour.
   let miniAerial = { key: null, img: null, loading: null };
@@ -486,6 +497,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     return null;
   }
   async function drawMini(p, lot) {
+    miniView?.apply();
     const ctx = cv.getContext('2d');
     if (!ctx) return;
     const W = cv.width;
@@ -596,6 +608,6 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   schedule();
   return {
     el: root, render, step, setLayout, setType, setFinish, planSet, openPanel, closePanel, pickView,
-    dispose() { disposed = true; window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); ro?.disconnect(); root.remove(); },
+    dispose() { disposed = true; window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); topView.dispose(); aerialT.dispose(); ro?.disconnect(); root.remove(); },
   };
 }
