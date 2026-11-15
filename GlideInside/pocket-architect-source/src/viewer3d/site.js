@@ -8,6 +8,9 @@ import { makeMesh, flattenGroup } from './model-util.js';
 
 const DEG = Math.PI / 180;
 
+/** The mown lawn green of the ground (the homepage hero look): a warm, slightly olive green. */
+export const LAWN_COLOUR = '#93a85a';
+
 // Triangulated horizontal polygon (plan mm) at height y, facing up (or down).
 export function addFloorPoly(b, slot, polygon, y, up = true, holes = []) {
   const contour = polygon.map((p) => new THREE.Vector2(p.x / 1000, p.y / 1000));
@@ -40,7 +43,7 @@ export function addGround(ctx, root, bounds, yOverride = null) {
     const p1 = [cx + R * Math.cos(a1), y, cz + R * Math.sin(a1)];
     b.tri('ground', [cx, y, cz], p0, p1, [cx, cz], [p0[0], p0[2]], [p1[0], p1[2]], [0, 1, 0]);
   }
-  const mat = ctx.lib.get('grass', '#76895f');
+  const mat = ctx.lib.get('grass', LAWN_COLOUR);
   const mesh = makeMesh(b.build(), { ground: mat }, { ground: true }, { cast: false, receive: true, name: 'ground' });
   if (mesh) root.add(mesh);
   return R;

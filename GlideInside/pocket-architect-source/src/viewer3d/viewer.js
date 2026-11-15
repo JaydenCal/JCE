@@ -23,9 +23,13 @@ const SUN_DIR = new THREE.Vector3(-0.45, 0.78, 0.65).normalize();
 // With a lot loaded plan up is grid north and the sun is in the northern sky (southern hemisphere), so a street frontage on the
 // north side is lit. 'warm' is a low afternoon sun from the north west with longer shadows.
 const SUN_PRESETS = {
-  day: { dir: new THREE.Vector3(0.5, 0.72, -0.5).normalize(), color: '#fff6ea', intensity: 3.0, hemi: 1.05, exposure: 1.0 },
-  warm: { dir: new THREE.Vector3(-0.72, 0.36, -0.58).normalize(), color: '#ffd9a8', intensity: 3.3, hemi: 0.95, exposure: 1.05 },
+  day: { dir: new THREE.Vector3(0.5, 0.72, -0.5).normalize(), color: '#fff6ea', intensity: 3.0, hemi: 1.05, exposure: 1.0, sky: '#eef3fb', ground: '#a39d8e' },
+  // The default, and the look of the homepage hero render: a warm afternoon sun about 34 degrees up, long soft shadows from the trees,
+  // houses and fences, and a gentle warm sky light. No fog and no haze.
+  warm: { dir: new THREE.Vector3(-0.66, 0.56, -0.5).normalize(), color: '#ffe2b8', intensity: 3.0, hemi: 1.3, exposure: 1.02, sky: '#f4ecdc', ground: '#b3a57c' },
 };
+// Without a lot there is no north: the same warm afternoon light from the front left.
+const NO_LOT_SUN = { dir: new THREE.Vector3(-0.56, 0.56, 0.61).normalize(), color: '#ffe2b8', intensity: 3.0, hemi: 1.3, exposure: 1.02, sky: '#f4ecdc', ground: '#b3a57c' };
 // Sky and ground are tuned for the white app theme: the horizon is a clear blue grey rather than near white,
 // so the edge of the view reads against a white page and white overlay chips stand out on it.
 const SKY = { top: '#3d7fd9', horizon: '#cfe3f7', ground: '#9aa28f' };
@@ -342,9 +346,9 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   syncRoofBtn();
   viewBar.append(vbHero, vbFront, vbAerial, vbSun, vbRoof);
   rootEl.appendChild(viewBar);
-  let sunKey = 'day';
+  let sunKey = 'warm'; // warm afternoon light unless the person switched it off
   try {
-    sunKey = localStorage.getItem('ps.view3d.sun') === 'warm' ? 'warm' : 'day';
+    sunKey = localStorage.getItem('ps.view3d.sun') === 'day' ? 'day' : 'warm';
   } catch {
     /* storage unavailable */
   }
@@ -434,7 +438,9 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   function fitSun() {
     if (!bounds) return;
     const hasLot = !!store.project.site?.lot?.boundary?.length;
-    const preset = hasLot ? SUN_PRESETS[sunKey] : { dir: SUN_DIR, color: '#fff3e0', intensity: 2.9, hemi: 1.2, exposure: 1.0 };
+    const preset = hasLot ? SUN_PRESETS[sunKey] : sunKey === 'warm' ? NO_LOT_SUN : { dir: SUN_DIR, color: '#fff6ea', intensity: 3.0, hemi: 1.05, exposure: 1.0, sky: '#eef3fb', ground: '#a39d8e' };
+    hemi.color.set(preset.sky);
+    if (mode !== 'walk') hemi.groundColor.set(preset.ground);
     sun.color.set(preset.color);
     sun.intensity = preset.intensity;
     hemi.intensity = mode === 'walk' ? 1.7 : preset.hemi;
@@ -806,8 +812,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   // Modes ---------------------------------------------------------------------------------------------
   function applyModeLighting() {
     const w = mode === 'walk';
-    hemi.intensity = w ? 1.7 : (store.project.site?.lot ? SUN_PRESETS[sunKey].hemi : 1.2);
-    hemi.groundColor.set(w ? '#d2d0c8' : '#8d8a7c');
+    hemi.intensity = w ? 1.7 : SUN_PRESETS[sunKey].hemi;
+    hemi.groundColor.set(w ? '#d2d0c8' : SUN_PRESETS[sunKey].ground);
     scene.environmentIntensity = w ? 0.3 : 0.45;
     headlight.intensity = w ? 7 : 0;
     camera.fov = w ? 70 : 38;

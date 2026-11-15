@@ -100,9 +100,10 @@ const ADDRESS = '12 Industrial Drive, Westdale NSW';
   };
   const fps = async (label) => console.log('fps', label, await fr.evaluate(() => new Promise((res) => { let n = 0; const t0 = performance.now(); const f = () => { n++; if (performance.now() - t0 > 2000) res(Math.round(n / 2)); else requestAnimationFrame(f); }; requestAnimationFrame(f); })), await fr.evaluate(() => { const r = window.__ps.getViewer?.()?.renderer?.info; return r ? JSON.stringify({ calls: r.render.calls, tris: r.render.triangles, tex: r.memory.textures, geo: r.memory.geometries }) : ''; }));
   if (want('strata')) {
-    await fr.evaluate(() => window.__ps.lotCard.setLayout('b2b-12')); await fr.waitForFunction(() => !document.querySelector('.is-busy'), null, { timeout: 60000 }); await fr.waitForTimeout(14000);
+    await fr.evaluate(() => window.__ps.lotCard.setLayout('b2b-12')); await fr.waitForFunction(() => !document.querySelector('.is-busy') && (document.querySelector('[data-ps="cc-stats"]')?.textContent || '').replace(/\s+/g, ' ').trim().startsWith('12'), null, { timeout: 240000 }).catch((e) => log.push('layout wait: ' + e.message)); await fr.waitForTimeout(14000);
     await fr.evaluate(() => window.__ps.buildingOps.setRowsUnit(window.__ps.store, { construction: 'tilt_up', panelFinish: 'painted', panelColour: 'project', panelReveals: 'one', accentPanels: 'both', accentColour: 'charcoal', signageBand: true })); await fr.waitForTimeout(2500);
-    await four('strata'); await fps('strata');
+    console.log('strata construction', await fr.evaluate(() => window.__ps.store.project.commercial.rows[0].unit.construction + ', panel walls ' + window.__ps.store.project.levels.flatMap((l) => l.walls).filter((w) => w.panel).length));
+    await four('strata');
   }
   if (want('mixed')) {
     await fr.evaluate(() => window.__ps.lotCard.setLayout('b2b-12')); await fr.waitForFunction(() => !document.querySelector('.is-busy'), null, { timeout: 60000 }); await fr.waitForTimeout(9000);
@@ -114,7 +115,7 @@ const ADDRESS = '12 Industrial Drive, Westdale NSW';
     await fr.evaluate(() => window.__ps.lotCard.setType('warehouse')); await fr.waitForTimeout(3000);
     await setParams({ construction: 'tilt_up_metal_upper', panelFinish: 'painted', panelColour: 'sand', dadoHeightMm: 3600, docks: 4 });
     await fr.waitForTimeout(1500);
-    await four('warehouse'); await fps('warehouse');
+    await four('warehouse');
   }
   if (want('showroom')) {
     await fr.evaluate(() => window.__ps.lotCard.setType('showroom')); await fr.waitForTimeout(3000);
@@ -124,7 +125,7 @@ const ADDRESS = '12 Industrial Drive, Westdale NSW';
   }
   if (want('servo')) {
     await fr.evaluate(() => window.__ps.lotCard.setType('service-station')); await fr.waitForTimeout(4000);
-    await four('servo'); await fps('servo');
+    await four('servo');
   }
   await page.context().close();
   const HOUSES = [['house', null], ['granny', 'granny_flat'], ['shed', 'shed_workshop']].filter(([n]) => want(n));
@@ -144,6 +145,19 @@ const ADDRESS = '12 Industrial Drive, Westdale NSW';
       await f2.evaluate(() => window.__ps.store.setUI({ view: '3d' })); await ph.waitForTimeout(2500);
     }
     await ph.context().close();
+  }
+  if (want('demo')) {
+    // The embedded viewer as the marketing pages show it: the sample lot, no aerial (mown lawn, paddock beyond), default hero camera.
+    const pm = await mk({ width: 1440, height: 900 });
+    await pm.goto(`${ORIGIN}/plan-studio/app/?embed=1`, { waitUntil: 'domcontentloaded' });
+    const fm = pm.mainFrame();
+    await pm.waitForFunction(() => window.__ps?.store?.project?.site?.lot?.boundary?.length > 2 && window.__ps.store.project.levels?.some((l) => l.walls?.length) && !/Loading your block|Placing design/.test(document.body.innerText), null, { timeout: 300000 }).catch((e) => log.push('demo wait: ' + e.message));
+    await pm.waitForTimeout(12000);
+    await fm.evaluate(() => document.querySelector('[data-ps="view3d-aerial"]')?.click()); await pm.waitForTimeout(3500); await shot(pm, `${PRE}-demo-aerial`);
+    await fm.evaluate(() => document.querySelector('[data-ps="view3d-hero"]')?.click()); await pm.waitForTimeout(3500); await shot(pm, `${PRE}-demo-3d`);
+    await fm.evaluate(() => document.querySelector('[data-ps="view3d-front"]')?.click()); await pm.waitForTimeout(3500); await shot(pm, `${PRE}-demo-street`);
+    await fm.evaluate(() => window.__ps.store.setUI({ view: 'walk' })); await pm.waitForTimeout(6000); await shot(pm, `${PRE}-demo-walk`);
+    await pm.context().close();
   }
   if (want('double')) {
     // The double storey starter in the full editor (no lot): the 3D view a person designing from a template sees.

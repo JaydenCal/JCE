@@ -163,11 +163,11 @@ export function exteriorPose(project, kind = '3d') {
     const half = (Math.max(...us) - Math.min(...us)) / 2;
     const front = Math.min(...pts.map(depth));
     const fov = 58;
-    const tanH = Math.tan((fov / 2) * (Math.PI / 180)) * 1.5; // horizontal half angle at a 3:2 view, the narrowest the card is shown at
+    const tanH = Math.tan((fov / 2) * (Math.PI / 180)) * 0.95; // usable horizontal half angle: the lot card covers the left of the view, so the clear part is about as wide as it is tall
     const back = Math.max(12000, (half * 1.18) / tanH, (hMax * 1.25) / Math.tan((fov / 2) * (Math.PI / 180)) * 0.62);
     // Stand on the street side of the boundary (6 m out or more) whenever the buildings still fill the picture from there; walk into the
     // lot only when they sit so far back that they would be small.
-    const sCam = front + 6000 <= back * 1.6 ? Math.max(-19000, Math.min(front - back, -6000)) : front - back * 1.3;
+    const sCam = front + 6000 <= back * 1.35 ? Math.max(-19000, Math.min(front - back, -6000)) : front - back * 1.3;
     const pos = { x: sf.mid.x + sf.u.x * uc - sf.n.x * sCam, y: sf.mid.y + sf.u.y * uc - sf.n.y * sCam };
     const tgt = { x: sf.mid.x + sf.u.x * uc - sf.n.x * front, y: sf.mid.y + sf.u.y * uc - sf.n.y * front };
     return { position: { x: pos.x / 1000, y: 1.7, z: pos.y / 1000 }, target: { x: tgt.x / 1000, y: Math.min(4.2, hMax * 0.42 / 1000), z: tgt.y / 1000 }, fov };

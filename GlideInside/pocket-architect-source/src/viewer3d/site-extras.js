@@ -207,7 +207,13 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       }
       // footpath: between the near and far footpath lines
       strip(b, 'path', S('footpathNear', 2), S('footpathFar', 2), 0.04, 1.5, 1);
-      // faint centre line, dashed
+      // crisp white edge lines, 0.35 m in from each gutter
+      for (const [name, sg] of [['gutter', 1], ['farGutter', -1]]) {
+        const pts = S(name, 2);
+        const off = (d) => pts.map((q) => ({ x: q.x + r.outward.x * sg * d, y: q.y + r.outward.y * sg * d }));
+        strip(b, 'line', off(300), off(420), 0.033, 1, 1);
+      }
+      // white lane line, dashed
       const c = S('centreline', 0.5);
       for (let i = 0; i + 1 < c.length; i++) {
         if (i % 12 > 5) continue;
@@ -222,11 +228,11 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
     if (!b.empty) {
       const pathMat = mat('#ffffff', { map: conc, roughness: 0.92 });
       add(makeMesh(b.build(), {
-        asphalt: asphalt ? mat('#ffffff', { map: asphalt, roughness: 0.95 }) : mat('#45484b', { roughness: 0.95 }),
+        asphalt: asphalt ? mat('#eeeeee', { map: asphalt, roughness: 0.95 }) : mat('#45484b', { roughness: 0.95 }),
         gutter: mat('#a3a19a', { roughness: 0.9 }),
         kerb: mat('#b4b2aa', { roughness: 0.85 }),
         path: conc ? pathMat : mat('#c3c0b7'),
-        line: mat('#ece6cf', { roughness: 0.8, transparent: true, opacity: 0.55, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }),
+        line: mat('#f4f3ec', { roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }),
       }, { ground: true }, { cast: false, receive: true, name: 'road' }));
       stats.road = true;
     }
@@ -375,6 +381,8 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
 
   // 4. Fences on the side and rear boundaries of the subject lot (Colorbond Shale Grey) -------------------------------------------
   if (subjectOn) {
+    // A house lot has a timber post and rail fence on its lot lines (the homepage hero look); a commercial site keeps a steel panel fence.
+    const timber = project.mode !== 'commercial';
     const b = new GeoBuilder();
     const n = lot.boundary.length;
     for (let i = 0; i < n; i++) {
@@ -382,7 +390,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       const a = lot.boundary[i];
       const c = lot.boundary[(i + 1) % n];
       const len = Math.hypot(c.x - a.x, c.y - a.y) / 1000;
-      const panels = Math.max(1, Math.round(len / 2.35));
+      const panels = Math.max(1, Math.round(len / (timber ? 2.7 : 2.35)));
       const ang = Math.atan2(c.y - a.y, c.x - a.x);
       for (let k = 0; k < panels; k++) {
         const t0 = k / panels;
@@ -394,18 +402,25 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
         const mx = (p0.x + p1.x) / 2000;
         const mz = (p0.y + p1.y) / 2000;
         const hl = (len / panels) / 2 - 0.035;
-        addOrientedBox(b, mx, mz, hl, 0.018, ang, y0, ya + 1.8, 'sheet');
-        addOrientedBox(b, mx, mz, hl, 0.03, ang, ya + 1.78, ya + 1.83, 'cap');
-        addOrientedBox(b, p1.x / 1000, p1.y / 1000, 0.035, 0.04, ang, y0, ya + 1.85, 'post');
+        if (timber) {
+          // two rails between posts, following the fall of the ground
+          for (const rh of [0.5, 0.98]) addOrientedBox(b, mx, mz, hl + 0.035, 0.022, ang, ya + rh - 0.045, ya + rh + 0.045, 'cap');
+          addOrientedBox(b, p1.x / 1000, p1.y / 1000, 0.055, 0.055, ang, y0, ya + 1.2, 'post');
+        } else {
+          addOrientedBox(b, mx, mz, hl, 0.018, ang, y0, ya + 1.8, 'sheet');
+          addOrientedBox(b, mx, mz, hl, 0.03, ang, ya + 1.78, ya + 1.83, 'cap');
+          addOrientedBox(b, p1.x / 1000, p1.y / 1000, 0.035, 0.04, ang, y0, ya + 1.85, 'post');
+        }
         stats.fences++;
       }
       const p = a;
       const ya = H(p.x / 1000, p.y / 1000);
-      addOrientedBox(b, p.x / 1000, p.y / 1000, 0.035, 0.04, ang, ya - 0.06, ya + 1.85, 'post');
+      if (timber) addOrientedBox(b, p.x / 1000, p.y / 1000, 0.055, 0.055, ang, ya - 0.06, ya + 1.2, 'post');
+      else addOrientedBox(b, p.x / 1000, p.y / 1000, 0.035, 0.04, ang, ya - 0.06, ya + 1.85, 'post');
     }
     // A commercial site is fenced in a dark steel colour (security fencing); a house lot keeps the light Colorbond sheet.
-    const fc = project.mode === 'commercial' ? { sheet: '#4a5056', cap: '#34383d', post: '#34383d' } : { sheet: '#cdc9bb', cap: '#9a978b', post: '#8e8b80' };
-    add(makeMesh(b.build(), { sheet: mat(fc.sheet, { roughness: 0.6, metalness: 0.25 }), cap: mat(fc.cap, { roughness: 0.6, metalness: 0.3 }), post: mat(fc.post, { roughness: 0.6, metalness: 0.3 }) }, { ground: true }, { cast: true, receive: true, name: 'fences' }));
+    const fc = project.mode === 'commercial' ? { sheet: '#4a5056', cap: '#34383d', post: '#34383d' } : { sheet: '#8a6b47', cap: '#8a6b47', post: '#7a5d3d' };
+    add(makeMesh(b.build(), { sheet: mat(fc.sheet, { roughness: timber ? 0.9 : 0.6, metalness: timber ? 0 : 0.25 }), cap: mat(fc.cap, { roughness: timber ? 0.9 : 0.6, metalness: timber ? 0 : 0.3 }), post: mat(fc.post, { roughness: timber ? 0.9 : 0.6, metalness: timber ? 0 : 0.3 }) }, { ground: true }, { cast: true, receive: true, name: 'fences' }));
   }
 
   // 5. Letterbox on the frontage, clear of the drive ---------------------------------------------------------------------------
@@ -544,7 +559,7 @@ function addBushes(group, spots, H, stats) {
   });
   mesh.instanceMatrix.needsUpdate = true;
   mesh.userData = { ground: true, extras: true };
-  mesh.castShadow = false;
+  mesh.castShadow = true;
   mesh.receiveShadow = false;
   mesh.name = 'bushes';
   group.add(mesh);
@@ -602,11 +617,11 @@ function addTrees(group, spots, H, stats) {
     const b = foliageBlob(rr, detail, 0.88, k * 1.7);
     const c = b.attributes.color;
     for (let i = 0; i < c.count; i++) c.setXYZ(i, c.getX(i) * tone, c.getY(i) * tone, c.getZ(i) * tone);
-    b.translate(x, y, z);
+    b.translate(x, 0.34 + y * 0.7, z); // crown lifted so the trunk reads clear below it
     return b;
   });
-  // trunk height 0.45 of the tree; canopy sits above (heights are fractions of h)
-  const geo = mergeGeometries([trunk.clone().scale(1, 0.55, 1), ...blobs], false);
+  // a clear trunk to about 0.6 of the tree; the crown sits above (heights are fractions of h)
+  const geo = mergeGeometries([trunk.clone().scale(0.8, 0.7, 0.8), ...blobs], false);
   if (!geo) return;
   const m = basic('#ffffff', { vertexColors: true });
   const mesh = new THREE.InstancedMesh(geo, m, spots.length);
@@ -624,7 +639,7 @@ function addTrees(group, spots, H, stats) {
   });
   mesh.instanceMatrix.needsUpdate = true;
   mesh.userData = { ground: true, extras: true };
-  mesh.castShadow = false;
+  mesh.castShadow = true; // long tree shadows across the lawn and the road (the trees themselves stay unlit, with no self shading)
   mesh.receiveShadow = false;
   mesh.name = 'trees';
   group.add(mesh);
