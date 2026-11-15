@@ -45,6 +45,8 @@ import { createCommercialCard } from './commercial/lotcard.js';
 import { createCommercialPanel } from './commercial/ui/panel-commercial.js';
 import { enterCommercial, offerCommercial, commercialUi } from './commercial/mode.js';
 import { effectiveClass } from './commercial/zones.js';
+import { initGuidedFlow, shouldStart } from './flow/index.js';
+import { flowInProgress } from './flow/state.js';
 import { viewerEmbedRequested, addressFromSearch, openFullEditor, initEmbedViewer, loadAddress, mountViewerChrome, takeHandoff } from './ui/embed-viewer.js';
 
 const demoMode = () => CONFIG.embedMode === 'demo';
@@ -433,14 +435,23 @@ async function main() {
   track('ps_open', { embedMode: CONFIG.embedMode });
 
   const openFull = () => openFullEditor(store.project);
+  // The home page card's call to action starts the guided flow at step 2 (choose a home) with the lot already set; "Open full editor" goes straight to the editor.
+  const openGuided = () => {
+    const p = store.project;
+    const kind = p.mode === 'commercial' ? 'commercial' : 'residential';
+    openFullEditor({ ...p, flow: { kind, step: p.site?.lot ? 2 : 1, designId: p.placedHouse?.id || null } });
+  };
+  const openEditorDirect = () => openFullEditor({ ...store.project, flow: { kind: store.project.mode === 'commercial' ? 'commercial' : 'residential', step: 5 } });
   const lotCard = COMMERCIAL_VIEWER
-    ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openFull, onFullEditor: openFull, onFind: (a) => api.embedViewer?.run(a) })
-    : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openFull, onFullEditor: openFull, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
+    ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a) })
+    : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
   api.lotCard = lotCard;
   if (!VIEWER && !demoMode()) api.commercial = createCommercialPanel({ store, host: refs.stage, editor });
   createMapCredit(refs.stage, store);
   { const fab = createAerialToggle({ store, className: 'ps-aerial-fab', dataPs: 'aerial-toggle-stage' }); refs.stage.append(fab.el); } // Aerial on/off over the 2D plan and the 3D view (hidden while the lot card shows its own)
-  if (!state.fromAutosave && !demoMode() && !narrow && !shareId && !VIEWER && !addressParam && !wantCommercial) createWelcome(refs.stage, store, { onChoose: openNew });
+  // The guided start flow (src/flow/) replaces the welcome card for a fresh open and for a flow that was part way through.
+  const startsFlow = shouldStart({ project: store.project, search: location.search, viewer: VIEWER, demo: demoMode(), shareId, fromAutosave: state.fromAutosave }) && !params.get('template');
+  if (!state.fromAutosave && !demoMode() && !narrow && !shareId && !VIEWER && !addressParam && !wantCommercial && !startsFlow) createWelcome(refs.stage, store, { onChoose: openNew });
 
   // The commercial handoff. A layout already in commercial mode is left as it is (the link must not reset its rows). A design kept
   // from an earlier visit is switched as one undo step and the person is told how to get it back; a starter design is renamed.
@@ -466,9 +477,10 @@ async function main() {
     else ev.startDemo();
   } else if (addressParam) {
     initEmbedViewer({ store, catalogue, shell: refs.shell, viewerMode: false }); // also answers gi:find-address
-    loadAddress(store, catalogue, addressParam)
+    api.addressLoad = loadAddress(store, catalogue, addressParam, { place: !startsFlow });
+    api.addressLoad
       .then(({ lot }) => {
-        toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' });
+        if (!startsFlow) toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' });
         if (wantCommercial) { goCommercial({ useClass: effectiveClass(store.project) || 'industrial' }); offerCommercial(store); }
       })
       .catch((e) => toast(e?.message || 'That address could not be loaded.', { kind: 'warn' }));
@@ -482,7 +494,16 @@ async function main() {
   else window.__ps?.premium?.setPortalPending?.(false);
   // Free user profiles: save designs to an account. Hidden for builder and client logins, subscribers and internal accounts, and when the server has no profile service.
   if (!demoMode() && !VIEWER) api.profilesReady = initProfiles(window.__ps, { refs }).then((p) => { profiles = p; window.__ps.profiles = p; return p; }).catch((e) => { console.warn('[profile] not available', e); return null; });
-  if (!VIEWER) import('./ui/onboarding/index.js').then((m) => m.initOnboarding?.(window.__ps)).catch(() => {});
+  // The guided flow opens before the tour: the tour starts when the person reaches the editor.
+  let flowOpen = false;
+  if (startsFlow && !VIEWER && !demoMode()) {
+    try { flowOpen = !!(await initGuidedFlow({ api, store, refs, catalogue, viewer: VIEWER, demo: demoMode(), shareId, fromAutosave: state.fromAutosave, wantCommercial, hasAddress: !!addressParam })); } catch (e) { console.warn('[flow] could not start', e); }
+  } else if (!VIEWER && !demoMode()) initGuidedFlow({ api, store, refs, catalogue, viewer: VIEWER, demo: demoMode(), shareId, fromAutosave: state.fromAutosave, wantCommercial }).catch(() => {});
+  const startTour = () => import('./ui/onboarding/index.js').then((m) => m.initOnboarding?.(window.__ps)).catch(() => {});
+  if (!VIEWER) {
+    if (flowOpen && flowInProgress(store.project)) { const off = store.on('project', (e) => { if (e?.label === 'flow' && !flowInProgress(store.project)) { off(); startTour(); } }); }
+    else startTour();
+  }
   return api;
 }
 

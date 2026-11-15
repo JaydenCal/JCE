@@ -19,6 +19,7 @@
 import rates from './rates.json' with { type: 'json' };
 import { layoutUnits, rowPoly, rowPoint } from '../../layout.js';
 import { parkingLayout } from '../../parking.js';
+import { siteWorksOf } from '../buildings.js';
 import { bayOffsetMm } from '../../schema.js';
 import { PAVEMENTS, ROLE_DEFAULTS, MAKEUP_NOTE, pavementById, isPavementType, makeUpShort } from './pavements.js';
 import { KERBS, KERB_DEFAULTS, kerbById, isKerbType } from './kerbs.js';
@@ -62,6 +63,16 @@ export function defaultAreas(commercial) {
       out.push({ id: `${pr.rowId}:bays`, role: 'bays', rowId: pr.rowId, polygon: quad(0, B, pr.depth + off, pr.depth + off + bayL) });
       if (footW > 0) out.push({ id: `${pr.rowId}:footpath`, role: 'footpath', rowId: pr.rowId, polygon: quad(0, B, pr.depth + off + bayL, pr.depth + off + bayL + footW) });
     }
+  }
+  // The automatic site layout: crossover pads, aisles, forecourt and apron slabs, bay rows and footpaths (sitelayout.js).
+  const sw = siteWorksOf(c);
+  if (sw && c.parking?.enabled !== false) {
+    for (const f of sw.forecourts || []) out.push({ id: f.id, role: 'apron', rowId: null, polygon: f.polygon });
+    for (const a of sw.aprons || []) out.push({ id: a.id, role: 'apron', rowId: null, polygon: a.polygon });
+    for (const x of sw.crossovers || []) if (x.polygon) out.push({ id: `${x.id}:pad`, role: 'aisle', rowId: null, polygon: x.polygon });
+    for (const a of sw.pavedAisles || []) out.push({ id: a.id, role: 'aisle', rowId: null, polygon: a.polygon });
+    for (const r of sw.bayRows || []) for (const b of r.bayAreas || []) out.push({ id: b.id, role: 'bays', rowId: r.rowId, polygon: b.polygon });
+    for (const f of sw.footpaths || []) out.push({ id: f.id, role: 'footpath', rowId: null, polygon: f.polygon });
   }
   const w = c.waste;
   if (w && w.widthMm > 0 && w.depthMm > 0) {
@@ -180,6 +191,8 @@ function classifyEdges(area, others, buildings) {
 }
 
 function autoCrossovers(runs, lot, c) {
+  const swo = siteWorksOf(c);
+  if (!Array.isArray(c.crossovers) && Array.isArray(swo?.crossovers) && swo.crossovers.length) return swo.crossovers.map((x) => ({ x: x.x, y: x.y, widthMm: x.widthMm, auto: true }));
   if (Array.isArray(c.crossovers)) return c.crossovers.filter((x) => Number.isFinite(x?.x) && Number.isFinite(x?.y)).map((x) => ({ x: x.x, y: x.y, widthMm: x.widthMm > 0 ? x.widthMm : CROSSOVER_MM, auto: false }));
   const b = lot?.boundary;
   const fe = lot?.frontEdges;
@@ -354,6 +367,23 @@ export function buildMarkings(commercial) {
       const along = (park.path[0].x - fr.o.x) * fr.u.x + (park.path[0].y - fr.o.y) * fr.u.y;
       const at = rowPoint(fr, along, home.depth + apron + aisleDepth / 2);
       items.push({ id: `crossing:${home.rowId}`, type: 'ped-crossing', x: at.x, y: at.y, rotationDeg: rowAngleDeg(fr), lengthMm: aisleDepth, widthMm: 2400, rowId: home.rowId });
+    }
+  }
+  const swm = siteWorksOf(c);
+  if (swm?.bayRows && c.parking?.enabled !== false) {
+    for (const r of swm.bayRows) {
+      if (!r.slots.length) continue;
+      const lines = [];
+      for (const sl of r.slots) {
+        const [p0, p1, p2, p3] = sl.poly;
+        const long01 = len(sub(p1, p0)) > len(sub(p3, p0));
+        lines.push(long01 ? [p0, p1] : [p0, p3], long01 ? [p3, p2] : [p1, p2]);
+      }
+      items.push({ id: `baylines:${r.rowId}`, type: 'bay-lines', lines, count: r.slots.filter((x) => x.kind !== 'zone').length, rowId: r.rowId });
+      r.slots.forEach((sl, i) => {
+        if (sl.kind === 'accessible') items.push({ id: `access:${r.rowId}:${i}`, type: 'accessible-symbol', x: sl.centre.x, y: sl.centre.y, rotationDeg: 0, rowId: r.rowId });
+        else if (sl.kind === 'zone') items.push({ id: `zone:${r.rowId}:${i}`, type: 'accessible-hatch', polygon: sl.poly, x: sl.centre.x, y: sl.centre.y, rotationDeg: 0, rowId: r.rowId });
+      });
     }
   }
   (Array.isArray(c.markings) ? c.markings : []).forEach((m, i) => {

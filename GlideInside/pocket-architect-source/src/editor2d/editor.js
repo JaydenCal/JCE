@@ -18,6 +18,7 @@ import { createSelectTool } from './tool-select.js';
 import { createMoveHouseTool } from './tool-movehouse.js';
 import { createCommercialTool } from '../commercial/ui/tool-commercial.js';
 import { drawCommercial, commercialExtents } from '../commercial/draw2d.js';
+import { createLabelLayer } from './label-layer.js';
 import { createDrawTools } from './tool-draw.js';
 import { createPlaceTools } from './tool-place.js';
 import { createMiscTools } from './tool-misc.js';
@@ -278,7 +279,9 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       scaleRight: !!document.querySelector('.lc-root:not([hidden])'),
     };
     const clashes = currentClashes(project);
-    const ctx = g2;
+    // In a commercial layout every upright label is collected and placed clear of the others (src/editor2d/label-layer.js).
+    const labels = project.mode === 'commercial' ? createLabelLayer(g2) : null;
+    const ctx = labels ? labels.ctx : g2;
     ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
     ctx.fillStyle = state.theme.c.canvas;
     ctx.fillRect(0, 0, state.size.w, state.size.h);
@@ -303,9 +306,10 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     current?.draw?.(ctx, st, ed);
     drawBreachWalls(ctx, st);
     drawArrangeOverlay(ctx, st);
-    drawNorthArrow(ctx, st);
-    drawScaleBar(ctx, st);
-    drawCredits(ctx, st);
+    if (labels) labels.flush({ w: state.size.w * state.dpr, h: state.size.h * state.dpr });
+    drawNorthArrow(g2, st);
+    drawScaleBar(g2, st);
+    drawCredits(g2, st);
   }
 
   // View ---------------------------------------------------------------------------------------------------

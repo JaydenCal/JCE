@@ -322,7 +322,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     return b;
   };
   const vbHero = mkBtn('Street view', 'hero', 'Three quarter view from the street');
-  const vbFront = mkBtn('Front', 'front', 'Close up of the front of the house');
+  const vbFront = mkBtn('Front', 'front', 'Close up of the front');
   const vbAerial = mkBtn('Aerial', 'aerial', 'The whole lot from above');
   const vbSun = mkBtn('Warm light', 'sun', 'Switch between midday and late afternoon light');
   vbSun.setAttribute('aria-pressed', 'false');

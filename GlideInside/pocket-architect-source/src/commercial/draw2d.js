@@ -8,7 +8,8 @@ import { rowFrame, rowLength, rowPoly } from './layout.js';
 import { bayOffsetMm } from './schema.js';
 import { doorStrips } from './parking.js';
 import { siteAccess } from './access.js';
-import { drawBuildings, buildingExtents } from './catalogue/draw2d.js';
+import { drawBuildings, buildingExtents, drawSiteWorks } from './catalogue/draw2d.js';
+import { siteWorksOf } from './catalogue/buildings.js';
 
 const GOLD = '#c7a256';
 const BLUE = '#1b5fbf';
@@ -57,7 +58,8 @@ export function drawCommercial(ctx, st) {
   const offAll = bayOffsetMm(c.parking); // facade to the near edge of the bays: the truck apron, or the car aisle when that is wider
   const lw = Math.max(1.2, Math.min(3, st.view.scale * 100)); // a 100 mm marking line, never under 1.2 px
   const labels = [];
-  const acc = siteAccess(c, p.site?.lot);
+  drawSiteWorks(ctx, st);
+  const acc = siteWorksOf(c)?.crossovers?.length ? null : siteAccess(c, p.site?.lot);
   if (acc) {
     for (const [poly, alpha] of [[acc.driveway, 0.2], [acc.crossover, 0.3]]) {
       if (!poly) continue;

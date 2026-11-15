@@ -72,8 +72,14 @@ export function fitSummary(c) {
  * apply(project, pose) mutates a copy to show the pose; pose is { x, y, rotation, mirrored }.
  * Returns { setPose, getPose, commit, cancel, preview }.
  */
-export function runPoseSession({ store, editor, host = document.getElementById('ps-stage'), title, apply, initialPose, describe = '', fit = null, commitLabel = 'Place house', commitText = 'Place house', reposeOnLot = null, onDone, onCancel }) {
+export function runPoseSession({ store, editor, host = document.getElementById('ps-stage'), title: title0, apply, initialPose, describe = '', fit = null, commitLabel = 'Place house', commitText = 'Place house', reposeOnLot = null, onDone, onCancel }) {
   injectPoseStyles();
+  // A commercial design places buildings, so the words say building, never house.
+  const COM = store.project.mode === 'commercial';
+  const say = (t) => (COM && typeof t === 'string' ? t.replace(/\bhouse\b/g, 'building').replace(/\bHouse\b/g, 'Building') : t);
+  const title = say(title0);
+  commitText = say(commitText);
+  describe = say(describe);
   store.setUI({ view: planView(store.ui.view), placing: true }); // the frontage panel stays out of the way while a house is placed
   let pose = { rotation: 0, mirrored: false, ...initialPose };
   let preview = null;
@@ -99,16 +105,16 @@ export function runPoseSession({ store, editor, host = document.getElementById('
   });
   const blockLine = h('div', { class: 'pas-block', role: 'alert' });
   const placeBtn = btn(commitText, () => commit(), 'pas-btn--primary');
-  const anywayBtn = btn('Place anyway', () => commit({ anyway: true }), '', { hidden: true, title: 'The house is inside the lot but outside the indicative setback envelope. Council decides.' });
+  const anywayBtn = btn('Place anyway', () => commit({ anyway: true }), '', { hidden: true, title: say('The house is inside the lot but outside the indicative setback envelope. Council decides.') });
   const panel = h('div', { class: 'pas-pose', role: 'group', 'aria-label': title },
     h('div', { class: 'pas-col' },
       h('h3', null, title),
-      h('p', null, describe || 'Drag the house to move it. Drag the gold handle to turn it, Shift for 15 degree steps. Arrow keys nudge 0.5 m (Shift 0.1 m). Q and E turn 15 degrees (Shift 1 degree). Ctrl+Z undoes a move.'),
+      h('p', null, describe || say('Drag the house to move it. Drag the gold handle to turn it, Shift for 15 degree steps. Arrow keys nudge 0.5 m (Shift 0.1 m). Q and E turn 15 degrees (Shift 1 degree). Ctrl+Z undoes a move.')),
       fitBadge),
     h('div', { class: 'pas-col' },
       h('div', { class: 'pas-row' }, btn('↶ 15°', () => turn(-15)), btn('15° ↷', () => turn(15)), btn('↶ 1°', () => turn(-1)), btn('1° ↷', () => turn(1))),
       h('div', { class: 'pas-row' }, btn('Turn 90°', () => turn(90)), mirrorBtn, h('label', { style: { display: 'flex', alignItems: 'center', gap: '4px' } }, rotInput, '°')),
-      h('div', { class: 'pas-row' }, faceBtn)),
+      h('div', { class: 'pas-row' }, COM ? null : faceBtn)),
     h('div', { class: 'pas-col' }, clrList, fitLine, blockLine, driveLine),
     h('div', { class: 'pas-col' }, h('div', { class: 'pas-row pas-end' }, btn('Cancel', () => cancel()), anywayBtn, placeBtn)),
     live);
@@ -138,7 +144,7 @@ export function runPoseSession({ store, editor, host = document.getElementById('
     const over = state.messages.filter((m) => m.kind === 'boundary');
     const env = state.messages.filter((m) => m.kind === 'envelope');
     if (over.length) {
-      blockLine.textContent = `Cannot place here: ${over[0].text}${over.length > 1 ? ` (and ${over.length - 1} more boundary)` : ''} Move the house inside the lot.`;
+      blockLine.textContent = `Cannot place here: ${over[0].text}${over.length > 1 ? ` (and ${over.length - 1} more boundary)` : ''} ${say('Move the house inside the lot.')}`;
       placeBtn.disabled = true;
       anywayBtn.hidden = true;
     } else if (env.length) {
@@ -163,7 +169,7 @@ export function runPoseSession({ store, editor, host = document.getElementById('
     fitLine.textContent = s.state === 'outside' ? '' : s.text;
     fitLine.style.color = s.colour;
     const d = deriveDriveway(preview);
-    driveLine.textContent = d?.ok ? `Driveway ${(d.widthMm / 1000).toFixed(1)} m wide, ${(d.lengthMm / 1000).toFixed(1)} m long to the kerb.` : d?.reason === 'door_faces_away' ? 'The garage door does not face the street.' : '';
+    driveLine.textContent = COM ? '' : d?.ok ? `Driveway ${(d.widthMm / 1000).toFixed(1)} m wide, ${(d.lengthMm / 1000).toFixed(1)} m long to the kerb.` : d?.reason === 'door_faces_away' ? 'The garage door does not face the street.' : '';
   }
 
   function draw() {

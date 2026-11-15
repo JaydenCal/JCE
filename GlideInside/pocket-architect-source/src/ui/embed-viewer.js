@@ -43,7 +43,7 @@ export function postToParent(msg) {
   try { window.parent.postMessage(msg, location.origin); } catch { /* the parent is gone or cross origin */ }
 }
 
-function waitForEnvelope(store, ms = 5000) {
+export function waitForEnvelope(store, ms = 5000) {
   return new Promise((resolve) => {
     const t0 = Date.now();
     const tick = () => {
@@ -198,7 +198,7 @@ export async function placeBestDesign(store, catalogue, wantId = null, { after =
  * Find my block without any dialogs: look the address up, take the first result, load the lot, accept the detected frontage and
  * place the current design. Throws a readable Error when the address is not found.
  */
-export async function loadAddress(store, catalogue, address, { onStep, viewer = false, after = null } = {}) {
+export async function loadAddress(store, catalogue, address, { onStep, viewer = false, after = null, place = true } = {}) {
   const q = String(address || '').trim();
   if (q.length < 3) throw new Error('Type a street address first.');
   const results = await searchAddresses(q, { onRetry: () => onStep?.('busy') });
@@ -207,7 +207,7 @@ export async function loadAddress(store, catalogue, address, { onStep, viewer = 
   const wantId = store.ui.placedDesign?.id || null;
   const { lot, warnings } = await applySiteLookup(store, pick, { onStep });
   confirmFrontage(store, viewer);
-  await placeBestDesign(store, catalogue, wantId, { after });
+  if (place) await placeBestDesign(store, catalogue, wantId, { after });
   return { lot, warnings, pick };
 }
 
