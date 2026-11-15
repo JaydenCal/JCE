@@ -67,6 +67,9 @@ export const FLOW_CSS = `
 .gf-empty{padding:24px;text-align:center;color:var(--gf-muted)}
 .gf-stage{position:relative;border:1px solid var(--gf-border);border-radius:12px;background:#dfe7d6;overflow:hidden;touch-action:none;flex:1;min-height:320px}
 .gf-stage svg{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-select:none}
+.gf-zoom{position:absolute;right:8px;top:8px;display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:calc(100% - 16px);z-index:3}
+.gf-zb{height:30px;min-width:30px;padding:0 9px;border-radius:15px;border:1px solid var(--gf-border,#d3dad4);background:rgba(255,255,255,.94);color:#16211d;font:600 12px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.gf-zb:hover:not(:disabled){border-color:#1b4fd1}.gf-zb:disabled{opacity:.55;cursor:default}
 .gf-stage .gf-house{cursor:grab}
 .gf-stage .gf-house:active{cursor:grabbing}
 .gf-stage .gf-bld{cursor:grab}

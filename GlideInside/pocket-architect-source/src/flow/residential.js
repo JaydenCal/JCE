@@ -89,11 +89,22 @@ function mountPlaceStep(ctx, { getHomes }) {
   let drag = null;
   let aerial = null;
   let busy = false;
+  // Zoom and pan: `view` is the visible box in plan mm (same shape as `box`); null means the whole lot. Aerial on/off is remembered.
+  let view = null;
+  let aerialOn = true;
+  try { aerialOn = localStorage.getItem('gi.flow.aerial') !== '0'; } catch { /* default on */ }
 
   const stage = h('div', { class: 'gf-stage', tabindex: '0', role: 'application', 'aria-label': 'Placement plan. Drag the home to move it. Arrow keys nudge it.', dataset: { ps: 'flow-stage' } });
   const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   stage.append(svg);
+  const zbtn = (label, text, fn, ps, cls = '') => h('button', { class: `gf-zb ${cls}`, type: 'button', 'aria-label': label, title: label, dataset: { ps }, onclick: (e) => { e.stopPropagation(); fn(); } }, text);
+  const aerialBtn = zbtn('Show or hide the aerial photo', 'Aerial: On', () => { aerialOn = !aerialOn; try { localStorage.setItem('gi.flow.aerial', aerialOn ? '1' : '0'); } catch { /* not remembered */ } draw(liveProject || store.project); }, 'flow-aerial-toggle', 'gf-zb--wide');
+  const zoomBar = h('div', { class: 'gf-zoom', role: 'group', 'aria-label': 'Zoom the plan' },
+    zbtn('Zoom in', '+', () => zoomBy(1 / 1.5), 'flow-zoom-in'), zbtn('Zoom out', '\u2212', () => zoomBy(1.5), 'flow-zoom-out'),
+    zbtn('Fit the whole lot', 'Fit lot', () => { view = null; draw(liveProject || store.project); }, 'flow-fit-lot', 'gf-zb--wide'),
+    zbtn('Zoom to the home', 'Zoom to home', () => zoomHome(), 'flow-zoom-home', 'gf-zb--wide'), aerialBtn);
+  stage.append(zoomBar);
   const busyEl = h('div', { class: 'gf-empty', style: { position: 'absolute', inset: '0', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,.6)' }, dataset: { ps: 'flow-placing' }, role: 'status' }, 'Placing your home');
 
   const statusEl = h('div', { class: 'gf-status', role: 'status', 'aria-live': 'polite', dataset: { ps: 'flow-place-status' } });
@@ -124,7 +135,32 @@ function mountPlaceStep(ctx, { getHomes }) {
   // Geometry ---------------------------------------------------------------------------------------------------------------
   let box = null;
   const lotNow = () => lotOf(store.project);
-  const mmPerPx = () => (box ? box.w / Math.max(1, Math.min(stage.clientWidth, stage.clientHeight * (box.w / box.h))) : 1);
+  const vb = () => view || box;
+  const mmPerPx = () => { const b = vb(); return b ? b.w / Math.max(1, Math.min(stage.clientWidth, stage.clientHeight * (b.w / b.h))) : 1; };
+  const clampView = (v) => {
+    const w = Math.min(box.w, Math.max(5000, v.w));
+    const h2 = w * (box.h / box.w);
+    return { x: Math.min(box.x + box.w - w, Math.max(box.x, v.x)), y: Math.min(box.y + box.h - h2, Math.max(box.y, v.y)), w, h: h2 };
+  };
+  function zoomBy(f, at = null) {
+    if (!box) return;
+    const b = vb();
+    const c = at || { x: b.x + b.w / 2, y: b.y + b.h / 2 };
+    const w = Math.min(box.w, Math.max(5000, b.w * f));
+    const k = w / b.w;
+    const next = clampView({ x: c.x - (c.x - b.x) * k, y: c.y - (c.y - b.y) * k, w, h: b.h * k });
+    view = next.w >= box.w - 1 ? null : next;
+    draw(liveProject || store.project);
+  }
+  function zoomHome(frames = 4) {
+    const hl = buildingHull(store.project);
+    if (!box || hl.length < 3) return;
+    const c = houseCentre(store.project);
+    const diag = Math.max(...hl.map((p) => G.dist(p, c))) * 2;
+    const w = Math.min(box.w, Math.max(18000, diag * frames));
+    view = w >= box.w - 1 ? null : clampView({ x: c.x - w / 2, y: c.y - (w * (box.h / box.w)) / 2, w, h: w * (box.h / box.w) });
+    draw(liveProject || store.project);
+  }
   const toMm = (ev) => { const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; const m = svg.getScreenCTM(); return m ? p.matrixTransform(m.inverse()) : { x: 0, y: 0 }; };
 
   const poly = (pts, attrs) => { const e = document.createElementNS(NS, 'polygon'); e.setAttribute('points', pts.map((p) => `${Math.round(p.x)},${Math.round(p.y)}`).join(' ')); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); return e; };
@@ -143,7 +179,10 @@ function mountPlaceStep(ctx, { getHomes }) {
     if (!lot) return;
     liveProject = project;
     if (!box) box = mapBox(lot, { margin: 0.12, roadM: 12 });
-    svg.setAttribute('viewBox', `${Math.round(box.x)} ${Math.round(box.y)} ${Math.round(box.w)} ${Math.round(box.h)}`);
+    const V = vb();
+    svg.setAttribute('viewBox', `${Math.round(V.x)} ${Math.round(V.y)} ${Math.round(V.w)} ${Math.round(V.h)}`);
+    aerialBtn.textContent = aerial?.href ? `Aerial: ${aerialOn ? 'On' : 'Off'}` : 'Aerial: none';
+    aerialBtn.disabled = !aerial?.href;
     const px = mmPerPx();
     const st = placementStatus(project);
     const col = STATUS_COLOUR[st.state] || STATUS_COLOUR.unknown;
@@ -151,7 +190,7 @@ function mountPlaceStep(ctx, { getHomes }) {
     const bg = document.createElementNS(NS, 'rect');
     for (const [k, v] of Object.entries({ x: box.x, y: box.y, width: box.w, height: box.h, fill: '#e3ead9' })) bg.setAttribute(k, v);
     svg.append(bg);
-    if (aerial?.href && aerial.extent) {
+    if (aerialOn && aerial?.href && aerial.extent) {
       const im = document.createElementNS(NS, 'image');
       const e = aerial.extent;
       for (const [k, v] of Object.entries({ href: aerial.href, x: e.x0, y: e.y0, width: e.x1 - e.x0, height: e.y1 - e.y0, preserveAspectRatio: 'none', opacity: '0.85' })) im.setAttribute(k, v);
@@ -204,7 +243,7 @@ function mountPlaceStep(ctx, { getHomes }) {
       handleG.append(dot);
       svg.append(handleG);
     }
-    svg.append(text({ x: box.x + box.w / 2, y: box.y + box.h - 9 * px }, 'Drag the home to move it', 11, { fill: '#3b3f46', opacity: '0.8' }));
+    svg.append(text({ x: V.x + V.w / 2, y: V.y + V.h - 9 * px }, 'Drag the home to move it, scroll to zoom', 11, { fill: '#3b3f46', opacity: '0.8' }));
     paintStatus(st);
   }
 
@@ -237,7 +276,15 @@ function mountPlaceStep(ctx, { getHomes }) {
     if (ev.button != null && ev.button !== 0) return;
     const onHandle = ev.target.closest?.('[data-ps="flow-handle"]');
     const onHouse = ev.target.closest?.('[data-ps="flow-house"]');
-    if (!onHandle && !onHouse) return;
+    if (!onHandle && !onHouse) {
+      // Empty ground: drag to pan (only useful when zoomed in)
+      if (!view) return;
+      ev.preventDefault();
+      stage.setPointerCapture?.(ev.pointerId);
+      const m = svg.getScreenCTM();
+      drag = { mode: 'pan', sx: ev.clientX, sy: ev.clientY, v0: { ...view }, scale: m ? m.a : 1 };
+      return;
+    }
     ev.preventDefault();
     stage.setPointerCapture?.(ev.pointerId);
     const p = toMm(ev);
@@ -248,6 +295,11 @@ function mountPlaceStep(ctx, { getHomes }) {
   };
   const onMove = (ev) => {
     if (!drag) return;
+    if (drag.mode === 'pan') {
+      view = clampView({ ...drag.v0, x: drag.v0.x - (ev.clientX - drag.sx) / drag.scale, y: drag.v0.y - (ev.clientY - drag.sy) / drag.scale });
+      draw(liveProject || store.project);
+      return;
+    }
     const p = toMm(ev);
     const prev = previewCopy(store.project);
     if (drag.mode === 'move') {
@@ -265,11 +317,13 @@ function mountPlaceStep(ctx, { getHomes }) {
   const onUp = () => {
     if (!drag) return;
     const d = drag; drag = null;
+    if (d.mode === 'pan') return;
     if (d.mode === 'move' && (d.dx || d.dy)) { touched = true; nudgeHouse(store, d.dx, d.dy); }
     else if (d.mode === 'turn' && d.deg) { touched = true; handleDeg += d.deg; turnHouse(store, d.deg); }
     else draw();
   };
   svg.addEventListener('pointerdown', onDown);
+  stage.addEventListener('wheel', (e) => { e.preventDefault(); zoomBy(Math.exp(e.deltaY * (e.ctrlKey ? 0.01 : 0.0016)), toMm(e)); }, { passive: false });
   stage.addEventListener('pointermove', onMove);
   stage.addEventListener('pointerup', onUp);
   stage.addEventListener('pointercancel', onUp);
@@ -278,6 +332,9 @@ function mountPlaceStep(ctx, { getHomes }) {
     const k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
     if (k) { e.preventDefault(); touched = true; nudgeHouse(store, k[0] * step, k[1] * step); }
     else if (e.key === 'm' || e.key === 'M') { touched = true; mirrorHouse(store); }
+    else if (e.key === '+' || e.key === '=') { e.preventDefault(); zoomBy(1 / 1.5); }
+    else if (e.key === '-' || e.key === '_') { e.preventDefault(); zoomBy(1.5); }
+    else if (e.key === '[' || e.key === ']') { e.preventDefault(); turn((e.key === '[' ? -1 : 1) * (e.shiftKey ? 15 : 1)); }
     else if (e.key === 'q' || e.key === 'Q') turn(-90);
     else if (e.key === 'e' || e.key === 'E') turn(90);
   });
@@ -310,6 +367,14 @@ function mountPlaceStep(ctx, { getHomes }) {
         try { await placeBest(store, d); } finally { busy = false; busyEl.remove(); }
       }
       draw();
+      // A large lot makes the home a speck: frame the home with the lot around it.
+      try {
+        const hl = buildingHull(store.project);
+        if (box && hl.length >= 3 && !view) {
+          const hb = G.bbox(hl);
+          if (Math.max(box.w, box.h) / Math.max(hb.w, hb.h, 1) > 5) zoomHome();
+        }
+      } catch { /* the whole lot stays in view */ }
       ctx.refresh();
     },
     dispose() { disposed = true; off?.(); ro?.disconnect(); },
