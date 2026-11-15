@@ -107,6 +107,20 @@
       a.setAttribute("href", u.pathname + u.search);
     });
   }
+  // "For the full tool set" tag beside Open full editor: pulses until it is hovered or the editor has been opened once.
+  (function () {
+    var KEY = "gi.editorOpened";
+    var seen = false;
+    try { seen = localStorage.getItem(KEY) === "1"; } catch (e) {}
+    document.querySelectorAll("[data-edit-tag]").forEach(function (tag) {
+      var still = function () { tag.classList.add("is-still"); };
+      if (seen) still();
+      var link = tag.parentNode && tag.parentNode.querySelector(".lh-edit");
+      if (!link) return;
+      link.addEventListener("mouseenter", still); link.addEventListener("focus", still); tag.addEventListener("mouseenter", still);
+      link.addEventListener("click", function () { still(); try { localStorage.setItem(KEY, "1"); } catch (e) {} });
+    });
+  })();
   function openAddress(address, pick) {
     live.last = address; live.lastPick = pick || null; syncEdit();
     try { if (window.gtag) window.gtag("event", "address_search", {}); } catch (e) {}

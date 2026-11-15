@@ -651,6 +651,11 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 .live-hero .lh-bar .lh-fs svg{width:13px;height:13px}
 .live-hero .lh-bar .lh-fs:hover{background:rgba(255,255,255,.18);border-color:#fff}
 .live-hero .lh-bar .lh-edit{margin-left:12px}
+.live-hero .lh-bar .lh-tag{margin-left:8px;flex:none;white-space:nowrap;font-size:11px;font-weight:700;letter-spacing:.02em;color:#16211d;background:#e9b66f;border-radius:999px;padding:3px 10px;animation:lhpulse 1.8s ease-in-out infinite}
+.live-hero .lh-bar .lh-tag.is-still{animation:none}
+@keyframes lhpulse{0%,100%{box-shadow:0 0 0 0 rgba(233,182,111,.65)}50%{box-shadow:0 0 0 7px rgba(233,182,111,0)}}
+@media (prefers-reduced-motion:reduce){.live-hero .lh-bar .lh-tag{animation:none}}
+@media(max-width:560px){.live-hero .lh-bar .lh-tag{display:none}}
 .live-hero .lh-exit{display:none}
 .lh-stage:fullscreen{height:100%;width:100%;background:#0d1627}
 .lh-stage:-webkit-full-screen{height:100%;width:100%;background:#0d1627}
