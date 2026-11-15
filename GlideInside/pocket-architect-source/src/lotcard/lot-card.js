@@ -72,7 +72,13 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const more = h('button', { class: 'lc-more', type: 'button', 'aria-expanded': 'false', onclick: () => { card.classList.toggle('is-open'); more.setAttribute('aria-expanded', String(card.classList.contains('is-open'))); sizeInset(); } }, 'Details');
   const tabsEl = E('lc-tabs', 'div', { role: 'tablist', 'aria-label': 'Rooms', dataset: { ps: 'lc-tabs' } });
   const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-sp lc-sp-rooms', 'div', null, E('lc-k', 'span', null, 'Rooms'), tabsEl), E('lc-acts', 'div', null, bWalk, bEdit, E('lc-links', 'span', null, bPdf, E('lc-dotsep', 'span', { 'aria-hidden': 'true' }, '\u00b7'), bPdfH)), sendRow, fit, zoneNote);
-  const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more), body);
+  const MINK = 'ps.lotcard.min';
+  let isMin = false; try { isMin = localStorage.getItem(MINK) === '1'; } catch { isMin = false; }
+  const minBtn = h('button', { class: 'lc-min', type: 'button', dataset: { ps: 'lc-minimise' }, onclick: () => { isMin = !card.classList.contains('is-min'); card.classList.toggle('is-min', isMin); paintMin(); try { localStorage.setItem(MINK, isMin ? '1' : '0'); } catch { /* storage blocked */ } try { sizeInset(); } catch { /* not ready */ } } });
+  const paintMin = () => { minBtn.textContent = isMin ? '+' : '\u2212'; minBtn.setAttribute('aria-label', isMin ? 'Expand the design card' : 'Minimise the design card'); minBtn.title = isMin ? 'Expand' : 'Minimise'; minBtn.setAttribute('aria-expanded', String(!isMin)); };
+  const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more, minBtn), body);
+  if (isMin) card.classList.add('is-min');
+  paintMin();
 
   const pgP = h('button', { type: 'button', 'aria-label': 'Previous design', onclick: () => step(-1) }, '‹');
   const pgN = h('button', { type: 'button', 'aria-label': 'Next design', onclick: () => step(1) }, '›');
