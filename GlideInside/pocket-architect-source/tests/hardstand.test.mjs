@@ -24,6 +24,8 @@ import { commercialScene } from '../src/commercial/topview-scene.js';
 import { sceneInner, fitView } from '../src/lotcard/topview.js';
 import { TOOL_DEFS, KEY_TO_TOOL } from '../src/editor2d/tools-meta.js';
 import { setTool } from '../src/ui/toolstate.js';
+import { chooseBuilding } from '../src/commercial/catalogue/fit.js';
+import { applyBuildingChoice, rerunSiteLayout } from '../src/commercial/catalogue/ops.js';
 import { exportPlanSet } from '../src/premium/exporters/planset/index.js';
 
 const here = dirname(new URL(import.meta.url).pathname);
@@ -618,4 +620,29 @@ test('wording: the new files have no dashes, no "compliant" and no Pocket Archit
     assert.ok(!/pocket architect/i.test(t), `${f} names the old product`);
   }
   assert.ok(readdirSync(join(here, '../src/commercial/ui')).includes('hardstand-controller.js'));
+});
+
+test('auto car park layout: hand drawn hardstand survives "Re-run car park layout", the generated paving is rebuilt around it', () => {
+  const store = createStore(commercialProject({ width: 65000, depth: 90000, rows: 'none' }));
+  applyBuildingChoice(store, chooseBuilding(store.project, 'warehouse'));
+  const lot = lotOf(store.project);
+  const before = pavementModel(store.project.commercial, store.project.site.lot);
+  assert.ok(before.areas.some((a) => a.id.startsWith('sw:')), 'the auto layout produced paving');
+  const drawn = R(1000, 1000, 6000, 6000);
+  store.apply('Draw hardstand', (p) => { addHardstand(p.commercial, { type: 'concrete-heavy', polygon: drawn, lot }); });
+  const n = hardstandList(store.project.commercial).length;
+  assert.equal(n, 1);
+  rerunSiteLayout(store);
+  assert.equal(hardstandList(store.project.commercial).length, n, 'the drawn area is kept');
+  const after = pavementModel(store.project.commercial, store.project.site.lot);
+  assert.ok(after.areas.some((a) => a.id.startsWith('sw:')), 'the generated paving is back');
+  assert.ok(after.areas.some((a) => a.role === 'hardstand'), 'and the drawn area is still in the model');
+});
+
+test('profile prompt: closes on Not now, the X and Escape, and stays suppressed for the session', () => {
+  const src = readFileSync(join(here, '../src/profile/ui.js'), 'utf8');
+  assert.match(src, /key !== 'Escape'/);
+  assert.match(src, /removeEventListener\('keydown', onPromptKey/);
+  assert.match(src, /aria-label': 'Not now'[^\n]*notNow\(\)/);
+  assert.match(src, /data-action|action: 'prompt-notnow'[^\n]*notNow\(\)/);
 });

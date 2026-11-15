@@ -145,7 +145,8 @@ export function measure(p, { value = false } = {}) {
   const acc = st.parking.accessible;
   const parking = { required, provided, unitsRequired: required - (st.parking.buildingRequired || 0), accessible: { required: acc.required, provided: acc.provided }, ratePerM2: st.parking.ratePerM2 };
   const needBays = Number(p.__parkingMin) || 0;
-  if (units.length + live.length && provided < required) issues.push(`Bays shown (${provided}) are fewer than the ${required} indicated`);
+  // With buildings the bays come from the automatic site layout, which reports a shortfall itself (a warning on the check step), so it is not a placement fault here.
+  if (units.length + live.length && provided < required && !(live.length && p.commercial?.siteWorks)) issues.push(`Bays shown (${provided}) are fewer than the ${required} indicated`);
   if (provided < needBays) issues.push(`Bays shown (${provided}) are fewer than the ${needBays} asked for`);
   if (acc.required > 0 && acc.provided < acc.required) issues.push(`Accessible bays ${acc.provided} of ${acc.required}`);
   const out = {

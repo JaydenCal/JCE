@@ -194,6 +194,7 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
 
   // The prompt (non blocking) --------------------------------------------------------------------------------------------------
   function closePrompt() {
+    document.removeEventListener('keydown', onPromptKey, true);
     prompt?.remove();
     prompt = null;
     policy.closed();
@@ -211,8 +212,17 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
         h('button', { class: 'ps-btn', type: 'button', dataset: { action: 'prompt-signin' }, onclick: () => { closePrompt(); openAuth('signin'); } }, 'Sign in'),
         h('button', { class: 'ps-btn ps-btn--ghost', type: 'button', dataset: { action: 'prompt-notnow' }, onclick: () => notNow() }, 'Not now')));
     (refs.shell || document.body).append(prompt);
+    document.addEventListener('keydown', onPromptKey, true);
+  }
+  // Escape closes the prompt like Not now (unless a dialog is open on top of it, which takes Escape for itself).
+  function onPromptKey(e) {
+    if (e.key !== 'Escape') return;
+    if (!prompt) { document.removeEventListener('keydown', onPromptKey, true); return; }
+    if (document.querySelector('.ps-modal')) return;
+    notNow();
   }
   function notNow() {
+    document.removeEventListener('keydown', onPromptKey, true);
     prompt?.remove();
     prompt = null;
     policy.dismiss();

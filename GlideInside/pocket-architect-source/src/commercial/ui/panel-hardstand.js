@@ -51,7 +51,7 @@ export function hardstandPanel(ctx) {
     root.append(h('div', { class: 'ps-sec' }, h('div', { class: 'ps-sec-title' }, 'Pavement type'), typeSelect(),
       t ? h('p', { class: 'ps-hint', style: { margin: '6px 0 0' } }, `${t.where}. Make-up ${makeUpShort(t.id)}, indicative.`) : null));
     root.append(h('p', { class: 'ps-hint', dataset: { ps: 'hardstand-hint' } }, modeDef(hsState.mode).hint));
-    root.append(h('p', { class: 'ps-hint' }, 'Snaps to the lot boundary, setbacks, building edges, existing pavement and a 0.5 m grid. Hold Alt to turn snapping off. Areas are cut off at the lot boundary; one that crosses a building is flagged but not blocked.'));
+    root.append(h('p', { class: 'ps-hint' }, 'Snaps to the lot boundary, setbacks, building edges, existing pavement and a 0.5 m grid. Hold Alt to turn snapping off. Areas are cut off at the lot boundary; one that crosses a building is flagged but not blocked. Areas you draw are kept when the car park layout is re-run.'));
 
     // Selected area
     const picked = ctl()?.selectedArea?.() || sum.drawn.find((d) => d.id === hsState.selected) || null;

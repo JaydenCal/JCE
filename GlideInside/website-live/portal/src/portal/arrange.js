@@ -71,9 +71,10 @@ export function fitStartPose(project) {
 }
 
 export function startArrange({ store, editor, host = document.getElementById('ps-stage'), onDone, onCancel } = {}) {
-  if (!lotOf(store.project)) throw new Error('Find your block first: there is no lot to arrange the house on.');
+  const COM = store.project.mode === 'commercial';
+  if (!lotOf(store.project)) throw new Error(COM ? 'Find your lot first: there is no lot to arrange the buildings on.' : 'Find your block first: there is no lot to arrange the house on.');
   return runPoseSession({
-    store, editor, host, title: 'Arrange house on lot', commitLabel: 'Arrange house on lot', commitText: 'Done',
+    store, editor, host, title: COM ? 'Arrange buildings on lot' : 'Arrange house on lot', commitLabel: COM ? 'Arrange buildings on lot' : 'Arrange house on lot', commitText: 'Done',
     initialPose: fitStartPose(store.project),
     apply: (p, pose) => arrangeApply(p, pose), onDone, onCancel,
   });

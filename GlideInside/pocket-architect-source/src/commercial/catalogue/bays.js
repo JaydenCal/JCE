@@ -2,7 +2,7 @@
 // from its front edge, back to back pairs of rows when one row is not enough, accessible bays with a shared zone beside them. NOT the full
 // parking design. Bays sit at offsetMm in front of the front edge, i.e. at local y = -offsetMm and beyond (the street is toward -y).
 
-import { buildingsOf } from './buildings.js';
+import { buildingsOf, siteWorksOf } from './buildings.js';
 import { frameOf, toWorld } from './frame.js';
 import { accessibleRequired, ACCESSIBLE_BAY } from '../rules.js';
 
@@ -33,6 +33,14 @@ export function bayZone(b, parking) {
  * totalBays, required, accessible: { required, provided }, perBuilding: [{ id, required, provided }] }. Bays needed are rounded up once per building.
  */
 export function buildingParking(c) {
+  const sw = siteWorksOf(c);
+  if (sw?.bayRows && c?.parking?.enabled !== false && c.buildings?.length) {
+    const sm = sw.summary || {};
+    return {
+      rows: sw.bayRows, totalBays: sm.provided || 0, slotsTotal: sw.bayRows.reduce((n, r) => n + r.slots.length, 0), required: sm.required || 0,
+      accessible: { required: sm.accessibleRequired || 0, provided: sm.accessibleProvided || 0 }, perBuilding: sm.perBuilding || [], siteWorks: true,
+    };
+  }
   const empty = { rows: [], totalBays: 0, required: 0, accessible: { required: 0, provided: 0 }, perBuilding: [], slotsTotal: 0 };
   if (!c?.buildings?.length || c.parking?.enabled === false) return { ...empty, required: c?.buildings?.length ? sumRequired(c) : 0 };
   const { bayW, bayL, aisleMm } = c.parking;

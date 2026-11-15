@@ -34,6 +34,13 @@ export function createToolbox(el, store, { onWheel } = {}) {
     }
   });
 
+  // Commercial only: add another building from the type picker (amenities block, office, warehouse, workshop, canopy, car wash, shed, kiosk ...).
+  const addBld = h('button', {
+    class: 'ps-tool ps-tool--add', type: 'button', title: 'Add building', 'aria-label': 'Add building', hidden: true, dataset: { action: 'add-building-tool' },
+    onclick: () => { import('../commercial/ui/add-building.js').then((m) => m.openAddBuilding({ store })); },
+  }, icon('plus', { size: 22 }), h('span', { class: 'ps-tool-key', 'aria-hidden': 'true' }, '+'));
+  el.append(addBld);
+
   if (onWheel) {
     el.append(h('button', {
       class: 'ps-tool ps-tool--wheel', type: 'button', title: 'Inventory wheel (hold Q)', 'aria-label': 'Inventory wheel', 'aria-keyshortcuts': 'Q', dataset: { action: 'wheel' },
@@ -46,6 +53,7 @@ export function createToolbox(el, store, { onWheel } = {}) {
 
   function sync() {
     const tool = store.ui.tool;
+    addBld.hidden = store.project?.mode !== 'commercial';
     for (const def of TOOL_DEFS) {
       const comm = store.project?.mode === 'commercial';
       const on = def.id === tool || !!def.family?.includes(tool) || (comm && def.id === 'movehouse' && tool === 'commercial');
@@ -53,7 +61,7 @@ export function createToolbox(el, store, { onWheel } = {}) {
       btn?.setAttribute('aria-pressed', String(on));
       if (def.commercialOnly && btn) btn.hidden = !comm; // Hardstand is drawn in commercial layouts only
       if (def.id === 'movehouse' && btn) {
-        const label = comm ? 'Move units' : def.label;
+        const label = comm ? 'Move buildings' : def.label;
         btn.title = `${label} (${def.key})`;
         btn.setAttribute('aria-label', label);
       }

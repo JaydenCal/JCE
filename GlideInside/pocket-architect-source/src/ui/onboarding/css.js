@@ -33,8 +33,9 @@ body:has(.ps-scrim) .pso-layer { visibility: hidden; }
 .pso-hint[data-side="right"]::before, .pso-hint[data-side="left"]::before { content: ''; position: absolute; top: calc(50% - 6px); width: 10px; height: 10px; background: var(--ps-panel); border: 1px solid var(--ps-border-strong); transform: rotate(45deg); }
 .pso-hint[data-side="right"]::before { left: -6px; border-right: 0; border-top: 0; }
 .pso-hint[data-side="left"]::before { right: -6px; border-left: 0; border-bottom: 0; }
-.pso-dock { position: absolute; left: 12px; bottom: 56px; z-index: 8; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-family: var(--ps-font-ui); }
+.pso-dock { position: absolute; left: 12px; bottom: 88px; z-index: 8; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-family: var(--ps-font-ui); }
 .pso-dock--fixed { position: fixed; z-index: 800; }
+.ps-stage:has(.gf-backpill:not([hidden])) .pso-dock { bottom: 136px; }
 .pso-pill { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px 0 8px; font: inherit; font-size: 12.5px; font-weight: 500; color: var(--ps-text); background: var(--ps-panel); border: 1px solid var(--ps-border-strong); border-radius: 999px; cursor: pointer; box-shadow: 0 1px 3px rgba(14, 28, 50, .15); }
 .pso-pill:hover { background: var(--ps-hover); }
 .pso-pill .pso-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ps-ok); }

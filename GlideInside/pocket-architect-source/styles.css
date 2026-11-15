@@ -1035,7 +1035,8 @@ svg { display: block; }
   .cm-cell b { font-size: 14px; }
   .cm-cell i { font-size: 10px; max-width: 110px; }
   .ps-stage[data-commercial="1"] .ps-credit { bottom: 62px; }
-  .ps-stage[data-commercial="1"] .pso-dock { bottom: 62px; }
+  .ps-stage[data-commercial="1"] .pso-dock { bottom: 94px; }
+  .ps-stage[data-commercial="1"]:has(.gf-backpill:not([hidden])) .pso-dock { bottom: 142px; }
   .ps-stage[data-commercial="1"][data-sheet="open"] .pso-dock, .ps-stage[data-commercial="1"][data-sheet="open"] .ps-credit { display: none; }
 }
 

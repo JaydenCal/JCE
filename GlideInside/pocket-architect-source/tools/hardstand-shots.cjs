@@ -52,6 +52,8 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
   await page.waitForTimeout(1500);
   await page.evaluate((s) => { window.__ps.replaceProject(JSON.parse(s)); window.__ps.store.setUI({ view: '2d' }); }, FIX['commercial.json']);
   await page.waitForTimeout(700);
+  await page.getByText('Skip to editor').click({ timeout: 5000 }).catch(() => {}); // the guided flow covers the plan
+  await page.waitForTimeout(700);
   // Frame the free ground east of the units (plan mm), then arm the Hardstand tool with the P key.
   await page.evaluate(() => {
     const ed = window.__ps.editor; const r = ed.element.getBoundingClientRect();
@@ -60,7 +62,7 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
     const scale = Math.min(w / (b.x1 - b.x0), h / (b.y1 - b.y0));
     ed.setView({ scale, ox: left + pad - b.x0 * scale, oy: pad - b.y0 * scale });
   });
-  await page.getByRole('button', { name: 'Not now' }).click({ timeout: 3000 }).catch(() => {});
+  await page.locator('[data-action="prompt-notnow"]').click({ timeout: 3000 }).catch(() => {});
   await page.locator('canvas.ps-plan-canvas').click({ position: { x: 5, y: 5 } }).catch(() => {});
   await page.keyboard.press('p'); await page.waitForTimeout(400);
   const px = (p) => page.evaluate((q) => { const ed = window.__ps.editor; const v = ed.getView(); const r = document.querySelector('canvas.ps-plan-canvas').getBoundingClientRect(); return { x: r.left + q.x * v.scale + v.ox, y: r.top + q.y * v.scale + v.oy }; }, p);
