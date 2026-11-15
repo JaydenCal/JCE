@@ -163,7 +163,7 @@ test('the spec is kept by the schema and the edit is one undo step', () => {
 });
 
 test('wording: caveat, GST note, no dashes, no compliant, no builder brands, DD/MM/YYYY dates', () => {
-  assert.equal(CAVEAT, 'Indicative only, not a valuation. Figures from portal listings and published reports, check with a registered valuer and quantity surveyor.');
+  assert.equal(CAVEAT, 'Estimates only, not a valuation. Enter your own values in any field. Defaults come from portal listings and published reports; check with a registered valuer and quantity surveyor before relying on them.');
   const f = feasibility(p.commercial, p.site.lot);
   const all = [CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT, ...summaryRows(f).flat(), ...costRows(f).flat(), ...Object.values(f.inputs).flatMap((i) => [i.chip, i.note || ''])].join('\n');
   assert.doesNotMatch(all, /[–—]/);

@@ -19,7 +19,7 @@ import { buildingCost } from './catalogue/rates.js';
 export const DATA_DATE = '13/11/2026';
 export const MIN_N = 4; // portal medians from fewer listings than this are weak evidence and are not used
 export const SMALL_UNIT_M2 = 400; // the ranges target 100 to 400 m2 strata units
-export const CAVEAT = 'Indicative only, not a valuation. Figures from portal listings and published reports, check with a registered valuer and quantity surveyor.';
+export const CAVEAT = 'Estimates only, not a valuation. Enter your own values in any field. Defaults come from portal listings and published reports; check with a registered valuer and quantity surveyor before relying on them.';
 export const GST_NOTE = 'All figures are ex GST.';
 export const RENT_NOTE = 'Gross rent less outgoings gives net rent, which is capitalised at the net yield. Mezzanine floor area is valued at a fraction of the ground floor rate. Stamp duty, finance, holding costs and infrastructure contributions are not included.';
 export const SOURCES_TEXT = `Sale and rent rates: commercialrealestate.com.au Factory, Warehouse and Industrial listings and sold statistics, read ${DATA_DATE}. Yields, land values and build costs: published ranges from cost guides and industry reports, mostly analyst estimates, ${DATA_DATE}.`;

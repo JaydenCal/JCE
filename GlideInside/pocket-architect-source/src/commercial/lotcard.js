@@ -386,7 +386,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
       h('h4', null, 'Cost build up'),
       ...costRows(f).map(([k, v]) => h('div', { class: 'cc-line' }, h('span', null, k), h('b', null, v))),
       h('p', { class: 'cc-note' }, `${GST_NOTE} ${RENT_NOTE} ${SOURCES_TEXT}`),
-      h('button', { class: 'lc-btn', type: 'button', onclick: () => { closePanel(); (onEdit || (() => store.setUI({ view: '2d' })))(); } }, `${CUSTOMISE_LABEL} to change these inputs`));
+      h('button', { class: 'lc-btn', type: 'button', onclick: () => { closePanel(); (onEdit || (() => store.setUI({ view: '2d' })))(); } }, 'Enter your own values'));
   }
 
   // Rendering ------------------------------------------------------------------------------------------------------------------
