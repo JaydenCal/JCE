@@ -22,17 +22,17 @@ export const COMMERCIAL_CARD_CSS = `
 .cc-root .lc-sp-rooms .lc-k{padding-top:6px}
 .cc-root .lc-tabs{gap:6px;flex-wrap:wrap}
 .cc-fits .lc-fit[hidden]{display:none}
-.lc-embed:not(.is-compact).cc-root .lc-card{width:clamp(400px,calc(50% - 168px),600px)}
+.lc-embed:not(.is-compact).cc-root .lc-card{width:var(--cc-w,380px)}
 .cc-root .lc-pager{height:50px;border-radius:25px}
 .cc-pgt{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0!important;max-width:none!important;flex:1;padding:0 4px;text-transform:none!important;letter-spacing:0!important;cursor:pointer}
 .cc-pgt i{font:500 9.5px/1 var(--lc-sans);font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:var(--lc-t2)}
 .cc-pgt b{font:500 12.5px/1.2 var(--lc-sans);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cc-root .lc-pager button.cc-pgt{width:auto;height:auto;border-radius:12px;line-height:1.2}
-.lc-embed:not(.is-compact).cc-root .lc-pager{left:calc(clamp(400px,calc(50% - 168px),600px) + 28px);right:auto;transform:none;width:auto;min-width:300px;max-width:calc(100% - clamp(400px,calc(50% - 168px),600px) - min(18%,200px) - 64px);justify-content:space-between}
+.lc-embed:not(.is-compact).cc-root .lc-pager{left:calc(var(--cc-w,380px) + 28px);right:auto;transform:none;width:auto;min-width:300px;max-width:calc(100% - var(--cc-w,380px) - min(18%,200px) - 64px);justify-content:space-between}
 .cc-root.is-compact .lc-pager{height:46px;left:12px;right:auto;max-width:calc(100% - 24px);min-width:0}
 .cc-root.is-compact .cc-pgt b{font-size:11.5px}
 .cc-typebar{position:absolute;z-index:2;display:flex;align-items:center;height:46px;border-radius:23px;padding:0 6px 0 4px}
-.lc-embed:not(.is-compact).cc-root .cc-typebar{left:calc(clamp(400px,calc(50% - 168px),600px) + 28px);bottom:84px;min-width:300px}
+.lc-embed:not(.is-compact).cc-root .cc-typebar{left:calc(var(--cc-w,380px) + 28px);bottom:84px;min-width:300px}
 .cc-root.is-compact .cc-typebar{left:12px;bottom:calc(var(--lc-card-h, 100px) + 66px);height:42px}
 .cc-tyb{display:flex;align-items:center;gap:10px;width:100%;padding:0 10px;height:100%;border-radius:20px;text-align:left;cursor:pointer}
 .cc-tyb:hover{background:rgba(255,255,255,.1)}
@@ -74,10 +74,25 @@ export const COMMERCIAL_CARD_CSS = `
 .cc-root.is-phone .lc-tabs{gap:4px}
 .cc-root.is-phone .cc-feas{padding:6px 10px}
 .cc-root.is-phone .cc-feas-t b{font-size:16px}
-.lc-embed:not(.is-compact).cc-root .cc-panel{left:calc(clamp(400px,calc(50% - 168px),600px) + 28px);transform:none;width:min(500px,calc(100% - clamp(400px,calc(50% - 168px),600px) - 260px));min-width:380px;max-height:calc(100% - 190px)}
+.lc-embed:not(.is-compact).cc-root .cc-panel{left:calc(var(--cc-w,380px) + 28px);transform:none;width:min(500px,calc(100% - var(--cc-w,380px) - 260px));min-width:380px;max-height:calc(100% - 190px)}
 .cc-root.is-compact .cc-panel{top:104px;max-height:calc(100% - 300px)}
 .cc-panel td:nth-child(2){white-space:nowrap}
 .cc-root.is-phone .cc-panel{padding:14px 12px}
 .cc-root.is-phone .cc-panel :is(td,th){padding:6px 4px;font-size:11.5px;white-space:nowrap}
 .cc-root.is-phone .cc-line{font-size:12px}
+
+/* Compact card and minimise (owner 15/11/2026: the commercial card covered the view) */
+.cc-root{--cc-w:min(380px,calc(50% - 40px))}
+.cc-root .cc-feas{margin:2px 0 6px;padding:6px 10px;gap:8px}
+.cc-root .cc-feas-t{font-size:11.5px}
+.cc-root .cc-feas-t b{font-size:16px}
+.cc-root .cc-feas .lc-btn{height:28px;font-size:11.5px;padding:0 12px!important}
+.cc-root .lc-card:not(.is-open) .cc-summary{display:none}
+.cc-root .cc-summary{font-size:11px}
+.cc-root .lc-tab{height:28px;padding:0 10px!important;font-size:11.5px}
+.cc-root .lc-sp .lc-k{width:58px}
+.cc-root .lc-zone{font-size:11px;padding:6px 10px;margin-top:6px}
+.cc-fits{margin:4px 0 10px}
+.cc-root .lc-fit{font-size:11px}
+.cc-root .lc-card.is-min,.lc-embed:not(.is-compact).cc-root .lc-card.is-min{width:max-content!important;min-width:220px}
 `;

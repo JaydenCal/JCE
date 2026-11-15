@@ -96,7 +96,13 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     E('lc-sp lc-sp-rooms', 'div', null, E('lc-k', 'span', null, 'Views'), viewsEl),
     E('lc-acts', 'div', null, bPlan, bEdit),
     sendRow, zoneNote, fits);
-  const card = E('lc-card lc-glass', 'section', { 'aria-label': 'Commercial layout', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more), body);
+  const MINK = 'ps.cccard.min';
+  let isMin = false; try { isMin = localStorage.getItem(MINK) === '1'; } catch { isMin = false; }
+  const minBtn = h('button', { class: 'lc-min', type: 'button', dataset: { ps: 'lc-minimise' }, onclick: () => { isMin = !card.classList.contains('is-min'); card.classList.toggle('is-min', isMin); paintMin(); try { localStorage.setItem(MINK, isMin ? '1' : '0'); } catch { /* storage blocked */ } try { sizeInset(); } catch { /* not ready */ } } });
+  const paintMin = () => { minBtn.textContent = isMin ? '+' : '\u2212'; minBtn.setAttribute('aria-label', isMin ? 'Expand the layout card' : 'Minimise the layout card'); minBtn.title = isMin ? 'Expand' : 'Minimise'; minBtn.setAttribute('aria-expanded', String(!isMin)); };
+  const card = E('lc-card lc-glass', 'section', { 'aria-label': 'Commercial layout', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more, minBtn), body);
+  if (isMin) card.classList.add('is-min');
+  paintMin();
 
   // The layout switcher: arrows and the name, which opens the list of every layout.
   const pgP = h('button', { type: 'button', 'aria-label': 'Previous layout', onclick: () => step(-1) }, '‹');
