@@ -678,6 +678,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
 
   function frameCamera(animate, kind = null) {
     clearRoomTurntable();
+    if (edit.items.selected()) store.select(null); // an exterior view never keeps furniture selected
     const hasLot = !!store.project.site?.lot?.boundary?.length;
     lastKind = kind;
     userMoved = false;
@@ -794,6 +795,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     }
     if (hit.kind === 'furniture' || hit.kind === 'stair' || hit.kind === 'tank') {
       picker.close();
+      // Furniture inside the house is only selectable from inside: a room view (turntable or cutaway), never the aerial or another exterior view.
+      if (hit.kind === 'furniture' && !(turntable || api.inCutaway?.())) { if (selectedAnItem()) store.select(null); return; }
       store.select(hit.id);
       return;
     }
