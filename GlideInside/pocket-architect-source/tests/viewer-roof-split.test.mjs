@@ -33,7 +33,7 @@ test('large Roof off / Roof on button on the 3D views: 44 px, labelled, pressed 
   assert.match(v, /mkBtn\('Roof off', 'roof'/);
   assert.match(v, /'Roof on' : 'Roof off'/);
   assert.match(v, /setAttribute\('aria-pressed', String\(hidden\)\)/);
-  assert.match(v, /viewBar\.append\(vbHero, vbFront, vbAerial, vbSun, vbRoof\)/);
+  assert.match(v, /viewBar\.append\(vbHero, vbFront, vbAerial, vbBuilding, vbDev, vbSun, vbRoof\)/);
   assert.match(v, /'showRoof' in patch\) syncRoofBtn\(\)/);
   assert.match(read('../src/viewer3d/viewer-css.js'), /\.ps3d-chip--roof\{[^}]*min-height:44px/);
 });
