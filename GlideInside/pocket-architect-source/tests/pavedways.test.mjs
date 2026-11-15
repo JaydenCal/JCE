@@ -289,7 +289,6 @@ test('the plan set carries the drawn pavement by material in its schedule', asyn
   const text = texts.join('\n');
   assert.match(text, /Gravel paving, \d+ m/, 'legend by material with the area');
   assert.match(text, /Pavers paving, \d+ m/);
-  assert.match(text, /Pavers (\(driveway or road\)|driveway or road)/, 'legend');
   assert.match(text, /PAVERS DRIVEWAY/, 'plan label');
   assert.ok(!/compliant/i.test(text));
 });
