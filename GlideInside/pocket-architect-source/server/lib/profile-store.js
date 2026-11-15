@@ -4,7 +4,7 @@
 const PROFILE_COLS = {
   id: 'id', email: 'email', name: 'name', phone: 'phone', postcode: 'postcode', role: 'role', passwordHash: 'password_hash',
   termsVersion: 'terms_version', termsAcceptedAt: 'terms_accepted_at', marketingConsent: 'marketing_consent:b', marketingConsentAt: 'marketing_consent_at',
-  marketingTextVersion: 'marketing_text_version', unsubscribed: 'unsubscribed:b', unsubscribedAt: 'unsubscribed_at', lastSignInAt: 'last_sign_in_at',
+  marketingTextVersion: 'marketing_text_version', marketingConsentVerified: 'marketing_consent_verified:b', unsubscribed: 'unsubscribed:b', unsubscribedAt: 'unsubscribed_at', lastSignInAt: 'last_sign_in_at',
   createdAt: 'created_at', updatedAt: 'updated_at',
 };
 const DESIGN_COLS = {
@@ -59,6 +59,18 @@ export function createD1ProfileStore(db) {
       await run('DELETE FROM profile_consent_events WHERE profile_id = ?1', id);
       await run('DELETE FROM profile_packs WHERE profile_id = ?1', id);
       return changed(await run('DELETE FROM profiles WHERE id = ?1', id));
+    },
+    /**
+     * L6: copy the profile's consent events into the anonymised archive (salted hash of the address instead of the profile id and email) plus one
+     * closing row that records the final state, BEFORE the profile is deleted. Spam Act 2003 consent and unsubscribe evidence outlives the account.
+     */
+    async archiveConsent({ profileId, emailHash, archivedAt, finalConsent, newId }) {
+      await run(`INSERT INTO consent_archive (id, email_hash, at, consent, text_version, source, archived_at)
+        SELECT ?3 || id, ?2, at, consent, text_version, source, ?4 FROM profile_consent_events WHERE profile_id = ?1`, profileId, emailHash, 'ca_', archivedAt);
+      await run('INSERT INTO consent_archive (id, email_hash, at, consent, text_version, source, archived_at) VALUES (?1, ?2, ?3, ?4, NULL, ?5, ?3)', newId, emailHash, archivedAt, finalConsent ? 1 : 0, 'account_deleted');
+    },
+    async purgeConsentArchive(olderThanIso) {
+      await run('DELETE FROM consent_archive WHERE archived_at < ?1', olderThanIso);
     },
     async addConsentEvent(e) {
       await run('INSERT INTO profile_consent_events (id, profile_id, at, consent, text_version, text, source) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)', e.id, e.profileId, e.at, e.consent ? 1 : 0, e.textVersion ?? null, e.text ?? null, e.source);
@@ -118,7 +130,7 @@ export function createD1ProfileStore(db) {
 
 // In memory (tests, development) ----------------------------------------------------------------------------------------
 export function createMemoryProfileStore() {
-  const T = { profiles: new Map(), sessions: new Map(), consent: [], designs: new Map(), packs: [] };
+  const T = { profiles: new Map(), sessions: new Map(), consent: [], designs: new Map(), packs: [], archive: [] };
   const cp = (o) => (o == null ? null : structuredClone(o));
   const noJson = (d) => {
     const c = cp(d);
@@ -130,7 +142,7 @@ export function createMemoryProfileStore() {
     _tables: T,
     async createProfile(p) {
       if ([...T.profiles.values()].some((x) => x.email === p.email) || T.profiles.has(p.id)) return false;
-      T.profiles.set(p.id, { phone: null, postcode: null, role: null, marketingConsent: false, marketingConsentAt: null, marketingTextVersion: null, unsubscribed: false, unsubscribedAt: null, lastSignInAt: null, ...cp(p) });
+      T.profiles.set(p.id, { phone: null, postcode: null, role: null, marketingConsent: false, marketingConsentAt: null, marketingTextVersion: null, marketingConsentVerified: false, unsubscribed: false, unsubscribedAt: null, lastSignInAt: null, ...cp(p) });
       return true;
     },
     getProfile: async (id) => cp(T.profiles.get(id)),
@@ -147,6 +159,13 @@ export function createMemoryProfileStore() {
       T.consent = T.consent.filter((e) => e.profileId !== id);
       T.packs = T.packs.filter((p) => p.profileId !== id);
       return T.profiles.delete(id);
+    },
+    async archiveConsent({ profileId, emailHash, archivedAt, finalConsent, newId }) {
+      for (const e of T.consent) if (e.profileId === profileId) T.archive.push({ id: `ca_${e.id}`, emailHash, at: e.at, consent: !!e.consent, textVersion: e.textVersion ?? null, source: e.source, archivedAt });
+      T.archive.push({ id: newId, emailHash, at: archivedAt, consent: !!finalConsent, textVersion: null, source: 'account_deleted', archivedAt });
+    },
+    async purgeConsentArchive(olderThanIso) {
+      T.archive = T.archive.filter((r) => r.archivedAt >= olderThanIso);
     },
     async addConsentEvent(e) {
       T.consent.push(cp({ ...e, consent: !!e.consent }));

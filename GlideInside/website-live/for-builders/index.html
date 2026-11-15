@@ -268,17 +268,11 @@
     <div class="trial-wrap">
       <form id="trial-form" class="trial-form" novalidate autocomplete="on">
       <div class="trial-grid">
-        <label class="tf wide"><span class="tl">Company name <span class="req">*</span></span><input name="companyLegalName" type="text" maxlength="120" required autocomplete="organization"></label>
-        <label class="tf"><span class="tl">ABN <span class="req">*</span></span><input name="abn" type="text" inputmode="numeric" maxlength="14" required placeholder="11 digits"></label>
-        <label class="tf">Trading name <small>(if different)</small><input name="tradingName" type="text" maxlength="120"></label>
-        <label class="tf"><span class="tl">First name <span class="req">*</span></span><input name="firstName" type="text" maxlength="60" required autocomplete="given-name"></label>
-        <label class="tf"><span class="tl">Last name <span class="req">*</span></span><input name="lastName" type="text" maxlength="60" required autocomplete="family-name"></label>
+        <label class="tf"><span class="tl">Your name <span class="req">*</span></span><input name="name" type="text" maxlength="120" required autocomplete="name"></label>
+        <label class="tf"><span class="tl">Company <span class="req">*</span></span><input name="company" type="text" maxlength="120" required autocomplete="organization"></label>
         <label class="tf"><span class="tl">Email <span class="req">*</span></span><input name="email" type="email" maxlength="160" required autocomplete="email"></label>
-        <label class="tf"><span class="tl">Mobile <span class="req">*</span></span><input name="mobile" type="tel" maxlength="30" required autocomplete="tel"></label>
-        <label class="tf"><span class="tl">Region <span class="req">*</span></span><select name="region" required><option value="">Choose a region</option><option>Mid North Coast</option><option>Northern Rivers</option><option>Hunter and Central Coast</option><option>New England and North West</option><option>Central West and Orana</option><option>Riverina and Murray</option><option>South Coast and Illawarra</option><option>Sydney and surrounds</option><option>Far North Queensland</option><option>North and Central Queensland</option><option>South East Queensland</option><option>Other</option></select></label>
-        <label class="tf">Homes you build a year <small>(approximate, optional)</small><input name="homesPerYear" type="number" min="0" max="100000" step="1" inputmode="numeric"></label>
-        <label class="tf wide">How did you hear about us? <small>(optional)</small><input name="howHeard" type="text" maxlength="200"></label>
-      </div>
+        <label class="tf"><span class="tl">Phone <span class="req">*</span></span><input name="phone" type="tel" maxlength="30" required autocomplete="tel"></label>
+</div>
       <div class="trial-hp" aria-hidden="true"><label>Leave this empty<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
       <label class="tf-check"><input name="consent" type="checkbox" required><span>I have read and agree to the <a class="link" href="../trial-terms.html" target="_blank" rel="noopener">trial terms</a>. <span class="req">*</span></span></label>
       <p class="trial-error" id="trial-error" role="alert" hidden></p>
@@ -324,14 +318,12 @@
     e.preventDefault();
     var f = form.elements, g = function (n) { return (f[n].value || "").trim(); };
     show("");
-    if (!g("companyLegalName")) return show("Enter your company name.");
-    if (!abnOk(g("abn"))) return show("Enter the 11 digit ABN for your business. That ABN does not look right.");
-    if (!g("firstName") || !g("lastName")) return show("Enter your first and last name.");
+    if (!g("name")) return show("Enter your name.");
+    if (!g("company")) return show("Enter your company name.");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g("email"))) return show("Enter a valid email address.");
-    if (!/^\d{8,15}$/.test(g("mobile").replace(/[\s()+-]/g, ""))) return show("Enter a valid mobile number.");
-    if (!g("region")) return show("Choose your region.");
+    if (!/^\d{8,15}$/.test(g("phone").replace(/[\s()+-]/g, ""))) return show("Enter a valid phone number.");
     if (!f.consent.checked) return show("Tick the box to agree to the trial terms.");
-    var body = { companyLegalName: g("companyLegalName"), abn: g("abn"), tradingName: g("tradingName"), firstName: g("firstName"), lastName: g("lastName"), email: g("email"), mobile: g("mobile"), region: g("region"), homesPerYear: g("homesPerYear"), howHeard: g("howHeard"), website: f.website.value, consent: true };
+    var body = { name: g("name"), company: g("company"), email: g("email"), phone: g("phone"), consent: true, website: g("website") };
     btn.disabled = true;
     fetch(((window.GI_CONFIG && window.GI_CONFIG.apiBase) || "/api") + "/portal/trial-request", { method: "POST", headers: { "content-type": "application/json", "x-gi-request": "1" }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; }); })

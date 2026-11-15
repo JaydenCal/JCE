@@ -201,14 +201,11 @@ for (const [label, d1] of stores) {
     await bad({ consent: false }, /tick the box/);
     await bad({ consent: undefined }, /tick the box/);
     await bad({ abn: '51 824 753 557' }, /ABN/);
-    await bad({ abn: '' }, /ABN/);
     await bad({ abn: 'abc' }, /ABN/);
-    await bad({ companyLegalName: ' ' }, /legal name is required/);
-    await bad({ firstName: '' }, /First name is required/);
-    await bad({ lastName: '' }, /Last name is required/);
+    await bad({ companyLegalName: ' ' }, /Company name is required/);
+    await bad({ firstName: '' }, /Name is required/);
     await bad({ email: 'nope' }, /email/);
-    await bad({ mobile: '12' }, /mobile/);
-    await bad({ region: '' }, /Region is required/);
+    await bad({ mobile: '12' }, /phone/);
     await bad({ homesPerYear: 'lots' }, /whole number/);
     await bad({ homesPerYear: -4 }, /whole number/);
     await bad({ companyLegalName: 'x'.repeat(200) }, /too long/);
@@ -238,6 +235,36 @@ for (const [label, d1] of stores) {
     // Works while the portal is still closed (requests are collected before logins open).
     const closed = makeWorld({ d1, env: { PORTAL_ENABLED: '' } });
     assert.equal((await closed.request()).status, 201);
+  });
+
+  t('trial request short form: name, company, email and any phone; ABN and region come later and the queue says so', async () => {
+    const w = makeWorld({ d1 });
+    const short = (over = {}) => w.request({ companyLegalName: undefined, abn: undefined, tradingName: undefined, firstName: undefined, lastName: undefined, mobile: undefined, region: undefined, homesPerYear: undefined, howHeard: undefined, name: 'Jo van der Marsh', company: 'Coastal Homes Pty Ltd', email: 'jo@coastalhomes.example', phone: '(02) 6555 1234', ...over });
+    const bad = async (over, re) => { const r = await short(over); assert.equal(r.status, 400, JSON.stringify(over)); assert.match(r.data.error.message, re); };
+    await bad({ consent: false }, /tick the box/);
+    await bad({ name: ' ' }, /Name is required/);
+    await bad({ company: '' }, /Company name is required/);
+    await bad({ email: 'nope' }, /email/);
+    await bad({ phone: '12' }, /phone/);
+    await bad({ abn: '51 824 753 557' }, /ABN/); // an ABN that is sent must still pass the checksum
+    assert.equal((await w.admin('GET', '/portal/admin/trial-requests')).data.length, 0, 'nothing stored for bad requests');
+    assert.equal((await short()).status, 201);
+    const [q] = (await w.admin('GET', '/portal/admin/trial-requests')).data;
+    assert.equal(q.firstName, 'Jo van der');
+    assert.equal(q.lastName, 'Marsh');
+    assert.equal(q.companyLegalName, 'Coastal Homes Pty Ltd');
+    assert.equal(q.mobile, '(02) 6555 1234', 'a landline is fine');
+    assert.equal(q.abn, '');
+    assert.equal(q.abnNeeded, true, 'the admin queue shows "ABN needed before billing"');
+    assert.equal((await short({ name: 'Cher', email: 'cher@coastalhomes.example' })).status, 201, 'one word names are kept');
+    // still rate limited per email (3 a day) without an ABN
+    for (let i = 0; i < 3; i += 1) await short();
+    assert.equal((await short()).status, 429);
+    // approval works without an ABN and the builder's account says the ABN is needed
+    const ap = await w.admin('POST', `/portal/admin/trial-requests/${q.id}/approve`, {});
+    assert.equal(ap.status, 201);
+    const orgs = (await w.admin('GET', '/portal/admin/orgs')).data;
+    assert.equal(orgs.find((o) => o.requestId === q.id).account.abnNeeded, true);
   });
 
   t('trial request: rate limited per address (5 an hour) and per email (3 a day)', async () => {
@@ -300,7 +327,7 @@ for (const [label, d1] of stores) {
     const ap = await w.admin('POST', `/portal/admin/trial-requests/${q.id}/approve`, {});
     assert.equal(ap.status, 201, JSON.stringify(ap.data));
     assert.match(ap.data.credentials.username, /^jo-[2-9]{4}$/);
-    assert.match(ap.data.credentials.password, /^[a-z]+-[a-z]+-[2-9]{2}$/);
+    assert.match(ap.data.credentials.password, /^[2-9a-hjkmnp-z]{4}(-[2-9a-hjkmnp-z]{4}){3}$/);
     assert.equal(ap.data.admin.role, 'admin');
     assert.equal(ap.data.org.account.status, 'trial');
     assert.equal(ap.data.org.account.trialEndsAt, '2026-11-24T13:00:00.000Z', '25/11/2026 00:00 Sydney');
@@ -479,7 +506,7 @@ for (const [label, d1] of stores) {
     // Reset the first admin's password (the first one is shown once).
     const rp = await w.admin('POST', `/portal/admin/orgs/${org.orgId}/reset-admin`, {});
     assert.equal(rp.status, 200);
-    assert.match(rp.data.credentials.password, /^[a-z]+-[a-z]+-[2-9]{2}$/);
+    assert.match(rp.data.credentials.password, /^[2-9a-hjkmnp-z]{4}(-[2-9a-hjkmnp-z]{4}){3}$/);
     assert.equal((await w.browser().post('/portal/session', { identifier: rp.data.credentials.username, password: rp.data.credentials.password })).status, 200);
   });
 

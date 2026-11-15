@@ -39,6 +39,7 @@ export function trialBanner(me, api, { goBilling } = {}) {
       h('div', { class: 'pp-trial-text' },
         h('strong', null, `Free trial: ${left}`),
         h('p', null, `Your staff can use everything in the portal until the end of ${a.lastTrialDay || ddmmyyyy(a.trialEndsAt)}. Client logins unlock when you add billing details. ${TRIAL_PRICING_TEXT}`),
+        a.abnNeeded ? h('p', { class: 'pp-trial-abn', id: 'trial-abn-needed' }, h('strong', null, 'ABN needed before billing.'), ' Add your ABN and legal name under Billing so your first client invoice can be issued.') : null,
         h('p', { class: 'pp-trial-wm', id: 'trial-watermark-note' }, h('span', { class: 'pp-trial-badge', style: { display: 'inline-block', background: '#be3232', color: '#fff', fontSize: '11px', fontWeight: '700', letterSpacing: '.06em', textTransform: 'uppercase', padding: '2px 7px', borderRadius: '4px' } }, 'Trial'), ' Exports are watermarked during your free trial. ', h('a', { href: '#/billing', onclick: () => goBilling?.() }, 'Add a card in Billing'), ' to remove the watermark.')),
       addBillingButton(api, { goBilling }));
   }

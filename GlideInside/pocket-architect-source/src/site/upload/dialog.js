@@ -4,7 +4,7 @@
 import { h, clear } from '../../ui/dom.js';
 import { openModal } from '../../ui/modal.js';
 import { injectUploadCss } from './css.js';
-import { readUpload, parseCoordinateText, UploadError } from './parsers.js';
+import { readUpload, parseCoordinateText, UploadError, MAX_FILE_BYTES, MAX_TOTAL_BYTES } from './parsers.js';
 import { searchCrs, resolveCrs, guessProjected, WGS84_ID } from './crs.js';
 import { UNITS } from './units.js';
 import { parseLegs, walkLegs, miscloseText, formatBearing } from './bearings.js';
@@ -79,6 +79,8 @@ export function openUploadDialog({ store = null, commercial = false, onApply, re
   async function onFiles(files) {
     say('');
     try {
+      // L16: refuse a huge file BEFORE reading it into memory.
+      if (files.some((f) => f.size > MAX_FILE_BYTES) || files.reduce((n, f) => n + f.size, 0) > MAX_TOTAL_BYTES) throw new UploadError('That file is too large to read here. A boundary file should be a few megabytes at most. Export just the lot or site boundary and try again.', 'TOO_LARGE');
       const bytes = await Promise.all(files.map(async (f) => ({ name: f.name, bytes: new Uint8Array(await f.arrayBuffer()) })));
       setParsed(reader(bytes), files[0].name);
     } catch (e) {

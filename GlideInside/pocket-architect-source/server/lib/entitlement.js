@@ -94,13 +94,15 @@ export async function authenticate(request, { store, config, now, missing = 'UNA
 
 /**
  * Token for a builder or client login: { oid, lid, role, cap?, exp }. The login system that owns the accounts calls this
- * after it has signed the person in. `cap` optionally overrides the monthly credits for that login.
+ * after it has signed the person in. `cap` optionally overrides the monthly credits for that login; `epoch` is the login's session epoch
+ * (claim `se`): the AI endpoints compare it with the database on every call, so a token issued before a logout, password change, disable or delete is refused.
  * (Identical to the version on claude/glide-ai, so the two branches merge cleanly.)
  */
-export async function issueOrgToken({ orgId, loginId, role, cap, ttlSeconds = 8 * 3600 }, config, nowMs) {
+export async function issueOrgToken({ orgId, loginId, role, cap, epoch = 0, ttlSeconds = 8 * 3600 }, config, nowMs) {
   if (!['builder', 'client'].includes(role)) throw new HttpError('BAD_REQUEST', 'role must be builder or client.');
   const payload = { oid: orgId, lid: loginId, role, exp: Math.floor(nowMs / 1000) + ttlSeconds };
   if (Number.isFinite(cap) && cap >= 0) payload.cap = Math.round(cap);
+  payload.se = Number.isInteger(epoch) && epoch > 0 ? epoch : 0; // the login's session epoch: bumped on logout, password change, disable and delete (lib/portal.js)
   return signToken(payload, config.entitlementSecret);
 }
 

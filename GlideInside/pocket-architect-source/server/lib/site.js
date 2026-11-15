@@ -258,7 +258,8 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         last = e;
       }
     }
-    console.warn(`[site] upstream failed ${url}${params && !post ? `?${new URLSearchParams(params)}` : ''}: ${String(last?.message || last).slice(0, 300)}`);
+    // L17: log the host and path only. The query string carries the visitor's address search text, which is personal data and stays out of the logs.
+    console.warn(`[site] upstream failed ${(() => { try { const u = new URL(url); return `${u.host}${u.pathname}`; } catch { return 'upstream'; } })()}: ${String(last?.message || last).slice(0, 120).replace(/https?:\/\/\S+/g, '[url]')}`);
     throw new HttpError('SITE_UPSTREAM', 'A government map service did not answer. Try again soon, or keep drawing without a lot.', { detail: String(last?.message || last).slice(0, 200) });
   }
 

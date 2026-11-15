@@ -240,7 +240,8 @@ CREATE TABLE IF NOT EXISTS users (
   house_access TEXT NOT NULL DEFAULT '"all"', -- JSON: "all" or an array of house ids
   first_sign_in_at TEXT,
   last_sign_in_at TEXT,
-  created_at TEXT NOT NULL
+  created_at TEXT NOT NULL,
+  session_epoch INTEGER NOT NULL DEFAULT 0   -- migration 0019: AI bearer tokens carry it; bumped on logout, password change, disable, delete
 );
 CREATE INDEX IF NOT EXISTS idx_users_org ON users(org_id, role);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email) WHERE email IS NOT NULL;
@@ -418,7 +419,8 @@ CREATE TABLE IF NOT EXISTS profiles (
   unsubscribed_at TEXT,
   last_sign_in_at TEXT,
   created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
+  updated_at TEXT NOT NULL,
+  marketing_consent_verified INTEGER NOT NULL DEFAULT 0  -- migration 0019: 1 only after a double opt in (not built yet); 0 = unverified
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_profiles_email ON profiles(email);
 CREATE INDEX IF NOT EXISTS idx_profiles_created ON profiles(created_at);
@@ -468,3 +470,16 @@ CREATE TABLE IF NOT EXISTS profile_packs (
   linked_at TEXT NOT NULL,
   PRIMARY KEY (profile_id, entitlement_id)
 );
+
+-- Anonymised consent record kept after a free profile is deleted (migration 0019).
+CREATE TABLE IF NOT EXISTS consent_archive (
+  id TEXT PRIMARY KEY,
+  email_hash TEXT NOT NULL,
+  at TEXT NOT NULL,
+  consent INTEGER NOT NULL,
+  text_version TEXT,
+  source TEXT NOT NULL,
+  archived_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_consent_archive_hash ON consent_archive(email_hash);
+CREATE INDEX IF NOT EXISTS idx_consent_archive_archived ON consent_archive(archived_at);

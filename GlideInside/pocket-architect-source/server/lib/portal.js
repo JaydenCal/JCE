@@ -12,6 +12,8 @@ import { generateUsername, generatePassword, passwordProblem } from '../../src/p
 import { monthKey, NEW_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, formatAud, LOGIN_TIER_2_MAX } from '../../src/portal/billing.js';
 import { HttpError, json, readJson, clientIp, bearerToken } from './http.js';
 import { hashPassword, verifyPassword, dummyVerify, newSessionToken, sha256Hex, secretEqual } from './password.js';
+import { countLoginAttempt, clearLoginCounters, LOCKOUT_MS as GUARD_LOCKOUT_MS } from './login-guard.js';
+import { enforceClientTopUpCap } from './credits.js';
 import { aiSnapshot, addTopUp, aiToken, reconcileTopUps, orgPoolIds } from './portal-ai.js';
 import { usageForMonth, runMonth, isMonthlyRunTime, contactComplete, topUpRows, stripeCall, ensureCustomer, MONTH_RE } from './portal-billing.js';
 import { readTrialConfig, orgState, accountView, trialEndFor, extendedEnd, parseTrialRequest, notifyOwner, trialNoClients, trialNoTopUps, readOnlyError, TRIAL_EXTENSION_DAYS, TERMS_VERSION } from './trial.js';
@@ -19,7 +21,7 @@ import { readTrialConfig, orgState, accountView, trialEndFor, extendedEnd, parse
 export const COOKIE = 'gi_session';
 const DAY = 86400000;
 export const TEMP_PASSWORD_DAYS = 7;
-export const LOCKOUT_MS = 15 * 60000;
+export const LOCKOUT_MS = GUARD_LOCKOUT_MS;
 const SESSION_ABSOLUTE_DAYS = 90;
 const SESSION_TOUCH_MS = 10 * 60000;
 const MAX_PROJECTS_PER_USER = 200;
@@ -180,11 +182,17 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     throw new HttpError('INTERNAL_ERROR', 'Could not generate a unique username. Try again.');
   }
 
+  /** End every session of a login AND invalidate the AI bearer tokens issued so far (security review M2: the epoch rides in the token). */
+  async function endSessions(userId, exceptHash = '') {
+    await pstore.deleteUserSessions(userId, exceptHash);
+    await pstore.bumpSessionEpoch(userId);
+  }
+
   async function issueTemp(user) {
     const password = generatePassword();
     await pstore.updateUser(user.id, { passwordHash: await hashPassword(password), mustChangePassword: true, tempPasswordExpiresAt: iso(now() + TEMP_PASSWORD_DAYS * DAY) });
-    await pstore.deleteUserSessions(user.id);
-    await pstore.clearFailure(`u:${user.username}`);
+    await endSessions(user.id);
+    await clearLoginCounters(pstore, { subject: user.username });
     return { credentials: { username: user.username, password } };
   }
 
@@ -202,29 +210,17 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const password = typeof body.password === 'string' ? body.password : '';
     if (!password || password.length > 512) throw new HttpError('INVALID_CREDENTIALS', 'That sign in did not work. Check the details and try again.');
     const nowMs = now();
-    const ip = clientIp(r.request);
-    const userKey = `u:${identifier}`;
-    const ipKey = `ip:${ip}`;
-    for (const [key, code] of [[userKey, 'ACCOUNT_LOCKED'], [ipKey, 'RATE_LIMITED']]) {
-      const f = await pstore.getFailure(key);
-      if (f?.lockedUntil && f.lockedUntil > nowMs) {
-        const retryAfter = Math.ceil((f.lockedUntil - nowMs) / 1000);
-        throw new HttpError(code, code === 'ACCOUNT_LOCKED' ? `Too many failed attempts. Try again in ${Math.ceil(retryAfter / 60)} minutes.` : 'Too many attempts. Try again later.', { retryAfter });
-      }
-    }
     const user = await pstore.findUserByLogin(identifier);
+    // The attempt is counted BEFORE the password is checked (atomic, so parallel guesses cannot exceed the limit), per username AND address.
+    // One account is one subject whether it was named by email or by username.
+    const attempt = await countLoginAttempt(pstore, { subject: user ? user.username : identifier, request: r.request, nowMs, config });
     const check = user ? await verifyPassword(password, user.passwordHash) : (await dummyVerify(password), { ok: false });
-    if (!check.ok) {
-      const u = await pstore.addFailure(userKey, nowMs, { windowMs: LOCKOUT_MS, max: config.loginMaxFailures, lockMs: LOCKOUT_MS });
-      await pstore.addFailure(ipKey, nowMs, { windowMs: LOCKOUT_MS, max: config.loginIpMaxFailures, lockMs: LOCKOUT_MS });
-      if (u.lockedUntil) throw new HttpError('ACCOUNT_LOCKED', `Too many failed attempts. Try again in ${Math.ceil(LOCKOUT_MS / 60000)} minutes.`, { retryAfter: Math.ceil(LOCKOUT_MS / 1000) });
-      throw new HttpError('INVALID_CREDENTIALS', 'That sign in did not work. Check the details and try again.');
-    }
+    if (!check.ok) throw attempt.failed();
+    await attempt.succeeded();
     if (user.status !== 'active') throw new HttpError('ACCOUNT_DISABLED', 'This login has been disabled. Contact your builder.');
     if (user.mustChangePassword && user.tempPasswordExpiresAt && Date.parse(user.tempPasswordExpiresAt) <= nowMs) {
       throw new HttpError('PASSWORD_EXPIRED', `This temporary password expired after ${TEMP_PASSWORD_DAYS} days. Ask your builder for a new one.`);
     }
-    await pstore.clearFailure(userKey);
     const patch = { lastSignInAt: iso(nowMs) };
     if (!user.firstSignInAt) patch.firstSignInAt = iso(nowMs);
     if (check.needsRehash) patch.passwordHash = await hashPassword(password);
@@ -246,7 +242,12 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
 
   async function signOut(r) {
     const token = cookies(r.request)[COOKIE];
-    if (token && token.length <= 100) await pstore.deleteSession(await sha256Hex(token));
+    if (token && token.length <= 100) {
+      const idHash = await sha256Hex(token);
+      const session = await pstore.getSession(idHash);
+      await pstore.deleteSession(idHash);
+      if (session) await pstore.bumpSessionEpoch(session.userId); // AI bearer tokens issued to this login stop working
+    }
     r.setCookie = sessionCookie('', 0);
     return json({ ok: true });
   }
@@ -270,21 +271,19 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   async function changePassword(r) {
     const { user, idHash } = await auth(r, { allowChange: true, allowReadOnly: true });
     const body = await readJson(r.request, 4096);
-    const key = `u:${user.username}`;
-    const f = await pstore.getFailure(key);
-    if (f?.lockedUntil && f.lockedUntil > now()) throw new HttpError('ACCOUNT_LOCKED', 'Too many failed attempts. Try again later.', { retryAfter: Math.ceil((f.lockedUntil - now()) / 1000) });
     const cur = typeof body.currentPassword === 'string' ? body.currentPassword : '';
+    const attempt = await countLoginAttempt(pstore, { subject: user.username, request: r.request, nowMs: now(), config });
     if (!(await verifyPassword(cur, user.passwordHash)).ok) {
-      await pstore.addFailure(key, now(), { windowMs: LOCKOUT_MS, max: config.loginMaxFailures, lockMs: LOCKOUT_MS });
-      throw new HttpError('INVALID_CREDENTIALS', 'The current password is not right.');
+      const e = attempt.failed();
+      throw e.code === 'ACCOUNT_LOCKED' ? e : new HttpError('INVALID_CREDENTIALS', 'The current password is not right.');
     }
+    await attempt.succeeded();
     const next = typeof body.newPassword === 'string' ? body.newPassword : '';
     if (next.length > 512) throw new HttpError('BAD_REQUEST', 'That password is too long.');
     const problem = next === cur ? 'Choose a new password, not the current one.' : passwordProblem(next, { username: user.username, email: user.email, temporary: cur });
     if (problem) throw new HttpError('BAD_REQUEST', problem);
     await pstore.updateUser(user.id, { passwordHash: await hashPassword(next), mustChangePassword: false, tempPasswordExpiresAt: null });
-    await pstore.clearFailure(key);
-    await pstore.deleteUserSessions(user.id, idHash); // other sessions are signed out
+    await endSessions(user.id, idHash); // other sessions are signed out, and AI tokens issued so far stop working
     return json({ ok: true });
   }
 
@@ -508,7 +507,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (status === 'disabled' && u.id === me.id) throw new HttpError('CONFLICT', 'You cannot disable your own login.');
     if (status === 'disabled' && u.role === 'admin' && !(await pstore.countActiveAdmins(org.id, u.id))) throw new HttpError('CONFLICT', 'There must be at least one active admin.');
     await pstore.updateUser(u.id, { status });
-    if (status === 'disabled') await pstore.deleteUserSessions(u.id); // sessions end at once
+    if (status === 'disabled') await endSessions(u.id); // sessions end at once, and so do the AI bearer tokens
     const next = { ...u, status };
     return json(kind === 'client' ? await clientView(org, next) : publicUser(next, await aiLight(org, next)));
   }
@@ -603,6 +602,8 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (state.isTrial) throw trialNoTopUps();
     if (!isStaff(user) && !org.allowClientTopUps) throw new HttpError('TOPUPS_DISABLED', 'Your builder has turned off AI credit top-ups.');
     if ((await store.hitRate(`topup:${org.id}:${user.id}`, 3600, now())) > 10) throw new HttpError('RATE_LIMITED', 'Too many top-ups in the last hour.', { retryAfter: 600 });
+    // L2: a client login spends the builder's money, so it also has a monthly ceiling (CLIENT_TOPUP_MONTHLY_MAX); builder staff are not capped.
+    if (!isStaff(user)) await enforceClientTopUpCap({ store, config, orgId: org.id, loginId: user.id, nowMs: now(), HttpError });
     const topUp = await addTopUp({ store, config, org, user, nowMs: now(), randomId: rid });
     return json({ topUp, ai: await aiFor(org, user) });
   }
@@ -648,7 +649,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       patch.email = mail || null;
     }
     await pstore.updateUser(u.id, patch);
-    if (patch.role) await pstore.deleteUserSessions(u.id); // a role change takes effect at once
+    if (patch.role) await endSessions(u.id); // a role change takes effect at once
     return json(publicUser({ ...u, ...patch }, await aiLight(org, { ...u, ...patch })));
   }
   async function resetStaff(r, id) {
@@ -721,7 +722,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     let slug = cleanSlug(slugify(name)) || 'builder';
     const slugBase = slug;
     for (let n = 2; await pstore.getOrgBySlug(slug); n += 1) slug = `${slugBase}-${n}`;
-    const org = { id: rid('org'), name, shortCode: code, slug, displayName: name, logoDataUrl: null, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, showAerialDefault: true, showAiAssistant: true, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso(), ...extra };
+    const org = { id: rid('org'), name, shortCode: code, slug, displayName: name, logoDataUrl: null, allowClientTopUps: false, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, showAerialDefault: true, showAiAssistant: true, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso(), ...extra };
     if (!(await pstore.createOrg(org))) throw new HttpError('CONFLICT', 'That organisation already exists.');
     return org;
   }
@@ -792,7 +793,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   }
 
   // Free trial: the public request form and the owner's admin routes ----------------------------------------------------------
-  const requestView = (q) => ({ id: q.id, createdAt: q.createdAt, status: q.status === 'deciding' ? 'pending' : q.status, companyLegalName: q.companyLegalName, abn: q.abn, tradingName: q.tradingName || '', firstName: q.firstName, lastName: q.lastName, email: q.email, mobile: q.mobile, region: q.region, homesPerYear: q.homesPerYear ?? null, howHeard: q.howHeard || '', consentAt: q.consentAt, termsVersion: q.termsVersion || '', notifyStatus: q.notifyStatus || '', decidedAt: q.decidedAt || null, decisionNote: q.decisionNote || '', orgId: q.orgId || null });
+  const requestView = (q) => ({ id: q.id, createdAt: q.createdAt, status: q.status === 'deciding' ? 'pending' : q.status, companyLegalName: q.companyLegalName, abn: q.abn, tradingName: q.tradingName || '', firstName: q.firstName, lastName: q.lastName, email: q.email, mobile: q.mobile, region: q.region, abnNeeded: !q.abn, homesPerYear: q.homesPerYear ?? null, howHeard: q.howHeard || '', consentAt: q.consentAt, termsVersion: q.termsVersion || '', notifyStatus: q.notifyStatus || '', decidedAt: q.decidedAt || null, decisionNote: q.decisionNote || '', orgId: q.orgId || null });
 
   /** POST /portal/trial-request (public). Honeypot field `website`, validated, rate limited, stored as pending, owner notified (never the builder). */
   async function trialRequest(r) {
@@ -805,7 +806,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if ((await store.hitRate(`trial:ip:${ip}`, 3600, nowMs)) > 5 || (await store.hitRate(`trial:email:${t.email}`, 86400, nowMs)) > 3) {
       throw new HttpError('RATE_LIMITED', 'You have sent several requests already. Please wait before sending another, or email hello@glideinside.com.au.', { retryAfter: 3600 });
     }
-    if (await pstore.findOpenTrialRequestByAbn(t.abn)) return json(done); // already received: no duplicate row and no second email
+    if (t.abn && await pstore.findOpenTrialRequestByAbn(t.abn)) return json(done); // already received: no duplicate row and no second email
     const q = { id: rid('tr'), createdAt: iso(nowMs), status: 'pending', ...t, consentAt: iso(nowMs), termsVersion: TERMS_VERSION, ipHash: (await sha256Hex(`gi-trial:${ip}`)).slice(0, 16), notifyStatus: null, decidedAt: null, decisionNote: null, orgId: null };
     await pstore.createTrialRequest(q);
     const n = await notifyOwner({ request: q, trialConfig, config, fetchImpl });
@@ -852,7 +853,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (!(await pstore.claimTrialRequest(id, { decidedAt: iso(nowMs) }))) throw new HttpError('CONFLICT', 'That request has just been decided.');
     try {
       const name = q.tradingName || q.companyLegalName;
-      const org = await makeOrg({ name, extra: { legalName: q.companyLegalName, abn: q.abn, billingName: `${q.firstName} ${q.lastName}`, billingEmail: q.email.toLowerCase(), billingPhone: q.mobile } });
+      const org = await makeOrg({ name, extra: { legalName: q.companyLegalName, abn: q.abn, billingName: [q.firstName, q.lastName].filter(Boolean).join(' '), billingEmail: q.email.toLowerCase(), billingPhone: q.mobile } });
       await pstore.saveOrgAccount(org.id, { status: 'trial', trialStartedAt: iso(nowMs), trialEndsAt: trialEndFor(nowMs), trialExtendedDays: 0, requestId: q.id });
       const { user, credentials } = await createAccount(org, { firstName: q.firstName, email: q.email, role: 'admin' });
       await pstore.updateTrialRequest(id, { status: 'approved', orgId: org.id });
@@ -1185,6 +1186,20 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     return { user, org };
   }
 
+  /**
+   * M2: a signed org AI token proves who the holder WAS when it was issued. Every use is re-checked against the database: the login must still
+   * exist in that org, be active, and carry the same session epoch (so a logout, password change, disable or delete ends the token at once);
+   * the org must still exist. Returns { user, org } or throws UNAUTHORISED.
+   */
+  async function verifyOrgToken(payload) {
+    const bad = () => new HttpError('UNAUTHORISED', 'Your sign in has ended. Sign in again to continue.');
+    const user = payload?.lid ? await pstore.getUser(payload.lid) : null;
+    if (!user || user.orgId !== payload.oid || user.status !== 'active') throw bad();
+    if ((user.sessionEpoch || 0) !== (Number.isInteger(payload.se) ? payload.se : 0)) throw bad();
+    const org = await pstore.getOrg(user.orgId);
+    if (!org) throw bad();
+    return { user, org };
+  }
   const isInternal = async (orgId) => !!orgId && (await pstore.getOrg(orgId))?.internal === true;
-  return { route, scheduled, exportContext, identity, gate, isInternal, completeCardSetup, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
+  return { route, scheduled, exportContext, identity, gate, isInternal, verifyOrgToken, completeCardSetup, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
 }

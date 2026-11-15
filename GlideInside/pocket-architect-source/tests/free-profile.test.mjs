@@ -79,7 +79,7 @@ function browser(w, { ip = '203.0.113.7' } = {}) {
     }
     return res;
   };
-  const call = async (method, path, body, extra = {}) => {
+  const call0 = async (method, path, body, extra = {}) => {
     const res = await fetchImpl(`${SITE}/api${path}`, {
       method,
       headers: { 'content-type': 'application/json', 'x-gi-request': '1', ...extra },
@@ -89,6 +89,18 @@ function browser(w, { ip = '203.0.113.7' } = {}) {
     let parsed = null;
     try { parsed = JSON.parse(text); } catch { /* CSV or empty */ }
     return { status: res.status, body: parsed, text, headers: res.headers };
+  };
+  // Sign up no longer signs the browser in (the server answers a new and an existing email identically, 202, with no session: security review M3).
+  // The page signs in right after with the details just typed (src/profile/controller.js), so this helper does the same and answers like the old
+  // sign up did (201 and the profile). Pass { raw: true } as the last argument to see the server's own sign up answer.
+  const call = async (method, path, body, extra = {}) => {
+    const { raw, ...headers } = extra;
+    const first = await call0(method, path, body, headers);
+    if (method === 'POST' && path === '/profile/signup' && !raw && first.status === 202) {
+      const si = await call0('POST', '/profile/session', { email: body.email, password: body.password }, headers);
+      return si.status === 200 ? { ...si, status: 201 } : si;
+    }
+    return first;
   };
   return { fetchImpl, call, cookie: () => cookie, clear: () => { cookie = ''; } };
 }
@@ -226,11 +238,12 @@ for (const [label, d1] of runs) {
     assert.match(out.headers.get('set-cookie'), /Max-Age=0/);
     assert.equal((await b.call('GET', '/profile/me')).body.profile, null);
 
-    // a duplicate sign up gets one fixed answer and is a 409 that does not create a second profile
-    const dup = await browser(w, { ip: '203.0.113.60' }).call('POST', '/profile/signup', signupBody({ name: 'Imposter' }));
-    assert.equal(dup.status, 409);
-    assert.equal(dup.body.error.code, 'SIGNUP_FAILED');
-    assert.match(dup.body.error.message, /could not create a profile with those details/);
+    // a duplicate sign up gets the same answer as a new one (202, no session) and does not create a second profile or reveal the account (M3)
+    const dup = await browser(w, { ip: '203.0.113.60' }).call('POST', '/profile/signup', signupBody({ name: 'Imposter' }), { raw: true });
+    const fresh = await browser(w, { ip: '203.0.113.61' }).call('POST', '/profile/signup', signupBody({ email: 'new@example.com' }), { raw: true });
+    assert.equal(dup.status, 202);
+    assert.equal(dup.text, fresh.text, 'a new and an existing email get an identical body');
+    assert.equal(dup.headers.get('set-cookie'), null, 'no session is started by sign up');
     assert.equal((await w.pstore.getProfileByEmail('sam@example.com')).name, 'Sam Builder');
   });
 
@@ -246,12 +259,16 @@ for (const [label, d1] of runs) {
     w.clock.t += 61 * MIN; // a new hour
     assert.equal((await a.call('POST', '/profile/signup', signupBody({ email: 'u5@example.com' }))).status, 201);
 
-    // per email: 8 tries in 15 minutes from a spread of addresses
+    // per email AND address: 8 tries in 15 minutes from one address; a spread of addresses is stopped by the higher global per email limit (M4)
     const s = world({ d1 });
     await browser(s).call('POST', '/profile/signup', signupBody());
+    const same = browser(s, { ip: '192.0.2.99' });
     let last;
-    for (let i = 0; i < 9; i += 1) last = await browser(s, { ip: `192.0.2.${100 + i}` }).call('POST', '/profile/session', { email: 'sam@example.com', password: `Wrong-guess-${i}-abc` });
-    assert.equal(last.status, 429, 'the ninth try for one email is stopped');
+    for (let i = 0; i < 9; i += 1) last = await same.call('POST', '/profile/session', { email: 'sam@example.com', password: `Wrong-guess-${i}-abc` });
+    assert.equal(last.status, 429, 'the ninth try from one address for one email is stopped');
+    assert.equal((await browser(s, { ip: '192.0.2.98' }).call('POST', '/profile/session', { email: 'sam@example.com', password: PW })).status, 200, 'a stranger cannot lock the owner out from another address');
+    for (let i = 0; i < 40; i += 1) last = await browser(s, { ip: `198.51.${Math.floor(i / 200)}.${i + 1}` }).call('POST', '/profile/session', { email: 'sam@example.com', password: `Wrong-guess-${i}-abc` });
+    assert.equal(last.status, 429, 'a spread of addresses hits the global limit for the email');
     assert.equal((await browser(s, { ip: '192.0.2.250' }).call('POST', '/profile/session', { email: 'sam@example.com', password: PW })).status, 429, 'even the right password waits');
     s.clock.t += 16 * MIN;
     assert.equal((await browser(s, { ip: '192.0.2.251' }).call('POST', '/profile/session', { email: 'sam@example.com', password: PW })).status, 200);
@@ -485,6 +502,8 @@ for (const [label, d1] of runs) {
     c.mode = 'commercial';
     await yes.call('POST', '/profile/designs', { project: c });
     await flip.call('PUT', '/profile/preferences', { marketing: false }); // unsubscribed after consenting
+    // consent is stored UNVERIFIED (no double opt in yet, M3), so the marketing export is empty until the address is verified
+    for (const e of ['yes@example.com', 'flip@example.com']) await w.pstore.updateProfile((await w.pstore.getProfileByEmail(e)).id, { marketingConsentVerified: 1 });
 
     const A = (path) => admin(w).call(path);
     assert.equal((await browser(w).call('GET', '/profile/admin/contacts')).status, 401);
@@ -549,6 +568,12 @@ for (const [label, d1] of runs) {
     // the person opting in again is fresh consent
     const again = await yes.call('PUT', '/profile/preferences', { marketing: true });
     assert.equal(again.body.profile.marketing, true);
+    // ...but it is unverified again (M3), so it is not marketable until the address is verified
+    const after = (await A('/profile/admin/contacts')).body.contacts.find((x) => x.email === 'yes@example.com');
+    assert.equal(after.marketable, false);
+    assert.equal(after.marketingStatus, 'consented (unverified)');
+    assert.equal((await A('/profile/admin/contacts.csv?scope=marketing')).text.replace(/^\ufeff/, '').trim().split('\r\n').length, 1, 'unverified consent stays out of the marketing export');
+    await w.pstore.updateProfile(id, { marketingConsentVerified: 1 });
     assert.equal((await A('/profile/admin/contacts?consent=yes')).body.contacts.length, 1);
   });
 

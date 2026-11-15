@@ -132,8 +132,19 @@ export function createProfileController({
     return saveNow({ migrating: true });
   }
 
+  // The server answers a sign up the same way whether or not the email already has a profile (it never reveals who is registered) and sets no
+  // session, so this signs in with the details just typed: that works for a new profile and fails with the usual sign in message for an existing one.
   async function signUp(form) {
-    const res = await api.signUp(form);
+    await api.signUp(form);
+    let res;
+    try {
+      res = await api.signIn({ email: form.email, password: form.password });
+    } catch (e) {
+      if (e instanceof ProfileError && e.code === 'INVALID_CREDENTIALS') {
+        throw new ProfileError('SIGNUP_NOT_SIGNED_IN', 'We could not sign you in with those details. If you already have a profile with this email address, use Sign in with your original password.', { status: e.status });
+      }
+      throw e;
+    }
     const saved = await afterSignIn(res.profile);
     return { profile: res.profile, saved };
   }

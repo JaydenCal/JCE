@@ -157,6 +157,13 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     return { name, email, password, phone, postcode, role, marketing: b.marketing === true };
   }
 
+  // M3: one answer for every valid request. A new email gets a profile; an email that already has one gets nothing changed. Both receive the same
+  // 202 body and NO session cookie, so the response cannot be used to find out who is registered. The browser then signs in with the details the
+  // person just typed (src/profile/controller.js): that works for a new profile and fails with the generic sign in message for an existing one.
+  // Marketing consent is stored UNVERIFIED (no email is sent yet, so nobody has confirmed the address belongs to the person who typed it).
+  // TODO(double opt in): when the owner approves email sending, send a confirmation link here and set marketingConsentVerified only when it is
+  // clicked; until then the marketing export leaves unverified contacts out. Do not add sending without an owner decision.
+  const SIGNUP_ACCEPTED = { ok: true, signedIn: false, message: 'Thanks. If this email address does not already have a profile, one has been created. Sign in with your email address and password to continue.' };
   async function signUp(r) {
     const b = await readJson(r.request, 8192);
     const v = validateSignup(b); // a form that fails validation costs nothing (no hashing, nothing stored), so only complete attempts are counted
@@ -169,15 +176,14 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     const profile = {
       id: rid('prof'), email: v.email, name: v.name, phone: v.phone, postcode: v.postcode, role: v.role, passwordHash,
       termsVersion: TERMS_VERSION, termsAcceptedAt: at,
-      marketingConsent: v.marketing, marketingConsentAt: v.marketing ? at : null, marketingTextVersion: v.marketing ? MARKETING_TEXT_VERSION : null,
-      unsubscribed: false, unsubscribedAt: null, lastSignInAt: at, createdAt: at, updatedAt: at,
+      marketingConsent: v.marketing, marketingConsentAt: v.marketing ? at : null, marketingTextVersion: v.marketing ? MARKETING_TEXT_VERSION : null, marketingConsentVerified: false,
+      unsubscribed: false, unsubscribedAt: null, lastSignInAt: null, createdAt: at, updatedAt: at,
     };
-    // A taken email gets one fixed answer. Without email verification the form cannot hide this entirely, so sign up is also limited per address and per email.
-    if (!(await pstore.createProfile(profile))) throw new HttpError('SIGNUP_FAILED', 'We could not create a profile with those details. If you already have one, sign in instead.');
-    if (v.marketing) await pstore.addConsentEvent({ id: rid('cons'), profileId: profile.id, at, consent: true, textVersion: MARKETING_TEXT_VERSION, text: MARKETING_TEXTS[MARKETING_TEXT_VERSION], source: 'signup' });
-    await pstore.purgeSessions(at);
-    await startSession(r, profile);
-    return json({ profile: await view(profile) }, 201);
+    if (await pstore.createProfile(profile)) {
+      if (v.marketing) await pstore.addConsentEvent({ id: rid('cons'), profileId: profile.id, at, consent: true, textVersion: MARKETING_TEXT_VERSION, text: MARKETING_TEXTS[MARKETING_TEXT_VERSION], source: 'signup' });
+      await pstore.purgeSessions(at);
+    }
+    return json(SIGNUP_ACCEPTED, 202);
   }
 
   async function signIn(r) {
@@ -185,7 +191,11 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     const email = cleanText(b.email, 254).toLowerCase();
     const password = typeof b.password === 'string' ? b.password : '';
     await limit(`profile:signin:ip:${await ipKey(r.request)}`, config.profileSigninIpMax, 600);
-    await limit(`profile:signin:email:${(await sha256Hex(email)).slice(0, 32)}`, config.profileSigninEmailMax, 900);
+    // M4: the throttle is keyed on email plus address, so someone guessing at a known email only throttles their own address; a higher ceiling per
+    // email across all addresses (PROFILE_SIGNIN_EMAIL_GLOBAL_MAX) slows guessing that is spread over many addresses. Counted before the password is checked (atomic).
+    const emailHash = (await sha256Hex(email)).slice(0, 32);
+    await limit(`profile:signin:emailip:${emailHash}:${await ipKey(r.request)}`, config.profileSigninEmailMax, 900);
+    await limit(`profile:signin:email:${emailHash}`, config.profileSigninEmailGlobalMax, 900);
     if (!email || !password || password.length > 200) {
       await dummyVerify(password);
       throw new HttpError('INVALID_CREDENTIALS', GENERIC_SIGNIN);
@@ -240,7 +250,7 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     if (typeof b.marketing !== 'boolean') throw new HttpError('BAD_REQUEST', 'marketing must be true or false.');
     const at = iso();
     const patch = b.marketing
-      ? { marketingConsent: true, marketingConsentAt: at, marketingTextVersion: MARKETING_TEXT_VERSION, unsubscribed: false, unsubscribedAt: null, updatedAt: at }
+      ? { marketingConsent: true, marketingConsentAt: at, marketingTextVersion: MARKETING_TEXT_VERSION, marketingConsentVerified: false, unsubscribed: false, unsubscribedAt: null, updatedAt: at }
       : { marketingConsent: false, unsubscribed: true, unsubscribedAt: at, updatedAt: at };
     await pstore.updateProfile(profile.id, patch);
     await pstore.addConsentEvent({ id: rid('cons'), profileId: profile.id, at, consent: b.marketing, textVersion: b.marketing ? MARKETING_TEXT_VERSION : null, text: b.marketing ? MARKETING_TEXTS[MARKETING_TEXT_VERSION] : null, source: 'preferences' });
@@ -252,6 +262,10 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     const b = await readJson(r.request, 1024);
     await limit(`profile:del:${profile.id}`, 5, 3600);
     if (!(await verifyPassword(typeof b.password === 'string' ? b.password : '', profile.passwordHash)).ok) throw new HttpError('INVALID_CREDENTIALS', 'Your password is not right.');
+    // L6: the consent record outlives the account, anonymised (salted hash of the address, no name or email), so the Spam Act 2003 evidence and an
+    // unsubscribe survive. Purged after CONSENT_ARCHIVE_YEARS by the scheduled cleanup. The privacy policy should say so.
+    const at = iso();
+    await pstore.archiveConsent({ profileId: profile.id, emailHash: await sha256Hex(`${config.ipHashSalt}consent:${profile.email}`), archivedAt: at, finalConsent: !!profile.marketingConsent && !profile.unsubscribed, newId: rid('cons') });
     await pstore.deleteProfile(profile.id);
     r.setCookie = sessionCookie('', 0);
     return json({ ok: true });
@@ -405,13 +419,15 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     const given = bearerToken(request);
     if (!given || !(await secretEqual(given, config.adminToken))) throw new HttpError('UNAUTHORISED', 'Not authorised.');
   }
-  const marketable = (c) => !!c.marketingConsent && !c.unsubscribed;
-  const statusOf = (c) => (c.unsubscribed ? 'unsubscribed' : c.marketingConsent ? 'consented' : 'no consent');
+  // M3: consent only counts for marketing once the address has been verified (double opt in, not built yet), unless the owner asks for unverified too.
+  const consented = (c) => !!c.marketingConsent && !c.unsubscribed;
+  const marketable = (c) => consented(c) && !!c.marketingConsentVerified;
+  const statusOf = (c) => (c.unsubscribed ? 'unsubscribed' : c.marketingConsent ? (c.marketingConsentVerified ? 'consented' : 'consented (unverified)') : 'no consent');
   const contactView = (c) => ({
     id: c.id, name: c.name, email: c.email, phone: c.phone || '', postcode: c.postcode || '', role: c.role || '', createdAt: c.createdAt, lastSignInAt: c.lastSignInAt || null,
     designs: c.designs, residentialDesigns: c.residentialDesigns, commercialDesigns: c.commercialDesigns,
     marketingConsent: !!c.marketingConsent, marketingConsentAt: c.marketingConsentAt || null, marketingTextVersion: c.marketingTextVersion || null,
-    unsubscribed: !!c.unsubscribed, unsubscribedAt: c.unsubscribedAt || null, marketingStatus: statusOf(c), marketable: marketable(c),
+    unsubscribed: !!c.unsubscribed, unsubscribedAt: c.unsubscribedAt || null, marketingStatus: statusOf(c), marketingConsentVerified: !!c.marketingConsentVerified, marketable: marketable(c), consentedUnverified: consented(c) && !c.marketingConsentVerified,
   });
   /** consent=yes|no (yes means marketable), type, from and to (YYYY-MM-DD, Sydney date), designs=none|some, mode=residential|commercial|both, suburb, q. */
   function applyFilters(list, q) {
@@ -444,25 +460,27 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     await adminAuth(r.request);
     const all = await pstore.listContacts();
     const list = applyFilters(all, r.url.searchParams);
-    return json({ contacts: list.map(contactView), total: all.length, matching: list.length, marketable: all.filter(marketable).length });
+    return json({ contacts: list.map(contactView), total: all.length, matching: list.length, marketable: all.filter(marketable).length, consentedUnverified: all.filter((c) => consented(c) && !c.marketingConsentVerified).length });
   }
   const CSV_COLUMNS = ['Name', 'Email', 'Phone', 'Postcode or suburb', 'I am a', 'Joined (DD/MM/YYYY)', 'Designs saved', 'Residential designs', 'Commercial designs', 'Marketing status', 'Consent date (DD/MM/YYYY)', 'Consent wording version'];
   async function adminCsv(r) {
     await adminAuth(r.request);
     const scope = r.url.searchParams.get('scope') === 'all' ? 'all' : 'marketing';
+    // M3: the marketing scope leaves out contacts whose consent is unverified. includeUnverified=1 is the owner's explicit, labelled override.
+    const includeUnverified = scope === 'marketing' && ['1', 'true', 'yes'].includes(String(r.url.searchParams.get('includeUnverified') || '').toLowerCase());
     let list = applyFilters(await pstore.listContacts(), r.url.searchParams);
-    if (scope === 'marketing') list = list.filter(marketable); // consenting and not unsubscribed, always, whatever the filters
-    const header = scope === 'all' ? [...CSV_COLUMNS, 'Note'] : CSV_COLUMNS;
+    if (scope === 'marketing') list = list.filter(includeUnverified ? consented : marketable); // consenting and not unsubscribed, always, whatever the filters
+    const header = scope === 'all' ? [...CSV_COLUMNS, 'Note'] : includeUnverified ? [...CSV_COLUMNS, 'Consent verified'] : CSV_COLUMNS;
     const rows = list.map((c) => {
       const cells = [c.name, c.email, c.phone, c.postcode, c.role, ddmmyyyy(c.createdAt), c.designs, c.residentialDesigns, c.commercialDesigns, statusOf(c), c.marketingConsentAt ? ddmmyyyy(c.marketingConsentAt) : '', c.marketingTextVersion || ''];
+      if (includeUnverified) return [...cells, c.marketingConsentVerified ? 'yes' : 'NO, UNVERIFIED'].map(csvCell).join(',');
       return (scope === 'all' ? [...cells, 'NOT FOR MARKETING'] : cells).map(csvCell).join(',');
     });
     const day = ddmmyyyy(iso()).replace(/\//g, '-');
-    const filename = scope === 'all' ? `glide-inside-all-contacts-NOT-FOR-MARKETING-${day}.csv` : `glide-inside-marketing-contacts-${day}.csv`;
-    return new Response(`﻿${[header.map(csvCell).join(','), ...rows].join('\r\n')}\r\n`, {
-      status: 200,
-      headers: { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': `attachment; filename="${filename}"`, 'cache-control': 'no-store', 'x-contact-count': String(rows.length) },
-    });
+    const filename = scope === 'all' ? `glide-inside-all-contacts-NOT-FOR-MARKETING-${day}.csv` : includeUnverified ? `glide-inside-marketing-contacts-INCLUDES-UNVERIFIED-CONSENT-${day}.csv` : `glide-inside-marketing-contacts-${day}.csv`;
+    const headers = { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': `attachment; filename="${filename}"`, 'cache-control': 'no-store', 'x-contact-count': String(rows.length) };
+    if (includeUnverified) headers['x-spam-act-warning'] = 'This export includes contacts whose marketing consent is UNVERIFIED. The Spam Act 2003 requires consent to be demonstrable; an unverified tick box is not.';
+    return new Response(`\uFEFF${[header.map(csvCell).join(','), ...rows].join('\r\n')}\r\n`, { status: 200, headers });
   }
   async function adminUnsubscribe(r, id) {
     await adminAuth(r.request);

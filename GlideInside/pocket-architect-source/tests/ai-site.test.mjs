@@ -20,6 +20,7 @@ import { scrubClaims } from '../server/lib/anthropic.js';
 import { readConfig } from '../server/lib/config.js';
 import { createApp } from '../server/lib/app.js';
 import { createMemoryStore } from '../server/lib/store.js';
+import { createMemoryPortalStore } from '../server/lib/portal-store.js';
 import { issueOrgToken, issueToken } from '../server/lib/entitlement.js';
 
 // A 15 m by 40 m lot, boundary clockwise on screen. Edge 2 (the bottom, y = 40000) is the front, edge 0 the rear.
@@ -349,18 +350,26 @@ const USAGE = { input_tokens: 5200, output_tokens: 180, cache_creation_input_tok
 function world(env = {}) {
   const clock = { t: T0 };
   const store = createMemoryStore();
+  const pstore = createMemoryPortalStore();
   const fetchImpl = async (url) => {
     assert.equal(String(url), 'https://api.anthropic.com/v1/messages');
     return jsonRes({ id: 'm', type: 'message', role: 'assistant', model: 'x', stop_reason: 'end_turn', usage: USAGE, content: [{ type: 'text', text: 'The house is fully compliant with the setbacks.' }, { type: 'tool_use', id: 'toolu_1', name: 'set_finish', input: { target: 'roof', colour: 'steel-charcoal' } }] });
   };
-  const app = createApp({ store, env: { SITE_URL: 'https://site.test', PORTAL_ENABLED: '1', ENTITLEMENT_SECRET: 'secret', ANTHROPIC_API_KEY: 'k', ...env }, fetchImpl, now: () => clock.t });
+  const app = createApp({ store, env: { SITE_URL: 'https://site.test', PORTAL_ENABLED: '1', ENTITLEMENT_SECRET: 'secret', ANTHROPIC_API_KEY: 'k', ...env }, fetchImpl, now: () => clock.t, portalStore: pstore });
   const w = { clock, store, app, config: app.config };
   w.call = async (method, path, { token, body } = {}) => {
     const headers = token ? { authorization: `Bearer ${token}`, 'content-type': 'application/json' } : {};
     const res = await app.fetch(new Request(`https://api.test${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) }));
     return { status: res.status, json: await res.clone().json().catch(() => null) };
   };
-  w.token = (orgId, loginId, role, cap) => issueOrgToken({ orgId, loginId, role, cap }, w.config, clock.t);
+  // Org AI tokens are re-checked against the database on every call (security review M2), so the org and the login must exist. The org has
+  // client top-ups switched on (they are off by default for a real new org), because these tests are about the pools and the top-up flow.
+  w.token = async (orgId, loginId, role, cap) => {
+    const at = new Date(clock.t).toISOString();
+    if (!(await pstore.getOrg(orgId))) await pstore.createOrg({ id: orgId, name: orgId, shortCode: orgId.toUpperCase().slice(0, 4), displayName: orgId, allowClientTopUps: true, allowClientEnquiries: true, createdAt: at });
+    if (!(await pstore.getUser(loginId))) await pstore.createUser({ id: loginId, orgId, role: role === 'client' ? 'client' : 'admin', name: loginId, email: null, username: `${loginId}-login`, passwordHash: 'x', mustChangePassword: false, status: 'active', houseAccess: 'all', createdAt: at });
+    return issueOrgToken({ orgId, loginId, role, cap }, w.config, clock.t);
+  };
   w.edit = (token) => (w.clock.t += 11000, w.call('POST', '/api/ai/edit', { token, body: { message: 'fit it', context: 'PROJECT "T" type=house units=mm\nLEVEL l_1 "Ground" active', history: [], activeLevelId: 'l_1' } }));
   w.pack = async (id = 'p_pub') => {
     const { entitlement } = await store.createEntitlement({ id: `ent_${id}`, projectId: id, stripeSessionId: `cs_${id}`, creditsTotal: 500, status: 'active', createdAt: new Date(clock.t).toISOString(), expiresAt: new Date(clock.t + 86400000 * 300).toISOString() });
@@ -430,12 +439,12 @@ test('org login: monthly credits are spent before top-up credits, and a request 
   assert.equal((await w.store.listEvents('ai_topup')).length, 1);
 });
 
-test('builder can turn client top-ups off for the organisation; default is on', async () => {
+test('builder can turn client top-ups off for the organisation (a seeded test org starts with them on; a new real org starts with them off)', async () => {
   const w = world({ ORG_MONTHLY_CREDITS: '1' });
   const builder = await w.token('o', 'b', 'builder');
   const client = await w.token('o', 'c', 'client');
-  const otherOrgClient = await w.token('o2', 'c', 'client');
-  assert.equal((await w.call('POST', '/api/ai/topup', { token: client, body: {} })).status, 200, 'on by default');
+  const otherOrgClient = await w.token('o2', 'c2', 'client');
+  assert.equal((await w.call('POST', '/api/ai/topup', { token: client, body: {} })).status, 200, 'on when the org allows it');
   assert.equal((await w.call('POST', '/api/ai/topup-setting', { token: client, body: { enabled: false } })).status, 403, 'a client cannot change it');
   assert.equal((await w.call('POST', '/api/ai/topup-setting', { token: builder, body: { enabled: 'no' } })).status, 400);
   assert.equal((await w.call('POST', '/api/ai/topup-setting', { token: builder, body: { enabled: false } })).json.clientTopUps, false);
@@ -476,7 +485,7 @@ test('per-organisation spend budgets stop one org before the global cap, and pub
   // Org A is paused, but org B and the public are not.
   assert.equal((await w.call('GET', '/api/health')).json.aiPaused, false);
   const pub = await w.pack();
-  const b = await w.token('b', 'l1', 'client');
+  const b = await w.token('b', 'l2', 'client');
   // Orgs together have used 1336 micro, over their combined 1000 micro share, so org B is stopped too.
   const bStop = await w.edit(b);
   assert.equal(bStop.status, 503);

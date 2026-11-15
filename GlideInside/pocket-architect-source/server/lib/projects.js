@@ -41,6 +41,16 @@ export function createProjects({ store, files, config, now = () => Date.now() })
     }
   }
 
+  // L8: how much one visitor address may store per day. The body size is only known after reading it, so this is counted after readBody
+  // (an atomic add of `bytes` to a per address, per day counter). A refused save writes nothing.
+  async function limitBytes(request, bytes) {
+    const ip = clientIp(request);
+    const key = `projbytes:${await sha(config.ipHashSalt + ip)}`;
+    if ((await store.hitRate(key, 86400, now(), bytes)) > config.projectDailyBytesPerIp) {
+      throw new HttpError('RATE_LIMITED', 'Too much has been saved from this connection today. Please try again tomorrow.', { retryAfter: Math.max(1, 86400 - (Math.floor(now() / 1000) % 86400)) });
+    }
+  }
+
   // Reads the body and returns { text, size, email, name }. Mirrors the live checks and messages.
   async function readBody(request) {
     const cap = config.projectMaxBytes;
@@ -96,6 +106,7 @@ export function createProjects({ store, files, config, now = () => Date.now() })
   async function create(request) {
     await limit(request, 'projsave', config.projectSaveRateMax, 3600);
     const b = await readBody(request);
+    await limitBytes(request, b.size);
     const id = rand(15);
     const editKey = rand(24);
     const ip = clientIp(request);
@@ -144,6 +155,7 @@ export function createProjects({ store, files, config, now = () => Date.now() })
       throw new HttpError('EXPIRED', 'That shared link has expired. Save again to make a new link.');
     }
     const b = await readBody(request);
+    await limitBytes(request, b.size);
     await files.put(r2key(id), b.text, { httpMetadata: { contentType: 'application/json' } });
     const at = iso();
     const exp = expiryFrom();

@@ -82,10 +82,24 @@ export function corsHeaders(request, config) {
   return headers;
 }
 
+// Security headers for API responses (security review M5). The API only ever returns JSON or a downloaded file, so the CSP is as tight as it
+// gets: nothing may load or run from an API response and it cannot be framed. The static site's headers are set in Cloudflare (SECURITY-HEADERS.md).
+export const SECURITY_HEADERS = {
+  'x-content-type-options': 'nosniff',
+  'referrer-policy': 'strict-origin-when-cross-origin',
+  'content-security-policy': "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+};
+
+/** Add the security headers to a response unless it already set that header (an HTML export sets its own sandbox CSP). */
+export function withSecurityHeaders(res) {
+  for (const [k, v] of Object.entries(SECURITY_HEADERS)) if (!res.headers.has(k)) res.headers.set(k, v);
+  return res;
+}
+
 export function json(body, status = 200, headers = {}) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...headers },
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...SECURITY_HEADERS, ...headers },
   });
 }
 
@@ -140,11 +154,17 @@ export async function readJson(request, maxBytes) {
 
 export const bearerToken = (request) => /^Bearer\s+(\S+)$/i.exec(request.headers.get('authorization') || '')?.[1] || null;
 
+// L13: the visitor address is the one Cloudflare puts in CF-Connecting-IP (a client cannot set it: Cloudflare overwrites it). X-Forwarded-For and
+// X-Real-IP are spoofable when the Worker is reached some other way, so they are ignored unless the host is NOT behind Cloudflare and says so
+// (TRUST_FORWARDED_HEADERS=1). With neither, every request shares the address "unknown", which is the safe (strictest) behaviour.
+let trustForwarded = false;
+export const setTrustForwardedHeaders = (on) => {
+  trustForwarded = on === true;
+};
+
 export function clientIp(request) {
-  return (
-    request.headers.get('cf-connecting-ip') ||
-    (request.headers.get('x-forwarded-for') || '').split(',')[0].trim() ||
-    request.headers.get('x-real-ip') ||
-    'unknown'
-  );
+  const cf = request.headers.get('cf-connecting-ip');
+  if (cf) return cf.trim();
+  if (trustForwarded) return (request.headers.get('x-forwarded-for') || '').split(',')[0].trim() || request.headers.get('x-real-ip') || 'unknown';
+  return 'unknown';
 }

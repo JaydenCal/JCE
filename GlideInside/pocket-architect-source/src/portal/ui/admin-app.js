@@ -120,7 +120,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
     return h('article', { class: 'pp-card pp-adm-req', dataset: { id: q.id } },
       h('div', { class: 'pp-card-head' }, h('h3', null, q.companyLegalName), h('span', { class: 'pp-sub' }, `Received ${when(q.createdAt)}`)),
       h('div', { class: 'pp-adm-grid' },
-        line('ABN', q.abn), line('Trading name', q.tradingName), line('Contact', `${q.firstName} ${q.lastName}`), line('Email', q.email), line('Mobile', q.mobile), line('Region', q.region),
+        line('ABN', q.abn || 'ABN needed before billing'), line('Trading name', q.tradingName), line('Contact', `${q.firstName} ${q.lastName}`.trim()), line('Email', q.email), line('Phone', q.mobile), line('Region', q.region),
         line('Homes per year', q.homesPerYear != null ? String(q.homesPerYear) : ''), line('Heard about us', q.howHeard), line('Trial terms', q.termsVersion ? `Accepted ${when(q.consentAt)} (version ${q.termsVersion})` : '')),
       actions);
   }
@@ -330,16 +330,17 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
       toast(errorMessage(e), { kind: 'error' });
     }
   }
-  async function exportContacts(scope, btn) {
+  async function exportContacts(scope, btn, { includeUnverified = false } = {}) {
+    if (includeUnverified && !globalThis.confirm?.('WARNING: this export includes contacts whose marketing consent has NOT been verified.\n\nThe Spam Act 2003 requires consent to be demonstrable. Someone may have typed another person\'s email address, and an unverified tick box does not prove consent.\n\nExport them anyway?')) return;
     await busy(btn, async () => {
-      const out = await api.profileCsv(scope, contactFilters);
+      const out = await api.profileCsv(scope, includeUnverified ? { ...contactFilters, includeUnverified: 1 } : contactFilters);
       downloadText(out.text, out.filename, 'text/csv');
       toast(`${out.count} ${out.count === 1 ? 'contact' : 'contacts'} exported to ${out.filename}.`, { kind: 'ok', timeout: 8000 });
     });
   }
   function contactsSection() {
     const head = h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Contacts'),
-      h('p', { class: 'pp-lead pp-lead--sm' }, contacts ? `${contacts.total} free ${contacts.total === 1 ? "profile" : "profiles"}, ${contacts.marketable} can be marketed to (ticked the box and not unsubscribed). Marketing is opt in. Nothing is emailed from here.` : 'Free profile contacts could not be loaded. The profile service may not be switched on yet.')));
+      h('p', { class: 'pp-lead pp-lead--sm' }, contacts ? `${contacts.total} free ${contacts.total === 1 ? "profile" : "profiles"}, ${contacts.marketable} can be marketed to (ticked the box, address verified, not unsubscribed)${contacts.consentedUnverified ? `, and ${contacts.consentedUnverified} ticked the box but are unverified (nothing confirms the address is theirs, so they are left out of the export)` : ''}. Marketing is opt in. Nothing is emailed from here.` : 'Free profile contacts could not be loaded. The profile service may not be switched on yet.')));
     if (!contacts) return h('div', { id: 'contacts-section' }, head);
     const sel = (key, label, options) => h('label', { class: 'pp-sub', style: { display: 'grid', gap: '2px', fontSize: '12px' } }, label,
       h('select', { 'aria-label': label, dataset: { filter: key }, onchange: (e) => { contactFilters[key] = e.target.value; refreshContacts(); } },
@@ -354,14 +355,15 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
       sel('mode', 'Design type', [['', 'Any'], ['residential', 'Residential'], ['commercial', 'Commercial'], ['both', 'Both']]),
       txt('suburb', 'Suburb or postcode'));
     const buttons = h('div', { class: 'pp-actions pp-actions--tight', style: { margin: '12px 0' } },
-      h('button', { class: 'pp-btn pp-btn--primary pp-btn--sm', type: 'button', id: 'export-marketing', onclick: (e) => exportContacts('marketing', e.currentTarget) }, icon('check', 15), 'Export for marketing (consenting contacts only)'),
+      h('button', { class: 'pp-btn pp-btn--primary pp-btn--sm', type: 'button', id: 'export-marketing', onclick: (e) => exportContacts('marketing', e.currentTarget) }, icon('check', 15), 'Export for marketing (verified consent only)'),
+      h('button', { class: 'pp-btn pp-btn--sm', type: 'button', id: 'export-unverified', title: 'Includes contacts whose consent is unverified. The Spam Act 2003 requires consent to be demonstrable.', onclick: (e) => exportContacts('marketing', e.currentTarget, { includeUnverified: true }) }, 'Export including UNVERIFIED consent (Spam Act risk)'),
       h('button', { class: 'pp-btn pp-btn--sm', type: 'button', id: 'export-all', onclick: (e) => exportContacts('all', e.currentTarget) }, 'Export everyone (not for marketing)'));
     const flag = (c, btn) => busy(btn, async () => {
       await api.profileUnsubscribe(c.id, !c.unsubscribed);
       toast(c.unsubscribed ? 'Unsubscribe flag cleared. They are not marketable until they opt in again.' : 'Marked unsubscribed. They are left out of the marketing export.', { kind: 'ok' });
       await refreshContacts();
     });
-    const status = (c) => (c.unsubscribed ? chip('Unsubscribed', 'warn') : c.marketingConsent ? chip('Consented', 'ok') : chip('No consent', 'muted'));
+    const status = (c) => (c.unsubscribed ? chip('Unsubscribed', 'warn') : c.marketingConsent ? (c.marketingConsentVerified ? chip('Consented', 'ok') : chip('Consented, unverified', 'warn')) : chip('No consent', 'muted'));
     const rows = contacts.contacts.map((c) => h('tr', { dataset: { contact: c.id } },
       td('Name', c.name), td('Email', c.email), td('Phone', c.phone), td('Suburb or postcode', c.postcode), td('I am a', c.role), td('Joined', when(c.createdAt)),
       td('Designs', `${c.designs}${c.commercialDesigns ? ` (${c.commercialDesigns} commercial)` : ''}`), td('Marketing', status(c), c.marketingConsentAt ? h('small', { style: { display: 'block' } }, `${when(c.marketingConsentAt)} ${c.marketingTextVersion || ''}`) : null),

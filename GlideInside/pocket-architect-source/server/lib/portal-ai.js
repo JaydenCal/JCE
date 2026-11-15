@@ -92,6 +92,6 @@ export async function addTopUp({ store, config, org, user, nowMs, randomId }) {
 export async function aiToken({ config, org, user, nowMs }) {
   if (!config.entitlementSecret) throw new HttpError('SERVER_NOT_CONFIGURED', 'ENTITLEMENT_SECRET is not set.');
   const ttlSeconds = 8 * 3600;
-  const token = await issueOrgToken({ orgId: org.id, loginId: user.id, role: aiRole(user), cap: monthlyCap(org, config), ttlSeconds }, config, nowMs);
+  const token = await issueOrgToken({ orgId: org.id, loginId: user.id, role: aiRole(user), cap: monthlyCap(org, config), epoch: user.sessionEpoch || 0, ttlSeconds }, config, nowMs);
   return { token, role: aiRole(user), expiresAt: new Date(nowMs + ttlSeconds * 1000).toISOString() };
 }

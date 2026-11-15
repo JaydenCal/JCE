@@ -83,6 +83,7 @@ export function accountView(org, nowMs) {
     status: s.status, trialStartedAt: s.trialStartedAt, trialEndsAt: s.trialEndsAt, daysLeft: s.daysLeft, lastTrialDay: s.lastTrialDay,
     internal: s.internal === true, readOnly: s.readOnly, canIssueClients: s.canIssueClients, canTopUp: s.canTopUp, cardOnFile: s.cardOnFile,
     card: s.cardOnFile ? { brand: org.cardBrand || '', last4: org.cardLast4 || '' } : null, dataKeptUntil: s.dataKeptUntil,
+    abnNeeded: !org.abn, // the short trial form does not ask for the ABN: it is added in the portal before billing
   };
 }
 
@@ -107,17 +108,31 @@ const oneLine = (v, name, { max = 120, required = false } = {}) => {
   return s;
 };
 
-/** Checks and cleans the body of POST /portal/trial-request. `abnValid(digits)` is passed in by portal.js. Throws BAD_REQUEST. */
+/**
+ * Checks and cleans the body of POST /portal/trial-request. `abnValid(digits)` is passed in by portal.js. Throws BAD_REQUEST.
+ * Short form: name (one field, split into first and last best effort), company, email, phone (any Australian number, landline or mobile) and the
+ * consent tickbox. ABN and region are optional here and collected later in the portal ("ABN needed before billing"); an ABN that IS sent must pass
+ * the checksum. The older long form (companyLegalName, firstName, lastName, mobile) still works.
+ */
 export function parseTrialRequest(body, { abnValid }) {
   if (body.consent !== true) throw new HttpError('BAD_REQUEST', 'Please tick the box to agree to the trial terms.');
-  const companyLegalName = oneLine(body.companyLegalName, 'Company legal name', { required: true });
-  const digits = String(body.abn || '').replace(/\s+/g, '');
-  if (!abnValid(digits)) throw new HttpError('BAD_REQUEST', 'Enter the 11 digit ABN for your business. That ABN does not look right.');
+  const companyLegalName = oneLine(body.company ?? body.companyLegalName, 'Company name', { required: true });
+  let firstName = oneLine(body.firstName, 'First name', { max: 60 });
+  let lastName = oneLine(body.lastName, 'Last name', { max: 60 });
+  if (!firstName) {
+    const full = oneLine(body.name, 'Name', { required: true, max: 121 }).replace(/\s+/g, ' ');
+    const i = full.lastIndexOf(' ');
+    firstName = i > 0 ? full.slice(0, i) : full;
+    lastName = i > 0 ? full.slice(i + 1) : '';
+    if (firstName.length > 60 || lastName.length > 60) throw new HttpError('BAD_REQUEST', 'Name is too long.');
+  }
+  const digits = String(body.abn ?? '').replace(/\s+/g, '');
+  if (digits && !abnValid(digits)) throw new HttpError('BAD_REQUEST', 'That ABN does not look right. It has 11 digits, or leave it blank and add it later.');
   const email = oneLine(body.email, 'Email', { required: true, max: 160 }).toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new HttpError('BAD_REQUEST', 'That email address does not look right.');
-  const mobile = oneLine(body.mobile, 'Mobile', { required: true, max: 30 });
+  const mobile = oneLine(body.phone ?? body.mobile, 'Phone', { required: true, max: 30 });
   const mdigits = mobile.replace(/[\s()+-]/g, '');
-  if (!/^\d{8,15}$/.test(mdigits)) throw new HttpError('BAD_REQUEST', 'That mobile number does not look right.');
+  if (!/^\d{8,15}$/.test(mdigits)) throw new HttpError('BAD_REQUEST', 'That phone number does not look right.');
   let homes = null;
   if (body.homesPerYear !== undefined && body.homesPerYear !== null && body.homesPerYear !== '') {
     const n = Number(body.homesPerYear);
@@ -125,11 +140,10 @@ export function parseTrialRequest(body, { abnValid }) {
     homes = n;
   }
   return {
-    companyLegalName, abn: `${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5, 8)} ${digits.slice(8)}`,
+    companyLegalName, abn: digits ? `${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5, 8)} ${digits.slice(8)}` : '',
     tradingName: oneLine(body.tradingName, 'Trading name'),
-    firstName: oneLine(body.firstName, 'First name', { required: true, max: 60 }),
-    lastName: oneLine(body.lastName, 'Last name', { required: true, max: 60 }),
-    email, mobile, region: oneLine(body.region, 'Region', { required: true, max: 80 }),
+    firstName, lastName,
+    email, mobile, region: oneLine(body.region, 'Region', { max: 80 }),
     homesPerYear: homes, howHeard: oneLine(body.howHeard, 'How you heard about us', { max: 200 }),
   };
 }
@@ -139,8 +153,8 @@ export function notificationText(r, { siteUrl = '' } = {}) {
   return [
     `A builder has asked for a free 14 day trial of the Glide Inside builder portal.`,
     '',
-    `Company: ${r.companyLegalName}`, r.tradingName ? `Trading name: ${r.tradingName}` : null, `ABN: ${r.abn}`,
-    `Contact: ${r.firstName} ${r.lastName}`, `Email: ${r.email}`, `Mobile: ${r.mobile}`, `Region: ${r.region}`,
+    `Company: ${r.companyLegalName}`, r.tradingName ? `Trading name: ${r.tradingName}` : null, `ABN: ${r.abn || 'not given yet (needed before billing)'}`,
+    `Contact: ${[r.firstName, r.lastName].filter(Boolean).join(' ')}`, `Email: ${r.email}`, `Phone: ${r.mobile}`, r.region ? `Region: ${r.region}` : null,
     r.homesPerYear != null ? `Homes built per year: ${r.homesPerYear}` : null, r.howHeard ? `Heard about us: ${r.howHeard}` : null,
     '',
     `Review and approve or decline: ${siteUrl}/portal/admin/`,

@@ -142,6 +142,23 @@ export function topUpRecord({ orgId, loginId, config, nowMs }) {
   return { orgId, loginId, credits: config.topUpCredits, amountCents: config.topUpCents, currency: 'aud', gstInclusive: true, createdAt: new Date(nowMs).toISOString() };
 }
 
+/** How many top-ups this CLIENT login has bought in the Sydney month of `nowMs` (each is billed to the builder). */
+export function clientTopUpsThisMonth(events, orgId, loginId, nowMs) {
+  const key = sydneyMonth(nowMs).key;
+  return events.filter((e) => e.detail?.orgId === orgId && e.detail?.loginId === loginId && e.detail?.role === 'client' && sydneyMonth(Date.parse(e.detail.createdAt || e.createdAt) || 0).key === key).length;
+}
+
+/**
+ * L2: the monthly ceiling on client self top-ups. Two checks: an atomic per login per month counter (so a burst of parallel requests cannot
+ * overshoot) and the logged billable events (exact month, survives counter resets). Throws RATE_LIMITED when the login is at its ceiling.
+ */
+export async function enforceClientTopUpCap({ store, config, orgId, loginId, nowMs, HttpError }) {
+  const max = config.clientTopUpMonthlyMax;
+  const refuse = () => new HttpError('RATE_LIMITED', max > 0 ? `This login has reached its limit of ${max} top-ups this month. Ask your builder.` : 'Client top-ups are not available.', { retryAfter: 3600, monthlyMax: max });
+  if (clientTopUpsThisMonth(await store.listEvents('ai_topup'), orgId, loginId, nowMs) >= max) throw refuse();
+  if ((await store.hitRate(`topupm:${sydneyMonth(nowMs).key}:${orgId}:${loginId}`, 86400 * 370, nowMs)) > max) throw refuse();
+}
+
 /** Latest on/off setting for client top-ups in an org (default on) from the logged setting events. */
 export function clientTopUpsEnabled(events, orgId) {
   const mine = events.filter((e) => e.detail?.orgId === orgId);

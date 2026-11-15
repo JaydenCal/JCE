@@ -4,7 +4,7 @@
 // The ring is open (no repeated closing point), x is longitude or easting, y is latitude or northing. Pure, no DOM, no network.
 // KML is read with a small tag scanner (no DOMParser) so the same code runs in the browser and in tests.
 
-import { unzipSync, strFromU8 } from '../../lib/fflate.js';
+import { Unzip, UnzipInflate, UnzipPassThrough, strFromU8 } from '../../lib/fflate.js';
 import { resolveCrs, WGS84_ID, looksLonLat } from './crs.js';
 
 export class UploadError extends Error {
@@ -13,6 +13,79 @@ export class UploadError extends Error {
     this.name = 'UploadError';
     this.code = code;
   }
+}
+
+// Size caps (security review L16). A boundary file is a few hundred kilobytes in practice; a crafted file must not hang the browser tab.
+export const MAX_FILE_BYTES = 30 * 1024 * 1024; // one file as chosen (a zip counts its compressed size)
+export const MAX_TOTAL_BYTES = 60 * 1024 * 1024; // every file chosen together
+export const MAX_UNZIPPED_BYTES = 50 * 1024 * 1024; // all entries of a zip, after decompression
+export const MAX_ZIP_ENTRIES = 500;
+const tooLarge = (what = 'That file') => new UploadError(`${what} is too large to read here. A boundary file should be a few megabytes at most. Export just the lot or site boundary and try again.`, 'TOO_LARGE');
+export const assertFileSize = (n, what) => {
+  if (n > MAX_FILE_BYTES) throw tooLarge(what);
+};
+
+/**
+ * Unzip with caps on the entry count and on the total DECOMPRESSED size. The zip is fed to a streaming inflater in small slices and stopped the
+ * moment a cap is passed, so a zip bomb (a tiny file that inflates to gigabytes, whatever its header claims) is refused before it is inflated.
+ */
+function safeUnzip(bytes, { badMessage, badCode = 'BAD_ZIP' }) {
+  const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  assertFileSize(u8.length, 'That zip file');
+  const out = {};
+  let total = 0;
+  let entries = 0;
+  let over = false;
+  let failed = false;
+  const unzipper = new Unzip();
+  unzipper.register(UnzipInflate);
+  unzipper.register(UnzipPassThrough);
+  unzipper.onfile = (file) => {
+    if (over || failed) return;
+    entries += 1;
+    if (entries > MAX_ZIP_ENTRIES) {
+      over = true;
+      return;
+    }
+    if (file.originalSize && total + file.originalSize > MAX_UNZIPPED_BYTES) {
+      over = true;
+      return;
+    }
+    const chunks = [];
+    file.ondata = (err, chunk, final) => {
+      if (over || failed) return;
+      if (err) {
+        failed = true;
+        return;
+      }
+      total += chunk.length;
+      if (total > MAX_UNZIPPED_BYTES) {
+        over = true;
+        file.terminate();
+        return;
+      }
+      chunks.push(chunk);
+      if (final) {
+        const all = new Uint8Array(chunks.reduce((n, c) => n + c.length, 0));
+        let at = 0;
+        for (const c of chunks) {
+          all.set(c, at);
+          at += c.length;
+        }
+        out[file.name] = all;
+      }
+    };
+    file.start();
+  };
+  try {
+    const SLICE = 16 * 1024;
+    for (let at = 0; at < u8.length && !over && !failed; at += SLICE) unzipper.push(u8.subarray(at, Math.min(u8.length, at + SLICE)), at + SLICE >= u8.length);
+  } catch {
+    if (!over) failed = true;
+  }
+  if (over) throw tooLarge('That zip file');
+  if (failed || !Object.keys(out).length) throw new UploadError(badMessage, badCode);
+  return out;
 }
 
 const num = (v) => Number(v);
@@ -51,6 +124,7 @@ const valid = (p) => p.ring.length >= 3 && Math.abs(area2(p.ring)) > 0;
 // Text from bytes: UTF-8 with an optional BOM, falling back to latin1 when the bytes are not valid UTF-8.
 export function textOf(bytes) {
   const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  assertFileSize(u8.length);
   try {
     return new TextDecoder('utf-8', { fatal: true }).decode(u8).replace(/^﻿/, '');
   } catch {
@@ -172,12 +246,7 @@ export function parseKML(input) {
 }
 
 export function parseKMZ(bytes) {
-  let files;
-  try {
-    files = unzipSync(bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes));
-  } catch {
-    throw new UploadError('That KMZ file could not be opened. Re-export it from Google Earth, or save as KML.', 'BAD_ZIP');
-  }
+  const files = safeUnzip(bytes, { badMessage: 'That KMZ file could not be opened. Re-export it from Google Earth, or save as KML.' });
   const names = Object.keys(files);
   const kml = names.find((n) => /(^|\/)doc\.kml$/i.test(n)) || names.find((n) => /\.kml$/i.test(n));
   if (!kml) throw new UploadError('There is no KML inside that KMZ file.', 'NO_KML');
@@ -320,12 +389,7 @@ export function parseShapefile({ shp, dbf = null, prj = null, name = '' }) {
 
 /** A zip holding a shapefile (.shp plus .dbf and .prj). */
 export function parseShapefileZip(bytes) {
-  let files;
-  try {
-    files = unzipSync(bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes));
-  } catch {
-    throw new UploadError('That zip file could not be opened.', 'BAD_ZIP');
-  }
+  const files = safeUnzip(bytes, { badMessage: 'That zip file could not be opened.' });
   const names = Object.keys(files).filter((n) => !/^__MACOSX\//.test(n));
   const shps = names.filter((n) => /\.shp$/i.test(n));
   if (!shps.length) {

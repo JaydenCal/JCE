@@ -19,12 +19,12 @@ import { passwordProblem } from '../../src/portal/credentials.js';
 import { sydneyDayStartPlus } from '../../src/portal/billing.js';
 import { HttpError, json, readJson, clientIp, bearerToken } from './http.js';
 import { signToken, verifyToken } from './entitlement.js';
+import { countLoginAttempt, clearLoginCounters } from './login-guard.js';
 import { hashPassword, verifyPassword, dummyVerify, secretEqual, randomBytes, hex } from './password.js';
 import * as credits from './credits.js';
 import * as stripe from './stripe.js';
 
 const DAY = 86400000;
-const LOCKOUT_MS = 15 * 60000;
 export const SUB_PREFIX = 'csub_';
 const GRACE_PREFIX = 'cgrace:';
 export const TRIAL_ROLE = 'commercial_trial';
@@ -467,24 +467,12 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
     if (!username || !password || password.length > 512) throw bad();
     const nowMs = now();
     const ps = needPstore();
-    const userKey = `ct:u:${username}`;
-    const ipKey = `ct:ip:${clientIp(request)}`;
-    for (const [key, code] of [[userKey, 'ACCOUNT_LOCKED'], [ipKey, 'RATE_LIMITED']]) {
-      const f = await ps.getFailure(key);
-      if (f?.lockedUntil && f.lockedUntil > nowMs) {
-        const retryAfter = Math.ceil((f.lockedUntil - nowMs) / 1000);
-        throw new HttpError(code, code === 'ACCOUNT_LOCKED' ? `Too many failed attempts. Try again in ${Math.ceil(retryAfter / 60)} minutes.` : 'Too many attempts. Try again later.', { retryAfter });
-      }
-    }
+    // M1 and M4: the attempt is counted before the password is checked (atomic), per username AND address, with a higher per username ceiling.
+    const attempt = await countLoginAttempt(ps, { scope: 'ct:', subject: username, request, nowMs, config });
     const rec = await loadTrial();
     const ok = rec && rec.username === username ? (await verifyPassword(password, rec.passwordHash)).ok : (await dummyVerify(password), false);
-    if (!ok) {
-      const u = await ps.addFailure(userKey, nowMs, { windowMs: LOCKOUT_MS, max: config.loginMaxFailures, lockMs: LOCKOUT_MS });
-      await ps.addFailure(ipKey, nowMs, { windowMs: LOCKOUT_MS, max: config.loginIpMaxFailures, lockMs: LOCKOUT_MS });
-      if (u.lockedUntil) throw new HttpError('ACCOUNT_LOCKED', `Too many failed attempts. Try again in ${Math.ceil(LOCKOUT_MS / 60000)} minutes.`, { retryAfter: Math.ceil(LOCKOUT_MS / 1000) });
-      throw bad();
-    }
-    await ps.clearFailure(userKey);
+    if (!ok) throw attempt.failed();
+    await attempt.succeeded();
     if (rec.disabled) throw new HttpError('TRIAL_DISABLED', 'This trial login has been switched off.');
     if (trialExpired(rec)) throw new HttpError('TRIAL_EXPIRED', 'This trial login has expired.');
     bump(rec, 'logins');
@@ -617,7 +605,7 @@ export function createCommercial({ store, pstore = null, config, fetchImpl, now 
         createdAt: old?.createdAt || iso(), updatedAt: iso(), lastLoginAt: old?.lastLoginAt || null, lastUsedAt: old?.lastUsedAt || null, usage: old?.usage || emptyUsage(), aiUsed: old?.aiUsed || 0,
       };
       await saveTrial(rec); // epoch + 1 signs out every device that held the previous login
-      await needPstore().clearFailure(`ct:u:${username}`);
+      await clearLoginCounters(needPstore(), { scope: 'ct:', subject: username });
       return json(await adminView(rec));
     }
     if (sub === '/settings' && method === 'POST') {

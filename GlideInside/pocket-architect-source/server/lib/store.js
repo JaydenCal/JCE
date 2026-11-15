@@ -183,18 +183,24 @@ export function createD1Store(db) {
     async releaseWebhookEvent(id) {
       await run('DELETE FROM webhook_events WHERE id = ?1', id);
     },
-    // Fixed window counter: returns the count in the current window, including this hit.
-    async hitRate(key, windowSec, nowMs) {
+    // Fixed window counter: returns the count in the current window, including this hit. `amount` (default 1) lets a caller count bytes or units.
+    async hitRate(key, windowSec, nowMs, amount = 1) {
       const start = Math.floor(nowMs / (windowSec * 1000)) * windowSec * 1000;
       const row = await first(
-        `INSERT INTO rate_limits (key, window_start, count) VALUES (?1, ?2, 1)
+        `INSERT INTO rate_limits (key, window_start, count) VALUES (?1, ?2, ?3)
          ON CONFLICT(key) DO UPDATE SET
-           count = CASE WHEN rate_limits.window_start = ?2 THEN rate_limits.count + 1 ELSE 1 END,
+           count = CASE WHEN rate_limits.window_start = ?2 THEN rate_limits.count + ?3 ELSE ?3 END,
            window_start = ?2
          RETURNING count`,
-        key, start,
+        key, start, amount,
       );
-      return Number(row?.count ?? 1);
+      if (Math.random() < 0.01) await this.purgeRateLimits(nowMs).catch(() => null); // L7: housekeeping on write, so the table cannot grow forever even without the cron
+      return Number(row?.count ?? amount);
+    },
+    /** L7: drop counters whose window ended long ago. The longest ordinary window is a day; the monthly top-up counters (key topupm:) use a year. */
+    async purgeRateLimits(nowMs, olderThanMs = 2 * 86400000) {
+      await run("DELETE FROM rate_limits WHERE window_start < ?1 AND key NOT LIKE 'topupm:%'", nowMs - olderThanMs);
+      await run("DELETE FROM rate_limits WHERE window_start < ?1 AND key LIKE 'topupm:%'", nowMs - 800 * 86400000);
     },
     // Site lookup cache (JSON strings with an expiry).
     async getSiteCache(key, nowMs) {
@@ -451,12 +457,16 @@ export function createMemoryStore() {
     async releaseWebhookEvent(id) {
       hooks.delete(id);
     },
-    async hitRate(key, windowSec, nowMs) {
+    async hitRate(key, windowSec, nowMs, amount = 1) {
       const start = Math.floor(nowMs / (windowSec * 1000)) * windowSec * 1000;
       const row = rates.get(key);
-      const count = row && row.start === start ? row.count + 1 : 1;
+      const count = row && row.start === start ? row.count + amount : amount;
       rates.set(key, { start, count });
+      if (rates.size > 5000) await this.purgeRateLimits(nowMs);
       return count;
+    },
+    async purgeRateLimits(nowMs, olderThanMs = 2 * 86400000) {
+      for (const [k, r] of [...rates]) if (r.start < nowMs - (k.startsWith('topupm:') ? 800 * 86400000 : olderThanMs)) rates.delete(k);
     },
     async getSiteCache(key, nowMs) {
       const row = siteCache.get(key);

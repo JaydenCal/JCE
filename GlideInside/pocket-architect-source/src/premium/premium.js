@@ -255,9 +255,11 @@ export function createPremium(store, options = {}) {
       return null;
     }
     if (state.exporting) return null;
-    // Plan PDFs and DXF files: the terms come first (src/legal). Nothing is generated until they are accepted for the current version.
+    // Every export: the terms come first (src/legal). Nothing is generated until they are accepted for the current version (the server gates
+    // html, glb and obj as well as pdf and dxf since the 15/11/2026 security review). Only the PDF and DXF carry the terms note inside the file.
+    const gated = true;
     const planFile = type === 'pdf' || type === 'dxf';
-    if (planFile && !(await planTermsGate.require({ context: `export-${type}` }))) return null;
+    if (gated && !(await planTermsGate.require({ context: `export-${type}` }))) return null;
     state.exporting = type;
     topbar?.setBusy(type, `Preparing ${exportLabel(type)}`);
     try {
@@ -267,7 +269,7 @@ export function createPremium(store, options = {}) {
         out = await go();
       } catch (e) {
         // The server has no acceptance on record for this account (accepted on another device, or the record failed): ask and record again, once.
-        if (!(planFile && e?.code === 'TERMS_REQUIRED')) throw e;
+        if (!(gated && e?.code === 'TERMS_REQUIRED')) throw e;
         planTermsGate.forget();
         if (!(await planTermsGate.require({ context: `export-${type}` }))) return null;
         out = await go();
