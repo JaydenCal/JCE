@@ -15,7 +15,7 @@ import { MARKETING_TEXT, MARKETING_TEXT_VERSION, ROLES, passwordStrength } from 
 const STYLE = `
 .ps-prof-btn .ps-prof-dot{display:none}
 .ps-prof-btn[data-state="in"] .ps-prof-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ps-ok);margin-left:2px}
-.ps-prof-save-text{display:inline;font-weight:600}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}
+.ps-prof-save-text{display:inline;font-weight:600}.ps-shell .ps-topbar .ps-btn.ps-prof-save{height:40px;padding:0 16px!important;margin-right:8px;border-radius:8px;background:#1f7a4d!important;border-color:#1f7a4d!important;color:#fff!important;font-size:15px;gap:6px}.ps-shell .ps-topbar .ps-btn.ps-prof-save:hover{background:#18643f!important}.ps-shell .ps-topbar .ps-btn.ps-prof-save .ps-icon{color:#fff}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}
 @media (min-width:1700px){.ps-shell .ps-topbar .ps-prof-save .ps-prof-save-text{display:inline}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}}
 .gf-open .ps-prof-prompt{position:fixed;z-index:950;top:64px;bottom:auto}
 .ps-prof-prompt{position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:40;width:min(380px,calc(100% - 32px));padding:14px 14px 12px;background:var(--ps-panel);color:var(--ps-text);border:1px solid var(--ps-border-strong);border-left:4px solid var(--ps-accent);border-radius:var(--ps-radius-lg);box-shadow:var(--ps-shadow,0 6px 24px rgba(0,0,0,.2));animation:ps-toast-in .18s ease-out}
@@ -165,8 +165,16 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   }
   const designsBtn = h('button', { class: 'ps-btn ps-prof-btn', type: 'button', title: 'My designs', 'aria-label': 'My designs', dataset: { action: 'my-designs' }, onclick: () => openDesigns() }, glyph(GLYPH.designs), h('span', { class: 'ps-btn-text' }, 'My designs'));
   const accountBtn = h('button', { class: 'ps-btn ps-prof-btn', type: 'button', title: 'Your profile', 'aria-label': 'Your profile', dataset: { action: 'profile-account', state: 'in' }, onclick: () => openAccount() }, glyph(GLYPH.person), h('i', { class: 'ps-prof-dot' }));
-  if (anchor) anchor.after(saveBtn, designsBtn, accountBtn);
-  else refs.topbar?.append(saveBtn, designsBtn, accountBtn);
+  if (anchor) anchor.after(designsBtn, accountBtn);
+  else refs.topbar?.append(designsBtn, accountBtn);
+  // The big Save design button sits on the right beside Exports and Unlock (owner 15/11/2026), so it is easy to find.
+  const placeSave = () => {
+    const ex = refs.topbar?.querySelector('.psp-bar .psp-menu-wrap');
+    if (ex) ex.before(saveBtn);
+    else if (!saveBtn.isConnected) (anchor ? anchor.after(saveBtn) : refs.topbar?.append(saveBtn));
+  };
+  placeSave();
+  if (!refs.topbar?.querySelector('.psp-bar')) setTimeout(placeSave, 0), setTimeout(placeSave, 800);
 
   // Status bar ------------------------------------------------------------------------------------------------------------------
   const statusText = h('span', { class: 'ps-prof-status', role: 'status', 'aria-live': 'polite', dataset: { role: 'profile-status' } });
