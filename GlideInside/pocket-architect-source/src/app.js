@@ -25,6 +25,7 @@ import { createFrontageBar } from './ui/frontage.js';
 import { saveDesign, pickDesignFile } from './ui/files.js';
 import { createEmbed } from './ui/embed.js';
 import { initShare } from './ui/share.js';
+import { initProfiles } from './profile/index.js';
 import { createViewManager } from './ui/views.js';
 import { createSampleProject, SAMPLE_TEMPLATE } from './ui/sample.js';
 import { setTool } from './ui/toolstate.js';
@@ -38,6 +39,8 @@ import { backTarget, backLabel } from './ui/back-target.js';
 import { startView, readLastView } from './ui/view-mode.js';
 import { portalUrl } from './portal/links.js';
 import { createLotCard } from './lotcard/lot-card.js';
+import { createAerialToggle } from './ui/aerial-toggle.js';
+import { mountPanelHide } from './ui/panel-hide.js';
 import { createCommercialCard } from './commercial/lotcard.js';
 import { createCommercialPanel } from './commercial/ui/panel-commercial.js';
 import { enterCommercial, offerCommercial, commercialUi } from './commercial/mode.js';
@@ -129,6 +132,7 @@ async function main() {
   const views = createViewManager({ store, refs, editor, catalogue });
   const getViewer = views.getViewer;
   const panel = createPanel(refs, store, { catalogue, editor });
+  mountPanelHide(refs, { panel }); // hide or show the whole side panel (remembered per browser); also where the builder's "Show AI design assistant" setting lands
   const fileInput = h('input', { type: 'file', accept: 'application/json,.json', hidden: true, tabindex: '-1', 'aria-hidden': 'true' });
   refs.shell.append(fileInput);
 
@@ -198,9 +202,11 @@ async function main() {
     });
   }
 
+  let profiles = null; // free user profiles, started after the first frame (below)
   function save() {
     saveDesign(store);
     track('ps_project_saved');
+    profiles?.promptSave(); // signed out: a friendly, non blocking offer of a free profile (the file save carries on)
   }
 
   // Chrome -------------------------------------------------------------------------------------------------------------------
@@ -433,6 +439,7 @@ async function main() {
   api.lotCard = lotCard;
   if (!VIEWER && !demoMode()) api.commercial = createCommercialPanel({ store, host: refs.stage, editor });
   createMapCredit(refs.stage, store);
+  { const fab = createAerialToggle({ store, className: 'ps-aerial-fab', dataPs: 'aerial-toggle-stage' }); refs.stage.append(fab.el); } // Aerial on/off over the 2D plan and the 3D view (hidden while the lot card shows its own)
   if (!state.fromAutosave && !demoMode() && !narrow && !shareId && !VIEWER && !addressParam && !wantCommercial) createWelcome(refs.stage, store, { onChoose: openNew });
 
   // The commercial handoff. A layout already in commercial mode is left as it is (the link must not reset its rows). A design kept
@@ -473,6 +480,8 @@ async function main() {
   if (!demoMode()) await mountPremium();
   if (!demoMode() && !VIEWER && CONFIG.portalEnabled) await import('./portal/client-mode.js').then((m) => m.initPortalMode(window.__ps)).catch((e) => console.warn('[portal] client mode not available', e)).finally(() => window.__ps?.premium?.setPortalPending?.(false));
   else window.__ps?.premium?.setPortalPending?.(false);
+  // Free user profiles: save designs to an account. Hidden for builder and client logins, subscribers and internal accounts, and when the server has no profile service.
+  if (!demoMode() && !VIEWER) api.profilesReady = initProfiles(window.__ps, { refs }).then((p) => { profiles = p; window.__ps.profiles = p; return p; }).catch((e) => { console.warn('[profile] not available', e); return null; });
   if (!VIEWER) import('./ui/onboarding/index.js').then((m) => m.initOnboarding?.(window.__ps)).catch(() => {});
   return api;
 }

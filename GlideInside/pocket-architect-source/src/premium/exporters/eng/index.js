@@ -2,6 +2,7 @@
 //   toEngineeringPDF(project, { jsPDF, image, aerial, config, catalogue, paper, date, scale, builder, logo }) -> Uint8Array
 // The result has a non-enumerable `layout`: { paper, mode, sheets: [{ number, title, scale, kind }], pages: [kind] }.
 
+import { withoutAerial } from '../../../site/aerial-pref.js';
 import * as G from '../../../model/geometry.js';
 import { terrainAt } from '../../../site/model.js';
 import { schemeColours } from '../../../model/colour-schemes.js';
@@ -123,7 +124,7 @@ function withHouseFloorRL(project) {
 }
 
 export async function toEngineeringPDF(project0, options = {}) {
-  const project = withHouseFloorRL(project0);
+  const project = withHouseFloorRL(options.includeAerial === false ? withoutAerial(project0) : project0);
   const { jsPDF, image = null, aerial = null, config = {}, catalogue = null, date = new Date(), paper = null, scale = null } = options;
   if (typeof jsPDF !== 'function') throw new Error('toEngineeringPDF needs the jsPDF class (options.jsPDF)');
   const plan = engineeringSheets(project, { paper, scale, catalogue });
@@ -140,7 +141,7 @@ export async function toEngineeringPDF(project0, options = {}) {
   });
   const doc = withSuperscripts(scaledDoc(raw, p.k));
   const total = plan.list.length;
-  const ctx = { colours: schemeColours(project), project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, extraCredit: options.aerialCredit || '', analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
+  const ctx = { colours: schemeColours(project), project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, terms: options.terms || null, extraCredit: options.aerialCredit || '', analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
   // The aerial is composited once per view (the site plan, the key plan and the cover locality), turned and cropped as each is drawn.
   const bytes0 = await resolveAerial(project, { aerial });
   const lotA = project.site?.lot;

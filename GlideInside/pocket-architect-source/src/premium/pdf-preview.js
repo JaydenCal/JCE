@@ -13,6 +13,7 @@ import { el, clear, track, clamp } from './util.js';
 import { icon } from './icons.js';
 import { loadPdfjs } from './pdf-import.js';
 import { loadJsPDF, coverImage, exportPayload } from './export-client.js';
+import { termsForExport } from '../legal/terms-gate.js';
 
 export const PREVIEW_DPI = 70;
 export const WATERMARK_TEXT = 'PREVIEW, Plan Pack required to download';
@@ -110,17 +111,22 @@ export function openPdfPreview({ layer, project, store = null, config = {}, cata
     SCALE_CHOICES.map(([v, t]) => el('option', { value: v }, t)));
   const paperSel = el('select', { class: 'psp-select', id: 'psp-pv-paper', 'aria-label': 'Paper size', onchange: (e) => changeDrawing({ paper: e.target.value }) },
     PAPER_CHOICES.map((v) => el('option', { value: v }, v)));
+  // "Include aerial underlay" (default on): off prints the sheets without the aerial picture. Stored with the drawing setup.
+  const aerialBox = el('input', { type: 'checkbox', id: 'psp-pv-aerial', checked: true, onchange: (e) => changeDrawing({ includeAerial: e.target.checked }) });
   const setupNote = el('span', { class: 'psp-pv-setupnote', role: 'status', 'aria-live': 'polite' }, '');
   const editTitle = btn('Edit title block', () => window.__ps?.openTitleBlock?.(), { dataset: { act: 'title-block' } });
   const setup = el('div', { class: 'psp-pv-setup', role: 'group', 'aria-label': 'Drawing setup' },
     el('strong', null, 'Drawing setup'),
     el('label', { for: 'psp-pv-scale' }, 'Scale'), scaleSel,
     el('label', { for: 'psp-pv-paper' }, 'Paper'), paperSel,
+    el('label', { for: 'psp-pv-aerial', class: 'psp-pv-check' }, aerialBox, ' Include aerial underlay'),
     editTitle, setupNote);
   function syncSetup() {
     const d = drawing();
     scaleSel.value = String(d.scale);
     paperSel.value = d.paper;
+    aerialBox.checked = d.includeAerial !== false;
+    aerialBox.disabled = !current().site?.lot?.aerial;
   }
   syncSetup();
   const root = el('div', { class: 'psp-pv-wrap' }, setup, status, body);
@@ -249,7 +255,7 @@ export function openPdfPreview({ layer, project, store = null, config = {}, cata
         : await (async () => {
             const jsPDF = await loadJsPDF();
             const { buildPdfBytes } = await import('./exporters/index.js');
-            return buildPdfBytes(payload, { jsPDF, image, config, catalogue });
+            return buildPdfBytes(payload, { jsPDF, image, config, catalogue, terms: termsForExport() });
           })();
       const layout = bytes.layout;
       setupNote.textContent = layout?.note || '';

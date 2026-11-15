@@ -133,7 +133,7 @@ function seedDb(now) {
   ];
   return {
     version: 1,
-    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null, colours: { primary: '#1f4d3a', accent: '#d9822b', darkInk: null, darkBg: null } }, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
+    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null, colours: { primary: '#1f4d3a', accent: '#d9822b', darkInk: null, darkBg: null } }, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, showAerialDefault: true, showAiAssistant: true, aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
     users, houses, projects, issues, topUps, resets: {},
   };
 }
@@ -191,7 +191,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     id: u.id, name: u.name, email: u.email || '', username: u.username, role: u.role, status: u.status, mustChangePassword: !!u.mustChangePassword,
     createdAt: u.createdAt, lastSignInAt: u.lastSignInAt, tempPasswordExpiresAt: u.mustChangePassword ? u.tempPasswordExpiresAt || null : null, ...(org ? { ai: aiBalance(u, org) } : {}),
   });
-  const publicOrg = (o) => ({ id: o.id, name: o.name, shortCode: o.shortCode, branding: clone(o.branding), allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap, billingContact: clone(o.billingContact) });
+  const publicOrg = (o) => ({ id: o.id, name: o.name, shortCode: o.shortCode, branding: clone(o.branding), allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, showAerialDefault: o.showAerialDefault !== false, showAiAssistant: o.showAiAssistant !== false, aiMonthlyCap: o.aiMonthlyCap, billingContact: clone(o.billingContact) });
   const staffEdit = (p) => ({ editedByStaff: !!p.editedById, editedByName: p.editedById ? p.editedByName || '' : '', editedByStaffAt: p.editedById ? p.editedByStaffAt || null : null });
   const houseMeta = (h) => { const { project, ...rest } = h; return { ...clone(rest), hasProject: !!project }; };
   const visibleHouse = (user, h) => !h.archived && (user.houseAccess === 'all' || (Array.isArray(user.houseAccess) && user.houseAccess.includes(h.id)));
@@ -750,13 +750,15 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       return clone(b);
     },
     /** Organisation settings. allowClientTopUps (default on) lets client logins buy AI credit top-ups. */
-    async setOrgSettings({ allowClientTopUps, allowClientEnquiries, showGlideToClients, allowClientCadExports } = {}) {
+    async setOrgSettings({ allowClientTopUps, allowClientEnquiries, showGlideToClients, allowClientCadExports, showAerialDefault, showAiAssistant } = {}) {
       await wait();
       const { db, org } = ctx('billing.write');
       if (allowClientTopUps !== undefined) org.allowClientTopUps = !!allowClientTopUps;
       if (allowClientEnquiries !== undefined) org.allowClientEnquiries = !!allowClientEnquiries;
       if (showGlideToClients !== undefined) org.showGlideToClients = !!showGlideToClients;
       if (allowClientCadExports !== undefined) org.allowClientCadExports = !!allowClientCadExports;
+      if (showAerialDefault !== undefined) org.showAerialDefault = !!showAerialDefault;
+      if (showAiAssistant !== undefined) org.showAiAssistant = !!showAiAssistant;
       save(db);
       return publicOrg(org);
     },

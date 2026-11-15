@@ -4,6 +4,13 @@
 import { CONFIG } from '../config.js';
 import { ApiError } from '../premium/api.js';
 
+const contactQuery = (f) => {
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(f || {})) if (v !== undefined && v !== null && String(v) !== '') q.set(k, String(v));
+  const s = q.toString();
+  return s ? `?${s}` : '';
+};
+
 export function createAdminApi({ token, base = CONFIG.apiBase, fetchImpl = null } = {}) {
   const root = String(base || '/api').replace(/\/+$/, '');
   const doFetch = (...a) => (fetchImpl || globalThis.fetch).call(globalThis, ...a);
@@ -39,9 +46,31 @@ export function createAdminApi({ token, base = CONFIG.apiBase, fetchImpl = null 
     saveCommercialTrial: ({ username, password, expiresAt }) => call('PUT', '/trial', { username, password, expiresAt: expiresAt || null }, '/commercial/admin'),
     commercialTrialSettings: (patch) => call('POST', '/trial/settings', patch, '/commercial/admin'),
     commercialUsage: () => call('GET', '/usage', undefined, '/commercial/admin'),
+    /** Plan set terms: { currentVersion, versions: [{ version, count, firstAt, lastAt }] } (acceptances per version). */
+    termsCounts: () => call('GET', '/admin/counts', undefined, '/terms'),
     /** Owner only: the internal test account. The owner types the username and password; the password is hashed on the server and never returned. */
     createInternal: ({ orgName, username, password }) => call('POST', '/internal-orgs', { orgName, username, password }),
     setInternal: (id, internal) => call('POST', `/orgs/${encodeURIComponent(id)}/internal`, { internal }),
     resetAdmin: (id) => call('POST', `/orgs/${encodeURIComponent(id)}/reset-admin`, {}),
+    // Free profile contacts (server/lib/profiles.js). Filters: consent (yes|no), type, from, to (YYYY-MM-DD), designs (none|some), mode (residential|commercial|both), suburb, q.
+    profileContacts: (filters = {}) => call('GET', `/contacts${contactQuery(filters)}`, undefined, '/profile/admin'),
+    /** Owner only: flag a contact unsubscribed (removes their consent), or clear the flag. The export always leaves unsubscribed contacts out. */
+    profileUnsubscribe: (id, unsubscribed) => call('POST', `/contacts/${encodeURIComponent(id)}/unsubscribe`, { unsubscribed: !!unsubscribed }, '/profile/admin'),
+    /** CSV of contacts: scope 'marketing' is consenting contacts only, 'all' is every contact and is marked NOT FOR MARKETING. Resolves { text, filename, count }. */
+    async profileCsv(scope, filters = {}) {
+      let res;
+      try {
+        res = await doFetch(`${root}/profile/admin/contacts.csv${contactQuery({ ...filters, scope })}`, { headers: { authorization: `Bearer ${token}` }, cache: 'no-store' });
+      } catch {
+        throw new ApiError('NETWORK', 'Could not reach the Glide Inside server. Check your connection and try again.');
+      }
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        const e = data?.error && typeof data.error === 'object' ? data.error : data || {};
+        throw new ApiError(e.code || 'ERROR', e.message || 'Something went wrong.', { status: res.status, details: e });
+      }
+      const filename = /filename="?([^";]+)"?/.exec(res.headers.get('content-disposition') || '')?.[1] || `contacts-${scope}.csv`;
+      return { text: await res.text(), filename, count: Number(res.headers.get('x-contact-count') || 0) };
+    },
   };
 }

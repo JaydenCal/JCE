@@ -15,6 +15,7 @@
 //   setbacks: null, envelope: null                        hooks for the setback stage. Nothing is invented here.
 //   provenance { lot, aerial, elevation }                 what each layer came from and how far to trust it
 
+import { initialAerial } from './aerial-pref.js';
 import { siteToPlan, planToSite, ringEdges, round } from './geo.js';
 import { deriveFrontage } from './frontage.js';
 
@@ -111,7 +112,7 @@ export function buildSiteLot({ lot, aerialMeta = null, aerialKey = null, aerialW
     } : null,
     floorRL: null,
     floorRLAuto: true,
-    layers: { ...DEFAULT_LAYERS },
+    layers: { ...DEFAULT_LAYERS, aerial: initialAerial() }, // the person's remembered Aerial choice, else the builder default (src/site/aerial-pref.js)
     setbacks: null,
     envelope: null,
     provenance: {

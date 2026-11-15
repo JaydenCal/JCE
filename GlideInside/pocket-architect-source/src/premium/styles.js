@@ -260,6 +260,7 @@ textarea.psp-input { resize: vertical; min-height: 64px; }
 .psp-pv-setup { display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; padding: 8px 10px; margin: 0 0 8px; border: 1px solid var(--psp-border); border-radius: var(--psp-radius); background: var(--psp-bg2); font-size: 12.5px; }
 .psp-pv-setup label { color: var(--psp-muted); }
 .psp-pv-setup .psp-select { font: inherit; padding: 4px 6px; border: 1px solid var(--psp-border); border-radius: var(--psp-radius); background: var(--psp-bg); color: var(--psp-text); }
+.psp-pv-check { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
 .psp-pv-setupnote { flex: 1 1 14em; min-width: 0; color: var(--psp-muted); }
 .psp-pv-setupnote.is-warn { color: var(--psp-danger); }
 .psp-pv-wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; }

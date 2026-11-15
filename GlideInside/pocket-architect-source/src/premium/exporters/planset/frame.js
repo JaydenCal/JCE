@@ -5,6 +5,7 @@
 import { clean, PEN, ink, wrap } from '../eng/kit.js';
 import { imageInfo, placeImage } from '../pdf.js';
 import { LOGO_PNG } from '../../brand/logo.js';
+import { termsStamp } from '../../../legal/sheet-note.js';
 
 export const SW = 420;
 export const SH = 297;
@@ -151,7 +152,8 @@ export function drawStrip(doc, ctx, sheet) {
     value(doc, r[3], x0 + W / 2 + 1.8, top + 6.2, { size: 6.8, maxW: W / 2 - 3 });
   });
 
-  const stH = 9;
+  // Status stamp, with the terms of use version and the acceptance date under it (src/legal). The sheet note itself is on the cover sheet.
+  const stH = 12.4;
   yb -= stH;
   doc.setDrawColor(...RED);
   doc.setLineWidth(0.5);
@@ -159,10 +161,14 @@ export function drawStrip(doc, ctx, sheet) {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(6.4);
   doc.setTextColor(...RED);
-  doc.text(STAMP, x0 + W / 2, yb + 5.4, { align: 'center' });
+  doc.text(STAMP, x0 + W / 2, yb + 4.6, { align: 'center' });
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(5);
+  doc.setTextColor(...PEN.ink);
+  doc.text(fit(doc, termsStamp(ctx.terms), W - 3), x0 + W / 2, yb + 9.6, { align: 'center' });
 
   // Revision table.
-  const rh = 16;
+  const rh = 12.6;
   yb -= rh;
   box(doc, x0, yb, x1, yb + rh);
   const cols = [x0, x0 + 8, x0 + 27, x0 + 62, x1];

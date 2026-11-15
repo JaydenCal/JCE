@@ -62,7 +62,7 @@ function world({ canSend = true, sendImpl = null } = {}) {
   const toasts = [];
   const engineer = createSendToEngineer({
     getApp: () => app, getProject: () => proj, getLot: () => lotOf(proj), getBuilderName: () => '',
-    toast: (message, opts) => { toasts.push({ message, ...opts }); return { dismiss() {} }; }, loadExporter: async () => exporter,
+    toast: (message, opts) => { toasts.push({ message, ...opts }); return { dismiss() {} }; }, requireTerms: async () => ({ version: '1.0' }), loadExporter: async () => exporter,
   });
   return { proj, modals, sent, toasts, engineer, app };
 }
@@ -153,13 +153,14 @@ test('the plan set PDF is built with kind site and download false, and a PDF ove
   const calls = [];
   const fake = async (o) => { calls.push(o); return { blob: new Blob([new Uint8Array(10)]) }; };
   const proj = project();
-  const b64 = await planSetBase64({ project: proj, lot: lotOf(proj), builderName: 'Hunter Homes', exportPlanSet: fake });
+  const b64 = await planSetBase64({ project: proj, lot: lotOf(proj), builderName: 'Hunter Homes', exportPlanSet: fake, requireTerms: async () => ({ version: '1.0' }) });
   assert.equal(calls[0].kind, 'site');
   assert.equal(calls[0].download, false);
   assert.equal(calls[0].builderName, 'Hunter Homes');
   assert.equal(Buffer.from(b64, 'base64').length, 10);
   const big = async () => ({ blob: new Blob([new Uint8Array(MAX_PDF_BYTES + 1)]) });
-  assert.equal(await planSetBase64({ project: proj, lot: lotOf(proj), exportPlanSet: big }), null);
+  assert.equal(await planSetBase64({ project: proj, lot: lotOf(proj), exportPlanSet: big, requireTerms: async () => ({ version: '1.0' }) }), null);
+  assert.equal(await planSetBase64({ project: proj, lot: lotOf(proj), exportPlanSet: fake, requireTerms: async () => null }), null, 'terms declined: no PDF is built');
 });
 
 test('wording: no em or en dashes, no exclamation marks, never "compliant", no prices', () => {

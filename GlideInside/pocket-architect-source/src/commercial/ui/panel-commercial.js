@@ -15,6 +15,7 @@ import { icon } from '../../ui/icons.js';
 import { effectiveClass, zoneClass, ZONE_CLASS_LABEL } from '../zones.js';
 import { rowLength } from '../layout.js';
 import { facts, NCC_CLASSES, PARKING_M2_PER_SPACE } from '../dataset.js';
+import { needsZone, ensureZone, lotKey } from '../zone-lookup.js';
 import { feasibility, AREAS, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT, DATA_DATE, money, band, pct1, summaryRows, costRows } from '../feasibility.js';
 
 const getPath = (o, path) => path.split('.').reduce((a, k) => (a == null ? a : a[k]), o);
@@ -43,7 +44,29 @@ export function createCommercialPanel({ store, host, editor }) {
   let wasOn = false;
   let open = { Doors: true, Unit: true, Buildings: true };
   // At phone width the dock is a bottom sheet: collapsed to its title bar so the plan is visible, opened with the toggle. Wide screens ignore it.
-  let sheetOpen = !(typeof matchMedia === 'function' && matchMedia('(max-width: 899.98px)').matches);
+  // The panel can be closed or collapsed on any width, and the choice is remembered per browser. Under 1280 px it starts collapsed so it never
+  // covers the plan; the person can drag it by its title or open it. A closed panel leaves a "Commercial layout" button to bring it back.
+  const PANEL_KEY = 'gi.cm.panel.v1';
+  const narrow = () => typeof matchMedia === 'function' && matchMedia('(max-width: 1279.98px)').matches;
+  const stored = () => { try { const v = localStorage.getItem(PANEL_KEY); return v === 'open' || v === 'collapsed' || v === 'closed' ? v : null; } catch { return null; } };
+  const keepState = () => { try { localStorage.setItem(PANEL_KEY, closed ? 'closed' : sheetOpen ? 'open' : 'collapsed'); } catch { /* storage blocked */ } };
+  let closed = stored() === 'closed';
+  let sheetOpen = stored() ? stored() === 'open' : !narrow();
+  const reopen = h('button', { type: 'button', class: 'cm-reopen', hidden: true, 'aria-label': 'Open the commercial layout panel', dataset: { ps: 'commercial-reopen' }, onclick: () => { closed = false; sheetOpen = true; keepState(); schedule(); dock.focus?.({ preventScroll: true }); } }, 'Commercial layout');
+  host.append(reopen);
+  const tried = new Set(); // lots the zone lookup was tried for since the design last switched to commercial
+  let zoneState = 'idle';
+  let seen = false;
+  function askZone(force = false) {
+    const lot = store.project.site?.lot;
+    if (!needsZone(lot) || zoneState === 'busy') return;
+    const k = lotKey(lot);
+    if (!force && tried.has(k)) return;
+    tried.add(k);
+    zoneState = 'busy';
+    schedule();
+    ensureZone(store).then((r) => { zoneState = r === 'found' ? 'idle' : r; schedule(); });
+  }
   const rowOf = () => { const c = store.project.commercial; return c?.rows.find((r) => r.id === store.ui.commercialRow) || c?.rows[0] || null; };
 
   let addType = null;
@@ -251,14 +274,21 @@ export function createCommercialPanel({ store, host, editor }) {
     raf = 0;
     const p = store.project;
     const on = isCommercial(p);
-    dock.hidden = !on;
+    // Switching a design to commercial (the mode switch) brings a closed panel back; a page that loads already commercial keeps the saved choice.
+    if (on && !wasOn && seen && closed) { closed = false; sheetOpen = true; keepState(); }
+    seen = true;
+    dock.hidden = !on || closed;
+    reopen.hidden = !on || !closed;
     strip.hidden = !on;
     host.dataset.commercial = on ? '1' : '0';
     // Entering commercial mode from the split view goes to the plan: the dock would cover most of the half width plan, and the
     // parking, bays and bollards are drawn on the plan only at this stage. The person can still choose Split afterwards.
     if (on && !wasOn && store.ui.view === 'split') store.setUI({ view: '2d' });
+    if (on && !wasOn) { tried.clear(); zoneState = 'idle'; } // a switch to commercial asks for the zone again
     wasOn = on;
     if (!on) return;
+    askZone();
+    if (closed) { if (document.activeElement && dock.contains(document.activeElement)) reopen.focus(); return; }
     const c = p.commercial;
     const row = rowOf();
     const a = analyse(p);
@@ -282,8 +312,9 @@ export function createCommercialPanel({ store, host, editor }) {
     zoneSel.value = c.zoneClass || '';
     dock.append(h('header', { class: 'cm-head' },
       h('div', { class: 'cm-title' }, h('b', null, h('span', { class: 'cm-full' }, 'Commercial and industrial layout'), h('span', { class: 'cm-short' }, 'Commercial layout')), h('span', { class: 'cm-beta' }, 'Beta'),
-        h('button', { type: 'button', class: 'cm-sheet-toggle', dataset: { action: 'sheet-toggle' }, 'aria-expanded': String(sheetOpen), 'aria-label': sheetOpen ? 'Collapse the layout panel' : 'Open the layout panel', onclick: () => { sheetOpen = !sheetOpen; schedule(); } }, sheetOpen ? 'Hide' : 'Edit')),
-      h('div', { class: 'cm-sub' }, lot ? `${lot.lotLabel || 'Lot'}${lot.zoning ? ` · ${lot.zoning.code || ''} ${lot.zoning.name || ''}` : ' · zone not looked up'}` : 'Find an address to place units on a lot'),
+        h('button', { type: 'button', class: 'cm-sheet-toggle', dataset: { action: 'sheet-toggle' }, 'aria-expanded': String(sheetOpen), 'aria-label': sheetOpen ? 'Collapse the layout panel' : 'Open the layout panel', title: sheetOpen ? 'Collapse' : 'Expand', onclick: () => { sheetOpen = !sheetOpen; keepState(); schedule(); } }, sheetOpen ? '\u25BE' : '\u25B8'),
+        h('button', { type: 'button', class: 'cm-close', dataset: { action: 'panel-close' }, 'aria-label': 'Close the layout panel', title: 'Close (Escape)', onclick: () => closePanel() }, '\u00D7')),
+      h('div', { class: 'cm-sub' }, lot ? `${lot.lotLabel || 'Lot'}${lot.zoning ? ` · ${lot.zoning.code || ''} ${lot.zoning.name || ''}` : (zoneState === 'busy' ? ' · looking up the zone' : zoneState === 'failed' ? ' · zone lookup failed' : zoneState === 'none' ? ' · no zone found' : ' · zone not looked up')}` : 'Find an address to place units on a lot', lot && needsZone(lot) && zoneState !== 'busy' ? h('button', { type: 'button', class: 'cm-link', dataset: { action: 'zone-retry' }, onclick: () => askZone(true) }, ' Look up the zone') : null),
       h('label', { class: 'cm-field cm-stack' }, h('span', { class: 'cm-l' }, 'Zone class'), zoneSel)));
     dock.append(buildingsSection(c));
     // Rows
@@ -413,10 +444,34 @@ export function createCommercialPanel({ store, host, editor }) {
     }
     editor.setInset({ left: left < r.width - 160 ? left : 0, top, bottom });
   }
+  function closePanel() { closed = true; keepState(); schedule(); reopen.focus?.({ preventScroll: true }); }
+  dock.tabIndex = -1;
+  dock.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !e.defaultPrevented) { e.preventDefault(); e.stopPropagation(); closePanel(); } });
+  // Drag the panel by its title (wide screens), so it can be moved off the part of the plan being worked on. Not on phones, where it is a sheet.
+  let drag = null;
+  dock.addEventListener('pointerdown', (e) => {
+    const head = e.target.closest?.('.cm-title');
+    if (!head || e.target.closest('button') || matchMedia('(max-width: 899.98px)').matches) return;
+    const hr = host.getBoundingClientRect();
+    const r = dock.getBoundingClientRect();
+    drag = { dx: e.clientX - r.left, dy: e.clientY - r.top, hr, id: e.pointerId };
+    try { dock.setPointerCapture(e.pointerId); } catch { /* no capture */ }
+  });
+  dock.addEventListener('pointermove', (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const x = Math.max(0, Math.min(drag.hr.width - 120, e.clientX - drag.hr.left - drag.dx));
+    const y = Math.max(0, Math.min(drag.hr.height - 60, e.clientY - drag.hr.top - drag.dy));
+    dock.style.left = `${Math.round(x)}px`;
+    dock.style.top = `${Math.round(y)}px`;
+    inset();
+  });
+  const endDrag = () => { drag = null; };
+  dock.addEventListener('pointerup', endDrag);
+  dock.addEventListener('pointercancel', endDrag);
   const schedule = () => { if (!raf) raf = requestAnimationFrame(() => { render(); inset(); }); };
   const offs = [store.on('project', schedule), store.on('ui', (p = {}) => { if ('commercialRow' in p || 'view' in p) schedule(); })];
   render();
   requestAnimationFrame(inset);
   window.addEventListener('resize', inset);
-  return { render, dispose() { offs.forEach((o) => o()); dock.remove(); strip.remove(); }, dock, strip };
+  return { render, open() { closed = false; sheetOpen = true; keepState(); schedule(); }, close: closePanel, isClosed: () => closed, dispose() { offs.forEach((o) => o()); dock.remove(); strip.remove(); reopen.remove(); }, dock, strip, reopen };
 }

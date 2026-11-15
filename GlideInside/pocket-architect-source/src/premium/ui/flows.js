@@ -1,5 +1,6 @@
 // Upgrade, restore, checkout return and Plan Pack details: the dialogs around buying and recovering a Plan Pack.
 
+import { createCheckoutTick } from '../../legal/checkout-tick.js';
 import { el, formatAud, ddmmyyyy, track } from '../util.js';
 import { icon } from '../icons.js';
 import { friendlyError } from '../messages.js';
@@ -57,7 +58,9 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
       errorBox.hidden = !text;
     };
 
+    const tick = createCheckoutTick({ onChange: (on) => { checkoutBtn.disabled = !(on && isOn()); } });
     async function startCheckout() {
+      if (!tick.checked()) return;
       showError('');
       checkoutBtn.disabled = true;
       checkoutBtn.replaceChildren(el('span', { class: 'psp-spin', 'aria-hidden': 'true' }), 'Opening secure checkout');
@@ -69,7 +72,7 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
         navigate(url);
         setTimeout(() => {
           if (!modal.closed && checkoutBtn.isConnected) {
-            checkoutBtn.disabled = false;
+            checkoutBtn.disabled = !tick.checked();
             checkoutBtn.replaceChildren('Continue to secure checkout');
           }
         }, 10000);
@@ -80,7 +83,7 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
       }
     }
 
-    checkoutBtn = el('button', { class: 'psp-btn psp-btn--primary', type: 'button', disabled: !isOn(), onclick: startCheckout },
+    checkoutBtn = el('button', { class: 'psp-btn psp-btn--primary', type: 'button', disabled: true, onclick: startCheckout },
       isOn() ? 'Continue to secure checkout' : 'Plan Pack unavailable, try again');
 
     modal = layer.openModal({
@@ -94,6 +97,7 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
         el('ul', { class: 'psp-includes' }, includes().map((t) => el('li', null, icon('check', 16), el('span', null, t)))),
         el('p', { class: 'psp-fine' }, config.disclaimer || ''),
         linkRow(),
+        isOn() ? tick.el : null,
         isOn() ? el('p', { class: 'psp-fine' }, 'Already bought a Plan Pack? ', el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => openRestore({ modal }) }, 'Restore purchase'), '.') : null,
         errorBox),
       footer: (close) => [

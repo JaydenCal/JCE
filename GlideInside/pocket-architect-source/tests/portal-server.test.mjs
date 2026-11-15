@@ -546,6 +546,17 @@ for (const [label, d1] of stores) {
     assert.equal((await cl.browser.get('/portal/glide-library')).data.length, GLIDE_LIBRARY.length);
     assert.equal((await org.admin.patch('/portal/org/settings', { showGlideLibrary: false })).data.showGlideToClients, false);
     assert.deepEqual((await cl.browser.get('/portal/glide-library')).data, []);
+    // "Show aerial by default" (migration 0015): on unless the builder turns it off, boolean only.
+    assert.equal((await org.admin.get('/portal/me')).data.org.showAerialDefault, true, 'aerial is on by default');
+    assert.equal((await org.admin.patch('/portal/org/settings', { showAerialDefault: false })).data.showAerialDefault, false);
+    assert.equal((await org.admin.get('/portal/me')).data.org.showAerialDefault, false, 'the setting is stored');
+    assert.equal((await org.admin.patch('/portal/org/settings', { showAerialDefault: 'no' })).status, 400);
+    assert.equal((await org.admin.patch('/portal/org/settings', { showAerialDefault: true })).data.showAerialDefault, true);
+    assert.equal((await org.admin.get('/portal/me')).data.org.showAiAssistant, true, 'the AI assistant is offered by default');
+    assert.equal((await org.admin.patch('/portal/org/settings', { showAiAssistant: false })).data.showAiAssistant, false);
+    assert.equal((await org.admin.get('/portal/me')).data.org.showAiAssistant, false, 'the setting is stored');
+    assert.equal((await org.admin.patch('/portal/org/settings', { showAiAssistant: 'no' })).status, 400);
+    assert.equal((await org.admin.patch('/portal/org/settings', { showAiAssistant: true })).data.showAiAssistant, true);
     assert.equal((await cl.browser.get('/portal/glide-library/glide:house_single')).status, 404);
     assert.equal((await org.admin.get('/portal/glide-library')).data.length, GLIDE_LIBRARY.length, 'staff still see it');
     // Another org sees none of this.

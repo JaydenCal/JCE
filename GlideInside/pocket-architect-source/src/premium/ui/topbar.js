@@ -4,6 +4,7 @@ import { el, clear, formatAud, ddmmyyyy, clamp } from '../util.js';
 import { icon } from '../icons.js';
 import { EXPORT_ITEMS, exportLabel } from '../export-client.js';
 import { tokenInfo } from '../entitlement.js';
+import { PLAN_TERMS_URL, planTermsLinkText } from '../../legal/terms-gate.js';
 
 /**
  * createTopbarUI({ root, config, getState, actions })
@@ -69,6 +70,8 @@ export function createTopbarUI({ root, config, getState, actions }) {
         ? el('span', null, st.commercial ? `Commercial Developer, ${formatAud(50)} per month, unlimited plan sets. ` : `Exports come with the Plan Pack, ${formatAud(pack.priceAud ?? 30)} per job. `, el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { closeMenu(false); actions.restore(); } }, 'Restore purchase'))
         : st.csub ? el('span', null, st.csub.kind === 'trial' ? 'Trial login: unlimited plan sets, watermarked.' : 'Unlimited plan sets while your subscription is active.')
         : el('span', null, st.devUnlock && !st.token ? 'Developer unlock: files are built in this browser.' : info?.exp ? `Re-export as often as you like until ${ddmmyyyy(info.exp * 1000)}.` : 'Re-export as often as you like.')));
+    // The plan set terms apply to every PDF and DXF; the link opens the public page with the same text.
+    menu.append(el('div', { class: 'psp-menu-foot psp-menu-terms' }, el('a', { class: 'psp-btn psp-btn--link', href: PLAN_TERMS_URL, target: '_blank', rel: 'noopener', dataset: { ps: 'terms-link' } }, planTermsLinkText())));
   }
 
   const billingHref = () => { try { return new URL('portal/#/billing', new URL('../', window.location.href)).href; } catch { return '#'; } };

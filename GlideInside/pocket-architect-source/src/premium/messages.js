@@ -28,6 +28,8 @@ export function friendlyError(e, { area = 'general', dev = false } = {}) {
       return 'The assistant is paused for a while to keep running costs under control. Your credits are untouched. Please try again later.';
     case 'PAYLOAD_TOO_LARGE':
       return area === 'export' ? 'This design is too large to export from here.' : 'This design is too large for the assistant to read. Try removing some furniture, or work on a smaller part of it.';
+    case 'TERMS_REQUIRED':
+      return 'Please accept the plan set terms of use to continue.';
     case 'TOPUP_DISABLED':
       return 'Top-ups are turned off for your organisation. Ask your builder.';
     case 'AI_TIMEOUT':

@@ -44,7 +44,7 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
   function settingsCard() {
     const canSet = me.permissions.includes('billing.write') && !isReadOnly(me);
     const row = (key, title, help) => {
-      const box = h('input', { type: 'checkbox', checked: !!me.org[key], disabled: !canSet, onchange: async (e) => {
+      const box = h('input', { type: 'checkbox', checked: (key === 'showAerialDefault' || key === 'showAiAssistant') ? me.org[key] !== false : !!me.org[key], disabled: !canSet, onchange: async (e) => {
         try {
           me.org = await api.setOrgSettings({ [key]: e.target.checked });
           toast('Saved.', { kind: 'ok' });
@@ -58,6 +58,8 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
     return h('section', { class: 'pp-card pp-client-settings' },
       h('h3', null, 'Client settings'),
       h('p', { class: 'pp-lead pp-lead--sm' }, 'What your clients can see and do. Your own staff logins are not affected.'),
+      row('showAerialDefault', 'Show aerial by default', 'On by default: lots open with the aerial imagery. Turn it off to open on a clean ground. Anyone can still switch the aerial on or off, and the browser remembers their choice.'),
+      row('showAiAssistant', 'Show AI design assistant to clients', 'On by default. Turn it off to hide the assistant entirely for your clients (their plans, colours and exports are unaffected). Your own staff logins keep it.'),
       row('showGlideToClients', 'Show Glide Inside sample designs to clients', 'Off (the default) means clients see only your own house designs.'),
       row('allowClientEnquiries', 'Let clients send their plans to JCE for engineering and DA quotes', 'On by default. Nothing is sent until the client ticks consent and presses Send.'),
       row('allowClientCadExports', 'Let clients export DXF and 3D models as well as the PDF', 'Off by default: clients get your branded PDF plans only. The design files stay your property (see the terms: clients are licensed to use the plans for their own build only).'));

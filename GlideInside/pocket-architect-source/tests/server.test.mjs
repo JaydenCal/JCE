@@ -86,6 +86,7 @@ function makeWorld(envOverrides = {}, { store = createMemoryStore(), catalogue =
     STRIPE_SECRET_KEY: 'sk_test_123',
     STRIPE_WEBHOOK_SECRET: 'whsec_unit',
     ANTHROPIC_API_KEY: 'sk-ant-unit',
+    TERMS_REQUIRED: '0', // the plan terms gate has its own tests (terms.test.mjs); these tests are about the exports themselves
     ...envOverrides,
   };
   world.app = createApp({ store, env, fetchImpl, now: () => clock.t, catalogue, devGrant: !!envOverrides.__devGrant, loadJsPDF: async () => (await import('jspdf')).jsPDF });
