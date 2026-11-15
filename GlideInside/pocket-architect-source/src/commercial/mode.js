@@ -8,6 +8,7 @@ import { zoneClass, effectiveClass, RESIDENTIAL_NOTE } from './zones.js';
 import { defaultRulesFor } from './rules.js';
 import { siteLotCommercialSetbacks } from './setbacks.js';
 import { toast as realToast } from '../ui/toast.js';
+import { syncCustomToCommercial } from '../site/custom-rules.js';
 
 export { isCommercial };
 
@@ -75,6 +76,7 @@ export function convertToCommercial(p, { useClass, name = null } = {}) {
     lot.setbacksAttempts = [];
   }
   p.commercial = defaultCommercial(cls);
+  syncCustomToCommercial(p);
   p.commercial.rows = [firstRow(p, cls)];
   materialise(p);
   return p;

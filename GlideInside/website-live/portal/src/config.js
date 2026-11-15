@@ -33,6 +33,12 @@ export const CONFIG = {
   // Setback rules are served statically from the site, one file per council (see tools/split-setbacks.mjs). Relative to the app page.
   setbacksBase: '../data/setbacks/',
   siteAerialMarginM: 30, // aerial and elevation grid extend this far beyond the lot boundary
+  // Worldwide aerial (Mapbox Satellite) for sites outside the NSW and Queensland imagery. The PUBLIC token (pk.) is set at build time from the
+  // environment variable MAPBOX_PUBLIC_TOKEN (tools/build-single.mjs writes window.__PS_MAPBOX_TOKEN__), or by the host page in
+  // GI_CONFIG.mapboxToken, or read once from GET /api/health when the Worker has MAPBOX_PUBLIC_TOKEN. Empty: a grey ground is shown instead.
+  // Never put a secret token (sk.) here. docs/BOUNDARY_UPLOAD.md is not needed: see UPLOAD-NOTES.md.
+  mapboxToken: (hasWindow && [window.GI_CONFIG?.mapboxToken, window.__PS_MAPBOX_TOKEN__].find((t) => typeof t === 'string' && /^pk\./.test(t))) || '',
+  mapboxMaxZoom: 19, // highest tile zoom asked for (the 512 pixel @2x tiles are then about 0.12 m a pixel at 37 degrees latitude)
   // Builder and client accounts (docs/PORTAL_API.md). While the back end does not exist the portal runs on the in-browser mock.
   // portalMock true runs the screens on the in-browser mock; false calls the real Worker routes (docs/PORTAL_API.md).
   // The host page can pick with GI_CONFIG.portalMock. Default: the mock only in the review build.

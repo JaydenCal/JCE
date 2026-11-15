@@ -56,7 +56,7 @@ function waitForEnvelope(store, ms = 5000) {
 }
 
 // viewer: the clean cinematic look (no site labels over the view, neighbouring houses shown), as on the concept models.
-function confirmFrontage(store, viewer = false) {
+export function confirmFrontage(store, viewer = false) {
   if (store.project.site?.lot) {
     store.apply('Confirm frontage', (p) => {
       const lot = p.site.lot;

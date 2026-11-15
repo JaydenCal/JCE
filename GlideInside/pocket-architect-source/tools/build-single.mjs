@@ -48,6 +48,15 @@ try { window.__PS_PDF_WORKER__ = URL.createObjectURL(new Blob([document.getEleme
 </script>
 <script>${jspdf}</script>`;
 
+// Mapbox PUBLIC token for the worldwide aerial: read from the environment at build time, never stored in the source. Only a public token (pk.)
+// is accepted; a secret token (sk.) or anything else is refused and the build carries no token (a grey ground is shown instead).
+const mbToken = (process.env.MAPBOX_PUBLIC_TOKEN || '').trim();
+let mapboxTag = '';
+if (mbToken) {
+  if (/^pk\.[A-Za-z0-9._-]+$/.test(mbToken)) mapboxTag = `<script>window.__PS_MAPBOX_TOKEN__ = ${JSON.stringify(mbToken)};</script>\n`;
+  else console.warn('MAPBOX_PUBLIC_TOKEN was ignored: it must be a public token that starts with pk.');
+}
+
 const html = `<!doctype html>
 <html lang="en-AU">
 <head>
@@ -57,6 +66,7 @@ const html = `<!doctype html>
 <meta name="description" content="Draw a floor plan, see it in 3D and walk through it. Houses, granny flats, units, sheds and extensions.">
 <!-- GI_CONFIG (portalEnabled, portalMock) comes from the site config; the portal stays closed if this file is missing -->
 <script src="../../site.config.js?v=20261111"></script>
+${mapboxTag}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap">

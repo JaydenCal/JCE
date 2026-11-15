@@ -733,10 +733,10 @@ export function siteNotes(project, { aerial = false, sheet = null, focus = false
   const lot = project.site?.lot || null;
   const out = [
     'Concept only. To be verified by a suitably qualified person before any use for approval or construction.',
-    'Boundaries are from the cadastre, are indicative only, and are not a survey. A registered survey is required.',
+    lot?.source === 'upload' ? 'Boundary supplied by user, not checked against title. It is indicative only and is not a survey. A registered survey is required.' : 'Boundaries are from the cadastre, are indicative only, and are not a survey. A registered survey is required.',
   ];
   if (focus) out.push('Large lot: this sheet shows the house and its surrounds. The whole lot is shown on the key plan, with the area covered by this sheet outlined.');
-  if (aerial) out.push('The aerial underlay is reduced in resolution and is for orientation only. It is not for measurement. Cadastre drawn in red over the aerial.');
+  if (aerial) out.push('The aerial underlay is reduced in resolution and is for orientation only. It is not for measurement. Cadastre drawn in red over the aerial.'.replace(lot?.source === 'upload' ? 'Cadastre drawn' : '', lot?.source === 'upload' ? 'Boundary drawn' : ''));
   if (lot?.setbacks) out.push(`Setbacks are indicative${lot.setbacks.council ? ` (${clean(lot.setbacks.council)})` : ''}. The sources, the figures provided and the items to confirm are on ${sheet ? `sheet ${sheet}` : 'the site analysis sheet'}. A figure marked check with council is not confirmed.`);
   else if (lot) out.push('Council setbacks are not loaded for this lot. The envelope is not shown.');
   if (lot?.terrain || lot?.contours?.length) out.push(`Levels are indicative only, from the ${lot.state === 'QLD' ? 'Queensland' : 'NSW'} 5 m DEM, and are not survey. Contours are at 1.0 m intervals and spot levels are to 0.1 m. A registered survey is required.`);

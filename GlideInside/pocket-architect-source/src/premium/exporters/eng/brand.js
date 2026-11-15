@@ -87,6 +87,7 @@ export function attribution(lot, { aerial = false } = {}) {
   const qld = 'Cadastre: Queensland Government (CC BY 4.0). Imagery and elevation: Queensland Government (CC BY-SA).';
   let base;
   if (!lot) base = `${nsw} ${qld} Where used.`;
+  else if (lot.source === 'upload') base = 'Boundary supplied by user, not checked against title.';
   else base = lot.state === 'QLD' ? qld : nsw;
   const a = aerial ? lot?.aerial : null;
   if (!a) return base;

@@ -1,5 +1,6 @@
 // Cover sheet (C000): project name and address, drawing index, locality context (DCDB), house thumbnail, revision table and general notes.
 
+import { sheetNotes, isMapboxAerial, MAPBOX_CREDIT } from '../../../site/upload/sheet-text.js';
 import * as G from '../../../model/geometry.js';
 import { clean, PEN, ink, wrap, haloText } from '../eng/kit.js';
 import { planGeometry } from '../pdf.js';
@@ -60,6 +61,7 @@ const NO_AERIAL = 'Aerial not available for this lot';
 
 /** "Imagery and cadastre ..." line for the locality plan, as in the site footer credits. */
 export function localityAttribution(lot, aerial) {
+  if (aerial && isMapboxAerial(aerial, lot)) return MAPBOX_CREDIT;
   const qld = (lot.state || aerial?.state) === 'QLD';
   const nsw = (lot.state || aerial?.state) === 'NSW';
   if (aerial) return qld ? 'Imagery and cadastre © State of Queensland (Department of Resources)' : 'Imagery and cadastre © NSW Spatial Services';
@@ -399,14 +401,14 @@ export function drawCover(doc, ctx) {
   doc.text('GENERAL NOTES', X, ny);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.6);
-  const notes = ctx.notes || [
+  const notes = sheetNotes(ctx.notes || [
     'Concept only. This set shows a house design sited on a lot for discussion. It is not a development application or construction drawing set.',
     'Boundaries are from the cadastre (DCDB) and are not a survey. Dimensions and areas must be confirmed by a registered surveyor.',
     'Setbacks and planning controls shown are indicative. They must be checked with the council and a suitably qualified person.',
     'Room areas are measured to internal wall faces. Roofed outdoor rooms are counted as alfresco.',
     'Driveway, kerb and road reserve widths are typical values and not the council standard for the street.',
     `${ENTITY}, ${ABN}, ${EMAIL}.`,
-  ];
+  ], ctx.lot, { aerialShown: !!ctx.locality?.aerial, aerial: ctx.locality?.aerial });
   let yy = ny + 6;
   notes.forEach((n, i) => {
     wrap(doc, `${i + 1}. ${n}`, 185).forEach((l, j) => { doc.text(j ? `   ${l}` : l, X, yy); yy += 3.6; });

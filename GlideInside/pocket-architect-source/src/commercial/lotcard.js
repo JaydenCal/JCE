@@ -16,6 +16,9 @@ import { lotOf } from '../model/placement.js';
 import { lotHeading, lotLine } from '../lotcard/stats.js';
 import { LOT_CARD_CSS } from '../lotcard/lot-card-css.js';
 import { createSendToEngineer, SEND_LABEL } from '../lotcard/send-engineer.js';
+import { runUpload, creditText, FOOT_BASE } from '../site/upload/flow.js';
+import { injectUploadCss } from '../site/upload/css.js';
+import { syncCurrency, activeSymbol } from '../site/custom-rules.js';
 import { COMMERCIAL_CARD_CSS } from './lotcard-css.js';
 import { isCommercial } from './schema.js';
 import { layoutUnits } from './layout.js';
@@ -113,10 +116,15 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     b.innerHTML = '<svg viewBox="-20 -20 40 40" aria-hidden="true"><circle r="17" fill="none" stroke="rgba(255,255,255,.6)"/><path d="M0-13 L4 3 L0 0 L-4 3Z" fill="#ffc83d"/><path d="M0 13 L4 3 L0 6 L-4 3Z" fill="rgba(255,255,255,.55)"/></svg>';
     return b;
   })();
+  const openUpload = () => runUpload(store, { viewer: true });
+  injectUploadCss();
+  const uploadBtn = h('button', { class: 'lc-upload lc-glass', type: 'button', dataset: { ps: 'lc-upload' }, title: 'Use your own lot boundary, anywhere in the world', onclick: () => openUpload() }, 'Upload boundary');
   const menuItems = [
     ['Open full editor', () => (onFullEditor || onEdit)?.()],
     [PLAN_SET_LABEL, () => planSet()],
     [SEND_LABEL, () => engineer.open()],
+    ['Upload boundary', () => openUpload()],
+    ['Site rules', () => import('../site/upload/rules-panel.js').then((m) => m.openRulesPanel(store))],
     ['Enlarge top view', () => toggleMini()],
   ];
   const menuList = h('div', { class: 'lc-menu-list lc-glass', role: 'menu', hidden: true }, ...menuItems.map(([label, fn]) => h('button', { class: 'lc-menu-item', type: 'button', role: 'menuitem', onclick: () => { menuList.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); fn(); } }, label)));
@@ -126,8 +134,8 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     return b;
   })();
   function paintMenu() { const it = menuList.lastElementChild; if (it) it.textContent = mini.classList.contains('is-big') ? 'Shrink top view' : 'Enlarge top view'; }
-  const foot = E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, 'Concept only · Glide Inside · JCE Infrastructure');
-  const root = E('lc-root lc-embed cc-root', 'div', { dataset: { ps: 'lot-card-root', mode: 'commercial' } }, head, compass, findPill, menuBtn, menuList, card, rooms, panel, pager, mini, foot);
+  const foot = E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, FOOT_BASE);
+  const root = E('lc-root lc-embed cc-root', 'div', { dataset: { ps: 'lot-card-root', mode: 'commercial' } }, head, compass, findPill, uploadBtn, menuBtn, menuList, card, rooms, panel, pager, mini, foot);
   host.append(root);
 
   // Address search -------------------------------------------------------------------------------------------------------------
@@ -338,7 +346,8 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     const hl = feasibilityHeadline(p);
     if (!hl) { panel.replaceChildren(x(), h('h3', null, 'Indicative yield and value'), h('p', { class: 'cc-sub' }, 'Place a layout on a lot to see the figures.')); return; }
     const f = hl.f;
-    const keys = [['saleRate', 'Sale rate', '$/m²'], ['rentRate', 'Rent per year', '$/m²'], ['yieldPct', 'Net yield', '%'], ['landRate', 'Land rate', '$/m²'], ['buildRate', 'Build rate (GFA)', '$/m²']];
+    const cs = activeSymbol();
+    const keys = [['saleRate', 'Sale rate', `${cs}/m²`], ['rentRate', 'Rent per year', `${cs}/m²`], ['yieldPct', 'Net yield', '%'], ['landRate', 'Land rate', `${cs}/m²`], ['buildRate', 'Build rate (GFA)', `${cs}/m²`]];
     const priceInput = h('input', { type: 'number', min: 0, step: 10000, value: f.inputs.landPrice.value ?? '', placeholder: 'Auto', dataset: { ps: 'cc-land-price' }, onchange: () => {
       const raw = priceInput.value;
       store.apply('Set land price', (q) => { if (!q.commercial) return; q.commercial.feasibility ??= { area: null, v: {} }; q.commercial.feasibility.v ??= {}; if (raw === '' || Number(raw) <= 0) delete q.commercial.feasibility.v.landPrice; else q.commercial.feasibility.v.landPrice = Number(raw); });
@@ -374,8 +383,10 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     bSend.hidden = !canSend;
     sendRow.hidden = !canSend;
 
+    syncCurrency(p);
     headT.textContent = lotHeading(lot);
     headS.textContent = 'Concept only';
+    foot.textContent = FOOT_BASE + creditText(lot);
     const pg = layoutPagerText(p);
     title.textContent = pg.name;
     const z = zoneClass(lot);

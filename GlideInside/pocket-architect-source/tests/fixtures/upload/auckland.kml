@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Document>
+<Placemark><name>Lot A Penrose</name><Polygon><outerBoundaryIs><LinearRing><coordinates>
+174.8100,-36.9000,0 174.8110,-36.9000,0 174.8110,-36.9010,0 174.8100,-36.9010,0 174.8100,-36.9000,0
+</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+<Placemark><name><![CDATA[Lot B & C]]></name><Polygon><outerBoundaryIs><LinearRing><coordinates>
+174.8120,-36.9000 174.8135,-36.9000 174.8135,-36.9012 174.8120,-36.9012 174.8120,-36.9000
+</coordinates></LinearRing></outerBoundaryIs><innerBoundaryIs><LinearRing><coordinates>
+174.8125,-36.9004 174.8130,-36.9004 174.8130,-36.9008 174.8125,-36.9008 174.8125,-36.9004
+</coordinates></LinearRing></innerBoundaryIs></Polygon></Placemark>
+<Placemark><name>Road line</name><LineString><coordinates>174.80,-36.89 174.82,-36.89</coordinates></LineString></Placemark>
+</Document></kml>

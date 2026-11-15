@@ -12,6 +12,7 @@ import { defaultRulesFor } from './rules.js';
 import { bollardsFor, pointInPoly, BOLLARD_NOTE } from './bollards.js';
 import { ACCESSIBLE_BAY } from './rules.js';
 import { facts } from './dataset.js';
+import { effectiveRules } from '../site/custom-rules.js';
 
 const m = (mm) => (mm / 1000).toFixed(2);
 const ACCESS_FACT = { class_5: 'accessibleClass5', class_6: 'accessibleClass6', class_7: 'accessibleClass7', class_8: 'accessibleClass8' };
@@ -39,6 +40,7 @@ export function commercialChecks(project) {
   const cls = effectiveClass(project);
   if (lot && (z.cls === 'residential' || z.cls === 'other') && !c.zoneClass) warn('zone', RESIDENTIAL_NOTE);
   else if (lot && z.cls === 'unknown' && !c.zoneClass) warn('zone', 'Zone not known for this lot, choose the zone class and check with council');
+  else if (lot?.customRules?.on) info('zone', 'Custom rules in use. Setbacks and rates are the values you entered, check them against the local rule');
   else if (cls) info('zone', `${defaultRulesFor(cls).label} zone class. Setbacks and rates are indicative, check with council`);
 
   // Setbacks and boundary, same checker as the housing mode (the generated rooms and walls are the footprint).
@@ -95,8 +97,8 @@ export function commercialChecks(project) {
 
   // Coverage
   const stats = commercialStats(project);
-  const rules = defaultRulesFor(cls || 'industrial');
-  if (stats.coveragePct != null && stats.coveragePct > rules.coverageMaxPct) warn('coverage', `Site coverage is ${stats.coveragePct}%, above the indicative ${rules.coverageMaxPct}% maximum, check with council`);
+  const rules = effectiveRules(project, cls || 'industrial');
+  if (stats.coveragePct != null && stats.coveragePct > rules.coverageMaxPct) warn('coverage', rules.custom ? `Site coverage is ${stats.coveragePct}%, above the ${rules.coverageMaxPct}% maximum you set` : `Site coverage is ${stats.coveragePct}%, above the indicative ${rules.coverageMaxPct}% maximum, check with council`);
 
   // Parking
   const park = parkingLayout(c);

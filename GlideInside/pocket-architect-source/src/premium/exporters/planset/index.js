@@ -19,6 +19,8 @@ import { prepare, toSiteLot } from './lot.js';
 import { drawStrip, drawConceptNote, drawWatermark, ddmmyyyy, ABN, ENTITY } from './frame.js';
 import { drawCover, localityScale, localityView } from './cover.js';
 import { resolveLocality } from './locality.js';
+import { syncCurrency } from '../../../site/custom-rules.js';
+import { sheetNotes } from '../../../site/upload/sheet-text.js';
 import { drawSite, siteView } from './site.js';
 import { drawHouseSheet, houseSheets } from './house.js';
 import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, drawLayout, drawMezzanine, drawYield, coverThumbnail, COMMERCIAL_NOTES } from './commercial.js';
@@ -76,6 +78,7 @@ export function planSetSheets({ project, lot, kind, catalogue = null }) {
  * @returns {Promise<{ blob: Blob, filename: string, sheets: Array, pages: number }>}
  */
 export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null } = {}) {
+  syncCurrency(project);
   if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Pocket Architect project');
   if (kind !== 'site' && kind !== 'house' && kind !== 'commercial') throw new Error("exportPlanSet kind must be 'site', 'house' or 'commercial'");
   const commercial = kind === 'commercial';
@@ -114,7 +117,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
       let r = null;
       if (s.id === 'cover') {
         const z = siteLot.zoning ? [siteLot.zoning.code && `Zone ${siteLot.zoning.code}`, siteLot.zoning.name].filter(Boolean).join(' ') : '';
-        drawCover(doc, { project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: COMMERCIAL_NOTES, lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
+        drawCover(doc, { project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes(COMMERCIAL_NOTES, siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
         strip = { ...strip, subtitle: 'Commercial unit layout', kvTitle: 'SITE DATA', kv: [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`], ['Units', String(cmodel.stats.units)]], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
       } else {
         if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null });
@@ -133,6 +136,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
       const h = drawHouseSheet(doc, aligned.project, s.house, { catalogue, northDeg: Number(aligned.project.site?.northDeg) || 0 });
       strip = { ...strip, subtitle: ascii(title), kvTitle: 'AREAS (INDICATIVE)', kv: h.kv, blocks: h.blocks, notes: ['Dimensions in millimetres.', 'Room areas to internal wall faces.', 'Door swings and window positions are shown as designed.', 'Confirm all dimensions on site before ordering.'] };
     }
+    strip.notes = sheetNotes(strip.notes, siteLot, { aerialShown: !!locality.aerial && ['cover', 'existing', 'site'].includes(s.id), aerial: locality.aerial });
     drawConceptNote(doc);
     drawStrip(doc, base, strip);
     if (builder) drawWatermark(raw, `Prepared for ${builder}`);

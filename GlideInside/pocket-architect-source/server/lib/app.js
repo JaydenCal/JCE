@@ -78,6 +78,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       sharing: projects.available(),
       aiPaused: !config.anthropicApiKey || !!(await credits.globalPause(store, config, now())),
       paymentsConfigured: !!(config.stripeSecretKey && config.stripeWebhookSecret && config.entitlementSecret),
+      ...(config.mapboxPublicToken ? { mapboxToken: config.mapboxPublicToken } : {}),
       ...(devGrant ? { devGrant: true } : {}),
     });
   }

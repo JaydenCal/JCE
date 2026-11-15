@@ -29,6 +29,8 @@ export function readConfig(env = {}) {
     })(),
     appUrl: str(env.APP_URL) || `${siteUrl}/floor-plan-designer/app/`,
     anthropicApiKey: str(env.ANTHROPIC_API_KEY),
+    // Mapbox PUBLIC token (pk.) handed to the browser for the worldwide aerial. A secret token (sk.) is never accepted or sent.
+    mapboxPublicToken: /^pk\.[A-Za-z0-9._-]+$/.test(str(env.MAPBOX_PUBLIC_TOKEN)) ? str(env.MAPBOX_PUBLIC_TOKEN) : '',
     anthropicModel: str(env.ANTHROPIC_MODEL) || str(env.AI_MODEL) || 'claude-haiku-5-5', // AI_MODEL is the live Worker's name for it
     priceInPerMtok: num(env.PRICE_IN_PER_MTOK_USD, 0.1),
     priceOutPerMtok: num(env.PRICE_OUT_PER_MTOK_USD, 0.5),
