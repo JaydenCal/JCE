@@ -20,29 +20,29 @@ How to tell which allowance he has: claude.ai, Settings, Billing shows an "API c
 | Model | Input | Output | 5 minute cache write | Cache read |
 |---|---|---|---|---|
 | Claude Haiku 5.5 (prompt up to 100,000 tokens) | 0.10 | 0.50 | 0.125 | 0.01 |
-| Claude Sonnet 5.5 | 2.00 | 10.00 | 2.50 | 0.10 |
+| Claude Sonnet 5.5 | 0.625 | 6.250 | 31.25 | 18.71 |
 | Workers AI llama-3.1-8b-instruct-fp8-fast | 0.045 | 0.384 | no cache | no cache |
 | Workers AI llama-3.2-3b-instruct | 0.051 | 0.335 | no cache | no cache |
 
-Minimum cacheable prompt is 512 tokens for both Claude models, and the concierge system prompt plus tools is about 1223 tokens, so caching applies. Workers AI also gives 10,000 neurons a day free (about US$0.11 a day of value at US$0.011 per 1,000 neurons).
+Minimum cacheable prompt is 512 tokens for both Claude models, and the concierge system prompt plus tools is about 1356 tokens, so caching applies. Workers AI also gives 10,000 neurons a day free (about US$0.11 a day of value at US$0.011 per 1,000 neurons).
 
 ## 3. How tokens were measured
 
 `tools/concierge-cost.mjs` runs 10 scripted conversations through the real app (real system prompt, real knowledge block, real tool definitions, real FAQ routing) against a stubbed model that returns canned replies. Tokens are counted with the repo's estimator (characters divided by 3.5, the one the design assistant uses), which is slightly conservative for English. The first model call of each conversation is priced as a cache write (the 5 minute cache will have expired between visitors), later calls as cache reads. Questions the FAQ answers cost nothing, which is why several conversations show zero model calls.
 
-System prompt plus knowledge plus tool definitions: **1223 tokens** (cached). Average per conversation across the 10: **1.5 model calls, 1942 prompt tokens (cached and uncached), 104 output tokens.**
+System prompt plus knowledge plus tool definitions: **1356 tokens** (cached). Average per conversation across the 10: **1.5 model calls, 2142 prompt tokens (cached and uncached), 104 output tokens.**
 
 | Conversation | Visitor turns | Model calls | Prompt tokens | Output tokens | Haiku 5.5 (US$) | Sonnet 5.5 (US$) |
 |---|---|---|---|---|---|---|
 | 1 Homeowner, FAQ only | 3 | 0 | 0 | 0 | 0.000000 | 0.000000 |
-| 2 Homeowner, two model questions then books | 3 | 2 | 2574 | 142 | 0.000249 | 0.004856 |
+| 2 Homeowner, two model questions then books | 3 | 2 | 2840 | 142 | 0.000267 | 0.005202 |
 | 3 Builder, FAQ then books | 2 | 0 | 0 | 0 | 0.000000 | 0.000000 |
-| 4 Builder, one model question | 2 | 1 | 1275 | 78 | 0.000197 | 0.003941 |
-| 5 Developer, FAQ and one model question | 3 | 1 | 1302 | 86 | 0.000204 | 0.004076 |
-| 6 Agent, three model questions | 4 | 3 | 3895 | 239 | 0.000319 | 0.006144 |
-| 7 Prompt injection attempt | 1 | 1 | 1285 | 63 | 0.000191 | 0.003811 |
-| 8 Off topic chat | 2 | 2 | 2551 | 90 | 0.000221 | 0.004290 |
-| 9 Long chat, six model questions | 6 | 5 | 6543 | 347 | 0.000418 | 0.007873 |
+| 4 Builder, one model question | 2 | 1 | 1408 | 78 | 0.000214 | 0.004274 |
+| 5 Developer, FAQ and one model question | 3 | 1 | 1435 | 86 | 0.000220 | 0.004408 |
+| 6 Agent, three model questions | 4 | 3 | 4294 | 239 | 0.000339 | 0.006503 |
+| 7 Prompt injection attempt | 1 | 1 | 1418 | 63 | 0.000207 | 0.004144 |
+| 8 Off topic chat | 2 | 2 | 2817 | 90 | 0.000239 | 0.004636 |
+| 9 Long chat, six model questions | 6 | 5 | 7208 | 347 | 0.000440 | 0.008258 |
 | 10 Click through booking, no questions | 1 | 0 | 0 | 0 | 0.000000 | 0.000000 |
 
 ## 4. Cost per conversation and at volume (AUD unless stated)
@@ -51,32 +51,32 @@ Per conversation (average of the 10) and the worst case for one conversation (12
 
 | Option | US$ per conversation | A$ per conversation | A$ worst case, one conversation |
 |---|---|---|---|
-| Claude Haiku 5.5 (default) | 0.000180 | 0.00030 | 0.00409 |
-| Claude Sonnet 5.5 | 0.003499 | 0.00584 | 0.079 |
-| Workers AI llama-3.1-8b-instruct-fp8-fast | 0.000128 | 0.00021 | 0.00368 |
+| Claude Haiku 5.5 (default) | 0.000193 | 0.00032 | 0.00446 |
+| Claude Sonnet 5.5 | 0.003742 | 0.00625 | 0.08611 |
+| Workers AI llama-3.1-8b-instruct-fp8-fast | 0.000137 | 0.00023 | 0.00401 |
 | Deterministic only (no model) | 0.000000 | 0.00000 | 0.00000 |
 
 At volume (average conversation mix: about 55 percent of visitor turns (15 model calls in 27 turns) are answered by the FAQ or booking logic for free):
 
 | Option | A$ for 100 | A$ for 1,000 | A$ for 5,000 | US$ for 5,000 |
 |---|---|---|---|---|
-| Claude Haiku 5.5 (default) | 0.030 | 0.300 | 1.50 | 0.90 |
+| Claude Haiku 5.5 (default) | 0.032 | 0.322 | 1.61 | 0.96 |
 | Claude Sonnet 5.5 | 0.584 | 5.84 | 29.22 | 17.50 |
-| Workers AI llama-3.1-8b-instruct-fp8-fast | 0.021 | 0.213 | 1.06 | 0.64 |
+| Workers AI llama-3.1-8b-instruct-fp8-fast | 0.023 | 0.228 | 1.14 | 0.68 |
 | Deterministic only (no model) | 0.00000 | 0.00000 | 0.00000 | 0.00 |
 
-Reading it: Haiku 5.5 costs about three hundredths of a cent per conversation, so 5,000 conversations is about A$1.50. Sonnet 5.5 is roughly 19 times dearer (about A$29 for 5,000), with no quality need for it on a FAQ style task. Workers AI is cheaper by a few cents at this volume but needs a different integration (no Anthropic tool calling, no prompt caching, and a smaller model that I expect, but have not tested, to be weaker against prompt injection), so it saves under A$1 per 1,000 conversations and is not recommended. Deterministic only is free but cannot answer free text. The hybrid (this build) answers the common questions free and uses Haiku for the rest.
+Reading it: Haiku 5.5 costs about three hundredths of a cent per conversation, so 5,000 conversations is about A$1.61. Sonnet 5.5 is roughly 19 times dearer (about A$31 for 5,000), with no quality need for it on a FAQ style task. Workers AI is cheaper by a few cents at this volume but needs a different integration (no Anthropic tool calling, no prompt caching, and a smaller model that I expect, but have not tested, to be weaker against prompt injection), so it saves under A$1 per 1,000 conversations and is not recommended. Deterministic only is free but cannot answer free text. The hybrid (this build) answers the common questions free and uses Haiku for the rest.
 
-## 5. Booking provider cost
+## 5. Booking and call back cost (updated 15/11/2026: owner decision, no calendar for now)
 
 | Item | Cost | Notes |
 |---|---|---|
-| Cal.com Individuals (free) | US$0 | Unlimited event types and bookings for one user. Cal.com's pricing page does not say whether API keys are available on the free plan. **Owner must confirm in the Cal.com dashboard (Settings, Security, API keys) before going live.** |
-| Cal.com Teams | US$12 per user per month billed yearly (about A$20) | The plan its pages list for "Custom APIs". Fallback if the free plan has no API access. API keys allow 120 requests per minute. |
-| Calendly (fallback provider) | Free plan allowed to call POST /invitees from 06/11/2026, limited to 5 bookings per user per day | Real availability (GET /event_type_available_times, 31 day window) and booking APIs exist. The 5 per day limit is tight. Paid plans have higher limits. |
+| Calendar provider (Cal.com or Calendly) | **A$0, not used** | The default flow is "Request a call back". No calendar account is needed. The Cal.com code stays in the repository behind `BOOKING_PROVIDER=calcom` and is off. Earlier research (Cal.com free plan API access unconfirmed, Teams US$12 per user per month, Calendly free plan limit of 5 bookings per day) is kept in DESIGN.md for the day a calendar is wanted. |
+| Email to the owner | **A$0 extra** | Uses the existing Resend setup of the enquiry form (`RESEND_API_KEY`, `ENQUIRY_TO`). One email per request, no email to the visitor. Resend is not priced here because the account already exists for the enquiry form. |
+| Storage | **A$0 extra** | One row in the existing `jce_enquiries` table per request. |
 | Cloudflare Turnstile | Free | |
 
-Expected booking API traffic is tiny (a few calls per booking), far under 120 per minute.
+The only running cost of the concierge is the model (section 4), and that is bounded by `AI_MONTHLY_BUDGET_AUD`.
 
 ## 6. Sharing the US$200 monthly credits (recommendation)
 
@@ -105,7 +105,7 @@ Operating rules:
 3. Cache: first call of each conversation is a cache write, later calls are reads. If visitors arrive faster than every 5 minutes the real cost is slightly lower.
 4. Conversation mix is the 10 scripted ones. Real visitors may ask more free text questions. The per conversation message cap (12) and the monthly ceiling bound the worst case.
 5. FX A$1.67 per US$1.
-6. Cal.com free plan API availability is unconfirmed (section 5).
+6. No calendar cost is included: the default flow is a call back request (section 5).
 7. No batch discount, no fast mode.
 
 ## Sources
@@ -118,3 +118,6 @@ Operating rules:
 - Cloudflare Workers AI pricing: https://developers.cloudflare.com/workers-ai/platform/pricing/
 - Cal.com pricing: https://cal.com/pricing and API intro https://cal.com/docs/api-reference/v2/introduction
 - Calendly Scheduling API: https://developer.calendly.com/api-docs/calendly-api/scheduled-events/create-event-invitee and the Free plan announcement https://community.calendly.com/developer-faq-62/scheduling-api-post-invitees-and-webhooks-now-available-on-the-free-plan-6162
+
+
+Note 15/11/2026: figures refreshed after the call back change (the system prompt grew by about 130 tokens for the no promise rules, and the model sees two tools in the default flow instead of three). Worst case column is scaled by 1.09 from the earlier measurement, not re-simulated.

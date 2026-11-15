@@ -1,6 +1,23 @@
 # Glide Inside AI booking and sales concierge: design (15/11/2026)
 
-Branch `claude/concierge` (from `origin/claude/growth-base`). Status: built, tested offline, **OFF by default**, nothing deployed, no real booking created, no credential used. Companion files: `COSTS.md`, `CHANGELOG.md`, screenshots in `shots/`.
+Branch `claude/concierge` (from `origin/claude/growth-base`). Status: built, tested offline, **OFF by default**, nothing deployed, no real request sent, no credential used. **Revised 15/11/2026 on the owner's decision: the default flow is "Request a call back" (no calendar). The booking calendar code is kept but is off.** Companion files: `COSTS.md`, `CHANGELOG.md`, screenshots in `shots/`.
+
+## 0. Revision 15/11/2026: Request a call back is the default
+
+Owner decision: no calendar integration for now. The visitor asks for a call and the owner is emailed.
+
+- Flow: intent chip, qualifier chip, optional questions, then the call back form: name, phone (required), email, customer type, best time to call (morning, afternoon, evening, or a note), short notes. A separate consent box (required) and a separate marketing box (unticked). The page path and the `utm_campaign` value are added by the page, not typed by the visitor. A review screen follows, then an explicit **Send call back request** button.
+- Server: `POST /api/concierge/callback` checks the conversation token, the explicit `confirm: true`, consent, an attempt key, then calls the **existing** `handleEnquiry` in `server/lib/enquiry.js`: validation reused, saved to `jce_enquiries` first, then emailed through Resend only when `RESEND_API_KEY` is set (reply-to is the visitor), enquiry rate limits reused. No new email provider and no new table. If email is not configured, or Resend fails, the request is still saved (the owner reads it in the admin route) and the visitor still sees the thanks.
+- The email goes to the owner only (`ENQUIRY_TO`). Subject `[GI-XXXXX] Call back request (Builder): name, phone`. The body holds name, phone, email, type, best time, notes, page, campaign, marketing opt in, reference, and states that nothing has been booked. Nothing is ever sent to the visitor.
+- Visitor message: "Thanks, your request is with Jayden at Glide Inside. He will call you, usually within one business day." The page and the AI never say a booking or appointment exists and never promise a time (a reply that does is replaced, tested).
+- Edits to a shared file, `server/lib/enquiry.js` (marked CONCIERGE): `callback` added to the allowed needs, a call back summary and subject, optional `callback` details, and an optional fixed `reference` so a replayed submit is idempotent. The existing `/api/enquiry/jce` behaviour for the other needs is unchanged (`enquiry.test.mjs` passes).
+- Calendar code: `booking.js`, `booking-provider.js` (Cal.com and mock), slot and booking screens remain, but appear only when `BOOKING_PROVIDER=calcom` with `BOOKING_LIVE=1` and approved types. The mock provider is used only in tests and the preview server. With the default settings `/slots`, `/propose`, `/confirm` answer 503 and the page shows no slot UI.
+- GA4: `booking_agent_callback_requested` replaces `booking_agent_booking_confirmed` in the default flow. It is sent only after the server accepted the request, once per request (deduplicated, never sent as a parameter), with only the intent and page path. `booking_agent_booking_confirmed` remains for the calendar flag only. The other events are unchanged. `booking_agent_booking_failed` gains the reason `callback_error`.
+- Duplicate submit: one attempt key makes one request; a replay returns the same reference and sends nothing again (tested with six simultaneous submits). The page generates a new key after any definite error. Known gap (SUSPECTED): if the first attempt dies after the key is counted but before the request is saved, a replay of the same key would report success. The page never replays a key after a definite error, and the enquiry is saved before email.
+- Rate limits: concierge per IP per minute, sessions per IP per hour, call back requests per IP per hour (4) and per conversation per day (3), plus the enquiry pipeline's own limits (per IP 5 an hour and per email 3 a day). Invalid requests do not use up the limits.
+- Prompt injection: the model has no tool that sends anything. It may only ask the page to open the form (`request_callback`), and the visitor must press the send button. Tests: model output claiming a booking or a time is replaced; fake tool names and `confirm_booking` are dropped; text asking to submit only opens the form; a non literal `confirm` is refused.
+
+Sections 1 to 16 below describe the whole build. Where they speak of booking, slots or a calendar they now apply only to the optional calendar flag. Section 12 has the updated owner setup list.
 
 ## 1. What it is
 
@@ -124,8 +141,10 @@ Plain variables (`[vars]` in the Worker config) and secrets (`wrangler secret pu
 | Name | Kind | Default | Meaning |
 |---|---|---|---|
 | `CONCIERGE_ENABLED` | var | off | Master switch. Off means every concierge route answers "not available" |
+| `RESEND_API_KEY`, `ENQUIRY_TO`, `ENQUIRY_FROM` | secret and vars (existing, enquiry form) | | Call back email to the owner. Unset key: saved only |
+| `CONCIERGE_IP_CALLBACKS_PER_HOUR` | var | 4 | Call back requests per IP per hour |
 | `BOOKING_LIVE` | var | off | Must be `1` before any real calendar is read or written |
-| `BOOKING_PROVIDER` | var | `mock` | `mock` or `calcom` |
+| `BOOKING_PROVIDER` | var | none (call back only) | `calcom` switches the optional calendar flow on (with `BOOKING_LIVE=1`). `mock` only with `CONCIERGE_ALLOW_MOCK=1` for tests |
 | `CONCIERGE_ALLOW_MOCK` | var | off | Allows the mock provider (tests and staging only) |
 | `CONCIERGE_APPROVED_TYPES` | var | empty | Comma list of approved booking types |
 | `CALCOM_EVENT_TYPE_HOMEOWNER` / `_BUILDER` / `_DEVELOPER` / `_AGENT` | var | none | Cal.com event type ids |
@@ -144,25 +163,29 @@ Plain variables (`[vars]` in the Worker config) and secrets (`wrangler secret pu
 
 ## 12. Owner setup steps (in order; none done by this build)
 
-1. **Approve** the booking types and durations (section 4) and the page set.
-2. **Cal.com account**: create or use the owner's account. Set availability in the Australia/Sydney timezone. Confirm API keys are available on the plan (Settings, Security). If not, Teams at US$12 per user per month.
-3. **Event types**: create four, with the durations above, a minimum notice of at least 12 hours, buffers as wanted, no host approval (so a booking is `accepted`; if approval is required the UI says "requested", not "confirmed"). Collect only name and email. Choose the meeting location. Note each event type id.
-4. **API key**: create a key in Cal.com, then in a terminal run `wrangler secret put CALCOM_API_KEY` and paste it. **Never paste it into chat or files.**
-5. **Turnstile**: in the Cloudflare dashboard create a widget for glideinside.com.au; `wrangler secret put TURNSTILE_SECRET_KEY`; set `TURNSTILE_SITE_KEY` as a var.
-6. **Anthropic**: claim the Ultra API credits by linking one Console organisation (claude.ai, Settings, Billing, API credits); create a workspace and key for production; auto reload OFF; set a workspace spend limit; `wrangler secret put ANTHROPIC_API_KEY` (already set for the design assistant: the same organisation serves both).
-7. **Apply the migration**: `npx wrangler d1 migrations apply pocket-architect` (adds `concierge_bookings`; additive). Migration 0019 is on another branch; D1 applies in order, so apply after that branch merges or accept the gap (the numbering test in `live-merge.test.mjs` lists 0020 after 0018).
-8. **Staging first**: deploy to the staging Worker with `BOOKING_PROVIDER=calcom`, `BOOKING_LIVE=1`, one approved type, and a Cal.com test event type; make one booking and cancel it; check the confirmation email and the GA4 DebugView.
-9. **Privacy policy and notifications review** (section 13).
-10. **Go live**: set `CONCIERGE_ENABLED=1`, `BOOKING_LIVE=1`, `CONCIERGE_APPROVED_TYPES`, and `conciergeEnabled: true` in `site.config.js` (the upload zip's `find assets` picks up `assets/concierge/`; `golive/UPLOAD_FILES.txt` is generated and needs regenerating).
+Default flow (call back). Everything is a Worker variable or secret that the owner sets himself:
+
+1. **Resend** (already used by the enquiry form): the existing `RESEND_API_KEY` secret and verified sending domain serve the concierge too. If the enquiry form already emails the owner, nothing more is needed. The email goes to the address already used by the enquiry form, `ENQUIRY_TO` (code default `enquiries@jceinfrastructure.com.au`); the sender is `ENQUIRY_FROM`. Without `RESEND_API_KEY` requests are still saved and are read in the admin enquiry route.
+2. **Turnstile**: create a widget for glideinside.com.au in the Cloudflare dashboard; `wrangler secret put TURNSTILE_SECRET_KEY`; set `TURNSTILE_SITE_KEY` as a variable. (Without a secret the concierge refuses to start a chat on the live site by design.)
+3. **Anthropic**: claim the Ultra API credits by linking one Console organisation (claude.ai, Settings, Billing, API credits); create a workspace and a production key; auto reload OFF; set a workspace spend limit; `ANTHROPIC_API_KEY` is already a secret for the design assistant (the same organisation serves both). Set `AI_MONTHLY_BUDGET_AUD` (section COSTS 6). Or set `CONCIERGE_AI=0` to run with the free FAQ only.
+4. **Signing secret**: the existing `ENTITLEMENT_SECRET` is used unless `CONCIERGE_SIGNING_SECRET` is set.
+5. **Privacy policy and the notification wording** (section 13) approved and applied.
+6. **Staging first**: deploy to the staging Worker with `CONCIERGE_ENABLED=1`; send one request from the staging site; check the email arrives with name, phone, email, type, best time, notes, page and reference, the row appears in the admin route, and GA4 DebugView shows `booking_agent_callback_requested` once with no personal data. Then send one with `RESEND_API_KEY` unset to confirm it is still saved.
+7. **Go live**: set `CONCIERGE_ENABLED=1` in the Worker variables, then `conciergeEnabled: true` in `site.config.js`, then upload the five pages, `analytics.js`, `site.config.js` and `assets/concierge/*` (the upload zip's `find assets` picks the folder up; `golive/UPLOAD_FILES.txt` is generated and needs regenerating). Mark `booking_agent_callback_requested` as a key event in GA4.
+8. The owner is the person who calls back. Decide who answers the new email and keep to "usually within one business day", which is what the page promises.
+
+Not needed for this flow: Cal.com account, event types, `CALCOM_API_KEY`, migration 0020 (the migration only adds the calendar's `concierge_bookings` table; the call back flow uses the existing `jce_enquiries` table).
+
+Optional calendar flow (later, only if the owner decides): the original steps. Approve the booking types and durations (section 4); create the Cal.com account and four event types (Sydney availability, notice at least 12 hours, no host approval, name and email only); confirm API key access on the plan; `wrangler secret put CALCOM_API_KEY`; apply migration 0020 (`npx wrangler d1 migrations apply pocket-architect`; 0019 is on another branch); set `BOOKING_PROVIDER=calcom`, `CALCOM_EVENT_TYPE_*`, `CONCIERGE_APPROVED_TYPES`, `BOOKING_LIVE=1`; run a staging smoke test with a test event type before go live.
 
 ## 13. Approvals and reviews needed before activation
 
-- Booking types and durations (owner).
-- Cal.com plan and API availability, meeting location, event type settings (owner).
-- **Privacy policy**: `privacy.html` already names Anthropic (United States) and Cloudflare. It does not mention the booking calendar provider or the booking assistant. Proposed addition (not applied, needs the owner's and legal review): "Booking assistant: if you use the assistant on this site to book a time, your name and email are sent to our scheduling provider, Cal.com, to make and confirm the booking. We keep only a booking reference and the time. We do not keep the chat. Your questions to the assistant are processed by Anthropic in the United States. Marketing is opt in and never ticked for you." Also add Cal.com to the list of providers, and Cloudflare Turnstile.
-- **Transactional notifications**: the booking confirmation and reminder emails come from Cal.com, not from us. Review its default templates (wording, "compliant" free, branding) before go live. This build sends no email and no SMS.
-- Marketing opt-in handling: the box is recorded in the proposal only; no marketing is sent. Decide whether to store opt-ins.
-- GA4: mark `booking_agent_booking_confirmed` as a key event.
+- **Privacy policy**: `privacy.html` already names Anthropic (United States) and Cloudflare. It does not mention the website assistant or call back requests. Proposed addition (not applied, needs the owner's and legal review): "Website assistant: if you use the assistant on this site to ask for a call back, your name, phone number, email address and note are sent to us by email and kept so we can call you. We do not keep the chat. Your questions to the assistant are processed by Anthropic in the United States. Marketing is opt in and never ticked for you." Also add Cloudflare Turnstile (spam check) if it is not already listed.
+- **Notification wording**: the only email is the one to the owner. No email or SMS goes to the visitor. Check the call back email text in `enquiry.js` (`summaryText`) reads as the owner wants.
+- **The promise on the page**: "usually within one business day" is the owner's chosen wording. Confirm he can keep it.
+- Marketing opt-in handling: the box is recorded in the request (the email says yes or no); no marketing is sent. Decide whether to keep a list.
+- GA4: mark `booking_agent_callback_requested` as a key event.
+- Calendar flag only, if ever used: booking types and durations (section 4), Cal.com plan and API availability, meeting location, event type settings, Cal.com's own confirmation emails.
 
 ## 14. Rollback
 
@@ -171,15 +194,19 @@ Every layer is independently switchable, fastest first:
 2. Set `conciergeEnabled: false` in `site.config.js` and re-upload that one file: the launcher stub does nothing and no panel loads.
 3. Remove the `<script ... launcher.js>` line from the five pages (marked `CONCIERGE`) and the `CONCIERGE` block in `analytics.js`.
 4. Revert the branch merge. The only schema change is the additive table `concierge_bookings` (no live table depends on it, so it can stay or be dropped later). No shared table or existing endpoint changed.
-5. Cal.com side: events already booked stay in Cal.com; cancel from its dashboard. Revoke the API key to stop all access.
+5. Call back requests already received stay in `jce_enquiries` (read them in the admin route); reverting the `enquiry.js` hunk does not remove them.
+6. Calendar flag only: events already booked stay in Cal.com; cancel from its dashboard. Revoke the API key to stop all access.
 
 ## 15. Findings and open items
 
 | Class | Item |
 |---|---|
 | CONFIRMED | `live-merge.test.mjs` hard codes the migration number list; this branch adds `0020` and the other branch adds `0019`; expect a merge edit to that one line |
+| CONFIRMED | `jce_enquiries.need` now also holds `callback` (a TEXT column, no constraint); the admin route lists it like any need. Any report that groups by need must expect the new value |
 | CONFIRMED | The existing assistants treat Anthropic's "credit balance too low" as a generic AI error (not changed here) |
-| SUSPECTED | `CalComProvider` has never spoken to the real Cal.com (no key); request and response shapes follow the docs. The slot response format and the 400 body for a taken slot need one real test on staging |
+| SUSPECTED | A replayed attempt key reports success even if the first attempt failed after the key was counted (the page never replays a key after an error; the enquiry is saved before email) |
+| SUSPECTED | Call back email deliverability depends on the existing Resend domain; not tested live |
+| SUSPECTED | (calendar flag only) `CalComProvider` has never spoken to the real Cal.com (no key); request and response shapes follow the docs. The slot response format and the 400 body for a taken slot need one real test on staging |
 | SUSPECTED | Cal.com free plan may not include API keys |
 | SUSPECTED | Turnstile was exercised only against a stub |
 | SUSPECTED | Rate limit rows hold the raw IP transiently (existing pattern in this Worker); consider hashing |
@@ -191,4 +218,4 @@ Every layer is independently switchable, fastest first:
 
 ## 16. Verification
 
-`node --test tests/concierge.test.mjs tests/concierge-analytics.test.mjs` (61 tests, offline). `PLAYWRIGHT_PATH=/opt/node-tools/node_modules/playwright node tools/concierge-shots.cjs growth/concierge/shots` runs 100+ browser checks at 1440 and 390 px and writes the screenshots. See `CHANGELOG.md` for the run results.
+`node --test tests/concierge.test.mjs tests/concierge-callback.test.mjs tests/concierge-analytics.test.mjs` (75 tests, offline). `PLAYWRIGHT_PATH=/opt/node-tools/node_modules/playwright node tools/concierge-shots.cjs growth/concierge/shots` runs 103 browser checks (call back flow, then the optional calendar flow) at 1440 and 390 px and writes the screenshots. See `CHANGELOG.md` for the run results.
