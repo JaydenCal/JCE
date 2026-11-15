@@ -818,7 +818,7 @@ function buildNeighbourSheds(group, rings, H, stats) {
     stats.houses++;
   }
   if (b.empty) return;
-  const mats = { dado: mat('#a9a8a2', { roughness: 0.95 }), roof: mat('#b9bec2', { roughness: 0.5, metalness: 0.3, side: THREE.DoubleSide }), door: mat('#5b636b', { roughness: 0.6, metalness: 0.2 }) };
+  const mats = { dado: mat('#a9a8a2', { roughness: 0.95 }), roof: mat('#959ba1', { roughness: 0.7, metalness: 0.1, side: THREE.DoubleSide }), door: mat('#5b636b', { roughness: 0.6, metalness: 0.2 }) };
   SHED_WALLS.forEach((col, i) => { mats[`w${i}`] = mat(col, { roughness: 0.7, metalness: 0.15 }); });
   add2(group, makeMesh(b.build(), mats, { ground: true }, { cast: true, receive: true, name: 'neighbour-sheds' }));
 }

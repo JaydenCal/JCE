@@ -147,12 +147,24 @@ function labelSprite(lines, kind) {
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.lineJoin = 'round';
+  // A rounded label plate (a pill for one line, a rounded rectangle for more), white at about 76% so the ground shows through a
+  // little; the text on it is drawn solid and crisp. Same size and place as before.
+  const rad = Math.min(height / 2 - 1, lines.length > 1 ? 20 : height / 2);
+  g.beginPath();
+  g.moveTo(1 + rad, 1);
+  g.arcTo(width - 1, 1, width - 1, height - 1, rad);
+  g.arcTo(width - 1, height - 1, 1, height - 1, rad);
+  g.arcTo(1, height - 1, 1, 1, rad);
+  g.arcTo(1, 1, width - 1, 1, rad);
+  g.closePath();
+  g.fillStyle = 'rgba(255,255,255,0.76)';
+  g.fill();
+  g.lineWidth = 1.5;
+  g.strokeStyle = strong ? 'rgba(166,27,27,0.55)' : 'rgba(58,63,51,0.35)';
+  g.stroke();
   lines.forEach((l, i) => {
     const y = pad + lh * (i + 0.5);
     g.font = font(i === 0 ? size : size * 0.86, i === 0 ? 700 : 600);
-    g.lineWidth = 7;
-    g.strokeStyle = 'rgba(255,255,255,0.92)';
-    g.strokeText(l, width / 2, y);
     g.fillStyle = strong ? '#a61b1b' : '#3a3f33';
     g.fillText(l, width / 2, y);
   });
