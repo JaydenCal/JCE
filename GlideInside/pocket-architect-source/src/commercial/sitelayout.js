@@ -59,11 +59,10 @@ function distSeg(p, a, b) {
 
 const FREE = 0; const BLOCK = 1; const SOLID = 2; const RESERVED = 3; const AISLE = 4; const BAY = 5;
 
-function makeGrid(f, lot, pts) {
+function makeGrid(f, lot, win) {
   const fp = lot.boundary.map((q) => toFrame(f, q));
-  const sMin = Math.min(...fp.map((q) => q.s)); const sMax = Math.max(...fp.map((q) => q.s));
-  const tMin = -VERGE_MM - 500; const tMax = Math.max(...fp.map((q) => q.t));
-  void pts;
+  const sMin = win ? win.s0 : Math.min(...fp.map((q) => q.s)); const sMax = win ? win.s1 : Math.max(...fp.map((q) => q.s));
+  const tMin = -VERGE_MM - 500; const tMax = win ? win.t1 : Math.max(...fp.map((q) => q.t));
   let cell = 500;
   const count = () => Math.ceil((sMax - sMin) / cell) * Math.ceil((tMax - tMin) / cell);
   while (count() > 90000) cell *= 2;
@@ -138,6 +137,21 @@ function fitToLot(polygon, lot) {
   const best = pieces.filter((r) => r.length >= 3).sort((a, b) => polyArea(b) - polyArea(a))[0];
   if (!best || polyArea(best) < 1e6) return { polygon: null, clipped: true, lost: true };
   return { polygon: best, clipped: true, lost: false };
+}
+
+export const DEV_MARGIN_MM = 30000;
+/** The working window in the lot frame, { s0, s1, t1 }: the buildings and bays with a margin, from the frontage inward, clipped to the lot. */
+function developableWindow(f, lot, src) {
+  const fp = lot.boundary.map((q) => toFrame(f, q));
+  const lo = { s: Math.min(...fp.map((q) => q.s)), t: Math.max(...fp.map((q) => q.t)) };
+  const hi = { s: Math.max(...fp.map((q) => q.s)) };
+  const pts = [...src.solids.flat(), ...src.reserved.flat(), ...src.bs.flatMap((b) => b.extras.flatMap((e) => e.polygon))].map((q) => toFrame(f, q));
+  if (!pts.length) return { s0: lo.s, s1: hi.s, t1: lo.t };
+  const m = DEV_MARGIN_MM;
+  const s0 = Math.max(lo.s, Math.min(...pts.map((q) => q.s)) - m);
+  const s1 = Math.min(hi.s, Math.max(...pts.map((q) => q.s)) + m);
+  const t1 = Math.min(lo.t, Math.max(...pts.map((q) => q.t)) + m);
+  return { s0, s1, t1 };
 }
 
 const isStation = (bs) => bs.some((b) => b.type === 'service-station');
@@ -283,7 +297,9 @@ export function generateSiteWorks(project, opts = {}) {
     const names = spill.map((b) => b.type.replace(/-/g, ' ')).join(', ');
     return { ...rowsOnlyWorks(c, lot, f), kind: 'does-not-fit', landscape: [], notFit: true, warnings: [`The ${names} does not fit inside the lot boundary, so no car park is laid out. Use a smaller building or a larger lot.`] };
   }
-  const g = makeGrid(f, lot);
+  // The working window: on a huge lot only the ground around the buildings is laid out (the developable envelope); the rest is balance land.
+  const win = developableWindow(f, lot, src);
+  const g = makeGrid(f, lot, win);
   const station = isStation(src.bs);
   const truck = wantsTruck(src.bs);
   const aisleW = truck ? AISLE_TRUCK_MM : Math.max(AISLE_MM, Number(c.parking?.aisleMm) || 0);
@@ -332,8 +348,8 @@ export function generateSiteWorks(project, opts = {}) {
   const e0 = (lot.frontEdges || [])[0] ?? 0;
   const edgeLen = Math.hypot(lot.boundary[(e0 + 1) % nB].x - lot.boundary[e0].x, lot.boundary[(e0 + 1) % nB].y - lot.boundary[e0].y);
   const CORNER = 6000;
-  const sLo = Math.max(Math.min(...fpoly.map((q) => q.s)), 0) + (frontEdges.has((e0 - 1 + nB) % nB) ? CORNER : 0);
-  const sHi = Math.min(Math.max(...fpoly.map((q) => q.s)), edgeLen) - (frontEdges.has((e0 + 1) % nB) ? CORNER : 0);
+  const sLo = Math.max(win.s0, Math.min(...fpoly.map((q) => q.s)), 0) + (frontEdges.has((e0 - 1 + nB) % nB) ? CORNER : 0);
+  const sHi = Math.min(win.s1, Math.max(...fpoly.map((q) => q.s)), edgeLen) - (frontEdges.has((e0 + 1) % nB) ? CORNER : 0);
   const frontLen = sHi - sLo;
   const snap = (s) => g.s0 + (Math.floor((s - g.s0) / g.cell) + 0.5) * g.cell;
   const clampS = (s) => snap(Math.max(sLo + sideLand + xoverW / 2 + 500, Math.min(sHi - sideLand - xoverW / 2 - 500, s)));
@@ -693,7 +709,7 @@ export function generateSiteWorks(project, opts = {}) {
   const addStrip = (s0, s1) => { if (s1 - s0 < 1200) return; const poly = rectWorld(f, s0, s1, 0, frontLand - 300); if (inLot(poly)) landscape.push({ id: `sw:land:${landscape.length}`, polygon: poly }); };
   for (const [a, b] of gaps) { addStrip(cursor, a); cursor = Math.max(cursor, b); }
   addStrip(cursor, sHi);
-  const tMaxLot = Math.max(...fpoly.map((q) => q.t));
+  const tMaxLot = win.t1;
   for (const side of [0, 1]) {
     const s0 = side ? sHi - sideLand : sLo; const s1 = side ? sHi : sLo + sideLand;
     const poly = rectWorld(f, s0, s1, frontLand, tMaxLot);
