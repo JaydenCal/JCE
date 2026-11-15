@@ -196,6 +196,7 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   // The prompt (non blocking) --------------------------------------------------------------------------------------------------
   function closePrompt() {
     document.removeEventListener('keydown', onPromptKey, true);
+    window.removeEventListener('keydown', onPromptKey, true);
     prompt?.remove();
     prompt = null;
     policy.closed();
@@ -215,16 +216,24 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
     // Inside the guided flow (Check it step) the prompt stands above the flow, in the page itself.
     (document.documentElement.classList.contains('gf-open') ? document.body : refs.shell || document.body).append(prompt);
     document.addEventListener('keydown', onPromptKey, true);
+    window.addEventListener('keydown', onPromptKey, true);
+    // Focus belongs to the prompt while it is open: a leftover onboarding button must not keep it (Escape then goes to the prompt).
+    try {
+      const ae = document.activeElement;
+      if (!ae || ae === document.body || ae.closest?.('.pso-card, .pso-dock, .pso-pop, [class*="pso-"]')) { prompt.tabIndex = -1; prompt.focus({ preventScroll: true }); }
+    } catch { /* focus is a convenience */ }
   }
   // Escape closes the prompt like Not now (unless a dialog is open on top of it, which takes Escape for itself).
   function onPromptKey(e) {
     if (e.key !== 'Escape') return;
-    if (!prompt) { document.removeEventListener('keydown', onPromptKey, true); return; }
+    if (!prompt) { document.removeEventListener('keydown', onPromptKey, true); window.removeEventListener('keydown', onPromptKey, true); return; }
     if (document.querySelector('.ps-modal')) return;
+    e.stopPropagation();
     notNow();
   }
   function notNow() {
     document.removeEventListener('keydown', onPromptKey, true);
+    window.removeEventListener('keydown', onPromptKey, true);
     prompt?.remove();
     prompt = null;
     policy.dismiss();
