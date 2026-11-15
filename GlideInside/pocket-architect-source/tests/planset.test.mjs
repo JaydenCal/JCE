@@ -385,7 +385,8 @@ test('commercial kind: no forbidden words, dashes or builder brands; watermark o
 });
 
 test('commercial kind: C103 carries the indicative yield and value section with the caveat, data date and sources', async () => {
-  const { text } = await crun({ builderName: '' });
+  const { text: raw } = await crun({ builderName: '' });
+  const text = raw.replace(/\s+/g, ' '); // the caveat is wrapped to the column, so it spans several lines
   for (const want of ['INDICATIVE YIELD AND VALUE', 'Estimates only, not a valuation. Enter your own values in any field. Defaults come from portal listings and published reports; check with a registered valuer and quantity surveyor before relying on them.', 'Data as at 13/11/2026', 'All figures are ex GST', 'Gross realisation (GFA x sale rate)', 'End value by capitalisation (net rent / net yield)', 'Net rent per year', 'Total development cost', 'Indicative margin, sell the units', '$3,714,379', 'commercialrealestate.com.au', 'building footprint plus hardstand', 'clearing and landscaping']) assert.ok(text.includes(want), `missing ${want}`);
 });
 

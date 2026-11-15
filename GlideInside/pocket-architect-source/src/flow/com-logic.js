@@ -299,6 +299,8 @@ export function checkSummary(project) {
   const rentRow = pick('Gross rent per year');
   const lines = [];
   for (const w of sw?.warnings || []) lines.push(w);
+  const zw = zoneWarning(project);
+  if (zw) lines.push(zw.text);
   if (verdict === 'met') lines.push('Every building sits inside the setbacks on every boundary.');
   else if (verdict === 'not-met') lines.push(`${st.text} Move or turn a building, or try another layout.`);
   else lines.push(st.text || 'Setbacks are not confirmed. Check with council.');

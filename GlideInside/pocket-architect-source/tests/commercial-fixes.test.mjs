@@ -121,3 +121,18 @@ test('plan set: the terms note is not followed by a second Terms of use stamp wh
   const text = await pdfText(p);
   assert.ok(!/ABN 29 699 165 663\.\s*Terms of use v/.test(text.replace(/\n/g, ' ')));
 });
+
+test('step 4 repeats the zone warning for a residential zone', () => {
+  const res = createStore(commercialProject({ rows: 'none', zoning: { code: 'R2', name: 'Low Density Residential' } }), { autosaveKey: null });
+  C.chooseType(res, 'warehouse');
+  assert.ok(C.checkSummary(res.project).lines.some((l) => /R2/.test(l)));
+  const ind = createStore(commercialProject({ rows: 'none' }), { autosaveKey: null });
+  C.chooseType(ind, 'warehouse');
+  assert.ok(!C.checkSummary(ind.project).lines.some((l) => /R2/.test(l)));
+});
+
+test('anonymous commercial export says Commercial Developer, not Plan Pack', async () => {
+  const { runExport } = await import('../src/premium/export-client.js');
+  const p = commercialProject({ plain: false });
+  await assert.rejects(runExport('pdf', p, { api: {}, token: null, config: {}, catalogue: null }), /Commercial Developer/);
+});

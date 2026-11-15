@@ -3,6 +3,7 @@
 import { injectCss } from './css.js';
 import { createHints } from './hints.js';
 import { createTour } from './tour.js';
+import { isCommercial } from '../../commercial/schema.js';
 import { KEYS, h, isOff, stageEl, store as ls } from './util.js';
 
 export function initOnboarding(ps = window.__ps) {
@@ -81,6 +82,7 @@ export function initOnboarding(ps = window.__ps) {
     startTour() {
       clearTimeout(autoTimer);
       hints.close();
+      if (isCommercial(ps.store.project)) return; // the tour is about furniture and rooms, not the commercial layout
       // The first step asks for an address; skip it when a lot is already on the plan.
       tour.start(ps.store.project?.site?.lot ? 1 : 0);
     },
@@ -108,6 +110,7 @@ export function initOnboarding(ps = window.__ps) {
   // One welcome card at a time: the tour waits until the welcome card has been used or dismissed.
   const startWhenQuiet = () => {
     if (disposed || !enabled || ls.get(KEYS.tourDone) === '1') return;
+    if (isCommercial(ps.store?.project)) return;
     if (window.innerWidth < 600) return; // narrow screens: no automatic tour (it can still be started from Demo tips)
     // One prompt at a time: wait while the welcome card or the street frontage bar is on screen.
     // Also wait while any dialog (Find my block and others) is open, and never auto start once a lot has been loaded.
