@@ -29,7 +29,7 @@ export function commercialCardStats(project) {
     { key: 'parking', label: 'Parking bays', value: `${s.parking.provided} / ${s.parking.required}` },
   ];
   if (s.buildingCount) out.splice(s.units ? 1 : 0, s.units ? 0 : 1, { key: 'buildings', label: s.buildingCount === 1 ? 'Building' : 'Buildings', value: String(s.buildingCount) });
-  if (s.coveragePct != null) out.push({ key: 'coverage', label: 'Site coverage', value: `${fmt1(s.coveragePct)}%` });
+  if (s.coveragePct != null) out.push({ key: 'coverage', label: 'Site coverage', value: s.coveragePct > 0 && s.coveragePct < 0.1 ? '<0.1%' : `${fmt1(s.coveragePct)}%` });
   return out;
 }
 

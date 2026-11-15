@@ -16,8 +16,9 @@ import { parkingLayout } from './parking.js';
 import { accessibleRequired } from './rules.js';
 import { clipTo } from './catalogue/pavements/polybool.js';
 import { polyArea } from './catalogue/pavements/geom.js';
+import { rowsSignature } from './estate.js';
 
-export const SITEWORKS_VERSION = 2; // 2: entry and exit stay on the first frontage edge and clear of a corner road; project.commercial.accessEdit overrides them
+export const SITEWORKS_VERSION = 3; // 2: entry and exit stay on the first frontage edge and clear of a corner road; project.commercial.accessEdit overrides them
 export const AISLE_MM = 6000;
 export const AISLE_TRUCK_MM = 7500;
 export const CROSSOVER_W = 6000;
@@ -59,11 +60,10 @@ function distSeg(p, a, b) {
 
 const FREE = 0; const BLOCK = 1; const SOLID = 2; const RESERVED = 3; const AISLE = 4; const BAY = 5;
 
-function makeGrid(f, lot, pts) {
+function makeGrid(f, lot, win) {
   const fp = lot.boundary.map((q) => toFrame(f, q));
-  const sMin = Math.min(...fp.map((q) => q.s)); const sMax = Math.max(...fp.map((q) => q.s));
-  const tMin = -VERGE_MM - 500; const tMax = Math.max(...fp.map((q) => q.t));
-  void pts;
+  const sMin = win ? win.s0 : Math.min(...fp.map((q) => q.s)); const sMax = win ? win.s1 : Math.max(...fp.map((q) => q.s));
+  const tMin = -VERGE_MM - 500; const tMax = win ? win.t1 : Math.max(...fp.map((q) => q.t));
   let cell = 500;
   const count = () => Math.ceil((sMax - sMin) / cell) * Math.ceil((tMax - tMin) / cell);
   while (count() > 90000) cell *= 2;
@@ -138,6 +138,21 @@ function fitToLot(polygon, lot) {
   const best = pieces.filter((r) => r.length >= 3).sort((a, b) => polyArea(b) - polyArea(a))[0];
   if (!best || polyArea(best) < 1e6) return { polygon: null, clipped: true, lost: true };
   return { polygon: best, clipped: true, lost: false };
+}
+
+export const DEV_MARGIN_MM = 30000;
+/** The working window in the lot frame, { s0, s1, t1 }: the buildings and bays with a margin, from the frontage inward, clipped to the lot. */
+function developableWindow(f, lot, src) {
+  const fp = lot.boundary.map((q) => toFrame(f, q));
+  const lo = { s: Math.min(...fp.map((q) => q.s)), t: Math.max(...fp.map((q) => q.t)) };
+  const hi = { s: Math.max(...fp.map((q) => q.s)) };
+  const pts = [...src.solids.flat(), ...src.reserved.flat(), ...src.bs.flatMap((b) => b.extras.flatMap((e) => e.polygon))].map((q) => toFrame(f, q));
+  if (!pts.length) return { s0: lo.s, s1: hi.s, t1: lo.t };
+  const m = DEV_MARGIN_MM;
+  const s0 = Math.max(lo.s, Math.min(...pts.map((q) => q.s)) - m);
+  const s1 = Math.min(hi.s, Math.max(...pts.map((q) => q.s)) + m);
+  const t1 = Math.min(lo.t, Math.max(...pts.map((q) => q.t)) + m);
+  return { s0, s1, t1 };
 }
 
 const isStation = (bs) => bs.some((b) => b.type === 'service-station');
@@ -283,7 +298,9 @@ export function generateSiteWorks(project, opts = {}) {
     const names = spill.map((b) => b.type.replace(/-/g, ' ')).join(', ');
     return { ...rowsOnlyWorks(c, lot, f), kind: 'does-not-fit', landscape: [], notFit: true, warnings: [`The ${names} does not fit inside the lot boundary, so no car park is laid out. Use a smaller building or a larger lot.`] };
   }
-  const g = makeGrid(f, lot);
+  // The working window: on a huge lot only the ground around the buildings is laid out (the developable envelope); the rest is balance land.
+  const win = developableWindow(f, lot, src);
+  const g = makeGrid(f, lot, win);
   const station = isStation(src.bs);
   const truck = wantsTruck(src.bs);
   const aisleW = truck ? AISLE_TRUCK_MM : Math.max(AISLE_MM, Number(c.parking?.aisleMm) || 0);
@@ -332,8 +349,8 @@ export function generateSiteWorks(project, opts = {}) {
   const e0 = (lot.frontEdges || [])[0] ?? 0;
   const edgeLen = Math.hypot(lot.boundary[(e0 + 1) % nB].x - lot.boundary[e0].x, lot.boundary[(e0 + 1) % nB].y - lot.boundary[e0].y);
   const CORNER = 6000;
-  const sLo = Math.max(Math.min(...fpoly.map((q) => q.s)), 0) + (frontEdges.has((e0 - 1 + nB) % nB) ? CORNER : 0);
-  const sHi = Math.min(Math.max(...fpoly.map((q) => q.s)), edgeLen) - (frontEdges.has((e0 + 1) % nB) ? CORNER : 0);
+  const sLo = Math.max(win.s0, Math.min(...fpoly.map((q) => q.s)), 0) + (frontEdges.has((e0 - 1 + nB) % nB) ? CORNER : 0);
+  const sHi = Math.min(win.s1, Math.max(...fpoly.map((q) => q.s)), edgeLen) - (frontEdges.has((e0 + 1) % nB) ? CORNER : 0);
   const frontLen = sHi - sLo;
   const snap = (s) => g.s0 + (Math.floor((s - g.s0) / g.cell) + 0.5) * g.cell;
   const clampS = (s) => snap(Math.max(sLo + sideLand + xoverW / 2 + 500, Math.min(sHi - sideLand - xoverW / 2 - 500, s)));
@@ -693,7 +710,7 @@ export function generateSiteWorks(project, opts = {}) {
   const addStrip = (s0, s1) => { if (s1 - s0 < 1200) return; const poly = rectWorld(f, s0, s1, 0, frontLand - 300); if (inLot(poly)) landscape.push({ id: `sw:land:${landscape.length}`, polygon: poly }); };
   for (const [a, b] of gaps) { addStrip(cursor, a); cursor = Math.max(cursor, b); }
   addStrip(cursor, sHi);
-  const tMaxLot = Math.max(...fpoly.map((q) => q.t));
+  const tMaxLot = win.t1;
   for (const side of [0, 1]) {
     const s0 = side ? sHi - sideLand : sLo; const s1 = side ? sHi : sLo + sideLand;
     const poly = rectWorld(f, s0, s1, frontLand, tMaxLot);
@@ -737,6 +754,8 @@ export function generateSiteWorks(project, opts = {}) {
  * the driveway and crossover stay the access line the rows have always had.
  */
 function rowsOnlyWorks(c, lot, f) {
+  const est = estateWorks(c, lot);
+  if (est) return est;
   const fp = lot.boundary.map((q) => toFrame(f, q));
   const sLo = Math.min(...fp.map((q) => q.s)); const sHi = Math.max(...fp.map((q) => q.s)); const tHi = Math.max(...fp.map((q) => q.t));
   const inLot = (poly) => G.pointInPolygon(centroid(poly), lot.boundary);
@@ -749,6 +768,25 @@ function rowsOnlyWorks(c, lot, f) {
   return { version: SITEWORKS_VERSION, kind: 'rows', aisleMm: 0, crossovers: [], aisles: [], pavedAisles: [], forecourts: [], aprons: [], footpaths: [], landscape, bayRows: [], summary: { required: 0, provided: 0, accessibleRequired: 0, accessibleProvided: 0, limited: false, perBuilding: [], reachable: {}, unreachable: [] }, generatedAt: 0 };
 }
 
+/**
+ * A strata estate (estate.js) carries its own connected pavement network: the crossover(s), entry drive, car park aisles, the driveway or
+ * aisle between the door faces, door aprons, footpaths, turning heads, frontage landscaping and the balance of a huge lot. It is only valid
+ * for the rows it was drawn for (a moved row makes it stale and the plain row layout applies).
+ */
+function estateWorks(c, lot) {
+  const e = c?.estate;
+  if (!e || !e.network || e.sig !== rowsSignature(c.rows)) return null;
+  const n = e.network;
+  const provided = (c.parking?.extra || []).reduce((t, x) => t + (x.count || 0), 0);
+  return {
+    version: SITEWORKS_VERSION, kind: 'estate', family: e.family, aisleMm: e.aisleMm,
+    crossovers: n.crossovers, aisles: n.aisles, pavedAisles: n.paved.map(({ id, polygon }) => ({ id, polygon })), forecourts: [], aprons: n.aprons, footpaths: n.foot, landscape: n.landscape,
+    pedestrianEntries: n.foot.filter((x) => x.pedestrian).map((x) => x.id),
+    balance: e.balance || null, estateWindow: n.window, warnings: [], bayRows: [],
+    summary: { required: 0, provided, accessibleRequired: 0, accessibleProvided: 0, limited: false, perBuilding: [], reachable: {}, unreachable: [] }, generatedAt: 0,
+  };
+}
+
 /** The key of what a layout depends on: lot, building placements and parameters, strata rows. A change means the layout is out of date. */
 export function siteKey(project) {
   const c = project?.commercial;
@@ -759,6 +797,7 @@ export function siteKey(project) {
     lot.boundary?.map((q) => [r(q.x), r(q.y)]), lot.frontEdges, lot.envelope?.length || 0,
     (c.buildings || []).map((b) => [b.id, b.type, r(b.place?.x), r(b.place?.y), r(b.place?.rotationDeg), b.params]),
     (c.rows || []).map((rw) => [rw.id, r(rw.x), r(rw.y), r(rw.rotationDeg), rw.count]),
+    c.estate?.sig || null, (c.parking?.extra || []).length,
     c.parking?.bayW, c.parking?.bayL, c.parking?.aisleMm, c.parking?.enabled, c.buildingClass,
     c.accessEdit ? [c.accessEdit.in?.offsetMm, c.accessEdit.out?.offsetMm, c.accessEdit.widthMm] : null,
   ]);

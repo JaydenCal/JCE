@@ -74,7 +74,7 @@ export function commercialStats(project) {
     officeM2: r1(office),
     officeMezzM2: r1(officeMezz),
     lotM2: lotM2 == null ? null : Math.round(lotM2),
-    coveragePct: lotM2 ? r1((ground / lotM2) * 100) : null,
+    coveragePct: lotM2 ? ((ground / lotM2) * 100 < 0.1 ? (ground / lotM2) * 100 : r1((ground / lotM2) * 100)) : null,
     parking: { ratePerM2: rate, officeRatePerM2: officeRate, officeSplit: split, split: { officeM2: r1(split ? rowsOffice : 0), otherM2: r1(split ? rowsGfa - rowsOffice : rowsGfa), officeSpaces: Math.round(officeRaw * 100) / 100, otherSpaces: Math.round(otherRaw * 100) / 100 }, required, buildingRequired: bp.required, provided: park.totalBays + bp.totalBays, accessible: { ...park.accessible, required: park.accessible.required + bp.accessible.required, provided: park.accessible.provided + bp.accessible.provided } },
   };
 }

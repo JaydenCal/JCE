@@ -18,7 +18,7 @@
 
 import rates from './rates.json' with { type: 'json' };
 import { layoutUnits, rowPoly, rowPoint } from '../../layout.js';
-import { parkingLayout } from '../../parking.js';
+import { parkingLayout, estateOf } from '../../parking.js';
 import { siteWorksOf } from '../buildings.js';
 import { bayOffsetMm } from '../../schema.js';
 import { PAVEMENTS, ROLE_DEFAULTS, MAKEUP_NOTE, pavementById, isPavementType, makeUpShort } from './pavements.js';
@@ -51,18 +51,21 @@ export function defaultAreas(commercial) {
     const { aisleMm, bayW, bayL } = c.parking;
     const off = bayOffsetMm(c.parking);
     const apron = Math.max(0, off - (Number(aisleMm) || 0));
-    const aisleDepth = off - apron;
     const footW = Number.isFinite(Number(c.pavementOptions?.footpathMm)) ? Math.max(0, Number(c.pavementOptions.footpathMm)) : FOOTPATH_MM;
+    const estate = !!estateOf(c); // an estate's aprons, aisles and footpaths are its own network (siteWorks); its bay strips only add the bays
     for (const pr of park.rows) {
       if (!pr.slots.length) continue;
       const fr = pr.frame;
       const L = pr.length;
       const B = pr.slots.length * bayW;
+      const rowOff = pr.extra ? pr.off : off; // a bay strip in a spare area carries its own aisle
+      const rowApron = pr.extra ? 0 : apron;
+      const rowAisle = rowOff - rowApron;
       const quad = (x0, x1, d0, d1) => [rowPoint(fr, x0, d0), rowPoint(fr, x1, d0), rowPoint(fr, x1, d1), rowPoint(fr, x0, d1)];
-      if (apron > 0) out.push({ id: `${pr.rowId}:apron`, role: 'apron', rowId: pr.rowId, polygon: quad(0, L, pr.depth, pr.depth + apron) });
-      if (aisleDepth > 0) out.push({ id: `${pr.rowId}:aisle`, role: 'aisle', rowId: pr.rowId, polygon: quad(0, L, pr.depth + apron, pr.depth + off) });
-      out.push({ id: `${pr.rowId}:bays`, role: 'bays', rowId: pr.rowId, polygon: quad(0, B, pr.depth + off, pr.depth + off + bayL) });
-      if (footW > 0) out.push({ id: `${pr.rowId}:footpath`, role: 'footpath', rowId: pr.rowId, polygon: quad(0, B, pr.depth + off + bayL, pr.depth + off + bayL + footW) });
+      if (rowApron > 0 && !estate) out.push({ id: `${pr.rowId}:apron`, role: 'apron', rowId: pr.rowId, polygon: quad(0, L, pr.depth, pr.depth + rowApron) });
+      if (rowAisle > 0 && !estate) out.push({ id: `${pr.rowId}:aisle`, role: 'aisle', rowId: pr.rowId, polygon: quad(0, L, pr.depth + rowApron, pr.depth + rowOff) });
+      out.push({ id: `${pr.rowId}:bays`, role: 'bays', rowId: pr.rowId, polygon: quad(0, B, pr.depth + rowOff, pr.depth + rowOff + bayL) });
+      if (footW > 0 && !estate) out.push({ id: `${pr.rowId}:footpath`, role: 'footpath', rowId: pr.rowId, polygon: quad(0, B, pr.depth + rowOff + bayL, pr.depth + rowOff + bayL + footW) });
     }
   }
   // The automatic site layout: crossover pads, aisles, forecourt and apron slabs, bay rows and footpaths (sitelayout.js).
@@ -348,7 +351,7 @@ export function buildWheelStops(commercial, areas) {
   for (const pr of park.rows) {
     const fr = pr.frame;
     const ang = rowAngleDeg(fr);
-    const off = bayOffsetMm(c.parking);
+    const off = pr.extra ? pr.off : bayOffsetMm(c.parking);
     pr.slots.forEach((s, i) => {
       if (s.kind === 'zone') return;
       const far = pr.depth + off + c.parking.bayL;
@@ -367,11 +370,12 @@ export function buildMarkings(commercial) {
   const park = parkingLayout(c);
   const items = [];
   if (c.parking?.enabled !== false && park.rows.length) {
-    const off = bayOffsetMm(c.parking);
+    const offAll = bayOffsetMm(c.parking);
     const { bayW, bayL, aisleMm } = c.parking;
-    const apron = Math.max(0, off - (Number(aisleMm) || 0));
+    const apron = Math.max(0, offAll - (Number(aisleMm) || 0));
     for (const pr of park.rows) {
       if (!pr.slots.length) continue;
+      const off = pr.extra ? pr.off : offAll;
       const fr = pr.frame;
       const ang = rowAngleDeg(fr);
       const n = pr.slots.length;
@@ -390,7 +394,7 @@ export function buildMarkings(commercial) {
       });
     }
     // pedestrian crossing over the car aisle on the accessible path of travel
-    const aisleDepth = off - apron;
+    const aisleDepth = offAll - apron;
     const home = park.entry ? park.rows.find((r) => r.rowId === park.entry.rowId) : null;
     if (home && park.path && aisleDepth >= 3000) {
       const fr = home.frame;

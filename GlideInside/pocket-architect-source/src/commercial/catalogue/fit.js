@@ -69,6 +69,11 @@ export function occupiedBy(project, exceptId = null) {
   return { solid: [...bs.map((b) => b.outline), ...rowsSolid], loose: [...bs.flatMap((b) => b.extras.map((e) => e.polygon)), ...bays, ...rowsLoose, ...lanes] };
 }
 
+/** How far behind its nearest possible position a building may stand on a huge lot: 40 m, so the drive in from the street stays short. */
+export const developableDepthMm = () => 40000;
+/** The frontage length a building (with its apron and bays) may spread over on a long lot: its own width with room each side, never under 120 m. */
+export const developableWidthMm = (ab) => Math.max(120000, 2.5 * (ab.maxX - ab.minX));
+
 const bboxOfLocal = (pts) => ({ minX: Math.min(...pts.map((p) => p.x)), maxX: Math.max(...pts.map((p) => p.x)), minY: Math.min(...pts.map((p) => p.y)), maxY: Math.max(...pts.map((p) => p.y)) });
 
 /** The local-frame shapes of one building record: outline, the roofed/paved extras and every bay polygon (at place 0,0,0 world == local). */
@@ -109,9 +114,14 @@ export function placeBuilding(project, rec, occ = null, strict = false) {
     const tLo = Math.max(et0 - ub.minY + WALL_MARGIN, lt0 - ab.minY);
     const tHi = Math.min(et1 - ub.maxY - WALL_MARGIN, lt1 - ab.maxY);
     if (sLo > sHi + 1 || tLo > tHi + 1) continue;
+    // A huge lot is not built out to its rear: the building stands within a developable depth of the frontage (the rest is balance land),
+    // so the drive from the street stays short and the car park in front of it stays in proportion.
+    const tCap = Math.min(tHi, tLo + developableDepthMm());
+    const sCap = Math.min(sHi - sLo, developableWidthMm(ab));
+    const sMid = sHi - sLo > sCap ? sLo + (sHi - sLo - sCap) / 2 : sLo;
     for (const fy of fb) for (const fx of fa) {
-      const A = Math.min(sHi, Math.max(sLo, Math.round((sLo + (sHi - sLo) * fx) / 100) * 100)); // rounded to 100 mm but never past the limit
-      const B = Math.min(tHi, Math.max(tLo, Math.round((tLo + (tHi - tLo) * fy) / 100) * 100));
+      const A = Math.min(sHi, Math.max(sLo, Math.round((sMid + sCap * fx) / 100) * 100)); // rounded to 100 mm but never past the limit
+      const B = Math.min(tHi, Math.max(tLo, Math.round((tLo + (tCap - tLo) * fy) / 100) * 100));
       const place = { x: Math.round(u.x * A + v.x * B), y: Math.round(u.y * A + v.y * B), rotationDeg: deg };
       const w = (p) => toWorld(place, p);
       if (!sh.outline.every((p) => insideBy(w(p), env, WALL_MARGIN - 1))) continue;

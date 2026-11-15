@@ -157,6 +157,10 @@ function mountPlaceStep(ctx) {
     const sw = c?.siteWorks;
     if (sw) {
       for (const l of sw.landscape || []) svg.append(poly(l.polygon, { fill: 'rgba(96,160,96,.45)', stroke: 'none', 'data-ps': 'flow-landscape' }));
+      for (const bp of sw.balance?.polygons || []) {
+        svg.append(poly(bp, { fill: 'rgba(120,130,110,.22)', stroke: '#8a917f', 'stroke-width': Math.round(1.5 * px), 'stroke-dasharray': `${Math.round(8 * px)} ${Math.round(6 * px)}`, 'data-ps': 'flow-balance' }));
+        svg.append(text(centroid(bp), 'Balance of lot', 12, { fill: '#4a5142', 'data-ps': 'flow-balance-label' }));
+      }
       const fills = { aisle: '#8f9298', apron: '#a9a69b', bays: '#b7babf', footpath: '#d8cfba' };
       for (const a of pavementAreas(c).filter((x) => String(x.id).startsWith('sw:'))) svg.append(poly(a.polygon, { fill: fills[a.role] || '#999', stroke: 'none', 'data-ps': `flow-paved-${a.role}` }));
       for (const r of sw.bayRows || []) for (const s of r.slots) svg.append(poly(s.poly, { fill: s.kind === 'accessible' ? 'rgba(27,95,191,.55)' : s.kind === 'zone' ? 'rgba(27,95,191,.2)' : 'rgba(255,255,255,.35)', stroke: '#ffffff', 'stroke-width': Math.round(1.2 * px), 'data-ps': 'flow-bay' }));
@@ -353,10 +357,10 @@ function mountCheckStep(ctx, { catalogue }) {
         h('thead', null, h('tr', null, h('th', null, 'Boundary'), h('th', null, 'Distance'), h('th', null, 'Needed'), h('th', null, ''))),
         h('tbody', null, ...s.rows.map((r) => h('tr', { dataset: { met: String(r.met) } }, h('td', null, r.label), h('td', null, `${r.clearanceM.toFixed(2)} m`), h('td', null, r.requiredM != null ? `${r.requiredM.toFixed(1)} m` : 'Not set'), h('td', null, r.met === true ? 'Met' : r.met === false ? 'Not met' : 'Check'))))),
       h('div', { class: 'gf-stats' },
-        stat(`${Math.round(s.coverageM2)} m2`, `Site coverage${s.coveragePct != null ? `, ${Math.round(s.coveragePct)} percent` : ''}`),
+        stat(`${Math.round(s.coverageM2)} m2`, `Site coverage${s.coverageText ? `, ${s.coverageText}` : ''}`),
         stat(`${s.parking.provided} of ${s.parking.required}`, 'Car bays against the indicative rate'),
-        stat(`${s.parking.accessibleProvided} of ${s.parking.accessibleRequired}`, 'Accessible bays'),
-        stat(s.truck.has ? (s.truck.ok ? 'Linked' : 'Check') : 'None', 'Truck access to loading')),
+        stat(s.accessibleText, 'Accessible bays'),
+        stat(s.truck.has ? (s.truck.ok ? 'Linked' : 'Check') : 'Not applicable', 'Truck access to loading')),
       s.yield ? h('div', { class: 'gf-stats', dataset: { ps: 'flow-yield' } },
         stat(s.yield.profitSell || 'n/a', 'Indicative profit, sell the units'),
         stat(s.yield.profitHold || 'n/a', 'Indicative profit, hold and lease'),
