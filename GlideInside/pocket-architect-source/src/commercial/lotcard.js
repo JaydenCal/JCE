@@ -580,7 +580,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
       if (el === head || el.hidden || getComputedStyle(el).display === 'none') continue;
       const r = el.getBoundingClientRect();
       if (r.right <= vr.left || r.left >= vr.right || r.bottom <= vr.top || r.top >= vr.bottom) continue;
-      if (el.classList.contains('ps-credit')) { inset.bottom = Math.max(inset.bottom, vr.bottom - r.top + 10); continue; }
+      if (el.classList.contains('ps-credit')) { if ((r.top + r.bottom) / 2 - vr.top > vr.height / 2) inset.bottom = Math.max(inset.bottom, vr.bottom - r.top + 10); continue; } // at the top (editor) the chip takes no room from the view
       const cx = (r.left + r.right) / 2 - vr.left;
       const nearTop = (r.top + r.bottom) / 2 - vr.top < vr.height / 3;
       if (nearTop) inset.top = Math.max(inset.top, r.bottom - vr.top + 6);

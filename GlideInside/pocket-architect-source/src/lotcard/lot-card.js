@@ -677,7 +677,11 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       if (el === head || el.hidden || getComputedStyle(el).display === 'none') continue;
       const r = el.getBoundingClientRect();
       if (r.right <= vr.left || r.left >= vr.right || r.bottom <= vr.top || r.top >= vr.bottom) continue;
-      if (el.classList.contains('ps-credit')) { inset.bottom = Math.max(inset.bottom, vr.bottom - r.top + 10); continue; } // the Map data chip only lifts the bottom
+      if (el.classList.contains('ps-credit')) {
+        // The Map data chip only lifts the bottom when it sits at the bottom; in the editor it sits at the top right and takes no room from the view.
+        if ((r.top + r.bottom) / 2 - vr.top > vr.height / 2) inset.bottom = Math.max(inset.bottom, vr.bottom - r.top + 10);
+        continue;
+      }
       const cx = (r.left + r.right) / 2 - vr.left;
       const nearTop = (r.top + r.bottom) / 2 - vr.top < vr.height / 3; // by its middle: a tall card whose top edge is high is still a side card
       if (!nearTop && r.height < vr.height * 0.12 && r.width < vr.width * 0.4 && cx > vr.width * 0.3) { inset.bottom = Math.max(inset.bottom, vr.bottom - r.top + 8); continue; } // a low bar (the pager) only lifts the bottom, it does not take a column of the plan
