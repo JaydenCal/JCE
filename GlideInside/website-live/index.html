@@ -19,7 +19,7 @@
 <link rel="preload" href="assets/fonts/newsreader-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/hero-builders-phone.webp" type="image/webp" media="(max-width:760px)" fetchpriority="high">
-<link rel="preload" as="image" href="assets/hero-builders-2400.webp" imagesrcset="assets/hero-builders-1600.webp 1600w, assets/hero-builders-2400.webp 2400w, assets/hero-builders-3200.webp 3200w" imagesizes="min(92vw, 1240px)" type="image/webp" media="(min-width:761px)" fetchpriority="high">
+<link rel="preload" as="image" href="assets/hero-builders-1600.webp" type="image/webp" media="(min-width:761px)" fetchpriority="high">
 <link rel="stylesheet" href="framework.css?v=20261115e">
 <link rel="stylesheet" href="builder-picker.css?v=20261115c" media="print" onload="this.media='all'"><link rel="stylesheet" href="enquiry-form.css?v=20261115c" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="builder-picker.css?v=20261115c"><link rel="stylesheet" href="enquiry-form.css?v=20261115c"></noscript>
@@ -72,12 +72,9 @@
       </div>
     </div>
   </div>
-  <div class="shell hero-still-wrap">
-    <figure class="hero-still"><picture><source media="(max-width:760px)" srcset="assets/hero-builders-phone.webp" type="image/webp"><img src="assets/hero-builders-2400.webp" srcset="assets/hero-builders-1600.webp 1600w, assets/hero-builders-2400.webp 2400w, assets/hero-builders-3200.webp 3200w" sizes="(max-width:760px) 100vw, min(92vw, 1240px)" width="3200" height="1800" alt="A four bedroom house design placed on a lot in 3D, with fences, driveway, street trees and the road" fetchpriority="high" decoding="async"></picture></figure>
-  </div>
 </section>
 
-<section class="sec" id="try" aria-labelledby="try-title" style="padding-bottom:0">
+<section class="sec" id="try" aria-labelledby="try-title" style="padding-top:clamp(12px,2vw,24px);padding-bottom:0">
   <div class="shell"><div class="sec-head" style="margin-bottom:12px"><h2 id="try-title">Try it on your own block</h2><p>Search an address in NSW or Queensland and the live viewer loads your lot.</p></div></div>
   <div class="shell live-wrap as-wrap">
     <form class="as" data-addr-search data-max="6" role="search" autocomplete="off" onsubmit="return false">
@@ -96,7 +93,7 @@
       <div class="lh-stage">
         <iframe title="Glide Inside Residential, live 3D viewer" data-src="plan-studio/app/?embed=1" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-pointer-lock allow-top-navigation-by-user-activation" allow="fullscreen; pointer-lock; clipboard-write" tabindex="-1"></iframe>
         <button class="lh-exit" type="button" data-fs-exit>Exit full screen</button>
-        <div class="lh-poster"><picture><source media="(max-width:760px)" srcset="assets/hero-builders-phone.webp" type="image/webp"><img class="lh-poster-img" src="assets/hero-builders-1600.webp" width="1600" height="900" alt="" loading="lazy" decoding="async"></picture><div><button class="btn" type="button" data-live-open>Open the live viewer</button><p>Loading the live viewer.</p></div></div>
+        <div class="lh-poster"><picture><source media="(max-width:760px)" srcset="assets/hero-builders-phone.webp" type="image/webp"><img class="lh-poster-img" src="assets/hero-builders-1600.webp" width="1600" height="900" alt="" fetchpriority="high" decoding="async"></picture><div><button class="btn" type="button" data-live-open>Open the live viewer</button><p>Loading the live viewer.</p></div></div>
       </div>
     </div>
     <p class="stage-cap">The live Glide Inside Residential viewer. Search an address above to start.</p>
