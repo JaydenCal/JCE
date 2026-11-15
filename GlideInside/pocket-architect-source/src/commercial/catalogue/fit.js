@@ -5,7 +5,7 @@ import * as G from '../../model/geometry.js';
 import { lotOf } from '../../model/placement.js';
 import { isCommercial } from '../schema.js';
 import { typeById, STRATA_ID } from './types/index.js';
-import { newBuilding, presetsOf } from './buildings.js';
+import { newBuilding, presetsOf, siteWorksOf } from './buildings.js';
 import { buildingParking } from './bays.js';
 import { buildingsOf } from './buildings.js';
 import { toWorld } from './frame.js';
@@ -61,17 +61,19 @@ export function polysOverlap(A, B) {
 export function occupiedBy(project, exceptId = null) {
   const c = project.commercial;
   const bs = buildingsOf({ ...c, buildings: (c.buildings || []).filter((b) => b.id !== exceptId) });
-  const bays = buildingParking({ ...c, buildings: (c.buildings || []).filter((b) => b.id !== exceptId) }).rows.flatMap((r) => r.slots.map((x) => x.poly));
+  const bays = buildingParking({ ...c, siteWorks: null, buildings: (c.buildings || []).filter((b) => b.id !== exceptId) }).rows.flatMap((r) => r.slots.map((x) => x.poly));
+  const sw = siteWorksOf(c);
+  const lanes = sw ? [...(sw.pavedAisles || []).map((a) => a.polygon), ...(sw.forecourts || []).map((a) => a.polygon)] : [];
   const rowsSolid = layoutUnits(c).map((u) => u.poly);
   const rowsLoose = parkingLayout(c).rows.flatMap((r) => r.slots.map((x) => x.poly));
-  return { solid: [...bs.map((b) => b.outline), ...rowsSolid], loose: [...bs.flatMap((b) => b.extras.map((e) => e.polygon)), ...bays, ...rowsLoose] };
+  return { solid: [...bs.map((b) => b.outline), ...rowsSolid], loose: [...bs.flatMap((b) => b.extras.map((e) => e.polygon)), ...bays, ...rowsLoose, ...lanes] };
 }
 
 const bboxOfLocal = (pts) => ({ minX: Math.min(...pts.map((p) => p.x)), maxX: Math.max(...pts.map((p) => p.x)), minY: Math.min(...pts.map((p) => p.y)), maxY: Math.max(...pts.map((p) => p.y)) });
 
 /** The local-frame shapes of one building record: outline, the roofed/paved extras and every bay polygon (at place 0,0,0 world == local). */
 function localShapes(project, rec) {
-  const c = { ...project.commercial, buildings: [{ ...rec, place: { x: 0, y: 0, rotationDeg: 0 } }] };
+  const c = { ...project.commercial, siteWorks: null, buildings: [{ ...rec, place: { x: 0, y: 0, rotationDeg: 0 } }] };
   const [b] = buildingsOf(c);
   if (!b) return null;
   const bays = buildingParking(c).rows.flatMap((r) => r.slots.map((s) => s.poly));
@@ -79,7 +81,8 @@ function localShapes(project, rec) {
 }
 
 /** The first pose in order of preference where the outline is in the envelope and everything else is in the lot. Null when none. */
-export function placeBuilding(project, rec, occ = null) {
+const STREET_TYPES = new Set(['service-station', 'kiosk', 'drive-through', 'car-wash']);
+export function placeBuilding(project, rec, occ = null, strict = false) {
   const lot = lotOf(project);
   if (!lot || !Array.isArray(lot.boundary) || lot.boundary.length < 3) return null;
   const env = envelopeOf(lot);
@@ -90,7 +93,8 @@ export function placeBuilding(project, rec, occ = null) {
   const ab = bboxOfLocal([...sh.outline, ...sh.extras.flat(), ...sh.bays.flat()]);
   const front = frontRotation(lot);
   const fa = [0.5, 0, 1, 0.25, 0.75];
-  const fb = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0];
+  // Buildings the public drive up to stand near the street (a short drive in); the rest start at the rear and leave the front for the car park.
+  const fb = STREET_TYPES.has(rec.type) ? [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] : [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0];
   for (const k of [0, 2, 1, 3]) {
     const deg = Math.round((((front + k * 90) % 360) + 360) % 360 * 100) / 100;
     const a = (deg * Math.PI) / 180;
@@ -117,6 +121,12 @@ export function placeBuilding(project, rec, occ = null) {
         const mine = [...sh.extras, ...sh.bays].map((q) => q.map(w));
         if (others.solid.some((o) => polysOverlap(out, o) || mine.some((m) => polysOverlap(m, o)))) continue;
         if (others.loose.some((o) => polysOverlap(out, o))) continue;
+        // Keep the way in clear: a strip in front of the door must not meet another building, and a paved apron must not sit on another's.
+        if (strict) {
+          const door = [{ x: ub.minX, y: ub.minY - 9000 }, { x: ub.maxX, y: ub.minY - 9000 }, { x: ub.maxX, y: ub.minY }, { x: ub.minX, y: ub.minY }].map(w);
+          if (others.solid.some((o) => polysOverlap(door, o))) continue;
+          if (sh.extras.map((q) => q.map(w)).some((m) => others.loose.some((o) => polysOverlap(m, o)))) continue;
+        }
       }
       return place;
     }

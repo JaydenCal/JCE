@@ -5,7 +5,7 @@
 import { parkingLayout, doorStrips } from './parking.js';
 import { layoutUnits } from './layout.js';
 import { CROSSOVER_MM } from './catalogue/pavements/logic.js';
-import { buildingsOf } from './catalogue/buildings.js';
+import { buildingsOf, siteWorksOf } from './catalogue/buildings.js';
 
 const CROSSOVER_PAD_MM = 3000; // verge depth drawn beyond the boundary
 
@@ -39,6 +39,16 @@ export function siteAccess(commercial, lot) {
   const b = lot?.boundary;
   const fe = lot?.frontEdges;
   if (!commercial || !Array.isArray(b) || b.length < 3 || !Array.isArray(fe) || !fe.length) return null;
+  const swx = siteWorksOf(commercial)?.crossovers?.[0] || null;
+  if (swx && !(Array.isArray(commercial.crossovers) && commercial.crossovers.length)) {
+    const w = swx.widthMm || CROSSOVER_MM;
+    const d = swx.dir || { x: 0, y: -1 };
+    const n = { x: -d.y * (w / 2), y: d.x * (w / 2) };
+    const q = { x: swx.x, y: swx.y };
+    const out0 = { x: q.x + d.x * CROSSOVER_PAD_MM, y: q.y + d.y * CROSSOVER_PAD_MM };
+    const quad = (a, c2) => [{ x: a.x + n.x, y: a.y + n.y }, { x: c2.x + n.x, y: c2.y + n.y }, { x: c2.x - n.x, y: c2.y - n.y }, { x: a.x - n.x, y: a.y - n.y }];
+    return { from: q, to: q, widthMm: w, lengthMm: 0, driveway: null, crossover: quad(q, out0), auto: true, siteWorks: true };
+  }
   const park = parkingLayout(commercial);
   const polys = [];
   for (const r of park.rows) {

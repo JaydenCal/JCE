@@ -61,14 +61,28 @@ export function buildSiteSection(ctx) {
 
     sec.append(h('div', { class: 'ps-sec' }, button('Confirm street frontage', () => store.setUI({ view: planView(store.ui.view), frontageEdit: true }), { title: 'Click the edges of your lot that face the street' })));
     // The builder's lot planner controls: drag, turn, mirror, face the garage to the street, live clearances.
+    if (store.project.mode === 'commercial') {
+      // A commercial lot holds buildings, not a house: add more, arrange them on the lot, and lay the car park out again.
+      sec.append(h('div', { class: 'ps-sec' },
+        button('Add building', async () => { const m = await import('../commercial/ui/add-building.js'); m.openAddBuilding({ store }); }, { title: 'Add another building: amenities block, office, warehouse, workshop, canopy, car wash, shed, kiosk and more' }),
+        button('Arrange buildings on lot', async () => {
+          try {
+            const { startArrange } = await import('../portal/arrange.js');
+            startArrange({ store, editor: ctx.editor });
+          } catch (e) { sec.append(h('p', { class: 'ps-hint' }, e.message || 'Could not start.')); }
+        }, { title: 'Drag, turn and mirror the buildings on the lot and see the clearance to each boundary' }),
+        button('Re-run car park layout', async () => { const m = await import('../commercial/catalogue/ops.js'); m.rerunSiteLayout(store); }, { title: 'Lay out the driveway, aisles, bays, footpaths and landscaping again' })));
+    } else {
     sec.append(h('div', { class: 'ps-sec' }, button('Arrange house on lot', async () => {
       try {
         const { startArrange } = await import('../portal/arrange.js');
         startArrange({ store, editor: ctx.editor });
       } catch (e) { sec.append(h('p', { class: 'ps-hint' }, e.message || 'Could not start.')); }
     }, { title: 'Drag, turn and mirror the house on the lot and see the clearance to each boundary' })));
+    }
     const layers = h('div', { class: 'ps-sec', style: { marginTop: '8px' } }, h('h4', null, 'Layers'));
-    for (const [id, label] of LAYER_LABELS) {
+    for (const [id, label0] of LAYER_LABELS) {
+      const label = id === 'houses' && store.project.mode === 'commercial' ? 'Neighbouring buildings (3D)' : label0;
       if (id === 'aerial' && !lot.aerial) continue;
       if (id === 'contours' && !lot.contours?.length) continue;
       if (id === 'setbacks' && !lot.envelope) continue;
@@ -93,7 +107,7 @@ export function buildSiteSection(ctx) {
       commit: (n) => ctx.apply('Set floor level', (p) => { p.site.lot.floorRL = n; p.site.lot.floorRLAuto = false; }),
     })));
     if (crl != null) {
-      sec.append(h('p', { class: 'ps-hint' }, `Starts at the lot centre RL plus 0.15 m (${defaultFloorRL(lot)?.toFixed(2)} m). The 3D view sits the house at this level.`));
+      sec.append(h('p', { class: 'ps-hint' }, `Starts at the lot centre RL plus 0.15 m (${defaultFloorRL(lot)?.toFixed(2)} m). The 3D view sits the ${store.project.mode === 'commercial' ? 'building' : 'house'} at this level.`));
     }
 
     const credits = siteCredits(lot).map((c) => c.text);
@@ -135,7 +149,7 @@ export function buildSiteSection(ctx) {
     const num = (v) => (Number.isFinite(v) ? String(v) : null);
     box.append(h('p', { class: 'ps-hint' }, hasHouse && inp.storeys != null && num(inp.wallHeightM) && num(inp.buildingHeightM)
       ? `Blank fields use your drawn design (${inp.storeys} storey${inp.storeys === 1 ? '' : 's'}, wall ${inp.wallHeightM} m, overall ${inp.buildingHeightM} m, roof height estimated).`
-      : 'Blank fields use your drawn design once a house is placed.'));
+      : `Blank fields use your drawn design once a ${store.project.mode === 'commercial' ? 'building' : 'house'} is placed.`));
     if (lot.state === 'QLD') {
       box.append(fb.add(selectField({ label: 'Street type', options: [['', 'Choose'], ['access', 'Access street'], ['collector', 'Collector street or higher']], get: () => lotOf()?.setbackInputs?.streetType || '', commit: (v) => setInput({ streetType: v || null }, 'Set street type for setbacks') })));
     }

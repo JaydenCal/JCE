@@ -38,7 +38,7 @@ export function lotChecks(project) {
   const messages = [];
   const rows = c.rows.map((r) => ({ ...r, words: edgeWords(lot, r.edge) }));
   for (const r of rows) {
-    if (r.clearanceM < -TOL_M) messages.push({ kind: 'boundary', edge: r.edge, overM: -r.clearanceM, text: `House crosses the lot boundary, ${(-r.clearanceM).toFixed(2)} m over the ${r.words}.` });
+    if (r.clearanceM < -TOL_M) messages.push({ kind: 'boundary', edge: r.edge, overM: -r.clearanceM, text: `${project.mode === 'commercial' ? 'Building' : 'House'} crosses the lot boundary, ${(-r.clearanceM).toFixed(2)} m over the ${r.words}.` });
   }
   const crossed = new Set(messages.map((m) => m.edge));
   for (const r of rows) {

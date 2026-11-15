@@ -209,7 +209,7 @@ const verifier = (project) => (cand, pose) => {
     t.commercial.rows = transformRows(cand.rows, pose.deg, pose.T);
     t.commercial.parking = { ...t.commercial.parking, extra: [] };
     t.commercial = normaliseCommercial(t.commercial);
-    materialise(t);
+    materialise(t, { site: false });
     return setbackStatusLine(t).state !== 'outside';
   } catch { return true; }
 };

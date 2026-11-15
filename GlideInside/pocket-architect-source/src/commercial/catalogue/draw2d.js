@@ -2,9 +2,11 @@
 // the selected building's outline with its turn handle. Screen space, derived from the project being drawn.
 
 import { worldToScreen } from '../../editor2d/math.js';
-import { buildingsOf } from './buildings.js';
+import { buildingsOf, siteWorksOf } from './buildings.js';
 import { buildingParking } from './bays.js';
 import { toWorld } from './frame.js';
+import { pavementAreas } from './pavements/logic.js';
+import { drawPavementArea } from './pavements/draw2d.js';
 
 const GOLD = '#c7a256';
 const BLUE = '#1b5fbf';
@@ -87,6 +89,66 @@ export function drawBuildings(ctx, st) {
     const a0 = S(st, centre); const a1 = S(st, handle);
     ctx.beginPath(); ctx.moveTo(a0.x, a0.y); ctx.lineTo(a1.x, a1.y); ctx.strokeStyle = GOLD; ctx.lineWidth = 1.4; ctx.stroke();
     ctx.beginPath(); ctx.arc(a1.x, a1.y, 8, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 2.4; ctx.stroke();
+  }
+  ctx.restore();
+}
+
+const arrow = (ctx, a, b, size) => {
+  const ang = Math.atan2(b.y - a.y, b.x - a.x);
+  ctx.beginPath();
+  ctx.moveTo(b.x, b.y); ctx.lineTo(b.x - size * Math.cos(ang - 0.45), b.y - size * Math.sin(ang - 0.45));
+  ctx.moveTo(b.x, b.y); ctx.lineTo(b.x - size * Math.cos(ang + 0.45), b.y - size * Math.sin(ang + 0.45));
+  ctx.stroke();
+};
+
+/**
+ * The automatic site layout (sitelayout.js) under the buildings: landscaping, the paved areas with their pavement hatch (aisles, forecourt,
+ * apron, bay rows, footpaths, so a changed pavement type shows), crossovers marked ENTRY and EXIT, and two-way arrows on the aisle centre lines.
+ */
+export function drawSiteWorks(ctx, st) {
+  const c = st.project.commercial;
+  const sw = siteWorksOf(c);
+  if (!sw) return;
+  ctx.save();
+  ctx.lineJoin = 'round';
+  for (const l of sw.landscape || []) {
+    ctx.beginPath(); trace(ctx, st, l.polygon);
+    ctx.fillStyle = 'rgba(96,160,96,0.20)'; ctx.fill();
+    ctx.setLineDash([3, 4]); ctx.strokeStyle = 'rgba(70,130,70,0.7)'; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+  }
+  const areas = pavementAreas(c).filter((a) => String(a.id).startsWith('sw:'));
+  for (const a of areas) drawPavementArea(ctx, a.polygon.map((q) => S(st, q)), a.type, st.view.scale);
+  // Crossovers, entry and exit.
+  ctx.font = `700 10px ${st.theme.f.ui}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for (const x of sw.crossovers || []) {
+    const q = x.polygon.map((p0) => S(st, p0));
+    const m = { x: q.reduce((a, p0) => a + p0.x, 0) / q.length, y: q.reduce((a, p0) => a + p0.y, 0) / q.length };
+    ctx.strokeStyle = st.theme.c.line; ctx.lineWidth = 1.6; ctx.fillStyle = st.theme.c.text;
+    const lab = x.role === 'in' ? 'ENTRY' : x.role === 'out' ? 'EXIT' : 'ENTRY AND EXIT';
+    const into = S(st, { x: x.x - (x.dir?.x || 0) * -2500, y: x.y - (x.dir?.y || 0) * -2500 });
+    const edge = S(st, { x: x.x + (x.dir?.x || 0) * 2500, y: x.y + (x.dir?.y || 0) * 2500 });
+    if (x.role !== 'out') arrow(ctx, edge, into, 8);
+    if (x.role !== 'in') arrow(ctx, into, edge, 8);
+    ctx.save(); ctx.lineWidth = 3.5; ctx.strokeStyle = st.theme.c.canvas; ctx.globalAlpha = 0.85; ctx.strokeText(lab, m.x, m.y - 14); ctx.restore();
+    ctx.fillText(lab, m.x, m.y - 14);
+  }
+  // Aisle centre lines with a two-way arrow at each end of a long run.
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1.2; ctx.setLineDash([9, 7]);
+  for (const a of sw.aisles || []) {
+    const p0 = S(st, a.centre[0]); const p1 = S(st, a.centre[1]);
+    if (Math.hypot(p1.x - p0.x, p1.y - p0.y) < 4) continue;
+    ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(p1.x, p1.y); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  for (const a of sw.aisles || []) {
+    const p0 = S(st, a.centre[0]); const p1 = S(st, a.centre[1]);
+    const L = Math.hypot(p1.x - p0.x, p1.y - p0.y);
+    if (L < 60) continue;
+    const u = { x: (p1.x - p0.x) / L, y: (p1.y - p0.y) / L };
+    const m = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 1.4;
+    arrow(ctx, { x: m.x - u.x * 10, y: m.y - u.y * 10 }, { x: m.x + u.x * 10, y: m.y + u.y * 10 }, 6);
+    arrow(ctx, { x: m.x + u.x * 10, y: m.y + u.y * 10 }, { x: m.x - u.x * 10, y: m.y - u.y * 10 }, 6);
   }
   ctx.restore();
 }

@@ -115,7 +115,7 @@ export function listRoomTabs(project, levelId = null, { groupBedrooms = false } 
   if (gar.length) make('garage', 'Garage', gar);
   tabs.push({
     id: 'aerial', label: 'Aerial', roomIds: [], levelId: null,
-    caption: 'Aerial view · The whole house and lot from above.',
+    caption: 'Aerial view · The whole lot from above.',
   });
   return tabs;
 }
