@@ -29,7 +29,7 @@ export const VERGE_MM = 3000;
 export const FOOTPATH_W = 1500;
 export const RE_RUN_LABEL = 'Re-run car park layout';
 
-const DRIVABLE_EXTRAS = new Set(['canopy', 'fuel-canopy', 'truck-canopy', 'apron', 'yard', 'landscape', 'dock-recess', 'entry-canopy']);
+const DRIVABLE_EXTRAS = new Set(['canopy', 'fuel-canopy', 'truck-canopy', 'apron', 'yard', 'landscape', 'dock-recess', 'entry-canopy', 'dock-apron', 'display-yard']);
 const FORECOURT_KINDS = new Set(['fuel-canopy', 'truck-canopy']);
 const r0 = (v) => Math.round(v);
 

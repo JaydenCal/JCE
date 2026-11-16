@@ -82,9 +82,9 @@ const BLURB = {
   'machinery-shed': 'A big farm or plant shed with an open front bay.',
   duplex: 'Two attached dwellings side by side, each with its own garage.',
   'townhouse-row': 'A row of two storey townhouses with garages and courtyards.',
-  'terrace-row': 'A tight terrace of narrow two storey homes with a rear lane.',
+  'terrace-row': 'A tight terrace of narrow two storey dwellings with a rear lane.',
   'business-park': 'A block of light industrial units, each with a front office and roller door.',
-  'mixed-use': 'Shops below with homes above and parking behind.',
+  'mixed-use': 'Shops below with apartments above and parking behind.',
   'community-centre': 'A childcare or medical centre with a drop-off car park.',
 };
 /** The types the person can choose as the main building, strata first: [{ id, label, category, icon, blurb }]. */

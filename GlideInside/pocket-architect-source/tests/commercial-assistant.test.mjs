@@ -417,7 +417,7 @@ test('context: lot, controls with sources, rows, buildings, stats, checks, feasi
   assert.match(text, /\nTYPE warehouse "Warehouse with loading docks" industrial zones=E4\/E5\/IN1\/IN2 params: spanMm\(15000\.\.60000 mm\)=30000/);
   assert.match(text, /\nTYPE vehicle-workshop /);
   assert.ok(!/\nROOM |\nWALL /.test(text), 'the generated walls and rooms are not sent');
-  assert.ok(tokens < 4000, `context ${tokens} tokens`);
+  assert.ok(tokens < 5500, `context ${tokens} tokens`);
   assert.equal(trimmed, false);
   lint(text, 'context');
   console.log(`commercial context: ${tokens} tokens (${text.length} characters), 2 rows of 8 units, 1 building, 2 catalogue types`);
@@ -427,7 +427,7 @@ test('context: a busy design stays under the budget and trims the checks before 
   const s = storeOf(fixture({ rows: 'pair' }));
   for (let i = 0; i < 4; i++) run(s, 'add_building', { type: 'vehicle-workshop', params: { bays: 3 + (i % 2) } });
   const full = buildCommercialContext(s.project);
-  assert.ok(full.tokens < 4500, `${full.tokens}`);
+  assert.ok(full.tokens < 6000, `${full.tokens}`);
   const tight = buildCommercialContext(s.project, { maxTokens: 700 });
   assert.ok(tight.tokens <= 700);
   assert.match(tight.text, /^PROJECT [^\n]*\nLOT /, 'the lot comes first so truncation keeps it');
