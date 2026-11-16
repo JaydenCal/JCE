@@ -14,10 +14,12 @@
 import * as THREE from 'three';
 import { terrainAt, floorRLOf } from '../site/model.js';
 import * as S from './site-geom.js';
+import * as G from '../model/geometry.js';
 import { addSiteExtras } from './site-extras.js';
 import { LAWN_COLOUR } from './site.js';
 import { planGrading, earthworks } from './grading.js';
-import { deriveDriveway } from '../site/lotplan.js';
+import { deriveDriveway, roadReserve } from '../site/lotplan.js';
+import { buildingsOf } from '../commercial/catalogue/buildings.js';
 import { pavementModel } from '../commercial/catalogue/pavements/logic.js';
 import { addCommercialPavements } from '../commercial/catalogue/pavements/view3d.js';
 import { addCommercialEntourage, addForecourtSlabs } from '../commercial/catalogue/entourage3d.js';
@@ -44,6 +46,26 @@ export function footprintBox(project) {
   };
 }
 
+// Mean natural ground RL under the building pad: the residential footprint box, or the commercial building outlines. null when none.
+export function meanPadRL(project, lot, fp) {
+  let polys = [];
+  if (project.mode === 'commercial' && project.commercial) polys = buildingsOf(project.commercial).map((b) => b.outline);
+  else if (fp) polys = [[{ x: fp.minX, y: fp.minY }, { x: fp.maxX, y: fp.minY }, { x: fp.maxX, y: fp.maxY }, { x: fp.minX, y: fp.maxY }]];
+  let sum = 0; let n = 0;
+  for (const poly of polys) {
+    if (!poly || poly.length < 3) continue;
+    const xs = poly.map((q) => q.x); const ys = poly.map((q) => q.y);
+    const x0 = Math.min(...xs); const x1 = Math.max(...xs); const y0 = Math.min(...ys); const y1 = Math.max(...ys);
+    const step = Math.max(500, Math.max(x1 - x0, y1 - y0) / 24);
+    for (let x = x0 + step / 2; x < x1; x += step) for (let y = y0 + step / 2; y < y1; y += step) {
+      if (!G.pointInPolygon({ x, y }, poly)) continue;
+      const rl = S.terrainAtClamped(lot.terrain, x, y);
+      if (rl != null) { sum += rl; n++; }
+    }
+  }
+  return n ? sum / n : null;
+}
+
 /**
  * terrainModel(project) -> { heightAt(xMm, yMm) -> Y metres, floorRL, base, padY } | null (no lot)
  * Defined everywhere (clamped to the elevation grid, flat at slab level when there is no grid), so the mesh never has a hole.
@@ -52,11 +74,16 @@ export function footprintBox(project) {
 export function terrainModel(project) {
   const lot = project.site?.lot;
   if (!lot) return null;
-  const floorRL = floorRLOf(lot);
+  let floorRL = floorRLOf(lot);
   const lowest = [...project.levels].sort((a, b) => a.elevation - b.elevation)[0];
   const base = (lowest ? lowest.elevation : 0) / 1000;
   const fp = footprintBox(project);
   const padY = base - 0.15; // SLAB.ground: the flat pad is the ground at slab level
+  // The floor level is the mean of the natural ground under the pad (not the lot centre) unless the person set a floor RL.
+  if (lot.terrain && !Number.isFinite(lot.floorRL)) {
+    const mean = meanPadRL(project, lot, fp);
+    if (mean != null) floorRL = mean + 0.15;
+  }
   const rawY = (x, y) => {
     if (!lot.terrain) return padY;
     const rl = S.terrainAtClamped(lot.terrain, x, y);
@@ -79,7 +106,15 @@ export function terrainModel(project) {
           driveways.push({ polys: [dw.polygon, ...(dw.crossover?.polygon?.length > 3 ? [dw.crossover.polygon] : [])], dir: { o: h, u: { x: (st.x - h.x) / l, y: (st.y - h.y) / l } } });
         }
       }
-      grading = planGrading({ rawAt: rawY, padY, fp, paving, driveways });
+      // The road reserve corridor (footpath to far kerb) is graded to one plane: smooth longitudinal profile, small crossfall.
+      const corridors = [];
+      if (S.layerOn(lot, 'road')) {
+        for (const r of roadReserve(lot, { extendM: 60 })) {
+          const L = r.lines;
+          corridors.push({ poly: [L.footpathNear[0], L.footpathNear[1], L.farKerb[1], L.farKerb[0]].map((q) => ({ x: q.x, y: q.y })), u: r.u, outward: r.outward });
+        }
+      }
+      grading = planGrading({ rawAt: rawY, padY, fp, paving, driveways, corridors });
     } catch (e) {
       console.warn('[viewer3d] auto grading skipped', e);
     }
@@ -257,7 +292,7 @@ float aerialNoise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3
 const PADDOCK_TINT = [1.3, 1.0, 1.04]; // lawn green -> dry tan grass
 // With a real aerial the 3D view keeps the clean lawn and paddock look and lets the picture through only subtly (this share, and at 55%
 // of its own colour), so the ground reads as real land without the muddy cast, the baked shadows and the roofs of the photograph.
-const AERIAL_BLEND = 0.08;
+const AERIAL_BLEND = 0.6; // share of the aerial beyond the near zone (the full aerial stays within nearK of the lot)
 // Owner 16/11/2026: with Aerial on, the real photograph shows in full on and around our lot and fades out with distance into the
 // clean lawn and paddock look (a fade scale), so the lot reads as the real site while the far ground stays tidy.
 const AERIAL_NEAR_MIN_M = 70; // full photograph out to at least this far from the lot centre
@@ -323,15 +358,16 @@ function lawnGroundMaterial(ctx, lot, ext, aerial = null) {
   vec3 lawnC = diffuseColor.rgb;
   float lawnL = dot(lawnC, vec3(0.3333));
   vec3 padC = diffuse * uPaddock * mix(0.9, lawnL / max(dot(diffuse, vec3(0.3333)), 0.001), 0.25);
+  ${aerial ? 'lawnC = diffuse * mix(1.0, lawnL / max(dot(diffuse, vec3(0.3333)), 0.001), 0.2); // weak mowing stripes under a real aerial' : ''}
   diffuseColor.rgb = mix(padC, lawnC, lotM);
 ${aerial ? `  vec3 aerC = texture2D(uAerialTex, vAerUv).rgb;
   float dM = length((vAerUv - uFadeC) * uExtM);
   float nearK = 1.0 - smoothstep(uFadeR.x, uFadeR.y, dM);
-  vec3 aerSoft = mix(vec3(dot(aerC, vec3(0.3333))), aerC, 0.55) * 1.12;
+  vec3 aerSoft = mix(vec3(dot(aerC, vec3(0.3333))), aerC, 0.85) * 1.08;
   vec3 aerFull = aerC * 1.06;
   diffuseColor.rgb = mix(mix(diffuseColor.rgb, aerSoft, ${AERIAL_BLEND.toFixed(2)}), aerFull, nearK);` : ''}`);
   };
-  mat.customProgramCacheKey = () => (aerial ? 'lawn-ground-aerial-3' : 'lawn-ground-2');
+  mat.customProgramCacheKey = () => (aerial ? 'lawn-ground-aerial-4' : 'lawn-ground-2');
   return mat;
 }
 
@@ -434,7 +470,7 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   addSiteOverlays(root, lot, surf, { showContours });
   let extras = null;
   try {
-    extras = addSiteExtras(ctx, root, project, surf, { extent: ext, tm, realAerial: !!texture });
+    extras = addSiteExtras(ctx, root, project, surf, { extent: ext, tm, realAerial: !!texture || !!(lot.aerial?.extent && S.layerOn(lot, 'aerial')) }); // a stored aerial hides the stand-in neighbours even while its picture is still loading
   } catch (e) {
     console.warn('[viewer3d] site extras skipped', e);
   }

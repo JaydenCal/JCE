@@ -30,3 +30,20 @@ test('lot width filter tolerates a missing frontage and filters by frontage when
   assert.equal(filterRows(rows, { frontage: 12.5 }).length, 2); // 10 m and the unknown
   assert.equal(filterRows(rows, { frontage: 18 }).length, 2); // 20 m and the unknown
 });
+
+test('the commercial viewer recovers a missing aerial like the residential flow and uses the chosen suggestion', () => {
+  const s = fs.readFileSync(new URL('../src/ui/embed-viewer.js', import.meta.url), 'utf8');
+  const fn = s.slice(s.indexOf('export async function loadAddressCommercial'), s.indexOf('export async function loadDemoCommercial'));
+  assert.match(fn, /ensureFlowAerial\(store\)/);
+  assert.match(fn, /pick: given/);
+  assert.match(s, /loadAddressCommercial\(store, address, \{ onStep: null, pick \}\)/);
+  const t = fs.readFileSync(new URL('../src/viewer3d/terrain.js', import.meta.url), 'utf8');
+  assert.match(t, /realAerial: !!texture \|\| !!\(lot\.aerial\?\.extent/);
+});
+
+test('ensureFlowAerial retries the imagery request once before giving up', async () => {
+  let n = 0;
+  const store = { project: { id: 'r', site: { lot: { ...lot } } }, emit() {} };
+  await ensureFlowAerial(store, { fetchImpl: async () => { n++; return new Response('x', { status: 500 }); }, retryMs: 1 });
+  assert.equal(n, 2);
+});

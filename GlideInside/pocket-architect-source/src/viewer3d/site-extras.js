@@ -261,7 +261,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
         left.push({ x: p.x - t.y * half, y: p.y + t.x * half });
         right.push({ x: p.x + t.y * half, y: p.y - t.x * half });
       }
-      strip(b, 'drive', left, right, 0.07, 3, 1);
+      strip(b, 'drive', left, right, 0.04, 3, 1);
       // splayed crossover over the verge: its outline is the driveway polygon's end
       const co = dw.crossover.polygon;
       if (co?.length > 3) {

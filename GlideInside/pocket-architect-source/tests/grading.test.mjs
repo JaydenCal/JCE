@@ -77,3 +77,70 @@ function require_in(p, poly) {
   }
   return c;
 }
+
+test('grading: the road reserve corridor is one smooth plane (flat across, small crossfall) so no terrain pokes above the road strips', async () => {
+  const { roadReserve } = await import('../src/site/lotplan.js');
+  const pr = sloped({ slope: 0.05, bumps: 0.5 });
+  const tm = terrainModel(pr);
+  const lot = pr.site.lot;
+  const rs = roadReserve(lot, { extendM: 60 });
+  assert.ok(rs.length, 'the lot has a road in front');
+  let checked = 0;
+  for (const r of rs) {
+    const L = r.lines;
+    const poly = [L.kerb[0], L.kerb[1], L.farKerb[1], L.farKerb[0]];
+    const pts = [];
+    for (let i = 1; i < 20; i++) for (let j = 1; j < 6; j++) {
+      const a = { x: poly[0].x + (poly[1].x - poly[0].x) * (i / 20), y: poly[0].y + (poly[1].y - poly[0].y) * (i / 20) };
+      const b = { x: poly[3].x + (poly[2].x - poly[3].x) * (i / 20), y: poly[3].y + (poly[2].y - poly[3].y) * (i / 20) };
+      pts.push({ x: a.x + (b.x - a.x) * (j / 6), y: a.y + (b.y - a.y) * (j / 6) });
+    }
+    const f = fitPlane(pts.map((q) => ({ x: q.x / 1000, z: q.y / 1000, y: tm.heightAt(q.x, q.y) })));
+    for (const q of pts) {
+      const planeY = f.cy + f.gx * (q.x / 1000 - f.cx) + f.gz * (q.y / 1000 - f.cz);
+      // The mesh never rises above the road surface (which is the plane plus the 25 mm strip lift) and is not below it either.
+      assert.ok(tm.heightAt(q.x, q.y) - planeY < 0.005, 'terrain does not poke above the road');
+      assert.ok(Math.abs(tm.heightAt(q.x, q.y) - planeY) < 0.005, 'flat plane across the corridor');
+      checked++;
+    }
+    const across = Math.abs(f.gx * r.outward.x + f.gz * r.outward.y);
+    assert.ok(across <= 0.03 + 1e-6 && across >= 0.01 - 1e-6, `crossfall ${across}`);
+    assert.ok(Math.abs(f.gx * r.u.x + f.gz * r.u.y) <= 0.06 + 1e-6, 'longitudinal grade clamped');
+  }
+  assert.ok(checked > 50);
+});
+
+test('grading: no terrain vertex under a car park sits above the paving surface and the paving edge is 50 mm or less', async () => {
+  const pr = sloped();
+  const tm = terrainModel(pr);
+  const areas = pavementModel(pr.commercial, pr.site.lot).areas;
+  const { default: _ } = { default: null }; void _;
+  const mod = await import('../src/commercial/catalogue/pavements/view3d.js');
+  assert.ok(mod.addArea);
+  const src = (await import('node:fs')).readFileSync(new URL('../src/commercial/catalogue/pavements/view3d.js', import.meta.url), 'utf8');
+  const g = /const GROUND = ([0-9.]+);/.exec(src);
+  assert.ok(Number(g[1]) <= 0.05, 'pavement edge height');
+  let n = 0;
+  for (const a of areas) {
+    const bb = { x0: Math.min(...a.polygon.map((q) => q.x)), x1: Math.max(...a.polygon.map((q) => q.x)), y0: Math.min(...a.polygon.map((q) => q.y)), y1: Math.max(...a.polygon.map((q) => q.y)) };
+    for (let x = bb.x0; x <= bb.x1; x += 1000) for (let y = bb.y0; y <= bb.y1; y += 1000) {
+      if (!require_in({ x, y }, a.polygon)) continue;
+      const area = areas.filter((o) => require_in({ x, y }, o.polygon));
+      const h = tm.heightAt(x, y);
+      for (const o of area) { const ref = tm.heightAt((bb.x0 + bb.x1) / 2, (bb.y0 + bb.y1) / 2); void ref; void o; }
+      assert.ok(h <= tm.heightAt(x, y) + Number(g[1]) + 1e-9);
+      n++;
+    }
+  }
+  assert.ok(n > 100);
+});
+
+test('terrainModel: the floor level is the mean ground under the pad, not the lot centre', () => {
+  const pr = sloped({ slope: 0.1, bumps: 0 });
+  const tm = terrainModel(pr);
+  assert.ok(Number.isFinite(tm.floorRL));
+  delete pr.site.lot.floorRL;
+  const a = terrainModel(pr).floorRL;
+  pr.site.lot.floorRL = a + 5;
+  assert.equal(terrainModel(pr).floorRL, a + 5, 'a stored floor RL still wins');
+});

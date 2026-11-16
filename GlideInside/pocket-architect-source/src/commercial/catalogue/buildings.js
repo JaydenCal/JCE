@@ -24,7 +24,7 @@ export function cleanBuildings(list) {
 /** A short signature of what the automatic site layout depends on (the buildings and the strata rows). A layout whose signature differs is stale. */
 export function layoutSig(c) {
   const r = (v) => Math.round(Number(v) || 0);
-  return JSON.stringify([(c?.buildings || []).map((b) => [b.id, b.type, r(b.place?.x), r(b.place?.y), r(b.place?.rotationDeg), b.params]), (c?.rows || []).map((w) => [w.id, r(w.x), r(w.y), r(w.rotationDeg), w.count, w.mirrorOf || 0, w.unit?.widthMm, w.unit?.depthMm]), c?.parking?.bayW, c?.parking?.bayL, c?.parking?.aisleMm, c?.parking?.enabled]);
+  return JSON.stringify([(c?.buildings || []).map((b) => [b.id, b.type, r(b.place?.x), r(b.place?.y), Math.round((Number(b.place?.rotationDeg) || 0) * 10), b.params]), (c?.rows || []).map((w) => [w.id, r(w.x), r(w.y), r(w.rotationDeg), w.count, w.mirrorOf || 0, w.unit?.widthMm, w.unit?.depthMm]), c?.parking?.bayW, c?.parking?.bayL, c?.parking?.aisleMm, c?.parking?.enabled]);
 }
 
 /** The automatic site layout (commercial.siteWorks) when it matches the buildings as they stand now, else null. Never a stale layout. */

@@ -30,7 +30,9 @@ export function ensureFlowAerial(store, deps = {}) {
       const b = lotBboxMga(lot);
       const common = { state: lot.state, srid: String(lot.srid), origin: `${lot.origin.e},${lot.origin.n}` };
       const opts = { fetchImpl: deps.fetchImpl || globalThis.fetch };
-      const inner = await fetchAerial({ ...common, bbox: `${b.minE - m},${b.minN - m},${b.maxE + m},${b.maxN + m}`, res: INNER_RES }, opts);
+      const innerParams = { ...common, bbox: `${b.minE - m},${b.minN - m},${b.maxE + m},${b.maxN + m}`, res: INNER_RES };
+      let inner;
+      try { inner = await fetchAerial(innerParams, opts); } catch { await new Promise((r) => setTimeout(r, deps.retryMs ?? 1500)); inner = await fetchAerial(innerParams, opts); } // one retry: the imagery service is busy now and then
       let wide = null;
       try { wide = await fetchAerial({ ...common, ...wideAerialParams(b, lot.state === 'NSW' ? WIDE_PX_NSW : WIDE_PX) }, opts); } catch { /* optional */ }
       const warnings = [];

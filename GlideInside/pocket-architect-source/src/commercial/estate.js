@@ -251,6 +251,30 @@ export function describe(p) {
     E.pedA = aw + XOVER_SPLIT_W / 2 + FOOT_W / 2;
     E.cross = { a0: aw + XOVER_SPLIT_W / 2, a1: ae - XOVER_SPLIT_W / 2, t0: T0 - FOOT_W, t1: T0 };
     E.crossFull = { a0: -d - FOOT_W, a1: d + FOOT_W };
+  } else if (family === 'wide') {
+    // A row ACROSS the frontage for a narrow lot, where a drive beside the row (the single family needs about 18 m plus the unit depth) cannot
+    // fit: the car park bank(s) at the front, the one entry drive, a cross aisle with the door apron and footpath, then the units with their
+    // fronts to the street. The cross aisle runs on past the row to a turning area at its east end.
+    const half = L / 2;
+    const fz = zone(-cpHalf, cpHalf, gapW, gapE);
+    T0 = fz.t1 + (nb ? FOOT_W : 0);
+    const tF = T0 + AISLE_SINGLE; // the facade
+    const aEast = Math.max(half, ENTRY_DRIVE / 2) + TURN_HEAD / 2;
+    const aWest = -Math.max(half, ENTRY_DRIVE / 2);
+    E.aisleMm = SINGLE_CARRIAGE;
+    E.xovers.push({ role: 'both', a: 0, w: XOVER_W });
+    E.units.push({ face: '-t', a0: -half, a1: half, t0: tF, t1: tF + d, n });
+    E.paved.push({ role: 'aisle', a0: -ENTRY_DRIVE / 2, a1: ENTRY_DRIVE / 2, t0: 0, t1: T0, id: 'entry' });
+    E.paved.push({ role: 'aisle', a0: aWest, a1: aEast, t0: T0, t1: T0 + SINGLE_CARRIAGE, id: 'cross' });
+    E.aprons.push({ a0: -half, a1: half, t0: T0 + SINGLE_CARRIAGE, t1: tF - FOOT_W, id: 'apron' });
+    E.foot.push({ a0: -half, a1: half, t0: tF - FOOT_W, t1: tF });
+    E.head = { t0: T0, t1: T0 + SINGLE_CARRIAGE };
+    E.aisles.push({ a: 0, t0: 0, t1: T0 + SINGLE_CARRIAGE / 2 });
+    E.span = [aWest, aEast];
+    E.tEnd = tF + d;
+    E.fz = fz;
+    E.pedA = ENTRY_DRIVE / 2 + FOOT_W / 2;
+    E.cross = null;
   } else if (family === 'u') {
     const cw = Math.ceil(COURT_W / w) * w; // the rear row fills the court between the two side rows
     const half = cw / 2;
@@ -393,7 +417,7 @@ export const rowsSignature = (rows) => JSON.stringify((rows || []).map((r) => [r
 
 // Planner -------------------------------------------------------------------------------------------------------------------------------
 const envelopeOf = (lot) => (Array.isArray(lot.envelope) && lot.envelope.length >= 3 ? lot.envelope : lot.boundary);
-const CP_WIDTHS = [64000, 52000, 40000, 30000];
+const CP_WIDTHS = [64000, 52000, 40000, 30000, 24000, 20000]; // the narrowest banks serve a narrow lot
 
 /**
  * Find where the estate described by `p` ({ family, w, d, n, nb, ... }) stands on the lot: the spine position `sc` (frame s) at which the

@@ -225,13 +225,16 @@ export async function loadAddress(store, catalogue, address, { onStep, viewer = 
 }
 
 /** Commercial: look the address up, load the lot, accept the frontage, convert and place the Best fit layout (src/commercial/place.js). */
-export async function loadAddressCommercial(store, address, { onStep } = {}) {
+export async function loadAddressCommercial(store, address, { onStep, pick: given = null } = {}) {
   const q = String(address || '').trim();
   if (q.length < 3) throw new Error('Type a street address first.');
-  const results = await smartSearch(q, { onRetry: () => onStep?.('busy') });
-  const pick = results[0];
+  // A suggestion the visitor already chose carries its coordinates: use it directly (as the residential viewer does), no second search.
+  const pick = validPick(given) ? given : (await smartSearch(q, { onRetry: () => onStep?.('busy') }))[0];
   if (!pick) throw Object.assign(new Error(NOT_FOUND_TEXT), { notFound: true });
   const { lot, warnings } = await applySiteLookup(store, pick, { onStep });
+  // The residential guided flow fetches the aerial again when the lookup left none (ensureFlowAerial); the commercial viewer never did, so a
+  // lookup whose imagery request failed once stayed on the striped lawn with a greyed Aerial pill. Same recovery here.
+  if (!store.project.site?.lot?.aerial?.extent) { try { const { ensureFlowAerial } = await import('../flow/flow-aerial.js'); await ensureFlowAerial(store); } catch { /* the lawn stays */ } }
   confirmFrontage(store, true);
   const { placeCommercial } = await import('../commercial/place.js');
   await placeCommercial(store);
@@ -289,7 +292,7 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
     shell.dataset.embedBusy = '1';
     postToParent({ type: 'gi:status', state: 'loading', address });
     try {
-      const r = commercial ? await loadAddressCommercial(store, address, { onStep: null }) : await loadAddress(store, catalogue, address, { viewer: viewerMode, after: viewerMode ? settleAerial : null, pick });
+      const r = commercial ? await loadAddressCommercial(store, address, { onStep: null, pick }) : await loadAddress(store, catalogue, address, { viewer: viewerMode, after: viewerMode ? settleAerial : null, pick });
       if (viewerMode) { store.setUI({ view: '3d' }); await aerial(); }
       postToParent({ type: 'gi:status', state: 'done', address: r.lot?.address || address });
       return true;
