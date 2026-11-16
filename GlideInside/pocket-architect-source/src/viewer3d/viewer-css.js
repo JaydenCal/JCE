@@ -141,6 +141,12 @@ export const VIEWER_CSS = `
 .ps3d-redit-note{margin:4px 0 6px;font-size:12px;color:var(--ps-muted,#5b6674)}
 .ps3d-redit-toast{bottom:auto;top:64px}
 .is-redit .ps3d-viewbar,.is-redit .ps3d-hints,.is-redit .ps3d-chip--toggle{display:none}
+.ps3d-redit-more{display:none}
+.ps3d-redit.is-compact .ps3d-redit-more{display:inline-flex;margin-left:auto}
+.ps3d-redit.is-compact:not(.is-open) .ps3d-redit-body{display:none}
+.ps3d-redit.is-compact.is-open{max-height:70%}
+.ps3d-redit.is-compact .ps3d-redit-head{padding:6px 8px 6px 12px}
+.ps3d-redit.is-compact .ps3d-redit-eyebrow{display:none}
 @container (max-width:720px){.ps3d-redit{top:auto;left:8px;right:8px;bottom:8px;width:auto;max-width:none;max-height:46%}.ps3d-redit-toast{top:56px}}
 @media (max-width:560px){.ps3d-hudtop{flex-wrap:wrap;align-items:flex-start}.ps3d-hudhint{border-radius:12px;max-width:calc(100% - 100px)}.ps3d-hints{bottom:8px}}
 @media (prefers-reduced-motion:reduce){.ps3d-rlabel{transition:none}.ps3d-edit-sw,.ps3d-edit-sw::after{transition:none}.ps3d-hints,.ps3d-hudhint{transition:none}.ps3d-swatch:hover{transform:none}}

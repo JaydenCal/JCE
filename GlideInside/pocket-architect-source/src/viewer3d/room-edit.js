@@ -34,7 +34,7 @@ function clearInsets(rootEl, panel) {
   if (panel.hidden || rr.width < 2) return { left: 0, right: 0, top: 0, bottom: 0 };
   const pr = panel.getBoundingClientRect();
   const sheet = pr.width > rr.width * 0.7;
-  return sheet ? { left: 0, right: 0, top: 0, bottom: Math.round(Math.min(rr.bottom - pr.top, rr.height * 0.46) + 8) } : { left: 0, right: Math.round(rr.right - pr.left + 8), top: 0, bottom: 0 };
+  return sheet ? { left: 0, right: 0, top: 0, bottom: Math.round(Math.min(rr.bottom - pr.top, rr.height * 0.7) + 8) } : { left: 0, right: Math.round(rr.right - pr.left + 8), top: 0, bottom: 0 };
 }
 const NUDGE = 100; // mm per press of a side button
 const SIDE_LABEL = { north: 'North', south: 'South', east: 'East', west: 'West' };
@@ -59,6 +59,7 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     blendT: 0,
     saved: null, // camera and ui before the mode
     savedInset: null,
+    open: false, // compact (phone) layout: the tools are folded away until asked for
     scope: null,
   };
   let toastTimer = 0;
@@ -320,6 +321,7 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     controls.minDistance = 0.8;
     panel.hidden = false;
     rootEl.classList.add('is-redit');
+    st.open = false;
     buildPanel();
     if (firstEntry) st.savedInset = viewer.getInset?.() || null;
     viewer.setInset?.(clearInsets(rootEl, panel), { reframe: false });
@@ -473,6 +475,9 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     done();
   }
   window.addEventListener('keydown', onKey, true);
+  let resizeTimer = 0;
+  const onResize = () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (st.phase === 'active') relayout(); }, 120); };
+  window.addEventListener('resize', onResize);
 
   // Project and view changes -----------------------------------------------------------------------------------
   let panelTimer = 0;
@@ -532,6 +537,7 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     panel.innerHTML = `
       <header class="ps3d-redit-head">
         <div class="ps3d-redit-title"><span class="ps3d-redit-eyebrow">Editing room</span><strong class="ps3d-redit-name">${esc(d.name)}</strong></div>
+        <button type="button" class="ps3d-itembtn ps3d-redit-more" data-act="more" aria-expanded="${st.open}" title="Show or hide the room tools">Tools</button>
         <button type="button" class="ps3d-btn is-primary ps3d-redit-done" data-act="done" title="Collapse the building with your edits (Esc)">Done <kbd class="ps3d-key">Esc</kbd></button>
       </header>
       <div class="ps3d-redit-body">
@@ -575,7 +581,23 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
         </section>` : ''}
       </div>`;
     updateInfo(d);
+    syncCompact();
     syncPanel();
+  }
+  // On a short, narrow viewer (a phone) the panel is a one line bar with a Tools button, so the room stays visible.
+  const compactNow = () => rootEl.clientWidth <= 720 && rootEl.clientHeight < 620;
+  function syncCompact() {
+    const c = compactNow();
+    panel.classList.toggle('is-compact', c);
+    panel.classList.toggle('is-open', c && st.open);
+    const more = panel.querySelector('[data-act="more"]');
+    if (more) more.setAttribute('aria-expanded', String(c && st.open));
+  }
+  function relayout() {
+    syncCompact();
+    viewer.setInset?.(clearInsets(rootEl, panel), { reframe: false });
+    st.poses = makePoses();
+    if (st.phase === 'active' && st.p === st.target && !st.camFree) apply();
   }
   function updateInfo(d) {
     const el = panel.querySelector('.ps3d-redit-info');
@@ -619,6 +641,7 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     const act = b.dataset.act;
     try {
       if (act === 'done') done();
+      else if (act === 'more') { st.open = !st.open; relayout(); }
       else if (act === 'explode') explode();
       else if (act === 'collapse') collapse();
       else if (act === 'replay') replay();
@@ -687,6 +710,8 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
       clearTimeout(toastTimer);
       unbind();
       window.removeEventListener('keydown', onKey, true);
+      window.removeEventListener('resize', onResize);
+      clearTimeout(resizeTimer);
       offProject?.();
       offUI?.();
       if (guard) guard.impl = null;
