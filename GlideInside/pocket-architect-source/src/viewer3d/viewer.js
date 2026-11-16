@@ -15,6 +15,7 @@ import { createAhead } from './ahead.js';
 import { VIEWER_CSS } from './viewer-css.js';
 import { loadBitmap } from '../editor2d/underlay.js';
 import { edgeColourOf } from './terrain.js';
+import { createRoomEdit } from './room-edit.js';
 import { snapToRoom as snapRoom, flyTo as flyToPose, enableRoomCutaway, createRoomBar, roomTabs as roomTabsOf } from './rooms.js';
 
 const STYLE_ID = 'ps3d-style';
@@ -233,13 +234,13 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     }
     camera.setViewOffset(w, h, -(inset.l - inset.r) / 2, (inset.b - inset.t) / 2, w, h);
   }
-  function setInset(next = {}) {
+  function setInset(next = {}, { reframe = true } = {}) {
     const n = { l: Math.max(0, next.left || 0), r: Math.max(0, next.right || 0), t: Math.max(0, next.top || 0), b: Math.max(0, next.bottom || 0) };
     if (n.l === inset.l && n.r === inset.r && n.t === inset.t && n.b === inset.b) return;
     inset = n;
     applyInset();
     camera.updateProjectionMatrix();
-    if (!userMoved && framed && bounds) frameCamera(false, lastKind);
+    if (reframe && !userMoved && framed && bounds) frameCamera(false, lastKind);
     invalidate();
   }
   controls.addEventListener('start', () => { userMoved = true; });
@@ -247,7 +248,18 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   ro?.observe(rootEl);
   window.addEventListener('resize', resize);
 
+  // Room edit mode (room-edit.js) fills in `impl`: while a room is being edited only its own walls, openings and fixtures can be touched.
+  const roomGuard = {
+    impl: null,
+    canTouch(h) { return !this.impl || this.impl.canTouch(h); },
+    onLocked(h) { this.impl?.onLocked?.(h); },
+    lift(id) { return this.impl?.lift?.(id) || 0; },
+    checkWallMove(...a) { return this.impl?.checkWallMove?.(...a); },
+    checkItemMove(...a) { return this.impl?.checkItemMove?.(...a); },
+  };
+  let roomEdit = null;
   const edit = createEdit({
+    guard: roomGuard,
     rootEl, canvas, scene, camera, controls, store, catalogue,
     getModel: () => model,
     pickAt: (x, y) => pickAt(x, y),
@@ -270,6 +282,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   let roofHiddenByEdit = false;
   edit.onChange = (on) => {
     picker.close();
+    roomEdit?.onEditToggled(on);
+    if (roomEdit?.busy) return; // room edit lifts the roof away itself and has its own hints
     if (on && store.ui.showRoof !== false) {
       roofHiddenByEdit = true;
       store.setUI({ showRoof: false });
@@ -511,6 +525,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       return;
     }
     if (model) {
+      roomEdit?.onBeforeRebuild(); // hands the model its own materials back before they are disposed
       scene.remove(model);
       disposeModel(model);
     }
@@ -539,6 +554,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     }
     dirtyModel = false;
     edit.onRebuild();
+    roomEdit?.onRebuild();
     stats.buildMs = performance.now() - t0;
     stats.builds++;
     invalidate();
@@ -805,7 +821,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   function onPointerUp(e) {
     const d = downInfo;
     downInfo = null;
-    if (!d || mode !== 'orbit' || !active || edit.enabled || ahead.isArmed) return; // edit mode handles its own clicks
+    if (!d || mode !== 'orbit' || !active || edit.enabled || ahead.isArmed || roomEdit?.busy) return; // edit mode and room edit handle their own clicks
     if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 5 || performance.now() - d.t > 700) return;
     const now = performance.now();
     const double = lastClick && now - lastClick.t < 350 && Math.hypot(e.clientX - lastClick.x, e.clientY - lastClick.y) < 24;
@@ -948,6 +964,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     adaptClip();
     sky.position.copy(camera.position);
     edit.onFrame();
+    roomEdit?.onFrame();
     renderer.render(scene, camera);
     stats.frames++;
     if (adaptive) monitor(dt);
@@ -1005,6 +1022,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       clearTimeout(rebuildTimer);
       rebuildTimer = null;
       clearTimeout(hintTimer);
+      roomEdit?.done({ instant: true });
       picker.close();
       walk.exit();
       edit.onActiveChange();
@@ -1089,6 +1107,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     picker.dispose();
     controls.dispose();
     if (model) {
+      roomEdit?.onBeforeRebuild(); // hands the model its own materials back before they are disposed
       scene.remove(model);
       disposeModel(model);
       model = null;
@@ -1116,6 +1135,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     setActive,
     setMode,
     setInset,
+    getInset: () => ({ left: inset.l, right: inset.r, top: inset.t, bottom: inset.b }),
     resetCamera: () => frameCamera(true),
     getModel: () => model,
     snapshot,
@@ -1186,10 +1206,13 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       };
     },
   };
+  roomEdit = createRoomEdit(api, { guard: roomGuard, catalogue });
+  api.roomEdit = roomEdit;
   const offCutaway = enableRoomCutaway(api, () => store.project);
   const roomBar = createRoomBar(api, () => store.project);
   api.dispose = () => {
     offCutaway();
+    roomEdit.dispose();
     roomBar.dispose();
     dispose();
   };

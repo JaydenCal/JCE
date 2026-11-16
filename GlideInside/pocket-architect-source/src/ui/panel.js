@@ -35,6 +35,18 @@ export function createPanel(refs, store, { catalogue, editor } = {}) {
         return null;
       }
     },
+    // Open the 3D view and explode the building to edit one room (viewer3d/room-edit.js). Needs the 3D view, which loads on demand.
+    async editRoom3d(id) {
+      try {
+        store.setUI({ view: '3d' });
+        const ps = typeof window !== 'undefined' ? window.__ps : null;
+        const v = await ps?.getViewer?.ensure?.();
+        for (let i = 0; i < 40 && v && !(v.getModel?.() && v.roomEdit); i++) await new Promise((r) => setTimeout(r, 100));
+        if (!v?.roomEdit?.start(id)) toast('The 3D view is not ready yet. Try again in a moment.', { kind: 'warn' });
+      } catch (e) {
+        toast(e?.message || 'Could not open the 3D view.', { kind: 'warn' });
+      }
+    },
     remove(id, what) {
       if (ctx.run('delete', { id })) toast(`Deleted ${what}.`, { action: { label: 'Undo', onClick: () => store.undo() } });
     },
