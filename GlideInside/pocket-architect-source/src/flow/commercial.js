@@ -342,6 +342,10 @@ function mountPlaceStep(ctx) {
     if (ev.button != null && ev.button !== 0) return;
     if (drawing) {
       ev.preventDefault();
+      const now = Date.now();
+      const again = drawing.last && now - drawing.last.t < 400 && Math.hypot(ev.clientX - drawing.last.x, ev.clientY - drawing.last.y) < 6;
+      drawing.last = { t: now, x: ev.clientX, y: ev.clientY };
+      if (again) { if (drawing.pts.length >= 2) finishDraw(); return; } // a double click finishes (the plan is redrawn between the clicks, so the dblclick event is not relied on)
       let s = snapAt(ev, toMm(ev));
       if (ev.shiftKey && drawing.pts.length && s.kind !== 'door' && s.kind !== 'frontage') s = { ...s, ...RD.lockTo15(s, drawing.pts[drawing.pts.length - 1], true) };
       if (!drawing.pts.length || Math.hypot(s.x - drawing.pts[drawing.pts.length - 1].x, s.y - drawing.pts[drawing.pts.length - 1].y) > 1) drawing.pts.push({ x: s.x, y: s.y });

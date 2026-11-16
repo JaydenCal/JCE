@@ -165,6 +165,23 @@ test('makeEditable swaps a generated aisle for a drawn road of the same width', 
   assert.ok(!siteWorksOf(store.project.commercial).aisles.some((a) => a.id === aisle.id));
 });
 
+test('checks: a drawn driveway from the street gives truck access once the generated entries are removed; a narrow one does not', async () => {
+  const { checkSummary, toggleSiteKind } = await import('../src/flow/com-logic.js');
+  const store = station();
+  store.apply('rm', (p) => { toggleSiteKind(p, 'crossovers'); });
+  const lot = lotOf(store.project);
+  const [a, b] = R.frontageEdges(lot)[0];
+  const start = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  const inward = { x: start.x, y: start.y + 12000 };
+  const had = checkSummary(store.project).truck.has;
+  commercialEdit(store, 'narrow', (c) => R.addRoad(c, { kind: 'driveway', centre: [start, inward], widthMm: 3000, lot: lot.boundary }));
+  if (had) assert.equal(checkSummary(store.project).truck.ok, false);
+  commercialEdit(store, 'wide', (c) => R.addRoad(c, { kind: 'driveway', centre: [start, inward], widthMm: 7000, lot: lot.boundary }));
+  const after = checkSummary(store.project);
+  assert.equal(after.truck.drawnRoads >= 1 || !had, true);
+  if (had) { assert.equal(after.truck.ok, true); assert.equal(after.truck.crossoverM, 7); }
+});
+
 test('roads survive normalisation; access report sees a driveway from the street to a door', () => {
   const store = station();
   const p = store.project;
