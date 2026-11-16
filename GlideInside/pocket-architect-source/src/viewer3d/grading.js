@@ -77,7 +77,27 @@ function samplesIn(polys, rawAt, stepMm = 2000) {
  * planGrading({ rawAt, padY, fp, paving: [poly], driveways: [{ polys, from }] }) -> { zones, heightAt(x, y, raw) } | null
  * rawAt(x, y) is the natural ground in metres (the same Y scale as padY); fp is the building pad bbox (plan mm) or null.
  */
-export function planGrading({ rawAt, padY, fp = null, paving = [], driveways = [] }) {
+export const ROAD_GRADE_MAX = 0.06; // steepest longitudinal grade of the graded road corridor
+export const CROSSFALL_MIN = 0.01; // the corridor falls across the road by 1 to 3 percent, never rising towards the far side
+export const CROSSFALL_MAX = 0.03;
+
+/**
+ * A road corridor as a design plane: a smooth (straight) longitudinal profile along the road, flat across it with a small crossfall that falls
+ * from the property side to the far kerb. One plane, so the mesh triangles lie exactly on it and the road strips draped on the mesh never sit
+ * below the ground. corridor = { poly: plan mm quad (near footpath to far kerb), u: unit along the road, outward: unit away from the lot }.
+ */
+export function corridorPlane(corridor, rawAt) {
+  const smp = samplesIn([corridor.poly], rawAt, 2000);
+  const fit = fitPlane(smp);
+  if (!fit) return null;
+  const { u, outward } = corridor;
+  const gu = Math.max(-ROAD_GRADE_MAX, Math.min(ROAD_GRADE_MAX, fit.gx * u.x + fit.gz * u.y));
+  const gc = fit.gx * outward.x + fit.gz * outward.y; // natural fall across the road (negative falls away from the lot)
+  const cross = -Math.max(CROSSFALL_MIN, Math.min(CROSSFALL_MAX, gc < 0 ? -gc : CROSSFALL_MIN));
+  return { cx: fit.cx, cz: fit.cz, cy: fit.cy, gx: u.x * gu + outward.x * cross, gz: u.y * gu + outward.y * cross, grade: gu, crossfall: cross };
+}
+
+export function planGrading({ rawAt, padY, fp = null, paving = [], driveways = [], corridors = [] }) {
   const zones = [];
   const padRef = fp ? { x: (fp.minX + fp.maxX) / 2, y: (fp.minY + fp.maxY) / 2 } : null;
   const nearPad = (polys) => {
@@ -112,6 +132,12 @@ export function planGrading({ rawAt, padY, fp = null, paving = [], driveways = [
   };
   if (paving.length) addZone(paving, { max: FALL_MAX });
   for (const d of driveways) addZone(d.polys, { max: DRIVE_FALL_MAX, dir: d.dir });
+  // Corridors come last: where paving (a crossover) overlaps the corridor the paving plane wins the tie.
+  for (const cr of corridors) {
+    const pl = corridorPlane(cr, rawAt);
+    if (!pl) continue;
+    zones.push({ polys: [cr.poly], boxes: [bboxOf(cr.poly)], level: (x, y) => pl.cy + pl.gx * (x / 1000 - pl.cx) + pl.gz * (y / 1000 - pl.cz), fall: Math.hypot(pl.gx, pl.gz), road: true, plane: pl });
+  }
   if (!zones.length) return null;
   const heightAt = (x, y, raw) => {
     const p = { x, y };

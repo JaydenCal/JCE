@@ -151,7 +151,7 @@ function mat(color, opts = {}) {
 
 // Geometry ---------------------------------------------------------------------------------------------------------------------------
 
-const GROUND = 0.055; // pavement surface above the ground, m (clears the aerial drape)
+const GROUND = 0.035; // pavement surface above the graded ground, m: flush, an edge of 50 mm or less (polygon offset clears the aerial drape)
 const PAINT_LIFT = 0.012; // paint above the pavement
 const SEG_M = 3; // drape grid
 
