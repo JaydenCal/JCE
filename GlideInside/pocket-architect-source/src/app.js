@@ -50,7 +50,7 @@ import { offerSwitch, openInTool } from './ui/tool-switch.js';
 import { effectiveClass } from './commercial/zones.js';
 import { initGuidedFlow, shouldStart, openFlow } from './flow/index.js';
 import { flowInProgress } from './flow/state.js';
-import { viewerEmbedRequested, addressFromSearch, openFullEditor, initEmbedViewer, loadAddress, mountViewerChrome, takeHandoff } from './ui/embed-viewer.js';
+import { viewerEmbedRequested, addressFromSearch, openFullEditor, sameAddress, initEmbedViewer, loadAddress, mountViewerChrome, takeHandoff } from './ui/embed-viewer.js';
 
 const demoMode = () => CONFIG.embedMode === 'demo';
 // ?embed=1 or ?view=viewer: the cinematic single lot 3D view only (the home page frame). See src/ui/embed-viewer.js.
@@ -90,7 +90,7 @@ function initialProject(catalogue) {
   let switchFrom = null;
   if (!demoMode() && !VIEWER) {
     const handed = takeHandoff();
-    if (handed) loaded = { project: handed.project, fromAutosave: true, previous: handed.previous };
+    if (handed) loaded = { project: handed.project, fromAutosave: true, previous: handed.previous, handedOver: true };
     else {
       const saved = loadAutosave(CONFIG.autosaveKey);
       if (saved) loaded = { project: saved, fromAutosave: true };
@@ -99,13 +99,10 @@ function initialProject(catalogue) {
   // ?address= asks for a specific lot. A design kept in this browser for a DIFFERENT address must not open in its place (it put a 50 ha
   // rural lot under a town address, 15/11/2026). Start fresh for the asked address and keep the saved design as the earlier design.
   const askedAddress = addressFromSearch();
-  if (loaded && askedAddress && !loaded.previous) {
-    const norm = (a) => String(a || '').toUpperCase().replace(/\b(NSW|QLD|NEW SOUTH WALES|QUEENSLAND|AUSTRALIA)\b/g, '').replace(/[^A-Z0-9]+/g, ' ').trim();
-    const savedAddr = loaded.project?.site?.lot?.address || '';
-    if (!savedAddr || norm(savedAddr) !== norm(askedAddress)) {
-      try { localStorage.setItem(PREV_AUTOSAVE_KEY, JSON.stringify(loaded.project)); } catch { /* storage blocked */ }
-      loaded = { previousOnly: loaded.project };
-    }
+  // A design handed over by an embedded viewer is never replaced by the address in the link (the link only names the lot it came from).
+  if (loaded && askedAddress && !loaded.previous && !loaded.handedOver && !sameAddress(loaded.project?.site?.lot?.address, askedAddress)) {
+    try { localStorage.setItem(PREV_AUTOSAVE_KEY, JSON.stringify(loaded.project)); } catch { /* storage blocked */ }
+    loaded = { previousOnly: loaded.project };
   }
   const previousOnly = loaded?.previousOnly || null;
   if (previousOnly) loaded = null;
@@ -515,7 +512,7 @@ async function main() {
   };
   const openEditorDirect = () => openFullEditor({ ...store.project, flow: { kind: store.project.mode === 'commercial' ? 'commercial' : 'residential', step: 5 } });
   const lotCard = COMMERCIAL_VIEWER
-    ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openGuided, onFind: (a) => api.embedViewer?.run(a) })
+    ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a) })
     : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
   api.lotCard = lotCard;
   // "Make it narrower" in the homepage viewer hands over to this editor: say how, once it has opened.
@@ -524,7 +521,7 @@ async function main() {
   if (VIEWER) {
     window.addEventListener('message', (ev) => {
       if (ev.origin !== location.origin || ev.source !== window.parent) return;
-      if (ev.data && typeof ev.data === 'object' && ev.data.type === 'gi:open-editor') (COMMERCIAL_VIEWER ? openGuided : openEditorDirect)(); // commercial goes through the guided steps first, as the address links do
+      if (ev.data && typeof ev.data === 'object' && ev.data.type === 'gi:open-editor') openEditorDirect(); // Open full editor always carries the embed's project into the editor itself (residential and commercial)
     });
   }
   if (COMMERCIAL_TOOL) api.commercial = createCommercialPanel({ store, host: refs.stage, editor }); // the residential tool has no commercial panel

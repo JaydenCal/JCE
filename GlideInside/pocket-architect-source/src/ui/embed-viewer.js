@@ -40,6 +40,14 @@ export function fullEditorUrl(project) {
   return a ? `${FULL_EDITOR_PATH}?${mode}address=${encodeURIComponent(a)}` : FULL_EDITOR_PATH;
 }
 
+/** Whether two address strings name the same place: case, commas, state, country and postcode are ignored, and a link that gives only the street part still matches. */
+export const sameAddress = (a, b) => {
+  const norm = (x) => String(x || '').toUpperCase().replace(/\b(NSW|QLD|VIC|TAS|SA|WA|NT|ACT|NEW SOUTH WALES|QUEENSLAND|VICTORIA|AUSTRALIA)\b/g, ' ').replace(/\b\d{4}\b$/, ' ').replace(/[^A-Z0-9]+/g, ' ').trim();
+  const x = norm(a), y = norm(b);
+  if (!x || !y) return false;
+  return x === y || x.startsWith(y + ' ') || y.startsWith(x + ' ');
+};
+
 const inFrame = () => { try { return window.parent !== window; } catch { return true; } };
 export function postToParent(msg) {
   if (!inFrame()) return;
