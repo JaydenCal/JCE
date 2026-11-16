@@ -8,12 +8,16 @@
 
 import { h } from '../ui/dom.js';
 import { createGuidedFlow } from './guided.js';
+import { createTutorial } from '../tutorial/coach.js';
 import { flowOf, flowInProgress, writeFlow, EDIT_STEP } from './state.js';
 import { residentialSteps, RESIDENTIAL_BRAND } from './residential.js';
 import { commercialSteps, COMMERCIAL_BRAND } from './commercial.js';
 
 /** Which flow this project belongs to. */
 export const kindOf = (project, wantCommercial = false) => (project?.mode === 'commercial' || flowOf(project)?.kind === 'commercial' || wantCommercial ? 'commercial' : 'residential');
+
+/** The one tutorial coach of this page (created on first use). */
+export const tutorialOf = (api) => (api.tutorial ||= createTutorial({ getFlow: () => api.flow }));
 
 /** Whether a fresh app open should start the flow (pure, so it can be tested). */
 export function shouldStart({ project, search = '', viewer = false, demo = false, shareId = null, fromAutosave = false }) {
@@ -47,6 +51,7 @@ export async function initGuidedFlow({ api, store, refs, catalogue, viewer = fal
   const step = f && f.kind === kind && f.step < EDIT_STEP ? f.step : kept ? 2 : 1;
   if (kept) writeFlow(store, { kind, step });
   await flow.open(step);
+  tutorialOf(api).startIfFirst(kind, step);
   attachBackPill({ api, store, refs, catalogue, wantCommercial });
   void hasAddress;
   return flow;
@@ -58,6 +63,7 @@ export async function openFlow({ api, store, refs, catalogue, kind, step = 1 }) 
   const flow = makeFlow({ api, store, refs, catalogue, kind });
   api.flow = flow;
   await flow.open(step);
+  tutorialOf(api).startIfFirst(kind, step);
   attachBackPill({ api, store, refs, catalogue, wantCommercial: kind === 'commercial' });
   return flow;
 }
@@ -68,6 +74,7 @@ function makeFlow({ api, store, refs, catalogue, kind }) {
   const flow = createGuidedFlow({
     store, kind, steps, host: document.body,
     brand: kind === 'commercial' ? COMMERCIAL_BRAND : RESIDENTIAL_BRAND,
+    onHelp: () => tutorialOf(api).restart(kind),
     onEditor: async () => {
       // The editor opens with the placed design. A residential home is selected on the plan so Move house is ready.
       store.setUI({ frontageEdit: false });

@@ -48,7 +48,7 @@ import { enterCommercial, offerCommercial, commercialUi, convertToCommercial } f
 import { resolveTool, toolMode, toolName, toolOfProject, TOOL_INFO, PREV_AUTOSAVE_KEY } from './toolmode.js';
 import { offerSwitch, openInTool } from './ui/tool-switch.js';
 import { effectiveClass } from './commercial/zones.js';
-import { initGuidedFlow, shouldStart, openFlow } from './flow/index.js';
+import { initGuidedFlow, shouldStart, openFlow, tutorialOf } from './flow/index.js';
 import { flowInProgress } from './flow/state.js';
 import { viewerEmbedRequested, addressFromSearch, openFullEditor, sameAddress, initEmbedViewer, loadAddress, mountViewerChrome, takeHandoff } from './ui/embed-viewer.js';
 
@@ -283,6 +283,8 @@ async function main() {
     onFindBlock: () => openFindBlock(store),
     onBack: () => goBack(),
   });
+  // "?" in the editor top bar restarts the tutorial for the tool in use.
+  if (!VIEWER && !demoMode()) refs.topbar.append(h('button', { class: 'ps-btn ps-tut-q', type: 'button', title: 'Show me how', 'aria-label': 'Show me how', dataset: { ps: 'tutorial-help' }, onclick: () => tutorialOf(api).restart(store.project.mode === 'commercial' ? 'commercial' : 'residential') }, '?'));
   const backFacts = () => ({ here: location.href, referrer: document.referrer, back: new URLSearchParams(location.search).get('back'), portalUrl: portalUrl(), homeUrl: CONFIG.homeUrl });
   const backBtn = refs.topbar.querySelector('[data-action="back"]');
   if (backBtn) {

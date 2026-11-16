@@ -22,6 +22,7 @@ export const FLOW_CSS = `
 .gf-prog li[data-state="done"] .gf-num{background:var(--gf-ok);border-color:var(--gf-ok);color:#fff}
 .gf-prog li[data-state="current"]{color:var(--gf-acc);background:var(--gf-acc-soft)}
 .gf-prog li[data-state="current"] .gf-num{background:var(--gf-acc);border-color:var(--gf-acc);color:var(--gf-acc-ink)}
+.gf-help{margin-left:auto}.gf-help+.gf-skip{margin-left:0}
 .gf-skip{margin-left:auto;background:none;border:0;color:var(--gf-muted);text-decoration:underline;padding:6px;white-space:nowrap}
 .gf-body{flex:1;min-height:0;overflow:auto;padding:20px;display:flex;flex-direction:column}
 .gf-wrap{width:100%;max-width:1180px;margin:0 auto;display:flex;flex-direction:column;flex:1;min-height:0}

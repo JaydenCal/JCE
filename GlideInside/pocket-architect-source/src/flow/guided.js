@@ -20,7 +20,7 @@ function injectStyle() {
   document.head.append(st);
 }
 
-export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {}, onSkip = null, host = document.body }) {
+export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {}, onSkip = null, onHelp = null, host = document.body }) {
   injectStyle();
   const meta = stepsFor(kind);
   const total = meta.length;
@@ -31,7 +31,8 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
   const brandEl = h('div', { class: 'gf-brand', dataset: { ps: 'flow-brand' } }, brand);
   const prog = h('ol', { class: 'gf-prog', 'aria-label': 'Progress', dataset: { ps: 'flow-progress' } });
   const skip = h('button', { class: 'gf-skip', type: 'button', dataset: { ps: 'flow-skip' }, onclick: () => skipToEditor() }, 'Skip to editor');
-  const head = h('header', { class: 'gf-head' }, brandEl, prog, skip);
+  const help = h('button', { class: 'gf-skip gf-help', type: 'button', title: 'Show me how', 'aria-label': 'Show me how', dataset: { ps: 'flow-help' }, onclick: () => onHelp?.() }, 'Show me how');
+  const head = h('header', { class: 'gf-head' }, brandEl, prog, help, skip);
   const titleEl = h('h1', { class: 'gf-title', dataset: { ps: 'flow-title' }, tabindex: '-1' });
   const introEl = h('p', { class: 'gf-intro' });
   const content = h('div', { class: 'gf-content', style: { display: 'flex', flexDirection: 'column', flex: '1', minHeight: '0' } });

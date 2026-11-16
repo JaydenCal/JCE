@@ -44,10 +44,10 @@ test('the full editor address link keeps the commercial tool', () => {
   assert.equal(addressFromSearch(LINK), '369 Shaw Road Shaw QLD');
 });
 
-test('app wiring: commercial Open full editor opens the guided steps, the address rule for a different address is kept, a kept lot opens at step 2', () => {
-  assert.match(app, /createCommercialCard\(\{[^\n]*onEdit: openGuided, onFullEditor: openGuided/);
-  assert.match(app, /COMMERCIAL_VIEWER \? openGuided : openEditorDirect/);
-  assert.match(app, /norm\(savedAddr\) !== norm\(askedAddress\)/);
+test('app wiring: commercial Open full editor carries the embed project into the editor (not the guided steps), the address rule for a different address is kept, a kept lot opens at step 2', () => {
+  assert.match(app, /createCommercialCard\(\{[^\n]*onEdit: openGuided, onFullEditor: openEditorDirect/);
+  assert.match(app, /gi:open-editor'\) openEditorDirect\(\)/);
+  assert.match(app, /!loaded\.handedOver && !sameAddress\(/);
   assert.match(flowSrc, /kept \? 2 : 1/);
 });
 
