@@ -18,8 +18,9 @@ import { accessibleRequired } from './rules.js';
 import { clipTo } from './catalogue/pavements/polybool.js';
 import { polyArea } from './catalogue/pavements/geom.js';
 import { rowsSignature } from './estate.js';
+import { orientedWorks, isSkewed } from './sitelayout-oriented.js';
 
-export const SITEWORKS_VERSION = 3; // 2: entry and exit stay on the first frontage edge and clear of a corner road; project.commercial.accessEdit overrides them
+export const SITEWORKS_VERSION = 4; // 4: a building turned off the lot grid gets a car park, aisle, bays, hardstand lane and one drive laid out in its own frame (sitelayout-oriented.js)
 export const AISLE_MM = 6000;
 export const AISLE_TRUCK_MM = 7500;
 export const CROSSOVER_W = 6000;
@@ -315,6 +316,11 @@ export function generateSiteWorks(project, opts = {}) {
   const frontLand = Math.min(3000, Math.max(1500, ...src.bs.map((b) => Number(b.site?.landscapeFrontMm) || 0)));
   const sideLand = 1000;
   const frontEdges = new Set(lot.frontEdges);
+  // A single building turned off the lot's grid: lay the whole car park out in the building's own frame as one connected design.
+  if (src.bs.length === 1 && !station && isSkewed(src.bs[0].place.rotationDeg, f) && !src.units.length) {
+    const ow = orientedWorks({ c, lot, f, b: src.bs[0], toFrame, toWorldF, fitToLot, frontLand, sideLand, truck, xoverW, aisleTruck: AISLE_TRUCK_MM });
+    if (ow) return { version: SITEWORKS_VERSION, ...ow, generatedAt: opts.stamp ?? 0 };
+  }
 
   // Lot cells, inset from the boundary by the landscape strips (front deeper than sides and rear).
   const edges = lot.boundary.map((a, i) => ({ a, b: lot.boundary[(i + 1) % lot.boundary.length], front: frontEdges.has(i) }));
@@ -798,7 +804,7 @@ export function siteKey(project) {
   const r = (v) => Math.round(Number(v) || 0);
   return JSON.stringify([
     lot.boundary?.map((q) => [r(q.x), r(q.y)]), lot.frontEdges, lot.envelope?.length || 0,
-    (c.buildings || []).map((b) => [b.id, b.type, r(b.place?.x), r(b.place?.y), r(b.place?.rotationDeg), b.params]),
+    (c.buildings || []).map((b) => [b.id, b.type, r(b.place?.x), r(b.place?.y), Math.round((Number(b.place?.rotationDeg) || 0) * 10), b.params]),
     (c.rows || []).map((rw) => [rw.id, r(rw.x), r(rw.y), r(rw.rotationDeg), rw.count]),
     c.estate?.sig || null, (c.parking?.extra || []).length,
     c.parking?.bayW, c.parking?.bayL, c.parking?.aisleMm, c.parking?.enabled, c.buildingClass,

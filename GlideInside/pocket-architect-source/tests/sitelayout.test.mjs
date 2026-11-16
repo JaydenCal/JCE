@@ -232,3 +232,38 @@ test('site layout: crossovers sit on the edge that abuts the road, not on a boun
   const dEdge = (p, a, c) => { const dx = c.x - a.x; const dy = c.y - a.y; const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy))); return Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy); };
   for (const x of sw.crossovers) assert.ok(dEdge(x, b[0], b[1]) < 1500, 'crossover on edge 0 (' + Math.round(dEdge(x, b[0], b[1])) + ')');
 });
+
+test('site layout: a warehouse turned 25 degrees gets one connected car park, aisle, bays and drive in its own frame', () => {
+  for (const type of ['warehouse', 'warehouse-docks'].filter((t) => typeById(t))) {
+    const store = site(type, { width: 90000, depth: 130000 });
+    const b0 = buildingsOf(store.project.commercial)[0];
+    const xs = b0.local.outline.map((q) => q.x); const ys = b0.local.outline.map((q) => q.y);
+    const cl = { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 };
+    const ar = (25 * Math.PI) / 180;
+    // Turn it 25 degrees about its centre, with the centre in the middle of the lot.
+    moveBuilding(store, b0.id, { x: 45000 - (Math.cos(ar) * cl.x - Math.sin(ar) * cl.y), y: 70000 - (Math.sin(ar) * cl.x + Math.cos(ar) * cl.y), rotationDeg: 25 });
+    const sw = store.project.commercial.siteWorks;
+    assert.ok(sw, 'regenerated after the rotation');
+    assert.equal(sw.version, 4);
+    assert.ok(sw.carPark?.polygon, `${type}: the car park is attached to the building`);
+    const b = buildingsOf(store.project.commercial)[0];
+    const inside = (pt, poly) => G.pointInPolygon(pt, poly) || distToPoly(pt, poly) <= 5;
+    const bays = sw.bayRows.flatMap((r) => r.slots);
+    assert.ok(bays.length > 0);
+    for (const s of bays) for (const q of s.poly) assert.ok(inside(q, sw.carPark.polygon), `${type}: bay corner inside the paved car park`);
+    // The bays are turned with the building (parallel to its walls), not left in the street frame.
+    const s0 = bays[0].poly; const ang = (Math.atan2(s0[1].y - s0[0].y, s0[1].x - s0[0].x) * 180) / Math.PI;
+    assert.ok(Math.abs((((ang - 25) % 90) + 90) % 90) < 1 || Math.abs((((ang - 25) % 90) + 90) % 90 - 90) < 1, `${type}: bays follow the building angle`);
+    const touchPads = [b.outline, ...sw.aprons.map((a) => a.polygon)];
+    assert.ok(touchPads.some((pad) => sw.carPark.polygon.some((q) => distToPoly(q, pad) < 400) || pad.some((q) => distToPoly(q, sw.carPark.polygon) < 400)), `${type}: the car park touches the pad or apron`);
+    const net = connected(sw);
+    assert.ok(net.some((poly) => poly === sw.pavedAisles[0].polygon), `${type}: the aisle is joined to the crossover`);
+    for (const a of sw.aprons) assert.ok(net.some((poly) => poly === a.polygon), `${type}: the hardstand is joined to the crossover`);
+    assert.equal(sw.summary.limited, false);
+    // Moving it again changes the layout (the pose is part of the key).
+    const k1 = siteKey(store.project);
+    moveBuilding(store, b.id, { x: b.place.x + 3000, y: b.place.y, rotationDeg: 40 });
+    assert.notEqual(siteKey(store.project), k1);
+    assert.ok(store.project.commercial.siteWorks.carPark, 'regenerated for the new pose');
+  }
+});
