@@ -15,6 +15,8 @@ import { pavementAreas, pavementModel, pavementCost } from './logic.js';
 import { layoutUnits } from '../../layout.js';
 import { buildingsOf } from '../buildings.js';
 
+// roads.js registers itself here (it imports this file, so this file cannot import it)
+export const roadsHook = { setRoad: null, addRoad: null };
 export const HS_PREFIX = 'hs_';
 export const GRID_MM = 500;
 export const SNAP_PX = 10;
@@ -51,7 +53,7 @@ const ptsOf = (ring) => (Array.isArray(ring) ? ring.filter((q) => num(q?.x) && n
 export function hardstandList(commercial) {
   const out = [];
   (Array.isArray(commercial?.pavements) ? commercial.pavements : []).forEach((o, index) => {
-    if (o && isHardstandId(o.id) && Array.isArray(o.polygon) && o.polygon.length >= 3 && isPavementType(o.type)) out.push({ id: o.id, type: o.type, polygon: ptsOf(o.polygon), index });
+    if (o && isHardstandId(o.id) && Array.isArray(o.polygon) && o.polygon.length >= 3 && isPavementType(o.type)) out.push({ id: o.id, type: o.type, polygon: ptsOf(o.polygon), index, road: o.road || null });
   });
   return out;
 }
@@ -192,6 +194,7 @@ export function drawnWarnings(poly, ctx) {
 
 // Editing the spec --------------------------------------------------------------------------------------------------------------
 
+export const nextHardstandId = (c) => `${HS_PREFIX}${nextNumber(c)}`;
 function nextNumber(c) {
   let n = 0;
   for (const o of c.pavements || []) { const m = /^hs_(\d+)/.exec(String(o?.id || '')); if (m) n = Math.max(n, Number(m[1])); }
@@ -235,6 +238,7 @@ export function setHardstandPolygon(c, id, polygon, lot = null) {
   if (!pieces.length) return { ids: [id], clipped, outside: true };
   const sorted = pieces.slice().sort((a, b) => Math.abs(polyArea(b)) - Math.abs(polyArea(a)));
   e.polygon = own(sorted[0]);
+  delete e.road; // a free reshape of the outline turns a road into a plain area
   const ids = [id];
   let n = nextNumber(c);
   const extra = sorted.slice(1).map((p) => { const nid = `${HS_PREFIX}${n++}`; ids.push(nid); return { id: nid, type: e.type, polygon: own(p) }; });
@@ -245,6 +249,9 @@ export function setHardstandPolygon(c, id, polygon, lot = null) {
 export function moveHardstand(c, id, dx, dy, lot = null) {
   const e = entry(c, id);
   if (!e) throw new Error('That hardstand area is gone.');
+  if (e.road) { // a road moves by its centre line (roads.js rebuilds the outline)
+    return roadsHook.setRoad(c, id, { centre: e.road.centre.map((p) => ({ x: p.x + dx, y: p.y + dy })) }, lot);
+  }
   return setHardstandPolygon(c, id, e.polygon.map((p) => ({ x: p.x + dx, y: p.y + dy })), lot);
 }
 
@@ -265,6 +272,13 @@ export function removeHardstand(c, id) {
 export function duplicateHardstand(c, id, lot = null, offset = 2000) {
   const e = entry(c, id);
   if (!e) throw new Error('That hardstand area is gone.');
+  if (e.road) {
+    for (const k of [offset, -offset]) {
+      const r = roadsHook.addRoad(c, { kind: e.road.kind, centre: e.road.centre.map((p) => ({ x: p.x + k, y: p.y + k })), widthMm: e.road.widthMm, type: e.type, lot });
+      if (!r.outside) return r;
+    }
+    throw new Error('There is no room inside the lot for a copy.');
+  }
   for (const k of [offset, -offset]) {
     const poly = e.polygon.map((p) => ({ x: p.x + k, y: p.y + k }));
     const r = addHardstand(c, { type: e.type, polygon: poly, lot });

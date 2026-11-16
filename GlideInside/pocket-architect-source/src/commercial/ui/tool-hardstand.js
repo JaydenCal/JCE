@@ -40,7 +40,7 @@ export function createHardstandTool(ed) {
     cancel() { return ctl.cancel(); },
     keyDown(e) { return ctl.keyDown(e); },
     pointerLeave() { ed.draw(); },
-    projectChanged() { if (hsState.selected && !ctl.selectedArea()) setHsState({ selected: null }); },
+    projectChanged() { if (hsState.selected && !ctl.selectedArea() && !ctl.selectedGenerated()) setHsState({ selected: null }); },
     draw(ctx, st) { drawDraft(ctx, st, ctl.draft()); },
   };
   return { hardstand: tool };
@@ -79,6 +79,11 @@ export function drawDraft(ctx, st, d) {
     ctx.beginPath(); path(ctx, st, d.selected);
     ctx.strokeStyle = GOLD; ctx.lineWidth = 2.4; ctx.setLineDash([8, 5]); ctx.stroke(); ctx.setLineDash([]);
   }
+  if (d.generated) {
+    ctx.beginPath(); path(ctx, st, d.generated);
+    ctx.fillStyle = 'rgba(199,162,86,0.18)'; ctx.fill();
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 2.4; ctx.setLineDash([8, 5]); ctx.stroke(); ctx.setLineDash([]);
+  }
   if (d.ghost) {
     ctx.beginPath(); path(ctx, st, d.ghost);
     ctx.strokeStyle = 'rgba(120,120,120,0.8)'; ctx.lineWidth = 1.4; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
@@ -92,6 +97,11 @@ export function drawDraft(ctx, st, d) {
     ctx.strokeStyle = warn ? RED : GOLD; ctx.lineWidth = 2.2; ctx.setLineDash(d.open ? [7, 5] : []); ctx.stroke(); ctx.setLineDash([]);
     if (d.open) for (const p of d.ring.slice(0, -1)) { const s = worldToScreen(st.view, p); ctx.beginPath(); ctx.arc(s.x, s.y, 4, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 2; ctx.stroke(); }
   }
+  if (d.centre && d.centre.length >= 2) {
+    ctx.beginPath(); path(ctx, st, d.centre, false);
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 1.6; ctx.setLineDash([10, 7]); ctx.stroke(); ctx.setLineDash([]);
+    if (d.mode === 'road') for (const p of d.centre.slice(0, -1)) { const s = worldToScreen(st.view, p); ctx.beginPath(); ctx.arc(s.x, s.y, 4, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 2; ctx.stroke(); }
+  }
   ctx.font = `600 11px ${st.theme.f.ui}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   for (const l of d.labels) {
     const s = worldToScreen(st.view, l);
@@ -102,12 +112,13 @@ export function drawDraft(ctx, st, d) {
     const s = worldToScreen(st.view, hd);
     ctx.beginPath();
     if (hd.kind === 'vertex') { ctx.rect(s.x - 5, s.y - 5, 10, 10); ctx.fillStyle = hd.active ? GOLD : '#fff'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 2; ctx.stroke(); }
+    else if (hd.kind === 'width') { ctx.moveTo(s.x, s.y - 7); ctx.lineTo(s.x + 7, s.y); ctx.lineTo(s.x, s.y + 7); ctx.lineTo(s.x - 7, s.y); ctx.closePath(); ctx.fillStyle = GOLD; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.6; ctx.stroke(); }
     else { ctx.arc(s.x, s.y, 3.5, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 1.4; ctx.stroke(); }
   }
   if (d.snap) {
     const s = worldToScreen(st.view, d.snap);
     ctx.beginPath();
-    if (d.snap.kind === 'corner') ctx.rect(s.x - 6, s.y - 6, 12, 12); else if (d.snap.kind === 'edge') { ctx.moveTo(s.x - 6, s.y); ctx.lineTo(s.x, s.y - 6); ctx.lineTo(s.x + 6, s.y); ctx.lineTo(s.x, s.y + 6); ctx.closePath(); } else ctx.arc(s.x, s.y, 4, 0, Math.PI * 2);
+    if (d.snap.kind === 'door' || d.snap.kind === 'frontage' || d.snap.kind === 'road-end') ctx.arc(s.x, s.y, 8, 0, Math.PI * 2); else if (d.snap.kind === 'corner') ctx.rect(s.x - 6, s.y - 6, 12, 12); else if (d.snap.kind === 'edge') { ctx.moveTo(s.x - 6, s.y); ctx.lineTo(s.x, s.y - 6); ctx.lineTo(s.x + 6, s.y); ctx.lineTo(s.x, s.y + 6); ctx.closePath(); } else ctx.arc(s.x, s.y, 4, 0, Math.PI * 2);
     ctx.strokeStyle = d.snap.kind === 'grid' || d.snap.kind === 'free' ? 'rgba(80,80,80,0.8)' : '#1b8f4a'; ctx.lineWidth = 2; ctx.stroke();
     const lines = [d.readout || '', ...d.warn, d.snap.text].filter(Boolean);
     if (lines.length) pill(ctx, st, lines, s.x + 16, s.y + 16, { warn });

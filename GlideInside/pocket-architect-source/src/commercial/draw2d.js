@@ -13,6 +13,7 @@ import { siteWorksOf } from './catalogue/buildings.js';
 import { drawPavementArea, drawKerb } from './catalogue/pavements/draw2d.js';
 import { pavementById } from './catalogue/pavements/pavements.js';
 import { labelPoint, hardstandModel } from './catalogue/pavements/hardstand.js';
+import { roadList, roadKind } from './catalogue/pavements/roads.js';
 
 const GOLD = '#c7a256';
 const BLUE = '#1b5fbf';
@@ -38,6 +39,14 @@ function drawHardstand(ctx, st, labels) {
     drawPavementArea(ctx, pts, a.type, scale);
   }
   for (const k of m.kerbs) if (String(k.areaId || '').startsWith('hs_')) drawKerb(ctx, k, (q) => S(st, q), scale);
+  const roads = new Map(roadList(st.project.commercial).map((r) => [r.id, r]));
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 1.2; ctx.setLineDash([9, 7]);
+  for (const r of roads.values()) {
+    if (r.kind === 'pavement') continue;
+    ctx.beginPath(); r.centre.forEach((q, i) => { const sp = S(st, q); if (i) ctx.lineTo(sp.x, sp.y); else ctx.moveTo(sp.x, sp.y); }); ctx.stroke();
+  }
+  ctx.restore();
   const seen = new Set();
   for (const a of drawn) {
     const id = String(a.id).split('~')[0];
@@ -47,7 +56,8 @@ function drawHardstand(ctx, st, labels) {
     const at = S(st, labelPoint(a.polygon));
     const w = Math.max(...a.polygon.map((q) => q.x)) - Math.min(...a.polygon.map((q) => q.x));
     if (w * scale < 90) continue;
-    labels.push({ at, text: `${t.short.toUpperCase()}  ${(a.areaM2 || 0).toFixed(0)} m2` });
+    const rd = roads.get(id);
+    labels.push({ at, text: rd ? `${roadKind(rd.kind).label.toUpperCase()}  ${(rd.widthMm / 1000).toFixed(1)} m wide` : `${t.short.toUpperCase()}  ${(a.areaM2 || 0).toFixed(0)} m2` });
   }
 }
 

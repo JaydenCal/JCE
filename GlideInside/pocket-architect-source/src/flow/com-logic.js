@@ -20,7 +20,8 @@ import { commercialStats } from '../commercial/stats.js';
 import { feasibility, summaryRows, headlineRows, CAVEAT, feasibilityNotes } from '../commercial/feasibility.js';
 import { commercialStatus } from '../commercial/card-model.js';
 import { siteAccess } from '../commercial/access.js';
-import { buildingsOf } from '../commercial/catalogue/buildings.js';
+import { buildingsOf, siteWorksOf } from '../commercial/catalogue/buildings.js';
+import { roadAccess } from '../commercial/catalogue/pavements/roads.js';
 import { typesForPicker, typeById, typeIconName, STRATA_ID } from '../commercial/catalogue/types/index.js';
 import { switcherList, chooseFor, applyChoice, activeTypeId, switcherIndex } from '../commercial/catalogue/picker.js';
 import { BEST_PRESET } from '../commercial/catalogue/fit.js';
@@ -302,10 +303,12 @@ export function checkSummary(project) {
   const bs = buildingsOf(project.commercial);
   const truckBuildings = bs.filter((b) => (b.site?.vehicles?.docks || 0) > 0 || b.extras.some((e) => e.kind === 'apron'));
   const rowsTruck = layoutUnits(project.commercial).length > 0;
-  const xo = sw?.crossovers || [];
-  const rowsAccess = rowsTruck && !xo.length ? siteAccess(project.commercial, lot) : null;
+  const xo = siteWorksOf(project.commercial)?.crossovers || sw?.crossovers || []; // what is left after the person removed entries
+  const drawn = roadAccess(project.commercial, lot); // roads and driveways drawn from the street count as access
+  const rowsAccess = rowsTruck && !xo.length && !drawn.fromStreet.length ? siteAccess(project.commercial, lot) : null;
+  const drawnOk = drawn.fromStreet.some((r) => r.widthMm >= 6000);
   const truck = truckBuildings.length || rowsTruck
-    ? { has: true, ok: (!!xo.length || !!rowsAccess) && xo.every((x) => x.widthMm >= 6000) && (!sw?.summary || Object.values(sw.summary.reachable || {}).every(Boolean)), crossoverM: xo.length ? Math.max(...xo.map((x) => x.widthMm)) / 1000 : rowsAccess ? rowsAccess.widthMm / 1000 : null }
+    ? { has: true, ok: (drawnOk || ((!!xo.length || !!rowsAccess) && xo.every((x) => x.widthMm >= 6000))) && (!sw?.summary || Object.values(sw.summary.reachable || {}).every(Boolean) || drawnOk), crossoverM: drawn.widthMm && !xo.length ? drawn.widthMm / 1000 : xo.length ? Math.max(...xo.map((x) => x.widthMm)) / 1000 : rowsAccess ? rowsAccess.widthMm / 1000 : null, drawnRoads: drawn.fromStreet.length }
     : { has: false, ok: true, crossoverM: null };
   let feas = null;
   try { feas = feasibility(project.commercial, lot); } catch { feas = null; }

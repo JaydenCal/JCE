@@ -3,7 +3,9 @@
 
 import { h, clear } from '../../ui/dom.js';
 import { button } from '../../ui/panel-forms.js';
-import { hsState, setHsState, onHsState, HS_MODES, modeDef } from './hardstand-state.js';
+import { hsState, setHsState, setRoadKind, onHsState, HS_MODES, modeDef } from './hardstand-state.js';
+import { ROAD_KINDS, roadKind, roadById, siteItemById, centreLengthM } from '../catalogue/pavements/roads.js';
+import { restoreSiteWorksIn } from '../../flow/com-logic.js';
 import { hardstandTypes, hardstandSummary, markingPrompts, OVERLAP_RULE } from '../catalogue/pavements/hardstand.js';
 import { makeUpShort, pavementById, RATES_CAVEAT } from '../catalogue/pavements/index.js';
 import { commercialEdit } from '../mode.js';
@@ -39,6 +41,18 @@ export function hardstandPanel(ctx) {
     return wrap;
   }
 
+  function roadKinds() {
+    const wrap = h('div', { class: 'ps-seg ps-seg--sm', role: 'group', 'aria-label': 'Road kind', style: { flexWrap: 'wrap' } });
+    for (const k of ROAD_KINDS) wrap.append(h('button', { class: 'ps-seg-btn', type: 'button', title: k.hint, 'aria-pressed': String(hsState.roadKind === k.id), dataset: { ps: `hardstand-kind-${k.id}`, value: k.id }, onclick: () => { setRoadKind(k.id); setHsState({ mode: 'road' }); } }, k.label));
+    wrap.append(h('button', { class: 'ps-seg-btn', type: 'button', title: 'A car park or hardstand is an area: drag a rectangle or click a polygon', dataset: { ps: 'hardstand-kind-area' }, onclick: () => setHsState({ mode: 'rect', type: 'asphalt-ac10-car' }) }, 'Car park or hardstand'));
+    return wrap;
+  }
+  function widthInput(value, onCommit, min, max, ps) {
+    const inp = h('input', { class: 'ps-input', type: 'number', step: '0.1', min: String(min / 1000), max: String(max / 1000), value: String(value / 1000), 'aria-label': 'Width in metres', dataset: { ps }, style: { width: '80px' } });
+    inp.addEventListener('change', () => { const v = Math.round(Number(inp.value) * 1000); if (Number.isFinite(v) && v > 0) onCommit(v); });
+    return h('label', { class: 'ps-hint', style: { display: 'inline-flex', gap: '6px', alignItems: 'center', margin: 0 } }, 'Width (m)', inp);
+  }
+
   function render() {
     clear(root);
     if (!comm()) { root.append(h('p', { class: 'ps-hint' }, 'Hardstand is drawn in commercial layouts.')); return; }
@@ -46,6 +60,11 @@ export function hardstandPanel(ctx) {
     const lot = store.project.site?.lot || null;
     const sum = hardstandSummary(c, lot);
     root.append(h('div', { class: 'ps-sel-title' }, h('strong', null, 'Hardstand')));
+    const kd = roadKind(hsState.roadKind);
+    root.append(h('div', { class: 'ps-sec', dataset: { ps: 'hardstand-roads' } }, h('div', { class: 'ps-sec-title' }, 'Road, driveway, pavement'), roadKinds(),
+      h('div', { class: 'ps-row', style: { gap: '8px', marginTop: '6px' } }, widthInput(hsState.roadWidth || kd.widthMm, (v) => setHsState({ roadWidth: v }), kd.minMm, kd.maxMm, 'hardstand-road-width'),
+        button('Draw', () => { ctl()?.cancel?.(); setHsState({ mode: 'road' }); }, { title: 'Click points on the plan. Double click or Enter finishes.' })),
+      h('p', { class: 'ps-hint', style: { margin: '6px 0 0' } }, `${kd.hint}. The surface below is used for what you draw next.`)));
     root.append(h('div', { class: 'ps-sec' }, h('div', { class: 'ps-sec-title' }, 'Draw mode'), modes()));
     const t = pavementById(hsState.type);
     root.append(h('div', { class: 'ps-sec' }, h('div', { class: 'ps-sec-title' }, 'Pavement type'), typeSelect(),
@@ -53,6 +72,23 @@ export function hardstandPanel(ctx) {
     root.append(h('p', { class: 'ps-hint', dataset: { ps: 'hardstand-hint' } }, modeDef(hsState.mode).hint));
     root.append(h('p', { class: 'ps-hint' }, 'Snaps to the lot boundary, setbacks, building edges, existing pavement and a 0.5 m grid. Hold Alt to turn snapping off. Areas are cut off at the lot boundary; one that crosses a building is flagged but not blocked. Areas you draw are kept when the car park layout is re-run.'));
 
+    // Selected generated item (a road, aisle, footpath, apron or entry the site layout made)
+    const gen = hsState.selected && String(hsState.selected).startsWith('sw:') ? siteItemById(c, hsState.selected) : null;
+    if (gen) {
+      root.append(h('div', { class: 'ps-sec', dataset: { ps: 'hardstand-generated' } }, h('div', { class: 'ps-sec-title' }, 'Selected, from the site layout'),
+        h('p', { style: { margin: '0 0 6px' } }, gen.label),
+        h('div', { class: 'ps-row', style: { gap: '6px', flexWrap: 'wrap' } },
+          button('Remove', () => ctl()?.removeGenerated?.(gen.id), { cls: 'ps-btn--danger', title: 'Take it off the plan (Delete). Restore all brings it back.' }),
+          button('Make editable', () => ctl()?.makeEditable?.(gen.id), { title: 'Turn it into a road you can reshape and resize' }))));
+    }
+    // Selected road
+    const road = hsState.selected ? roadById(c, hsState.selected) : null;
+    if (road) {
+      root.append(h('div', { class: 'ps-sec', dataset: { ps: 'hardstand-road-selected' } }, h('div', { class: 'ps-sec-title' }, 'Selected road'),
+        h('p', { style: { margin: '0 0 6px' } }, `${roadKind(road.kind).label}, ${centreLengthM(road.centre).toFixed(1)} m long, ${road.centre.length} points`),
+        h('div', { class: 'ps-seg ps-seg--sm', role: 'group', 'aria-label': 'Change kind', style: { flexWrap: 'wrap', marginBottom: '6px' } }, ...ROAD_KINDS.map((k) => h('button', { class: 'ps-seg-btn', type: 'button', 'aria-pressed': String(road.kind === k.id), dataset: { ps: `hardstand-road-kind-${k.id}` }, onclick: () => ctl()?.setRoadKind?.(road.id, k.id) }, k.label))),
+        widthInput(road.widthMm, (v) => ctl()?.setRoadWidth?.(road.id, v), roadKind(road.kind).minMm, roadKind(road.kind).maxMm, 'hardstand-selected-width')));
+    }
     // Selected area
     const picked = ctl()?.selectedArea?.() || sum.drawn.find((d) => d.id === hsState.selected) || null;
     if (picked) {
@@ -67,6 +103,8 @@ export function hardstandPanel(ctx) {
         prompts[0] ? h('p', { class: 'ps-hint', style: { margin: '8px 0 0' }, dataset: { ps: 'hardstand-marking-prompt' } }, prompts[0].text, ' ', button('Add marking', () => commercialEdit(store, 'Add line marking', (cc) => addPromptMarking(cc, prompts[0])), { title: 'Adds one arrow or keep clear box to the plan' })) : null));
     }
 
+    const removed = (c.siteRemoved?.ids?.length || 0) + (c.siteRemoved?.kinds?.length || 0);
+    if (removed) root.append(h('p', { class: 'ps-hint', dataset: { ps: 'hardstand-restore' } }, `${removed} generated item${removed === 1 ? '' : 's'} removed. `, button('Restore all', () => restoreSiteWorksIn(store), { title: 'Bring back every generated road, aisle, footpath and apron' })));
     // Drawn areas
     const list = h('div', { class: 'ps-radio-row', dataset: { ps: 'hardstand-list' } });
     if (!sum.drawn.length) list.append(h('p', { class: 'ps-hint', style: { margin: 0 } }, 'Nothing drawn yet. Pick a mode and drag across the plan.'));

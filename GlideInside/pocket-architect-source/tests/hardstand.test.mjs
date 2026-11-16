@@ -403,7 +403,7 @@ test('edit: clicking empty ground deselects and lets the host pan; Escape desele
   assert.equal(ctl.keyDown({ key: 'f' }), true); assert.equal(hsState.mode, 'fill');
   assert.equal(ctl.keyDown({ key: 'r' }), true); assert.equal(hsState.mode, 'rect');
   assert.equal(ctl.keyDown({ key: 'v' }), true); assert.equal(hsState.mode, 'edit');
-  assert.deepEqual(HS_MODES.map((m) => m.id), ['rect', 'poly', 'fill', 'edit']);
+  assert.deepEqual(HS_MODES.map((m) => m.id), ['road', 'rect', 'poly', 'fill', 'edit']);
 });
 
 test('edit: pickPart finds corners before edges', () => {
