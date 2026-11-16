@@ -81,6 +81,19 @@ test('explodeTargets: rooms move away from the centre, floors stack, the roof si
   assert.ok(t2.levels.get([...t2.levels.keys()][1]).roofY > ys[1]);
 });
 
+test('explodeTargets: the selected room stays put on the plan, the others still slide', () => {
+  const p = house();
+  const sel = p.levels[0].rooms.find((r) => /Master/.test(r.name));
+  const t = X.explodeTargets(p, { selectedId: sel.id });
+  assert.deepEqual(t.rooms.get(sel.id), { x: 0, z: 0 });
+  const other = p.levels[0].rooms.find((r) => /Garage/.test(r.name));
+  assert.ok(Math.hypot(t.rooms.get(other.id).x, t.rooms.get(other.id).z) >= X.MIN_GAP - 1e-9);
+  const poses = X.cinematicPoses(p, sel.id, { position: { x: 1, y: 1, z: 1 }, target: { x: 0, y: 0, z: 0 } });
+  const c = { x: poses.roomCentre.x * 1000, z: poses.roomCentre.z * 1000 };
+  const bb = sel.polygon.reduce((a, q) => ({ x0: Math.min(a.x0, q.x), x1: Math.max(a.x1, q.x), y0: Math.min(a.y0, q.y), y1: Math.max(a.y1, q.y) }), { x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9 });
+  assert.ok(c.x >= bb.x0 && c.x <= bb.x1 && c.z >= bb.y0 && c.z <= bb.y1, 'the camera looks at the room where it is');
+});
+
 test('offsetFor: nothing moves at p=0, everything is at its target at p=1, rooms slide only horizontally', () => {
   const p = two();
   const t = X.explodeTargets(p);

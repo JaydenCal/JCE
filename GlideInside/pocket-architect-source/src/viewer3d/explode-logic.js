@@ -76,8 +76,8 @@ export function buildingCentre(project) {
   return { x: (b.minX + b.maxX) / 2, y: (b.minY + b.maxY) / 2 };
 }
 
-// Where every room goes when fully exploded: { centre, levels: Map(levelId -> {index, y, roofY}), rooms: Map(roomId -> {x, z}) } in metres.
-export function explodeTargets(project, { levelGap = LEVEL_GAP, roofLift = ROOF_LIFT, slideK = SLIDE_K, minGap = MIN_GAP } = {}) {
+// Where every room goes when fully exploded (selectedId, the room being edited, stays put): { centre, levels: Map(levelId -> {index, y, roofY}), rooms: Map(roomId -> {x, z}) } in metres.
+export function explodeTargets(project, { levelGap = LEVEL_GAP, roofLift = ROOF_LIFT, slideK = SLIDE_K, minGap = MIN_GAP, selectedId = null } = {}) {
   const centre = buildingCentre(project);
   const levels = new Map();
   const rooms = new Map();
@@ -93,7 +93,8 @@ export function explodeTargets(project, { levelGap = LEVEL_GAP, roofLift = ROOF_
       const ux = d > 0.05 ? dx / d : 0;
       const uz = d > 0.05 ? dz / d : 0;
       const push = d > 0.05 ? minGap : 0;
-      rooms.set(r.id, { x: dx * slideK + ux * push, z: dz * slideK + uz * push });
+      // the room being edited stays where it is (its level still lifts): the others slide away from it
+      rooms.set(r.id, r.id === selectedId ? { x: 0, z: 0 } : { x: dx * slideK + ux * push, z: dz * slideK + uz * push });
     }
   });
   return { centre, levels, rooms, levelGap, roofLift };
@@ -236,7 +237,7 @@ export function explodedExtent(project, targets = explodeTargets(project)) {
 
 // The poses of the cinematic: where the camera starts, the pulled back overview, and the close view of the selected room.
 export function cinematicPoses(project, roomId, base, { fov = 38, aspect = 1.6, azimuthDeg = 38 } = {}) {
-  const targets = explodeTargets(project);
+  const targets = explodeTargets(project, { selectedId: roomId });
   const ext = explodedExtent(project, targets);
   const overview = poseAround(ext.centre, fitDistance(ext.radius, { fov, aspect }), azimuthDeg, 30);
   const found = findRoom(project, roomId);

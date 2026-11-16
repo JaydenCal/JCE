@@ -29,7 +29,7 @@ export const TOOLS = [
   { id: 'door', label: 'Door', hint: 'Hover a wall to see the door, click to place it.' },
 ];
 
-export function createEdit({ rootEl, canvas, scene, camera, controls, store, catalogue, getModel, pickAt, invalidate, getMode, isActive, suspended = () => false, keysOk = () => true }) {
+export function createEdit({ rootEl, canvas, scene, camera, controls, store, catalogue, getModel, pickAt, invalidate, getMode, isActive, suspended = () => false, keysOk = () => true, guard = null }) {
   let enabled = false;
   let pinned = false; // selection outline kept on while Edit is off (an item just placed)
   let pinTimer = null;
@@ -163,7 +163,8 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
   overlay.add(rectFill);
   let selHelper = null;
 
-  const levelElev = (level) => (level ? level.elevation / 1000 : 0);
+  // In room edit mode the floors are lifted apart: guard.lift(levelId) is how far that level is raised right now (metres).
+  const levelElev = (level) => (level ? level.elevation / 1000 + (guard?.lift?.(level.id) || 0) : 0);
 
   // Pointer maths --------------------------------------------------------------------------------
   function rayAt(clientX, clientY) {
@@ -182,6 +183,8 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
   }
   const activeLevel = () => store.level();
   const canInteract = () => isActive() && getMode() === 'orbit' && !suspended();
+  // Room edit mode (room-edit.js) installs a guard: only things that belong to the room being edited can be picked, dragged or deleted.
+  const touchable = (hit) => !guard || guard.canTouch(hit);
   const canEdit = () => enabled && canInteract();
 
   // The selected furniture, tank or stairs (as store.find returns it), or null.
@@ -398,6 +401,18 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
       if (selHelper) selHelper.visible = true;
       return false;
     }
+    if (guard) {
+      const chk = d.kind === 'wall' ? guard.checkWallMove?.(d.id, d.dx, d.dy) : guard.checkItemMove?.(d.kind, d.id, d.pos);
+      if (chk && chk.ok === false) {
+        d.objs.forEach((o, i) => o.position.copy(d.bases[i]));
+        if (selHelper) selHelper.visible = true;
+        say(chk.error || 'That change is not allowed here.', { error: true });
+        updateBar();
+        invalidate();
+        return false;
+      }
+      if (chk?.warnings?.length) say(chk.warnings.join(' '), { ms: 7000 });
+    }
     try {
       if (d.kind === 'furniture') store.run('update_furniture', { id: d.id, x: d.pos.x, y: d.pos.y });
       else if (d.kind === 'tank') store.run('update_tank', { id: d.id, x: d.pos.x, y: d.pos.y });
@@ -422,13 +437,13 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
       // Edit is off: only furniture, tanks and stairs can be picked up. Anything else is left to the orbit
       // controls and the finish picker.
       first = pickAt(e.clientX, e.clientY);
-      if (!first || !MOVABLE.includes(first.kind)) return;
+      if (!first || !MOVABLE.includes(first.kind) || !touchable(first)) return;
     }
     press = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId, moved: false, took: false, hit: null };
     if (tool === 'select') {
       const hit = first || pickAt(e.clientX, e.clientY);
       press.hit = hit && !hit.ground ? hit : null;
-      if (hit && (MOVABLE.includes(hit.kind) || (enabled && hit.kind === 'wall'))) {
+      if (hit && touchable(hit) && (MOVABLE.includes(hit.kind) || (enabled && hit.kind === 'wall'))) {
         const level = store.project.levels.find((l) => l.id === hit.levelId) || activeLevel();
         const y = hit.kind === 'tank' ? levelElev(store.project.levels[0]) : hit.kind === 'wall' ? hit.point.y : levelElev(level);
         const plan = planeAt(e.clientX, e.clientY, y);
@@ -566,8 +581,11 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
     lastClickT = now;
     if (tool === 'select') {
       const hit = p.hit;
-      if (hit && hit.kind !== 'roof') store.select(hit.id);
-      else store.select(null);
+      if (hit && hit.kind !== 'roof' && touchable(hit)) store.select(hit.id);
+      else {
+        if (hit && guard?.onLocked) guard.onLocked(hit);
+        store.select(null);
+      }
       return;
     }
     if (tool === 'wall') {
@@ -655,7 +673,7 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
     const level = activeLevel();
     const hit = pickAt(cx, cy);
     let wall = null;
-    if (hit && (hit.kind === 'wall' || hit.kind === 'opening') && hit.levelId === level.id) {
+    if (hit && (hit.kind === 'wall' || hit.kind === 'opening') && hit.levelId === level.id && touchable(hit)) {
       const wid = hit.kind === 'wall' ? hit.id : hit.wallId;
       wall = level.walls.find((w) => w.id === wid) || null;
     }
@@ -751,6 +769,7 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
     }
   }
   function rotateSelected(found, deg) {
+    if (!touchable({ kind: found.kind, id: found.item.id })) return null;
     const rot = nextRotation(found.item.rotation, deg);
     try {
       store.run(found.kind === 'stair' ? 'update_stair' : 'update_furniture', { id: found.item.id, rotation: rot });
@@ -761,6 +780,7 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
     }
   }
   function deleteSelected(found) {
+    if (!touchable({ kind: found.kind, id: found.item.id })) return false;
     try {
       store.run('delete', { id: found.item.id });
       return true;
@@ -788,6 +808,11 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
     canvas.style.cursor = tool === 'select' ? '' : 'crosshair';
     if (enabled) say(TOOLS.find((t) => t.id === tool).hint, { ms: 7000 });
     invalidate();
+  }
+  // Room edit limits the tools to the ones that make sense inside one room (no new walls or rooms).
+  function setToolsAllowed(ids) {
+    for (const b of toolsEl.querySelectorAll('[data-tool]')) b.hidden = !!ids && !ids.includes(b.dataset.tool);
+    if (ids && !ids.includes(tool)) setTool(ids[0] || 'select');
   }
   function setEnabled(on) {
     on = !!on && getMode() === 'orbit';
@@ -882,6 +907,8 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
     },
     setEnabled,
     setTool,
+    setToolsAllowed,
+    say,
     pinSelection,
     onModeChange,
     onRebuild: refreshSelection,
