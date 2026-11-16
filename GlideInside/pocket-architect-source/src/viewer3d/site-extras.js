@@ -113,7 +113,7 @@ function sampleLine(line, step = 1.5) {
   return Array.from({ length: n + 1 }, (_, i) => ({ x: a.x + ((b.x - a.x) * i) / n, y: a.y + ((b.y - a.y) * i) / n }));
 }
 
-export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = null } = {}) {
+export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = null, realAerial = false } = {}) {
   const lot = project.site?.lot;
   if (!lot?.boundary?.length) return null;
   const group = new THREE.Group();
@@ -448,7 +448,8 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   // 6. Neighbouring houses and trees --------------------------------------------------------------------------------------------
   const nbRings = [lot.boundary, ...(lot.neighbours || []).filter((n) => !n.isRoad && n.ring?.length > 2).map((n) => n.ring)];
   const rings = nbRings.map((r) => r.map(asArr));
-  const housesOn = lot.source === 'sample' ? layerOn(lot, 'houses') : lot.layers?.houses === true;
+  // With a real aerial under the scene the photograph already shows the existing houses, so no stand-in houses are drawn (owner 16/11/2026).
+  const housesOn = !realAerial && (lot.source === 'sample' ? layerOn(lot, 'houses') : lot.layers?.houses === true);
   const treeSpots = [];
   // Around a commercial site the neighbours are drawn as plain industrial sheds, not houses.
   if (housesOn) (project.mode === 'commercial' ? buildNeighbourSheds : buildNeighbourHouses)(group, rings, H, stats, treeSpots);
