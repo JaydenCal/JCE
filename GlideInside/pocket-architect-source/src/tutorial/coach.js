@@ -3,7 +3,8 @@
 import { h } from '../ui/dom.js';
 import { tutorialFor, readTutorial, writeTutorial, shouldStartTutorial, stepIndexForFlow } from './steps.js';
 
-const AVOID = '.gf-stage,.gf-3d,.lc-card,[data-ps="lot-card"],.ps-stage canvas';
+const AVOID_FLOW = '.gf-stage,.gf-3d';
+const AVOID_EDITOR = '.lc-card,[data-ps="lot-card"],.ps-stage canvas';
 export const CSS = `
 .tut-card{position:fixed;z-index:2147483000;width:260px;box-sizing:border-box;padding:12px 14px;border-radius:12px;background:#12263a;color:#fff;font:500 13px/1.4 system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35)}
 .tut-card[hidden]{display:none}
@@ -13,7 +14,7 @@ export const CSS = `
 .tut-skip{margin-left:auto;border:0!important;text-decoration:underline;padding:6px 0!important}
 .tut-arrow{position:absolute;width:12px;height:12px;background:#12263a;transform:rotate(45deg)}
 .tut-hl{outline:2px solid #c7a256;outline-offset:3px;border-radius:6px}
-@media (max-width:600px){.tut-card{left:8px!important;right:8px;top:auto!important;bottom:8px;width:auto}.tut-arrow{display:none}}
+@media (max-width:600px){.tut-card{left:8px!important;right:8px;top:auto!important;bottom:8px!important;width:auto}.tut-arrow{display:none}}
 `;
 
 /** Where to put a card of size (w,h) beside rect r inside the viewport, avoiding the rects in `avoid`. Returns { left, top, side } or null (use the bottom sheet). Pure. */
@@ -21,9 +22,9 @@ export function placeBeside(r, size, view, avoid = []) {
   const gap = 14;
   const hit = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
   const tries = [
+    ['below', r.left + r.width / 2 - size.w / 2, r.bottom + gap + 24],
     ['right', r.right + gap, r.top + r.height / 2 - size.h / 2],
     ['left', r.left - gap - size.w, r.top + r.height / 2 - size.h / 2],
-    ['below', r.left + r.width / 2 - size.w / 2, r.bottom + gap],
     ['above', r.left + r.width / 2 - size.w / 2, r.top - gap - size.h],
   ];
   for (const [side, x, y] of tries) {
@@ -78,9 +79,10 @@ export function createTutorial({ getFlow = () => null, storage } = {}) {
     const t = document.querySelector(s.target);
     hl = t; t?.classList.add('tut-hl');
     el.hidden = false;
+    if (innerWidth <= 600) { el.style.left = el.style.top = el.style.bottom = ''; arrow.style.display = 'none'; return; } // bottom sheet (CSS)
     if (!t) { el.style.left = '8px'; el.style.top = 'auto'; el.style.bottom = '8px'; arrow.style.display = 'none'; return; }
     const r = t.getBoundingClientRect();
-    const avoid = [...document.querySelectorAll(AVOID)].map((n) => n.getBoundingClientRect()).filter((b) => b.width > 40 && b.height > 40);
+    const avoid = [...document.querySelectorAll(document.querySelector('[data-ps="flow-root"]:not([hidden])') ? AVOID_FLOW : AVOID_EDITOR)].map((n) => n.getBoundingClientRect()).filter((b) => b.width > 40 && b.height > 40);
     const pos = placeBeside(r, { w: el.offsetWidth || 260, h: el.offsetHeight || 120 }, { w: innerWidth, h: innerHeight }, avoid);
     el.style.bottom = 'auto';
     if (!pos) { el.style.left = '8px'; el.style.top = 'auto'; el.style.bottom = '8px'; arrow.style.display = 'none'; return; }
