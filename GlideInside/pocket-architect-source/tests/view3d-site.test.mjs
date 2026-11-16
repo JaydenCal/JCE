@@ -438,3 +438,19 @@ test('terrain: without a wide texture (or an old project) the build is as before
   addSiteTerrain(ctx, b, q, { texture: new THREE.Texture(), wideTexture: new THREE.Texture() });
   assert.equal(b.getObjectByName('site-terrain-wide'), undefined);
 });
+
+import { kerbDropScale, sampleLineWithBreaks } from '../src/viewer3d/site-extras.js';
+test('kerb drops across a crossover span and ramps back', () => {
+  assert.equal(kerbDropScale(5, null), 1);
+  assert.equal(kerbDropScale(10, [8, 12]), 0);
+  assert.equal(kerbDropScale(8, [8, 12]), 0);
+  near(kerbDropScale(7.7, [8, 12], 0.6), 0.5);
+  assert.equal(kerbDropScale(3, [8, 12]), 1);
+});
+test('sampleLineWithBreaks puts vertices exactly on the cut distances', () => {
+  const pts = sampleLineWithBreaks([{ x: 0, y: 0 }, { x: 20000, y: 0 }], 1.5, [8.2, 12.1, 99]);
+  for (const d of [8200, 12100]) assert.ok(pts.some((p) => Math.abs(p.x - d) < 1e-6), `vertex at ${d}`);
+  assert.equal(pts[0].x, 0);
+  assert.equal(pts.at(-1).x, 20000);
+  assert.ok(pts.every((p, i) => i === 0 || p.x > pts[i - 1].x));
+});

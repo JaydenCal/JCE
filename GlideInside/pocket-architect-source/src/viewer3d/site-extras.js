@@ -113,6 +113,25 @@ function sampleLine(line, step = 1.5) {
   return Array.from({ length: n + 1 }, (_, i) => ({ x: a.x + ((b.x - a.x) * i) / n, y: a.y + ((b.y - a.y) * i) / n }));
 }
 
+/** Sample a plan line every ~step metres and also at the given distances (metres from the start), so a cut lands exactly on a vertex. */
+export function sampleLineWithBreaks(line, step = 1.5, breaks = []) {
+  const [a, b] = line;
+  const len = Math.hypot(b.x - a.x, b.y - a.y) / 1000;
+  const ts = new Set();
+  const n = Math.max(1, Math.ceil(len / step));
+  for (let i = 0; i <= n; i++) ts.add(i / n);
+  for (const d of breaks) if (len > 0 && d > 0 && d < len) ts.add(d / len);
+  return [...ts].sort((x, y) => x - y).map((t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }));
+}
+
+/** Height scale (0 = fully dropped, 1 = full kerb) at distance d metres along the kerb for a driveway crossover spanning [s0, s1] metres, with a ramp each side. */
+export function kerbDropScale(d, span, ramp = 0.6) {
+  if (!span) return 1;
+  if (d >= span[0] && d <= span[1]) return 0;
+  const k = d < span[0] ? span[0] - d : d - span[1];
+  return Math.min(1, k / ramp);
+}
+
 export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = null, realAerial = false } = {}) {
   const lot = project.site?.lot;
   if (!lot?.boundary?.length) return null;
@@ -153,6 +172,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   
   // 1. Road, kerb, footpath ------------------------------------------------------------------------------------------------
   const reserves = layerOn(lot, 'road') ? roadReserve(lot, { extendM: 60 }) /* 16/11/2026: 400 m tails crossed large lots as phantom roads */ : [];
+  const dw = layerOn(lot, 'driveway') ? deriveDriveway(project) : null;
   const streetDirs = [];
   if (reserves.length && extent) {
     const b = new GeoBuilder();
@@ -165,48 +185,44 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       const S = (k, step = 1.5) => sampleLine(lines[k], step);
       // carriageway and the gutter strip
       strip(b, 'asphalt', S('gutter'), S('farGutter'), 0.025, 6, 1);
-      strip(b, 'gutter', S('kerb', 2), S('gutter', 2), 0.012, 3, 0.15);
-      strip(b, 'gutter', S('farGutter', 2), S('farKerb', 2), 0.012, 3, 0.15);
+      strip(b, 'gutter', S('kerb', 2), S('gutter', 2), 0.015, 3, 0.15, 0.025); // lip meets the asphalt edge flush
+      strip(b, 'gutter', S('farGutter', 2), S('farKerb', 2), 0.025, 3, 0.15, 0.015);
       // roll top kerb: profile across the line (t metres out from the kerb face towards the property, height m)
       const prof = [[0, 0.015], [0.015, 0.1], [0.06, 0.145], [0.13, 0.155], [0.2, 0.14], [0.25, 0.09], [0.3, 0.045], [0.34, 0.03]];
-      const kerbLine = (name, dir) => {
-        const pts = S(name, 1.5);
-        const out = prof.map(([t, h]) => ({ off: t * dir, h }));
-        for (let k = 0; k + 1 < out.length; k++) {
-          const u = r.outward;
+      // The driveway crossover drops the near kerb (layback): span of the crossover along the street, metres from the kerb line's start.
+      let drop = null;
+      if (dw?.ok && dw.crossover?.polygon?.length && dw.edge === r.edge) {
+        const k0 = lines.kerb[0];
+        const ds = dw.crossover.polygon.map((p) => ((p.x - k0.x) * r.u.x + (p.y - k0.y) * r.u.y) / 1000);
+        drop = [Math.min(...ds), Math.max(...ds)];
+      }
+      // sg: +1 near kerb (profile runs back towards the property), -1 far kerb (profile runs out to the far verge)
+      const kerbLine = (name, sg, span) => {
+        const pts = sampleLineWithBreaks(lines[name], 1.5, span ? [span[0] - 0.6, span[0], span[1], span[1] + 0.6] : []);
+        const k0 = lines[name][0];
+        const along = pts.map((p) => ((p.x - k0.x) * r.u.x + (p.y - k0.y) * r.u.y) / 1000);
+        const u = r.outward;
+        for (let k = 0; k + 1 < prof.length; k++) {
           for (let i = 0; i + 1 < pts.length; i++) {
-            const P = (p, o) => [(p.x - u.x * o.off * 1000) / 1000, 0, (p.y - u.y * o.off * 1000) / 1000];
-            const p0 = P(pts[i], out[k]);
-            const p1 = P(pts[i + 1], out[k]);
-            const q0 = P(pts[i], out[k + 1]);
-            const q1 = P(pts[i + 1], out[k + 1]);
-            p0[1] = H(p0[0], p0[2]) + out[k].h;
-            p1[1] = H(p1[0], p1[2]) + out[k].h;
-            q0[1] = H(q0[0], q0[2]) + out[k + 1].h;
-            q1[1] = H(q1[0], q1[2]) + out[k + 1].h;
+            const P = (p, t, h, sc) => {
+              const o = [(p.x - u.x * sg * t * 1000) / 1000, 0, (p.y - u.y * sg * t * 1000) / 1000];
+              // dropped kerb: height falls to the gutter lip and the roll flattens
+              o[1] = H(o[0], o[2]) + 0.015 + (h - 0.015) * sc;
+              return o;
+            };
+            const sa = kerbDropScale(along[i], span);
+            const sb = kerbDropScale(along[i + 1], span);
+            if (sa === 0 && sb === 0) continue;
+            const p0 = P(pts[i], prof[k][0], prof[k][1], sa);
+            const p1 = P(pts[i + 1], prof[k][0], prof[k][1], sb);
+            const q0 = P(pts[i], prof[k + 1][0], prof[k + 1][1], sa);
+            const q1 = P(pts[i + 1], prof[k + 1][0], prof[k + 1][1], sb);
             b.quad('kerb', p0, p1, q1, q0, undefined, [0, 1, 0]);
           }
         }
       };
-      kerbLine('kerb', 1);
-      // far kerb mirrors it (profile towards the far verge)
-      {
-        const pts = S('farKerb', 1.5);
-        for (let k = 0; k + 1 < prof.length; k++) {
-          for (let i = 0; i + 1 < pts.length; i++) {
-            const P = (p, t) => [(p.x + r.outward.x * t * 1000) / 1000, 0, (p.y + r.outward.y * t * 1000) / 1000];
-            const p0 = P(pts[i], prof[k][0]);
-            const p1 = P(pts[i + 1], prof[k][0]);
-            const q0 = P(pts[i], prof[k + 1][0]);
-            const q1 = P(pts[i + 1], prof[k + 1][0]);
-            p0[1] = H(p0[0], p0[2]) + prof[k][1];
-            p1[1] = H(p1[0], p1[2]) + prof[k][1];
-            q0[1] = H(q0[0], q0[2]) + prof[k + 1][1];
-            q1[1] = H(q1[0], q1[2]) + prof[k + 1][1];
-            b.quad('kerb', p0, p1, q1, q0, undefined, [0, 1, 0]);
-          }
-        }
-      }
+      kerbLine('kerb', 1, drop);
+      kerbLine('farKerb', -1, null);
       // footpath: between the near and far footpath lines
       strip(b, 'path', S('footpathNear', 2), S('footpathFar', 2), 0.04, 1.5, 1);
       // crisp white edge lines, 0.35 m in from each gutter
@@ -241,7 +257,6 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   }
 
   // 2. Driveway, crossover, path to the front door ------------------------------------------------------------------------
-  const dw = layerOn(lot, 'driveway') ? deriveDriveway(project) : null;
   const gravelDrive = (G.polygonArea(lot.boundary) || 0) / 1e6 >= 4000; // rural lots get a gravel drive
   const driveCentres = [];
   const drivePolys = [];
