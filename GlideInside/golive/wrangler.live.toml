@@ -23,10 +23,10 @@ cpu_ms = 30000
 [vars]
 SITE_URL = "https://glideinside.com.au"                    # the site origin. Used for CORS (one origin only, no www).
 APP_URL = "https://glideinside.com.au/plan-studio/app/"     # where Stripe sends people after paying
-ANTHROPIC_MODEL = "claude-haiku-5-5"                       # confirm the model ID before go-live
-PRICE_IN_PER_MTOK_USD = "0.10"
-PRICE_OUT_PER_MTOK_USD = "0.50"
-AI_MAX_OUTPUT_TOKENS = "1500"
+ANTHROPIC_MODEL = "claude-sonnet-5-5"                      # residential assistant upgraded 16/11/2026 (was claude-haiku-5-5)
+PRICE_IN_PER_MTOK_USD = "2"
+PRICE_OUT_PER_MTOK_USD = "10"
+AI_MAX_OUTPUT_TOKENS = "3000"
 AI_MAX_CONTEXT_TOKENS = "40000"
 CREDIT_USD = "0.001"
 PLAN_PACK_CREDITS = "500"
