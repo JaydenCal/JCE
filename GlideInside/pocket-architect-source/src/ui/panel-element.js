@@ -107,6 +107,12 @@ export function buildElementForm(ctx, found) {
       clear: () => ctx.apply('Clear floor finish', () => { cur().floor = null; }),
     });
     if (floorFinish) root.append(h('div', { class: 'ps-sec-title', style: { margin: '12px 0 6px' } }, 'Floor finish'), floorFinish);
+    if (ctx.editRoom3d && !r.outdoor) {
+      root.append(
+        h('div', { class: 'ps-sec-title', style: { margin: '12px 0 6px' } }, 'Room edit'),
+        button('Edit in 3D, building opened up', () => ctx.editRoom3d(id), { title: 'Opens the 3D view, pulls the building apart and locks every other room while you edit this one' }),
+      );
+    }
     remove('room');
   } else if (kind === 'wall') {
     const w = found.item;
