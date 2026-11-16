@@ -104,6 +104,15 @@ export function deriveFrontage(lot) {
     const parcels = facts.filter((f) => f.roadParcel >= 0.5).map((f) => f.index);
     if (parcels.length) { front = parcels; method = 'roads'; }
   }
+  // No road information at all (no road parcel, no centreline) and several open edges: the neighbour search only reaches about 60 m, so on a
+  // big lot nearly every edge looks like "no lot beyond". Suggest only the longest open edge as the street frontage (a street is one long
+  // straight run); the person can still tick more edges. 16/11/2026: stops roads being drawn around every side of a large lot.
+  if (!hasRoadInfo && method === 'no-lot-beyond' && front.length > 2) {
+    const open = front.map((i) => facts[i]);
+    const longestOpen = open.reduce((a, b) => (b.length > a.length ? b : a));
+    front = [longestOpen.index];
+    method = 'longest-open-edge';
+  }
   if (!front.length) {
     const longest = facts.reduce((a, b) => (b.length > a.length ? b : a));
     front = [longest.index];

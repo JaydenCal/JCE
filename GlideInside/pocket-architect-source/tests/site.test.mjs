@@ -465,3 +465,14 @@ test('the PDF footer carries the site credits when a lot is present', async () =
   toPDF(createProject(), { jsPDF: Spy });
   assert.doesNotMatch(seen.join('\n'), /Site data:/);
 });
+
+test('frontage: a big lot with no road data gets one street edge, not one per open edge (369 Shaw Road)', () => {
+  // Shape of Lot 16 SP 232874: seven open edges, one shared with a lot, no road centrelines or road parcels returned.
+  const ring = [[-75.958, 259.211], [168.656, 170.479], [169.728, -252.738], [66.857, -243.176], [40.748, -240.748], [-203.445, -90.255], [-217.265, -11.502], [-228.532, 11.653]];
+  const boundary = ring.map(([x, y]) => ({ x: x * 1000, y: -y * 1000 }));
+  const lot = { boundary, neighbours: [], roads: [] };
+  const r = deriveFrontage(lot);
+  assert.equal(r.frontEdges.length, 1);
+  assert.equal(r.method, 'longest-open-edge');
+  assert.equal(r.cornerLot, false);
+});
