@@ -45,6 +45,7 @@ export function labelFor(family, size, count, units = null) {
   if (family === 'b2b') return `Back to back with loop road, ${count * 2} units`;
   if (family === 'double') return `Two rows facing a central driveway, ${count * 2} units`;
   if (family === 'u') return `U shape around a court, ${units ?? count * 2} units`;
+  if (family === 'wide') return `Row across the frontage, ${count} unit${count === 1 ? '' : 's'}`;
   return `Single row, ${count} unit${count === 1 ? '' : 's'}`;
 }
 
@@ -81,7 +82,7 @@ export function naturalAngle(lot) {
 
 // Search --------------------------------------------------------------------------------------------------------------------------------
 const nMaxFor = (family, w, d) => {
-  if (family === 'single' || family === 'large') return Math.min(20, MAX_UNITS);
+  if (family === 'single' || family === 'large' || family === 'wide') return Math.min(20, MAX_UNITS);
   if (family === 'u') return Math.max(1, Math.floor((MAX_UNITS - Math.ceil(18000 / w)) / 2));
   return MAX_UNITS / 2;
 };
@@ -137,7 +138,7 @@ function search(project, lot, family, w, d, { fixed = null, verify = null } = {}
 const labelOf = (c, id) => (id === BEST_ID ? labelBest(c) : labelFor(c.family === 'large' ? 'single' : c.family, c.family === 'large' ? 'large' : 'std', c.n, c.units));
 function labelBest(c) {
   const k = c.family === 'single' || c.family === 'large' ? 1 : c.family === 'u' ? 3 : 2;
-  const what = { single: 'Single row', large: 'Single row', double: 'Two rows facing a central driveway', b2b: 'Back to back with loop road', u: 'U shape around a court' }[c.family];
+  const what = { single: 'Single row', large: 'Single row', wide: 'Row across the frontage', double: 'Two rows facing a central driveway', b2b: 'Back to back with loop road', u: 'U shape around a court' }[c.family];
   void k;
   return `${what}, ${c.units} units`;
 }
@@ -201,6 +202,14 @@ export function chooseLayout(project, id = BEST_ID) {
     for (const d of BF_DEPTHS) for (const w of BF_WIDTHS) {
       if (Date.now() - t0 > 9000) break;
       const r = search(project, lot, family, w, d, { verify });
+      if (r?.ok) found.push(r.cand);
+    }
+  }
+  // Nothing stood beside a drive (a narrow lot): try the row across the frontage before saying the block is too small.
+  if (!found.length) {
+    for (const d of BF_DEPTHS) for (const w of BF_WIDTHS) {
+      if (Date.now() - t0 > 9000) break;
+      const r = search(project, lot, 'wide', w, d, { verify });
       if (r?.ok) found.push(r.cand);
     }
   }
