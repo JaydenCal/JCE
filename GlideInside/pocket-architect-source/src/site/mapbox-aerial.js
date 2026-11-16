@@ -218,6 +218,9 @@ export async function loadAerialForLot({ lot, frame, bbox, marginM = 30, wideM =
   const warnings = [];
   const centre = frameToLonLat(frame, (bbox.minE + bbox.maxE) / 2, (bbox.minN + bbox.maxN) / 2);
   const choice = chooseAerialSource({ lon: centre.lon, lat: centre.lat, token, forceMapbox });
+  // Large sites get a proportionally wider sharp aerial around the lot (owner 16/11/2026), up to 300 m each side.
+  const lotSpan = Math.max(bbox.maxE - bbox.minE, bbox.maxN - bbox.minN);
+  marginM = Math.max(marginM, Math.min(300, lotSpan * 0.4));
   const inner = { minE: bbox.minE - marginM, minN: bbox.minN - marginM, maxE: bbox.maxE + marginM, maxN: bbox.maxN + marginM };
   const span = Math.max(inner.maxE - inner.minE, inner.maxN - inner.minN);
   const m = Math.min(700, Math.max(wideM, span * 0.75));
@@ -237,7 +240,8 @@ export async function loadAerialForLot({ lot, frame, bbox, marginM = 30, wideM =
       if (stateFetch && frame.kind === 'mga') {
         const common = { state: choice.source.toUpperCase(), srid: String(lot.srid), origin: `${lot.origin.e},${lot.origin.n}` };
         try {
-          const innerPic = await stateFetch({ ...common, bbox: `${inner.minE},${inner.minN},${inner.maxE},${inner.maxN}` });
+          const innerSpan = Math.max(inner.maxE - inner.minE, inner.maxN - inner.minN);
+          const innerPic = await stateFetch({ ...common, bbox: `${inner.minE},${inner.minN},${inner.maxE},${inner.maxN}`, ...(innerSpan > 400 ? { res: String(Math.min(1, innerSpan / 4096).toFixed(3)), maxpx: '4096' } : {}) });
           let wideOut = null;
           try { wideOut = await stateFetch({ ...common, bbox: `${wide.minE},${wide.minN},${wide.maxE},${wide.maxN}`, res: String(Math.min(2, Math.max(0.1, (wide.maxE - wide.minE) / 2048)).toFixed(3)), maxpx: '2048' }); } catch (e) { if (e?.name === 'AbortError') throw e; }
           return { aerial: innerPic, aerialWide: wideOut, source, warnings };

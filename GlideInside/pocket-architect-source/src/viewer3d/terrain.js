@@ -261,7 +261,7 @@ const AERIAL_BLEND = 0.08;
 // Owner 16/11/2026: with Aerial on, the real photograph shows in full on and around our lot and fades out with distance into the
 // clean lawn and paddock look (a fade scale), so the lot reads as the real site while the far ground stays tidy.
 const AERIAL_NEAR_MIN_M = 70; // full photograph out to at least this far from the lot centre
-const AERIAL_FAR_FACTOR = 2.2; // fully faded to the subtle blend at this multiple of the near radius
+const AERIAL_FAR_FACTOR = 1.7; // fully faded to the subtle blend at this multiple of the near radius
 function lawnGroundMaterial(ctx, lot, ext, aerial = null) {
   if (typeof document === 'undefined') return null;
   const base = ctx.lib.get('grass', LAWN_COLOUR);
@@ -306,7 +306,7 @@ function lawnGroundMaterial(ctx, lot, ext, aerial = null) {
   const cx = pts.reduce((a, q) => a + q.x, 0) / Math.max(1, pts.length);
   const cy = pts.reduce((a, q) => a + q.y, 0) / Math.max(1, pts.length);
   const lotR = pts.reduce((a, q) => Math.max(a, Math.hypot(q.x - cx, q.y - cy)), 0) / 1000;
-  const nearR = Math.min(Math.max(AERIAL_NEAR_MIN_M, lotR * 2.5), Math.min(w, h) * 0.32); // out past the site, fading before the photograph's edge
+  const nearR = Math.max(AERIAL_NEAR_MIN_M, lotR * 1.15); // the whole lot and a margin past it in full, on large sites too
   const fadeC = new THREE.Vector2((cx - ext.x0) / 1000 / w, 1 - (cy - ext.y0) / 1000 / h);
   mat.onBeforeCompile = (shader) => {
     shader.uniforms.uLotMask = { value: mask };

@@ -152,7 +152,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   };
   
   // 1. Road, kerb, footpath ------------------------------------------------------------------------------------------------
-  const reserves = layerOn(lot, 'road') ? roadReserve(lot, { extendM: 400 }) : [];
+  const reserves = layerOn(lot, 'road') ? roadReserve(lot, { extendM: 60 }) /* 16/11/2026: 400 m tails crossed large lots as phantom roads */ : [];
   const streetDirs = [];
   if (reserves.length && extent) {
     const b = new GeoBuilder();
