@@ -11,6 +11,7 @@ import { deleteRow } from './row-ops.js';
 import { buildingsOf } from '../catalogue/buildings.js';
 import { buildingHandle } from '../catalogue/draw2d.js';
 import { deleteBuilding, moveBuilding } from '../catalogue/ops.js';
+import { slideEstate } from '../estate.js';
 
 const DRAG_START_PX = 3;
 const HANDLE_PX = 16;
@@ -84,7 +85,11 @@ export function createCommercialTool(ed) {
   };
   const angleAt = (ev, centre) => { const c = ed.toScreen(centre); return (Math.atan2(ev.screen.y - c.y, ev.screen.x - c.x) * 180) / Math.PI; };
 
-  const moveRow = (p, id, x, y) => { const r = p.commercial.rows.find((q) => q.id === id); r.x = x; r.y = y; regenerate(p); };
+  const moveRow = (p, id, x, y) => {
+    const r = p.commercial.rows.find((q) => q.id === id);
+    if (slideEstate(p, x - r.x, y - r.y)) { regenerate(p); return; } // a drawn estate moves as one piece
+    r.x = x; r.y = y; regenerate(p);
+  };
   const turnRow = (p, id, deg, base) => {
     const r = p.commercial.rows.find((q) => q.id === id);
     r.rotationDeg = base + deg; regenerate(p);

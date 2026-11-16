@@ -449,3 +449,47 @@ export const SPECS = Object.freeze({
   std: (w, d) => ({ w, d, h: 6000 }),
   large: () => ({ w: 10000, d: 30000, h: 8000, doors: { presetId: '4.5x5.0', widthMm: 4500, heightMm: 5000 }, plain: true }),
 });
+
+/**
+ * Slide a drawn estate (rows, bays, entrance, aisles, paving and footpaths) along the street frontage as one piece, so its pavement network
+ * stays connected and its entrance stays on the frontage. `p` is the project (mutated); (dx, dy) is the wanted move in plan mm, of which only
+ * the part along the frontage is used (the estate keeps its depth from the street). Returns the move actually made { dx, dy, ds }, or null when
+ * the layout is not a valid estate (the caller then moves the row alone, as before). 16/11/2026: a moved row used to make the whole network
+ * stale, so aisles, footpaths and entries vanished.
+ */
+export function slideEstate(p, dx, dy) {
+  const c = p?.commercial;
+  const lot = p?.site?.lot;
+  const e = c?.estate;
+  if (!e?.network || !lot?.boundary || e.sig !== rowsSignature(c.rows)) return null;
+  const f = frameOf(lot);
+  let ds = dx * f.u.x + dy * f.u.y;
+  const w = e.network.window;
+  if (w && Number.isFinite(w.s0) && Number.isFinite(w.s1)) {
+    const fp = lot.boundary.map((q) => toFrame(f, q).s);
+    const lo = Math.min(...fp) - w.s0; const hi = Math.max(...fp) - w.s1;
+    if (lo <= hi) ds = Math.max(lo, Math.min(hi, ds));
+  }
+  ds = Math.round(ds);
+  if (!ds) return { dx: 0, dy: 0, ds: 0 };
+  const v = { x: Math.round(f.u.x * ds), y: Math.round(f.u.y * ds) };
+  const mv = (o) => { if (o && Number.isFinite(o.x) && Number.isFinite(o.y)) { o.x += v.x; o.y += v.y; } };
+  const mvPoly = (poly) => { if (Array.isArray(poly)) poly.forEach(mv); };
+  for (const r of c.rows) mv(r);
+  for (const x of c.parking?.extra || []) mv(x);
+  const n = e.network;
+  for (const k of ['paved', 'aprons', 'foot', 'landscape', 'aisles', 'crossovers', 'bayPolys']) {
+    for (const item of n[k] || []) {
+      mvPoly(item.polygon);
+      if (Array.isArray(item.centre)) item.centre.forEach(mv);
+      if (k === 'crossovers') mv(item);
+    }
+  }
+  if (w) { w.s0 += ds; w.s1 += ds; }
+  const bal = w ? balanceOf(w, f, lot) : null;
+  e.balance = bal && bal.polygons.length ? bal : null;
+  e.sig = rowsSignature(c.rows);
+  if (c.layout) c.layout.sig = e.sig;
+  delete c.siteWorks; // the plain site layout is rebuilt from the moved rows
+  return { dx: v.x, dy: v.y, ds };
+}

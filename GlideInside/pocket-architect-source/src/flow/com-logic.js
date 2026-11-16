@@ -15,6 +15,7 @@ import { applyFinishes, finishesOf } from '../commercial/finishes.js';
 import { materialise } from '../commercial/materialise.js';
 import { normaliseCommercial } from '../commercial/schema.js';
 import { rowFrame, rowLength, rowPoly, layoutUnits } from '../commercial/layout.js';
+import { slideEstate } from '../commercial/estate.js';
 import { commercialStats } from '../commercial/stats.js';
 import { feasibility, summaryRows, headlineRows, CAVEAT, feasibilityNotes } from '../commercial/feasibility.js';
 import { commercialStatus } from '../commercial/card-model.js';
@@ -162,7 +163,11 @@ export function moveBy(store, sel, dx, dy) {
     if (b) moveBuilding(store, sel.id, { x: b.place.x + dx, y: b.place.y + dy });
     return;
   }
-  store.apply('Move units', (p) => { const r = p.commercial.rows.find((x) => x.id === sel.id); if (r) { r.x = Math.round(r.x + dx); r.y = Math.round(r.y + dy); } regen(p); });
+  store.apply('Move units', (p) => {
+    // A drawn estate moves as one piece along the frontage so its aisles, footpaths and entry stay connected to the units.
+    if (slideEstate(p, dx, dy)) { regen(p); return; }
+    const r = p.commercial.rows.find((x) => x.id === sel.id); if (r) { r.x = Math.round(r.x + dx); r.y = Math.round(r.y + dy); } regen(p);
+  });
 }
 
 /** Turn a building or a base row by `deg` about its own centre. One undo step. */
