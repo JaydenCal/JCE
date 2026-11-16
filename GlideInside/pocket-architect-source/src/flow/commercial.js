@@ -24,6 +24,10 @@ import { moveBuilding } from '../commercial/catalogue/ops.js';
 import { parkingLayout, doorStrips } from '../commercial/parking.js';
 import { siteAccess } from '../commercial/access.js';
 import { commercialStats } from '../commercial/stats.js';
+import * as RD from '../commercial/catalogue/pavements/roads.js';
+import { pavementById } from '../commercial/catalogue/pavements/pavements.js';
+import { commercialEdit } from '../commercial/mode.js';
+import { removeHardstand } from '../commercial/catalogue/pavements/hardstand.js';
 import { baysText, offsetAlongFront, editAccessIn, REMOVABLE_LABELS, removedKinds, toggleSiteKindIn, restoreSiteWorksIn } from './com-logic.js';
 
 export const COMMERCIAL_BRAND = 'Glide Inside Commercial';
@@ -85,6 +89,9 @@ function mountPlaceStep(ctx) {
   let box = null;
   let selected = null; // { kind, id }
   let notice = '';
+  let pave = null; // selected paving: a generated sw: id or a drawn hs_ id
+  let drawing = null; // { kind, pts, hover } while a road is being drawn
+  let rdrag = null; // a drawn road's point being dragged: { id, index, centre }
 
   const stage = h('div', { class: 'gf-stage', tabindex: '0', role: 'application', 'aria-label': 'Site layout plan. Drag a building to move it. Arrow keys nudge it.', dataset: { ps: 'flow-stage' } });
   const svg = document.createElementNS(NS, 'svg');
@@ -105,6 +112,14 @@ function mountPlaceStep(ctx) {
   const removeBtns = Object.entries(REMOVABLE_LABELS).map(([kind, label]) => mk(`Remove ${label.toLowerCase()}`, () => toggleSiteKindIn(store, kind, `Remove ${label.toLowerCase()}`), `flow-remove-${kind}`, 'gf-btn--sm', { 'aria-pressed': 'false', title: `Take the ${label.toLowerCase()} off the plan. Press again to bring it back.` }));
   const roadsRow = h('div', { class: 'gf-row', style: { gap: '6px', flexWrap: 'wrap' } }, ...removeBtns, mk('Restore all', () => restoreSiteWorksIn(store), 'flow-restore-site', 'gf-btn--sm'));
   const paintRoadsRow = () => { const off = removedKinds(store.project); Object.keys(REMOVABLE_LABELS).forEach((kind, i) => { const on = off.includes(kind); const b = removeBtns[i]; b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.textContent = `${on ? 'Bring back' : 'Remove'} ${REMOVABLE_LABELS[kind].toLowerCase()}`; }); };
+  const drawBtns = RD.ROAD_KINDS.map((k) => mk(`Draw ${k.id === 'pavement' ? 'footpath' : k.id}`, () => startDraw(k.id), `flow-draw-${k.id}`, 'gf-btn--sm', { title: `${k.hint}. Click points, double click to finish.` }));
+  const finishBtn = mk('Finish', () => finishDraw(), 'flow-draw-finish', 'gf-btn--sm');
+  const cancelBtn = mk('Cancel', () => cancelDraw(), 'flow-draw-cancel', 'gf-btn--sm');
+  const paveName = h('div', { class: 'gf-note', style: { margin: '0', fontWeight: '600' }, dataset: { ps: 'flow-pave-name' } });
+  const removePaveBtn = mk('Remove selected paving', () => removePave(), 'flow-remove-paving', 'gf-btn--sm', { title: 'Remove the selected road, aisle, footpath or apron (Delete)' });
+  const editableBtn = mk('Make editable', () => makePaveEditable(), 'flow-make-editable', 'gf-btn--sm', { title: 'Turn the selected generated road into one you can reshape' });
+  const widthSel = h('select', { 'aria-label': 'Road width', dataset: { ps: 'flow-road-width' }, onchange: () => setPaveWidth(Number(widthSel.value)) });
+  const paveRow = h('div', { class: 'gf-row', style: { gap: '6px', flexWrap: 'wrap' } }, paveName, removePaveBtn, editableBtn, h('label', { class: 'gf-note' }, 'Width ', widthSel));
   const side = h('div', { class: 'gf-side' },
     h('div', { class: 'gf-card' }, nameEl, h('div', { style: { height: '8px' } }), statusEl, parkEl),
     h('div', { class: 'gf-card' },
@@ -121,6 +136,9 @@ function mountPlaceStep(ctx) {
       h('div', { style: { height: '8px' } }),
       h('div', { class: 'gf-note', style: { fontWeight: '600' } }, 'Roads and paving'),
       roadsRow,
+      h('div', { class: 'gf-row', style: { gap: '6px', flexWrap: 'wrap', marginTop: '6px' } }, ...drawBtns, finishBtn, cancelBtn),
+      paveRow,
+      h('p', { class: 'gf-note' }, 'Click a road, aisle, footpath or apron on the plan to select it, then remove it. Draw your own road, driveway or footpath: click points, double click to finish. Ends snap to the street, building doors and other roads.'),
       h('p', { class: 'gf-note' }, 'Switch off any road, driveway or paving you do not want. Switch it on again to bring it back.')),
     h('div', { class: 'gf-card' },
       h('div', { class: 'gf-ctl' }, mk('Add building', () => addBuilding(), 'flow-add-building', 'gf-btn--primary'), dupBtn, delBtn),
@@ -143,6 +161,8 @@ function mountPlaceStep(ctx) {
   const line = (a, b, attrs) => set(document.createElementNS(NS, 'line'), { x1: Math.round(a.x), y1: Math.round(a.y), x2: Math.round(b.x), y2: Math.round(b.y), ...attrs });
   const text = (p, t, px, attrs = {}) => { const e = set(document.createElementNS(NS, 'text'), { x: Math.round(p.x), y: Math.round(p.y), 'font-size': Math.round(px * mmPerPx()), 'text-anchor': 'middle', 'font-family': 'system-ui,sans-serif', 'font-weight': '600', ...attrs }); e.textContent = t; return e; };
   const group = (attrs = {}) => set(document.createElementNS(NS, 'g'), attrs);
+  const line2 = (pts, attrs) => set(document.createElementNS(NS, 'polyline'), { points: pts.map((p) => `${Math.round(p.x)},${Math.round(p.y)}`).join(' '), fill: 'none', ...attrs });
+  const paveIdOf = (id) => { const base = String(id).replace(/:pad$/, ''); return RD.siteItemById(store.project.commercial, base) ? base : null; };
   const centroid = (pts) => ({ x: pts.reduce((s, q) => s + q.x, 0) / pts.length, y: pts.reduce((s, q) => s + q.y, 0) / pts.length });
 
   function draw(project = store.project, dragOffset = null) {
@@ -161,7 +181,7 @@ function mountPlaceStep(ctx) {
     const env = Array.isArray(lot.envelope) && lot.envelope.length >= 3 ? lot.envelope : null;
     if (env) svg.append(poly(env, { fill: st.state === 'outside' ? 'rgba(199,119,0,.10)' : 'rgba(23,114,74,.10)', stroke: col, 'stroke-width': Math.round(3 * px), 'stroke-dasharray': `${Math.round(10 * px)} ${Math.round(6 * px)}`, 'data-ps': 'flow-envelope' }));
     const c = project.commercial;
-    const sw = c?.siteWorks;
+    const sw = siteWorksOf(c); // what is left after the person removed roads and paving
     if (sw) {
       for (const l of sw.landscape || []) svg.append(poly(l.polygon, { fill: 'rgba(96,160,96,.45)', stroke: 'none', 'data-ps': 'flow-landscape' }));
       for (const bp of sw.balance?.polygons || []) {
@@ -169,11 +189,11 @@ function mountPlaceStep(ctx) {
         svg.append(text(centroid(bp), 'Balance of lot', 12, { fill: '#4a5142', 'data-ps': 'flow-balance-label' }));
       }
       const fills = { aisle: '#8f9298', apron: '#a9a69b', bays: '#b7babf', footpath: '#d8cfba' };
-      for (const a of pavementAreas(c).filter((x) => String(x.id).startsWith('sw:'))) svg.append(poly(a.polygon, { fill: fills[a.role] || '#999', stroke: 'none', 'data-ps': `flow-paved-${a.role}` }));
-      for (const r of sw.bayRows || []) for (const s of r.slots) svg.append(poly(s.poly, { fill: s.kind === 'accessible' ? 'rgba(27,95,191,.55)' : s.kind === 'zone' ? 'rgba(27,95,191,.2)' : 'rgba(255,255,255,.35)', stroke: '#ffffff', 'stroke-width': Math.round(1.2 * px), 'data-ps': 'flow-bay' }));
+      for (const a of pavementAreas(c).filter((x) => String(x.id).startsWith('sw:'))) { const pid = paveIdOf(a.id); svg.append(poly(a.polygon, { fill: fills[a.role] || '#999', stroke: 'none', 'data-ps': `flow-paved-${a.role}`, ...(pid ? { 'data-pave': pid, style: 'cursor:pointer' } : {}) })); }
+      for (const r of sw.bayRows || []) for (const s of r.slots) svg.append(poly(s.poly, { fill: s.kind === 'accessible' ? 'rgba(27,95,191,.55)' : s.kind === 'zone' ? 'rgba(27,95,191,.2)' : 'rgba(255,255,255,.35)', stroke: '#ffffff', 'stroke-width': Math.round(1.2 * px), 'data-ps': 'flow-bay', 'pointer-events': 'none' }));
       for (const x of sw.crossovers || []) {
         const m = centroid(x.polygon);
-        svg.append(poly(x.polygon, { fill: '#6b6f76', stroke: 'none' }));
+        svg.append(poly(x.polygon, { fill: '#6b6f76', stroke: 'none', 'data-pave': x.id, style: 'cursor:pointer' }));
         svg.append(text({ x: m.x, y: m.y - 5 * px }, x.role === 'in' ? 'ENTRY' : x.role === 'out' ? 'EXIT' : 'ENTRY / EXIT', 10, { fill: '#1d2024', 'data-ps': 'flow-crossover' }));
         // A draggable end: slides along the street frontage.
         const knob = document.createElementNS(NS, 'circle');
@@ -183,13 +203,19 @@ function mountPlaceStep(ctx) {
       }
       for (const a of sw.aisles || []) svg.append(line(a.centre[0], a.centre[1], { stroke: 'rgba(255,255,255,.8)', 'stroke-width': Math.round(1.4 * px), 'stroke-dasharray': `${Math.round(8 * px)} ${Math.round(6 * px)}` }));
     }
+    // Roads, driveways, footpaths and areas the person drew (on top of the generated paving).
+    for (const a of pavementAreas(c || {}).filter((x) => x.role === 'hardstand')) {
+      const id = String(a.id).split('~')[0];
+      svg.append(poly(a.polygon, { fill: pavementById(a.type)?.colour || '#999', stroke: '#6a6d72', 'stroke-width': Math.round(1 * px), 'data-ps': 'flow-paved-drawn', 'data-pave': id, style: 'cursor:pointer' }));
+    }
+    for (const r of RD.roadList(c || {})) if (r.kind !== 'pavement') svg.append(line2(r.centre, { stroke: 'rgba(255,255,255,.85)', 'stroke-width': Math.round(1.3 * px), 'stroke-dasharray': `${Math.round(8 * px)} ${Math.round(6 * px)}`, 'pointer-events': 'none' }));
     if (c?.rows?.length && !(sw?.bayRows || []).length) {
       // Strata rows carry their own bays and truck aprons (parking.js), the same result step 4 and the editor count.
       const acc = siteAccess(c, lot);
       for (const q of [acc?.driveway, acc?.crossover]) if (q) svg.append(poly(q, { fill: '#6b6f76', opacity: '0.55', stroke: 'none', 'data-ps': 'flow-crossover' }));
       const park = parkingLayout(c);
       for (const d of doorStrips(c, park)) svg.append(poly(d.poly, { fill: '#a9a69b', stroke: 'none', 'data-ps': 'flow-paved-apron' }));
-      for (const r of park.rows) for (const sl of r.slots) svg.append(poly(sl.poly, { fill: sl.kind === 'accessible' ? 'rgba(27,95,191,.55)' : sl.kind === 'zone' ? 'rgba(27,95,191,.2)' : 'rgba(255,255,255,.35)', stroke: '#ffffff', 'stroke-width': Math.round(1.2 * px), 'data-ps': 'flow-bay' }));
+      for (const r of park.rows) for (const sl of r.slots) svg.append(poly(sl.poly, { fill: sl.kind === 'accessible' ? 'rgba(27,95,191,.55)' : sl.kind === 'zone' ? 'rgba(27,95,191,.2)' : 'rgba(255,255,255,.35)', stroke: '#ffffff', 'stroke-width': Math.round(1.2 * px), 'data-ps': 'flow-bay', 'pointer-events': 'none' }));
     }
     for (const it of placeables(project)) {
       const isSel = selected && selected.kind === it.kind && selected.id === it.id;
@@ -200,6 +226,20 @@ function mountPlaceStep(ctx) {
       const cc = centroid(it.outline);
       g.append(text({ x: cc.x, y: cc.y }, it.label, 11, { fill: '#2c2f36', 'pointer-events': 'none' }));
       svg.append(g);
+    }
+    const selPave = pave && c ? (RD.siteItemById(c, pave)?.polygon || (pavementAreas(c).find((a) => String(a.id).split('~')[0] === pave && a.role === 'hardstand')?.polygon) || null) : null;
+    if (selPave) svg.append(poly(selPave, { fill: 'rgba(199,162,86,.18)', stroke: '#c7a256', 'stroke-width': Math.round(2.4 * px), 'stroke-dasharray': `${Math.round(8 * px)} ${Math.round(5 * px)}`, 'pointer-events': 'none', 'data-ps': 'flow-pave-selected' }));
+    const selRoad = pave && c ? RD.roadById(c, pave) : null;
+    if (selRoad && !drawing) {
+      const centre = rdrag?.centre || selRoad.centre;
+      svg.append(line2(centre, { stroke: '#c7a256', 'stroke-width': Math.round(1.5 * px), 'pointer-events': 'none' }));
+      centre.forEach((q, i) => { const k = set(document.createElementNS(NS, 'circle'), { cx: Math.round(q.x), cy: Math.round(q.y), r: Math.round(8 * px), fill: '#fff', stroke: '#c7a256', 'stroke-width': Math.round(2 * px), 'data-ps': 'flow-road-handle', 'data-index': i, style: 'cursor:grab' }); svg.append(k); });
+    }
+    if (drawing) {
+      const kd = RD.roadKind(drawing.kind);
+      const centre = drawing.hover && drawing.pts.length ? [...drawing.pts, drawing.hover] : drawing.pts.slice();
+      if (centre.length >= 2) { const ring = RD.corridor(centre, kd.widthMm); if (ring.length >= 3) svg.append(poly(ring, { fill: 'rgba(199,162,86,.35)', stroke: '#c7a256', 'stroke-width': Math.round(2 * px), 'pointer-events': 'none', 'data-ps': 'flow-draw-preview' })); svg.append(line2(centre, { stroke: '#fff', 'stroke-width': Math.round(1.5 * px), 'stroke-dasharray': `${Math.round(8 * px)} ${Math.round(5 * px)}`, 'pointer-events': 'none' })); }
+      if (drawing.hover) { const hv = drawing.hover; svg.append(set(document.createElementNS(NS, 'circle'), { cx: Math.round(hv.x), cy: Math.round(hv.y), r: Math.round((hv.kind === 'door' || hv.kind === 'frontage' || hv.kind === 'road-end' ? 9 : 5) * px), fill: 'none', stroke: hv.kind === 'grid' || hv.kind === 'free' ? '#555' : '#1b8f4a', 'stroke-width': Math.round(2 * px), 'pointer-events': 'none' })); if (hv.text) svg.append(text({ x: hv.x, y: hv.y - 14 * px }, hv.text, 11, { fill: '#1d2024', 'pointer-events': 'none' })); }
     }
     // turn handle for the selected catalogue building
     const sb = selected?.kind === 'building' ? (c?.buildings || []).find((b) => b.id === selected.id) : null;
@@ -225,6 +265,18 @@ function mountPlaceStep(ctx) {
     statusEl.dataset.state = st.state;
     statusEl.replaceChildren(h('span', { 'aria-hidden': 'true' }, st.state === 'inside' ? '✓' : st.state === 'outside' ? '!' : 'i'), h('span', null, st.state === 'inside' ? 'Inside the setbacks. Good position.' : st.text));
     paintRoadsRow();
+    const pc = store.project.commercial;
+    const gen = pave && pc ? RD.siteItemById(pc, pave) : null;
+    const rd = pave && pc ? RD.roadById(pc, pave) : null;
+    const known = !!gen || !!rd || (!!pave && !!pc && pavementAreas(pc).some((a) => a.role === 'hardstand' && String(a.id).split('~')[0] === pave));
+    if (pave && !known) pave = null;
+    paveName.textContent = rd ? `Selected: ${RD.roadKind(rd.kind).label.toLowerCase()}, ${(rd.widthMm / 1000).toFixed(1)} m wide` : gen ? `Selected: ${gen.label.toLowerCase()}` : pave ? 'Selected: area you drew' : 'No road or paving selected';
+    removePaveBtn.disabled = !pave;
+    editableBtn.disabled = !gen;
+    widthSel.disabled = !rd;
+    if (rd) { const k = RD.roadKind(rd.kind); const opts = []; for (let w = k.minMm; w <= k.maxMm; w += w < 3000 ? 500 : 1000) opts.push(w); if (!opts.includes(rd.widthMm)) opts.push(rd.widthMm); opts.sort((a, b) => a - b); widthSel.replaceChildren(...opts.map((w) => h('option', { value: String(w) }, `${(w / 1000).toFixed(1)} m`))); widthSel.value = String(rd.widthMm); }
+    finishBtn.hidden = cancelBtn.hidden = !drawing;
+    drawBtns.forEach((b, i) => b.setAttribute('aria-pressed', String(drawing?.kind === RD.ROAD_KINDS[i].id)));
     const c = store.project.commercial;
     parkEl.textContent = baysText(commercialStats(store.project).parking);
     const sel = selectedItem();
@@ -252,9 +304,56 @@ function mountPlaceStep(ctx) {
   function duplicate() { const s = selectedItem(); if (!s || s.kind !== 'building') return; const r = duplicateBuilding(store, s.id); if (r) { selected = { kind: 'building', id: r.id }; notice = r.fitted ? 'Copied into free space.' : 'There was no free space, so the copy stands beside the original.'; } draw(); }
   function remove() { const s = selectedItem(); if (!s || s.kind !== 'building') return; deleteBuilding(store, s.id); selected = null; notice = 'Building removed.'; }
 
+  function startDraw(kind) { drawing = { kind, pts: [], hover: null }; pave = null; notice = `Click the points of the ${kind === 'pavement' ? 'footpath' : kind}. Double click to finish.`; stage.focus({ preventScroll: true }); draw(); }
+  function cancelDraw() { drawing = null; notice = ''; draw(); }
+  function finishDraw() {
+    if (!drawing) return;
+    const d = drawing;
+    if (d.pts.length < 2) { notice = 'A road needs two points at least.'; draw(); return; }
+    drawing = null;
+    let res = null;
+    try { commercialEdit(store, `Add ${RD.roadKind(d.kind).label.toLowerCase()}`, (c) => { res = RD.addRoad(c, { kind: d.kind, centre: d.pts, lot: lotNow()?.boundary || null }); }); notice = ''; }
+    catch (e) { notice = e?.message || 'That road could not be added.'; }
+    if (res?.ids?.length) pave = res.ids[0]; else if (res) notice = 'That is outside the lot, so nothing was added.';
+    draw(); ctx.refresh();
+  }
+  function removePave() {
+    if (!pave) return;
+    const id = pave;
+    try {
+      if (String(id).startsWith('hs_')) commercialEdit(store, 'Remove paving', (c) => { removeHardstand(c, id); });
+      else store.apply('Remove site works item', (p) => { RD.removeGenerated(p, id); });
+      notice = 'Removed. Restore all brings back what the layout made.';
+    } catch (e) { notice = e?.message || 'That could not be removed.'; }
+    pave = null; draw();
+  }
+  function makePaveEditable() {
+    if (!pave) return;
+    let res = null;
+    commercialEdit(store, 'Make road editable', (c) => { res = RD.makeEditable(c, pave, lotNow()?.boundary || null); });
+    if (res?.id) { pave = res.id; notice = 'Now a road you can reshape. Drag its white points.'; } else notice = 'That item cannot be turned into a road.';
+    draw();
+  }
+  function setPaveWidth(w) { const id = pave; if (!id || !RD.roadById(store.project.commercial, id)) return; commercialEdit(store, 'Change road width', (c) => { RD.setRoad(c, id, { widthMm: w }, lotNow()?.boundary || null); }); draw(); }
+  const snapAt = (ev, p) => RD.snapRoadPoint(p, RD.roadSnapContext(store.project, { exclude: rdrag?.id || null }), { mmPerPx: mmPerPx(), alt: !!ev.altKey });
+
   // Pointer: drag a building, or the handle to turn the selected one
   const onDown = (ev) => {
     if (ev.button != null && ev.button !== 0) return;
+    if (drawing) {
+      ev.preventDefault();
+      let s = snapAt(ev, toMm(ev));
+      if (ev.shiftKey && drawing.pts.length && s.kind !== 'door' && s.kind !== 'frontage') s = { ...s, ...RD.lockTo15(s, drawing.pts[drawing.pts.length - 1], true) };
+      if (!drawing.pts.length || Math.hypot(s.x - drawing.pts[drawing.pts.length - 1].x, s.y - drawing.pts[drawing.pts.length - 1].y) > 1) drawing.pts.push({ x: s.x, y: s.y });
+      stage.focus({ preventScroll: true });
+      draw();
+      return;
+    }
+    const rh = ev.target.closest?.('[data-ps="flow-road-handle"]');
+    if (rh && pave) {
+      const road = RD.roadById(store.project.commercial, pave);
+      if (road) { ev.preventDefault(); stage.setPointerCapture?.(ev.pointerId); rdrag = { id: road.id, index: Number(rh.getAttribute('data-index')), centre: road.centre.map((q) => ({ ...q })), moved: false }; return; }
+    }
     const ah = ev.target.closest?.('[data-ps="flow-access-handle"]');
     if (ah) {
       ev.preventDefault();
@@ -264,7 +363,13 @@ function mountPlaceStep(ctx) {
     }
     const onHandle = ev.target.closest?.('[data-ps="flow-handle"]');
     const g = ev.target.closest?.('[data-ps="flow-building"]');
-    if (!onHandle && !g) return;
+    if (!onHandle && !g) {
+      const pv = ev.target.closest?.('[data-pave]');
+      const next = pv ? pv.getAttribute('data-pave') : null;
+      if (next !== pave) { pave = next; stage.focus({ preventScroll: true }); draw(); ctx.refresh(); }
+      return;
+    }
+    if (pave) pave = null;
     ev.preventDefault();
     stage.setPointerCapture?.(ev.pointerId);
     const p = toMm(ev);
@@ -277,6 +382,8 @@ function mountPlaceStep(ctx) {
     draw();
   };
   const onMove = (ev) => {
+    if (drawing) { const s = snapAt(ev, toMm(ev)); drawing.hover = drawing.pts.length && ev.shiftKey && s.kind !== 'door' && s.kind !== 'frontage' ? { ...s, ...RD.lockTo15(s, drawing.pts[drawing.pts.length - 1], true) } : s; draw(); return; }
+    if (rdrag) { const s = snapAt(ev, toMm(ev)); rdrag.centre[rdrag.index] = { x: s.x, y: s.y }; rdrag.moved = true; draw(); return; }
     if (!drag) return;
     const p = toMm(ev);
     if (drag.mode === 'access') {
@@ -298,6 +405,11 @@ function mountPlaceStep(ctx) {
     }
   };
   const onUp = () => {
+    if (rdrag) {
+      const d = rdrag; rdrag = null;
+      if (d.moved) { try { commercialEdit(store, 'Reshape road', (c) => { RD.setRoad(c, d.id, { centre: d.centre }, lotNow()?.boundary || null); }); } catch (e) { notice = e?.message || ''; } }
+      draw(); return;
+    }
     if (!drag) return;
     const d = drag; drag = null;
     if (d.mode === 'access') { if (d.off != null) { notice = ''; editAccessIn(store, { role: d.role, offsetMm: d.off }); } else draw(); return; }
@@ -306,10 +418,17 @@ function mountPlaceStep(ctx) {
     else draw();
   };
   svg.addEventListener('pointerdown', onDown);
+  svg.addEventListener('dblclick', () => { if (drawing && drawing.pts.length >= 2) finishDraw(); });
   stage.addEventListener('pointermove', onMove);
   stage.addEventListener('pointerup', onUp);
   stage.addEventListener('pointercancel', onUp);
   stage.addEventListener('keydown', (e) => {
+    if (drawing) {
+      if (e.key === 'Enter') { e.preventDefault(); finishDraw(); } else if (e.key === 'Escape') { e.preventDefault(); cancelDraw(); } else if (e.key === 'Backspace') { e.preventDefault(); drawing.pts.pop(); draw(); }
+      return;
+    }
+    if (pave && (e.key === 'Delete' || e.key === 'Backspace')) { e.preventDefault(); removePave(); return; }
+    if (pave && e.key === 'Escape') { pave = null; draw(); return; }
     const step = e.shiftKey ? 1000 : nudgeMm;
     const k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
     if (k) { e.preventDefault(); const s = ensureSelected(); if (s) moveBy(store, s, k[0] * step, k[1] * step); }
@@ -341,7 +460,7 @@ function mountPlaceStep(ctx) {
   };
 }
 
-import { buildingsOf } from '../commercial/catalogue/buildings.js';
+import { buildingsOf, siteWorksOf } from '../commercial/catalogue/buildings.js';
 const placeablesBuilding = (project, id) => buildingsOf(project.commercial).find((b) => b.id === id) || null;
 
 // Step 4 ----------------------------------------------------------------------------------------------------------------------
