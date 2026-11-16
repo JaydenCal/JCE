@@ -5,6 +5,7 @@
 import { withConstruction } from '../construction.js';
 import { TYPES_B } from './index-typesB.js';
 import { TYPES_C } from './index-typesC.js';
+import { TYPES_D } from './index-typesD.js';
 import showroom from './showroom.js';
 import { TYPES_SMALL } from './small.js';
 import strataUnits from './strata-units.js';
@@ -16,6 +17,7 @@ export const STRATA_ID = 'strata-units';
 export const TYPES = [
   ...TYPES_B,
   ...TYPES_C,
+  ...TYPES_D,
   ...TYPES_SMALL,
   showroom,
   strataUnits,
@@ -32,6 +34,8 @@ export const CATEGORIES = Object.freeze([
   { id: 'office', label: 'Office' },
   { id: 'automotive', label: 'Automotive' },
   { id: 'community', label: 'Community' },
+  { id: 'sheds', label: 'Garages and sheds' },
+  { id: 'residential', label: 'Homes and mixed use' },
 ]);
 
 /** Types for the pickers: strata units first, then by category order and label. */
@@ -44,11 +48,14 @@ const ICON_BY_ID = {
   'strata-units': 'bt-strata', warehouse: 'bt-warehouse', 'portal-shed': 'bt-warehouse', 'transport-depot': 'bt-warehouse', 'self-storage': 'bt-storage',
   'cold-store': 'bt-cold', showroom: 'bt-retail', 'retail-strip': 'bt-retail', 'drive-through': 'bt-drive', office: 'bt-office',
   'vehicle-workshop': 'bt-auto', 'machinery-dealership': 'bt-auto', 'service-station': 'bt-fuel', 'community-centre': 'bt-community',
+  'garage-single': 'bt-garage', 'garage-double': 'bt-garage', 'garage-triple': 'bt-garage', 'gable-shed': 'bt-shed', 'skillion-shed': 'bt-shed', 'barn-shed': 'bt-shed',
+  'lean-to-carport': 'bt-carport', 'clear-span-shed': 'bt-warehouse', 'machinery-shed': 'bt-shed', duplex: 'bt-home', 'townhouse-row': 'bt-home', 'terrace-row': 'bt-home',
+  'business-park': 'bt-warehouse', 'mixed-use': 'bt-retail',
 };
 
 /** The icon name (see ui/icons.js) of a type for the pickers: its own, by id, else by category. */
 export function typeIconName(t) {
   if (t?.icon) return t.icon;
   if (ICON_BY_ID[t?.id]) return ICON_BY_ID[t.id];
-  return { storage: 'bt-storage', retail: 'bt-retail', office: 'bt-office', automotive: 'bt-auto', community: 'bt-community' }[t?.category] || 'bt-warehouse';
+  return { storage: 'bt-storage', retail: 'bt-retail', office: 'bt-office', automotive: 'bt-auto', community: 'bt-community', sheds: 'bt-shed', residential: 'bt-home' }[t?.category] || 'bt-warehouse';
 }

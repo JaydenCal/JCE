@@ -182,7 +182,9 @@ export function chooseBuilding(project, typeId, presetId = BEST_PRESET) {
   for (const preset of list) {
     const rec = newBuilding(typeId, { presetId: preset.id });
     const place = placeBuilding(project, rec, EMPTY);
-    if (place) return { id: `${typeId}:${preset.id}`, label: `${def.label}, ${preset.label}`, typeId, presetId: preset.id, buildings: [{ ...rec, place, presetId: preset.id }], tooBig: false };
+    // A building that only fits turned side-on to the street has its doors facing a boundary, so no drive can reach them: not a fit.
+    const sideOn = place && Math.abs((((place.rotationDeg - frontRotation(lot)) % 180) + 180) % 180 - 90) < 1;
+    if (place && !sideOn) return { id: `${typeId}:${preset.id}`, label: `${def.label}, ${preset.label}`, typeId, presetId: preset.id, buildings: [{ ...rec, place, presetId: preset.id }], tooBig: false };
   }
   const small = list[list.length - 1];
   const rec = newBuilding(typeId, { presetId: small.id });

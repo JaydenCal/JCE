@@ -242,6 +242,60 @@
       "status": "ESTIMATE",
       "source": "Analyst judgement for form liners or rebates on the casting bed, no published source found.",
       "note": "Per m2 of external wall (concrete panel area including parapet), added to the metal clad rate already in the building rate. Added only when horizontal reveals, grooves or a feature band are chosen."
+    },
+    "garage": {
+      "label": "Garage",
+      "low": 1100,
+      "high": 1900,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "analyst range: small garage, slab, steel frame, cladding and roller or sectional doors, anchored to the shed row with a premium for the small size",
+      "note": "Small garage, ESTIMATE, check with a quantity surveyor."
+    },
+    "shed-small": {
+      "label": "Small shed",
+      "low": 600,
+      "high": 1200,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "analyst range: light gauge steel shed on a slab, below the portal frame shed row",
+      "note": "Garden, farm or workshop shed, ESTIMATE."
+    },
+    "carport": {
+      "label": "Carport or lean-to",
+      "low": 300,
+      "high": 700,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "analyst range: open roof on posts, no walls",
+      "note": "Open sided roof on posts, ESTIMATE."
+    },
+    "townhouse": {
+      "label": "Townhouse or terrace",
+      "low": 2400,
+      "high": 3800,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "analyst range anchored to the general commercial range of market.json buildCost, no direct regional source found",
+      "note": "Two storey attached dwellings, ESTIMATE."
+    },
+    "mixed-use": {
+      "label": "Mixed use, shops below and homes above",
+      "low": 2600,
+      "high": 3900,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "blend of the retail and townhouse rows",
+      "note": "Shops below with homes above, ESTIMATE."
+    },
+    "business-park": {
+      "label": "Business park units",
+      "low": 1300,
+      "high": 2200,
+      "perM2": true,
+      "status": "ESTIMATE",
+      "source": "analyst range between the shed and the workshop rows, with a small office fitout per unit",
+      "note": "Light industrial and trade units with a front office, ESTIMATE."
     }
   }
 }
