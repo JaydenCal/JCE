@@ -582,10 +582,8 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
     if (tool === 'select') {
       const hit = p.hit;
       if (hit && hit.kind !== 'roof' && touchable(hit)) store.select(hit.id);
-      else {
-        if (hit && guard?.onLocked) guard.onLocked(hit);
-        store.select(null);
-      }
+      else if (hit && !touchable(hit)) guard?.onLocked?.(hit); // locked by room edit: say so, keep the room selected
+      else store.select(null);
       return;
     }
     if (tool === 'wall') {

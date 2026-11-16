@@ -16,8 +16,9 @@
 
 import * as THREE from 'three';
 import { exitCutaway, cancelFlight } from './rooms.js';
+import { collectUnits, applyUnits, restoreUnits } from './explode-apply.js';
 import {
-  phases, stepProgress, explodeTargets, offsetFor, opacityFor, classify, wallOwners, cinematicPoses, cameraAt, lerp3, smooth, findRoom,
+  phases, stepProgress, explodeTargets, offsetFor, cinematicPoses, cameraAt, lerp3, smooth, findRoom,
 } from './explode-logic.js';
 import {
   roomScope, canTouchHit, describeRoom, planResize, planSetSize, planWallMove, suggestOpening, roomAtPlanPoint, SIDES, softMinSide,
@@ -27,6 +28,14 @@ import { formatLength } from '../model/geometry.js';
 
 const reducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+// The camera aims at the part of the screen the panel leaves clear: a right hand panel on a wide viewer, a bottom sheet on a narrow one.
+function clearInsets(rootEl, panel) {
+  const rr = rootEl.getBoundingClientRect();
+  if (panel.hidden || rr.width < 2) return { left: 0, right: 0, top: 0, bottom: 0 };
+  const pr = panel.getBoundingClientRect();
+  const sheet = pr.width > rr.width * 0.7;
+  return sheet ? { left: 0, right: 0, top: 0, bottom: Math.round(Math.min(rr.bottom - pr.top, rr.height * 0.46) + 8) } : { left: 0, right: Math.round(rr.right - pr.left + 8), top: 0, bottom: 0 };
+}
 const NUDGE = 100; // mm per press of a side button
 const SIDE_LABEL = { north: 'North', south: 'South', east: 'East', west: 'West' };
 const KIND_LABEL = { window: 'Window', door: 'Door', sliding_door: 'Sliding door', garage_door: 'Garage door', roller_door: 'Roller door', opening: 'Opening' };
@@ -49,6 +58,7 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     blendFrom: null,
     blendT: 0,
     saved: null, // camera and ui before the mode
+    savedInset: null,
     scope: null,
   };
   let toastTimer = 0;
@@ -96,86 +106,20 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
   }
 
   // Binding to the model -----------------------------------------------------------------------------------
-  // A unit is one object that moves as a piece: a wall, a floor, a furniture group, the roof of a level. Offsets go on the topmost
-  // object under the level group, so rotated furniture groups still move along the world axes.
-  function topOf(o, model) {
-    let t = o;
-    while (t.parent && t.parent !== model && !String(t.parent.name || '').startsWith('level:')) t = t.parent;
-    return t;
-  }
   function unbind() {
-    for (const u of st.units) {
-      u.obj.position.copy(u.base);
-      for (const m of u.meshes) {
-        if (u.mats.has(m)) {
-          const rec = u.mats.get(m);
-          if (m.parent) m.material = rec.orig;
-          for (const c of rec.clones) c.dispose();
-          m.castShadow = rec.cast;
-        }
-      }
-    }
+    restoreUnits(st.units);
     st.units = [];
   }
   function bind() {
     unbind();
     const model = viewer.getModel();
     if (!model) return;
-    const project = store.project;
-    const owners = wallOwners(project, st.roomId);
-    const byObj = new Map();
-    model.traverse((o) => {
-      if (!o.isMesh) return;
-      const c = classify(project, o.userData || {}, owners);
-      if (!c) return;
-      const top = topOf(o, model);
-      let u = byObj.get(top);
-      if (!u) {
-        u = { obj: top, base: top.position.clone(), role: c.role, roomId: c.roomId, levelId: c.levelId, meshes: [], mats: new Map() };
-        byObj.set(top, u);
-      }
-      u.meshes.push(o);
-    });
-    st.units = [...byObj.values()];
-    // Everything that can fade gets its own copy of its materials (the library shares them between meshes).
-    for (const u of st.units) {
-      if (u.role === 'room' && u.roomId === st.roomId) continue;
-      for (const m of u.meshes) {
-        const list = Array.isArray(m.material) ? m.material : [m.material];
-        const clones = list.map((mat) => {
-          const c = mat.clone();
-          c.userData = { ...(mat.userData || {}), shared: false };
-          return c;
-        });
-        u.mats.set(m, {
-          orig: m.material,
-          clones,
-          base: list.map((mat) => ({ o: mat.opacity, t: mat.transparent, w: mat.depthWrite })),
-          cast: m.castShadow,
-        });
-        m.material = Array.isArray(m.material) ? clones : clones[0];
-      }
-    }
+    st.units = collectUnits(model, store.project, st.roomId);
   }
 
   function apply() {
-    const ph = phases(st.p);
-    st.stage = ph;
-    for (const u of st.units) {
-      const off = offsetFor(st.targets, u, ph);
-      u.obj.position.set(u.base.x + off.x, u.base.y + off.y, u.base.z + off.z);
-      if (!u.mats.size) continue;
-      const op = opacityFor(u, st.roomId, ph);
-      for (const [m, rec] of u.mats) {
-        rec.clones.forEach((c, i) => {
-          const b = rec.base[i];
-          c.opacity = b.o * op;
-          c.transparent = b.t || op < 0.999;
-          c.depthWrite = op < 0.999 ? false : b.w;
-        });
-        m.castShadow = rec.cast && op > 0.5;
-      }
-    }
+    st.stage = applyUnits(st.units, st.targets, st.roomId, st.p);
+    const ph = st.stage;
     if (!st.camFree && st.poses) {
       const pose = cameraAt(ph, st.poses);
       let pos = pose.position;
@@ -204,7 +148,7 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
   function tick() {
     st.raf = 0;
     const t = now();
-    const dt = Math.min(0.1, (t - st.last) / 1000);
+    const dt = Math.min(0.25, (t - st.last) / 1000); // real time, so a slow device still takes the same seconds
     st.last = t;
     st.blendT = Math.min(1, st.blendT + dt / 0.6);
     st.p = stepProgress(st.p, st.target, dt, { reduced: reducedMotion() });
@@ -324,6 +268,14 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
   }
   if (guard) guard.impl = impl;
 
+  function aspectNow() {
+    const ins = viewer.getInset?.() || { left: 0, right: 0, top: 0, bottom: 0 };
+    const w = Math.max(1, rootEl.clientWidth - ins.left - ins.right);
+    const h = Math.max(1, rootEl.clientHeight - ins.top - ins.bottom);
+    return w / h || camera.aspect || 1.6;
+  }
+  const makePoses = () => cinematicPoses(store.project, st.roomId, st.saved, { fov: camera.fov, aspect: aspectNow() });
+
   // Starting, finishing ------------------------------------------------------------------------------------
   function canStart() {
     return viewer.mode === 'orbit' && !!viewer.getModel() && (store.ui.view === '3d' || store.ui.view === 'split');
@@ -359,7 +311,6 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     st.targets = explodeTargets(store.project, { selectedId: roomId });
     st.camFree = false;
     st.blendFrom = null;
-    st.poses = cinematicPoses(store.project, roomId, st.saved, { fov: camera.fov, aspect: camera.aspect || 1.6 });
     armBtn.setAttribute('aria-pressed', 'true');
     armBtn.classList.add('is-on');
     store.select(roomId);
@@ -370,6 +321,9 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     panel.hidden = false;
     rootEl.classList.add('is-redit');
     buildPanel();
+    if (firstEntry) st.savedInset = viewer.getInset?.() || null;
+    viewer.setInset?.(clearInsets(rootEl, panel), { reframe: false });
+    st.poses = makePoses();
     say('');
     st.p = 0;
     apply();
@@ -435,6 +389,8 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     rootEl.classList.remove('is-redit');
     labelsEl.hidden = true;
     controls.minDistance = 1.2;
+    if (st.savedInset) viewer.setInset?.(st.savedInset, { reframe: false });
+    st.savedInset = null;
     store.select(null);
     viewer.invalidate();
     emit();
@@ -460,7 +416,7 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     st.blendFrom = null;
     st.p = 1;
     st.target = 1;
-    st.poses = cinematicPoses(store.project, st.roomId, st.saved, { fov: camera.fov, aspect: camera.aspect || 1.6 });
+    st.poses = makePoses();
     apply();
     settled();
   };
@@ -468,6 +424,26 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     st.labels = !!on;
     syncLabels();
     syncPanel();
+  }
+
+  // The room a 3D pick belongs to. A floor is its room; furniture is in the room it stands in; a wall, opening or roof is judged a little
+  // towards the camera so a click on a wall between two rooms picks the room that is facing you.
+  function roomForHit(hit) {
+    const project = store.project;
+    if (hit.kind === 'floor' && findRoom(project, hit.id)) return hit.id;
+    if (hit.kind === 'furniture' || hit.kind === 'stair') {
+      const f = store.find(hit.id);
+      const r = f ? roomAtPlanPoint(project, f.item.x, f.item.y, f.level?.id)?.room.id : null;
+      if (r) return r;
+    }
+    const px = hit.point.x * 1000;
+    const pz = hit.point.z * 1000;
+    const dx = camera.position.x * 1000 - px;
+    const dz = camera.position.z * 1000 - pz;
+    const d = Math.hypot(dx, dz) || 1;
+    const nudge = hit.kind === 'wall' || hit.kind === 'opening' ? 250 : 0;
+    const found = roomAtPlanPoint(project, px + (dx / d) * nudge, pz + (dz / d) * nudge, hit.levelId || null) || roomAtPlanPoint(project, px, pz, hit.levelId || null);
+    return found ? found.room.id : null;
   }
 
   // Picking a room while armed ------------------------------------------------------------------------------
@@ -480,9 +456,7 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 6 || now() - d.t > 700) return;
     const hit = viewer.pickAt(e.clientX, e.clientY);
     if (!hit || hit.ground || !hit.point) { say('Tap inside a room.', { ms: 2500 }); return; }
-    let rid = hit.kind === 'floor' ? hit.id : null;
-    if (!findRoom(store.project, rid)) rid = null;
-    if (!rid) rid = roomAtPlanPoint(store.project, hit.point.x * 1000, hit.point.z * 1000, hit.levelId || null)?.room.id || null;
+    const rid = roomForHit(hit);
     if (rid) start(rid);
     else say('Tap inside a room.', { ms: 2500 });
   });
@@ -508,7 +482,7 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     if (!f) { done({ instant: true }); return; }
     st.scope = roomScope(store.project, st.roomId);
     st.targets = explodeTargets(store.project, { selectedId: st.roomId });
-    st.poses = cinematicPoses(store.project, st.roomId, st.saved, { fov: camera.fov, aspect: camera.aspect || 1.6 });
+    st.poses = makePoses();
     cancelAnimationFrame(panelTimer);
     panelTimer = requestAnimationFrame(buildPanel);
   });
@@ -521,6 +495,9 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
     if (st.phase === 'active' || st.phase === 'leaving') { st.phase = 'active'; done({ instant: true }); }
   }
   // The viewer rebuilt the model (an edit, a finish change): bind the new meshes and keep the stage.
+  function onBeforeRebuild() {
+    if (st.units.length) unbind();
+  }
   function onRebuild() {
     if (st.phase !== 'active' && st.phase !== 'leaving') return;
     bind();
@@ -693,7 +670,7 @@ export function createRoomEdit(viewer, { guard = null, catalogue = null } = {}) 
   panel.addEventListener('input', (e) => { if (e.target.dataset?.f === 'name') { const n = panel.querySelector('.ps3d-redit-name'); if (n) n.textContent = e.target.value; } });
 
   const api = {
-    start, arm, done, explode, collapse, replay, reset, setLabels, renderAt, onRebuild, onEditToggled, onFrame: syncLabels,
+    start, arm, done, roomForHit, explode, collapse, replay, reset, setLabels, renderAt, onBeforeRebuild, onRebuild, onEditToggled, onFrame: syncLabels,
     on: (fn) => { listeners.add(fn); return () => listeners.delete(fn); },
     get active() { return isActive(); },
     get armed() { return st.phase === 'armed'; },

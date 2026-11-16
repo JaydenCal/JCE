@@ -234,13 +234,13 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     }
     camera.setViewOffset(w, h, -(inset.l - inset.r) / 2, (inset.b - inset.t) / 2, w, h);
   }
-  function setInset(next = {}) {
+  function setInset(next = {}, { reframe = true } = {}) {
     const n = { l: Math.max(0, next.left || 0), r: Math.max(0, next.right || 0), t: Math.max(0, next.top || 0), b: Math.max(0, next.bottom || 0) };
     if (n.l === inset.l && n.r === inset.r && n.t === inset.t && n.b === inset.b) return;
     inset = n;
     applyInset();
     camera.updateProjectionMatrix();
-    if (!userMoved && framed && bounds) frameCamera(false, lastKind);
+    if (reframe && !userMoved && framed && bounds) frameCamera(false, lastKind);
     invalidate();
   }
   controls.addEventListener('start', () => { userMoved = true; });
@@ -525,6 +525,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       return;
     }
     if (model) {
+      roomEdit?.onBeforeRebuild(); // hands the model its own materials back before they are disposed
       scene.remove(model);
       disposeModel(model);
     }
@@ -1106,6 +1107,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     picker.dispose();
     controls.dispose();
     if (model) {
+      roomEdit?.onBeforeRebuild(); // hands the model its own materials back before they are disposed
       scene.remove(model);
       disposeModel(model);
       model = null;
@@ -1133,6 +1135,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     setActive,
     setMode,
     setInset,
+    getInset: () => ({ left: inset.l, right: inset.r, top: inset.t, bottom: inset.b }),
     resetCamera: () => frameCamera(true),
     getModel: () => model,
     snapshot,

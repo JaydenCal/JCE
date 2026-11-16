@@ -251,7 +251,7 @@ export function cinematicPoses(project, roomId, base, { fov = 38, aspect = 1.6, 
     const bb = G.bbox(found.room.polygon);
     roomRadius = Math.max(1.2, Math.hypot(bb.w, bb.h) / 2000);
     roomCentre = { x: c.x / 1000 + off.x, y: found.level.elevation / 1000 + lv.y + 0.6, z: c.y / 1000 + off.z };
-    focus = poseAround(roomCentre, fitDistance(roomRadius * 1.15, { fov, aspect, margin: 1.0 }), azimuthDeg, 50);
+    focus = poseAround(roomCentre, fitDistance(roomRadius * 2.0, { fov, aspect, margin: 1.0 }), azimuthDeg, 50);
   }
   return { base, overview, focus, targets, extent: ext, roomCentre, roomRadius };
 }
