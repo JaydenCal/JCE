@@ -211,6 +211,18 @@ async function start(container, base64, encoding) {
     let hasSite = false;
     model.traverse((o) => { if (/^site-terrain/.test(o.name || '')) hasSite = true; });
     const pad = hasSite ? 0 : addSetting(scene, box, renderer.capabilities.getMaxAnisotropy());
+    // Frame the building (plus a margin of its lot), not the whole terrain: a model with its site carries a wide ground that made the view far too zoomed out (owner 16/11/2026).
+    if (hasSite) {
+      const fb = new Box3();
+      const inSite = (o) => { for (let p = o; p; p = p.parent) if (/^site/i.test(p.name || '')) return true; return false; };
+      model.traverse((o) => { if (o.isMesh && !inSite(o)) fb.expandByObject(o); });
+      if (!fb.isEmpty()) {
+        fb.getCenter(centre);
+        const fs = fb.getSize(new Vector3());
+        size.set(fs.x * 1.6, fs.y, fs.z * 1.6);
+      }
+    }
+    const span2 = Math.max(size.x, size.z, 4);
     const sd = new Vector3(-0.56, 0.56, 0.61).normalize();
     sun.position.copy(centre).addScaledVector(sd, span * 3 + 20);
     sun.target.position.copy(centre);
@@ -218,13 +230,13 @@ async function start(container, base64, encoding) {
     const r = Math.max(span * 1.2, pad);
     sc.left = -r; sc.right = r; sc.top = r; sc.bottom = -r; sc.near = 0.5; sc.far = span * 7 + 80;
     sc.updateProjectionMatrix();
-    const dist = span * 0.95 + size.y * 1.2;
+    const dist = span2 * 0.95 + size.y * 1.2;
     home = { pos: new Vector3(centre.x + dist * 0.62, centre.y + dist * 0.58, centre.z + dist * 0.78), target: centre.clone() };
     camera.near = Math.max(0.1, dist / 200);
-    camera.far = dist * 40;
+    camera.far = Math.max(dist * 40, span * 6);
     camera.updateProjectionMatrix();
-    controls.minDistance = Math.max(1.5, span * 0.15);
-    controls.maxDistance = dist * 4;
+    controls.minDistance = Math.max(1.5, span2 * 0.15);
+    controls.maxDistance = Math.max(dist * 4, span * 1.5);
     reset();
     const roofBtn = document.getElementById('pa-roof');
     if (roofBtn && roofParts.length) {
