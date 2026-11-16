@@ -168,7 +168,7 @@ export function defineType(def) {
       const doors = { roller: 0, personnel: 0, dock: 0 };
       for (const o of ops) {
         if (o.kind === 'roller_door' && o.dock) doors.dock += 1;
-        else if (o.kind === 'roller_door') doors.roller += 1;
+        else if (o.kind === 'roller_door' || o.kind === 'garage_door') doors.roller += 1;
         else if (o.kind === 'door') doors.personnel += 1;
       }
       const gfa = ground + upper;

@@ -7,7 +7,7 @@ const BRANDS = /\b(shell|bp|caltex|ampol|mobil|united petroleum|7-?eleven|mcdona
 const DASH = /[–—]/;
 
 /** Common checks from INTERFACE.md for one type module. */
-export function checkType(type, srcFile, { variants = [] } = {}) {
+export function checkType(type, srcFile, { variants = [], noParking = false } = {}) {
   const cases = [{}, ...variants];
   const src = fs.readFileSync(new URL(srcFile, import.meta.url), 'utf8');
 
@@ -71,9 +71,11 @@ export function checkType(type, srcFile, { variants = [] } = {}) {
   test(`${type.id}: site rates present`, () => {
     for (const c of cases) {
       const s = type.site({ ...type.defaults(), ...c });
-      assert.ok(s.parking.ratePerM2.length >= 1);
-      for (const r of s.parking.ratePerM2) assert.ok(r.use && r.per > 0 && r.m2 > 0);
-      assert.equal(s.parking.accessible, true);
+      if (noParking) { assert.equal(s.parking.ratePerM2.length, 0); assert.equal(s.parking.accessible, false); } else {
+        assert.ok(s.parking.ratePerM2.length >= 1);
+        for (const r of s.parking.ratePerM2) assert.ok(r.use && r.per > 0 && r.m2 > 0);
+        assert.equal(s.parking.accessible, true);
+      }
       assert.ok(['MRV', 'HRV', 'AV', 'B99'].includes(s.vehicles.design));
       assert.ok(Number.isFinite(s.vehicles.apronDepthMm) && Number.isFinite(s.vehicles.docks));
       assert.ok(Number.isFinite(s.landscapeFrontMm) && s.notes.length >= 1);
