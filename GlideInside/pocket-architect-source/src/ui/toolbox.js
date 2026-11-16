@@ -5,7 +5,7 @@ import { icon } from './icons.js';
 import { TOOL_DEFS } from '../editor2d/tools-meta.js';
 import { setTool } from './toolstate.js';
 
-const GROUPS = [['movehouse', 'select'], ['room', 'wall', 'door', 'window'], ['furniture', 'stairs', 'deck', 'tank'], ['hardstand'], ['measure', 'underlay', 'status']];
+const GROUPS = [['movehouse', 'select'], ['room', 'wall', 'door', 'window'], ['furniture', 'stairs', 'deck', 'tank'], ['pave'], ['hardstand'], ['measure', 'underlay', 'status']];
 
 // Options: onWheel() opens the inventory wheel from the button at the foot of the toolbox (for touch, where Q is not available).
 export function createToolbox(el, store, { onWheel } = {}) {
@@ -19,7 +19,7 @@ export function createToolbox(el, store, { onWheel } = {}) {
       const btn = h('button', {
         class: 'ps-tool',
         type: 'button',
-        title: `${def.label} (${def.key})`,
+        title: def.tip ? `${def.label} (${def.key}). ${def.tip}` : `${def.label} (${def.key})`,
         'aria-label': def.label,
         'aria-keyshortcuts': def.key,
         'aria-pressed': 'false',

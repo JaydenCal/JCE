@@ -6,6 +6,7 @@ import { h } from '../ui/dom.js';
 import * as G from '../model/geometry.js';
 import { lotOf, translateHouse, rotateHouse, houseCentre } from '../model/placement.js';
 import { buildingHull, clearances, deriveDriveway, garageDoor, setStoredDriveway, storedDriveway } from '../site/lotplan.js';
+import { getWays, removeWay } from '../site/pavedways.js';
 import { projectToSvg, svgDataUri } from '../portal/thumbnail.js';
 import { mountLotStep, zoneText } from './lot-step.js';
 import { lotMapSvg, mapBox, roadSvg, aerialOf } from './lot-map.js';
@@ -290,7 +291,7 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
     for (const sd of sides) svg.append(line(sd.a, sd.b, { stroke: '#e0321c', 'stroke-width': Math.round(7 * px), 'stroke-linecap': 'round', class: 'gf-breach', 'data-ps': 'flow-breach-side' }));
     const dw = (() => { try { return deriveDriveway(project); } catch { return null; } })();
     if (dw?.ok) svg.append(poly(dw.polygon, { fill: '#9a9da3', stroke: '#6b6f76', 'stroke-width': Math.round(1.5 * px), opacity: '0.95' }));
-    if (dw?.ok) {
+    if (dw?.ok && !dw.manual) { // a driveway drawn in the editor has its own handles there
       const knob = (pt, kind, idx, fill) => {
         const c = document.createElementNS(NS, 'circle');
         for (const [k, v] of Object.entries({ cx: Math.round(pt.x), cy: Math.round(pt.y), r: Math.round(9 * px), fill, stroke: '#1b4fd1', 'stroke-width': Math.round(2 * px), 'data-ps': 'flow-drive-handle', 'data-kind': kind, 'data-idx': String(idx), style: 'cursor:grab' })) c.setAttribute(k, v);
@@ -382,7 +383,7 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
     touched = true;
     store.apply('Edit driveway', (pr) => { const st = storedDriveway(pr) || { radiusM: 6 }; setStoredDriveway(pr, { endOffsetMm: dw.endOffsetMm, pis: dw.pis || [], radiusM: st.radiusM, widthMm: mm }); });
   }
-  function resetDriveway() { touched = true; store.apply('Reset driveway', (pr) => { setStoredDriveway(pr, null); }); }
+  function resetDriveway() { touched = true; store.apply('Reset driveway', (pr) => { setStoredDriveway(pr, null); const drawn = getWays(pr).find((w) => w.kind === 'driveway' && w.kerbEdge != null); if (drawn) removeWay(pr, drawn.id); }); }
 
   // Actions ----------------------------------------------------------------------------------------------------------------
   function nudge(sx, sy) { touched = true; coach.did('move'); nudgeHouse(store, sx * nudgeMm, sy * nudgeMm); }
