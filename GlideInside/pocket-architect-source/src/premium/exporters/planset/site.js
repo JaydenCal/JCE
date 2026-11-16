@@ -9,6 +9,7 @@
 import * as G from '../../../model/geometry.js';
 import { classifyEdges, requiredFor } from '../../../model/placement.js';
 import { boundaryDims, roadReserve, ROAD_DEFAULTS, deriveDriveway, clearances, buildingHull, lotLabelLines, inwardNormalOf } from '../../../site/lotplan.js';
+import { extraWays, pavedSummary, HATCH_KIND, SHEET_LABEL, MATERIALS as PAVE_MATERIALS } from '../../../site/pavedways.js';
 import { wallShapes } from '../shared.js';
 import { planGeometry, scaleBar } from '../pdf.js';
 import { hasGround, prepareContours, strokeContours, boxMask, placeContourLabels, drawSpotLevels, groundLevelFn, cornersOf, houseCorners } from './contours.js';
@@ -203,7 +204,7 @@ export function northPoint(doc, cx, cy, deg) {
 }
 
 /** Legend block for the title strip. */
-export function legendBlock({ contours = false } = {}) {
+export function legendBlock({ contours = false, paved = null } = {}) {
   const items = [
     ['Lot boundary (DCDB)', (doc, a, b) => { doc.setLineWidth(0.7); doc.setDrawColor(...PEN.ink); doc.line(a, b, a + 12, b); }],
     ['Adjoining lot boundary', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.line(a, b, a + 12, b); }],
@@ -212,7 +213,7 @@ export function legendBlock({ contours = false } = {}) {
     ['Walls', (doc, a, b) => { doc.setLineWidth(0.8); doc.setDrawColor(...PEN.ink); doc.line(a, b, a + 12, b); }],
     ['Roof line (eaves)', (doc, a, b) => { doc.setLineWidth(0.25); doc.setDrawColor(...PEN.ink); doc.setLineDashPattern([3, 1.2], 0); doc.line(a, b, a + 12, b); doc.setLineDashPattern([], 0); }],
     ['Kerb and gutter', (doc, a, b) => { doc.setLineWidth(0.25); doc.setDrawColor(...PEN.ink); doc.line(a, b - 0.5, a + 12, b - 0.5); doc.line(a, b + 0.5, a + 12, b + 0.5); }],
-    ['Concrete driveway', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.rect(a, b - 1.4, 12, 2.8, 'S'); hatch(doc, [{ x: a, y: b - 1.4 }, { x: a + 12, y: b - 1.4 }, { x: a + 12, y: b + 1.4 }, { x: a, y: b + 1.4 }], 'concrete'); }],
+    ...((paved && paved.length ? paved : [{ material: 'concrete' }]).map((e) => [paved && paved.length ? `${PAVE_MATERIALS[e.material].label} paving, ${Math.round(e.areaM2)} m2` : 'Concrete driveway', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.rect(a, b - 1.4, 12, 2.8, 'S'); hatch(doc, [{ x: a, y: b - 1.4 }, { x: a + 12, y: b - 1.4 }, { x: a + 12, y: b + 1.4 }, { x: a, y: b + 1.4 }], HATCH_KIND[e.material]); }])),
     ...(contours ? [['Contour (minor, major)', (doc, a, b) => { doc.setLineDashPattern([], 0); doc.setLineWidth(0.12); doc.setDrawColor(...PEN.contourMinor); doc.line(a, b - 0.7, a + 5.5, b - 0.7); doc.setLineWidth(0.26); doc.setDrawColor(...PEN.contourMajor); doc.line(a + 6.5, b + 0.7, a + 12, b + 0.7); }]] : []),
     ['Setback encroachment', (doc, a, b) => { doc.setLineWidth(0.3); doc.setDrawColor(...RED); doc.line(a, b, a + 12, b); }],
   ];
@@ -365,10 +366,22 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
       const sp = poly.map(S);
       doc.setFillColor(246, 246, 246);
       doc.lines(sp.slice(1).map((p, i) => [p.x - sp[i].x, p.y - sp[i].y]), sp[0].x, sp[0].y, [1, 1], 'FD', true);
-      hatch(doc, sp, 'concrete');
+      hatch(doc, sp, dw.manual ? HATCH_KIND[dw.material] || 'concrete' : 'concrete');
       regRing(field, sp);
     }
     driveCentre = dw.centre.map(S);
+  }
+  // Other driveways and roads drawn with the Driveway and road tool, each in the hatch of its material.
+  for (const { geom, way } of extraWays(project)) {
+    doc.setLineWidth(0.2);
+    doc.setDrawColor(...GREYLINE);
+    for (const pc of geom.pieces) {
+      const sp = pc.ring.map(S);
+      doc.setFillColor(246, 246, 246);
+      doc.lines(sp.slice(1).map((p, i) => [p.x - sp[i].x, p.y - sp[i].y]), sp[0].x, sp[0].y, [1, 1], 'FD', true);
+      hatch(doc, sp, HATCH_KIND[way.material] || 'concrete');
+      regRing(field, sp);
+    }
   }
 
   // Room names, only for rooms of about 12 m2 or more, over a white halo. The rest are named on A100.
@@ -528,7 +541,7 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
       const p = driveCentre[i];
       const q = driveCentre[i + 1];
       if (lenOf(p, q) < 0.01) continue;
-      cands.push(() => alongLabel(doc, 'CONC. DRIVEWAY', G.lerp(p, q, 0.5), G.norm(G.sub(q, p)), -6.8 * 0.3528 / 2, { size: 6.8, colour: [70, 74, 82], halo: 0.9 }));
+      cands.push(() => alongLabel(doc, dw?.manual ? `${SHEET_LABEL[dw.material] || 'CONC.'} DRIVEWAY` : 'CONC. DRIVEWAY', G.lerp(p, q, 0.5), G.norm(G.sub(q, p)), -6.8 * 0.3528 / 2, { size: 6.8, colour: [70, 74, 82], halo: 0.9 }));
     }
     field.place(cands, { lines: false });
   }
@@ -676,6 +689,7 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
     const masks = field.boxes.filter((b) => !b.nomask).map((b) => boxMask(b));
     if (hullPoly.length) masks.push(hullPoly.map(S));
     if (dw?.ok) for (const poly of [dw.polygon, dw.crossover?.polygon].filter(Boolean)) masks.push(poly.map(S));
+    for (const e of extraWays(project)) for (const pc of e.geom.pieces) masks.push(pc.ring.map(S));
     const before = pageStream.length;
     strokeContours(doc, contourLines, VP, masks);
     const added = pageStream.splice(before);
@@ -702,7 +716,8 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
     ['Setbacks F / S / R', [m(sb.front), m(sb.side), m(sb.rear)].map((v) => (typeof v === 'number' ? v.toFixed(2) : 'n/a')).join(' / ') + ' m'],
     ['Setback check', cl.status === 'ok' ? 'Inside setbacks (indicative)' : cl.status === 'breach' ? 'Outside setbacks (indicative)' : 'Setbacks not loaded'],
   ].filter(Boolean);
-  const blocks = [legendBlock({ contours: ground0 })];
+  const pavedSum = pavedSummary(project);
+  const blocks = [legendBlock({ contours: ground0, paved: pavedSum.byMaterial })];
   if (schedule.length) blocks.push(scheduleBlock(schedule));
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines and dimensions are indicative.', 'Driveway and road reserve are typical values.'];
   notes.push(ground0 ? `Levels are indicative only, from the ${lot.state === 'QLD' ? 'Queensland' : 'NSW'} 5 m DEM, not survey. Contours at 1.0 m intervals. A registered survey is required.` : 'No ground levels for this lot.');

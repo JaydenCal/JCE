@@ -13,6 +13,7 @@ export const TOOL_DEFS = [
   { id: 'stairs', key: 'S', label: 'Stairs', icon: 'stairs' },
   { id: 'deck', key: 'K', label: 'Deck or patio', icon: 'deck' },
   { id: 'tank', key: 'T', label: 'Rainwater tank', icon: 'tank' },
+  { id: 'pave', key: 'L', label: 'Road or pavement', icon: 'road', tip: 'Click to drop PI points along the centreline, then curve any PI. Double click or Enter finishes.' },
   { id: 'hardstand', key: 'P', label: 'Hardstand', icon: 'hardstand', commercialOnly: true },
   { id: 'measure', key: 'M', label: 'Measure', icon: 'measure' },
   { id: 'underlay', key: 'U', label: 'Underlay', icon: 'underlay' },

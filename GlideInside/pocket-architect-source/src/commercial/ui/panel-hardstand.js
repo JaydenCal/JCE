@@ -9,6 +9,8 @@ import { restoreSiteWorksIn } from '../../flow/com-logic.js';
 import { hardstandTypes, hardstandSummary, markingPrompts, OVERLAP_RULE } from '../catalogue/pavements/hardstand.js';
 import { makeUpShort, pavementById, RATES_CAVEAT } from '../catalogue/pavements/index.js';
 import { commercialEdit } from '../mode.js';
+import { setTool } from '../../ui/toolstate.js';
+import { setPaveState } from '../../editor2d/pave-state.js';
 import { addPromptMarking } from '../catalogue/pavements/hardstand.js';
 
 const money = (v) => `$${Math.round(v).toLocaleString('en-AU')}`;
@@ -35,7 +37,7 @@ export function hardstandPanel(ctx) {
 
   function modes() {
     const wrap = h('div', { class: 'ps-seg ps-seg--sm ps-hs-modes', role: 'group', 'aria-label': 'Draw mode', style: { flexWrap: 'wrap' } });
-    for (const m of HS_MODES) {
+    for (const m of HS_MODES.filter((x) => x.id !== 'road')) { // roads and paths have their own tool: Road or pavement (L)
       wrap.append(h('button', { class: 'ps-seg-btn', type: 'button', title: `${m.label} (${m.key}). ${m.hint}`, 'aria-pressed': String(hsState.mode === m.id), dataset: { ps: `hardstand-mode-${m.id}`, value: m.id }, onclick: () => { ctl()?.cancel?.(); setHsState({ mode: m.id }); } }, `${m.label} (${m.key})`));
     }
     return wrap;
@@ -43,7 +45,7 @@ export function hardstandPanel(ctx) {
 
   function roadKinds() {
     const wrap = h('div', { class: 'ps-seg ps-seg--sm', role: 'group', 'aria-label': 'Road kind', style: { flexWrap: 'wrap' } });
-    for (const k of ROAD_KINDS) wrap.append(h('button', { class: 'ps-seg-btn', type: 'button', title: k.hint, 'aria-pressed': String(hsState.roadKind === k.id), dataset: { ps: `hardstand-kind-${k.id}`, value: k.id }, onclick: () => { setRoadKind(k.id); setHsState({ mode: 'road' }); } }, k.label));
+    for (const k of ROAD_KINDS) wrap.append(h('button', { class: 'ps-seg-btn', type: 'button', title: k.hint, 'aria-pressed': String(hsState.roadKind === k.id), dataset: { ps: `hardstand-kind-${k.id}`, value: k.id }, onclick: () => { setRoadKind(k.id); setPaveState({ kind: k.id, material: null, widthMm: { [k.id]: k.widthMm } }); setTool(store, 'pave'); } }, k.label));
     wrap.append(h('button', { class: 'ps-seg-btn', type: 'button', title: 'A car park or hardstand is an area: drag a rectangle or click a polygon', dataset: { ps: 'hardstand-kind-area' }, onclick: () => setHsState({ mode: 'rect', type: 'asphalt-ac10-car' }) }, 'Car park or hardstand'));
     return wrap;
   }
@@ -63,7 +65,7 @@ export function hardstandPanel(ctx) {
     const kd = roadKind(hsState.roadKind);
     root.append(h('div', { class: 'ps-sec', dataset: { ps: 'hardstand-roads' } }, h('div', { class: 'ps-sec-title' }, 'Road, driveway, pavement'), roadKinds(),
       h('div', { class: 'ps-row', style: { gap: '8px', marginTop: '6px' } }, widthInput(hsState.roadWidth || kd.widthMm, (v) => setHsState({ roadWidth: v }), kd.minMm, kd.maxMm, 'hardstand-road-width'),
-        button('Draw', () => { ctl()?.cancel?.(); setHsState({ mode: 'road' }); }, { title: 'Click points on the plan. Double click or Enter finishes.' })),
+        button('Draw (L)', () => { ctl()?.cancel?.(); setPaveState({ kind: hsState.roadKind }); setTool(store, 'pave'); }, { title: 'Opens the Road or pavement tool: click PI points, double click or Enter finishes.' })),
       h('p', { class: 'ps-hint', style: { margin: '6px 0 0' } }, `${kd.hint}. The surface below is used for what you draw next.`)));
     root.append(h('div', { class: 'ps-sec' }, h('div', { class: 'ps-sec-title' }, 'Draw mode'), modes()));
     const t = pavementById(hsState.type);

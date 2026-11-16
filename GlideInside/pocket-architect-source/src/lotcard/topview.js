@@ -11,6 +11,7 @@ import { snapMove, moveWarnings, turnRing, shiftRing, boxCentre, inside, turnSna
 import { lotOf, houseCentre } from '../model/placement.js';
 import { buildingRings, deriveDriveway } from '../site/lotplan.js';
 import { fitFacts } from '../site/fit-advice.js';
+import { extraWays } from '../site/pavedways.js';
 import { schemeColours } from '../model/colour-schemes.js';
 import { createAerialToggle } from '../ui/aerial-toggle.js';
 
@@ -52,6 +53,7 @@ export function housingScene(project) {
   let dw = null;
   try { dw = deriveDriveway(project); } catch { dw = null; }
   if (dw?.ok) for (const poly of [dw.polygon, dw.crossover?.polygon]) if (poly) shapes.push({ kind: 'driveway', ring: ringPts(poly) });
+  try { for (const e of extraWays(project)) for (const pc of e.geom.pieces) shapes.push({ kind: 'driveway', ring: ringPts(pc.ring) }); } catch { /* none */ } // other drawn driveways and roads
   const roof = schemeColours(project)?.roof || '#6b7178';
   const rings = buildingRings(project).map(ringPts).filter((r) => r.length >= 3);
   for (const ring of rings) shapes.push({ kind: 'house', ring, fill: roof });

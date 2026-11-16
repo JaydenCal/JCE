@@ -4,6 +4,7 @@ import * as G from '../../../model/geometry.js';
 import { fallAcross, lotDimensions } from '../../../model/placement.js';
 import { scheduleData, levelsSorted } from '../shared.js';
 import { buildingRings, roadReserve, deriveDriveway, clearances, lotLabelLines, titleLotDp } from '../../../site/lotplan.js';
+import { pavedSummary, extraPavedInLotM2 } from '../../../site/pavedways.js';
 import { northArrow, placeImage, imageInfo } from '../pdf.js';
 import { PHANTOM, PEN, TXT, clean, wrap, fit, ink, polygon, viewTitle, clippedPolyline, clipPolygon, labelOn, hatch, haloText } from './kit.js';
 import { BODY } from './frame.js';
@@ -368,7 +369,9 @@ export function areaFigures(project, roofM2 = null) {
   const outdoor = data.totals.reduce((a, t) => a + t.outdoor, 0);
   const garage = data.rooms.filter((r) => r.type === 'Garage').reduce((a, r) => a + r.area, 0);
   const site = siteAreaOf(lot).m2 || null;
-  return { footprint, driveM2, crossM2, total, outdoor, garage, site, coverage: site ? (footprint / site) * 100 : null, roofM2, perLevel: data.totals, data };
+  const paved = pavedSummary(project);
+  const extraM2 = extraPavedInLotM2(project);
+  return { footprint, driveM2, crossM2, total, outdoor, garage, site, coverage: site ? (footprint / site) * 100 : null, roofM2, perLevel: data.totals, data, paved, extraM2 };
 }
 
 /** Subject polygon clipped to a convex polygon (Sutherland-Hodgman), in either winding. */
@@ -423,7 +426,8 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
     if (f.roofM2 != null) rows.push(['Roof area (from the model, sloped)', `${f.roofM2.toFixed(1)} m²`]);
     if (f.driveM2 > 0) rows.push(['Driveway within the lot (indicative)', `${f.driveM2.toFixed(1)} m²`]);
     if (f.crossM2 > 0) rows.push(['Crossover in the road reserve (indicative)', `${f.crossM2.toFixed(1)} m²`]);
-    if (f.site && f.driveM2 > 0) rows.push(['Remaining site area (soft and other hard)', fmtArea(Math.max(0, f.site - f.footprint - f.driveM2))]);
+    for (const e of f.paved.byMaterial) rows.push([`Drawn ${e.label.toLowerCase()} driveways and roads (with crossover)`, `${e.areaM2.toFixed(1)} m²`]);
+    if (f.site && (f.driveM2 > 0 || f.extraM2 > 0)) rows.push(['Remaining site area (soft and other hard)', fmtArea(Math.max(0, f.site - f.footprint - f.driveM2 - f.extraM2))]);
     const t = table(doc, colA, top, [{ w: wA - 32, head: 'ITEM' }, { w: 32, head: 'AREA', align: 'right' }], rows, opt);
     let y = t.y + 5;
     doc.setFont('helvetica', 'normal');
@@ -439,7 +443,8 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
       const parts = [
         ['Building footprint', f.footprint, PEN.proposed],
         ['Driveway within the lot', f.driveM2, [150, 150, 150]],
-        ['Remaining site area', Math.max(0, f.site - f.footprint - f.driveM2), PEN.proposedFill],
+        ['Other drawn driveways and roads', f.extraM2, [190, 180, 160]],
+        ['Remaining site area', Math.max(0, f.site - f.footprint - f.driveM2 - f.extraM2), PEN.proposedFill],
       ].filter((q) => q[1] > 0);
       let bx = colA;
       const bh = 12;
