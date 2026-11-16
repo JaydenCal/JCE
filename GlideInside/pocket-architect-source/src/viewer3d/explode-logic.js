@@ -26,7 +26,7 @@ export const easeInOutCubic = (t) => {
   const x = clamp01(t);
   return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 };
-export const lerp = (a, b, t) => a + (b - a) * t;
+export const lerp = (a, b, t) => (t >= 1 ? b : a + (b - a) * t);
 export const lerp3 = (a, b, t) => ({ x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t), z: lerp(a.z, b.z, t) });
 const phase = (p, a, b) => smooth((p - a) / (b - a));
 
@@ -110,7 +110,7 @@ export function offsetFor(targets, unit, ph) {
   }
   let y = lv.y * ph.levels;
   if (unit.role === 'roof') y = lv.y * ph.levels + (lv.roofY - lv.y) * ph.roof;
-  return { x, y, z };
+  return { x: x || 0, y: y || 0, z: z || 0 };
 }
 
 // Opacity of a unit at stage `ph` while `selectedId` is being edited.
