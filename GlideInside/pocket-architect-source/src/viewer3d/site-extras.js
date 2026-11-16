@@ -172,7 +172,8 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   
   // 1. Road, kerb, footpath ------------------------------------------------------------------------------------------------
   const reserves = layerOn(lot, 'road') ? roadReserve(lot, { extendM: 60 }) /* 16/11/2026: 400 m tails crossed large lots as phantom roads */ : [];
-  const dw = layerOn(lot, 'driveway') ? deriveDriveway(project) : null;
+  // A commercial site's drive is its own paved site works (asphalt), never the house driveway in concrete (owner 16/11/2026).
+  const dw = layerOn(lot, 'driveway') && project.mode !== 'commercial' ? deriveDriveway(project) : null;
   const streetDirs = [];
   if (reserves.length && extent) {
     const b = new GeoBuilder();
@@ -296,7 +297,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       drivePolys.push(dw.polygon);
     }
     // front door path
-    const door = frontDoor(project, streetDirs[0] || reserves[0] || null, lot);
+    const door = project.mode === 'commercial' ? null : frontDoor(project, streetDirs[0] || reserves[0] || null, lot);
     if (door) {
       const prop = (reserves[0] || streetDirs[0])?.lines?.property;
       if (prop) {

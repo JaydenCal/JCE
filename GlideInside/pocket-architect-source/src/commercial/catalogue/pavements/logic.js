@@ -71,7 +71,9 @@ export function defaultAreas(commercial) {
   // The automatic site layout: crossover pads, aisles, forecourt and apron slabs, bay rows and footpaths (sitelayout.js).
   const sw = siteWorksOf(c);
   if (sw && c.parking?.enabled !== false) {
-    for (const f of sw.forecourts || []) out.push({ id: f.id, role: 'apron', rowId: null, polygon: f.polygon });
+    // An estate's entry drive and court are one asphalt surface with the car park (owner 16/11/2026: no concrete path down the middle).
+    const isEstate = !!estateOf(c);
+    for (const f of sw.forecourts || []) out.push({ id: f.id, role: isEstate ? 'aisle' : 'apron', rowId: null, polygon: f.polygon });
     for (const a of sw.aprons || []) out.push({ id: a.id, role: 'apron', rowId: null, polygon: a.polygon });
     for (const x of sw.crossovers || []) if (x.polygon) out.push({ id: `${x.id}:pad`, role: 'aisle', rowId: null, polygon: x.polygon });
     for (const a of sw.pavedAisles || []) out.push({ id: a.id, role: 'aisle', rowId: null, polygon: a.polygon });
