@@ -367,3 +367,29 @@ export function editAccess(p, patch) {
   return p.commercial.accessEdit || null;
 }
 export function editAccessIn(store, patch, label = 'Edit entry and exit') { store.apply(label, (p) => { editAccess(p, patch); }); }
+
+
+// Remove and restore parts of the automatic site layout: project.commercial.siteRemoved = { kinds, ids } (see siteWorksOf in catalogue/buildings.js).
+export const REMOVABLE_LABELS = { driveway: 'Driveway', crossovers: 'Entries and exits', aisles: 'Aisles and roads', footpaths: 'Footpaths', aprons: 'Aprons', forecourts: 'Forecourts', landscape: 'Landscaping' };
+export const removedKinds = (p) => (Array.isArray(p?.commercial?.siteRemoved?.kinds) ? [...p.commercial.siteRemoved.kinds] : []);
+
+/** Switch a kind of paving or road off (or back on). Pure on the object. Returns true when it is now removed. */
+export function toggleSiteKind(p, kind) {
+  if (!p?.commercial || !REMOVABLE_LABELS[kind]) return false;
+  const r = { kinds: removedKinds(p), ids: [...(p.commercial.siteRemoved?.ids || [])] };
+  const on = r.kinds.includes(kind);
+  r.kinds = on ? r.kinds.filter((k) => k !== kind) : [...r.kinds, kind];
+  if (!r.kinds.length && !r.ids.length) delete p.commercial.siteRemoved; else p.commercial.siteRemoved = r;
+  return !on;
+}
+/** Remove one road, aisle, footpath or paved area by its id (sw:aisle:0 ...). */
+export function removeSiteItem(p, id) {
+  if (!p?.commercial || typeof id !== 'string' || !id) return false;
+  const r = { kinds: removedKinds(p), ids: [...(p.commercial.siteRemoved?.ids || [])] };
+  if (!r.ids.includes(id)) r.ids.push(id);
+  p.commercial.siteRemoved = r;
+  return true;
+}
+export function restoreSiteWorks(p) { if (p?.commercial) delete p.commercial.siteRemoved; return true; }
+export const toggleSiteKindIn = (store, kind, label) => store.apply(label || `Toggle ${REMOVABLE_LABELS[kind] || kind}`, (p) => { toggleSiteKind(p, kind); });
+export const restoreSiteWorksIn = (store) => store.apply('Restore roads and paving', (p) => { restoreSiteWorks(p); });

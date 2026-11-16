@@ -30,7 +30,32 @@ export function layoutSig(c) {
 /** The automatic site layout (commercial.siteWorks) when it matches the buildings as they stand now, else null. Never a stale layout. */
 export function siteWorksOf(c) {
   const sw = c?.siteWorks;
-  return sw && sw.bsig === layoutSig(c) ? sw : null;
+  if (!(sw && sw.bsig === layoutSig(c))) return null;
+  return withoutRemoved(sw, c.siteRemoved);
+}
+
+// What the person has removed from the automatic site layout: project.commercial.siteRemoved = { kinds: [...], ids: [...] }. Kinds are the
+// site works lists ('crossovers', 'aisles', 'footpaths', 'aprons', 'forecourts', 'landscape') or 'driveway' (the long access driveway drawn when
+// there are no generated entrances). Filtering happens here, on read, so the layout itself is untouched, a removal can be undone and a re-run of
+// the layout keeps what was removed.
+export const SITE_REMOVABLE = ['crossovers', 'aisles', 'footpaths', 'aprons', 'forecourts', 'landscape'];
+const filtered = new WeakMap();
+function withoutRemoved(sw, removed) {
+  const kinds = Array.isArray(removed?.kinds) ? removed.kinds : [];
+  const ids = Array.isArray(removed?.ids) ? removed.ids : [];
+  if (!kinds.length && !ids.length) return sw;
+  const sig = JSON.stringify([kinds, ids]);
+  const hit = filtered.get(sw);
+  if (hit && hit.sig === sig) return hit.value;
+  const gone = new Set(ids);
+  const out = { ...sw };
+  for (const k of SITE_REMOVABLE) {
+    if (!Array.isArray(sw[k])) continue;
+    out[k] = kinds.includes(k) ? [] : sw[k].filter((x) => !gone.has(x?.id));
+  }
+  if (Array.isArray(sw.pavedAisles)) out.pavedAisles = kinds.includes('aisles') ? [] : sw.pavedAisles.filter((x) => !gone.has(x?.id));
+  filtered.set(sw, { sig, value: out });
+  return out;
 }
 
 export const hasBuildings = (c) => Array.isArray(c?.buildings) && c.buildings.length > 0;

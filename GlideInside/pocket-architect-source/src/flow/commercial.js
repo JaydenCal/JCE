@@ -24,7 +24,7 @@ import { moveBuilding } from '../commercial/catalogue/ops.js';
 import { parkingLayout, doorStrips } from '../commercial/parking.js';
 import { siteAccess } from '../commercial/access.js';
 import { commercialStats } from '../commercial/stats.js';
-import { baysText, offsetAlongFront, editAccessIn } from './com-logic.js';
+import { baysText, offsetAlongFront, editAccessIn, REMOVABLE_LABELS, removedKinds, toggleSiteKindIn, restoreSiteWorksIn } from './com-logic.js';
 
 export const COMMERCIAL_BRAND = 'Glide Inside Commercial';
 const STATUS_COLOUR = { inside: '#17724a', outside: '#c77700', unknown: '#1b4fd1', none: '#1b4fd1' };
@@ -102,6 +102,9 @@ function mountPlaceStep(ctx) {
   const pad = h('div', { class: 'gf-pad', role: 'group', 'aria-label': 'Nudge the selected building' }, h('span'), arrow('↑', 0, -1, 'flow-nudge-up'), h('span'), arrow('←', -1, 0, 'flow-nudge-left'), h('span', { class: 'gf-mid' }, 'nudge'), arrow('→', 1, 0, 'flow-nudge-right'), h('span'), arrow('↓', 0, 1, 'flow-nudge-down'), h('span'));
   const dupBtn = mk('Duplicate', () => duplicate(), 'flow-duplicate', '', { title: 'A copy of the selected building, placed in free space' });
   const delBtn = mk('Remove', () => remove(), 'flow-remove', '', { title: 'Remove the selected building' });
+  const removeBtns = Object.entries(REMOVABLE_LABELS).map(([kind, label]) => mk(`Remove ${label.toLowerCase()}`, () => toggleSiteKindIn(store, kind, `Remove ${label.toLowerCase()}`), `flow-remove-${kind}`, 'gf-btn--sm', { 'aria-pressed': 'false', title: `Take the ${label.toLowerCase()} off the plan. Press again to bring it back.` }));
+  const roadsRow = h('div', { class: 'gf-row', style: { gap: '6px', flexWrap: 'wrap' } }, ...removeBtns, mk('Restore all', () => restoreSiteWorksIn(store), 'flow-restore-site', 'gf-btn--sm'));
+  const paintRoadsRow = () => { const off = removedKinds(store.project); Object.keys(REMOVABLE_LABELS).forEach((kind, i) => { const on = off.includes(kind); const b = removeBtns[i]; b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.textContent = `${on ? 'Bring back' : 'Remove'} ${REMOVABLE_LABELS[kind].toLowerCase()}`; }); };
   const side = h('div', { class: 'gf-side' },
     h('div', { class: 'gf-card' }, nameEl, h('div', { style: { height: '8px' } }), statusEl, parkEl),
     h('div', { class: 'gf-card' },
@@ -114,7 +117,11 @@ function mountPlaceStep(ctx) {
       h('div', { class: 'gf-row', style: { gap: '6px', flexWrap: 'wrap' } },
         h('label', { class: 'gf-note' }, 'Width ', h('select', { dataset: { ps: 'flow-access-width' }, onchange: (e) => editAccessIn(store, { widthMm: Number(e.target.value) }) }, ...[4000, 6000, 8000, 10000].map((w) => h('option', { value: String(w) }, `${(w / 1000).toFixed(1)} m`)))),
         mk('Reset entry and exit', () => editAccessIn(store, null, 'Reset entry and exit'), 'flow-access-reset', 'gf-btn--sm')),
-      h('p', { class: 'gf-note' }, 'Drag a white dot to slide the entry or exit along the street frontage.')),
+      h('p', { class: 'gf-note' }, 'Drag a white dot to slide the entry or exit along the street frontage.'),
+      h('div', { style: { height: '8px' } }),
+      h('div', { class: 'gf-note', style: { fontWeight: '600' } }, 'Roads and paving'),
+      roadsRow,
+      h('p', { class: 'gf-note' }, 'Switch off any road, driveway or paving you do not want. Switch it on again to bring it back.')),
     h('div', { class: 'gf-card' },
       h('div', { class: 'gf-ctl' }, mk('Add building', () => addBuilding(), 'flow-add-building', 'gf-btn--primary'), dupBtn, delBtn),
       h('div', { style: { height: '10px' } }),
@@ -217,6 +224,7 @@ function mountPlaceStep(ctx) {
   function paintPanel(st = placementStatus(store.project)) {
     statusEl.dataset.state = st.state;
     statusEl.replaceChildren(h('span', { 'aria-hidden': 'true' }, st.state === 'inside' ? '✓' : st.state === 'outside' ? '!' : 'i'), h('span', null, st.state === 'inside' ? 'Inside the setbacks. Good position.' : st.text));
+    paintRoadsRow();
     const c = store.project.commercial;
     parkEl.textContent = baysText(commercialStats(store.project).parking);
     const sel = selectedItem();

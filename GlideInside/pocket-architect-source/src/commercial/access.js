@@ -100,5 +100,6 @@ export function siteAccess(commercial, lot) {
   const n = { x: -dir.y * (widthMm / 2), y: dir.x * (widthMm / 2) };
   const quad = (a, c) => [{ x: a.x + n.x, y: a.y + n.y }, { x: c.x + n.x, y: c.y + n.y }, { x: c.x - n.x, y: c.y - n.y }, { x: a.x - n.x, y: a.y - n.y }];
   const out = { x: q.x + dir.x * CROSSOVER_PAD_MM, y: q.y + dir.y * CROSSOVER_PAD_MM };
-  return { from: p, to: q, widthMm, lengthMm: L, driveway: L > 1 ? quad(p, q) : null, crossover: quad(q, out), auto: !given };
+  const noDrive = Array.isArray(commercial.siteRemoved?.kinds) && commercial.siteRemoved.kinds.includes('driveway');
+  return { from: p, to: q, widthMm, lengthMm: L, driveway: L > 1 && !noDrive ? quad(p, q) : null, crossover: quad(q, out), auto: !given };
 }
