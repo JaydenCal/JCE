@@ -71,7 +71,7 @@ export function meanPadRL(project, lot, fp) {
  * Defined everywhere (clamped to the elevation grid, flat at slab level when there is no grid), so the mesh never has a hole.
  * Pure: also used by tests.
  */
-export function terrainModel(project) {
+export function terrainModel(project, opts = {}) {
   const lot = project.site?.lot;
   if (!lot) return null;
   let floorRL = floorRLOf(lot);
@@ -114,7 +114,7 @@ export function terrainModel(project) {
           corridors.push({ poly: [L.footpathNear[0], L.footpathNear[1], L.farKerb[1], L.farKerb[0]].map((q) => ({ x: q.x, y: q.y })), u: r.u, outward: r.outward });
         }
       }
-      grading = planGrading({ rawAt: rawY, padY, fp, paving, driveways, corridors });
+      grading = planGrading({ rawAt: rawY, padY, fp, pads: project.mode === 'commercial' && project.commercial ? buildingsOf(project.commercial).map((b) => b.outline).filter((q) => q?.length >= 3) : null, paving, driveways, corridors, cellM: opts.cellM || 0.75 });
     } catch (e) {
       console.warn('[viewer3d] auto grading skipped', e);
     }
@@ -377,11 +377,12 @@ ${aerial ? `  vec3 aerC = texture2D(uAerialTex, vAerUv).rgb;
  */
 export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour = null, wideTexture = null, wideEdgeColour = null, showContours = false } = {}) {
   const lot = project.site?.lot;
-  const tm = terrainModel(project);
+  const ext0 = S.terrainExtent(lot, 30);
+  const dims = ext0 ? S.gridDims(ext0) : null;
+  const tm = terrainModel(project, { cellM: dims ? Math.max(dims.dx, dims.dy) / 1000 : 0.75 });
   if (!tm || !S.siteReady(project)) return null;
-  const ext = S.terrainExtent(lot, 30);
+  const ext = ext0;
   if (!ext) return null;
-  const dims = S.gridDims(ext);
   const { cols, rows } = dims;
   const heights = new Float32Array(cols * rows);
   const pos = new Float32Array(cols * rows * 3);

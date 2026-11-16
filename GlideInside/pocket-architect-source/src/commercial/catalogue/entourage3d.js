@@ -201,7 +201,7 @@ export function addForecourtSlabs(root, project, surf) {
       const ax = p0.x + (p1.x - p0.x) * s; const ay = p0.y + (p1.y - p0.y) * s;
       const bx = p3.x + (p2.x - p3.x) * s; const by = p3.y + (p2.y - p3.y) * s;
       const x = ax + (bx - ax) * t; const z = ay + (by - ay) * t;
-      return { v: [x, H(x, z) + 0.035, z], uv: [(s * nu) / 4, (t * nv) / 4] };
+      return { v: [x, H(x, z) + 0.025, z], uv: [(s * nu) / 4, (t * nv) / 4] };
     };
     for (let i = 0; i < nu; i++) for (let j = 0; j < nv; j++) {
       const a = P(i, j); const c2 = P(i + 1, j); const d = P(i + 1, j + 1); const f = P(i, j + 1);

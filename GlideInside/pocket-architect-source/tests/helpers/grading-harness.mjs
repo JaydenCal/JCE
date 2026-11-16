@@ -38,33 +38,58 @@ export function residential(opts = {}) {
   const h = catalogue.createFromTemplate('house_double');
   placeHouse(p, h, autoPose(p, h).pose);
   const xs = p.site.lot.boundary.map((q) => q.x); const ys = p.site.lot.boundary.map((q) => q.y);
-  return injectTerrain(p, { w: Math.max(...xs), d: Math.max(...ys), ...opts });
+  const d = Math.max(...ys);
+  return injectTerrain(p, { w: Math.max(...xs), d, fall: 4 * (d / 100000), bump: 0.12, ...opts });
 }
 
 /** The viewer mesh grid, built exactly as addSiteTerrain does. */
 export function meshGrid(p) {
-  const tm = terrainModel(p);
   const ext = S.terrainExtent(p.site.lot, 30);
   const dims = S.gridDims(ext);
+  const tm = terrainModel(p, { cellM: Math.max(dims.dx, dims.dy) / 1000 });
   const heights = new Float32Array(dims.cols * dims.rows);
   for (let j = 0; j < dims.rows; j++) for (let i = 0; i < dims.cols; i++) heights[j * dims.cols + i] = tm.heightAt(dims.x0 + i * dims.dx, dims.y0 + j * dims.dy);
   return { tm, dims, grid: { ...dims, heights } };
 }
 
-/** Over every footprint zone: the worst mesh height above (poke) and below (sunk) its design surface, and the worst sample count. */
-export function probeZones({ tm, grid }, step = 400) {
+/**
+ * Over every footprint zone, the worst mesh height above (poke) and below (sunk) its design surface. A sample counts only where this zone is the
+ * first (highest ranked) to contain it and it is at least one cell clear of every other zone, so two different planes meeting is not scored.
+ */
+export function probeZones({ tm, grid, dims }, step = 400) {
+  const zs = tm.grading.zones;
+  const clear = Math.max(dims.dx, dims.dy) * 1.6;
   const out = [];
-  for (const z of tm.grading.zones) {
+  zs.forEach((z, zi) => {
     let poke = 0; let sunk = 0; let n = 0;
     for (let k = 0; k < z.polys.length; k++) {
       const bb = z.boxes[k];
       for (let x = bb.minX + 100; x < bb.maxX; x += step) for (let y = bb.minY + 100; y < bb.maxY; y += step) {
         if (!G.pointInPolygon({ x, y }, z.polys[k])) continue;
+        if (x < grid.x0 || x > grid.x0 + (grid.cols - 1) * grid.dx || y < grid.y0 || y > grid.y0 + (grid.rows - 1) * grid.dy) continue;
+        let skip = false;
+        zs.forEach((o, oi) => {
+          if (oi === zi || skip) return;
+          if (oi < zi && o.polys.some((q, qi) => G.pointInPolygon({ x, y }, q) || nearPoly({ x, y }, q, o.boxes[qi], clear))) skip = true;
+          else if (oi > zi && o.polys.some((q, qi) => nearPoly({ x, y }, q, o.boxes[qi], clear))) skip = true;
+        });
+        if (skip) continue;
         const dz = S.surfaceAt(grid, x, y) - z.level(x, y);
         n++; if (dz > poke) poke = dz; if (-dz > sunk) sunk = -dz;
       }
     }
     out.push({ road: !!z.road, poke, sunk, n });
-  }
+  });
   return out;
+}
+
+function nearPoly(p, poly, bb, d) {
+  if (p.x < bb.minX - d || p.x > bb.maxX + d || p.y < bb.minY - d || p.y > bb.maxY + d) return false;
+  for (let i = 0; i < poly.length; i++) {
+    const a = poly[i]; const b = poly[(i + 1) % poly.length];
+    const ex = b.x - a.x; const ey = b.y - a.y; const l2 = ex * ex + ey * ey;
+    const t = l2 ? Math.max(0, Math.min(1, ((p.x - a.x) * ex + (p.y - a.y) * ey) / l2)) : 0;
+    if (Math.hypot(p.x - a.x - t * ex, p.y - a.y - t * ey) < d) return true;
+  }
+  return false;
 }

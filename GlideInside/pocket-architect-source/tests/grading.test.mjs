@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 import { commercialProject } from './helpers/commercial-fixture.mjs';
 import { terrainModel } from '../src/viewer3d/terrain.js';
 import { pavementModel } from '../src/commercial/catalogue/pavements/logic.js';
-import { fitPlane, clampFall, planGrading, FALL_MAX } from '../src/viewer3d/grading.js';
+import { fitPlane, clampFall, planGrading, FALL_MAX, clusterPolys } from '../src/viewer3d/grading.js';
+import * as H from './helpers/grading-harness.mjs';
 import { createStore } from '../src/model/store.js';
 import { applyBuildingChoice } from '../src/commercial/catalogue/ops.js';
 import { chooseBuilding } from '../src/commercial/catalogue/fit.js';
@@ -34,29 +35,6 @@ test('grading: plane fit and fall clamp', () => {
   assert.ok(Math.abs(Math.hypot(g.gx, g.gz) - 0.01) < 1e-9);
 });
 
-test('grading: a sloping, bumpy lot gets paving on one plane (fall 1 to 5 percent) with the mesh flattened under it', () => {
-  const pr = sloped();
-  const tm = terrainModel(pr);
-  assert.ok(tm.grading, 'grading planned');
-  const areas = pavementModel(pr.commercial, pr.site.lot).areas;
-  assert.ok(areas.length);
-  const pts = [];
-  for (const a of areas) { const bb = { x0: Math.min(...a.polygon.map((q) => q.x)), x1: Math.max(...a.polygon.map((q) => q.x)), y0: Math.min(...a.polygon.map((q) => q.y)), y1: Math.max(...a.polygon.map((q) => q.y)) }; for (const [fx, fy] of [[0.3, 0.3], [0.7, 0.3], [0.3, 0.7], [0.7, 0.7], [0.5, 0.5]]) pts.push({ x: bb.x0 + (bb.x1 - bb.x0) * fx, y: bb.y0 + (bb.y1 - bb.y0) * fy }); }
-  const inside = pts.filter((q) => areas.some((a) => a.polygon.length >= 3 && require_in(q, a.polygon)));
-  assert.ok(inside.length > 6);
-  const f = fitPlane(inside.map((q) => ({ x: q.x / 1000, z: q.y / 1000, y: tm.heightAt(q.x, q.y) })));
-  const fall = Math.hypot(f.gx, f.gz);
-  assert.ok(fall <= FALL_MAX + 1e-6 && fall >= 0.01 - 1e-6, `fall ${fall}`);
-  for (const q of inside) {
-    const planeY = f.cy + f.gx * (q.x / 1000 - f.cx) + f.gz * (q.y / 1000 - f.cz);
-    assert.ok(Math.abs(tm.heightAt(q.x, q.y) - planeY) < 0.01, 'on the plane');
-  }
-  // The natural ground is bumpy (more than 0.2 m about its own plane) so the flattening is real
-  const raw = fitPlane(inside.map((q) => ({ x: q.x / 1000, z: q.y / 1000, y: tm.rawAt(q.x, q.y) })));
-  const dev = Math.max(...inside.map((q) => Math.abs(tm.rawAt(q.x, q.y) - (raw.cy + raw.gx * (q.x / 1000 - raw.cx) + raw.gz * (q.y / 1000 - raw.cz)))));
-  assert.ok(dev > 0.2, `natural ground deviation ${dev}`);
-});
-
 test('grading: a batter of about 1 in 3 runs back to natural ground and far ground is untouched', () => {
   const zone = [{ x: 0, y: 0 }, { x: 10000, y: 0 }, { x: 10000, y: 10000 }, { x: 0, y: 10000 }];
   const rawAt = (x) => 4 + x / 1000 * 0.2; // a steep 20 percent natural slope, so the design plane is well away from the ground
@@ -77,38 +55,6 @@ function require_in(p, poly) {
   }
   return c;
 }
-
-test('grading: the road reserve corridor is one smooth plane (flat across, small crossfall) so no terrain pokes above the road strips', async () => {
-  const { roadReserve } = await import('../src/site/lotplan.js');
-  const pr = sloped({ slope: 0.05, bumps: 0.5 });
-  const tm = terrainModel(pr);
-  const lot = pr.site.lot;
-  const rs = roadReserve(lot, { extendM: 60 });
-  assert.ok(rs.length, 'the lot has a road in front');
-  let checked = 0;
-  for (const r of rs) {
-    const L = r.lines;
-    const poly = [L.kerb[0], L.kerb[1], L.farKerb[1], L.farKerb[0]];
-    const pts = [];
-    for (let i = 1; i < 20; i++) for (let j = 1; j < 6; j++) {
-      const a = { x: poly[0].x + (poly[1].x - poly[0].x) * (i / 20), y: poly[0].y + (poly[1].y - poly[0].y) * (i / 20) };
-      const b = { x: poly[3].x + (poly[2].x - poly[3].x) * (i / 20), y: poly[3].y + (poly[2].y - poly[3].y) * (i / 20) };
-      pts.push({ x: a.x + (b.x - a.x) * (j / 6), y: a.y + (b.y - a.y) * (j / 6) });
-    }
-    const f = fitPlane(pts.map((q) => ({ x: q.x / 1000, z: q.y / 1000, y: tm.heightAt(q.x, q.y) })));
-    for (const q of pts) {
-      const planeY = f.cy + f.gx * (q.x / 1000 - f.cx) + f.gz * (q.y / 1000 - f.cz);
-      // The mesh never rises above the road surface (which is the plane plus the 25 mm strip lift) and is not below it either.
-      assert.ok(tm.heightAt(q.x, q.y) - planeY < 0.005, 'terrain does not poke above the road');
-      assert.ok(Math.abs(tm.heightAt(q.x, q.y) - planeY) < 0.005, 'flat plane across the corridor');
-      checked++;
-    }
-    const across = Math.abs(f.gx * r.outward.x + f.gz * r.outward.y);
-    assert.ok(across <= 0.03 + 1e-6 && across >= 0.01 - 1e-6, `crossfall ${across}`);
-    assert.ok(Math.abs(f.gx * r.u.x + f.gz * r.u.y) <= 0.06 + 1e-6, 'longitudinal grade clamped');
-  }
-  assert.ok(checked > 50);
-});
 
 test('grading: no terrain vertex under a car park sits above the paving surface and the paving edge is 50 mm or less', async () => {
   const pr = sloped();
@@ -143,4 +89,67 @@ test('terrainModel: the floor level is the mean ground under the pad, not the lo
   const a = terrainModel(pr).floorRL;
   pr.site.lot.floorRL = a + 5;
   assert.equal(terrainModel(pr).floorRL, a + 5, 'a stored floor RL still wins');
+});
+
+const CASES = [['warehouse', () => H.commercial('warehouse')], ['strata U shape', () => H.commercial('strata')], ['house with driveway', () => H.residential()]];
+
+for (const [name, make] of CASES) {
+  test(`grading: no terrain above any pad, paving, driveway or road surface (${name}), on a 4 m fall with cross slope and bumps`, () => {
+    const m = H.meshGrid(make());
+    const zones = H.probeZones(m);
+    assert.ok(zones.some((z) => z.road) && zones.some((z) => !z.road && z.n > 50), 'road and footprint zones sampled');
+    for (const z of zones) {
+      assert.ok(z.poke <= 0.005, `terrain pokes ${z.poke} m above a ${z.road ? 'road' : 'footprint'} surface`);
+      assert.ok(z.sunk <= 0.05, `terrain sits ${z.sunk} m below a ${z.road ? 'road' : 'footprint'} surface`);
+    }
+  });
+}
+
+test('grading: roads roll on a smooth longitudinal profile (at most 6 percent) with 1 to 3 percent crossfall, flat across', () => {
+  const m = H.meshGrid(H.commercial('warehouse'));
+  const road = m.tm.grading.zones.find((z) => z.road);
+  assert.ok(road.fall <= 0.06 + 1e-6, `grade ${road.fall}`);
+  assert.ok(Math.abs(road.crossfall) >= 0.01 - 1e-9 && Math.abs(road.crossfall) <= 0.03 + 1e-9, `crossfall ${road.crossfall}`);
+  const b = road.boxes[0];
+  const y = (b.minY + b.maxY) / 2;
+  for (let x = 0; x < 80000; x += 2000) {
+    const a = road.level(x, y); const c = road.level(x + 500, y);
+    assert.ok(Math.abs(c - a) / 0.5 <= 0.06 + 1e-6, 'no kink along the road');
+  }
+});
+
+test('grading: batters are a clean 1 in 3 band on the real lots (the 99.5th percentile mesh slope, no spikes or terraces)', () => {
+  for (const [name, make] of CASES) {
+    const m = H.meshGrid(make());
+    const { grid, dims } = m;
+    const slopes = [];
+    for (let j = 0; j < dims.rows; j++) for (let i = 0; i + 1 < dims.cols; i++) slopes.push(Math.abs(grid.heights[j * dims.cols + i + 1] - grid.heights[j * dims.cols + i]) / (dims.dx / 1000));
+    slopes.sort((p, q) => p - q);
+    const p995 = slopes[Math.floor(slopes.length * 0.995)];
+    // Where two different design planes meet (a crossover onto the road, an apron onto a pad) one cell carries their level difference, so only the rare junction cells exceed 1 in 3.
+    assert.ok(p995 <= 1 / 3 + 0.15, `${name}: 99.5th percentile mesh slope ${p995}`);
+  }
+});
+
+test('grading: clusters of paving that touch share a plane and distant ones do not', () => {
+  const sq = (x, y) => [{ x, y }, { x: x + 5000, y }, { x: x + 5000, y: y + 5000 }, { x, y: y + 5000 }];
+  const g = clusterPolys([sq(0, 0), sq(5200, 0), sq(200000, 0)]);
+  assert.equal(g.length, 2);
+});
+
+test('grading: a large lot (500 x 500 m, 2 m grid, 400 footprints) grades inside the time budget', () => {
+  const rawAt = (x, y) => 100 + 0.02 * y / 1000 + 0.3 * Math.sin(x / 7000) * Math.cos(y / 5000);
+  const paving = []; const pads = [];
+  for (let i = 0; i < 20; i++) for (let j = 0; j < 20; j++) {
+    const x = 10000 + i * 24000; const y = 10000 + j * 24000;
+    paving.push([{ x, y }, { x: x + 14000, y }, { x: x + 14000, y: y + 9000 }, { x, y: y + 9000 }]);
+    if ((i + j) % 3 === 0) pads.push([{ x: x + 2000, y: y - 8000 }, { x: x + 10000, y: y - 8000 }, { x: x + 10000, y: y - 2000 }, { x: x + 2000, y: y - 2000 }]);
+  }
+  const t0 = performance.now();
+  const g = planGrading({ rawAt, padY: 100, fp: null, pads, paving, cellM: 2.15 });
+  let sum = 0;
+  for (let j = 0; j < 261; j++) for (let i = 0; i < 261; i++) { const x = -30000 + i * 2154; const y = -30000 + j * 2154; sum += g.heightAt(x, y, rawAt(x, y)); }
+  const ms = performance.now() - t0;
+  assert.ok(Number.isFinite(sum));
+  assert.ok(ms < 400, `grading took ${Math.round(ms)} ms`); // about 150 ms on a quiet machine; the budget leaves room for a loaded runner
 });

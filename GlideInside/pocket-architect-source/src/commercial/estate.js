@@ -357,11 +357,7 @@ export function realise(E, sc, f, spec, lot) {
   for (const r of [...(E.fz?.paved || []), ...E.paved]) paved.push({ id: `sw:paved:${k++}`, polygon: R(r).polygon, role: r.role, name: r.id });
   const aprons = E.aprons.map((r, i) => ({ id: `sw:apron:${i}`, buildingId: null, polygon: R(r).polygon }));
   const foot = E.foot.map((r, i) => ({ id: `sw:foot:${i}`, buildingId: null, polygon: R(r).polygon }));
-  // the pedestrian link: street footpath edge, down beside the entry drive, across to the facade footpaths
-  const pa = sc + E.pedA;
-  const pedW = FOOT_W;
-  const T0 = E.T0;
-  foot.push({ id: `sw:foot:${foot.length}`, buildingId: null, pedestrian: true, polygon: rect(f, pa - pedW / 2, pa + pedW / 2, -VERGE, T0 - 0) });
+  // No separate pedestrian link from the street: the entry drive and the car park are one continuous asphalt surface (owner, 16/11/2026).
   if (E.cross) foot.push({ id: `sw:foot:${foot.length}`, buildingId: null, polygon: rect(f, sc + E.cross.a0, sc + E.cross.a1, E.cross.t0, E.cross.t1) });
   // crossovers
   const crossovers = E.xovers.map((x, i) => {

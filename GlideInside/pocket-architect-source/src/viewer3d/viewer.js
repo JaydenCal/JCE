@@ -564,6 +564,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     dirtyModel = true;
     if (!active) return;
     clearTimeout(rebuildTimer);
+    // Debounce regrading while dragging: a slow rebuild (large lot, many footprints) waits proportionally longer between runs.
+    if (delay >= 100 && stats.buildMs > 150) delay = Math.min(600, Math.round(stats.buildMs * 1.5));
     rebuildTimer = setTimeout(rebuild, delay);
   }
 
