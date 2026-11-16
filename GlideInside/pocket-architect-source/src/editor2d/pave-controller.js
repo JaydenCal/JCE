@@ -20,6 +20,7 @@ export function createPaveController({ store, scale, toast = () => {}, redraw = 
   let meta = []; // per point: { kerbEdge }
   let rubber = null;
   let hover = null;
+  let finishedAt = 0; // when a road was last finished, so the tail of a double click does not edit it
   let drag = null; // { kind: 'vertex' | 'move', ... }
   let activeVertex = null;
   const setActive = (v) => { activeVertex = v; if (paveState.vertex !== v) setPaveState({ vertex: v }); };
@@ -62,6 +63,7 @@ export function createPaveController({ store, scale, toast = () => {}, redraw = 
     const way = edit(`Add ${kind()}`, (p) => P.addWay(p, spec));
     if (!way) return null;
     pts = []; meta = []; rubber = null;
+    finishedAt = Date.now();
     setPaveState({ selected: way.id, mode: 'edit' });
     setActive(null);
     const d = describe(way);
@@ -204,8 +206,7 @@ export function createPaveController({ store, scale, toast = () => {}, redraw = 
     if (paveState.mode === 'draw') {
       let s = withLock(snap(w, mods), mods);
       hover = s;
-      // Closing onto the first point of a draft with three or more points finishes it.
-      if (pts.length >= 2 && dist(s, pts.at(-1)) <= tolMm() * 0.6) { finish(); return true; }
+      // A second click on the point just dropped is the second half of a double click: the dblClick event finishes the road.
       pushPoint(s);
       // A click on the kerb ends a road or driveway that was started elsewhere (the house end first).
       if (pts.length >= 2 && s.kind === 'kerb' && meta[0]?.kerbEdge == null) { finish(); return true; }
@@ -306,7 +307,7 @@ export function createPaveController({ store, scale, toast = () => {}, redraw = 
   function dblClick(w) {
     if (paveState.mode === 'draw') { if (pts.length >= 2) finishAfterDouble(); return; }
     const sel = selectedWay();
-    if (!sel) return;
+    if (!sel || Date.now() - finishedAt < 600) return;
     const tol = tolMm();
     const vi = sel.pts.findIndex((p) => dist(p, w) <= tol);
     if (vi >= 0) { removeVertexOf(sel.id, vi); return; }
@@ -400,7 +401,7 @@ export function createPaveController({ store, scale, toast = () => {}, redraw = 
       out.readout = fmtM(dist(pts[0], rubber) / 1000);
     }
     {
-      const lg = out.geom || out.selected?.geom;
+      const lg = out.geom; // while drawing or dragging; a stored way carries its own length and area label on the plan
       if (lg && lg.centre.length >= 2 && lg.areaM2 > 0) {
         let half = lg.lengthMm / 2;
         let at = lg.centre[0];

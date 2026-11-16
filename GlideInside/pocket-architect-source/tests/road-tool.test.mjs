@@ -223,3 +223,22 @@ test('3D: the pavement follows the surface function with nothing floating', asyn
     assert.ok(Math.abs(pos.getY(i) - (surf(x * 1000, z * 1000) + LIFT_M)) < 1e-6, 'every vertex is the ground plus the lift');
   }
 });
+
+test('controller: a double click on the last PI finishes the road with that PI kept, and Backspace removes the last PI', () => {
+  const p = lotProject();
+  const store = createStore(p, { autosave: false });
+  const ctl = createPaveController({ store, scale: () => 0.1, toast: () => {} });
+  setPaveState({ kind: 'road', mode: 'draw', material: 'asphalt', selected: null, curve: false, curveMm: null, radiusMm: 0, vertex: null });
+  ctl.reset();
+  const at = (x, y) => ({ x, y });
+  ctl.pointerDown(at(5000, 20000), { alt: true });
+  ctl.pointerDown(at(15000, 20000), { alt: true });
+  ctl.pointerDown(at(15000, 40000), { alt: true });
+  ctl.keyDown({ key: 'Backspace' });
+  assert.equal(ctl.draftPoints.length, 2);
+  ctl.pointerDown(at(15000, 40000), { alt: true });
+  ctl.pointerDown(at(15000, 40000), { alt: true }); // second click of the double click
+  ctl.dblClick(at(15000, 40000));
+  ctl.dblClick(at(15000, 40000)); // a stray tail must not delete the point just placed
+  assert.equal(store.project.site.paved[0].pts.length, 3);
+});
