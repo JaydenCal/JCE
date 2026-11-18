@@ -26,7 +26,7 @@ export function accessPicker(houses, initial = 'all') {
     h('label', { class: 'pp-check' }, all, h('span', null, 'All of my designs')),
     h('label', { class: 'pp-check' }, some, h('span', null, 'Only the designs I select')),
     h('div', { class: 'pp-checklist' }, ...boxes),
-    h('p', { class: 'pp-hint' }, 'Clients see the Glide Inside library only when you tick Show Glide Inside sample designs to clients.'));
+    h('p', { class: 'pp-hint' }, 'Clients see only your own house designs.'));
   return { el, value: () => (all.checked ? 'all' : boxes.map((b) => b.querySelector('input')).filter((i) => i.checked).map((i) => i.value)) };
 }
 

@@ -386,13 +386,30 @@ for (const [label, d1] of stores) {
     const w = makeWorld({ d1 });
     const org = await w.makeOrg();
     const b = org.admin;
-    assert.equal((await b.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id }, { noCsrf: true })).status, 403, 'no custom header');
-    assert.equal((await b.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id }, { origin: 'https://evil.example' })).status, 403, 'wrong Origin');
-    assert.equal((await b.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id }, { origin: null, headers: { 'sec-fetch-site': 'cross-site' } })).status, 403, 'no Origin but a cross-site fetch');
+    assert.equal((await b.post('/portal/houses', { name: 'Csrf', project: createFromTemplate('house_single') }, { noCsrf: true })).status, 403, 'no custom header');
+    assert.equal((await b.post('/portal/houses', { name: 'Csrf', project: createFromTemplate('house_single') }, { origin: 'https://evil.example' })).status, 403, 'wrong Origin');
+    assert.equal((await b.post('/portal/houses', { name: 'Csrf', project: createFromTemplate('house_single') }, { origin: null, headers: { 'sec-fetch-site': 'cross-site' } })).status, 403, 'no Origin but a cross-site fetch');
     assert.equal((await b.del('/portal/session', { noCsrf: true })).status, 403, 'sign out is protected too');
     assert.equal((await w.browser().post('/portal/session', { identifier: 'a', password: 'b' }, { noCsrf: true })).status, 403, 'sign in is protected (login CSRF)');
     assert.equal((await b.get('/portal/houses', { noCsrf: true, origin: 'https://evil.example' })).status, 200, 'safe methods are not blocked (and CORS stops the response being read)');
-    assert.equal((await b.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id })).status, 200 + 0 === 200 ? (await b.get('/portal/houses')).status && 200 : 200);
+    assert.equal((await b.post('/portal/houses', { name: 'Csrf', project: createFromTemplate('house_single') })).status, 200);
+  });
+
+  t('the Glide Inside library: ordinary builders and their clients get [] and 404s, only the internal account keeps it', async () => {
+    const w = makeWorld({ d1 });
+    const org = await w.makeOrg();
+    const cl = await w.makeClient(org, 'Sarah');
+    for (const b of [org.admin, cl.browser]) {
+      assert.deepEqual((await b.get('/portal/glide-library')).data, []);
+      assert.equal((await b.get(`/portal/glide-library/${GLIDE_LIBRARY[0].id}`)).status, 404);
+    }
+    assert.equal((await org.admin.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id, name: 'X' })).status, 404);
+    const intl = await w.makeOrg('Internal Test Pty Ltd', 'Owner');
+    assert.equal((await w.admin('POST', `/portal/admin/orgs/${intl.orgId}/internal`, { internal: true })).status, 200);
+    const lib = (await intl.admin.get('/portal/glide-library')).data;
+    assert.equal(lib.length, GLIDE_LIBRARY.length, 'the internal account keeps the library');
+    assert.equal((await intl.admin.get(`/portal/glide-library/${GLIDE_LIBRARY[0].id}`)).status, 200);
+    assert.equal((await intl.admin.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id, name: 'From library' })).status, 200);
   });
 
   t('CORS: credentials only for the configured site origin', async () => {
@@ -423,13 +440,13 @@ for (const [label, d1] of stores) {
     assert.equal((await d.patch('/portal/org/settings', { allowClientTopUps: false })).status, 403);
     assert.equal((await d.post(`/portal/clients/${cl.client.id}/reset-password`)).status, 403);
     assert.equal((await d.del(`/portal/clients/${cl.client.id}`)).status, 403);
-    assert.equal((await d.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id })).status, 200, 'designers write houses');
+    assert.equal((await d.post('/portal/houses', { name: 'Designer house', project: createFromTemplate('house_single') })).status, 200, 'designers write houses');
     const me = (await d.get('/portal/me')).data;
     assert.equal(me.org.billingContact, undefined, 'billing contact is not sent to designers');
     assert.deepEqual(me.permissions, ['houses.write', 'clients.read', 'projects.read']);
     const c = cl.browser;
     for (const [m, p] of [['get', '/portal/clients'], ['get', '/portal/team'], ['get', '/portal/billing/usage'], ['get', '/portal/billing/contact']]) assert.equal((await c[m](p)).status, 403, p);
-    assert.equal((await c.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id })).status, 403);
+    assert.equal((await c.post('/portal/houses', { name: 'Client house', project: createFromTemplate('house_single') })).status, 403);
     assert.equal((await c.post('/portal/admin/orgs', { name: 'x', adminFirstName: 'y' })).status, 401, 'the admin endpoint takes a bearer token only');
     const cme = (await c.get('/portal/me')).data;
     assert.deepEqual(cme.permissions, []);
@@ -600,7 +617,7 @@ for (const [label, d1] of stores) {
     const org = await w.makeOrg();
     const designer = await w.makeDesigner(org, 'Tom');
     const s1 = await w.makeClient(org, 'Sarah');
-    const mine = await org.admin.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id, name: 'Banksia' });
+    const mine = await org.admin.post('/portal/houses', { name: 'Banksia', project: createFromTemplate('house_single') });
     assert.equal(mine.status, 200);
     const proj = await s1.browser.post('/portal/projects', { name: 'Thornton', project: createFromTemplate('house_single'), lotAddress: 'Lot 14' });
     assert.equal(proj.status, 200);
@@ -612,7 +629,7 @@ for (const [label, d1] of stores) {
       // The design endpoints a client uses all work for a staff login, scoped to the org.
       assert.equal((await staff.get('/portal/houses')).data.length, 1);
       assert.equal((await staff.get(`/portal/houses/${mine.data.id}`)).status, 200);
-      assert.equal((await staff.get('/portal/glide-library')).status, 200);
+      assert.deepEqual((await staff.get('/portal/glide-library')).data, [], 'no Glide library for builder staff');
       assert.equal((await staff.get(`/portal/projects?clientId=${s1.client.id}`)).data.length, 1);
       const open = await staff.get(`/portal/projects/${id}`);
       assert.equal(open.status, 200);
@@ -649,7 +666,7 @@ for (const [label, d1] of stores) {
     const otherDesigner = await w.makeDesigner(other, 'Ollie');
     const s1 = await w.makeClient(org, 'Sarah');
     const id = (await s1.browser.post('/portal/projects', { name: 'Thornton', project: createFromTemplate('house_single') })).data.id;
-    const house = (await org.admin.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id, name: 'Banksia' })).data;
+    const house = (await org.admin.post('/portal/houses', { name: 'Banksia', project: createFromTemplate('house_single') })).data;
     for (const staff of [other.admin, otherDesigner.browser]) {
       assert.equal((await staff.get(`/portal/projects/${id}`)).status, 404, 'cannot open it');
       assert.equal((await staff.get(`/portal/projects?clientId=${s1.client.id}`)).data.length, 0, 'cannot list it by client id');
@@ -1188,7 +1205,7 @@ for (const [label, d1] of stores) {
     assert.equal(await api.me(), null, 'me resolves null on 401');
     const me = await api.signIn({ identifier: org.adminUser.username, password: org.adminPassword });
     assert.equal(me.user.role, 'admin');
-    const house = await api.saveHouse({ fromGlideId: GLIDE_LIBRARY[0].id });
+    const house = await api.saveHouse({ name: 'Own design', project: createFromTemplate('house_single') });
     assert.deepEqual((await api.listHouses()).map((h) => h.id), [house.id]);
     assert.equal((await api.archiveHouse(house.id)).archived, true);
     assert.equal((await api.archiveHouse(house.id, false)).archived, false);

@@ -423,7 +423,7 @@ for (const [label, d1] of stores) {
     // One minute before the end it is still the trial.
     w.clock.t = end - 60000;
     assert.equal((await org.admin.get('/portal/me')).data.account.status, 'trial');
-    assert.equal((await org.admin.post('/portal/houses', { fromGlideId: glide.id, name: 'Second' })).status, 200);
+    assert.equal((await org.admin.post('/portal/houses', { name: 'Second', project: createFromTemplate('granny_flat') })).status, 200);
     // At the end (00:00 on 25/11/2026 Sydney) it is read only. The session is still valid, so nobody is signed out.
     w.clock.t = end;
     const me = (await org.admin.get('/portal/me')).data;
@@ -441,7 +441,7 @@ for (const [label, d1] of stores) {
     assert.equal((await org.admin.get('/portal/ai')).status, 200);
     // Every state changing route is refused.
     const blocked = [
-      ['post', '/portal/houses', { fromGlideId: glide.id, name: 'Third' }], ['post', `/portal/houses/${house.id}/duplicate`], ['post', `/portal/houses/${house.id}/archive`, { archived: true }],
+      ['post', '/portal/houses', { name: 'Third', project: createFromTemplate('granny_flat') }], ['post', `/portal/houses/${house.id}/duplicate`], ['post', `/portal/houses/${house.id}/archive`, { archived: true }],
       ['post', '/portal/projects', { name: 'x', project: {} }], ['post', '/portal/clients', { firstName: 'Sarah' }], ['post', '/portal/team', { firstName: 'Tom', role: 'designer' }],
       ['put', '/portal/org/branding', { displayName: 'X' }], ['post', '/portal/ai/top-up'], ['post', '/portal/ai/token'],
     ];
@@ -452,7 +452,7 @@ for (const [label, d1] of stores) {
     }
     const patch = await org.admin.call('PATCH', '/portal/org/settings', { allowClientTopUps: false });
     assert.equal(patch.data.error.code, 'READ_ONLY');
-    assert.match((await org.admin.post('/portal/houses', { fromGlideId: glide.id })).data.error.message, /free trial has ended.*read only/);
+    assert.match((await org.admin.post('/portal/houses', { name: 'Fourth', project: createFromTemplate('granny_flat') })).data.error.message, /free trial has ended.*read only/);
     // The AI helper endpoints refuse the org token that was issued earlier.
     const ai = await w.app.fetch(new Request(`${SITE}/api/ai/edit`, { method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify({ message: 'hi', context: '{}' }) }));
     assert.ok([403, 503].includes(ai.status));
