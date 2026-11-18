@@ -65,13 +65,17 @@ TOPUP_AMOUNT_CENTS = "1000"                                # A$10 incl. GST
 TRIAL_NOTIFY = "1"                                         # "0" switches the owner email off
 TRIAL_NOTIFY_TO = "hello@glideinside.com.au"               # owner address. Empty = no email. Also needs the RESEND_API_KEY secret.
 # STRIPE_GST_TAX_RATE_ID = ""                              # optional: an existing inclusive 10% GST tax rate; otherwise one is created
-# STRIPE_LIVE_BILLING_APPROVED stays unset: live Stripe keys are refused without the owner's written go-ahead.
+STRIPE_LIVE_BILLING_APPROVED = "owner-written-go-ahead"  # owner approved live builder portal billing in writing on 18/11/2026
+COMMERCIAL_SUB_PRICE_ID = "price_1Ud1SIBd0GFQCpgxypaZBtmg"  # Glide Inside Commercial, A$50 per month (live, created 18/11/2026)
+COMMERCIAL_SUB_PRICE_AUD = "50"
+COMMERCIAL_AI_TOPUP_PRICE_ID = "price_1Ud1TYBd0GFQCpgxi990bYbE"  # AI messages top-up (100), A$15 one-off (live, created 18/11/2026)
+COMMERCIAL_AI_TOPUP_PRICE_AUD = "15"
 
 # Month end invoices: 06:00 on the 1st, Sydney time (19:00 UTC in AEDT, 20:00 UTC in AEST). The handler checks the Sydney clock.
 # OFF while PORTAL_ENABLED is "0": a cron with nothing to bill only adds noise. When the portal launches, set PORTAL_ENABLED to "1"
 # and remove the leading # from the next three lines.
-# [triggers]
-# crons = ["0 19 * * *", "0 20 * * *"]
+[triggers]
+crons = ["0 19 * * *", "0 20 * * *"]  # month end portal invoices, switched on 18/11/2026 with live billing
 
 # D1 (SQLite): the LIVE database. Its schema is changed only by the migrations in server/migrations:
 #   npx wrangler d1 migrations apply pocket-architect --remote

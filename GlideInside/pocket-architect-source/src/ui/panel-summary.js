@@ -15,6 +15,8 @@ import { deleteLevelWithConfirm } from './level-actions.js';
 import { designTypesFor, designTypeOf, changeDesignType } from './design-type.js';
 import { buildSiteSection } from './panel-site.js';
 import { lotChecks } from '../site/lot-checks.js';
+import { createFinance } from '../finance/ui.js';
+import { isCommercial } from '../commercial/mode.js';
 
 const ROOF_LABEL = { hip: 'Hip', gable: 'Gable', skillion: 'Skillion', flat: 'Flat' };
 const m2 = (v) => `${v.toFixed(2)} m²`;
@@ -197,7 +199,12 @@ export function buildSummary(ctx) {
   }
 
   const site = buildSiteSection(ctx);
-  root.append(design, site.el, walls, drawing, lv, dyn);
+  // Development feasibility for a house or other residential design: collapsed, so it never crowds the plan. Commercial designs have their own panel.
+  const fin = createFinance(store, { mode: 'full' });
+  const finSec = h('details', { class: 'ps-sec', dataset: { ps: 'res-fin-sec' } }, h('summary', null, 'Development feasibility (indicative)'), fin.el);
+  const syncFin = () => { finSec.hidden = isCommercial(store.project); };
+  syncFin();
+  root.append(design, site.el, finSec, walls, drawing, lv, dyn);
   buildLevelForm();
   fb.refresh();
   renderTables();
@@ -207,6 +214,7 @@ export function buildSummary(ctx) {
       if (builtFor !== levelKey()) buildLevelForm();
       fb.refresh();
       site.refresh();
+      syncFin();
       levelBlock.refresh?.();
       renderTables();
     },

@@ -28,6 +28,7 @@ import * as RD from '../commercial/catalogue/pavements/roads.js';
 import { pavementById } from '../commercial/catalogue/pavements/pavements.js';
 import { commercialEdit } from '../commercial/mode.js';
 import { removeHardstand } from '../commercial/catalogue/pavements/hardstand.js';
+import { createFinance } from '../finance/ui.js';
 import { baysText, offsetAlongFront, editAccessIn, REMOVABLE_LABELS, removedKinds, toggleSiteKindIn, restoreSiteWorksIn } from './com-logic.js';
 
 export const COMMERCIAL_BRAND = 'Glide Inside Commercial';
@@ -473,6 +474,7 @@ function mountCheckStep(ctx, { catalogue }) {
   const card = h('div', { class: 'gf-card', dataset: { ps: 'flow-summary' } });
   const view = h('div', { class: 'gf-3d', dataset: { ps: 'flow-3d' } });
   const el = h('div', { class: 'gf-check' }, card, view);
+  const fin = createFinance(store, { mode: 'step' });
   let preview = null;
   let disposed = false;
   const stat = (b, s) => h('div', { class: 'gf-stat' }, h('b', null, b), h('span', null, s));
@@ -492,12 +494,7 @@ function mountCheckStep(ctx, { catalogue }) {
         stat(`${s.parking.provided} of ${s.parking.required}`, 'Car bays against the indicative rate'),
         stat(s.accessibleText, 'Accessible bays'),
         stat(s.truck.has ? (s.truck.ok ? 'Linked' : 'Check') : 'Not applicable', 'Truck access to loading')),
-      s.yield ? h('div', { class: 'gf-stats', dataset: { ps: 'flow-yield' } },
-        stat(s.yield.profitSell || 'n/a', 'Indicative profit, sell the units'),
-        stat(s.yield.profitHold || 'n/a', 'Indicative profit, hold and lease'),
-        stat(s.yield.value || 'n/a', 'Indicative end value'),
-        stat(s.yield.grossRent || 'n/a', 'Indicative gross rent a year'),
-        stat(s.yield.yieldPct || 'n/a', 'Indicative gross yield on cost')) : null,
+      fin.el,
       h('p', { class: 'gf-note', dataset: { ps: 'flow-estimates' } }, s.caveat),
       h('ul', { class: 'gf-lines', dataset: { ps: 'flow-lines' } }, ...s.lines.map((t) => h('li', null, t))),
       h('p', { class: 'gf-note' }, h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(3); } }, 'Back to placement'), ' to move, add or turn a building.'));
@@ -508,7 +505,7 @@ function mountCheckStep(ctx, { catalogue }) {
     el,
     nextLabel: 'Open the editor',
     async onEnter() { preview = await mount3dPreview(view, store, catalogue); if (disposed) preview?.dispose?.(); },
-    dispose() { disposed = true; off?.(); preview?.dispose?.(); },
+    dispose() { disposed = true; off?.(); fin.dispose(); preview?.dispose?.(); },
   };
 }
 

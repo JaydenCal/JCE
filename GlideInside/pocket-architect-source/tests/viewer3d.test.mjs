@@ -227,7 +227,7 @@ test('a level with walls and no rooms still gets a floor and a roof', () => {
   assert.match(floor.userData.id, /:floor$/);
   assert.equal(floor.userData.finish.material, 'polished_concrete', 'shed default floor');
   const size = sizeOf(info.bounds);
-  assert.ok(size.x > 6 && size.x < 7.5 && size.z > 4 && size.z < 5.5, `size ${size.x} x ${size.z}`);
+  assert.ok(size.x > 6 && size.x < 8.5 && size.z > 4 && size.z < 5.5, `size (gutters, downpipes and roof overhang included) ${size.x} x ${size.z}`);
   // gable roof: gable ends are built in the wall finish
   assert.ok(ofKind(info, 'roof')[0].userData.slotKeys.includes('gable'));
 });

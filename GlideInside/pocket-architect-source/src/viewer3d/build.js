@@ -15,12 +15,16 @@ import { buildLevelRoof } from './roof.js';
 import * as F from './footprint.js';
 import { makeMesh, modelBounds } from './model-util.js';
 import { addSiteTerrain } from './terrain.js';
+import { addBuildingTrim } from './trim.js';
 import { siteReady } from './site-geom.js';
 import { rotateHouse } from '../model/placement.js';
 import { addCatalogue3D } from '../commercial/catalogue/three.js';
 import { buildPanelWall, panelEnds, openingsAbove, PANEL_SLOTS } from './panels3d.js';
 import { hexOfCladding } from '../commercial/catalogue/construction.js';
 import { addFloorPoly, addGround, addDeck, addRoomBalustrade, addStair, addTank, addFurniture, shade } from './site.js';
+
+// The commercial default roller door colour (Dark grey, the default door in src/commercial/finishes.js), used when a layout names none.
+const ROLLER_DEFAULT_HEX = '#5b6064';
 
 export { disposeModel, modelBounds } from './model-util.js';
 
@@ -150,7 +154,7 @@ function liftDark(hexStr, minL) {
 }
 
 export function buildModel(project, opts = {}) {
-  const { levelFilter = 'all', showRoof = true, statusView = 'proposed', catalogue = null, walk = false } = opts;
+  const { levelFilter = 'all', showRoof = true, statusView = 'proposed', catalogue = null, walk = false, detail = 'full' } = opts;
   const lib = opts.materials || createMaterialLibrary({ textures: false, catalogue });
   const root = new THREE.Group();
   root.name = 'plan-model';
@@ -221,6 +225,8 @@ export function buildModel(project, opts = {}) {
   // The top level of each building (or of the strata rows) that has panel walls: only its walls take the parapet.
   const panelTopLi = new Map();
   levels.forEach((lv, i) => { for (const w of lv.walls) if (w.panel) panelTopLi.set(w.building || '_rows', Math.max(panelTopLi.get(w.building || '_rows') ?? -1, i)); });
+
+  const trimEntries = [];
 
   // Level by level -----------------------------------------------------------------------------
   levels.forEach((level, li) => {
@@ -308,6 +314,7 @@ export function buildModel(project, opts = {}) {
       const cls = statusView === 'both' ? { kind: w.kind, outside: w.outside || 0 } : viewClass(w, shownIndoor);
       const outSide = cls.kind === 'interior' ? 0 : cls.outside;
       const wallOpenings = level.openings.filter((o) => o.wallId === w.id && vis(o.status));
+      if (outSide && cls.kind !== 'interior' && tint(w.status) !== 'demolish') trimEntries.push({ w, elev, H, outSide, ops: wallOpenings, li });
       // Construction system: concrete panels are built by panels3d.js (real joints and openings); blockwork is a block textured wall with a parapet.
       const pSys = w.panel && cls.kind !== 'interior' && outSide ? w.panel.system : null;
       const topLevel = (panelTopLi.get(w.building || '_rows') ?? li) === li;
@@ -372,8 +379,17 @@ export function buildModel(project, opts = {}) {
           ? (project.finishes?.rollerDoor?.colour ? hex(project.finishes.rollerDoor.colour) : '#4b5158')
           : lum(frameHex) < 0.2 ? '#7a5233' : frameHex;
         // A commercial layout names its roller door colour (finishes.rollerDoor); otherwise the door follows the fascia.
-        const doorBase = o.kind === 'roller_door' && project.finishes?.rollerDoor?.colour ? hex(project.finishes.rollerDoor.colour) : fasciaHex;
-        const garageHex = lum(doorBase) < 0.35 ? shade(doorBase, 0.35 / Math.max(0.05, lum(doorBase))) : doorBase;
+        // A commercial roller door with no named colour (a strata layout straight off the card) takes the default door colour, and it
+        // keeps its own colour (no lift) so it never reads as the wall. If it still sits too close to the wall colour it is darkened.
+        const commercialRoller = o.kind === 'roller_door' && project.mode === 'commercial';
+        const doorBase = o.kind === 'roller_door' && project.finishes?.rollerDoor?.colour
+          ? hex(project.finishes.rollerDoor.colour)
+          : commercialRoller ? ROLLER_DEFAULT_HEX : fasciaHex;
+        let garageHex = commercialRoller ? doorBase : lum(doorBase) < 0.35 ? shade(doorBase, 0.35 / Math.max(0.05, lum(doorBase))) : doorBase;
+        if (commercialRoller && fin.externalWalls?.colour) {
+          const wallLum = lum(hex(fin.externalWalls.colour));
+          if (Math.abs(lum(garageHex) - wallLum) < 0.18) garageHex = wallLum > 0.4 ? shade(garageHex, 0.55) : shade(garageHex, 1.6);
+        }
         const mats = {
           frame: o.kind === 'garage_door' || o.kind === 'roller_door' ? lib.plain(garageHex, { tint: ot, rough: 0.55, metal: 0 }) : lib.frame(frameHex, { tint: ot }),
           glass: lib.glass({ tint: ot }),
@@ -425,6 +441,9 @@ export function buildModel(project, opts = {}) {
     root.add(group);
   });
 
+  // trim: base course, downpipes, awnings, porch, sills, signage
+  try { addBuildingTrim(ctx, root, trimEntries, { detail }); } catch (e) { console.warn('[trim]', e?.message); }
+
   // tanks (site items, shown with the ground level)
   for (const tank of project.site?.tanks || []) {
     if (!vis(tank.status)) continue;
@@ -466,13 +485,13 @@ export function buildModel(project, opts = {}) {
   }
 
   // catalogue buildings: roofs and the extras each type draws (dock levellers, canopies, skylights)
-  if (showRoof || project.commercial?.buildings?.length) { try { addCatalogue3D(ctx, root, project, { showRoof }); } catch (e) { console.warn('[catalogue 3D]', e?.message); } }
+  if (showRoof || project.commercial?.buildings?.length) { try { addCatalogue3D(ctx, root, project, { showRoof, detail }); } catch (e) { console.warn('[catalogue 3D]', e?.message); } }
 
   // ground last so it can size itself to the model
   const bounds = modelBounds(root);
   // Whenever a lot is loaded the site is built: terrain with the aerial (when present), boundary, neighbours, labels and envelope.
   // The elevation grid is optional (flat ground at slab level without it). Without a lot the old flat disc stays.
-  const terrain = siteReady(project) ? addSiteTerrain(ctx, root, project, { texture: opts.siteTexture || null, edgeColour: opts.siteEdgeColour || null, wideTexture: opts.siteWideTexture || null, wideEdgeColour: opts.siteWideEdgeColour || null, showContours: !!opts.showContours }) : null;
+  const terrain = siteReady(project) ? addSiteTerrain(ctx, root, project, { texture: opts.siteTexture || null, edgeColour: opts.siteEdgeColour || null, wideTexture: opts.siteWideTexture || null, wideEdgeColour: opts.siteWideEdgeColour || null, showContours: !!opts.showContours, detail }) : null;
   const groundR = terrain ? terrain.outerR : addGround(ctx, root, bounds, null);
   root.userData = { groundY, groundR, levelIds: levels.map((l) => l.id), cutIdx };
   return root;
