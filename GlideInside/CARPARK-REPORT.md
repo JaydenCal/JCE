@@ -32,3 +32,8 @@ carpark-generator, carpark-auto, carpark, sitelayout, hardstand test files pass.
 - Tests: tests/carpark-generator.test.mjs now 22 tests (apron/dock approach clear, 6 m queue, 40 m walk on the large lot, shared edges, car orientation). carpark-auto test accepts rows square to the lot edge. carpark-auto, carpark-generator, sitelayout, carpark, hardstand: 103 pass. commercial-assistant has 3 failures that also fail without my changes. Full suite not completed (machine load).
 - Screenshots: /home/claude/shots/claude-carpark-tool/{large,small,deepnarrow}-{2d,2d-close,3d,3d-close}-v4.png (v3 for 2d-close).
 - Not done: rotated buildings (sitelayout-oriented.js) still use the old comb layout; one side aisle only (very large demand falls back to the comb).
+
+## 3D car orientation recheck (18/11/2026)
+- New tests/carpark-car-mesh.test.mjs: builds the 3D entourage for the three sample lots, transforms the real car mesh vertices to world space, takes the minimum area oriented box, and asserts its long axis is within 5 degrees of the bay depth, the mesh footprint is inside the bay polygon, and the car is nose in (nose farther from the nearest aisle than the tail).
+- Result against the old code: the axis and footprint checks PASSED (the mesh and placement already agreed; the car long axis lies along the bay depth); the nose in check FAILED because about 30 percent of cars were flipped at random. Fixed in entourage3d.js (no random flip; nose to the closed end of the bay). Passes now.
+- Top down screenshots (tools/carpark-shots.cjs now also writes 3d-top) show cars lengthwise between the bay lines. Residential garage cars (car_sedan furniture) are 1850 x 4800 with the long axis along depth, the same in plan and 3D; no other car meshes exist.

@@ -126,6 +126,10 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
       await page.evaluate(async (a) => { const v = window.__ps.getViewer(); await v.flyTo({ position: { x: a.x - 14, y: 26, z: a.z + 30 }, target: { x: a.x, y: 0, z: a.z }, fov: 45 }, { duration: 0.01 }); }, focus);
       await page.waitForTimeout(2000);
       await shot('3d-close');
+      // Straight down on the bays: the cars' long axes must lie along the bay lines.
+      await page.evaluate(async (a) => { const v = window.__ps.getViewer(); await v.flyTo({ position: { x: a.x, y: 30, z: a.z + 0.5 }, target: { x: a.x, y: 0, z: a.z }, fov: 45 }, { duration: 0.01 }); }, focus);
+      await page.waitForTimeout(1500);
+      await shot('3d-top');
     }
     await ctx.close();
   }
