@@ -9,6 +9,7 @@ import { siteCredits } from '../site/credits.js';
 import { boundaryDims, lotLabelLines, buildingHull } from '../site/lotplan.js';
 import { drawLotPlan } from './draw-lotplan.js';
 import { drawPavedWays } from './draw-pave.js';
+import { drawOverlays } from './draw-overlays.js';
 
 const BOUNDARY = '#d62828'; // red, so the lot reads clearly over an aerial and is never mistaken for proposed work
 const CONTOUR_MINOR = 'rgba(150,102,48,0.6)';
@@ -308,6 +309,7 @@ export function drawCredits(ctx, st) {
 // All site layers in drawing order (called after the aerial underlay, before the plan).
 export function drawSite(ctx, st) {
   if (!st.project.site?.lot) return;
+  drawOverlays(ctx, st); // site constraint overlays (off until switched on), under everything else
   drawContours(ctx, st);
   drawNeighbours(ctx, st);
   drawLot(ctx, st);
