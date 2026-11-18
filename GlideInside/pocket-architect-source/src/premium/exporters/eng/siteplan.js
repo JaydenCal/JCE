@@ -488,7 +488,7 @@ export function drawSitePlan(doc, ctx) {
   // 10. Ground contours and their RL labels (the shared layer), in the space the other labels left
   const levels = ctx.levels || levelsModel(project, lot);
   const hullS = buildingHull(project).map(T);
-  const gl = drawGroundLayer(doc, { lot, levels, S: T, rect, field, masks: hullS.length >= 3 ? [hullS] : [], mark: gmark, labelSize: TXT.min, bbox: view.windowPlan ? G.bbox(view.windowPlan) : null });
+  const gl = drawGroundLayer(doc, { lot, levels, S: T, rect, field, masks: hullS.length >= 3 ? [hullS] : [], mark: gmark, casing: aerial, labelSize: TXT.min, bbox: view.windowPlan ? G.bbox(view.windowPlan) : null });
 
   // 11. Neighbour labels: lot number, then the DP one size larger beneath it
   for (const nb of lot.neighbours || []) {
@@ -550,7 +550,7 @@ export function drawSitePlan(doc, ctx) {
   const items = [];
   const hc = facts.obox ? T(facts.obox.centre) : null;
   const footprint = footRings.reduce((a, r) => a + G.polygonArea(r) / 1e6, 0);
-  if (hc) items.push({ id: 'house', lines: ['PROPOSED DWELLING', lot.floorRL != null ? `FFL ${lot.floorRL.toFixed(2)} (${lot.floorRLAuto ? 'assumed' : 'set'})` : 'FFL to be set', `Footprint ${footprint.toFixed(0)} m²`], at: hc, colour: PEN.proposed });
+  if (hc) items.push({ id: 'house', lines: ['PROPOSED DWELLING', ctx.levels?.has || lot.floorRL != null ? `FFL ${(ctx.levels?.has ? ctx.levels.floorRL : lot.floorRL).toFixed(2)} (${lot.floorRLAuto === false ? 'set' : 'from the ground at the house'})` : 'FFL to be set', `Footprint ${footprint.toFixed(0)} m²`], at: hc, colour: PEN.proposed });
   if (drive?.ok) {
     items.push({ id: 'drive', lines: ['PROPOSED DRIVEWAY', `${(drive.widthMm / 1000).toFixed(1)} m wide, concrete`], at: T(drive.centre[Math.floor(drive.centre.length * 0.55)]), colour: PEN.proposed });
     items.push({ id: 'cross', lines: ['PROPOSED CROSSOVER', 'Council approval required'], at: T(G.lerp(drive.crossover.from, drive.crossover.to, 0.5)), colour: PEN.proposed });
@@ -662,16 +662,14 @@ export function drawSitePanel(doc, ctx, site) {
     [site?.facts?.lot?.proposed ? 'Lot boundary (proposed)' : 'Lot boundary (existing)', sample((cx, cy) => { doc.setDrawColor(...(site?.facts?.lot?.proposed ? PEN.proposed : pal.boundary)); doc.setLineWidth(site?.facts?.lot?.proposed ? 0.9 : 1.1); doc.setLineDashPattern(site?.facts?.lot?.proposed ? PROPOSED_BOUNDARY : [], 0); doc.line(cx, cy, cx + sw, cy); doc.setLineDashPattern([], 0); })],
     [aerial ? 'Neighbouring lots (cadastre)' : 'Neighbouring lot boundary', sample((cx, cy) => { doc.setDrawColor(...pal.neighbour); doc.setLineWidth(pal.neighbourW + 0.1); doc.line(cx, cy, cx + sw, cy); })],
     ['Indicative setback envelope', sample((cx, cy) => { doc.setDrawColor(...pal.envelope); doc.setLineWidth(0.5); doc.setLineDashPattern([4, 2], 0); doc.line(cx, cy, cx + sw, cy); doc.setLineDashPattern([], 0); })],
-    ['Road centreline (phantom, indicative)', sample((cx, cy) => { doc.setDrawColor(...PEN.phantom); doc.setLineWidth(0.5); doc.setLineDashPattern([5, 1.2, 1.2, 1.2, 1.2, 1.2], 0); doc.line(cx, cy, cx + sw, cy); doc.setLineDashPattern([], 0); })],
-    ['Kerb and gutter', sample((cx, cy) => { doc.setDrawColor(...PEN.road); doc.setLineWidth(0.4); doc.line(cx, cy, cx + sw, cy); })],
+    ...(AUTO_ROAD ? [['Road centreline (phantom, indicative)', sample((cx, cy) => { doc.setDrawColor(...PEN.phantom); doc.setLineWidth(0.5); doc.setLineDashPattern([5, 1.2, 1.2, 1.2, 1.2, 1.2], 0); doc.line(cx, cy, cx + sw, cy); doc.setLineDashPattern([], 0); })], ['Kerb and gutter', sample((cx, cy) => { doc.setDrawColor(...PEN.road); doc.setLineWidth(0.4); doc.line(cx, cy, cx + sw, cy); })]] : []),
     ...(site?.ground?.stroked ? [[`Existing contour, ${fmtM(site.ground.interval.minor)} m`, sample((cx, cy) => { const pm = contourPen({ major: false }); const pj = contourPen({ major: true }); doc.setDrawColor(...pm.colour); doc.setLineWidth(pm.width); doc.setLineDashPattern(pm.dash, 0); doc.line(cx, cy - 0.9, cx + 6, cy - 0.9); doc.setDrawColor(...pj.colour); doc.setLineWidth(pj.width); doc.setLineDashPattern(pj.dash, 0); doc.line(cx + 7, cy + 0.9, cx + sw, cy + 0.9); doc.setLineDashPattern([], 0); })]] : []),
     ['Dimension to boundary', sample((cx, cy) => { doc.setDrawColor(...PEN.dim); doc.setLineWidth(0.13); doc.line(cx, cy, cx + sw, cy); doc.setLineWidth(0.25); doc.line(cx, cy - 1, cx, cy + 1); doc.line(cx + sw, cy - 1, cx + sw, cy + 1); })],
     ['Proposed works', sample((cx, cy) => { const p = rectP(cx, cy); hatch(doc, p, 'proposed'); doc.setDrawColor(...PEN.proposed); doc.setLineWidth(0.4); polygon(doc, p, 'S'); })],
     ...(site?.facts?.paved?.length
       ? site.facts.paved.map((mat) => [`${PAVE_MATERIALS[mat].label} (driveway or road)`, sample((cx, cy) => hatch(doc, rectP(cx, cy), HATCH_KIND[mat]))])
       : [['Hardstand (driveway)', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'hardstand'))], ['Concrete (crossover)', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'concrete'))]]),
-    ['Road pavement', sample((cx, cy) => { const q = rectP(cx, cy); hatch(doc, q, 'road', { angle: 0, width: 0.12, colour: [90, 94, 102] }); doc.setDrawColor(...PEN.road); doc.setLineWidth(0.3); doc.line(cx, cy - 1.8, cx + sw, cy - 1.8); doc.line(cx, cy + 1.8, cx + sw, cy + 1.8); })],
-    ['Footpath', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'footpath'))],
+    ...(AUTO_ROAD ? [['Road pavement', sample((cx, cy) => { const q = rectP(cx, cy); hatch(doc, q, 'road', { angle: 0, width: 0.12, colour: [90, 94, 102] }); doc.setDrawColor(...PEN.road); doc.setLineWidth(0.3); doc.line(cx, cy - 1.8, cx + sw, cy - 1.8); doc.line(cx, cy + 1.8, cx + sw, cy + 1.8); })], ['Footpath', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'footpath'))]] : []),
   ];
   if (isRuralLot(site?.facts?.lot)) for (let i = items.length - 1; i >= 0; i--) if (/^(Kerb and gutter|Footpath)$/.test(items[i][0])) items.splice(i, 1);
   const lh = 5.2;

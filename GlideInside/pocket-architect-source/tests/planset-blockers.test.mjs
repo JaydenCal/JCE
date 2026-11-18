@@ -111,3 +111,13 @@ test('C101 draws the paving the levels sheet and the 3D use (links to the access
   const c900 = pages[r.sheets.findIndex((s) => codeOf(s) === 'C900')].texts.map((x) => x.s).join('\n');
   assert.ok(!/BOLLARD SCHEDULE/.test(c900) || /Total/.test(c900), 'no empty bollard schedule');
 });
+
+test('engineering set site plan A-002: contours are stroked and listed in the legend, and the legend has no road, kerb or footpath entries', async () => {
+  const { toEngineeringPDF } = await import('../src/premium/exporters/eng/index.js');
+  const { Rec, pages } = recordingPDF();
+  await toEngineeringPDF(residentialCase('mid'), { jsPDF: Rec, catalogue, date });
+  const t = pages[1].texts.map((x) => x.s);
+  assert.ok(t.some((x) => /^Existing contour/.test(x)), 'contours in the legend');
+  assert.ok(t.some((x) => /^\d+\.\d$/.test(x.trim())), 'contour RL labels');
+  for (const bad of [/^Road centreline/, /^Kerb and gutter$/, /^Road pavement$/, /^Footpath$/]) assert.ok(!t.some((x) => bad.test(x)), `no ${bad}`);
+});
