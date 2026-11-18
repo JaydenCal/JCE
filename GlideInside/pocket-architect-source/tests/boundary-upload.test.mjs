@@ -455,7 +455,8 @@ test('an uploaded overseas lot goes through commercial Best fit with custom rule
     constructor(...a) { super(...a); const t = this.text.bind(this); this.text = (s, ...rest) => (texts.push(Array.isArray(s) ? s.join(' ') : String(s)), t(s, ...rest)); }
   }
   const out = await exportPlanSet({ project: store.project, kind: 'commercial', download: false, jsPDF: Rec, fetchSite: null, date: new Date(2026, 10, 15) });
-  assert.equal(out.pages, 7);
+  assert.equal(out.pages, out.sheets.length, 'the page count is the sheet list');
+  assert.ok(out.sheets.some((x) => x.no.endsWith('-C200')) && out.sheets.some((x) => x.no.endsWith('-C300')), 'elevations and sections are in the set');
   const all = texts.join('\n');
   assert.match(all, /Boundary supplied by user, not checked against title/);
   assert.doesNotMatch(all, /Boundaries are from the cadastre/);

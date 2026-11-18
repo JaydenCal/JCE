@@ -306,7 +306,7 @@ function drawSide(doc, t, d, box, scale, levels, wallRgb) {
   const areaTop = box.y0 + (strip ? 4 : 10);
   const areaBot = box.y1 - (strip ? 14 : 22) - 7;
   const drawH = Math.min(areaBot - areaTop, px(hMm));
-  const zeroY = areaTop + (areaBot - areaTop - drawH) / 2 + px(topMm);
+  const zeroY = (strip ? areaTop + (areaBot - areaTop - drawH) / 2 : areaBot - drawH) + px(topMm);
   const Y = (mm) => zeroY - px(mm);
   const X = (s) => X0 + px(s - d.sMin);
   const spec = t.spec;

@@ -90,7 +90,7 @@ export function drawUpperPlans(doc, model, t, levels) {
     }
     // overall dimensions
     dimLine(doc, { x: bx.minX, y: bx.maxY + 4 }, { x: bx.maxX, y: bx.maxY + 4 }, `${(G.bbox(t.outline).w / 1000).toFixed(1)} m`, { size: TXT, textSide: 1 });
-    dimLine(doc, { x: bx.maxX + 4, y: bx.minY }, { x: bx.maxX + 4, y: bx.maxY }, `${(G.bbox(t.outline).h / 1000).toFixed(1)} m`, { size: TXT, textSide: 1 });
+    dimLine(doc, { x: bx.maxX + 9, y: bx.minY }, { x: bx.maxX + 9, y: bx.maxY }, `${(G.bbox(t.outline).h / 1000).toFixed(1)} m`, { size: TXT, textSide: 1 });
     const ffl = ffl0 + p.f.z / 1000;
     haloText(doc, `FFL ${rlText(ffl)}${assumed ? ' (ASSUMED)' : ''}`, bx.minX, bx.minY - 2.6, { size: 6.4, bold: true, colour: PEN.dim, halo: 0.9 });
     haloText(doc, `${t.tag} ${String(p.f.name).toUpperCase()} FLOOR PLAN`, box.x0 + 3, box.y1 - 6, { size: 8, bold: true, halo: 0 });
@@ -110,7 +110,6 @@ export function drawUpperPlans(doc, model, t, levels) {
     ['Scale', `1:${lay.scale} @ A3`],
     ...(ground?.interval ? [['Contours', intervalText(ground.interval)]] : []),
   ];
-  const notes = ['Concept only. Floor plans are indicative and not for construction.', 'Room names and areas are indicative, to internal wall faces.', ...(levels?.has ? [TAG] : ['Levels are on an assumed datum (floor level RL 100.00).'])];
-  if (ground?.note) notes.push(ground.note);
+  const notes = ['Concept only. Floor plans are indicative and not for construction.', 'Room names and areas are indicative, to internal wall faces.', ...(ground?.note ? [ground.note] : levels?.has ? [TAG] : ['Levels are on an assumed datum (floor level RL 100.00).'])];
   return { kv, notes, blocks: [], bounds };
 }
