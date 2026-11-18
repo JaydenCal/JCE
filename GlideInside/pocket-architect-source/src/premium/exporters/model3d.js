@@ -47,7 +47,7 @@ function ensureFileReader() {
 }
 
 function modelFor(project, catalogue, trial = false) {
-  const group = buildModel(project, { THREE, catalogue, showRoof: true, statusView: 'proposed', levelFilter: 'all' });
+  const group = buildModel(project, { THREE, catalogue, showRoof: true, statusView: 'proposed', levelFilter: 'all', bakeGround: true });
   if (!group) throw new Error('The 3D model builder returned nothing');
   group.name = String(project.name || 'Design');
   // The 3D view draws a large lawn disc around the house. A model file holds the building only, so a person who opens

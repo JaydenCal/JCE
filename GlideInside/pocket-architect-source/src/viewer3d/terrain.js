@@ -726,7 +726,7 @@ export function terrainKey(project, dims, detail = 1) {
   return JSON.stringify([lot.boundary, lot.layers, lot.floorRL, lot.frontEdges, lot.roads, gridId(lot.terrain), project.mode, c, (project.levels || []).map((l) => [l.id, l.elevation, l.walls?.length, l.rooms?.length]), project.site?.grading, footprintBox(project), getWays(project), project.site?.driveway, dims, detail]);
 }
 
-export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour = null, wideTexture = null, wideEdgeColour = null, showContours = false, detail = 1 } = {}) {
+export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour = null, wideTexture = null, wideEdgeColour = null, showContours = false, detail = 1, bakeGround = false } = {}) {
   const lot = project.site?.lot;
   const T0 = nowMs(); let tl = T0; const ph = {};
   const lap = (k) => { const t = nowMs(); ph[k] = (ph[k] || 0) + (t - tl); tl = t; };
@@ -809,9 +809,25 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   geo.computeVertexNormals();
   lap('geometry');
   let mat = null;
+  // A model file (GLB for the offline HTML export) cannot carry the ground shader, so the lawn inside the lots and the dry paddock beyond
+  // them are baked into vertex colours instead, the same look as the online viewers.
+  const bake = bakeGround && !hasAerial && !grey;
+  if (bake) {
+    const rings = [lot.boundary, ...(lot.neighbours || []).filter((n) => !n.isRoad && n.ring?.length > 2).map((n) => n.ring)].filter((r) => r?.length > 2).map((r) => ({ r, x0: Math.min(...r.map((q) => q.x)), x1: Math.max(...r.map((q) => q.x)), y0: Math.min(...r.map((q) => q.y)), y1: Math.max(...r.map((q) => q.y)) }));
+    const lawn = new THREE.Color(LAWN_COLOUR); const pad = new THREE.Color(PADDOCK);
+    const col = new Float32Array(cols * rows * 3);
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      const x = dims.x0 + i * dims.dx; const y = dims.y0 + j * dims.dy;
+      const inside = rings.some((q) => x >= q.x0 && x <= q.x1 && y >= q.y0 && y <= q.y1 && G.pointInPolygon({ x, y }, q.r));
+      const c = inside ? lawn : pad; const k = (j * cols + i) * 3;
+      col[k] = c.r; col[k + 1] = c.g; col[k + 2] = c.b;
+    }
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  }
   const wideExt = wideTexture ? usableWideExtent(lot, ext) : null;
   const blended = hasAerial ? lawnGroundMaterial(ctx, lot, ext, texture, !!wideExt, wideExt ? wideTexture : null, wideExt) : null; // the clean lawn with the aerial let through subtly
-  if (blended) mat = blended;
+  if (bake) { mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0 }); mat.userData.shared = false; }
+  else if (blended) mat = blended;
   else if (hasAerial) {
     // Sharp: the aerial at full resolution, bilinear when magnified, trilinear mipmaps and anisotropy when minified.
     texture.colorSpace = THREE.SRGBColorSpace;

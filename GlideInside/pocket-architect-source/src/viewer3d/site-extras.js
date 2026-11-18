@@ -128,6 +128,7 @@ export function sampleLineWithBreaks(line, step = 1.5, breaks = []) {
 /** Height scale (0 = fully dropped, 1 = full kerb) at distance d metres along the kerb for a driveway crossover spanning [s0, s1] metres, with a ramp each side. */
 export function kerbDropScale(d, span, ramp = 0.6) {
   if (!span) return 1;
+  if (Array.isArray(span[0])) return span.reduce((m, sp) => Math.min(m, kerbDropScale(d, sp, ramp)), 1); // several crossovers: the lowest wins
   if (d >= span[0] && d <= span[1]) return 0;
   const k = d < span[0] ? span[0] - d : d - span[1];
   return Math.min(1, k / ramp);

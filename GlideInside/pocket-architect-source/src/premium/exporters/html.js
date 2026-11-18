@@ -3,6 +3,7 @@
 // No network access: no CDN, no web fonts, no links. Pure function, Node compatible. The 3D tab is left out when no GLB is given.
 
 import * as G from '../../model/geometry.js';
+import { siteLabels, layerOn } from '../../viewer3d/site-geom.js';
 import {
   ascii, levelsSorted, wallShapes, doorGeometry, openingLines, stairGeometry, furnitureSize, furnitureCorners, scheduleData,
 } from './shared.js';
@@ -208,6 +209,9 @@ tr.tot td{font-weight:700}
 .pa-btn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;min-height:36px}
 .pa-btn[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
 .pa-msg{padding:28px 18px;text-align:center;color:var(--mut)}
+.pa-lbl{position:absolute;left:0;top:0;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;text-align:center;font:700 12px/1.25 Arial,sans-serif;color:#3a3f33;background:rgba(255,255,255,.76);border:1px solid rgba(58,63,51,.35);border-radius:14px;padding:3px 10px}
+.pa-lbl.lot{font-size:14px;color:#a61b1b;border-color:rgba(166,27,27,.55)}
+.pa-lbl small{display:block;font-weight:600;font-size:.86em}
 footer{border-top:1px solid var(--line);background:#fff;margin-top:12px}
 footer .pa-wrap{padding:14px 16px 22px;font-size:12.5px;color:var(--mut)}
 footer p{margin:0 0 6px}
@@ -256,7 +260,11 @@ export function toHTML(project, options = {}) {
 
   const tabs = `<nav class="pa-tabs" role="tablist" aria-label="Views"><button class="pa-tab" role="tab" data-tab="plan" aria-selected="true">Plan</button>${has3d ? '<button class="pa-tab" role="tab" data-tab="3d" aria-selected="false">3D</button>' : ''}</nav>`;
   const view3d = has3d ? '<div data-panel="3d" hidden><div class="pa-view" id="pa-view" aria-label="Interactive 3D model"><div class="pa-tools"><button class="pa-btn" id="pa-reset" type="button">Reset view</button><button class="pa-btn" id="pa-roof" type="button" aria-pressed="true" hidden>Roof on</button></div></div></div>' : '';
-  const scripts = has3d ? `<script id="pa-glb" type="text/plain"${glbEncoding ? ` data-enc="${esc(glbEncoding)}"` : ''}>${glb}</script>\n<script>${viewerJs.replace(/<\/script/gi, '<\\/script').replace(/<!--/g, '<\\!--')}</script>\n` : '';
+  // Lot and neighbour labels (rounded, semi transparent, as in the online 3D view): the viewer places them over the terrain.
+  const lot = project.site?.lot;
+  const labels = has3d && lot?.boundary?.length && layerOn(lot, 'labels') ? siteLabels(lot).map((l) => ({ k: l.kind, t: l.lines.map(ascii), x: Math.round(l.x) / 1000, z: Math.round(l.y) / 1000 })) : [];
+  const labelData = labels.length ? `<script id="pa-labels" type="application/json">${JSON.stringify(labels).replace(/</g, '\\u003c')}</script>\n` : '';
+  const scripts = has3d ? `${labelData}<script id="pa-glb" type="text/plain"${glbEncoding ? ` data-enc="${esc(glbEncoding)}"` : ''}>${glb}</script>\n<script>${viewerJs.replace(/<\/script/gi, '<\\/script').replace(/<!--/g, '<\\!--')}</script>\n` : '';
   const product = BRAND.name;
   const company = [ascii(seller.name), seller.abn ? `ABN ${ascii(seller.abn)}` : ''].filter(Boolean).join(' | ');
 

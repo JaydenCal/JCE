@@ -2,6 +2,7 @@
 // project.commercial.finishes ({ cladding, door } ids) and written to project.finishes, which the 3D view, the plan and the exports read.
 
 import { isCommercial } from './schema.js';
+import { liftDarkHex } from '../model/colour-lift.js';
 
 /** Wall and roof cladding. `material` is the wall finish (concrete for the tilt panel look, else corrugated steel), `roof` the roof colour. */
 export const CLADDING = Object.freeze([
@@ -33,6 +34,16 @@ export const doorById = (id) => DOORS.find((c) => c.id === id) || DOORS.find((c)
 export function finishesOf(project) {
   const f = project?.commercial?.finishes || {};
   return { cladding: claddingById(f.cladding).id, door: doorById(f.door).id };
+}
+
+/**
+ * The colour a building takes on the top view and the lot card mini map. Seen from above a building shows its roof, so this is the roof
+ * colour the 3D model shows (project.finishes.roof once set, else the cladding's own roof colour, dark ones lifted as the model does), never the wall colour.
+ */
+export function topViewFill(project) {
+  const set = project?.finishes?.roof?.colour;
+  const hex = typeof set === 'string' && /^#[0-9a-f]{6}$/i.test(set) ? set : claddingById(finishesOf(project).cladding).roof;
+  return liftDarkHex(hex, 0.27); // the 3D model lifts very dark roofs the same way (src/viewer3d/build.js)
 }
 
 /** One line for the card: "Warm white cladding, Dark grey doors". */

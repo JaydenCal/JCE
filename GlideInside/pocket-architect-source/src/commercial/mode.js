@@ -4,6 +4,7 @@ import * as S from '../model/schema.js';
 import { lotOf } from '../model/placement.js';
 import { defaultCommercial, defaultRow, normaliseCommercial, isCommercial, bayOffsetMm } from './schema.js';
 import { materialise } from './materialise.js';
+import { applyFinishes } from './finishes.js';
 import { zoneClass, effectiveClass, RESIDENTIAL_NOTE } from './zones.js';
 import { defaultRulesFor } from './rules.js';
 import { siteLotCommercialSetbacks } from './setbacks.js';
@@ -78,6 +79,7 @@ export function convertToCommercial(p, { useClass, name = null } = {}) {
   p.commercial = defaultCommercial(cls);
   syncCustomToCommercial(p);
   p.commercial.rows = [firstRow(p, cls)];
+  applyFinishes(p, {}); // the card's default cladding and doors, so a layout shows the same colours before and after a colour is picked
   materialise(p);
   return p;
 }
