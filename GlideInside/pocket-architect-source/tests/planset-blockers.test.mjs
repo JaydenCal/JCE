@@ -65,3 +65,19 @@ test('legends list only what is drawn: no road centreline or kerb and gutter wit
     });
   }
 });
+
+test('residential A200, A300, A301: natural and finished surface lines with RLs, and an RL on every FFL, ridge and ceiling tag', async () => {
+  for (const opts of [{}, { builder }]) {
+    const { r, pages } = await run(residentialCase('mid'), 'site', opts);
+    for (const code of ['A200', 'A300', 'A301']) {
+      const pg = pages[r.sheets.findIndex((s) => codeOf(s) === code)];
+      const t = pg.texts.map((x) => x.s.trim());
+      assert.ok(t.some((x) => /^NATURAL SURFACE RL \d+\.\d\d$/.test(x)), `${code}: natural surface with its RL`);
+      assert.ok(t.some((x) => /^FINISHED SURFACE RL \d+\.\d\d$/.test(x)), `${code}: finished surface with its RL`);
+      assert.ok(t.some((x) => /^RIDGE( RL)? \d+\.\d\d$/.test(x)), `${code}: ridge RL`);
+      for (const x of t) {
+        if (/^(FFL|RIDGE|CEILING)\b/.test(x) && !/ABOVE|Max/.test(x)) assert.match(x, /\d+\.\d\d/, `${code}: tag "${x}" carries an RL`);
+      }
+    }
+  }
+});

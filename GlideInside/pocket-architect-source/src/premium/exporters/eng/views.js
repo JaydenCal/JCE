@@ -231,7 +231,7 @@ const cap = (t) => { const s = String(t ?? ''); return s ? s[0].toUpperCase() + 
 export const compassWord = (t) => (/^[nsew]{1,3}$/i.test(String(t || '').trim()) ? String(t).trim().toUpperCase() : cap(t));
 
 /** Ground profile (view mm to the right, mm up from the ground floor) under the building: natural surface from the terrain grid. */
-function groundProfile(project, spec, axes, view, unalign = null) {
+function groundProfile(project, spec, axes, view, unalign = null, levels = null) {
   const lot = project.site?.lot;
   const floor = lot?.floorRL;
   const out = [];
@@ -244,10 +244,29 @@ function groundProfile(project, spec, axes, view, unalign = null) {
     const p = G.add(front, G.mul(view.right, s));
     const q = unalign ? unalign(p) : p;
     const rl = lot?.terrain && floor != null ? terrainAt(lot.terrain, q.x, q.y) : null;
-    out.push({ sx: p.x * view.right.x + p.y * view.right.y, z: rl != null ? (rl - floor) * 1000 : null });
+    const rf = rl != null && levels?.design ? levels.design(q) : null; // the finished surface (pads, paving, batters) from the same model the 3D uses
+    out.push({ sx: p.x * view.right.x + p.y * view.right.y, z: rl != null ? (rl - floor) * 1000 : null, zf: rf != null && Number.isFinite(rf) ? (rf - floor) * 1000 : null });
   }
   return out;
 }
+
+/** A ground line through sheet points, clipped to x0..x1 (no dash when dash is null). */
+function clippedLine(doc, pts, x0, x1, { colour, width, dash = null }) {
+  doc.setDrawColor(...colour);
+  doc.setLineWidth(width);
+  doc.setLineDashPattern(dash || [], 0);
+  for (let i = 0; i + 1 < pts.length; i++) {
+    let a = pts[i];
+    let b = pts[i + 1];
+    if (b.x === a.x || (a.x < x0 && b.x < x0) || (a.x > x1 && b.x > x1)) continue;
+    const at = (x) => ({ x, y: a.y + ((x - a.x) / (b.x - a.x)) * (b.y - a.y) });
+    if (a.x < x0) a = at(x0);
+    if (b.x > x1) b = at(x1);
+    doc.line(a.x, a.y, b.x, b.y);
+  }
+  doc.setLineDashPattern([], 0);
+}
+const FINISHED_PEN = [60, 66, 76];
 
 const rlText = (floor, z) => (floor != null ? ` RL ${(floor + z / 1000).toFixed(2)}` : '');
 
@@ -312,14 +331,11 @@ export function drawElevations(doc, ctx, tris, area) {
     doc.setLineWidth(0.2);
     doc.rect(cx0 + 1, cy0 + 1, cw - 2, ch - 2);
     // Natural surface (dashed), clamped to the cell
-    const prof = groundProfile(project, v.s, axes, r, ctx.unalign);
-    doc.setDrawColor(...PEN.contourMajor);
-    doc.setLineWidth(0.4);
-    doc.setLineDashPattern([2.6, 1.4], 0);
+    const prof = groundProfile(project, v.s, axes, r, ctx.unalign, ctx.levels);
     const pts = prof.filter((p) => p.z != null).map((p) => T(p.sx, -p.z));
-    const cx = (x) => Math.min(gx1, Math.max(gx0, x));
-    if (pts.length > 1) for (let a = 0; a + 1 < pts.length; a++) { const x1 = cx(pts[a].x); const x2 = cx(pts[a + 1].x); if (x2 > x1) doc.line(x1, pts[a].y, x2, pts[a + 1].y); }
-    doc.setLineDashPattern([], 0);
+    const fpts = prof.filter((p) => p.zf != null).map((p) => T(p.sx, -p.zf));
+    if (pts.length > 1) clippedLine(doc, pts, gx0, gx1, { colour: PEN.contourMajor, width: 0.4, dash: [2.6, 1.4] });
+    if (fpts.length > 1) clippedLine(doc, fpts, gx0, gx1, { colour: FINISHED_PEN, width: 0.35 });
     paintView(doc, r, T, { colours: ctx.colours });
     compactPages(doc);
     // Ground floor line
@@ -357,6 +373,21 @@ export function drawElevations(doc, ctx, tris, area) {
       doc.line(xr - 6, T(0, -topZ).y, dx + 3, T(0, -topZ).y);
       doc.setLineDashPattern([], 0);
       doc.text(clean(`RIDGE ${(floor + topZ / 1000).toFixed(2)}`), dx + 1.5, T(0, -topZ).y - 1.2);
+    }
+    // Ground line labels with their RL at the right end of the lines, stacked below the lower of the two so they never overprint.
+    if (pts.length > 1 && floor != null) {
+      const endOf = (key) => { const q = prof.filter((p) => p[key] != null); return q.length ? q[q.length - 1] : null; };
+      const nEnd = endOf('z');
+      const fEnd = fpts.length > 1 ? endOf('zf') : null;
+      const yN = T(nEnd.sx, -nEnd.z).y;
+      const yF = fEnd ? T(fEnd.sx, -fEnd.zf).y : yN;
+      const lowest = Math.max(yN, yF, ...[...pts, ...fpts].filter((q) => q.x >= gx1 - 75).map((q) => q.y)); // the lines under the labels
+      const yBase = Math.min(cy0 + ch - 10, lowest);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(TXT.small);
+      doc.setTextColor(...PEN.contourMajor);
+      doc.text(clean(`NATURAL SURFACE RL ${(floor + nEnd.z / 1000).toFixed(2)}`), gx1 - 1, yBase + 3.2, { align: 'right' });
+      if (fEnd) { doc.setTextColor(...FINISHED_PEN); doc.text(clean(`FINISHED SURFACE RL ${(floor + fEnd.zf / 1000).toFixed(2)}`), gx1 - 1, yBase + 6.2, { align: 'right' }); }
     }
     viewTitle(doc, cx0 + 5, cy0 + ch - 5, `${cap(v.s.name.toLowerCase())} elevation`, `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.head });
   });
@@ -511,27 +542,15 @@ export function drawSection(doc, ctx, tris, area) {
   const xr = P(r.bounds.x1, 0).x;
 
   // Natural surface through the cut
-  const prof = pl.axes ? groundProfile(project, { out: pl.a }, pl.axes, r, ctx.unalign) : [];
+  const prof = pl.axes ? groundProfile(project, { out: pl.a }, pl.axes, r, ctx.unalign, ctx.levels) : [];
   const gpts = prof.filter((p) => p.z != null).map((p) => T(p.sx, -p.z));
+  const fgpts = prof.filter((p) => p.zf != null).map((p) => T(p.sx, -p.zf));
   // The beyond: the far half of the house in light tone
   paintView(doc, r, T, { colours: ctx.colours });
-  doc.setDrawColor(...PEN.contourMajor);
-  doc.setLineWidth(0.45);
-  doc.setLineDashPattern([2.6, 1.4], 0);
   const gx0 = area.x0 + 2;
   const gx1 = area.x1 - 2;
-  if (gpts.length > 1) {
-    for (let i = 0; i + 1 < gpts.length; i++) {
-      let a = gpts[i];
-      let b = gpts[i + 1];
-      if (b.x === a.x || (a.x < gx0 && b.x < gx0) || (a.x > gx1 && b.x > gx1)) continue;
-      const at = (x) => ({ x, y: a.y + ((x - a.x) / (b.x - a.x)) * (b.y - a.y) });
-      if (a.x < gx0) a = at(gx0);
-      if (b.x > gx1) b = at(gx1);
-      doc.line(a.x, a.y, b.x, b.y);
-    }
-  }
-  doc.setLineDashPattern([], 0);
+  if (gpts.length > 1) clippedLine(doc, gpts, gx0, gx1, { colour: PEN.contourMajor, width: 0.45, dash: [2.6, 1.4] });
+  if (fgpts.length > 1) clippedLine(doc, fgpts, gx0, gx1, { colour: FINISHED_PEN, width: 0.4 });
 
   // Cut slabs: solid
   doc.setLineWidth(0.5);
@@ -667,8 +686,17 @@ export function drawSection(doc, ctx, tris, area) {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(TXT.small);
     doc.setTextColor(...PEN.contourMajor);
-    const g = gpts[gpts.length - 2];
-    doc.text('NATURAL SURFACE', Math.min(area.x1 - 4, g.x), g.y + 4.4, { align: 'right' });
+    const fl = project.site?.lot?.floorRL;
+    const gz = prof.filter((p) => p.z != null);
+    const lastP = gz[gz.length - 1];
+    const fz = prof.filter((p) => p.zf != null);
+    const fLast = fgpts.length > 1 ? fz[fz.length - 1] : null;
+    const yEnd = Math.max(...[...gpts, ...fgpts].filter((q) => q.x >= area.x1 - 75).map((q) => q.y), gpts[gpts.length - 1].y, fLast ? fgpts[fgpts.length - 1].y : 0);
+    doc.text(clean(`NATURAL SURFACE${fl != null ? ` RL ${(fl + lastP.z / 1000).toFixed(2)}` : ''}`), area.x1 - 4, yEnd + 4.4, { align: 'right' });
+    if (fLast) {
+      doc.setTextColor(...FINISHED_PEN);
+      doc.text(clean(`FINISHED SURFACE${fl != null ? ` RL ${(fl + fLast.zf / 1000).toFixed(2)}` : ''}`), area.x1 - 4, yEnd + 8, { align: 'right' });
+    }
   }
 
   viewTitle(doc, area.x0 + 3, area.y0 + 8.4, `Section ${letter}-${letter}`, `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.title });
