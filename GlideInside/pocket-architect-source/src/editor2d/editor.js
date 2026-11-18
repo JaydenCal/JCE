@@ -581,7 +581,10 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       return;
     }
     const scale = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 300 : 1;
-    const k = e.ctrlKey ? 0.012 : 0.0016;
+    // Owner 18/11/2026: scroll zoom was too slow on large lots (about 25 notches from 2% to 100%). About 1.35x a notch now, and a
+    // larger step while zoomed far out, so a big lot reaches building scale in a handful of notches.
+    const far = state.view && state.view.scale < 0.02 ? 1.5 : 1;
+    const k = (e.ctrlKey ? 0.012 : 0.003) * far;
     zoomBy(Math.exp(-e.deltaY * scale * k), { x: e.clientX - r.left, y: e.clientY - r.top });
   }
 
