@@ -5,6 +5,8 @@
 //   applySchemeToFinishes(finishes, id)      a copy of the finishes (walls, roof, fascia) with the scheme colours laid over them
 //   schemeColours(project)                   { roof, wall, trim } hex for the plan and the minimap, or null
 
+import { liftDarkHex } from './colour-lift.js';
+
 export const DEFAULT_SCHEME_ID = 'standard';
 
 // Standard colours: a dark charcoal roof and gutters. Walls stay as the house design has them (wall null).
@@ -46,5 +48,6 @@ export function applySchemeToFinishes(finishes, id) {
 export function schemeColours(project, designWall = null) {
   const s = schemeById(effectiveSchemeId(project));
   if (!s) return null;
-  return { roof: s.roof, wall: s.wall || designWall || '#cfc9bd', trim: s.trim, id: s.id };
+  // The roof is the colour the 3D model shows: very dark roofs are lifted there (src/viewer3d/build.js), so the plan and minimap lift them too.
+  return { roof: liftDarkHex(s.roof, 0.27), wall: s.wall || designWall || '#cfc9bd', trim: s.trim, id: s.id };
 }

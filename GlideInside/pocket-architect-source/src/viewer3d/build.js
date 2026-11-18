@@ -6,6 +6,7 @@
 
 import { applySchemeToFinishes, effectiveSchemeId } from '../model/colour-schemes.js';
 import * as THREE from 'three';
+import { liftDarkHex } from '../model/colour-lift.js';
 import * as G from '../model/geometry.js';
 import { DEFAULT_FINISHES } from '../model/schema.js';
 import { createMaterialLibrary, resolveHex } from './materials.js';
@@ -143,14 +144,7 @@ export function dominantWallAngle(project) {
 
 /** Very dark finishes (Monument, charcoal) go black under tone mapping and hide the roof form: keep their lightness above a floor. */
 function liftDark(hexStr, minL) {
-  try {
-    const c = new THREE.Color(hexStr);
-    const hsl = {};
-    c.getHSL(hsl);
-    if (hsl.l >= minL) return hexStr;
-    c.setHSL(hsl.h, hsl.s, minL);
-    return `#${c.getHexString()}`;
-  } catch { return hexStr; }
+  try { return liftDarkHex(hexStr, minL); } catch { return hexStr; }
 }
 
 export function buildModel(project, opts = {}) {

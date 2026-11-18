@@ -30,7 +30,7 @@ import { COMMERCIAL_CARD_CSS } from './lotcard-css.js';
 import { isCommercial } from './schema.js';
 import { layoutUnits } from './layout.js';
 import { zoneClass, RESIDENTIAL_NOTE } from './zones.js';
-import { CLADDING, DOORS, finishesOf, finishLine, applyFinishes } from './finishes.js';
+import { CLADDING, DOORS, finishesOf, finishLine, applyFinishes, topViewFill } from './finishes.js';
 import { stepLayout } from './layouts.js';
 import { activeTypeId, typeChoices, switcherList, switcherIndex, pagerText, chooseFor, applyChoice } from './catalogue/picker.js';
 import { STRATA_ID } from './catalogue/types/index.js';
@@ -561,7 +561,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
       const { buildingParking } = await import('./catalogue/bays.js');
       for (const r of [...parkingLayout(p.commercial).rows, ...buildingParking(p.commercial).rows]) for (const s of r.slots) { path(s.poly); ctx.fillStyle = s.kind === 'bay' ? 'rgba(90,100,110,.55)' : 'rgba(59,130,246,.75)'; ctx.fill(); }
     } catch { /* bays are decoration here */ }
-    const fill = CLADDING.find((c) => c.id === finishesOf(p).cladding)?.hex || '#cfc9bd';
+    const fill = topViewFill(p);
     for (const b of buildingsOf(p.commercial)) {
       for (const e of b.extras) { path(e.polygon); ctx.fillStyle = e.kind === 'canopy' || e.kind === 'fuel-canopy' ? 'rgba(120,130,140,.45)' : 'rgba(90,100,110,.35)'; ctx.fill(); }
       path(b.outline);

@@ -6,7 +6,7 @@ import { boxCentre, rotPoint } from '../lotcard/topview-move.js';
 import { commercialEdit } from './mode.js';
 import { layoutUnits } from './layout.js';
 import { buildingsOf } from './catalogue/buildings.js';
-import { CLADDING, finishesOf } from './finishes.js';
+import { topViewFill } from './finishes.js';
 import { parkingLayout } from './parking.js';
 import { buildingParking } from './catalogue/bays.js';
 import { hardstandModel } from './catalogue/pavements/hardstand.js';
@@ -25,7 +25,7 @@ export async function commercialScene(project) {
     const m = hardstandModel(project);
     for (const a of m?.areas || []) if (a.role === 'hardstand') shapes.push({ kind: 'hardstand', ring: ringPts(a.polygon), fill: pavementById(a.type)?.colour || '#bdb9ae', type: a.type });
   } catch { /* hardstand is decoration here */ }
-  const fill = CLADDING.find((x) => x.id === finishesOf(project).cladding)?.hex || '#cfc9bd';
+  const fill = topViewFill(project);
   const blds = buildingsOf(c);
   for (const b of blds) {
     for (const e of b.extras || []) shapes.push({ kind: e.kind === 'canopy' || e.kind === 'fuel-canopy' ? 'canopy' : 'extra', ring: ringPts(e.polygon) });
