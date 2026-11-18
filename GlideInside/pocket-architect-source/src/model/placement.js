@@ -128,6 +128,22 @@ export function classifyEdges(lot) {
   const len = (i) => G.dist(b[i], b[(i + 1) % b.length]);
   const primary = fronts.length ? fronts.reduce((a, i) => (len(i) < len(a) ? i : a)) : -1;
   if (!useGiven) fronts.forEach((i) => (kinds[i] = i === primary ? 'front' : 'secondaryFront'));
+  // An irregular frontage (a splay, a curve or a dog leg) is several consecutive street edges that bend gently: they are one frontage, not a
+  // corner. Edges that chain onto the primary edge with a turn of 40 degrees or less are part of the front, not a secondary front.
+  if (!useGiven && primary >= 0) {
+    const n = b.length;
+    const dir = (i) => G.norm(G.sub(b[(i + 1) % n], b[i]));
+    const gentle = (i, j) => G.dot(dir(i), dir(j)) >= Math.cos((40 * Math.PI) / 180);
+    for (const step of [1, n - 1]) {
+      let cur = primary;
+      for (let k = 0; k < n; k++) {
+        const nx = (cur + step) % n;
+        if (kinds[nx] !== 'secondaryFront' || !gentle(cur, nx)) break;
+        kinds[nx] = 'front';
+        cur = nx;
+      }
+    }
+  }
   if (fronts.length && !useGiven) {
     const f = edge(primary);
     const df = G.norm(G.sub(f.b, f.a));

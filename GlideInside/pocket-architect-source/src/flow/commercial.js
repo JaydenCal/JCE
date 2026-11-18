@@ -7,7 +7,7 @@ import * as G from '../model/geometry.js';
 import { lotOf } from '../model/placement.js';
 import { icon } from '../ui/icons.js';
 import { mountLotStep } from './lot-step.js';
-import { mapBox, roadSvg, aerialOf } from './lot-map.js';
+import { mapBox, aerialOf } from './lot-map.js';
 import { writeFlow, flowOf } from './state.js';
 import { mount3dPreview } from './preview3d.js';
 const openAddBuilding = (opts) => import('../commercial/ui/add-building.js').then((m) => m.openAddBuilding(opts)); // loaded when asked, so the step logic stays importable without a document
@@ -169,7 +169,7 @@ function mountPlaceStep(ctx) {
   function draw(project = store.project, dragOffset = null) {
     const lot = lotNow();
     if (!lot || disposed) return;
-    if (!box) box = mapBox(lot, { margin: 0.12, roadM: 12 });
+    if (!box) box = mapBox(lot, { margin: 0.12 });
     svg.setAttribute('viewBox', `${Math.round(box.x)} ${Math.round(box.y)} ${Math.round(box.w)} ${Math.round(box.h)}`);
     const px = mmPerPx();
     const st = placementStatus(project);
@@ -177,7 +177,6 @@ function mountPlaceStep(ctx) {
     svg.replaceChildren();
     svg.append(set(document.createElementNS(NS, 'rect'), { x: box.x, y: box.y, width: box.w, height: box.h, fill: '#e3ead9' }));
     if (aerial?.href && aerial.extent) { const e = aerial.extent; svg.append(set(document.createElementNS(NS, 'image'), { href: aerial.href, x: e.x0, y: e.y0, width: e.x1 - e.x0, height: e.y1 - e.y0, preserveAspectRatio: 'none', opacity: '0.85' })); }
-    const roads = document.createElementNS(NS, 'g'); roads.innerHTML = roadSvg(lot, px); svg.append(roads);
     svg.append(poly(lot.boundary, { fill: 'rgba(255,255,255,.22)', stroke: '#d11f1f', 'stroke-width': Math.round(3 * px) }));
     const env = Array.isArray(lot.envelope) && lot.envelope.length >= 3 ? lot.envelope : null;
     if (env) svg.append(poly(env, { fill: st.state === 'outside' ? 'rgba(199,119,0,.10)' : 'rgba(23,114,74,.10)', stroke: col, 'stroke-width': Math.round(3 * px), 'stroke-dasharray': `${Math.round(10 * px)} ${Math.round(6 * px)}`, 'data-ps': 'flow-envelope' }));

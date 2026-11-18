@@ -215,7 +215,7 @@ export function drawAnalysis(doc, ctx) {
   doc.setDrawColor(...pal.neighbour);
   doc.setLineWidth(pal.neighbourW);
   for (const nb of lot.neighbours || []) if (!nb.isRoad) line(nb.ring);
-  for (const r of facts.reserve) {
+  for (const r of []) { // the automatic road at the frontage is not drawn (owner 18/11/2026)
     const L = r.lines;
     const bit = clipPolygon([L.gutter[0], L.gutter[1], L.farGutter[1], L.farGutter[0]].map(T), rect);
     if (bit.length > 2 && !aerial) { doc.setFillColor(226, 228, 232); polygon(doc, bit, 'F'); }

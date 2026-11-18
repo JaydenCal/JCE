@@ -9,7 +9,7 @@ import { buildingHull, clearances, deriveDriveway, garageDoor, setStoredDriveway
 import { getWays, removeWay } from '../site/pavedways.js';
 import { projectToSvg, svgDataUri } from '../portal/thumbnail.js';
 import { mountLotStep, zoneText } from './lot-step.js';
-import { lotMapSvg, mapBox, roadSvg, aerialOf } from './lot-map.js';
+import { lotMapSvg, mapBox, aerialOf } from './lot-map.js';
 import { writeFlow, flowOf } from './state.js';
 import { loadHomes, filterRows, placeBest, nudgeHouse, turnHouse, mirrorHouse, previewCopy, placementStatus, checkSummary, INDICATIVE } from './res-logic.js';
 import { mount3dPreview } from './preview3d.js';
@@ -258,7 +258,7 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
     const lot = lotNow();
     if (!lot) return;
     liveProject = project;
-    if (!box) box = mapBox(lot, { margin: 0.12, roadM: 12 });
+    if (!box) box = mapBox(lot, { margin: 0.12 });
     const V = vb();
     svg.setAttribute('viewBox', `${Math.round(V.x)} ${Math.round(V.y)} ${Math.round(V.w)} ${Math.round(V.h)}`);
     aerialBtn.textContent = aerial?.href ? `Aerial: ${aerialOn ? 'On' : 'Off'}` : aerialState === 'loading' ? 'Aerial: loading' : NO_AERIAL;
@@ -276,7 +276,6 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
       for (const [k, v] of Object.entries({ href: aerial.href, x: e.x0, y: e.y0, width: e.x1 - e.x0, height: e.y1 - e.y0, preserveAspectRatio: 'none', opacity: '0.85' })) im.setAttribute(k, v);
       svg.append(im);
     }
-    const roads = document.createElementNS(NS, 'g'); roads.innerHTML = roadSvg(lot, px); svg.append(roads);
     svg.append(poly(lot.boundary, { fill: 'rgba(255,255,255,.22)', stroke: '#d11f1f', 'stroke-width': Math.round(3 * px) }));
     const env = Array.isArray(lot.envelope) && lot.envelope.length >= 3 ? lot.envelope : null;
     // The buildable area (the lot less the setbacks), shaded, so it is plain where a house can go.

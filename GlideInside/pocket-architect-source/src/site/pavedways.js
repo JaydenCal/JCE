@@ -81,7 +81,46 @@ function clean(w) {
 /** The drawn ways on the project, cleaned. */
 export function getWays(project) {
   const list = project?.site?.paved;
-  return Array.isArray(list) ? list.map(clean).filter(Boolean) : [];
+  return Array.isArray(list) ? list.map((w) => fence(project, clean(w))).filter(Boolean) : [];
+}
+
+/** How far from the lot (mm) a point of a drawn way may be before it counts as a stray point (50 m: a way is kept inside its lot, so anything further out is a stray). */
+export const STRAY_MM = 50000;
+
+/**
+ * Guard against degenerate points (NaN, a point left at the origin, a point far from the lot, doubled points): they are dropped, so a way can
+ * never build a fan of long strips across the aerial. A way left with fewer than two points is dropped whole.
+ */
+export function fence(project, w) {
+  if (!w) return null;
+  const lot = lotOf(project);
+  let pts = w.pts.filter((p) => finite(p.x) && finite(p.y));
+  if (lot?.boundary?.length) {
+    const b = G.bbox(lot.boundary);
+    pts = pts.filter((p) => p.x > b.minX - STRAY_MM && p.x < b.maxX + STRAY_MM && p.y > b.minY - STRAY_MM && p.y < b.maxY + STRAY_MM);
+  }
+  pts = pts.filter((p, i) => i === 0 || dist(p, pts[i - 1]) >= 1);
+  return pts.length >= 2 ? { ...w, pts } : null;
+}
+
+/** The distance (mm) from a way's own polyline that any of its surfaces (body, crossover, turning head, mitre) can reach. */
+export function wayBufferMm(way) {
+  const w = way.widthMm || 0;
+  return (way.heads?.length ? 1.5 * Math.max(HEADS.bulb.radiusMm, w) + w : 0) + w * 1.5 + FLARE_MM + 1000;
+}
+
+const segDist = (p, a, b) => {
+  const dx = b.x - a.x; const dy = b.y - a.y;
+  const l2 = dx * dx + dy * dy;
+  const t = l2 ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / l2)) : 0;
+  return Math.hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy));
+};
+
+/** True when every point of the ring is finite and within the way's buffer of its polyline. */
+export function ringWithinBuffer(ring, way) {
+  const buf = wayBufferMm(way);
+  const pl = way.pts;
+  return ring.every((p) => finite(p.x) && finite(p.y) && pl.some((a, i) => (i + 1 < pl.length ? segDist(p, a, pl[i + 1]) : dist(p, a)) <= buf));
 }
 export const getWay = (project, id) => getWays(project).find((w) => w.id === id) || null;
 
