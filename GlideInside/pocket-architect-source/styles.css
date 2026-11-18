@@ -664,7 +664,7 @@ svg { display: block; }
   .ps-product { display: none; }
   .ps-name { width: 130px; flex: 1 1 110px; }
   .ps-topbar-spacer { display: none; }
-  .ps-field { grid-template-columns: 84px minmax(0, 1fr); }
+  .ps-field { grid-template-columns: 92px minmax(0, 1fr); }
   .ps-drawer { width: 100%; }
   .ps-statusbar { gap: 4px 12px; padding: 4px 8px; }
   .ps-status-hint { flex-basis: 100%; order: 9; }
@@ -1097,3 +1097,13 @@ svg { display: block; }
 .ps-rot-chip strong { font-size: 18px; line-height: 1.1; }
 .ps-rot-chip small { font-size: 11px; opacity: 0.85; }
 .ps-rot-chip[data-snap="lot"], .ps-rot-chip[data-snap="frontage"] { background: #17724a; }
+
+/* Short desktop windows (a 1080p laptop with browser bars, about 730 px of page): the toolbox wraps to two columns so every tool shows without scrolling. */
+@media (min-width: 900px) and (max-height: 860px) {
+  .ps-shell:not([data-view="3d"]):not([data-view="walk"]) .ps-main { grid-template-columns: 92px minmax(0, 1fr) 328px; }
+  .ps-shell[data-panel="hidden"]:not([data-view="3d"]):not([data-view="walk"]) .ps-main { grid-template-columns: 92px minmax(0, 1fr) 0; }
+  .ps-toolbox { flex-direction: row; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 4px; padding: 6px 4px; }
+  .ps-tool { width: 36px; height: 36px; }
+  .ps-tool svg { width: 20px; height: 20px; }
+  .ps-tool-sep { flex: 0 0 100%; width: 100%; height: 1px; margin: 2px 8px; }
+}

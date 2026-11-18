@@ -9,12 +9,13 @@ const DRAG_PX = 3;
 const HANDLE_PX = 10;
 const fmtM1 = (v) => `${(Math.round(v * 10) / 10).toFixed(1)} m`;
 
-export const DRIVEPI_HINT = 'Click the driveway centreline to add a PI. Drag a square to move it. Delete or a right click removes the PI. Drag the green diamond to slide the end along the kerb. The garage door end stays attached.';
+export const DRIVEPI_HINT = 'Click the driveway centreline to add a PI. Drag a square to move it. Delete or a right click removes the PI. Drag the green diamond to slide the end along the kerb. The building end stays attached.';
 
 export function createDrivePIController({ store, scale, toast = () => {}, redraw = () => {} }) {
   let selected = null; // index of the selected PI
   let drag = null; // { kind: 'pi' | 'end', index, moved, screen, to, ok }
   let hover = null;
+  let drawing = null; // a driveway being drawn: { pts: [{x,y}], cursor }, the first point on the street frontage
   const mmPerPx = () => 1 / Math.max(1e-6, scale());
   const tolMm = () => HANDLE_PX * mmPerPx();
   const say = (msg, kind = 'ok', extra = {}) => { try { toast(msg, { kind, ...extra }); } catch { /* no toast host */ } };
@@ -51,8 +52,44 @@ export function createDrivePIController({ store, scale, toast = () => {}, redraw
     return r;
   }
 
+  // Drawing a new driveway (no garage door, or none yet): click the frontage, click PIs, double click or Enter at the building.
+  const KERB_PICK_PX = 40;
+  function drawDown(w) {
+    if (!drawing) {
+      const k = D.kerbSnap(store.project, w);
+      if (!k || k.distMm > KERB_PICK_PX * mmPerPx() + 3000) { say('Start the driveway on the street frontage.', 'info'); return true; }
+      drawing = { pts: [k.point], cursor: k.point };
+      redraw();
+      return true;
+    }
+    const last = drawing.pts.at(-1);
+    if (Math.hypot(w.x - last.x, w.y - last.y) > tolMm()) drawing.pts.push({ x: w.x, y: w.y }); // a double click's second press adds nothing
+    drawing.cursor = { x: w.x, y: w.y };
+    redraw();
+    return true;
+  }
+  function finishDrawing() {
+    if (!drawing) return false;
+    if (drawing.pts.length < 2) { say('Click at least one more point, at the building, to finish.', 'info'); return true; }
+    const pts = drawing.pts;
+    const r = edit('Draw driveway', (p) => D.createDrawnDriveway(p, pts));
+    if (r.ok) { drawing = null; say('Driveway drawn. Drag a PI to shape it.', 'ok'); }
+    redraw();
+    return true;
+  }
+  const cancelDrawing = () => { if (!drawing) return false; drawing = null; redraw(); return true; };
+
+  function deleteDriveway() {
+    const r = edit('Delete driveway', (p) => (D.deleteDrawnDriveway(p) ? { ok: true } : { ok: false, reason: 'There is no drawn driveway to delete.' }));
+    select(null); drag = null; hover = null;
+    if (r.ok) say('Driveway deleted.', 'ok');
+    redraw();
+    return !!r.ok;
+  }
+
   function pointerDown(w, mods = {}) {
     const st = state();
+    if (!st.ok && st.canDraw) return drawDown(w);
     if (!st.ok) { say(D.driveEditBlock(st), 'info'); return false; }
     const hit = D.driveHit(st, w, tolMm());
     if (!hit) { if (selected != null) { select(null); redraw(); } return false; }
@@ -79,6 +116,7 @@ export function createDrivePIController({ store, scale, toast = () => {}, redraw
       redraw();
       return;
     }
+    if (drawing) { drawing.cursor = { x: w.x, y: w.y }; redraw(); return; }
     const st = state();
     const h = st.ok ? D.driveHit(st, w, tolMm()) : null;
     const key = h ? `${h.kind}${h.index ?? ''}` : '';
@@ -96,6 +134,7 @@ export function createDrivePIController({ store, scale, toast = () => {}, redraw
   }
 
   function dblClick(w) {
+    if (drawing) { finishDrawing(); return; }
     const st = state();
     if (!st.ok) return;
     const hit = D.driveHit(st, w, tolMm());
@@ -135,6 +174,7 @@ export function createDrivePIController({ store, scale, toast = () => {}, redraw
   }
 
   function cancel() {
+    if (cancelDrawing()) return true;
     if (drag) { drag = null; redraw(); return true; }
     if (selected != null) { select(null); redraw(); return true; }
     return false;
@@ -144,6 +184,8 @@ export function createDrivePIController({ store, scale, toast = () => {}, redraw
   function keyDown(e) {
     const k = e.key;
     if (k === 'Escape') return cancel();
+    if (drawing && k === 'Enter') return finishDrawing();
+    if (drawing && (k === 'Backspace' || k === 'Delete')) { if (drawing.pts.length > 1) drawing.pts.pop(); else drawing = null; redraw(); return true; }
     if (k === 'Delete' || k === 'Backspace') {
       const st = state();
       if (!st.ok) return false;
@@ -156,6 +198,7 @@ export function createDrivePIController({ store, scale, toast = () => {}, redraw
 
   function hint() {
     const st = state();
+    if (drawing) return 'Click to add a PI. Double click or press Enter at the building to finish. Backspace removes the last point. Escape cancels.';
     if (!st.ok) return D.driveEditBlock(st);
     return DRIVEPI_HINT;
   }
@@ -163,6 +206,7 @@ export function createDrivePIController({ store, scale, toast = () => {}, redraw
   /** What to draw: { ok, message, centre, polygon, pis, kerb, selected, hover, dragging, refused, reason, readout }. */
   function draft() {
     const st = state();
+    if (drawing) return { ok: false, drawing: { pts: drawing.pts, cursor: drawing.cursor } };
     if (!st.ok) return { ok: false, message: D.driveEditBlock(st) };
     let src = st;
     let refused = false; let reason = '';
@@ -175,9 +219,9 @@ export function createDrivePIController({ store, scale, toast = () => {}, redraw
   }
 
   return {
-    pointerDown, pointerMove, pointerUp, dblClick, rightClick, keyDown, cancel, reset, setRadius, deleteSelected, removePI, draft, hint, state,
+    pointerDown, pointerMove, pointerUp, dblClick, rightClick, keyDown, cancel, reset, deleteDriveway, finishDrawing, isDrawing: () => !!drawing, setRadius, deleteSelected, removePI, draft, hint, state,
     selectedPI: () => selected,
     selectPI: (i) => { select(i); redraw(); },
-    clear: () => { selected = null; drag = null; hover = null; },
+    clear: () => { selected = null; drag = null; hover = null; drawing = null; },
   };
 }

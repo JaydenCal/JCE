@@ -465,3 +465,17 @@ test('sampleLineWithBreaks puts vertices exactly on the cut distances', () => {
   assert.equal(pts.at(-1).x, 20000);
   assert.ok(pts.every((p, i) => i === 0 || p.x > pts[i - 1].x));
 });
+
+test('neighbour context (massing houses, sheds, rear trees) is off even when the houses layer is on', () => {
+  for (const mode of ['residential', 'commercial']) {
+    const p = designOnLot();
+    p.mode = mode;
+    p.site.lot.aerial = null;
+    p.site.lot.layers = { ...p.site.lot.layers, houses: true };
+    const g = buildModel(p, {});
+    const names = [];
+    g.traverse((o) => names.push(o.name));
+    for (const n of ['neighbour-walls', 'neighbour-roofs', 'neighbour-trim', 'neighbour-windows', 'neighbour-sheds']) assert.ok(!names.includes(n), `${mode} drew ${n}`);
+    assert.ok(g.getObjectByName('neighbour-boundaries'), 'neighbour lot lines stay');
+  }
+});

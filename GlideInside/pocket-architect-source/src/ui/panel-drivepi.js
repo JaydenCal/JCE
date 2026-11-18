@@ -20,15 +20,19 @@ export function drivePIPanel(ctx) {
     root.append(h('div', { class: 'ps-sel-title' }, h('strong', null, 'Driveway PIs')));
     if (!st.ok) {
       root.append(h('p', { class: 'ps-hint', dataset: { ps: 'drivepi-block' } }, driveEditBlock(st)));
+      if (st.canDraw) root.append(h('div', { class: 'ps-sec' }, h('div', { class: 'ps-row', style: { gap: '6px', flexWrap: 'wrap' } },
+        button('Finish driveway', () => { ctl()?.finishDrawing(); render(); }, { title: 'Finish at the last point you clicked (or double click, or press Enter).', dataset: { ps: 'drivepi-finish' } }))));
       return;
     }
     root.append(h('div', { class: 'ps-sec' },
-      h('div', { class: 'ps-sec-title' }, st.edited ? 'Edited driveway' : 'Automatic driveway'),
-      h('p', { class: 'ps-hint', style: { margin: 0 } }, `${m1(st.d.lengthMm / 1000)} long, ${m1(st.d.widthMm / 1000)} wide, ${st.pis.length} PI${st.pis.length === 1 ? '' : 's'}.`)));
+      h('div', { class: 'ps-sec-title' }, st.drawn ? 'Drawn driveway' : st.edited ? 'Edited driveway' : 'Automatic driveway'),
+      h('p', { class: 'ps-hint', style: { margin: 0 } }, `${m1(st.d.lengthMm / 1000)} long, ${m1(st.d.widthMm / 1000)} wide, ${st.pis.length} PI${st.pis.length === 1 ? '' : 's'}.${st.drawn ? ' Drawn by you; it stays attached to the building.' : ''}`)));
     root.append(h('div', { class: 'ps-sec' },
       h('div', { class: 'ps-row', style: { gap: '6px', flexWrap: 'wrap' } },
         button('Delete PI', () => { ctl()?.deleteSelected(); render(); }, { title: 'Delete the selected PI (Delete or Backspace). A right click on a PI does the same.', dataset: { ps: 'drivepi-delete' } }),
-        button('Reset to auto', () => { ctl()?.reset(); render(); }, { title: 'Drop your changes and bring the automatic driveway route back. The garage door and kerb ends stay attached either way.', dataset: { ps: 'drivepi-reset' } }))));
+        ...(st.drawn
+          ? [button('Delete driveway', () => { ctl()?.deleteDriveway(); render(); }, { title: 'Remove this drawn driveway. You can draw another one.', dataset: { ps: 'drivepi-delete-driveway' } })]
+          : [button('Reset to auto', () => { ctl()?.reset(); render(); }, { title: 'Drop your changes and bring the automatic driveway route back. The garage door and kerb ends stay attached either way.', dataset: { ps: 'drivepi-reset' } })]))));
     const radius = h('div', { class: 'ps-chips', role: 'group', 'aria-label': 'Bend radius', dataset: { ps: 'drivepi-radius' } });
     for (const r of RADII) radius.append(h('button', { class: 'ps-chip', type: 'button', 'aria-pressed': String(Math.abs((st.radiusM || 6) - r) < 0.01 && st.edited), dataset: { value: r }, onclick: () => { ctl()?.setRadius(r); render(); } }, `${r} m`));
     root.append(h('div', { class: 'ps-sec' }, h('div', { class: 'ps-sec-title' }, 'Bend radius at every PI'), radius));

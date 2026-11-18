@@ -21,7 +21,7 @@ import { ringOf } from '../editor2d/draw-lotplan.js';
 import { buildingRings, buildingHull } from '../site/lotplan.js';
 import { setbackStatusLine } from '../site/lot-checks.js';
 import { SCHEMES, effectiveSchemeId, schemeById, schemeLine, schemeColours } from '../model/colour-schemes.js';
-import { cardStats, lotHeading, lotLine, hasBuilding } from './stats.js';
+import { cardStats, lotHeading, lotLine, lotIdentity, hasBuilding } from './stats.js';
 import { designsFor, currentIndex, pagerText, stepIndex } from './designs.js';
 import { swapHouse } from './swap.js';
 import { LOT_CARD_CSS } from './lot-card-css.js';
@@ -99,7 +99,13 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   });
   const coach = createCoach({ theme: 'glass', steps: TOPVIEW_COACH, onChange: () => { try { sizeInset(); } catch { /* not ready */ } } });
   const advice = E('lc-advice', 'div', null, coach.el, fitCard.el);
-  const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more, minBtn), advice, body);
+  // Change the building type or design from the card, in every tool: the title and a small chevron open a compact list (designs for this lot first,
+  // then every other building type in the catalogue). Picking one places it exactly as the pager does.
+  const swapBtn = h('button', { class: 'lc-chev', type: 'button', 'aria-haspopup': 'listbox', 'aria-expanded': 'false', 'aria-label': 'Change building type or design', title: 'Change building type or design', dataset: { ps: 'lc-swap' }, onclick: (e) => { e.stopPropagation(); toggleSwap(); } }, '\u25be');
+  const swapList = E('lc-swaplist', 'div', { role: 'listbox', 'aria-label': 'Building types and designs', hidden: true, dataset: { ps: 'lc-swaplist' } });
+  title.addEventListener('click', () => toggleSwap());
+  title.style.cursor = 'pointer';
+  const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, E('lc-ttl', 'div', null, title, swapBtn), sub), more, minBtn), swapList, advice, body);
   if (isMin) card.classList.add('is-min');
   paintMin();
 
@@ -188,6 +194,13 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const closeSugg = () => { if (findList) { findList.hidden = true; suggI = -1; } };
   let shownText = '';
   let finding = false;
+  // One source of truth: the pill text is derived from the loaded lot (lotIdentity), never from what was last typed or picked.
+  const syncPill = (lot) => {
+    const lotText = lotIdentity(lot).pill;
+    shownText = lotText;
+    if (findInput) { if (document.activeElement !== findInput && !finding) findInput.value = lotText; }
+    else if (findPill) findPill.lastChild.textContent = lotText || 'Find my block';
+  };
   // A failed search puts the previous lot back in the pill (the viewer toasts the reason).
   const pickAddress = async (label) => {
     closeSugg();
@@ -205,6 +218,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     } finally {
       finding = false;
       findPill.classList.remove('is-busy');
+      syncPill(lotOf(store.project)); // whatever the outcome (loaded, failed or queued) the pill shows the lot that is actually loaded
       schedule();
     }
   };
@@ -310,6 +324,36 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => setTimeout(run, 0));
       else setTimeout(run, 0);
     });
+  }
+
+  /** Designs for this lot (ranked) then the other catalogue building types, as [{ id, name, group, project?, make? }]. */
+  function swapChoices() {
+    const out = designs.map((d) => ({ id: d.id, name: d.name, group: 'Designs for this lot', d }));
+    const seen = new Set(out.map((x) => x.id));
+    for (const t of Array.isArray(catalogue?.templates) ? catalogue.templates : []) {
+      if (!t?.id || t.id === 'blank' || seen.has(t.id)) continue;
+      out.push({ id: t.id, name: t.name || t.id, group: 'Building types', make: () => ({ id: t.id, name: t.name || t.id, project: catalogue.createFromTemplate ? catalogue.createFromTemplate(t.id) : t.create?.() }) });
+    }
+    return out;
+  }
+  function closeSwap() { swapList.hidden = true; swapBtn.setAttribute('aria-expanded', 'false'); document.removeEventListener('pointerdown', outsideSwap, true); try { sizeInset(); } catch { /* not ready */ } }
+  function outsideSwap(e) { if (!swapList.contains(e.target) && !swapBtn.contains(e.target) && e.target !== title) closeSwap(); }
+  function toggleSwap() {
+    if (!swapList.hidden) { closeSwap(); return; }
+    const cur = uiPlaced()?.id || store.project.placedHouse?.id || null;
+    const curName = uiPlaced()?.name || store.project.placedHouse?.name || store.project.name;
+    const kids = [];
+    let group = '';
+    for (const c of swapChoices()) {
+      if (c.group !== group) { group = c.group; kids.push(h('div', { class: 'lc-swap-g' }, group)); }
+      const on = (cur && c.id === cur) || (!cur && c.name === curName);
+      kids.push(h('button', { class: 'lc-swap-i', type: 'button', role: 'option', 'aria-selected': String(!!on), dataset: { id: c.id }, onclick: () => { closeSwap(); if (on) return; let d = c.d; try { d = d || c.make(); } catch { d = null; } if (d?.project) placeDesign(d); } }, h('span', null, c.name), on ? h('i', null, '\u2713') : null));
+    }
+    swapList.replaceChildren(...kids);
+    swapList.hidden = false;
+    swapBtn.setAttribute('aria-expanded', 'true');
+    document.addEventListener('pointerdown', outsideSwap, true);
+    try { sizeInset(); } catch { /* not ready */ }
   }
 
   function setScheme(id) {
@@ -419,6 +463,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     const p = store.project;
     const lot = lotOf(p);
     const view = store.ui.view;
+    syncPill(lot); // the address pill always names the lot that is loaded, even while the card is hidden
     // Not while the placement panel is open (it uses the bottom of the stage), nor in walk mode.
     const show = !!lot && hasBuilding(p) && p.mode !== 'commercial' && view !== 'walk' && !host.querySelector('.pas-pose');
     if (show && canMoveHouse(p)) coach.start();
@@ -462,14 +507,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     tabsCompact.replaceChildren(...tabs.map(mkTab));
     setTimeout(cue, 0);
     const sample = lot.demo || lot.lotLabel === 'Sample lot';
-    const lotText = sample ? '' : `${lot.address || lot.lotLabel || ''}${lot.areaM2 ? ` · ${Math.round(lot.areaM2).toLocaleString('en-AU')} m²` : ''}`;
-    shownText = lotText;
-    if (findInput) {
-      if (document.activeElement !== findInput && !finding) {
-        findInput.value = lotText;
-        findInput.placeholder = sample ? `Sample lot · ${lotLine(lot).split(' · ').slice(1).join(' · ') || 'search a NSW or QLD address'}` : 'Search a NSW or QLD address';
-      }
-    } else findPill.lastChild.textContent = lotText || 'Find my block';
+    if (findInput) findInput.placeholder = sample ? `Sample lot · ${lotLine(lot).split(' · ').slice(1).join(' · ') || 'search a NSW or QLD address'}` : 'Search a NSW or QLD address';
     const cur = targetTab() || tabs.find((t) => t.id === 'aerial');
     cap.textContent = cur?.caption || '';
     rooms.hidden = tabs.length < 2;

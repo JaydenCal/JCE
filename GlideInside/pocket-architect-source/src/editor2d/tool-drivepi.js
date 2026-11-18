@@ -59,6 +59,7 @@ function pill(ctx, st, lines, x, y, warn) {
 
 /** Draw a controller draft() over the plan. */
 export function drawOverlay(ctx, st, d) {
+  if (d?.drawing) { drawInProgress(ctx, st, d.drawing); return; }
   if (!d?.ok) return;
   ctx.save();
   ctx.lineJoin = 'round';
@@ -95,6 +96,25 @@ export function drawOverlay(ctx, st, d) {
   } else if (d.dragging) {
     const anchor = worldToScreen(st.view, d.kerb);
     pill(ctx, st, d.refused ? [d.readout, d.reason] : [d.readout], anchor.x + 16, anchor.y + 16, d.refused);
+  }
+  ctx.restore();
+}
+
+/** A driveway being drawn: gold dashed line through the clicked points to the pointer, white squares at the points, the start on the kerb in green. */
+function drawInProgress(ctx, st, dr) {
+  const pts = dr.cursor ? [...dr.pts, dr.cursor] : dr.pts;
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.beginPath(); trace(ctx, st, pts, false);
+  ctx.strokeStyle = GOLD; ctx.lineWidth = 1.8; ctx.setLineDash([9, 5]); ctx.stroke(); ctx.setLineDash([]);
+  dr.pts.forEach((q, i) => {
+    const s = worldToScreen(st.view, q);
+    ctx.beginPath(); ctx.rect(s.x - 5, s.y - 5, 10, 10);
+    ctx.fillStyle = i === 0 ? GREEN : '#fff'; ctx.fill(); ctx.strokeStyle = i === 0 ? '#fff' : GOLD; ctx.lineWidth = 2; ctx.stroke();
+  });
+  if (dr.cursor) {
+    const s = worldToScreen(st.view, dr.cursor);
+    pill(ctx, st, ['Click to add a PI', 'Double click or Enter at the building to finish'], s.x + 14, s.y + 14, false);
   }
   ctx.restore();
 }
