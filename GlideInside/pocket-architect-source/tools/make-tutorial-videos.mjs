@@ -46,6 +46,10 @@ const q = (page, sel) => page.locator(sel).first();
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // Recorder: paced actions plus a caption log
 // ---------------------------------------------------------------------------------------------------------------------------------------
+const DISMISS_JS = `(() => { window.__dismissPrompt = true; setInterval(() => { const q = (x) => document.querySelector(x); const hit = (b) => b && b.click();
+  if (window.__dismissPrompt) hit(q('[data-action="prompt-notnow"]'));
+  hit(q('[data-ps="fit-coach-skip"]'));
+  const g = [...document.querySelectorAll('.pso-btn--primary')].find((b) => /Got it/.test(b.textContent)); hit(g); }, 350); })();`;
 const CURSOR_JS = `(() => {
   const dot = document.createElement('div');
   dot.style.cssText = 'position:fixed;z-index:2147483647;left:0;top:0;width:22px;height:22px;margin:-3px 0 0 -3px;pointer-events:none;transition:left var(--cur-ms,650ms) cubic-bezier(.45,0,.2,1),top var(--cur-ms,650ms) cubic-bezier(.45,0,.2,1)';
@@ -90,7 +94,7 @@ class Rec {
   async glide(x, y, ms = 650, { drag = false } = {}) {
     if (!drag) { await this.page.mouse.move(x, y); await sleep(ms); }
     else {
-      const steps = Math.max(6, Math.round(ms / 130)), x0 = this.x, y0 = this.y;
+      const steps = Math.max(3, Math.round(ms / 330)), x0 = this.x, y0 = this.y;
       for (let i = 1; i <= steps; i += 1) { const k = i / steps; await this.page.mouse.move(x0 + (x - x0) * k, y0 + (y - y0) * k); await sleep(ms / steps); }
     }
     this.x = x; this.y = y;
@@ -107,6 +111,7 @@ class Rec {
   async at(sel, fx = 0.5, fy = 0.5) { const b = await this.box(sel); return { x: b.x + b.width * fx, y: b.y + b.height * fy }; }
   async point(sel, fx, fy, ms) { const p = await this.at(sel, fx, fy); await this.glide(p.x, p.y, ms); return p; }
   async click(sel, { fx = 0.5, fy = 0.5, after = 900 } = {}) {
+    if (sel.includes('profile-save')) await this.page.evaluate(() => { window.__dismissPrompt = false; });
     const p = await this.at(sel, fx, fy);
     await this.glide(p.x, p.y, 700);
     await sleep(250);
@@ -308,8 +313,8 @@ SCENARIOS['residential-view3d'] = { kind: 'residential', setup: (p) => toStep(p,
   await r.cap('Open the editor for the full 3D view'); await r.click('[data-ps="flow-next"]', { after: 300 }); await r.editor();
   await page.click('[data-ps="prompt-notnow"]', { timeout: 3000 }).catch(() => {});
   await r.cap('3D fills the whole screen'); await r.click('[data-view="3d"]', { after: 2500 });
-  await r.cap('Preset views: Aerial'); await r.click('[data-ps="view3d-aerial"]', { after: 2500 });
-  await r.cap('Street view'); await r.click('[data-ps="view3d-hero"]', { after: 2500 });
+  await r.cap('Preset views: Aerial'); await r.softClick('[data-ps="view3d-aerial"]', { after: 2500 });
+  await r.cap('Street view'); await r.softClick('[data-ps="view3d-hero"]', { after: 2500 });
   await r.cap('Walk puts you inside at eye height'); await r.click('[data-view="walk"]', { after: 2500 });
   await r.cap('Use W A S D to move and drag to look');
   await page.keyboard.down('w'); await sleep(1400); await page.keyboard.up('w'); await r.hold(600);
@@ -333,8 +338,8 @@ SCENARIOS['residential-planset'] = { kind: 'residential', setup: (p) => toEditor
   const page = r.page;
   r.begin();
   await r.cap('The lot card shows the key numbers'); await r.point('[data-ps="lot-card"]', 0.5, 0.3); await r.hold(2500);
+  await r.cap('Details opens the plan set buttons'); await r.softClick('[data-ps="lot-card"] .lc-more', { after: 1200 });
   await r.cap('Site plan PDF builds the plan set'); await r.point('[data-ps="lc-pdf"]'); await r.hold(1800);
-  await r.click('[data-ps="lc-pdf"]', { after: 4500 });
   await r.cap('Send to engineer passes it on for the next stage');
   if (await q(page, '[data-ps="lc-send-engineer"]').isVisible().catch(() => false)) { await r.point('[data-ps="lc-send-engineer"]'); await r.hold(2500); }
   else await r.hold(2500);
@@ -345,25 +350,22 @@ SCENARIOS['residential-overview'] = { kind: 'residential', run: async (r) => {
   r.begin();
   await seg.find(r, 'residential', true);
   await r.cap('Step 2: filter and choose a design');
-  await r.pick('[data-ps="flow-filter-bedrooms"]', '4', { after: 1500 });
   await r.click('[data-ps="flow-home"]', { after: 1500 });
   await r.cap('Press Place this home'); await r.click('[data-ps="flow-next"]', { after: 300 }); await r.step(3);
   await page.click('[data-ps="fit-coach-skip"]', { timeout: 2000 }).catch(() => {});
   await r.cap('Step 3: drag the house, or press Best fit');
   const house = await r.at('[data-ps="flow-house"]', 0.5, 0.5);
   await r.drag(house, { x: house.x + 30, y: house.y - 24 }, { ms: 1100 }); await r.click('[data-ps="flow-bestfit"]', { after: 300 }); await r.quiet();
-  await r.cap('Set the driveway with the round handle');
-  const dh = await r.at('[data-ps="flow-drive-handle"]', 0.5, 0.5); await r.drag(dh, { x: dh.x - 30, y: dh.y }, { ms: 1000 });
   await r.cap('Step 4: check the design in 3D'); await r.click('[data-ps="flow-next"]', { after: 300 }); await r.step(4);
-  const c = await r.at('[data-ps="flow-3d"]', 0.5, 0.5); await r.drag({ x: c.x - 60, y: c.y }, { x: c.x + 80, y: c.y }, { ms: 1400 });
+  await r.hold(1800);
   await r.cap('Open the editor to change anything'); await r.click('[data-ps="flow-next"]', { after: 300 }); await r.editor();
   await page.click('[data-ps="prompt-notnow"]', { timeout: 3000 }).catch(() => {});
   await r.cap('3D shows the house on your lot'); await r.click('[data-view="3d"]', { after: 3000 });
   await r.click('[data-view="split"]', { after: 1500 });
-  await r.cap('Wall, door and window tools edit the plan'); await r.click('[data-tool="wall"]', { after: 1200 }); await r.click('[data-tool="door"]', { after: 1200 }); await r.click('[data-tool="select"]', { after: 1200 });
   await r.cap('Save design keeps it in a free profile'); await r.click('[data-action="profile-save"]', { after: 2500 });
   await page.click('[data-ps="prompt-notnow"]', { timeout: 1500 }).catch(() => {}); await page.keyboard.press('Escape');
-  await r.cap('Site plan PDF builds the plan set'); await r.point('[data-ps="lc-pdf"]'); await r.hold(2500);
+  await r.softClick('[data-ps="lot-card"] .lc-more', { after: 800 });
+  await r.cap('Site plan PDF builds the plan set'); await r.point('[data-ps="lc-pdf"]'); await r.hold(2000);
   await r.cap('Press Show me how any time for more help'); await r.point('[data-ps="tutorial-help"]'); await r.hold(2500);
 } };
 
@@ -436,7 +438,6 @@ SCENARIOS['commercial-planset'] = { kind: 'commercial', setup: (p) => toEditor(p
   await r.cap('Save design keeps the layout in a free profile'); await r.click('[data-action="profile-save"]', { after: 3000 });
   await page.click('[data-ps="prompt-notnow"]', { timeout: 1500 }).catch(() => {}); await page.keyboard.press('Escape'); await sleep(500);
   await r.cap('The plan set button builds the PDF'); await r.point('[data-ps="cc-planset"]'); await r.hold(2200);
-  await r.click('[data-ps="cc-planset"]', { after: 4500 });
   await r.cap('Send to engineer passes the layout on');
   if (await q(page, '[data-ps="lc-send-engineer"]').isVisible().catch(() => false)) { await r.point('[data-ps="lc-send-engineer"]'); await r.hold(2500); } else await r.hold(2500);
 } };
@@ -550,7 +551,7 @@ async function main() {
       let rec = null, video = null, ok = false; const errors = [];
       for (let attempt = 1; attempt <= 2 && !ok; attempt += 1) {
         const ctx = await browser.newContext({ viewport: { width: W, height: H }, recordVideo: { dir: rawDir, size: { width: W, height: H } }, reducedMotion: 'no-preference' });
-        await ctx.addInitScript(CURSOR_JS);
+        await ctx.addInitScript(CURSOR_JS); await ctx.addInitScript(DISMISS_JS);
         await ctx.addInitScript(() => { try { localStorage.setItem('gi.tutorial', JSON.stringify({ residential: 'skipped', commercial: 'skipped' })); } catch { /* none */ } });
         await ctx.route(/^https:\/\/(fonts\.(googleapis|gstatic)\.com|www\.googletagmanager\.com|api\.mapbox\.com)\//, (r) => r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
         await ctx.route((u) => u.pathname.startsWith('/api/') && u.origin === ORIGIN, (route) => {
@@ -568,7 +569,7 @@ async function main() {
           await page.mouse.move(640, 360);
           if (sc.setup) await sc.setup(page);
           await sc.run(rec);
-          rec.finish(); ok = true;
+          await sleep(7000); rec.finish(); ok = true;
         } catch (e) { console.log(`  attempt ${attempt} FAILED ${id}: ${e.message.split('\n').slice(0, 3).join(' | ')}`); if (attempt === 2) failures.push(`${id}: ${String(e.message).split('\n')[0]}`); await page.screenshot({ path: path.join(scratch, `${id}-fail${attempt}.png`), timeout: 20000 }).catch(() => {}); console.log(`    page: ${await page.evaluate(() => `${document.querySelector('[data-ps=\\"flow-root\\"]')?.dataset.step || 'noflow'} ${document.body.innerText.slice(0, 120).replace(/\\n/g, ' / ')}`).catch((x) => `no page: ${x.message}`)}`); }
         video = page.video();
         await ctx.close();

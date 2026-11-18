@@ -17,7 +17,7 @@ import { commercialSteps, COMMERCIAL_BRAND } from './commercial.js';
 export const kindOf = (project, wantCommercial = false) => (project?.mode === 'commercial' || flowOf(project)?.kind === 'commercial' || wantCommercial ? 'commercial' : 'residential');
 
 /** The one tutorial coach of this page (created on first use). */
-export const tutorialOf = (api) => (api.tutorial ||= createTutorial({ getFlow: () => api.flow, onEnter: (s) => { if (s.arm) api.setTool?.(s.arm); } }));
+export const tutorialOf = (api) => (api.tutorial ||= createTutorial({ getFlow: () => api.flow, onEnter: (s) => { if (s.arm) api.setTool?.(s.arm); if (s.openCard) { const c = document.querySelector('[data-ps="lot-card"]'); if (c && !c.classList.contains('is-open')) c.querySelector('.lc-more')?.click(); } } }));
 
 /** Whether a fresh app open should start the flow (pure, so it can be tested). */
 export function shouldStart({ project, search = '', viewer = false, demo = false, shareId = null, fromAutosave = false }) {
