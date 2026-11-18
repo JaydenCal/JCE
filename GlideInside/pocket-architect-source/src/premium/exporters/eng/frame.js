@@ -3,6 +3,7 @@
 
 import { clean, PEN, fit, ink, wrap } from './kit.js';
 import { placeImage } from '../pdf.js';
+import { drawBuilderBrand, drawPoweredBy } from '../planset/titleblock.js';
 import { titleLotDp } from '../../../site/lotplan.js';
 import { termsLines } from '../../../legal/sheet-note.js';
 import { DISCLAIMER, ddmmyyyy, normDate, drawingNo, attribution, projectTitle } from './brand.js';
@@ -99,19 +100,9 @@ export function drawFrame(doc, ctx, sheet) {
   doc.rect(x0, y0, w1, h);
   const place = (img, box) => img && placeImage(doc, img, box);
   if (brand.mode === 'builder') {
-    if (brand.logo) place(brand.logo, { x: x0 + 4, y: y0 + 3, w: w1 - 8, h: h * 0.4 });
-    if (brand.name) {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(brand.logo ? 9 : 11.5);
-      ink(doc, PEN.ink);
-      const lines = wrap(doc, brand.name, w1 - 6).slice(0, 2);
-      lines.forEach((l, i) => doc.text(l, x0 + w1 / 2, y0 + (brand.logo ? h * 0.4 + 8 : h * 0.3) + i * 4, { align: 'center' }));
-    }
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(5.8);
-    ink(doc, PEN.grey);
-    doc.text(clean(brand.credit), x0 + w1 / 2, y0 + h - 9.2, { align: 'center' });
-    if (brand.glide) place(brand.glide, { x: x0 + w1 / 2 - 10, y: y0 + h - 8, w: 20, h: 20 / (brand.glide.w / brand.glide.h) });
+    // The builder's own title block (planset/titleblock.js): logo, name, licence, ABN, address, contacts, and a small Powered by Glide Inside mark.
+    drawBuilderBrand(doc, { name: brand.name, logo: brand.logo, details: brand.details }, { x: x0, y: y0, w: w1, h: h - 6.5 });
+    drawPoweredBy(doc, { x: x0, y: y0 + h - 6.5, w: w1, h: 6.5 });
   } else {
     if (brand.logo) {
       // The user's own logo sits above the Glide Inside mark.
@@ -146,7 +137,7 @@ export function drawFrame(doc, ctx, sheet) {
   if (addr) doc.text(fit(doc, addr.toUpperCase(), w2 - 5), x2 + 2.6, y0 + 14.6);
   if (lotdp) doc.text(fit(doc, lotdp.toUpperCase(), w2 - 5), x2 + 2.6, y0 + 19.2);
   const rest = (h - rh * 1.6) / 2;
-  cell(doc, x2, y0 + rh * 1.6, w2, rest, 'CLIENT', tb.client, { size: 9.5 });
+  cell(doc, x2, y0 + rh * 1.6, w2, rest, 'CLIENT', tb.client || (brand.mode === 'builder' ? brand.client?.name : ''), { size: 9.5 });
   cell(doc, x2, y0 + rh * 1.6 + rest, w2, rest, 'DRAWING TITLE', sheet.title, { size: 11 });
 
   // Panel 3: revision table.

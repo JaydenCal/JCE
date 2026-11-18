@@ -100,7 +100,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     app.getLogo = () => brand.logoDataUrl;
   }
   // The PDF plan set leads with the builder's name and logo and credits Glide Inside in small print.
-  app.builder = { name: brand.displayName || me.org.name, logo: brand.logoDataUrl || null };
+  app.builder = { name: brand.displayName || me.org.name, logo: brand.logoDataUrl || null, details: brand.details || null, client: me.user.role === 'client' ? { name: me.user.name || '', lotAddress: me.user.lotAddress || '' } : null };
   document.querySelector('.ps-welcome')?.remove();
   let aiTok = null; // the login's AI token (see refreshAiToken)
   const entitlement = () => ({

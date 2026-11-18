@@ -14,6 +14,7 @@ const SPECS = {
       billingName: 'billing_name', billingEmail: 'billing_email', billingPhone: 'billing_phone', stripeCustomerId: 'stripe_customer_id', createdAt: 'created_at',
       brandPrimary: 'brand_primary', brandAccent: 'brand_accent', brandDarkInk: 'brand_dark_ink', brandDarkBg: 'brand_dark_bg', slug: 'slug', // builder colours (migration 0010)
       directoryListed: 'directory_listed:b', directoryRegion: 'directory_region', // opt in to the public builder search (migration 0022)
+      brandLicence: 'brand_licence', brandAbn: 'brand_abn', brandAddress: 'brand_address', brandPhone: 'brand_phone', brandEmail: 'brand_email', brandWebsite: 'brand_website', // title block details (migration 0024)
       customLoginCents: 'custom_login_cents', // nullable: the owner's per-login price for this org (migration 0008)
     },
   },

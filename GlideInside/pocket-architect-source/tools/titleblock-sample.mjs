@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import { jsPDF } from 'jspdf';
+import { exportPlanSet } from '../src/premium/exporters/planset/index.js';
+const root=new URL('../../', import.meta.url).pathname;
+const houses = JSON.parse(fs.readFileSync(root+'golive/builder-houses/hunter-homes.json','utf8'));
+const project = houses[0].project;
+const rect = (x0, y0, x1, y1) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+const lot = { boundaryM: rect(0,0,36,60), frontEdge:0, lotNumber:'12', planLabel:'DP 1234567', address:'12 Sample Street, Thornton NSW 2322', lga:'Maitland City Council', setbacks:{front:6,side:0.9,rear:3}, neighbours:[] };
+const logo = 'data:image/png;base64,'+fs.readFileSync('/tmp/sample-logo.png').toString('base64');
+const builder = process.argv[2]==='public'?null:{ name:'Sample Homes Pty Ltd', logo, details:{licence:'123456C',abn:'51 824 753 556',address:'Unit 4, 118 Industrial Drive, Thornton NSW 2322',phone:'02 5550 0100',email:'hello@samplehomes.com.au',website:'www.samplehomes.com.au'}, client:{name:'Jordan and Sam Example'} };
+const r = await exportPlanSet({ project, lot, kind:'site', download:false, jsPDF, builder, date:new Date(2026,10,18) });
+fs.writeFileSync(`/tmp/set-${process.argv[2]||'builder'}.pdf`, Buffer.from(await r.blob.arrayBuffer()));
+console.log(r.pages);

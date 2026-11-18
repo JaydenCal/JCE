@@ -17,11 +17,11 @@ export function bytesToBase64(bytes) {
 }
 
 /** Builds the site plan set PDF and resolves it as base64, or null when it is over the size the server accepts. */
-export async function planSetBase64({ project, lot, builderName = '', exportPlanSet, kind = 'site', requireTerms = requirePlanTerms, terms = null }) {
+export async function planSetBase64({ project, lot, builderName = '', builder = null, exportPlanSet, kind = 'site', requireTerms = requirePlanTerms, terms = null }) {
   // The PDF attached to the request is a plan PDF: the terms come first. Declined, the request goes without the PDF (null).
   const accepted = terms || (await requireTerms({ context: 'send-to-engineer' }));
   if (!accepted) return null;
-  const out = await exportPlanSet({ project, lot, kind, builderName, download: false, terms: accepted });
+  const out = await exportPlanSet({ project, lot, kind, builderName, builder, download: false, terms: accepted });
   const blob = out?.blob || out?.bytes || out?.data || out;
   const bytes = blob instanceof Blob ? new Uint8Array(await blob.arrayBuffer()) : blob instanceof Uint8Array ? blob : blob instanceof ArrayBuffer ? new Uint8Array(blob) : null;
   if (!bytes || bytes.length > MAX_PDF_BYTES) return null;
@@ -42,7 +42,7 @@ export function createSendToEngineer({ getApp, getProject, getLot, getBuilderNam
     if (!available()) return null;
     return p.openEnquiry({
       anyone: true,
-      buildPdf: async () => planSetBase64({ project: getProject(), lot: getLot(), builderName: getBuilderName(), exportPlanSet: await loadExporter(), requireTerms, kind: typeof kind === 'function' ? kind() : kind }),
+      buildPdf: async () => planSetBase64({ project: getProject(), lot: getLot(), builderName: getBuilderName(), builder: getApp()?.builder || null, exportPlanSet: await loadExporter(), requireTerms, kind: typeof kind === 'function' ? kind() : kind }),
     });
   }
   function offerAfterExport() {

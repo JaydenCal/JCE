@@ -116,7 +116,7 @@ test('branding switch: public leads with Glide Inside and the user fields, build
   const bb = await toEngineeringPDF(p, { jsPDF: b.Rec, catalogue, builder: { name: 'Sample Builder Homes', logo: null } });
   assert.equal(bb.layout.mode, 'builder');
   assert.ok(b.texts.includes('Sample Builder Homes'));
-  assert.ok(b.texts.includes('Prepared with Glide Inside'));
+  assert.ok(b.texts.includes('Powered by Glide Inside'));
   assert.ok(!b.texts.some((t) => /Prepared by Sample Designs/.test(t)));
   assert.equal(brandOf(p, { builder: null, logo: null }).mode, 'public');
   assert.equal(brandOf(p, { builder: { name: 'X' }, logo: null }).mode, 'builder');

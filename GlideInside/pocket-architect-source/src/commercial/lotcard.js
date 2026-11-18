@@ -356,7 +356,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
       bPlan.textContent = 'Preparing plan set';
       bPlan.disabled = true;
       const { exportPlanSet } = await import('../premium/exporters/planset/index.js');
-      const out = await exportPlanSet({ project: store.project, lot: lotOf(store.project), kind: 'commercial', builderName: builderName() || '', download: false, terms, includeAerial: aerialOn(store.project) && store.project.drawing?.includeAerial !== false });
+      const out = await exportPlanSet({ project: store.project, lot: lotOf(store.project), kind: 'commercial', builderName: builderName() || '', builder: app().builder || null, download: false, terms, includeAerial: aerialOn(store.project) && store.project.drawing?.includeAerial !== false });
       const bytes = out?.bytes || out?.blob || out?.data || out;
       if (bytes instanceof Blob || bytes instanceof Uint8Array || bytes instanceof ArrayBuffer) {
         downloadBlob(bytes instanceof Blob ? bytes : new Blob([bytes], { type: 'application/pdf' }), out?.filename || 'Commercial_Plan_Set.pdf');

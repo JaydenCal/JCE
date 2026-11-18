@@ -9,6 +9,7 @@ import { migrate, validate } from '../model/schema.js';
 import { GLIDE_LIBRARY } from './glide-library.generated.js';
 import { houseStats } from './house-stats.js';
 import { validateColours } from './theme.js';
+import { validateDetails } from './brand-details.js';
 import { projectToSvg } from './thumbnail.js';
 import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js';
 import { gstOfTotal, monthLabel } from './billing.js';
@@ -775,7 +776,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
 
     // Branding and settings --------------------------------------------------------------------------------------------------------
     /** Builder logo, name and colour scheme. logoDataUrl: PNG or JPEG data URL (at most 400 KB) or null to remove. colours: { primary, accent, darkInk, darkBg } or null for the Glide Inside look. */
-    async setBranding({ displayName, logoDataUrl, colours } = {}) {
+    async setBranding({ displayName, logoDataUrl, colours, details } = {}) {
       await wait();
       const { db, org } = ctx('branding.write');
       const b = { displayName: text(displayName, 'Name for plans', { required: true, max: 60 }), logoDataUrl: org.branding.logoDataUrl };
@@ -792,6 +793,12 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
           if (!v.ok) throw err('BAD_REQUEST', Object.values(v.errors)[0]);
           b.colours = v.colours.primary ? v.colours : null;
         }
+      }
+      b.details = org.branding.details || null;
+      if (details !== undefined) {
+        const v = validateDetails(details);
+        if (!v.ok) throw err('BAD_REQUEST', Object.values(v.errors)[0]);
+        b.details = v.details;
       }
       org.branding = b;
       save(db);
