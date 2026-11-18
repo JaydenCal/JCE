@@ -179,3 +179,121 @@ export function fillGaps(grid) {
   }
   return grid;
 }
+
+// ---- Terrace removal -------------------------------------------------------------------------------------------------------------
+// Elevation sources are sometimes stored on a step (whole metres, half metres), so a gently falling paddock arrives as flat plateaus
+// with a full step between them, which a mesh draws as stair-step terraces. quantStep finds that step, and smoothTerraces rebuilds the
+// ground between the step edges: each cell sits between the contour below it and the contour above it, in proportion to its distance
+// from each (the same idea as drawing a surface through contour lines), and the result is eased with a small blur so the seams between
+// plateaus leave no crease. A grid that is not stepped is returned untouched.
+
+const STEP_CANDIDATES = [5, 2, 1, 0.5, 0.25, 0.2, 0.1];
+
+/** The largest candidate step that nearly all values sit on, or 0 when the grid is not stepped (or has too little relief to tell). */
+export function quantStep(values) {
+  const vals = [];
+  let min = Infinity; let max = -Infinity;
+  const stride = Math.max(1, Math.floor(values.length / 20000));
+  for (let n = 0; n < values.length; n += stride) {
+    const v = values[n];
+    if (v == null || !Number.isFinite(v)) continue;
+    vals.push(v);
+    if (v < min) min = v; if (v > max) max = v;
+  }
+  if (vals.length < 50) return 0;
+  for (const q of STEP_CANDIDATES) {
+    if (max - min < 2 * q) continue;
+    const tol = Math.min(0.03, q * 0.12);
+    let hit = 0;
+    for (const v of vals) { const r = v / q; if (Math.abs(r - Math.round(r)) * q <= tol) hit++; }
+    if (hit / vals.length >= 0.7) return q;
+  }
+  return 0;
+}
+
+// Distance (in cells) from every cell to the nearest cell of a lower step (dir -1) or a higher step (dir +1), travelling over cells of its
+// own step, so every step is done in one sweep whatever the number of steps. Infinity where its plateau touches no such cell.
+function stepDistance(idx, cols, rows, dir, out) {
+  const D = 1.4142;
+  out.fill(Infinity);
+  const nb = (n, m, w) => { const a = idx[n]; const c = idx[m]; if (dir < 0 ? c < a : c > a) return w; return c === a ? out[m] + w : Infinity; };
+  for (let sweep = 0; sweep < 3; sweep++) {
+    let changed = false;
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const n = j * cols + i; let d = out[n];
+        if (i > 0) d = Math.min(d, nb(n, n - 1, 1));
+        if (j > 0) {
+          d = Math.min(d, nb(n, n - cols, 1));
+          if (i > 0) d = Math.min(d, nb(n, n - cols - 1, D));
+          if (i < cols - 1) d = Math.min(d, nb(n, n - cols + 1, D));
+        }
+        if (d < out[n]) { out[n] = d; changed = true; }
+      }
+    }
+    for (let j = rows - 1; j >= 0; j--) {
+      for (let i = cols - 1; i >= 0; i--) {
+        const n = j * cols + i; let d = out[n];
+        if (i < cols - 1) d = Math.min(d, nb(n, n + 1, 1));
+        if (j < rows - 1) {
+          d = Math.min(d, nb(n, n + cols, 1));
+          if (i < cols - 1) d = Math.min(d, nb(n, n + cols + 1, D));
+          if (i > 0) d = Math.min(d, nb(n, n + cols - 1, D));
+        }
+        if (d < out[n]) { out[n] = d; changed = true; }
+      }
+    }
+    if (!changed) break;
+  }
+}
+
+function boxBlur(a, cols, rows, r, tmp) {
+  const w = 2 * r + 1;
+  for (let j = 0; j < rows; j++) {
+    let s = 0;
+    for (let k = -r; k <= r; k++) s += a[j * cols + Math.min(cols - 1, Math.max(0, k))];
+    for (let i = 0; i < cols; i++) {
+      tmp[j * cols + i] = s / w;
+      s += a[j * cols + Math.min(cols - 1, i + r + 1)] - a[j * cols + Math.max(0, i - r)];
+    }
+  }
+  for (let i = 0; i < cols; i++) {
+    let s = 0;
+    for (let k = -r; k <= r; k++) s += tmp[Math.min(rows - 1, Math.max(0, k)) * cols + i];
+    for (let j = 0; j < rows; j++) {
+      a[j * cols + i] = s / w;
+      s += tmp[Math.min(rows - 1, j + r + 1) * cols + i] - tmp[Math.max(0, j - r) * cols + i];
+    }
+  }
+}
+
+/** Values (same layout as grid.values) with the terraces removed; the input array is returned unchanged when it is not stepped. */
+export function smoothTerraces(grid) {
+  const { cols, rows, values } = grid;
+  const q = quantStep(values);
+  if (!q || cols < 4 || rows < 4) return values;
+  const N = cols * rows;
+  const idx = new Int32Array(N);
+  let kmin = Infinity; let kmax = -Infinity;
+  for (let n = 0; n < N; n++) { const k = Math.round(values[n] / q); idx[n] = k; if (k < kmin) kmin = k; if (k > kmax) kmax = k; }
+  if (kmax - kmin > 400) return values;
+  const out = new Float64Array(N);
+  const dLo = new Float64Array(N); const dHi = new Float64Array(N);
+  stepDistance(idx, cols, rows, -1, dLo);
+  stepDistance(idx, cols, rows, 1, dHi);
+  const widths = [];
+  for (let n = 0; n < N; n++) {
+    let a = dLo[n]; let b = dHi[n];
+    if (a === Infinity && b === Infinity) { out[n] = idx[n] * q; continue; }
+    // a missing side is taken as far off, so the plateau meets its one neighbour without a jump and tends to its own level inland
+    if (a === Infinity) a = b + 20; else if (b === Infinity) b = a + 20;
+    out[n] = (idx[n] - 0.5 + a / (a + b)) * q;
+    if (a < 60 && b < 60 && widths.length < 20000) widths.push(a + b);
+  }
+  widths.sort((x, y) => x - y);
+  const med = widths.length ? widths[Math.floor(widths.length / 2)] : 6;
+  const r = Math.max(1, Math.min(10, Math.round(med * 0.3)));
+  const tmp = new Float64Array(N);
+  for (let p = 0; p < 3; p++) boxBlur(out, cols, rows, r, tmp);
+  return Array.from(out, (v) => Math.round(v * 1000) / 1000);
+}

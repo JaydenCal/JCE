@@ -50,7 +50,7 @@ import {
   ringsToPolygons, polygonArea, ringCentroid, interiorPoint, bboxOf, formatPlan, formatLotLabel, round, mgaToWeb,
 } from '../../src/site/geo.js';
 import { readTiff } from '../../src/site/tiff.js';
-import { contourLines, fillGaps, gridRange } from '../../src/site/contours.js';
+import { contourLines, fillGaps, gridRange, smoothTerraces } from '../../src/site/contours.js';
 import { clipPolygonsToBox } from '../../src/site/overlays.js';
 import { overlaySourcesFor } from './site-overlay-sources.js';
 
@@ -964,7 +964,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     if (!valid) throw new HttpError('NOT_FOUND', 'No ground levels are available for this lot.');
     const grid = { cols, rows, cell, x0: round(box.minE - origin.e, 3), y0: round(box.maxN - origin.n, 3), values };
     fillGaps(grid);
-    grid.values = grid.values.map((v) => round(v, 2));
+    grid.values = smoothTerraces(grid).map((v) => round(v, 2)); // a stepped source (whole metre levels) becomes a smooth slope, not terraces
     const { min, max } = gridRange(grid);
     const lines = contourLines(grid, { minor, major });
     let provenance;

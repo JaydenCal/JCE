@@ -5,8 +5,8 @@ const SITE = path.resolve(__dirname, '../../website-live');
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.woff2': 'font/woff2' };
 const ADDRESS = '14 Sample Street, Westdale NSW';
 
-// `lot` and `contours` (optional) replace the sample lot and levels: functions returning the /api/site/lot and /api/site/contours responses.
-async function startServer(port = Number(process.env.PORT || 8821), { commercial = false, lot = null, contours = null } = {}) {
+// `aerial` (optional) replaces the aerial meta. `lot` and `contours` (optional) replace the sample lot and levels: functions returning the /api/site/lot and /api/site/contours responses.
+async function startServer(port = Number(process.env.PORT || 8821), { commercial = false, lot = null, contours = null, aerial = null } = {}) {
   const ORIGIN = `http://127.0.0.1:${port}`;
   const { createApp } = await import('../server/lib/app.js');
   const { createMemoryStore } = await import('../server/lib/store.js');
@@ -24,7 +24,7 @@ async function startServer(port = Number(process.env.PORT || 8821), { commercial
     const u = new URL(req.url, ORIGIN);
     if (u.pathname === '/api/site/search') return json(res, { results: [{ label: ADDRESS, state: 'NSW', lon: 150.930273, lat: -31.090267 }] });
     if (u.pathname === '/api/site/lot') return json(res, lot ? lot(lotResp()) : lotResp());
-    if (u.pathname === '/api/site/aerial') { res.writeHead(200, { 'content-type': 'image/jpeg', 'x-site-meta': encodeURIComponent(JSON.stringify(tam.aerial)) }); return res.end(jpg); }
+    if (u.pathname === '/api/site/aerial') { res.writeHead(200, { 'content-type': 'image/jpeg', 'x-site-meta': encodeURIComponent(JSON.stringify(aerial ? aerial(tam.aerial) : tam.aerial)) }); return res.end(jpg); }
     if (u.pathname === '/api/site/contours') return json(res, contours ? contours(tam.contours) : tam.contours);
     if (u.pathname.startsWith('/api/')) {
       const chunks = [];
@@ -36,8 +36,9 @@ async function startServer(port = Number(process.env.PORT || 8821), { commercial
       return res.end(Buffer.from(await r.arrayBuffer()));
     }
     let p = decodeURIComponent(u.pathname); if (p.endsWith('/')) p += 'index.html';
-    const f = path.join(SITE, p);
-    if (!f.startsWith(SITE) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end('not found'); }
+    let f = path.join(SITE, p);
+    if (process.env.APP_DIR && p.startsWith('/plan-studio/app/')) f = path.join(path.resolve(process.env.APP_DIR), p);
+    if ((!f.startsWith(SITE) && !process.env.APP_DIR) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end('not found'); }
     res.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(res);
   });
   await new Promise((r) => server.listen(port, '127.0.0.1', r));

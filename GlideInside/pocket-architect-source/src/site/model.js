@@ -15,6 +15,7 @@
 //   setbacks: null, envelope: null                        hooks for the setback stage. Nothing is invented here.
 //   provenance { lot, aerial, elevation }                 what each layer came from and how far to trust it
 
+import { smoothTerraces } from './contours.js';
 import { initialAerial } from './aerial-pref.js';
 import { siteToPlan, planToSite, ringEdges, round } from './geo.js';
 import { deriveFrontage } from './frontage.js';
@@ -42,7 +43,8 @@ export function terrainAt(terrain, x, y) {
 export function buildTerrain(grid) {
   if (!grid?.values?.length) return null;
   const p = siteToPlan([grid.x0, grid.y0]); // north west node
-  return { cols: grid.cols, rows: grid.rows, cellMm: Math.round(grid.cell * 1000), x0: p.x, y0: p.y, values: grid.values.map((v) => round(v, 2)) };
+  const smooth = smoothTerraces(grid); // stepped sources (whole metre levels) become a smooth slope, not terraces
+  return { cols: grid.cols, rows: grid.rows, cellMm: Math.round(grid.cell * 1000), x0: p.x, y0: p.y, values: smooth.map((v) => round(v, 2)) };
 }
 
 export function buildContours(resp) {
