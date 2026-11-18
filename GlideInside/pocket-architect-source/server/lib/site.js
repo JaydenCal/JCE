@@ -1026,13 +1026,19 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     const warnings = [];
     let complete = true;
     const layers = await Promise.all(overlaySourcesFor(state).map(async (src) => {
-      const base = { id: src.id, label: src.label, source: src.source, attribution: src.attribution || '', date: null, status: 'ok', note: '', features: [] };
+      const base = { id: src.id, label: src.label, category: src.category, kind: src.kind, source: src.source, attribution: src.attribution || '', date: null, status: 'ok', note: '', coverage: src.notes || '', verified: src.verified, checked: src.checked, features: [], values: [] };
       if (!src.urls.length) return { ...base, status: 'unavailable', note: src.note || 'No open service is wired for this layer.' };
+      const value = src.kind === 'value';
+      // Area layers: everything intersecting the box. Value layers (lot size, height, FSR): the polygon(s) at the lot centre, attributes only.
+      const params = value
+        ? { f: 'json', geometry: `${origin.e},${origin.n}`, geometryType: 'esriGeometryPoint', inSR: String(srid), spatialRel: 'esriSpatialRelIntersects', outFields: src.outFields, returnGeometry: 'false' }
+        : { f: 'json', ...envelope(box, srid), outFields: src.outFields, returnGeometry: 'true', outSR: String(srid), maxAllowableOffset: '0.5' };
+      if (src.where) params.where = src.where;
       let body = null;
       let lastErr = null;
       for (const layerUrl of src.urls) {
         try {
-          body = await upstream(`${layerUrl}/query`, { f: 'json', ...envelope(box, srid), outFields: src.outFields, returnGeometry: 'true', outSR: String(srid), maxAllowableOffset: '0.5' }, { timeoutMs: 9000, retries: 0 });
+          body = await upstream(`${layerUrl}/query`, params, { timeoutMs: 9000, retries: 0 });
           if (body && Array.isArray(body.features)) break;
           body = null;
           lastErr = new Error('unexpected response');
@@ -1047,15 +1053,17 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
       }
       let newest = null;
       const features = [];
+      const values = [];
       for (const f of body.features) {
-        const polys = clipPolygonsToBox(polysRel(ringsToPolygons(f.geometry?.rings || []), origin), relBox);
-        if (!polys.length) continue;
         const c = src.classify(f.attributes || {});
         if (c.dateMs && (!newest || c.dateMs > newest)) newest = c.dateMs;
+        if (value) { if (c.label && !values.some((v) => v.label === c.label && v.detail === c.detail) && values.length < 4) values.push({ label: c.label, detail: c.detail }); continue; }
+        const polys = clipPolygonsToBox(polysRel(ringsToPolygons(f.geometry?.rings || []), origin), relBox);
+        if (!polys.length) continue;
         features.push({ label: c.label, detail: c.detail, polygons: polys });
       }
-      if (body.exceededTransferLimit) { complete = false; warnings.push(`${src.label}: more features than the service returns at once, some are missing.`); }
-      return { ...base, date: newest ? ddmmyyyy(newest) : null, features };
+      if (body.exceededTransferLimit && !value) { complete = false; warnings.push(`${src.label}: more features than the service returns at once, some are missing.`); }
+      return { ...base, date: newest ? ddmmyyyy(newest) : null, features, values };
     }));
     return { complete, body: { state, srid, origin, retrieved: iso(), layers, warnings } };
   }

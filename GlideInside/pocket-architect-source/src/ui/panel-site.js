@@ -146,12 +146,34 @@ export function buildSiteSection(ctx) {
         }, { title: 'Look up open government mapping for this lot' })));
       return box;
     }
-    const rows = constraintSummary(lot).map((r) => h('div', { class: 'ps-constraint', dataset: { ps: `constraint-${r.id}` }, style: { padding: '6px 0', borderBottom: '1px solid rgba(128,128,128,0.2)' } },
-      h('div', { style: { display: 'flex', justifyContent: 'space-between', gap: '8px' } },
-        h('span', null, h('span', { class: 'ps-swatch', style: { display: 'inline-block', width: '9px', height: '9px', marginRight: '6px', background: `rgb(${OVERLAY_STYLE[r.id].rgb.join(',')})`, opacity: r.hit ? '1' : '0.35' } }), r.title),
-        h('strong', null, r.answer)),
-      r.detail ? h('div', { class: 'ps-hint', style: { margin: '2px 0 0' } }, r.detail) : null,
-      r.source ? h('div', { class: 'ps-hint', style: { margin: '2px 0 0' } }, `Source: ${r.source}${r.date ? `, data dated ${r.date}` : ''}.`) : null));
+    const all = constraintSummary(lot);
+    const sw = (r) => h('span', { class: 'ps-swatch', style: { display: 'inline-block', width: '9px', height: '9px', marginRight: '6px', background: `rgb(${OVERLAY_STYLE[r.id].rgb.join(',')})`, opacity: r.hit ? '1' : '0.35' } });
+    const src = (r) => (r.source ? h('div', { class: 'ps-hint', style: { margin: '2px 0 0' } }, `Source: ${r.source}${r.date ? `, data dated ${r.date}` : ''}.`) : null);
+    const head = (r) => h('div', { style: { display: 'flex', justifyContent: 'space-between', gap: '8px' } }, h('span', null, r.kind === 'value' ? null : sw(r), r.title), h('strong', { style: { textAlign: 'right' } }, r.answer));
+    const line = { padding: '6px 0', borderBottom: '1px solid rgba(128,128,128,0.2)' };
+    const affected = all.filter((r) => r.hit && r.kind !== 'value');
+    const controls = all.filter((r) => r.kind === 'value' && r.hit);
+    const rest = all.filter((r) => !r.hit && !(r.kind === 'value'));
+    const rows = [];
+    // Affected constraints in full: what was found, what it may mean, what to do next.
+    for (const r of affected) {
+      rows.push(h('div', { class: 'ps-constraint', dataset: { ps: `constraint-${r.id}` }, style: line },
+        head(r), r.detail ? h('div', { class: 'ps-hint', style: { margin: '2px 0 0' } }, r.detail) : null,
+        r.rule?.means ? h('div', { class: 'ps-hint', style: { margin: '2px 0 0' } }, r.rule.means) : null,
+        r.rule?.steps?.length ? h('ul', { class: 'ps-hint', style: { margin: '2px 0 0', paddingLeft: '16px' } }, ...r.rule.steps.map((t) => h('li', null, t))) : null,
+        r.rule ? h('div', { class: 'ps-hint', style: { margin: '2px 0 0' } }, r.rule.instruction) : null,
+        r.coverage ? h('div', { class: 'ps-hint', style: { margin: '2px 0 0' } }, r.coverage) : null, src(r)));
+    }
+    // Planning control maps: the mapped values, not hatches.
+    if (controls.length) {
+      rows.push(h('div', { class: 'ps-constraint', dataset: { ps: 'constraint-controls' }, style: line }, h('strong', null, 'Planning control maps (LEP)'),
+        ...controls.map((r) => h('div', { style: { margin: '3px 0 0' } }, h('div', { style: { display: 'flex', justifyContent: 'space-between', gap: '8px' } }, h('span', null, r.title), h('strong', null, r.answer)), r.detail ? h('div', { class: 'ps-hint', style: { margin: 0 } }, r.detail) : null, src(r))),
+        h('div', { class: 'ps-hint', style: { margin: '3px 0 0' } }, 'Values are read at the lot centre from the LEP maps. Confirm the clause and exceptions on the s10.7 certificate.')));
+    }
+    // Everything else, one compact row each, with the coverage caveat (for example that flood covers LEP maps only).
+    for (const r of rest) {
+      rows.push(h('div', { class: 'ps-constraint', dataset: { ps: `constraint-${r.id}` }, style: line }, head(r), r.detail ? h('div', { class: 'ps-hint', style: { margin: '2px 0 0' } }, r.detail) : null, r.answer === 'No mapped' && r.coverage ? h('div', { class: 'ps-hint', style: { margin: '2px 0 0' } }, r.coverage) : null, src(r)));
+    }
     box.append(h('div', { dataset: { ps: 'constraints-table' } }, ...rows));
     for (const w of lot.overlays.warnings || []) box.append(h('p', { class: 'ps-hint' }, w));
     box.append(h('p', { class: 'ps-hint', dataset: { ps: 'constraints-note' } }, `${CHECK_WITH_COUNCIL} A mapped area is context for your own planning enquiry, not a planning decision, and an area with none mapped is not an all clear.`),

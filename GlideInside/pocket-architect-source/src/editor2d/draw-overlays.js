@@ -22,6 +22,8 @@ function hatchPattern(ctx, id) {
   if (hatch === 'diag' || hatch === 'cross') { g.moveTo(-2, 14); g.lineTo(14, -2); g.moveTo(-2, 2); g.lineTo(2, -2); g.moveTo(10, 14); g.lineTo(14, 10); }
   if (hatch === 'cross') { g.moveTo(-2, -2); g.lineTo(14, 14); }
   if (hatch === 'horiz') { g.moveTo(0, 6); g.lineTo(12, 6); }
+  if (hatch === 'vert') { g.moveTo(6, 0); g.lineTo(6, 12); }
+  if (hatch === 'diag2') { g.moveTo(-2, -2); g.lineTo(14, 14); }
   g.stroke();
   if (hatch === 'dots') { g.beginPath(); g.arc(6, 6, 1.6, 0, Math.PI * 2); g.fill(); }
   const p = ctx.createPattern(c, 'repeat');

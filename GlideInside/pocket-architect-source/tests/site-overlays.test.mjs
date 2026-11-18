@@ -16,6 +16,7 @@ import { drawOverlays } from '../src/editor2d/draw-overlays.js';
 import { overlayLegendItems, drawOverlayOutlines } from '../src/premium/exporters/planset/overlays.js';
 import { legendBlock } from '../src/premium/exporters/planset/site.js';
 import { refreshOverlays } from '../src/site/apply.js';
+import { ruleFor, RULES } from '../src/site/overlay-rules.js';
 import { mockOverlays } from '../src/site/fixtures/overlays.js';
 
 const T0 = Date.UTC(2026, 10, 18, 1, 0, 0);
@@ -31,7 +32,12 @@ const FLOOD_DATE = Date.UTC(2025, 5, 30);
 const ANSWERS = {
   'Planning/Hazard/MapServer/1': { features: [feat([ring(C.e - 400, C.n - 60, C.e + 400, C.n + 10)], { EPI_NAME: 'Tamworth Regional Local Environmental Plan 2010', LGA_NAME: 'Tamworth Regional', LAY_CLASS: 'Flood Planning', CURRENCY_DATE: FLOOD_DATE })] },
   'Fire/BFPL/MapServer/0': { features: [feat([ring(C.e + 20, C.n + 20, C.e + 90, C.n + 400)], { Category: '1', d_Category: 'Vegetation Category 1', Guideline: 'Planning for Bush Fire Protection', LastUpdate: Date.UTC(2025, 0, 15), VerDate: null }), feat([ring(C.e + 90, C.n + 20, C.e + 120, C.n + 400)], { Category: 'Vegetation Buffer', d_Category: 'Vegetation Buffer', LastUpdate: Date.UTC(2025, 0, 15) })] },
-  'EPI_Primary_Planning_Layers/MapServer/0': { features: [feat([ring(C.e - 90, C.n - 20, C.e - 40, C.n + 20)], { H_ID: 'I123', H_NAME: 'Sample Cottage', SIG: 'Local', LAY_CLASS: 'Heritage', EPI_NAME: 'Tamworth LEP', LGA_NAME: 'Tamworth Regional', CURRENCY_DATE: FLOOD_DATE }), feat([ring(C.e - 300, C.n - 300, C.e - 60, C.n + 300)], { H_ID: null, H_NAME: 'Central Tamworth', SIG: null, LAY_CLASS: 'Heritage Conservation Area', EPI_NAME: 'Tamworth LEP', LGA_NAME: 'Tamworth Regional' })] },
+  'EPI_Primary_Planning_Layers/MapServer/0': (u) => (/NOT LIKE/.test(u.searchParams.get('where') || '')
+    ? { features: [feat([ring(C.e - 90, C.n - 20, C.e - 40, C.n + 20)], { H_ID: 'I123', H_NAME: 'Sample Cottage', SIG: 'Local', LAY_CLASS: 'Heritage', EPI_NAME: 'Tamworth LEP', LGA_NAME: 'Tamworth Regional', CURRENCY_DATE: FLOOD_DATE })] }
+    : { features: [feat([ring(C.e - 300, C.n - 300, C.e - 60, C.n + 300)], { H_ID: null, H_NAME: 'Central Tamworth', SIG: null, LAY_CLASS: 'Heritage Conservation Area', EPI_NAME: 'Tamworth LEP', LGA_NAME: 'Tamworth Regional' })] }),
+  'Planning/Protection/MapServer/1': { features: [feat([ring(C.e - 400, C.n - 5, C.e + 400, C.n + 400)], { LAY_CLASS: 'Class 5', EPI_NAME: 'Tamworth LEP', CURRENCY_DATE: FLOOD_DATE })] },
+  'EPI_Primary_Planning_Layers/MapServer/4': { features: [{ attributes: { LOT_SIZE: 450, UNITS: 'm2', LAY_CLASS: 'Lot Size', EPI_NAME: 'Tamworth LEP', CURRENCY_DATE: FLOOD_DATE } }] },
+  'EPI_Primary_Planning_Layers/MapServer/5': { features: [{ attributes: { MAX_B_H: 8.5, MAX_B_H_M: 8.5, UNITS: 'm', EPI_NAME: 'Tamworth LEP', CURRENCY_DATE: FLOOD_DATE } }] },
   'LandParcelPropertyFramework/MapServer/9': { features: [feat([ring(C.e - 400, C.n + 5, C.e + 400, C.n + 7)], { lotplan: '5E123456', lot: '5', plan: 'E123456', feat_name: null, lot_area: 120, parcel_typ: 'Easement' })] },
 };
 
@@ -41,8 +47,9 @@ function mkSite({ fail = null, calls = [], answers = ANSWERS } = {}) {
     calls.push(url.pathname);
     if (fail && fail.test(url.host + url.pathname)) return new Response('nope', { status: 503 });
     const key = Object.keys(answers).find((k) => url.pathname.includes(k));
+    const ans = typeof answers[key] === 'function' ? answers[key](url) : answers[key];
     if (!key) return new Response(JSON.stringify({ features: [] }), { status: 200, headers: { 'content-type': 'application/json' } });
-    return new Response(JSON.stringify(answers[key]), { status: 200, headers: { 'content-type': 'application/json' } });
+    return new Response(JSON.stringify(ans), { status: 200, headers: { 'content-type': 'application/json' } });
   };
   const store = createMemoryStore();
   const app = createApp({ store, now: () => T0, env: {}, siteFetch: fetchImpl });
@@ -78,29 +85,56 @@ test('clip: a concave L shape keeps its area inside the box', () => {
 });
 
 // Server: NSW ----------------------------------------------------------------------------------------------------------------------
-test('server NSW: flood, bushfire, heritage answer, clipped to the box, relative to the origin, with source and date', async () => {
-  const { get } = mkSite();
+const NSW_IDS = ['flood', 'bushfire', 'heritage_item', 'heritage_conservation', 'acid_sulfate', 'biodiversity', 'coastal', 'coastal_env', 'riparian', 'land_reservation', 'airport', 'ols', 'mine_subsidence', 'sepp_area', 'urban_release', 'landslide', 'lot_size', 'height', 'fsr', 'easement', 'contamination', 'transport_corridor'];
+
+test('server NSW: every JCESite verified layer is queried; polygons clipped to the box, relative to the origin, with source, date and caveat', async () => {
+  const { get, calls } = mkSite();
   const res = await get(q('NSW'));
   assert.equal(res.status, 200);
   const b = await res.json();
-  assert.deepEqual(b.layers.map((l) => l.id), ['flood', 'bushfire', 'heritage', 'easement']);
+  assert.deepEqual(b.layers.map((l) => l.id), NSW_IDS);
+  const ok = b.layers.filter((l) => l.status === 'ok');
+  assert.equal(ok.length, 19, '19 live layers: 16 JCESite layers plus coastal environment, OLS and landslide alternates');
   const flood = b.layers.find((l) => l.id === 'flood');
-  assert.equal(flood.status, 'ok');
   assert.equal(flood.date, '30/06/2025');
-  assert.match(flood.source, /Flood Planning Map/);
+  assert.match(flood.source, /Flood Planning/);
+  assert.match(flood.coverage, /NOT covered, so .*does not mean flood free/);
+  assert.equal(flood.verified, 'jcesite');
+  assert.equal(flood.checked, '12/10/2026');
   assert.equal(flood.features[0].label, 'Flood Planning');
   const all = b.layers.flatMap((l) => l.features.flatMap((f) => f.polygons.flatMap((p) => p.outer)));
-  assert.ok(all.length > 0 && all.every(([x, y]) => x >= -100.0001 && x <= 100.0001 && y >= -100.0001 && y <= 100.0001), 'every vertex is inside the box, relative to the origin');
+  assert.ok(all.length > 0 && all.every(([x, y]) => x >= -100.0001 && x <= 100.0001 && y >= -100.0001 && y <= 100.0001), 'every vertex is inside the box');
   const bf = b.layers.find((l) => l.id === 'bushfire');
   assert.deepEqual(bf.features.map((f) => f.label), ['Vegetation Category 1', 'Vegetation buffer']);
-  const her = b.layers.find((l) => l.id === 'heritage');
-  assert.match(her.features[0].label, /^Heritage item: Sample Cottage/);
-  assert.match(her.features[1].label, /^Heritage conservation area: Central Tamworth/);
-  const ease = b.layers.find((l) => l.id === 'easement');
-  assert.equal(ease.status, 'unavailable');
-  assert.match(ease.note, /registered plan and title/);
+  // heritage items and conservation areas are the same layer split by the where clause JCESite recorded
+  assert.match(b.layers.find((l) => l.id === 'heritage_item').features[0].label, /^Heritage item: Sample Cottage/);
+  assert.match(b.layers.find((l) => l.id === 'heritage_conservation').features[0].label, /^Heritage conservation area: Central Tamworth/);
+  assert.ok(calls.some((c) => c.includes('Protection/MapServer/1')));
+  assert.equal(b.layers.find((l) => l.id === 'acid_sulfate').features[0].label, 'Class 5');
+  // planning control maps give values, no polygons
+  const lotSize = b.layers.find((l) => l.id === 'lot_size');
+  assert.equal(lotSize.kind, 'value');
+  assert.deepEqual(lotSize.values, [{ label: '450 m2', detail: 'Tamworth LEP' }]);
+  assert.deepEqual(lotSize.features, []);
+  assert.equal(b.layers.find((l) => l.id === 'height').values[0].label, '8.5 m');
+  assert.equal(b.layers.find((l) => l.id === 'fsr').values.length, 0, 'a value layer with no answer has no values');
+  for (const id of ['easement', 'contamination', 'transport_corridor']) { const l = b.layers.find((x) => x.id === id); assert.equal(l.status, 'unavailable'); assert.ok(l.note); }
   assert.deepEqual(b.warnings, []);
-  assert.ok(b.retrieved);
+});
+
+test('server NSW: the where clauses and the point query for value layers are sent as JCESite recorded them', async () => {
+  const seen = [];
+  const answers = { ...ANSWERS };
+  const fetchImpl = async (input) => { const u = new URL(String(input)); seen.push(u); return new Response(JSON.stringify({ features: [] }), { status: 200, headers: { 'content-type': 'application/json' } }); };
+  const site = createSite({ store: createMemoryStore(), fetchImpl, now: () => T0 });
+  await site.handle('/overlays', new Request(`https://x.test/api/site/overlays?${q('NSW')}`), new URL(`https://x.test/api/site/overlays?${q('NSW')}`));
+  const her = seen.filter((u) => u.pathname.includes('EPI_Primary_Planning_Layers/MapServer/0'));
+  assert.equal(her.length, 2);
+  assert.ok(her.some((u) => u.searchParams.get('where') === "LAY_CLASS NOT LIKE 'Conservation Area%' AND LAY_CLASS <> 'Heritage Conservation Area'"));
+  const size = seen.find((u) => u.pathname.includes('MapServer/4/query'));
+  assert.equal(size.searchParams.get('geometryType'), 'esriGeometryPoint');
+  assert.equal(size.searchParams.get('returnGeometry'), 'false');
+  void answers;
 });
 
 test('server NSW: the bushfire layer falls back to the Planning Portal copy when the first URL fails', async () => {
@@ -114,16 +148,18 @@ test('server NSW: the bushfire layer falls back to the Planning Portal copy when
 });
 
 // Server: QLD ----------------------------------------------------------------------------------------------------------------------
-test('server QLD: easements from the cadastre; flood, bushfire and heritage are reported unavailable, never guessed', async () => {
+test('server QLD: easements from the cadastre; JCESite has no verified QLD endpoint, so the rest are reported unavailable, never guessed', async () => {
   const { get, calls } = mkSite();
   const b = await (await get(q('QLD'))).json();
   assert.equal(b.state, 'QLD');
-  assert.deepEqual(b.layers.map((l) => `${l.id}:${l.status}`), ['easement:ok', 'flood:unavailable', 'bushfire:unavailable', 'heritage:unavailable']);
+  assert.equal(b.layers.find((l) => l.id === 'easement').status, 'ok');
+  const un = b.layers.filter((l) => l.status === 'unavailable');
+  assert.deepEqual(un.map((l) => l.id), ['flood', 'bushfire', 'heritage_item', 'acid_sulfate', 'biodiversity', 'landslide']);
   const e = b.layers.find((l) => l.id === 'easement');
   assert.equal(e.features[0].label, 'Easement');
   assert.match(e.features[0].detail, /5E123456/);
   assert.equal(calls.length, 1, 'one upstream call only: unavailable layers make none');
-  for (const l of b.layers.filter((x) => x.status === 'unavailable')) assert.match(l.note, /council/i);
+  for (const l of un) assert.match(l.note, /council/i);
 });
 
 // Failure tolerance ----------------------------------------------------------------------------------------------------------------
@@ -135,7 +171,7 @@ test('failure tolerance: one dead service gives partial results with a warning, 
   assert.equal(res.headers.get('cache-control'), 'no-store');
   const b = await res.json();
   assert.equal(b.layers.find((l) => l.id === 'flood').status, 'error');
-  assert.equal(b.layers.find((l) => l.id === 'heritage').status, 'ok');
+  assert.equal(b.layers.find((l) => l.id === 'heritage_item').status, 'ok');
   assert.ok(b.warnings.some((w) => /Flood planning area/.test(w)));
   const n = calls.length;
   await get(q('NSW'));
@@ -147,8 +183,10 @@ test('failure tolerance: every service down is still a 200 with all layers in er
   const res = await get(q('NSW'));
   assert.equal(res.status, 200);
   const b = await res.json();
-  assert.ok(b.layers.filter((l) => l.id !== 'easement').every((l) => l.status === 'error'));
-  assert.equal(b.warnings.length, 3);
+  const live = b.layers.filter((l) => l.status !== 'unavailable');
+  assert.equal(live.length, 19);
+  assert.ok(live.every((l) => l.status === 'error'));
+  assert.equal(b.warnings.length, 19);
 });
 
 test('caching: a complete answer is served from the cache with no upstream calls', async () => {
@@ -157,7 +195,7 @@ test('caching: a complete answer is served from the cache with no upstream calls
   const n = calls.length;
   const again = await get(q('NSW'));
   assert.equal(calls.length, n);
-  assert.equal((await again.json()).layers.length, 4);
+  assert.equal((await again.json()).layers.length, 22);
 });
 
 test('params: a bad state or an oversized box is a 4xx, not a crash', async () => {
@@ -193,12 +231,38 @@ test('model: buildOverlays converts to plan mm, y down; the summary says Yes, No
   assert.equal(rows.flood.answer, 'Yes');
   assert.match(rows.flood.detail, /Flood Planning/);
   assert.match(rows.flood.detail, /about \d+ % of the lot|the whole lot|small part/);
-  assert.match(rows.flood.source, /Flood Planning Map/);
+  assert.match(rows.flood.source, /Flood Planning/);
   assert.equal(rows.flood.date, '30/06/2025');
-  assert.equal(rows.bushfire.answer, 'No mapped', 'bushfire polygons are 20 m or more north-east of the lot origin box, beyond the lot');
+  assert.match(rows.flood.coverage, /does not mean flood free/);
+  assert.equal(rows.bushfire.answer, 'No mapped', 'bushfire polygons start 20 m or more from the lot centre, beyond the lot');
   assert.match(rows.bushfire.detail, /nearby/);
-  assert.equal(rows.heritage.answer, 'No mapped', 'the heritage item lies west of the lot');
+  assert.equal(rows.heritage_item.answer, 'No mapped', 'the heritage item lies west of the lot');
+  assert.equal(rows.acid_sulfate.answer, 'Yes');
   assert.equal(rows.easement.answer, 'Not available');
+  assert.equal(rows.lot_size.answer, '450 m2');
+  assert.equal(rows.height.answer, '8.5 m');
+  assert.equal(rows.lot_size.kind, 'value');
+  assert.equal(rows.fsr.answer, 'None mapped');
+});
+
+test('rules: affected rows say what it may mean, the next steps and the s10.7 instruction (NSW) or the council report (QLD); never "compliant"', async () => {
+  const lot = lotFixture();
+  lot.overlays = buildOverlays(await fullResp());
+  const rows = Object.fromEntries(constraintSummary(lot).map((r) => [r.id, r]));
+  const fl = rows.flood.rule;
+  assert.match(fl.means, /^This may mean a flood planning level, freeboard above it/);
+  assert.ok(fl.steps.includes('Request flood information from council'));
+  assert.match(fl.instruction, /s10\.7 planning certificate/);
+  assert.match(rows.acid_sulfate.rule.steps.join(' '), /management plan/);
+  assert.match(rows.height.rule.means, /maximum height/);
+  assert.equal(rows.bushfire.rule, null, 'only affected rows carry a rule');
+  // state filtered steps
+  assert.ok(ruleFor('bushfire', 'NSW').steps.some((t) => /Planning for Bushfire Protection/.test(t)));
+  assert.ok(!ruleFor('bushfire', 'NSW').steps.some((t) => /State Planning Policy/.test(t)));
+  assert.ok(ruleFor('bushfire', 'QLD').steps.some((t) => /State Planning Policy/.test(t)));
+  assert.match(ruleFor('flood', 'QLD').instruction, /council property or planning report/);
+  assert.equal(ruleFor('nonsense', 'NSW'), null);
+  for (const id of Object.keys(RULES)) for (const st of ['NSW', 'QLD']) { const r = ruleFor(id, st); assert.doesNotMatch(JSON.stringify(r), /complian/i); assert.match(r.instruction, /certificate|report/); }
 });
 
 test('model: the summary lists every overlay, says Not checked without data, and never uses the word compliant', async () => {
@@ -257,7 +321,7 @@ test('refreshOverlays: attaches overlays, and a failing fetch leaves the lot unt
   const store = fakeStore(lot);
   const ok = await refreshOverlays(store, lot, { fetchImpl: async () => new Response(JSON.stringify(json), { status: 200, headers: { 'content-type': 'application/json' } }) });
   assert.equal(ok, true);
-  assert.equal(store.project.site.lot.overlays.layers.length, 4);
+  assert.equal(store.project.site.lot.overlays.layers.length, 22);
   assert.equal(store.events.length, 1);
   const lot2 = lotFixture();
   const store2 = fakeStore(lot2);
@@ -314,14 +378,14 @@ test('2D: nothing is drawn while overlays are off; switched on they fill, outlin
   drawOverlays(off.ctx, stFor(lot));
   assert.equal(off.calls.length, 0);
   lot.layers.ov_flood = true;
-  lot.layers.ov_heritage = true;
+  lot.layers.ov_heritage_conservation = true;
   const on = recorder();
   drawOverlays(on.ctx, stFor(lot));
   const names = on.calls.map((c) => c[0]);
   assert.ok(names.includes('fill') && names.includes('stroke'));
   assert.ok(on.calls.some((c) => c[0] === 'fillText' && /Site constraints \(indicative\)/.test(c[1])));
   assert.ok(on.calls.some((c) => c[0] === 'fillText' && c[1] === 'Flood planning area'));
-  assert.ok(on.calls.some((c) => c[0] === 'fillText' && c[1] === 'Heritage'));
+  assert.ok(on.calls.some((c) => c[0] === 'fillText' && c[1] === 'Heritage conservation area'));
   assert.doesNotThrow(() => drawOverlays(recorder().ctx, stFor({ ...lotFixture() })));
 });
 
@@ -351,4 +415,17 @@ test('mock overlays: SAMPLE data is labelled, covers both states, and is clipped
   const qld = mockOverlays({ state: 'QLD', srid: 7855, origin: '500000,7000000', bbox: '499900,6999900,500100,7000100' });
   assert.equal(qld.layers.find((l) => l.id === 'easement').features.length, 1);
   assert.equal(drawableLayers({ overlays: buildOverlays(qld) }).length, 1);
+});
+
+test('config table: carries all 16 NSW endpoints from the JCESite endpoints_nsw.json (verified 12/10/2026) with their where clauses', () => {
+  const jce = ['Planning/Hazard/MapServer/1', 'Fire/BFPL/MapServer/0', 'Planning/EPI_Primary_Planning_Layers/MapServer/0', 'Planning/Protection/MapServer/1', 'ePlanning/BiodiversityValuesMap/MapServer/1',
+    'Planning/SEPP_Resilience_and_Hazards_2021/MapServer/3', 'Planning/Protection/MapServer/7', 'Planning/EPI_Primary_Planning_Layers/MapServer/3', 'Planning/Protection/MapServer/2',
+    'ePlanning/Planning_Portal_Subsidence_Advisory/MapServer/248', 'Planning/SEPP_Resilience_and_Hazards_2021/MapServer/1', 'Planning/Development_Control/MapServer/7',
+    'Planning/EPI_Primary_Planning_Layers/MapServer/4', 'Planning/EPI_Primary_Planning_Layers/MapServer/5', 'Planning/EPI_Primary_Planning_Layers/MapServer/1'];
+  const urls = OVERLAY_SOURCES.filter((s) => s.state === 'NSW').flatMap((s) => s.urls);
+  for (const j of jce) assert.ok(urls.some((u) => u.endsWith(`/${j}`)), j);
+  const alt = ['ePlanning/Planning_Portal_Hazard/MapServer/229', 'ePlanning/Planning_Portal_Hazard/MapServer/230', 'Planning/Hazard/MapServer/2', 'Planning/SEPP_Resilience_and_Hazards_2021/MapServer/6', 'Planning/Protection/MapServer/6'];
+  for (const j of alt) assert.ok(urls.some((u) => u.endsWith(`/${j}`)), j);
+  assert.equal(OVERLAY_SOURCES.filter((s) => s.id.startsWith('heritage') && s.state === 'NSW').every((s) => s.where), true);
+  assert.ok(OVERLAY_SOURCES.filter((s) => s.state === 'NSW' && s.urls.length).every((s) => s.checked === '12/10/2026'));
 });
