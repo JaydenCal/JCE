@@ -1553,12 +1553,12 @@ export function drawFinancePage(doc, project) {
     doc.text(clean(c.notes[0] || 'No figures could be worked out for this design.'), X0, y + 4);
     return { kv: [], notes: ['Indicative only.'], blocks: [] };
   }
-  const W1 = 122; const W2 = 150; const XA = X0 + W1 + 6; const XB = XA + W2 + 6; const W3 = X1 - XB;
+  const W1 = 104; const W2 = 118; const XA = X0 + W1 + 6; const XB = XA + W2 + 6; const W3 = X1 - XB;
   const hold = r.mode === 'hold';
   // Left: headline and breakdown
   let yl = y + 1;
   yl = sectionTitle(doc, hold ? 'RESULT, HOLD AND LEASE' : 'RESULT, SELL', X0, yl, W1);
-  yl = table(doc, X0, yl, [{ w: 76 }, { w: W1 - 76, align: 'right' }], ['MEASURE', 'AT THE VALUES IN USE'], [
+  yl = table(doc, X0, yl, [{ w: 62 }, { w: W1 - 62, align: 'right' }], ['MEASURE', 'AT THE VALUES IN USE'], [
     ['Indicative profit', fmtM(r.profit)], ['Margin on cost', fmtP(r.marginOnCostPct)], ['Margin on value (GDV)', fmtP(r.marginOnGdvPct)], ['Development yield on cost', fmtP(r.yieldOnCostPct)],
     [`Residual land value at ${fmtP(r.residual.targetPct)} margin`, r.residual.viable ? fmtM(r.residual.value) : 'Nil, target not reached'],
     ['Peak debt (incl. capitalised interest)', fmtM(r.peakDebt)], ['Equity needed', fmtM(r.peakEquity)], [hold ? 'End value by capitalisation' : 'Net revenue (GDV after GST option)', fmtM(r.revenue)],
@@ -1570,7 +1570,7 @@ export function drawFinancePage(doc, project) {
     L('Council and infrastructure contributions', r.contributions), L('Building', r.build), L('Site works', r.siteWorks), L('Earthworks', r.earthworks), L('Clearing and landscaping', r.landscape), L('Contingency', r.contingency),
     L('Holding costs (rates, insurance)', r.holding), L('Loan establishment fee', r.fee), L(`Capitalised interest (${r.months} months)`, r.interest), L(hold ? 'Leasing costs' : 'Selling costs', r.selling)].filter(Boolean);
   rows.push(['TOTAL COST', fmtM(r.totalCost), '100.0%']);
-  yl = table(doc, X0, yl, [{ w: 76 }, { w: 30, align: 'right' }, { w: W1 - 106, align: 'right' }], ['ITEM', 'AMOUNT', '% OF COST'], rows, { rh: 4.1, size: 6.6, boldLast: true });
+  yl = table(doc, X0, yl, [{ w: 62 }, { w: 22, align: 'right' }, { w: W1 - 84, align: 'right' }], ['ITEM', 'AMOUNT', '% OF COST'], rows, { rh: 4.1, size: 6.6, boldLast: true });
   yl += 2;
   if (r.gstMode !== 'none' && r.gstPayable) { setText(doc, 6.2, false); doc.text(clean(`GST ${r.gstMode === 'margin' ? 'on the margin scheme' : 'in full'}: ${fmtM(r.gstPayable)} payable on the sale. Indicative.`), X0, yl); yl += 4; }
   // Middle: assumptions
@@ -1579,9 +1579,11 @@ export function drawFinancePage(doc, project) {
   const STAT = { VERIFIED_REPORT: 'Report', VERIFIED_SECONDARY: 'Report (2nd)', VERIFIED_LISTING: 'Listing', ESTIMATE: 'Estimate' };
   const ab = c.model.descs.map((d) => {
     const val = d.kind === 'select' ? (d.options.find(([v]) => v === d.value)?.[1] || d.value) : Number(d.value).toLocaleString('en-AU', { maximumFractionDigits: 2 });
-    return [d.label.replace(/ \(.*$/, ''), `${val}${d.unit && d.kind !== 'select' ? ` ${d.unit.replace(/^\$ ?/, '$ ')}` : ''}`, d.edited ? 'Edited' : STAT[d.status] || d.status, d.asAt];
+    const u = d.kind === 'select' ? '' : String(d.unit || '');
+    const shown = !u ? val : u === '$' ? `$${val}` : /^\$/.test(u) ? `$${val} ${u.slice(1).trim().replace(/^\//, 'per ')}` : `${val} ${u}`;
+    return [d.label.replace(/ \(.*$/, ''), shown, d.edited ? 'Edited' : STAT[d.status] || d.status, d.asAt];
   });
-  ym = table(doc, XA, ym, [{ w: 56 }, { w: 50, align: 'right' }, { w: 24 }, { w: W2 - 130 }], ['ASSUMPTION', 'VALUE', 'STATUS', 'AS AT'], ab, { rh: 3.55, size: 5.7 });
+  ym = table(doc, XA, ym, [{ w: 44 }, { w: 40, align: 'right' }, { w: 18 }, { w: W2 - 102 }], ['ASSUMPTION', 'VALUE', 'STATUS', 'AS AT'], ab, { rh: 3.55, size: 5.7 });
   // Right: sensitivity, scenarios, sources
   let yr = y + 1;
   yr = sectionTitle(doc, 'SENSITIVITY, MARGIN ON COST', XB, yr, W3);
@@ -1592,10 +1594,10 @@ export function drawFinancePage(doc, project) {
   const cols = financeCompare(project);
   if (cols.length > 1) {
     yr = sectionTitle(doc, 'SAVED SCENARIOS', XB, yr, W3);
-    const sw = (W3 - 28) / (cols.length);
+    const sw = (W3 - 26) / (cols.length);
     const pick = (k) => FIN_COMPARE_ROWS.find((x) => x[0] === k);
     const rws = ['profit', 'marginOnCostPct', 'residual', 'peakDebt'].map((k) => { const [, lab, get, kind] = pick(k); return [lab, ...cols.map((x) => (x.result ? (kind === 'money' ? fmtM(get(x.result)) : fmtP(get(x.result))) : 'n/a'))]; });
-    yr = table(doc, XB, yr, [{ w: 28 }, ...cols.map(() => ({ w: sw, align: 'right' }))], ['', ...cols.map((x) => x.name)], rws, { rh: 4.1, size: 6.2 });
+    yr = table(doc, XB, yr, [{ w: 26 }, ...cols.map(() => ({ w: sw, align: 'right' }))], ['', ...cols.map((x) => x.name)], rws, { rh: 4.1, size: 6.2 });
     yr += 2;
   }
   yr = sectionTitle(doc, 'NOTES AND SOURCES', XB, yr, W3);

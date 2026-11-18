@@ -153,8 +153,7 @@ export function createFinance(store, { mode = 'step', onChange } = {}) {
     const save = h('button', { type: 'button', class: 'fx-btn', dataset: { ps: 'fin-scn-save' }, onclick: () => {
       let ok = true;
       edit('Save scenario', (q) => { ok = saveScenario(q, draftName); });
-      if (ok) draftName = '';
-      else nameIn.placeholder = 'Three scenarios saved. Delete one first.';
+      if (ok) { draftName = ''; render(); } else nameIn.placeholder = 'Three scenarios saved. Delete one first.';
     } }, 'Save current as scenario');
     const list = st.scenarios.map((s) => h('div', { class: 'fx-scn', dataset: { ps: 'fin-scn', id: s.id } },
       h('b', null, s.name),
