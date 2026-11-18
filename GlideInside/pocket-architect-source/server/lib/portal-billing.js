@@ -27,10 +27,19 @@ export async function topUpRows(store, orgId) {
     .map((e) => ({ id: e.id, loginId: e.detail.loginId, credits: Number(e.detail.credits) || LEGACY_TOPUP_CREDITS, amountCents: Number.isFinite(e.detail.amountCents) ? e.detail.amountCents : LEGACY_TOPUP_FEE_CENTS, createdAt: e.detail.createdAt || e.createdAt }));
 }
 
+/** Login charges recorded from 11/11/2026 Sydney (00:00 AEDT = 10/11/2026 13:00 UTC) onward are waived: client logins became free and the owner decided not to bill them. Earlier rows bill as before. */
+export const LOGIN_WAIVER_FROM_MS = Date.UTC(2026, 10, 10, 13, 0, 0);
+const isWaivable = (at) => Date.parse(at) >= LOGIN_WAIVER_FROM_MS;
+
 /** GET /portal/billing/usage for one Sydney calendar month. */
 export async function usageForMonth({ pstore, store, orgId, month, names }) {
-  const issues = (await pstore.listLoginIssues(orgId)).map((i) => ({ id: i.id, loginId: i.loginId, clientName: i.clientName, chargedAt: i.issuedAt, amountCents: i.amountCents }));
+  // Client logins are free (owner decision 18/11/2026) and the old A$30/A$25 login rows are WAIVED (owner, 18/11/2026): nothing is deleted, the rows stay visible
+  // labelled "waived", but they add nothing to a month end invoice. A month whose invoice was already issued (due, paid or void) keeps its original figures.
+  const existing = await pstore.getInvoiceByMonth(orgId, month);
+  const waive = !(existing && ['due', 'paid', 'void'].includes(existing.status));
+  const issues = (await pstore.listLoginIssues(orgId)).map((i) => ({ id: i.id, loginId: i.loginId, clientName: i.clientName, chargedAt: i.issuedAt, amountCents: waive && isWaivable(i.issuedAt) ? 0 : i.amountCents, ...(waive && isWaivable(i.issuedAt) ? { waived: true, originalCents: i.amountCents } : {}) }));
   const s = summariseMonth({ issues, topUps: await topUpRows(store, orgId) }, month);
+  s.totals.loginsCount = s.logins.filter((l) => !l.waived).length;
   const org = await pstore.getOrg(orgId);
   // Jobs are charged to the saved card when each project is started, so they are listed here but are NOT part of totals (the month end invoice).
   const jobRows = await pstore.listJobCharges(orgId, month);
@@ -40,7 +49,7 @@ export async function usageForMonth({ pstore, store, orgId, month, names }) {
     loginPricing: null,
     rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, volumeLoginCents: VOLUME_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS, topUpMessages: TOPUP_MESSAGES, jobCents: JOB_FEE_CENTS },
     jobs: { ...summariseJobs(jobRows), feeCents: JOB_FEE_CENTS, items: jobRows.map((j) => ({ id: j.id, projectName: j.projectName || '', userName: j.userName || '', createdAt: j.createdAt, kind: j.kind, amountCents: j.amountCents, plan: j.plan || null })) },
-    logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName || '', firstSignInAt: i.chargedAt, amountCents: i.amountCents, ...(org?.internal === true ? { label: 'internal test, no charge' } : {}) })),
+    logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName || '', firstSignInAt: i.chargedAt, amountCents: i.amountCents, ...(i.waived ? { waived: true, originalCents: i.originalCents, label: 'waived' } : {}), ...(org?.internal === true ? { label: 'internal test, no charge' } : {}) })),
     topUps: s.topUps.map((t) => ({ id: t.id, loginId: t.loginId, clientName: names.get(t.loginId) || '', credits: t.credits, amountCents: t.amountCents, createdAt: t.createdAt })),
     totals: { ...s.totals, gstCents: gstOfTotal(s.totals.totalCents) },
   };
@@ -49,7 +58,7 @@ export async function usageForMonth({ pstore, store, orgId, month, names }) {
 /** One invoice line per distinct unit price (the first 15 logins, then the volume rate, or a custom rate). */
 function loginLines(logins, month) {
   const by = new Map();
-  for (const l of logins) by.set(l.amountCents, (by.get(l.amountCents) || 0) + 1);
+  for (const l of logins.filter((x) => !x.waived)) by.set(l.amountCents, (by.get(l.amountCents) || 0) + 1);
   return [...by.entries()].sort((a, b) => b[0] - a[0]).map(([cents, qty]) => ({
     description: `New client logins first signed in during ${month} (A$${cents / 100} each, incl. GST)`, quantity: qty, unitCents: cents, totalCents: cents * qty,
   }));
@@ -112,7 +121,7 @@ export async function chargeJob({ config, pstore, fetchImpl, org, requestId }) {
   const customer = await ensureCustomer({ config, pstore, fetchImpl, org });
   const taxRate = await gstTaxRate({ config, pstore, fetchImpl });
   const inv = await call({
-    path: '/invoices', idempotencyKey: `gi-job-inv-${org.id}-${requestId}`,
+    path: '/invoices', idempotencyKey: `gi-job-inv-${org.id}-${requestId}-${org.paymentMethodId}`, // the card is part of the key: a retry after adding a new card is a fresh attempt, a plain retry with the same card still replays
     form: {
       customer, currency: 'aud', auto_advance: 'false', pending_invoice_items_behavior: 'exclude', collection_method: 'charge_automatically', default_payment_method: org.paymentMethodId,
       description: 'Glide Inside builder job: one new project. Tax invoice. Price includes GST.',

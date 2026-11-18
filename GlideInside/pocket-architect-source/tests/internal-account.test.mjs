@@ -445,7 +445,7 @@ test('H7 (revised 18/11/2026): client logins are free, so no billing details are
     assert.equal(view.billingSkipRisk, false, 'nothing is billable at month end, so nothing would be skipped');
     assert.equal(view.billingReady, false);
     // A login charged before client logins became free, with no details to invoice it, is flagged.
-    await w.pstore.addLoginIssue({ loginId: 'legacy_nb', id: 'li_legacy_nb', orgId: org.orgId, clientName: 'Old', issuedAt: new Date(w.clock.t).toISOString(), month: '2026-11', amountCents: 3000 });
+    await w.pstore.addLoginIssue({ loginId: 'legacy_nb', id: 'li_legacy_nb', orgId: org.orgId, clientName: 'Old', issuedAt: '2026-11-05T00:00:00.000Z', month: '2026-11', amountCents: 3000 });
     view = (await w.admin('GET', '/portal/admin/orgs')).data.find((o) => o.id === org.orgId);
     assert.equal(view.billingSkipRisk, true);
     // saving the details clears it

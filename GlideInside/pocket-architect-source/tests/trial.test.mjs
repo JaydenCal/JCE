@@ -600,7 +600,7 @@ for (const [label, d1] of stores) {
     const issued = await org.admin.post('/portal/clients', { firstName: 'Sarah' });
     assert.equal(issued.status, 201);
     assert.equal((await w.browser().post('/portal/session', { identifier: issued.data.credentials.username, password: issued.data.credentials.password })).status, 200);
-    await w.pstore.addLoginIssue({ loginId: issued.data.client.id, id: 'li_legacy1', orgId: org.orgId, clientName: 'Sarah', issuedAt: new Date(w.clock.t).toISOString(), month: '2026-11', amountCents: 3000 }); // a login charged before client logins became free
+    await w.pstore.addLoginIssue({ loginId: issued.data.client.id, id: 'li_legacy1', orgId: org.orgId, clientName: 'Sarah', issuedAt: '2026-11-05T00:00:00.000Z', month: '2026-11', amountCents: 3000 }); // a login charged before client logins became free
     await org.admin.post('/portal/ai/top-up');
     // 01/12/2026 06:00 Sydney: the cron handler runs the month end job.
     w.clock.t = Date.UTC(2026, 10, 30, 19, 0);
@@ -649,7 +649,7 @@ for (const [label, d1] of stores) {
     await w.webhook({ id: 'evt_c2', type: 'checkout.session.completed', data: { object: await setupSession(w, org.orgId) } });
     const issued = await org.admin.post('/portal/clients', { firstName: 'Sarah' });
     await w.browser().post('/portal/session', { identifier: issued.data.credentials.username, password: issued.data.credentials.password });
-    await w.pstore.addLoginIssue({ loginId: issued.data.client.id, id: 'li_legacy2', orgId: org.orgId, clientName: 'Sarah', issuedAt: new Date(w.clock.t).toISOString(), month: '2026-11', amountCents: 3000 });
+    await w.pstore.addLoginIssue({ loginId: issued.data.client.id, id: 'li_legacy2', orgId: org.orgId, clientName: 'Sarah', issuedAt: '2026-11-05T00:00:00.000Z', month: '2026-11', amountCents: 3000 });
     w.clock.t = Date.UTC(2026, 10, 30, 19, 0);
     w.stripe.payResult = 'declined';
     const run = await w.app.scheduled();
@@ -665,7 +665,7 @@ for (const [label, d1] of stores) {
     await w2.admin('POST', `/portal/admin/orgs/${o2.orgId}/convert`, {});
     const c2 = await o2.admin.post('/portal/clients', { firstName: 'Tim' });
     await w2.browser().post('/portal/session', { identifier: c2.data.credentials.username, password: c2.data.credentials.password });
-    await w2.pstore.addLoginIssue({ loginId: c2.data.client.id, id: 'li_legacy3', orgId: o2.orgId, clientName: 'Tim', issuedAt: new Date(w2.clock.t).toISOString(), month: '2026-11', amountCents: 3000 });
+    await w2.pstore.addLoginIssue({ loginId: c2.data.client.id, id: 'li_legacy3', orgId: o2.orgId, clientName: 'Tim', issuedAt: '2026-11-05T00:00:00.000Z', month: '2026-11', amountCents: 3000 });
     w2.clock.t = Date.UTC(2026, 10, 30, 19, 0);
     assert.equal((await w2.app.scheduled()).results[0].status, 'issued');
     const create = w2.stripe.calls.find((c) => c.method === 'POST' && c.path === '/invoices');

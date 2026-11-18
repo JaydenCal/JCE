@@ -322,6 +322,15 @@ export function createD1PortalStore(db) {
     listLoginIssues: (orgId) => many(SPECS.loginIssues, 'org_id = ?1', [orgId], 'ORDER BY issued_at, id'),
     // Job charges (migration 0023)
     addJobCharge: (row) => insert(SPECS.jobCharges, row, { ignore: true }),
+    // Plan included job: ONE statement that inserts only while the month's plan_included count is under the cap, so two simultaneous saves cannot both take the last one.
+    async addJobChargeWithinCap(row, cap) {
+      const spec = SPECS.jobCharges;
+      const keys = Object.keys(spec.cols).filter((k) => row[k] !== undefined);
+      const cols = keys.map((k) => colName(spec.cols[k]));
+      const n = keys.length;
+      const res = await run(`INSERT OR IGNORE INTO ${spec.table} (${cols.join(', ')}) SELECT ${keys.map((_, i) => `?${i + 1}`).join(', ')} WHERE (SELECT COUNT(*) FROM ${spec.table} WHERE org_id = ?${n + 1} AND month = ?${n + 2} AND kind = 'plan_included') < ?${n + 3}`, ...toParams(spec, row, keys), row.orgId, row.month, cap);
+      return changed(res);
+    },
     getJobByRequest: (orgId, requestId) => one(SPECS.jobCharges, 'org_id = ?1 AND request_id = ?2', orgId, requestId),
     updateJobCharge: (id, patch) => update(SPECS.jobCharges, 'id = ?1', [id], patch),
     listJobCharges: (orgId, month = null) => (month ? many(SPECS.jobCharges, 'org_id = ?1 AND month = ?2', [orgId, month], 'ORDER BY created_at, id') : many(SPECS.jobCharges, 'org_id = ?1', [orgId], 'ORDER BY created_at, id')),
@@ -550,6 +559,10 @@ export function createMemoryPortalStore() {
       if ([...T.jobCharges.values()].some((r) => r.orgId === row.orgId && r.requestId === row.requestId) || T.jobCharges.has(row.id)) return false;
       T.jobCharges.set(row.id, cp(row));
       return true;
+    },
+    async addJobChargeWithinCap(row, cap) { // no await between the count and the insert, so it is atomic
+      if ([...T.jobCharges.values()].filter((r) => r.orgId === row.orgId && r.month === row.month && r.kind === 'plan_included').length >= cap) return false;
+      return this.addJobCharge(row); // synchronous body inside: still no await before the set
     },
     getJobByRequest: async (orgId, requestId) => cp([...T.jobCharges.values()].find((r) => r.orgId === orgId && r.requestId === requestId)),
     async updateJobCharge(id, patch) {

@@ -518,7 +518,7 @@ for (const [label, d1] of stores) {
     assert.ok(exp.projects[0].project.levels);
     // Client logins are free now: a first sign in leaves no billing row. A login charged BEFORE that keeps its row (the financial record).
     assert.equal(await w.pstore.getLoginIssue(used.client.id), null, 'a first sign in creates no charge row');
-    await w.pstore.addLoginIssue({ loginId: used.client.id, id: 'li_legacy_used', orgId: org.orgId, clientName: 'Used', issuedAt: new Date(w.clock.t).toISOString(), month: monthKey(w.clock.t), amountCents: 3000 });
+    await w.pstore.addLoginIssue({ loginId: used.client.id, id: 'li_legacy_used', orgId: org.orgId, clientName: 'Used', issuedAt: '2026-11-05T00:00:00.000Z', month: monthKey(w.clock.t), amountCents: 3000 });
     const d1r = await org.admin.del(`/portal/clients/${used.client.id}`);
     assert.deepEqual(d1r.data, { ok: true, removedProjects: 1, charged: true });
     const d2r = await org.admin.del(`/portal/clients/${unused.client.id}`);
@@ -736,7 +736,7 @@ for (const [label, d1] of stores) {
     const org = await w.makeOrg();
     const month = monthKey(w.clock.t);
     for (let n = 1; n <= 51; n += 1) {
-      assert.equal(await w.pstore.addLoginIssue({ loginId: `seed${n}`, id: `li_seed${n}`, orgId: org.orgId, clientName: `C${n}`, issuedAt: new Date(w.clock.t + n * 1000).toISOString(), month, amountCents: priceForNthLoginThisMonth(n) }), true);
+      assert.equal(await w.pstore.addLoginIssue({ loginId: `seed${n}`, id: `li_seed${n}`, orgId: org.orgId, clientName: `C${n}`, issuedAt: new Date(Date.UTC(2026, 10, 5) + n * 1000).toISOString(), month, amountCents: priceForNthLoginThisMonth(n) }), true);
     }
     const gen = await org.admin.post('/portal/clients', { firstName: 'Fiftysecond' });
     assert.equal(gen.data.charge.amountCents, 0);

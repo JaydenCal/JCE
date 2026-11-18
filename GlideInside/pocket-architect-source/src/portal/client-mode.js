@@ -354,7 +354,12 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
         if (quiet) { statusLine.textContent = 'Use Save project in the menu to confirm this new job.'; return false; }
         if (!(await confirmJobDialog(e.details?.quote))) return false;
         pendingJobId ||= newJobId();
-        saved = await api.saveProject({ ...body, confirmJob: true, jobRequestId: pendingJobId });
+        try {
+          saved = await api.saveProject({ ...body, confirmJob: true, jobRequestId: pendingJobId });
+        } catch (err) {
+          if (err?.code === 'JOB_PAYMENT_FAILED' || err?.code === 'JOB_CARD_REQUIRED') pendingJobId = null; // a failed attempt must not be replayed: the next try is a fresh one
+          throw err;
+        }
       }
       pendingJobId = null;
       currentProjectId = saved.id;
