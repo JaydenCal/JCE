@@ -101,3 +101,26 @@ test('engineering ridge RL and height above FFL match the residential sheets A20
   assert.equal(hp[1], above(resText('A300'))[0]);
   assert.deepEqual(above(engText('A-007')), above(resText('A300')), 'height above FFL on the section');
 });
+
+test('a floor level the person set moves only the first pad: a second commercial building keeps its own level', async () => {
+  const { terrainModel } = await import('../src/viewer3d/terrain.js');
+  const make = () => {
+    const p = commercialCase('warehouse', 'steep');
+    const b2 = structuredClone(p.commercial.buildings[0]);
+    b2.id = 'bld_second';
+    b2.params = { ...b2.params, spanMm: 12000, depthMm: 15000, docks: 1, apronDepthMm: 12000 };
+    b2.place = { ...b2.place, y: 6000 }; // at the other end of the lot, well clear of the first building
+    p.commercial.buildings.push(b2);
+    return p;
+  };
+  const auto = terrainModel(make());
+  const set = make();
+  set.site.lot.floorRL = auto.floorRL;
+  set.site.lot.floorRLAuto = false;
+  const person = terrainModel(set);
+  assert.equal(auto.pads.length, 2, 'two building pads');
+  assert.equal(person.pads.length, 2);
+  assert.ok(Math.abs(auto.pads[1].dy) > 0.1, `the second building has its own level on the steep lot (${auto.pads[1].dy})`);
+  assert.equal(person.pads[0].dy, 0, 'the first building sits at the level the person set');
+  assert.equal(person.pads[1].dy, auto.pads[1].dy, 'the second building keeps the shift it gets with the automatic level');
+});

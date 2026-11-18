@@ -188,7 +188,7 @@ export function terrainModel(project, opts = {}) {
       const userPad = (g, i) => { const n = Number(gr.pads?.[`pad:${i}`]); return Number.isFinite(n) && n !== 0 ? n : null; };
       // A floor level the person set puts the house at that level: it is not moved to the natural ground or raised for the drive.
       const floorSetByPerson = lot.floorRLAuto === false && Number.isFinite(lot.floorRL);
-      const autoPad = opts.padOverride || (floorSetByPerson ? () => 0 : driveRaise ? (g, i) => (i === 0 ? driveRaise : null) : null);
+      const autoPad = opts.padOverride || (floorSetByPerson ? (g, i) => (i === 0 ? 0 : null) : driveRaise ? (g, i) => (i === 0 ? driveRaise : null) : null);
       pads = padGroups(padPolygons(project, fp), rawY, padY, autoPad, userPad);
       const paving = []; const crossovers = [];
       const driveways = [];
