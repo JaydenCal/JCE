@@ -28,6 +28,8 @@ import { buildingPolys, buildingScheduleRows, dockLines, extraLabel } from '../.
 import { scaleBar } from '../pdf.js';
 import { PEN, PHANTOM, clipSegment, hatch, hatchSegments, dimLine, haloText, alongLabel, LabelField, boxOfPts, clean, wrap, polygon } from '../eng/kit.js';
 import { COMMERCIAL_SHEET_LIST } from '../../../commercial/sheet-list.js';
+import { compute as financeCompute, compareScenarios as financeCompare, COMPARE_ROWS as FIN_COMPARE_ROWS, DISCLAIMER as FIN_DISCLAIMER } from '../../../finance/model.js';
+import { FINANCE_DATA as FIN_DATA } from '../../../finance/engine.js';
 import { AREA, fit } from './frame.js';
 import { drawSite, roadModel, siteView, fitView, northPoint, northDegOf, SITE_SCALES, SCALES_BEYOND, VP } from './site.js';
 import { hasGround, groundLevelFn } from './contours.js';
@@ -1530,3 +1532,83 @@ export function coverThumbnail(model) {
 export const COMMERCIAL_STRIP = Object.freeze({
   cover: { subtitle: 'Commercial site layout', notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] },
 });
+
+// Development feasibility page (commercial C105, residential F100) ----------------------------------------------------------
+const fmtM = (v) => `${v < 0 ? '-' : ''}$${Math.round(Math.abs(v)).toLocaleString('en-AU')}`;
+const fmtP = (v) => `${(Math.round(v * 10) / 10).toFixed(1)}%`;
+/**
+ * The feasibility page: headline figures, the cost breakdown, every assumption with its value, status, as-at date and source, the price against
+ * cost sensitivity grid, saved scenarios side by side, and the notes. Same figures as the Check it panel (src/finance). Returns { kv, notes, blocks }.
+ */
+export function drawFinancePage(doc, project) {
+  const c = financeCompute(project);
+  let y = 20;
+  const r = c.result;
+  y = sectionTitle(doc, 'INDICATIVE DEVELOPMENT FEASIBILITY', X0, y, X1 - X0);
+  setText(doc, 6.4, true);
+  for (const ln of wrap(doc, clean(FIN_DISCLAIMER), X1 - X0)) { doc.text(ln, X0, y); y += 2.9; }
+  y += 1;
+  if (!r) {
+    setText(doc, 7, false);
+    doc.text(clean(c.notes[0] || 'No figures could be worked out for this design.'), X0, y + 4);
+    return { kv: [], notes: ['Indicative only.'], blocks: [] };
+  }
+  const W1 = 122; const W2 = 150; const XA = X0 + W1 + 6; const XB = XA + W2 + 6; const W3 = X1 - XB;
+  const hold = r.mode === 'hold';
+  // Left: headline and breakdown
+  let yl = y + 1;
+  yl = sectionTitle(doc, hold ? 'RESULT, HOLD AND LEASE' : 'RESULT, SELL', X0, yl, W1);
+  yl = table(doc, X0, yl, [{ w: 76 }, { w: W1 - 76, align: 'right' }], ['MEASURE', 'AT THE VALUES IN USE'], [
+    ['Indicative profit', fmtM(r.profit)], ['Margin on cost', fmtP(r.marginOnCostPct)], ['Margin on value (GDV)', fmtP(r.marginOnGdvPct)], ['Development yield on cost', fmtP(r.yieldOnCostPct)],
+    [`Residual land value at ${fmtP(r.residual.targetPct)} margin`, r.residual.viable ? fmtM(r.residual.value) : 'Nil, target not reached'],
+    ['Peak debt (incl. capitalised interest)', fmtM(r.peakDebt)], ['Equity needed', fmtM(r.peakEquity)], [hold ? 'End value by capitalisation' : 'Net revenue (GDV after GST option)', fmtM(r.revenue)],
+  ], { rh: 4.1, size: 6.6 });
+  yl += 2;
+  yl = sectionTitle(doc, 'COST BREAKDOWN', X0, yl, W1);
+  const L = (k, v) => (Math.abs(v) < 0.5 ? null : [k, fmtM(v), r.totalCost > 0 ? fmtP((v / r.totalCost) * 100) : '']);
+  const rows = [L('Land', r.land), L(`Transfer duty (${r.state})`, r.duty), L('Legal and acquisition', r.acquisition), L('Design and professional fees', r.professional), L('Approvals and DA fees', r.approvals),
+    L('Council and infrastructure contributions', r.contributions), L('Building', r.build), L('Site works', r.siteWorks), L('Earthworks', r.earthworks), L('Clearing and landscaping', r.landscape), L('Contingency', r.contingency),
+    L('Holding costs (rates, insurance)', r.holding), L('Loan establishment fee', r.fee), L(`Capitalised interest (${r.months} months)`, r.interest), L(hold ? 'Leasing costs' : 'Selling costs', r.selling)].filter(Boolean);
+  rows.push(['TOTAL COST', fmtM(r.totalCost), '100.0%']);
+  yl = table(doc, X0, yl, [{ w: 76 }, { w: 30, align: 'right' }, { w: W1 - 106, align: 'right' }], ['ITEM', 'AMOUNT', '% OF COST'], rows, { rh: 4.1, size: 6.6, boldLast: true });
+  yl += 2;
+  if (r.gstMode !== 'none' && r.gstPayable) { setText(doc, 6.2, false); doc.text(clean(`GST ${r.gstMode === 'margin' ? 'on the margin scheme' : 'in full'}: ${fmtM(r.gstPayable)} payable on the sale. Indicative.`), X0, yl); yl += 4; }
+  // Middle: assumptions
+  let ym = y + 1;
+  ym = sectionTitle(doc, 'ASSUMPTIONS (EVERY VALUE EDITABLE IN THE TOOL)', XA, ym, W2);
+  const STAT = { VERIFIED_REPORT: 'Report', VERIFIED_SECONDARY: 'Report (2nd)', VERIFIED_LISTING: 'Listing', ESTIMATE: 'Estimate' };
+  const ab = c.model.descs.map((d) => {
+    const val = d.kind === 'select' ? (d.options.find(([v]) => v === d.value)?.[1] || d.value) : Number(d.value).toLocaleString('en-AU', { maximumFractionDigits: 2 });
+    return [d.label.replace(/ \(.*$/, ''), `${val}${d.unit && d.kind !== 'select' ? ` ${d.unit.replace(/^\$ ?/, '$ ')}` : ''}`, d.edited ? 'Edited' : STAT[d.status] || d.status, d.asAt];
+  });
+  ym = table(doc, XA, ym, [{ w: 56 }, { w: 50, align: 'right' }, { w: 24 }, { w: W2 - 130 }], ['ASSUMPTION', 'VALUE', 'STATUS', 'AS AT'], ab, { rh: 3.55, size: 5.7 });
+  // Right: sensitivity, scenarios, sources
+  let yr = y + 1;
+  yr = sectionTitle(doc, 'SENSITIVITY, MARGIN ON COST', XB, yr, W3);
+  const g = r.sensitivity;
+  const cw = (W3 - 24) / 3;
+  yr = table(doc, XB, yr, [{ w: 24 }, ...g.steps.map(() => ({ w: cw, align: 'right' }))], ['PRICE / COST', ...g.steps.map((k) => `${k > 0 ? '+' : ''}${k}%`)], g.cells.map((row, i) => [`${g.steps[i] > 0 ? '+' : ''}${g.steps[i]}%`, ...row.map((x) => fmtP(x.margin))]), { rh: 4.1, size: 6.6 });
+  yr += 2;
+  const cols = financeCompare(project);
+  if (cols.length > 1) {
+    yr = sectionTitle(doc, 'SAVED SCENARIOS', XB, yr, W3);
+    const sw = (W3 - 28) / (cols.length);
+    const pick = (k) => FIN_COMPARE_ROWS.find((x) => x[0] === k);
+    const rws = ['profit', 'marginOnCostPct', 'residual', 'peakDebt'].map((k) => { const [, lab, get, kind] = pick(k); return [lab, ...cols.map((x) => (x.result ? (kind === 'money' ? fmtM(get(x.result)) : fmtP(get(x.result))) : 'n/a'))]; });
+    yr = table(doc, XB, yr, [{ w: 28 }, ...cols.map(() => ({ w: sw, align: 'right' }))], ['', ...cols.map((x) => x.name)], rws, { rh: 4.1, size: 6.2 });
+    yr += 2;
+  }
+  yr = sectionTitle(doc, 'NOTES AND SOURCES', XB, yr, W3);
+  const seen = new Set(); const srcs = [];
+  for (const d of c.model.descs) { if (d.source && !seen.has(d.source) && /https?:/.test(d.source)) { seen.add(d.source); srcs.push(`${d.label}: ${d.asAt}. ${d.source}`); } }
+  const duty = FIN_DATA.duty[c.model.state];
+  srcs.push(`Transfer duty: ${duty.name}, as at ${duty.asAt}. ${duty.source}. ${duty.note}`);
+  const items = [
+    `Programme ${r.programme.pre} months approvals, ${r.programme.build} months construction, ${r.programme.tail} months ${hold ? 'lease up' : 'sell down'}. Loan to cost ${fmtP(c.model.input.a.lcrPct)} at ${fmtP(c.model.input.a.ratePct)} a year, drawn on an S-curve after equity, interest capitalised.`,
+    ...c.notes, ...srcs,
+    'Figures marked Estimate are analyst allowances, not quotes. Values come from the Check it panel and can be edited there.',
+  ];
+  yr = paragraphs(doc, XB, yr, W3, items, { size: 5.7, lead: 2.6 });
+  void yl; void ym; void yr;
+  return { kv: [['Profit', fmtM(r.profit)], ['Margin on cost', fmtP(r.marginOnCostPct)], ['Residual land value', r.residual.viable ? fmtM(r.residual.value) : 'Nil'], ['Peak debt', fmtM(r.peakDebt)]], notes: ['Indicative only, not a valuation or advice.', 'Check with a quantity surveyor, valuer and your accountant.'], blocks: [] };
+}

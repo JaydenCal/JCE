@@ -338,7 +338,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       // Everyone else, including the free embed viewer, gets the stamped "PREVIEW, NOT TO SCALE" version.
       const a = app();
       const full = !!(a.premium?.isEntitled?.() || a.builder);
-      const out = await exportPlanSet({ project: store.project, lot, kind, builderName: builderName() || '', download: false, preview: !full, terms, includeAerial: aerialOn(store.project) && store.project.drawing?.includeAerial !== false });
+      const out = await exportPlanSet({ project: store.project, lot, kind, feasibility: true, builderName: builderName() || '', download: false, preview: !full, terms, includeAerial: aerialOn(store.project) && store.project.drawing?.includeAerial !== false });
       if (!full) toast('This is a preview, not to scale. A Plan Pack gives you the to-scale plan set.', { kind: 'info' });
       const bytes = out?.bytes || out?.blob || out?.data || out;
       if (bytes instanceof Blob || bytes instanceof Uint8Array || bytes instanceof ArrayBuffer) {

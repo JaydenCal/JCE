@@ -36,6 +36,7 @@ import { activeTypeId, typeChoices, switcherList, switcherIndex, pagerText, choo
 import { STRATA_ID } from './catalogue/types/index.js';
 import { buildingsOf } from './catalogue/buildings.js';
 import { commercialCardStats, zoneLine, unitList, commercialStatus, feasibilityHeadline, commercialSummaryLine, exteriorPose, unitWalkPose } from './card-model.js';
+import { createFinance } from '../finance/ui.js';
 import { summaryRows, costRows, money, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT, DATA_DATE, areaStatusLine } from './feasibility.js';
 
 const STYLE_ID = 'lc-style';
@@ -380,6 +381,8 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     schedule();
   }
   const x = () => h('button', { class: 'cc-x', type: 'button', 'aria-label': 'Close', onclick: () => closePanel() }, '×');
+  let fx = null;
+  const fxHost = () => { fx ||= createFinance(store, { mode: 'full' }); return fx.el; };
   function paintPanel() {
     const p = store.project;
     if (panelKind === 'units') {
@@ -410,6 +413,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
       ...keys.map(([k, label, unit]) => h('div', { class: 'cc-line' }, h('span', null, label, h('i', null, f.inputs[k].chip)), h('b', null, `${Number(f.inputs[k].value).toLocaleString('en-AU')} ${unit}`))),
       h('h4', null, 'Cost build up'),
       ...costRows(f).map(([k, v]) => h('div', { class: 'cc-line' }, h('span', null, k), h('b', null, v))),
+      h('h4', null, 'Development feasibility'), fxHost(),
       h('p', { class: 'cc-note' }, `${GST_NOTE} ${RENT_NOTE} ${SOURCES_TEXT}`),
       h('button', { class: 'lc-btn', type: 'button', onclick: () => { closePanel(); (onEdit || (() => store.setUI({ view: '2d' })))(); } }, 'Enter your own values'));
   }
@@ -617,6 +621,6 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   schedule();
   return {
     el: root, render, step, setLayout, setType, setFinish, planSet, openPanel, closePanel, pickView,
-    dispose() { disposed = true; window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); topView.dispose(); aerialT.dispose(); ro?.disconnect(); root.remove(); },
+    dispose() { disposed = true; fx?.dispose(); window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); topView.dispose(); aerialT.dispose(); ro?.disconnect(); root.remove(); },
   };
 }

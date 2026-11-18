@@ -36,7 +36,8 @@ export function buildModel(project, ov) {
 export function compute(project, ov) {
   const m = buildModel(project, ov);
   const result = m.input.revenue.length ? analyse(m.input) : null;
-  return { model: m, result, notes: [...m.notes, ...(result ? sanityNotes(result) : [])] };
+  const sanity = result ? sanityNotes(result) : [];
+  return { model: m, result, sanity, notes: [...m.notes, ...sanity] };
 }
 
 // Edits (call inside store.apply with the draft project) ---------------------------------------------------------------------------
