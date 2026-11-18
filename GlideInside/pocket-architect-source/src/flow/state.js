@@ -61,3 +61,19 @@ export const resumeStep = (project, kind, fallback = 1) => {
   const f = flowOf(project);
   return f && f.kind === kind ? f.step : fallback;
 };
+
+/**
+ * A design opened from the builder portal (?project=, ?house= or ?glide=) already has its home and lot: it goes straight into the full editor,
+ * never the guided steps. Pure, so it is unit tested.
+ */
+export function portalDeepLink(search = '') {
+  const q = new URLSearchParams(search);
+  return !!(q.get('project') || q.get('house') || q.get('glide'));
+}
+
+/** The project to load in the editor: a design saved part way through the guided flow is moved to the editing step so no step overlay opens. */
+export function forEditing(project) {
+  const f = flowOf(project);
+  if (!f || f.step >= EDIT_STEP) return project;
+  return { ...project, flow: { ...project.flow, kind: f.kind, step: EDIT_STEP } };
+}
