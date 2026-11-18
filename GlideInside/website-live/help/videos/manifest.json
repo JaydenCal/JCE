@@ -1,0 +1,42 @@
+{
+  "residential-find": {
+    "seconds": 26.4,
+    "bytes": 236231
+  },
+  "residential-design": {
+    "seconds": 26.1,
+    "bytes": 296826
+  },
+  "residential-place": {
+    "seconds": 73.7,
+    "bytes": 630926
+  },
+  "residential-edit": {
+    "seconds": 37.1,
+    "bytes": 761471
+  },
+  "residential-driveway": {
+    "seconds": 36.7,
+    "bytes": 636759
+  },
+  "residential-save": {
+    "seconds": 21.9,
+    "bytes": 469571
+  },
+  "commercial-find": {
+    "seconds": 24.4,
+    "bytes": 269422
+  },
+  "commercial-type": {
+    "seconds": 28.6,
+    "bytes": 530235
+  },
+  "commercial-place": {
+    "seconds": 271.2,
+    "bytes": 1800743
+  },
+  "commercial-hardstand": {
+    "seconds": 33.3,
+    "bytes": 746339
+  }
+}

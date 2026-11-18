@@ -48,7 +48,7 @@ const q = (page, sel) => page.locator(sel).first();
 // ---------------------------------------------------------------------------------------------------------------------------------------
 const CURSOR_JS = `(() => {
   const dot = document.createElement('div');
-  dot.style.cssText = 'position:fixed;z-index:2147483647;left:0;top:0;width:22px;height:22px;margin:-3px 0 0 -3px;pointer-events:none;transition:transform .05s linear';
+  dot.style.cssText = 'position:fixed;z-index:2147483647;left:0;top:0;width:22px;height:22px;margin:-3px 0 0 -3px;pointer-events:none;transition:left var(--cur-ms,650ms) cubic-bezier(.45,0,.2,1),top var(--cur-ms,650ms) cubic-bezier(.45,0,.2,1)';
   dot.innerHTML = '<svg width="22" height="22" viewBox="0 0 22 22"><path d="M3 2 L3 17 L7.2 13.2 L10 19.5 L12.6 18.4 L9.8 12.2 L15.5 12 Z" fill="#fff" stroke="#0a111e" stroke-width="1.6" stroke-linejoin="round"/></svg>';
   const ring = document.createElement('div');
   ring.style.cssText = 'position:fixed;z-index:2147483646;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:4px solid #e9b66f;pointer-events:none;opacity:0;transform:scale(.4)';
@@ -85,16 +85,17 @@ class Rec {
   editor() { return this.cut(async () => { await this.page.waitForFunction(() => document.querySelector('.ps-shell')?.dataset.flow === 'editor', null, { timeout: T }); await sleep(3000); await this.page.click('[data-ps="prompt-notnow"]', { timeout: 800 }).catch(() => {}); await this.page.click('[data-ps="fit-hide"]', { timeout: 300 }).catch(() => {}); await sleep(500); }); }
   step(n) { return this.cut(async () => { await this.page.waitForFunction((k) => Number(document.querySelector('[data-ps="flow-root"]:not([hidden])')?.dataset.step || 0) === k, n, { timeout: T }); await sleep(1200); await this.page.waitForFunction(() => !document.querySelector('[data-ps="flow-placing"],[data-ps="flow-3d-loading"],[data-ps="flow-spinner"],[data-ps="flow-loading-text"]'), null, { timeout: T }); await sleep(600); }); }
   async hold(ms) { await sleep(ms); }
-  async glide(x, y, ms = 650) {
-    const steps = Math.max(5, Math.round(ms / 45));
-    const x0 = this.x, y0 = this.y;
-    for (let i = 1; i <= steps; i += 1) {
-      const k = i / steps, e = k < 0.5 ? 2 * k * k : 1 - ((-2 * k + 2) ** 2) / 2;
-      await this.page.mouse.move(x0 + (x - x0) * e, y0 + (y - y0) * e);
-      await sleep(ms / steps);
+  /** Move the pointer. The cursor dot glides in the page (a CSS transition), so a slow machine does not make the motion slow: the real
+   *  pointer jumps once. While a button is held (a drag) the move is stepped, because the app follows the pointer events. */
+  async glide(x, y, ms = 650, { drag = false } = {}) {
+    if (!drag) { await this.page.mouse.move(x, y); await sleep(ms); }
+    else {
+      const steps = Math.max(6, Math.round(ms / 130)), x0 = this.x, y0 = this.y;
+      for (let i = 1; i <= steps; i += 1) { const k = i / steps; await this.page.mouse.move(x0 + (x - x0) * k, y0 + (y - y0) * k); await sleep(ms / steps); }
     }
     this.x = x; this.y = y;
   }
+  async fast(on) { await this.page.evaluate((v) => document.documentElement.style.setProperty('--cur-ms', v ? '110ms' : '650ms'), on); }
   async box(sel) {
     const loc = q(this.page, sel);
     await loc.waitFor({ state: 'visible', timeout: T });
@@ -107,7 +108,7 @@ class Rec {
   async point(sel, fx, fy, ms) { const p = await this.at(sel, fx, fy); await this.glide(p.x, p.y, ms); return p; }
   async click(sel, { fx = 0.5, fy = 0.5, after = 900 } = {}) {
     const p = await this.at(sel, fx, fy);
-    await this.glide(p.x, p.y);
+    await this.glide(p.x, p.y, 700);
     await sleep(250);
     await this.page.mouse.down(); await sleep(90); await this.page.mouse.up();
     await sleep(after);
@@ -121,10 +122,10 @@ class Rec {
   }
   async pick(sel, value, { after = 1100 } = {}) { await this.point(sel, 0.5, 0.5, 600); await sleep(300); await q(this.page, sel).selectOption(value); await sleep(after); }
   async drag(from, to, { ms = 900, steps = null } = {}) {
-    await this.glide(from.x, from.y, 600); await sleep(250);
-    await this.page.mouse.down(); await sleep(150);
-    if (steps) { for (const s of steps) await this.glide(s.x, s.y, ms / steps.length); } else await this.glide(to.x, to.y, ms);
-    await sleep(200); await this.page.mouse.up(); await sleep(700);
+    await this.glide(from.x, from.y, 700); await sleep(250);
+    await this.page.mouse.down(); await this.fast(true); await sleep(150);
+    if (steps) { for (const st of steps) await this.glide(st.x, st.y, ms / steps.length, { drag: true }); } else await this.glide(to.x, to.y, ms, { drag: true });
+    await sleep(200); await this.page.mouse.up(); await this.fast(false); await sleep(700);
   }
   async key(k, { after = 600 } = {}) { await this.page.keyboard.press(k); await sleep(after); }
   /** Plan point (mm) to page pixels, via the editor. */
