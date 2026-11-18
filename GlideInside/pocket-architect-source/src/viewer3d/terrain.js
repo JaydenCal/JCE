@@ -28,7 +28,7 @@ import { addCommercialPavements } from '../commercial/catalogue/pavements/view3d
 import { addCommercialEntourage, addForecourtSlabs } from '../commercial/catalogue/entourage3d.js';
 import { SUBGRADE, ROAD_BURY } from './levels.js';
 import { polyDistM } from './fds.js';
-import { skirtGeometry } from './skirts.js';
+import { skirtGeometry, retainingWallGeometry } from './skirts.js';
 
 export { PAD_MARGIN_M } from './site-geom.js';
 
@@ -814,13 +814,13 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   // Skirts under the edges of the exact surfaces, so no strip of road, paving or driveway stands over a gap above the mesh.
   try {
     if (tm.fds) {
-      const sk = skirtGeometry({ elements: tm.fds.elements, levelAt: (x, y) => tm.fds.levelAt(x, y).y, meshAt, inExtent: (x, y) => x >= ext.x0 && x <= ext.x1 && y >= ext.y0 && y <= ext.y1 });
+      const sk = skirtGeometry({ elements: tm.fds.elements, levelAt: (x, y) => tm.fds.levelAt(x, y).y, meshAt, inExtent: (x, y) => x >= ext.x0 && x <= ext.x1 && y >= ext.y0 && y <= ext.y1, coveredAt: (x, y, top) => { const r = tm.fds.levelAt(x, y); return !!r.id && r.kind !== 'pad' && Math.abs(r.y - top) < 0.03; } });
       if (sk.quads) {
         const g3 = new THREE.BufferGeometry();
         g3.setAttribute('position', new THREE.Float32BufferAttribute(sk.positions, 3));
         g3.setIndex(sk.indices);
         g3.computeVertexNormals();
-        const m3 = new THREE.Mesh(g3, new THREE.MeshStandardMaterial({ color: '#8a8c88', roughness: 0.95, side: THREE.DoubleSide }));
+        const m3 = new THREE.Mesh(g3, new THREE.MeshStandardMaterial({ color: GRASS, roughness: 0.95, side: THREE.DoubleSide })); // a safety net only, coloured like the ground beside it
         m3.material.userData.shared = false;
         m3.name = 'edge-skirts';
         m3.userData = { ground: true, skirts: true };
@@ -828,6 +828,23 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
       }
     }
   } catch (e) { console.warn('[viewer3d] edge skirts skipped', e); }
+  // Retaining walls on the lot boundary where a batter cannot fit inside the lot: a block face with a capping (never a plain grey skirt).
+  try {
+    const lotB = project.site?.lot;
+    if (tm.fds && lotB?.boundary?.length > 2) {
+      const re = retainingEdges(tm, lotB, 0.15);
+      const wg = retainingWallGeometry(re.samples);
+      for (const [part, color, name] of [[wg.face, '#9c9a93', 'retaining-wall'], [wg.cap, '#cfcdc6', 'retaining-wall-cap']]) {
+        if (!part.indices.length) continue;
+        const g4 = new THREE.BufferGeometry();
+        g4.setAttribute('position', new THREE.Float32BufferAttribute(part.positions, 3));
+        g4.setIndex(part.indices); g4.computeVertexNormals();
+        const m4 = new THREE.Mesh(g4, new THREE.MeshStandardMaterial({ color, roughness: 0.9, side: THREE.DoubleSide }));
+        m4.material.userData.shared = false; m4.name = name; m4.userData = { ground: true, retainingWall: true };
+        root.add(m4);
+      }
+    }
+  } catch (e) { console.warn('[viewer3d] retaining walls skipped', e); }
   lap('skirts');
   // Cut and fill heat map (project.site.grading.heat): the same grid as the ground in vertex colours, red where the design is cut below the natural
   // ground, blue where it is filled, strongest at 1 m; the held road is left clear. A transparent overlay just above the ground.

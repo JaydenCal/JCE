@@ -14,7 +14,7 @@ const SKIRTED = new Set(['road', 'crossover', 'paving', 'drive']);
  * skirtGeometry({ elements, levelAt(x, y) -> exact surface level, meshAt(x, y) -> terrain mesh level, inExtent(x, y) }) ->
  *   { positions: number[], indices: number[], quads, maxM } : the skirt quads (plan mm in, metres out: x / 1000, y, z / 1000).
  */
-export function skirtGeometry({ elements, levelAt, meshAt, inExtent = () => true }) {
+export function skirtGeometry({ elements, levelAt, meshAt, inExtent = () => true, coveredAt = null }) {
   const positions = []; const indices = [];
   let quads = 0; let maxM = 0;
   for (const el of elements) {
@@ -35,6 +35,8 @@ export function skirtGeometry({ elements, levelAt, meshAt, inExtent = () => true
           const q = { x: a.x + ((b.x - a.x) * s) / segs, y: a.y + ((b.y - a.y) * s) / segs };
           if (!inExtent(q.x, q.y)) { col.push(null); continue; }
           const top = levelAt(q.x - nx * 20, q.y - ny * 20);
+          // an edge shared with another exact surface of the same network (equal levels) has nothing under it to close: no skirt
+          if (coveredAt && coveredAt(q.x + nx * 40, q.y + ny * 40, top)) { col.push(null); continue; }
           const lowMesh = Math.min(meshAt(q.x, q.y), meshAt(q.x + nx * 300, q.y + ny * 300), meshAt(q.x - nx * 120, q.y - ny * 120));
           col.push({ x: q.x / 1000, z: q.y / 1000, top, bot: Math.min(top, lowMesh - SKIRT_BELOW_M) });
         }
@@ -51,4 +53,28 @@ export function skirtGeometry({ elements, levelAt, meshAt, inExtent = () => true
     }
   }
   return { positions, indices, quads, maxM };
+}
+
+/**
+ * retainingWallGeometry(samples) -> { face, cap } : a retaining wall along the lot boundary where a batter cannot fit inside the lot (the step
+ * between the design and the neighbouring ground). samples are retainingEdges samples { x, y (plan mm), nx, ny (unit, out of the lot), a (level
+ * inside), b (level outside) }, one per metre. The face stands on the boundary line from the higher level down to 0.3 m under the lower, with a
+ * 0.3 m wide capping on top. Each is { positions, indices } in metres.
+ */
+export function retainingWallGeometry(samples, { capM = 0.3, footM = 0.3, maxJoinMm = 1600 } = {}) {
+  const face = { positions: [], indices: [] }; const cap = { positions: [], indices: [] };
+  for (let i = 0; i + 1 < samples.length; i++) {
+    const p = samples[i]; const q = samples[i + 1];
+    if (Math.hypot(q.x - p.x, q.y - p.y) > maxJoinMm || Math.abs(p.nx * q.nx + p.ny * q.ny) < 0.95) continue;
+    const top = (s) => Math.max(s.a, s.b) + 0.1;
+    const bot = (s) => Math.min(s.a, s.b) - footM;
+    const f = face.positions; const k = f.length / 3;
+    f.push(p.x / 1000, top(p), p.y / 1000, p.x / 1000, bot(p), p.y / 1000, q.x / 1000, top(q), q.y / 1000, q.x / 1000, bot(q), q.y / 1000);
+    face.indices.push(k, k + 1, k + 2, k + 2, k + 1, k + 3);
+    const c = cap.positions; const m = c.length / 3;
+    const o = (s, side) => [s.x / 1000 + (s.nx * capM * side) / 2, top(s), s.y / 1000 + (s.ny * capM * side) / 2];
+    c.push(...o(p, -1), ...o(p, 1), ...o(q, -1), ...o(q, 1));
+    cap.indices.push(m, m + 1, m + 2, m + 2, m + 1, m + 3);
+  }
+  return { face, cap };
 }

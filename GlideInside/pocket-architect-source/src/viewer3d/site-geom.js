@@ -101,7 +101,8 @@ export function padHeight(raw, padY, d, batterRun = BATTER_RUN) {
   const out = d - PAD_MARGIN_M;
   if (out <= 0) return padY;
   const delta = raw - padY;
-  const run = Math.max(BATTER_MIN_M, Math.abs(delta) * batterRun);
+  // 1V:3H in fill (the design above the natural ground), 1V:2H in cut (the design below it): batterRun is the fill run, the cut run is one less
+  const run = Math.max(BATTER_MIN_M, Math.abs(delta) * (delta > 0 ? Math.max(2, batterRun - 1) : batterRun));
   if (out >= run) return raw;
   return padY + delta * (out / run);
 }

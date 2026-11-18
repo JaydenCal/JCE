@@ -42,6 +42,49 @@ const rowAngleDeg = (fr) => (Math.atan2(fr.u.y, fr.u.x) * 180) / Math.PI;
 
 // Pavement areas ---------------------------------------------------------------------------------------------------------------------
 
+
+// Convex hull of plan points (monotone chain).
+function hullOf(pts) {
+  const p = [...pts].sort((a, b) => a.x - b.x || a.y - b.y);
+  const cr = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+  const lo = []; for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  const up = []; for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+  return lo.slice(0, -1).concat(up.slice(0, -1));
+}
+const polyGapMm = (A, B) => {
+  let best = Infinity;
+  const seg = (P, Q) => { for (const a of P) for (let k = 0; k < Q.length; k++) { const b = Q[k]; const c = Q[(k + 1) % Q.length]; const ex = c.x - b.x; const ey = c.y - b.y; const l2 = ex * ex + ey * ey || 1; const t = Math.max(0, Math.min(1, ((a.x - b.x) * ex + (a.y - b.y) * ey) / l2)); best = Math.min(best, Math.hypot(a.x - b.x - t * ex, a.y - b.y - t * ey)); } };
+  seg(A, B); seg(B, A);
+  return best;
+};
+/**
+ * One network is one continuous sealed surface: two automatic areas of the site layout that stand within maxGapMm of each other (and do not
+ * overlap) get a joining area over the gap (the hull of the pair), so no ground shows between the apron, aisles, bays and crossover.
+ */
+function joinNetwork(areas, from, maxGapMm) {
+  const base = areas.slice(from).filter((a) => a.role !== 'waste' && a.polygon?.length >= 3);
+  const edgePts = (poly, step = 200) => {
+    const out = [];
+    for (let i = 0; i < poly.length; i++) { const a = poly[i]; const b = poly[(i + 1) % poly.length]; const L = Math.hypot(b.x - a.x, b.y - a.y); const n = Math.max(1, Math.ceil(L / step)); for (let k = 0; k < n; k++) out.push({ x: a.x + ((b.x - a.x) * k) / n, y: a.y + ((b.y - a.y) * k) / n }); }
+    return out;
+  };
+  const near = (q, poly) => { let best = Infinity; for (let k = 0; k < poly.length; k++) { const b = poly[k]; const c = poly[(k + 1) % poly.length]; const ex = c.x - b.x; const ey = c.y - b.y; const l2 = ex * ex + ey * ey || 1; const t = Math.max(0, Math.min(1, ((q.x - b.x) * ex + (q.y - b.y) * ey) / l2)); best = Math.min(best, Math.hypot(q.x - b.x - t * ex, q.y - b.y - t * ey)); } return best; };
+  let n = 0;
+  for (let i = 0; i < base.length; i++) for (let j = i + 1; j < base.length; j++) {
+    const A = base[i]; const B = base[j];
+    const pa = edgePts(A.polygon); const pb = edgePts(B.polygon);
+    if (pa.some((q) => pointInPolyLoose(q, B.polygon)) || pb.some((q) => pointInPolyLoose(q, A.polygon))) continue; // overlapping: no gap
+    const ca = pa.filter((q) => near(q, B.polygon) <= maxGapMm); const cb = pb.filter((q) => near(q, A.polygon) <= maxGapMm);
+    if (!ca.length || !cb.length) continue;
+    const g = Math.min(...ca.map((q) => near(q, B.polygon)));
+    if (g < 50) continue; // touching already
+    areas.push({ id: `join:${A.id}:${B.id}`, role: A.role === 'footpath' ? B.role : A.role, rowId: null, polygon: hullOf([...ca, ...cb]), join: true });
+    n++;
+  }
+  return n;
+}
+function pointInPolyLoose(p, poly) { let ins = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i]; const b = poly[j]; if ((a.y > p.y) !== (b.y > p.y) && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) ins = !ins; } return ins; }
+
 /** The default areas (before overrides): [{ id, role, rowId, type, polygon, auto: true }]. */
 export function defaultAreas(commercial) {
   const c = commercial || {};
@@ -77,8 +120,22 @@ export function defaultAreas(commercial) {
     for (const a of sw.aprons || []) out.push({ id: a.id, role: 'apron', rowId: null, polygon: a.polygon });
     for (const x of sw.crossovers || []) if (x.polygon) out.push({ id: `${x.id}:pad`, role: 'aisle', rowId: null, polygon: x.polygon });
     for (const a of sw.pavedAisles || []) out.push({ id: a.id, role: 'aisle', rowId: null, polygon: a.polygon });
-    for (const r of sw.bayRows || []) for (const b of r.bayAreas || []) out.push({ id: b.id, role: 'bays', rowId: r.rowId, polygon: b.polygon });
+    for (const r of sw.bayRows || []) {
+      // A bay row is one continuous sealed strip: the runs of bays (and the gaps between them, e.g. the shared zone between accessible bays)
+      // are paved as one rectangle in the row's own frame, so no grass or terrain shows between bay runs.
+      const bas = r.bayAreas || [];
+      const u = r.frame?.u;
+      if (bas.length > 1 && u && Math.hypot(u.x, u.y) > 0.5) {
+        const w = { x: -u.y, y: u.x };
+        const pts = bas.flatMap((b2) => b2.polygon);
+        const ps = pts.map((q) => q.x * u.x + q.y * u.y); const pv = pts.map((q) => q.x * w.x + q.y * w.y);
+        const [s0, s1, t0, t1] = [Math.min(...ps), Math.max(...ps), Math.min(...pv), Math.max(...pv)];
+        const at = (sv, tv) => ({ x: Math.round(u.x * sv + w.x * tv), y: Math.round(u.y * sv + w.y * tv) });
+        out.push({ id: bas[0].id, role: 'bays', rowId: r.rowId, polygon: [at(s0, t0), at(s1, t0), at(s1, t1), at(s0, t1)] });
+      } else for (const b2 of bas) out.push({ id: b2.id, role: 'bays', rowId: r.rowId, polygon: b2.polygon });
+    }
     for (const f of sw.footpaths || []) out.push({ id: f.id, role: 'footpath', rowId: null, polygon: f.polygon });
+    joinNetwork(out, 0, 600);
   }
   const w = c.waste;
   if (w && w.widthMm > 0 && w.depthMm > 0) {

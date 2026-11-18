@@ -35,7 +35,7 @@ test('grading: plane fit and fall clamp', () => {
   assert.ok(Math.abs(Math.hypot(g.gx, g.gz) - 0.01) < 1e-9);
 });
 
-test('grading: a batter of about 1 in 3 runs back to natural ground and far ground is untouched', () => {
+test('grading: a batter of 1 in 3 in fill and 1 in 2 in cut runs back to natural ground and far ground is untouched', () => {
   const zone = [{ x: 0, y: 0 }, { x: 10000, y: 0 }, { x: 10000, y: 10000 }, { x: 0, y: 10000 }];
   const rawAt = (x) => 4 + x / 1000 * 0.2; // a steep 20 percent natural slope, so the design plane is well away from the ground
   const g = planGrading({ rawAt, padY: 0, fp: null, paving: [zone] });
@@ -44,7 +44,7 @@ test('grading: a batter of about 1 in 3 runs back to natural ground and far grou
   assert.equal(g.heightAt(500000, 500000, 7), 7);
   let steepest = 0;
   for (let x = 11000; x < 40000; x += 500) steepest = Math.max(steepest, Math.abs(at(x + 500) - at(x)) / 0.5);
-  assert.ok(steepest > 0.2 && steepest <= 1 / 3 + 1e-6, `batter slope ${steepest}`);
+  assert.ok(steepest > 0.2 && steepest <= 1 / 2 + 1e-6, `cut batter (1V:2H) slope ${steepest}`);
   assert.ok(Math.abs(at(60000) - rawAt(60000)) < 1e-9, 'natural ground beyond the batter');
 });
 
