@@ -186,7 +186,9 @@ export function terrainModel(project, opts = {}) {
       // The person's grading controls (project.site.grading): a pad raised or lowered in whole 50 mm steps from the automatic level, and the batter.
       const gr = project.site?.grading || {};
       const userPad = (g, i) => { const n = Number(gr.pads?.[`pad:${i}`]); return Number.isFinite(n) && n !== 0 ? n : null; };
-      const autoPad = opts.padOverride || (driveRaise ? (g, i) => (i === 0 ? driveRaise : null) : null);
+      // A floor level the person set puts the house at that level: it is not moved to the natural ground or raised for the drive.
+      const floorSetByPerson = lot.floorRLAuto === false && Number.isFinite(lot.floorRL);
+      const autoPad = opts.padOverride || (floorSetByPerson ? (g, i) => (i === 0 ? 0 : null) : driveRaise ? (g, i) => (i === 0 ? driveRaise : null) : null);
       pads = padGroups(padPolygons(project, fp), rawY, padY, autoPad, userPad);
       const paving = []; const crossovers = [];
       const driveways = [];

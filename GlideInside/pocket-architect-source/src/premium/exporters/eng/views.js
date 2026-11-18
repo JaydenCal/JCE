@@ -22,7 +22,11 @@ const BIAS = { opening: 90, leaf: 140, stair: 0, tank: 0 };
 /** Triangles of the model in plan millimetres, y down: { p: [{x, y, z}], n, kind, inner }. z is up from the ground floor level. */
 export async function collectTriangles(project, catalogue = null) {
   const { buildModel } = await import('../../../viewer3d/build.js');
-  const g = buildModel(project, { catalogue, showRoof: true, statusView: 'proposed', levelFilter: 'all' });
+  // The house alone, in its own frame (z up from the ground floor level). With a lot loaded the 3D build moves the house with its pad
+  // (raise towards the street, or down to the natural ground), which would add that move to every height read from these triangles.
+  const lot = project.site?.lot;
+  const bare = lot ? { ...project, site: { ...project.site, lot: { ...lot, boundary: null } } } : project;
+  const g = buildModel(bare, { catalogue, showRoof: true, statusView: 'proposed', levelFilter: 'all' });
   g.updateMatrixWorld(true);
   const tris = [];
   const e = (g.matrixWorld && g.matrixWorld.elements) || null;
