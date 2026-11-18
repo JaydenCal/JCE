@@ -691,24 +691,36 @@ function drawBuildingShells(doc, model, view, field) {
 function layoutLegend(model = null, contours = [], lot = null) {
   const dc = drawnContext(lot);
   const hsTypes = [...new Set((model?.hardstand || []).map((x) => x.type))];
+  // The legend lists only what this sheet draws.
+  const units = model?.units || [];
+  const c = model?.c || null;
+  const slots = [...(model?.a?.parking?.rows || []), ...(c?.buildings?.length ? buildingParking(c).rows : [])].flatMap((r) => r.slots || []);
+  const hasBay = slots.some((sl) => sl.kind !== 'accessible' && sl.kind !== 'zone');
+  const hasAccessible = slots.some((sl) => sl.kind === 'accessible' || sl.kind === 'zone');
+  const hasUnits = units.length > 0;
+  const hasBuildingDoors = (model?.project?.levels || []).some((l) => (l.openings || []).some((o) => o.building && o.kind === 'roller_door'));
+  const hasMezz = units.some((u) => mezzanineOf(u.spec).enabled);
+  const hasBollards = (model?.a?.bollards || []).length > 0;
   return legendBlock([
     ['Lot boundary (existing)', lineSw(PEN.ink, 0.7)],
     ...(dc.neighbours ? [['Adjoining lot (DCDB)', lineSw(GREYLINE, 0.18)]] : []),
     ...(dc.roads ? [['Road centreline', lineSw(PEN.phantom, 0.3, [3, 0.8, 0.6, 0.8])]] : []),
     ['Building setback line', lineSw(GREYLINE, 0.2, [1.6, 1])],
     [model?.stats?.units > 0 ? 'PROPOSED UNIT' : 'PROPOSED BUILDING', swatch(UNIT_FILL, PEN.ink)],
-    ['Mezzanine outline', lineSw(PEN.ink, 0.25, [1.6, 0.9])],
-    ['Roller door', lineSw(RED, 0.9)],
-    ['Personnel door', lineSw(BLUE, 0.9)],
+    ...(hasMezz ? [['Mezzanine outline', lineSw(PEN.ink, 0.25, [1.6, 0.9])]] : []),
+    ...(hasUnits ? [['Roller door', lineSw(RED, 0.9)], ['Personnel door', lineSw(BLUE, 0.9)]] : []),
+    ...(hasBuildingDoors ? [['Roller or dock door', lineSw(PEN.ink, 0.25, [1.2, 0.8])]] : []),
     ['Truck apron and car aisle', swatch(AISLE_FILL, null)],
-    ['Parking bay', swatch([250, 250, 250], GREYLINE)],
-    ['Accessible bay and shared zone', swatch([196, 214, 244], BLUE)],
-    ['Bollard', (doc, a, b) => { doc.setFillColor(224, 168, 0); doc.setDrawColor(29, 32, 36); doc.setLineWidth(0.15); doc.circle(a + 6, b, 0.9, 'FD'); }],
+    ...(hasBay ? [['Parking bay', swatch([250, 250, 250], GREYLINE)]] : []),
+    ...(hasAccessible ? [['Accessible bay and shared zone', swatch([196, 214, 244], BLUE)]] : []),
+    ...(hasBollards ? [['Bollard', (doc, a, b) => { doc.setFillColor(224, 168, 0); doc.setDrawColor(29, 32, 36); doc.setLineWidth(0.15); doc.circle(a + 6, b, 0.9, 'FD'); }]] : []),
     ['Landscaping (indicative)', (doc, a, b) => { doc.setDrawColor(...GREEN); doc.setLineWidth(0.1); for (let k = 0; k < 6; k++) doc.line(a + k * 2, b + 1.2, a + k * 2 + 2, b - 1.2); }],
     ...hsTypes.map((id) => [`Hardstand: ${pavementById(id).short}, ${m2f((model.hardstand || []).filter((x) => x.type === id).reduce((s, x) => s + (x.areaM2 || 0), 0))} m2`, pavementSwatch(pavementById(id))]),
     ...((model?.hardstandKerbs || []).length ? [['Kerb, drawn hardstand', lineSw(PEN.ink, 0.45)]] : []),
     ...contours,
-    ['OSD placeholder, waste, hydrant', (doc, a, b) => { doc.setDrawColor(...BLUE); doc.setLineWidth(0.2); doc.setLineDashPattern([1.2, 0.8], 0); doc.rect(a, b - 1.2, 5, 2.4, 'S'); doc.setLineDashPattern([], 0); doc.setFillColor(214, 196, 168); doc.rect(a + 6, b - 1.2, 3, 2.4, 'F'); doc.setFillColor(192, 57, 43); doc.circle(a + 11, b, 0.9, 'F'); }],
+    ...(model?.osd ? [['OSD placeholder', (doc, a, b) => { doc.setDrawColor(...BLUE); doc.setLineWidth(0.2); doc.setLineDashPattern([1.2, 0.8], 0); doc.rect(a, b - 1.2, 5, 2.4, 'S'); doc.setLineDashPattern([], 0); }]] : []),
+    ...(c?.waste ? [['Waste enclosure', (doc, a, b) => { doc.setFillColor(214, 196, 168); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.2); doc.rect(a, b - 1.2, 4, 2.4, 'FD'); }]] : []),
+    ...(c?.hydrant ? [['Hydrant', (doc, a, b) => { doc.setFillColor(192, 57, 43); doc.circle(a + 3, b, 0.9, 'F'); }]] : []),
   ]);
 }
 
@@ -1342,7 +1354,8 @@ export function drawMezzanine(doc, model) {
   }
   // Existing ground contours outside the buildings (the site context of the level plan), in pale pens.
   const mmasks = [...units.map((u) => u.poly), ...buildingsOf(model.c).map((b) => b.outline)].filter((q) => q?.length >= 3).map((poly) => poly.map(T));
-  const ground = drawGroundLayer(doc, { lot: model.lot, levels: lv, S: T, Si: view.Ti, rect: VP, field, masks: mmasks, light: true, mark: gmark });
+  void mmasks; void gmark; // floor plans carry no ground contours
+  const ground = { legend: [], interval: null, note: '' };
   northAndScale(doc, field, project, scale, view);
   const mz = model.stats;
   const levels = [...new Set(mezzUnits.map(({ m }) => m.level))];
@@ -1358,7 +1371,6 @@ export function drawMezzanine(doc, model) {
     'The mezzanine may count as a storey above its area limit, check with council and the NCC.',
     'Clear height under the mezzanine is unverified, see C900.',
   ];
-  if (lv.has) { kv.push(['Contours', ground.interval ? intervalText(ground.interval) : 'None at this view']); notes.push(ground.note); }
   return { scale, kv, notes, blocks: [mezzLegend(ground.legend)] };
 }
 

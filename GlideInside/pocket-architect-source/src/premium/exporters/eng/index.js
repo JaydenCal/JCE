@@ -19,11 +19,11 @@ import { drawSitePlan, drawSitePanel, siteFacts, siteView, SITE_VP, keyBox, loca
 import { AREA } from '../pdf.js';
 import { resolveAerial, renderUnderlay } from './aerial.js';
 import { drawCover, drawAnalysis, drawSchedules, scheduleCount, COVER_BOX } from './sheets.js';
-import { collectTriangles, drawElevations, drawSection, drawRoofPlan, roofAreaM2, roofScale, elevationScale, sectionScale, drawSectionMarker, sectionLinePlan } from './views.js';
+import { collectTriangles, drawElevations, drawSection, drawRoofPlan, roofAreaM2, roofScale, elevationScale, sectionScale, drawSectionMarker, sectionLinePlan, clearOfLine } from './views.js';
 import { drawRoomLabels } from './roomlabels.js';
 import { stairGeometry } from '../shared.js';
 import { drawLevelPanel, analysisScale, analysisView } from './sheets.js';
-import { levelsModel, loadTerrainModel } from '../planset/levels.js';
+import { levelsModel, loadTerrainModel, roundRL } from '../planset/levels.js';
 import { streamMark } from '../planset/contours.js';
 import { drawPlanGround } from '../planset/plan-context.js';
 
@@ -57,29 +57,6 @@ export function engineeringSheets(project, { paper = 'A3', scale = null, catalog
   for (let i = 0; i < n; i++) list.push({ kind: 'schedule', index: i, count: n, title: n > 1 ? `SCHEDULES (${i + 1} OF ${n})` : 'SCHEDULES', scale: 'NTS' });
   list.forEach((s, i) => { s.n = i + 1; s.number = drawingNo(project, i + 1); });
   return { list, scale: picked, paper: p };
-}
-
-/** Moves the figure of a dimension string along the string when the section line would run through it. */
-function clearOfLine(d, sl, ds) {
-  if (!sl || !d.textAt) return d;
-  const vertical = d.textRot === 90;
-  const ln = (u) => ({ x: sl.p0.x + (sl.p1.x - sl.p0.x) * u, y: sl.p0.y + (sl.p1.y - sl.p0.y) * u });
-  const dx = sl.p1.x - sl.p0.x;
-  const dy = sl.p1.y - sl.p0.y;
-  const pos = (pt) => (vertical ? pt.y : pt.x);
-  const across = vertical ? d.a.x : d.a.y;
-  // Where the section line meets the string's own line
-  const u = vertical ? (Math.abs(dx) < 1 ? null : (across - sl.p0.x) / dx) : (Math.abs(dy) < 1 ? null : (across - sl.p0.y) / dy);
-  if (u == null || u < 0 || u > 1) return d;
-  const at = pos(ln(u));
-  const lo = Math.min(pos(d.a), pos(d.b));
-  const hi = Math.max(pos(d.a), pos(d.b));
-  const tp = pos(d.textAt);
-  const clear = 5 * ds;
-  if (at < lo || at > hi || Math.abs(tp - at) > clear) return d;
-  const want = at + (tp >= at ? 1 : -1) * Math.min(clear, (hi - lo) / 2 + 0.6 * ds);
-  const textAt = vertical ? { x: d.textAt.x, y: want } : { x: want, y: d.textAt.y };
-  return { ...d, textAt };
 }
 
 /** UP on the stair of the ground floor and DN on the same stair where it arrives on the upper floor, drawn as an outline with treads. */
@@ -127,11 +104,11 @@ function withHouseFloorRL(project) {
 }
 
 export async function toEngineeringPDF(project0, options = {}) {
-  const project = withHouseFloorRL(options.includeAerial === false ? withoutAerial(project0) : project0);
+  let project = withHouseFloorRL(options.includeAerial === false ? withoutAerial(project0) : project0);
   const { jsPDF, image = null, aerial = null, config = {}, catalogue = null, date = new Date(), paper = null, scale = null } = options;
   if (typeof jsPDF !== 'function') throw new Error('toEngineeringPDF needs the jsPDF class (options.jsPDF)');
   const plan = engineeringSheets(project, { paper, scale, catalogue });
-  const aligned = alignProject(project);
+  let aligned = alignProject(project);
   const p = plan.paper;
   const raw = new jsPDF({ orientation: 'landscape', unit: 'mm', format: p.format, compress: true, precision: 3 });
   const brand = brandOf(project, options);
@@ -148,7 +125,15 @@ export async function toEngineeringPDF(project0, options = {}) {
   // Ground levels (the same model the 3D uses), shared by every plan sheet: contours, RL labels, floor levels.
   const lotG = project.site?.lot || null;
   ctx.levels = lotG ? levelsModel(project, lotG, { tm: await loadTerrainModel(project) }) : null;
-  ctx.ground = ctx.levels ? { lot: lotG, levels: ctx.levels, align: aligned.align || null, unalign: aligned.unalign || null } : null;
+  // One floor level for every sheet: when the lot has terrain but no set level, the 3D model's level is used everywhere (as the residential plan set does).
+  if (ctx.levels?.has && lotG && lotG.floorRL == null) {
+    const withFloor = (pr) => (pr?.site?.lot ? { ...pr, site: { ...pr.site, lot: { ...pr.site.lot, floorRL: roundRL(ctx.levels.floorRL), floorRLAuto: true } } } : pr);
+    project = withFloor(project);
+    aligned = { ...aligned, project: withFloor(aligned.project) };
+    ctx.project = project;
+    ctx.lot = project.site.lot;
+  }
+  ctx.ground = ctx.levels ? { lot: ctx.lot, levels: ctx.levels, align: aligned.align || null, unalign: aligned.unalign || null } : null;
   // The aerial is composited once per view (the site plan, the key plan and the cover locality), turned and cropped as each is drawn.
   const bytes0 = await resolveAerial(project, { aerial });
   const lotA = project.site?.lot;
@@ -241,13 +226,9 @@ export async function toEngineeringPDF(project0, options = {}) {
       if (sl) drawSectionMarker(doc, aligned.project, T, sectionSheet, half);
       const stairBoxes = drawStairNotes(doc, aligned.project, s.level, T);
       drawRoomLabels(doc, { extra: stairBoxes, content, T, catalogue, section: sl ? [T(sl.p0), T(sl.p1)] : null, bounds: { x0: BODY.x0, y0: BODY.y0, x1: BODY.x1, y1: BODY.y1 } });
-      // Existing ground contours outside the plan and its dimension strings (the site context of the floor plan)
-      const cb = s.content.box;
-      const Ti = (q) => ({ x: cb.minX + (q.x - ox) * ds, y: cb.minY + (q.y - oy) * ds });
-      const a0 = T({ x: cb.minX, y: cb.minY });
-      const a1 = T({ x: cb.maxX, y: cb.maxY });
-      s.ground = drawPlanGround(doc, { ground: ctx.ground, T, Ti, rect: { x0: ox - 12 > BODY.x0 + 70 ? ox - 12 : BODY.x0, y0: BODY.y0, x1: BODY.x1, y1: BODY.y1 }, keepOut: [{ x0: a0.x - 4, y0: a0.y - 4, x1: a1.x + 4, y1: a1.y + 4 }, { x0: BODY.x0, y0: BODY.y0, x1: BODY.x1, y1: BODY.y0 + 14 }], mark: gmark, light: true });
-      drawLevelPanel(doc, apr, s.level, ox, { sectionSheet, ground: s.ground });
+      // Floor plans carry no ground contours (site plan only).
+      void gmark;
+      drawLevelPanel(doc, apr, s.level, ox, { sectionSheet, ground: null });
     } else if (s.kind === 'roof') drawRoofPlan(doc, apr, tris, area);
     else if (s.kind === 'elevations') {
       if (tris.length) drawElevations(doc, apr, tris, area); else emptySheet(doc, area, 'Elevations need a building with walls.');

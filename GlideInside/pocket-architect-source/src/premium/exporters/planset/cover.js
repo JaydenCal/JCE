@@ -407,7 +407,7 @@ export function drawCover(doc, ctx) {
     'Boundaries are from the cadastre (DCDB) and are not a survey. Dimensions and areas must be confirmed by a registered surveyor.',
     'Setbacks and planning controls shown are indicative. They must be checked with the council and a suitably qualified person.',
     'Room areas are measured to internal wall faces. Roofed outdoor rooms are counted as alfresco.',
-    'Driveway, kerb and road reserve widths are typical values and not the council standard for the street.',
+    'Driveway and crossover widths are typical values and not the council standard for the street.',
     `${ENTITY}, ${ABN}, ${EMAIL}.`,
   ], ctx.lot, { aerialShown: !!ctx.locality?.aerial, aerial: ctx.locality?.aerial });
   // The plan set terms note (src/legal) closes the general notes, with the version and the acceptance date.

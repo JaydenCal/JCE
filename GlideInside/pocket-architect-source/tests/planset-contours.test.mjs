@@ -80,8 +80,8 @@ test('surfaceContours contours any RL function and whereChanged keeps only the s
   assert.ok(kept.length > 0 && kept.every((c) => c.pts.every((p) => p.y >= 19000)));
 });
 
-test('10: every plan sheet draws at least three contour polylines and an RL label, at 0.6, 3 and 9 m of fall', async () => {
-  const plan = new Set(['C100', 'C101', 'C102', 'A100', 'A101']);
+test('10: every site plan sheet draws at least three contour polylines and an RL label, at 0.6, 3 and 9 m of fall (floor and roof plans carry none)', async () => {
+  const plan = new Set(['C100', 'C101', 'C102']);
   for (const terrain of CASES) {
     for (const type of ['warehouse', 'strata']) {
       const { r, pages } = await commercialSet(type, terrain);
@@ -93,13 +93,13 @@ test('10: every plan sheet draws at least three contour polylines and an RL labe
     }
     const res = await residentialSet(terrain);
     res.r.sheets.forEach((s, i) => {
-      if (!plan.has(codeOf(s))) return;
+      if (codeOf(s) !== 'C100') return;
       assert.ok(contourChains(res.pages[i]).length >= 3, `residential ${terrain} ${codeOf(s)}`);
       assert.ok(rlLabels(res.pages[i]).length >= 1, `residential ${terrain} ${codeOf(s)} label`);
     });
     const eng = await engSet(terrain);
     eng.bytes.layout.sheets.forEach((s, i) => {
-      if (!['site', 'level', 'roof', 'analysis'].includes(s.kind)) return;
+      if (!['site', 'analysis'].includes(s.kind)) return;
       assert.ok(contourChains(eng.pages[i]).length >= 3, `engineering ${terrain} ${s.kind} ${contourChains(eng.pages[i]).length}`);
       assert.ok(eng.pages[i].texts.some((t) => /^\d{2,4}(\.\d{1,2})?$/.test(t.s)), `engineering ${terrain} ${s.kind} RL label`);
     });
