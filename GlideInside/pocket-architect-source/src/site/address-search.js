@@ -95,8 +95,41 @@ export async function smartSearch(q, opts = {}) {
     found = await (opts.search || searchAddresses)(t, opts);
     if (found.length) break;
   }
-  return rankResults(parsed, found);
+  const ranked = rankResults(parsed, found);
+  if (found.rateLimited) ranked.rateLimited = true;
+  return ranked;
 }
 
 /** Wording for "nothing found". */
 export const NOT_FOUND_TEXT = 'We could not find that address. Check the spelling, try the street name and suburb, or use a sample lot or your own boundary.';
+
+export const SEARCH_DEBOUNCE_MS = 300;
+
+/**
+ * Live suggestions for a search box: waits delay ms after the last keystroke, aborts the previous request on every keystroke (and when
+ * cancelled), ignores aborted and out of date answers, and never reports a failure (a 429 or error just clears the suggestions).
+ * trigger() on each input event; onBusy() only for a real timeout, 5xx or 429 retry; onResults(rows) with the final rows.
+ */
+export function createLiveSearch({ getText, onResults, onBusy, search = smartSearch, delay = SEARCH_DEBOUNCE_MS, setT = setTimeout, clearT = clearTimeout }) {
+  let timer = null;
+  let ctl = null;
+  const cancel = () => { clearT(timer); timer = null; ctl?.abort(); ctl = null; };
+  const run = async () => {
+    const q = String(getText() || '').trim();
+    if (q.length < 3) { onResults([]); return; }
+    const mine = new AbortController();
+    ctl = mine;
+    try {
+      const rows = await search(q, { signal: mine.signal, onRetry: () => { if (!mine.signal.aborted) onBusy?.(); } });
+      if (mine.signal.aborted || String(getText() || '').trim() !== q) return;
+      onResults(Array.isArray(rows) ? rows : []);
+    } catch (e) {
+      if (e?.name === 'AbortError' || mine.signal.aborted) return;
+      onResults([]);
+    }
+  };
+  return {
+    trigger() { cancel(); timer = setT(run, delay); },
+    cancel,
+  };
+}

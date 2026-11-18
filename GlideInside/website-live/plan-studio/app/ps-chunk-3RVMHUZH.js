@@ -1,0 +1,1 @@
+var o=/[‐-―−]/g,p=e=>typeof e=="string"?e.replace(o,"-"):e;function n(e){if(typeof e=="string")return e.replace(o,"-");if(Array.isArray(e))return e.map(n);if(e&&typeof e=="object"){let r={};for(let t of Object.keys(e))r[t]=n(e[t]);return r}return e}export{p as a,n as b};

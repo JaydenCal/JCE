@@ -6,10 +6,10 @@
 //   const r = autoPose(project, house)    // project holds site.lot; house is a library design (project JSON)
 //   r = { pose: { x, y, rotation, mirrored }, facing: true|false, fits: true|false|null, reason }
 
-import * as G from '../model/geometry.js?v=20261119b';
-import { lotOf, envelopeOf, footprint, worstEncroachment, requiredFor, classifyEdges } from '../model/placement.js?v=20261119b';
-import { faceGarageAngle, buildingHull, garageDoor, inwardNormalOf } from '../site/lotplan.js?v=20261119b';
-import { placeHouse, houseBounds } from './place-house.js?v=20261119b';
+import * as G from '../model/geometry.js?v=20261119c';
+import { lotOf, envelopeOf, footprint, worstEncroachment, requiredFor, classifyEdges } from '../model/placement.js?v=20261119c';
+import { faceGarageAngle, buildingHull, garageDoor, inwardNormalOf } from '../site/lotplan.js?v=20261119c';
+import { placeHouse, houseBounds } from './place-house.js?v=20261119c';
 
 /** Distance (mm) the front wall sits behind the front setback line, so the house is not hard on it. */
 export const FRONT_EASE_MM = 500;

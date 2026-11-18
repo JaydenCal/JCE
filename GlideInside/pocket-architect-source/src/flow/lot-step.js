@@ -47,13 +47,16 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     input.setAttribute('aria-expanded', String(!!items.length));
   };
 
+  let sctl = null;
   async function suggest() {
     const q = input.value.trim();
     if (q.length < 4) { setSugg([]); return; }
+    const mine = new AbortController();
+    sctl = mine;
     try {
-      const r = await smartSearch(q, {});
-      if (!disposed && input.value.trim() === q) setSugg(r.slice(0, 5));
-    } catch { /* the Find button reports a failed search */ }
+      const r = await smartSearch(q, { signal: mine.signal });
+      if (!disposed && !mine.signal.aborted && input.value.trim() === q) setSugg(r.slice(0, 5));
+    } catch { /* the Find button reports a failed search; an abort or a rate limit shows nothing */ }
   }
 
   async function choose(pick) {
@@ -78,7 +81,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     if (q.length < 3) { error = 'Type a street address first.'; paint(); return; }
     loading = true; error = ''; notFound = false; slow = false; paint();
     let pick = list.find((r) => String(r.label || '').toLowerCase() === q.toLowerCase()) || null; // a suggestion already shown: no second search
-    try { if (!pick) pick = (await smartSearch(q, {}))[0]; } catch (e) { error = e?.message || 'The address search is not available right now.'; slow = e?.code === 'SLOW'; }
+    try { if (!pick) { const r = await smartSearch(q, {}); pick = r[0]; if (!pick && r.rateLimited) { error = 'The address service is busy. Press Find my lot again in a moment.'; slow = true; } } } catch (e) { error = e?.message || 'The address search is not available right now.'; slow = e?.code === 'SLOW'; }
     loading = false;
     if (!pick && !error) { error = NOT_FOUND_TEXT; notFound = true; }
     if (pick) await choose(pick); else paint();
@@ -155,7 +158,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     paintConfirm();
   }
 
-  input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(suggest, 300); });
+  input.addEventListener('input', () => { sctl?.abort(); clearTimeout(timer); timer = setTimeout(suggest, 300); });
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); if (list.length) choose(list[0]); else find(); } else if (e.key === 'Escape') setSugg([]); });
   input.addEventListener('blur', () => setTimeout(() => setSugg([]), 150));
   findBtn.addEventListener('click', find);
@@ -171,6 +174,6 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     el,
     canNext: () => !!lotOf(store.project) && !loading,
     nextLabel: 'This is my lot',
-    dispose() { disposed = true; clearTimeout(timer); clearTimeout(slowT); off?.(); },
+    dispose() { disposed = true; sctl?.abort(); clearTimeout(timer); clearTimeout(slowT); off?.(); },
   };
 }

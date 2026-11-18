@@ -1,7 +1,7 @@
 // A small plan thumbnail (SVG text) drawn from a project: rooms, walls and openings of the lowest level.
 // Pure string building, so it runs in the browser, in Node tests and on a Worker.
 
-import { lowestLevel } from './house-stats.js?v=20261119b';
+import { lowestLevel } from './house-stats.js?v=20261119c';
 
 const ROOM_FILL = {
   bedroom: '#dfe7dc', bathroom: '#d3e3e8', ensuite: '#d3e3e8', wc: '#d3e3e8', laundry: '#d3e3e8', kitchen: '#efe3d0',

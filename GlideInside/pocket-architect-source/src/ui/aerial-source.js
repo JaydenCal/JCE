@@ -12,7 +12,7 @@ export const AERIAL_SOURCE_CSS = `
 .lc-root .lc-aerial-src{position:absolute;right:64px;top:134px}
 .lc-embed.is-compact .lc-aerial-src{right:12px;top:270px}
 .lc-root[data-view="2d"] .lc-aerial-src,.lc-root[data-view="split"] .lc-aerial-src{display:none!important}
-.ps-aerial-src-fab{position:absolute;left:12px;bottom:80px;z-index:15}
+.ps-aerial-src-fab{position:absolute;left:12px;bottom:84px;z-index:15}
 .ps-stage:has(.lc-root:not([hidden])) .ps-aerial-src-fab{display:none}
 .tv-bar .ps-aerial-src{height:40px;border-radius:20px;padding:0 14px!important}
 .as-dlg{display:grid;gap:12px;font-size:14px}

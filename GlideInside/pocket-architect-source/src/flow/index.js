@@ -9,6 +9,7 @@
 import { h } from '../ui/dom.js';
 import { createGuidedFlow } from './guided.js';
 import { createTutorial } from '../tutorial/coach.js';
+import { arrangeOnLoadWatching } from './arrange-on-load.js';
 import { flowOf, flowInProgress, writeFlow, EDIT_STEP, portalDeepLink } from './state.js';
 import { residentialSteps, RESIDENTIAL_BRAND } from './residential.js';
 import { commercialSteps, COMMERCIAL_BRAND } from './commercial.js';
@@ -79,6 +80,7 @@ function makeFlow({ api, store, refs, catalogue, kind }) {
     onEditor: async () => {
       // The editor opens with the placed design. A residential home is selected on the plan so Move house is ready.
       store.setUI({ frontageEdit: false });
+      if (kind === 'residential') await arrangeOnLoadWatching(store, { catalogue }).catch(() => {}); // a skipped step 2 or 3 never leaves the house outside the setbacks
       if (kind === 'commercial') api.commercialReady?.();
       refs.shell.dataset.flow = 'editor';
     },
@@ -109,11 +111,17 @@ export function attachBackPill({ api, store, refs, catalogue, wantCommercial }) 
     const card = refs.stage.querySelector('.lc-card');
     const sr = refs.stage.getBoundingClientRect();
     const cr = card && !card.hidden && getComputedStyle(card).display !== 'none' ? card.getBoundingClientRect() : null;
-    if (!cr || cr.width < 2 || sr.height < 2) { pill.style.bottom = ''; pill.style.left = ''; return; }
+    if (!cr || cr.width < 2 || sr.height < 2) {
+      // No lot card: beside the row of aerial and grading pills (never over them).
+      const row = refs.stage.querySelector('.ps-pillrow');
+      const rr = innerWidth > 599.98 && row && row.children.length && row.getBoundingClientRect().width > 2 ? row.getBoundingClientRect() : null;
+      pill.style.bottom = ''; pill.style.left = rr ? `${Math.round(rr.right - sr.left + 8)}px` : '';
+      return;
+    }
     pill.style.left = `${Math.max(12, Math.round(cr.left - sr.left))}px`;
     pill.style.bottom = `${Math.max(12, Math.round(sr.bottom - cr.top + 10))}px`;
   };
-  try { const ro = new ResizeObserver(place); ro.observe(refs.stage); const c = refs.stage.querySelector('.lc-card'); if (c) ro.observe(c); } catch { /* no ResizeObserver */ }
+  try { const ro = new ResizeObserver(place); ro.observe(refs.stage); const pr = refs.stage.querySelector('.ps-pillrow'); if (pr) ro.observe(pr); const c = refs.stage.querySelector('.lc-card'); if (c) ro.observe(c); } catch { /* no ResizeObserver */ }
   store.on('ui', () => requestAnimationFrame(place));
   store.on('project', () => requestAnimationFrame(place));
   setTimeout(place, 600);

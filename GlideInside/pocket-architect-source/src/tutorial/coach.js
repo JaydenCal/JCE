@@ -36,12 +36,31 @@ export function placeBeside(r, size, view, avoid = []) {
   return null;
 }
 
+/** Another dialog or prompt is on screen (a modal such as the plan set preview, the profile prompt): the coach steps aside so only one shows. Pure on `doc`. */
+export const OTHER_PROMPTS = '.ps-modal,.psp-modal,.gi-terms,.tv-dlg,.ps-prof-prompt'; // not the guided flow itself (it is also a dialog, and the coach lives over it)
+export const otherPromptOpen = (doc = typeof document !== 'undefined' ? document : null) => !!doc?.querySelector?.(OTHER_PROMPTS);
+
+/** Where a card of size (w,h) goes when it cannot sit beside its target: the first screen corner that touches neither the target nor anything in `avoid`. Null when every corner is taken. Pure. */
+export function placeCorner(r, size, view, avoid = []) {
+  const m = 8;
+  const hit = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  const corners = [['br', view.w - size.w - m, view.h - size.h - m], ['tr', view.w - size.w - m, m], ['tl', m, m], ['bl', m, view.h - size.h - m]];
+  for (const [, left, top] of corners) {
+    const box = { left, top, right: left + size.w, bottom: top + size.h };
+    if (!avoid.some((a) => hit(box, a)) && !(r && hit(box, r))) return { left, top };
+  }
+  return null;
+}
+
 export function createTutorial({ getFlow = () => null, onEnter = null, storage } = {}) {
   let kind = null, steps = [], i = 0, active = false, timer = null, chapterId = BASICS_ID, hint = '';
   const text = h('p'), count = h('div', { class: 'tut-count' });
   const back = h('button', { type: 'button', dataset: { ps: 'tutorial-back' }, onclick: () => go(i - 1) }, 'Back');
   const next = h('button', { type: 'button', class: 'tut-next', dataset: { ps: 'tutorial-next' }, onclick: () => go(i + 1) }, 'Next');
-  const skip = h('button', { type: 'button', class: 'tut-skip', dataset: { ps: 'tutorial-skip' }, onclick: () => end('skipped') }, 'Skip tutorial');
+  // Skip works on the first press and is remembered at once (pointerdown, not only click, so a repaint between the two cannot swallow it).
+  let skipped = false;
+  const doSkip = (e) => { e?.preventDefault?.(); e?.stopPropagation?.(); if (skipped) return; skipped = true; end('skipped'); setTimeout(() => { skipped = false; }, 400); };
+  const skip = h('button', { type: 'button', class: 'tut-skip', dataset: { ps: 'tutorial-skip' }, onpointerdown: doSkip, onclick: doSkip }, 'Skip tutorial');
   const arrow = h('div', { class: 'tut-arrow' });
   const el = h('div', { class: 'tut-card', hidden: true, role: 'dialog', 'aria-label': 'Tutorial', dataset: { ps: 'tutorial' } }, arrow, count, text, h('div', { class: 'tut-row' }, back, next, skip));
   let hl = null;
@@ -49,9 +68,13 @@ export function createTutorial({ getFlow = () => null, onEnter = null, storage }
     const st = document.createElement('style'); st.textContent = CSS; document.head.append(st);
     document.body.append(el);
     window.addEventListener('resize', () => active && paint());
+    // A dialog opening or closing is noticed at once (not on the next 700 ms tick).
+    try { new MutationObserver(() => { if (active && otherPromptOpen() !== wasBlocked) paint(); }).observe(document.body, { childList: true, subtree: true }); } catch { /* no observer: the timer still checks */ }
   }
 
+  let gen = 0; // bumped by end(), so a step change still waiting on the flow cannot paint after the card was closed
   function end(value) {
+    gen += 1;
     active = false; el.hidden = true; hl?.classList.remove('tut-hl'); hl = null; clearInterval(timer);
     // Finishing the Basics (or skipping the first visit tour) is remembered as before; any chapter that is finished is ticked in the menu.
     if (value && chapterId === BASICS_ID) writeTutorial(kind, value, storage);
@@ -60,7 +83,7 @@ export function createTutorial({ getFlow = () => null, onEnter = null, storage }
   async function go(n) {
     if (n < 0) return;
     if (n >= steps.length) { end('done'); return; }
-    const s = steps[n], flow = getFlow();
+    const s = steps[n], flow = getFlow(), mine = gen;
     // Moving to a control in another flow step takes the flow there first (the flow asks its own question if it has one).
     const want = s.where === 'editor' ? 5 : s.flowStep;
     if (s.where === 'flow' && !flow?.isOpen) {
@@ -80,6 +103,7 @@ export function createTutorial({ getFlow = () => null, onEnter = null, storage }
         }
       } else await flow.go(want);
     }
+    if (mine !== gen) return;
     hint = ''; i = n; try { onEnter?.(s); } catch { /* the tool is optional */ } paint();
   }
   // The card follows the flow: when the person moves on with the flow's own Next or Back (or opens the editor), the tutorial jumps to the first
@@ -92,8 +116,12 @@ export function createTutorial({ getFlow = () => null, onEnter = null, storage }
     else if (s.where === 'flow' && !open) { const j = steps.findIndex((x) => x.where === 'editor'); if (j >= 0) i = j; }
     else if (s.where === 'editor' && open) { const j = stepIndexForFlow(steps, flow.step); if (j !== null) i = j; }
   }
+  let wasBlocked = false;
   function paint() {
     if (!active) return;
+    // Never over another dialog or prompt: the card hides while one is open and comes back when it closes.
+    wasBlocked = otherPromptOpen();
+    if (wasBlocked) { el.hidden = true; hl?.classList.remove('tut-hl'); hl = null; return; }
     syncToFlow();
     const s = steps[i];
     count.textContent = `${chapterById(kind, chapterId)?.title || 'Tutorial'}: ${i + 1} of ${steps.length}`;
@@ -110,12 +138,17 @@ export function createTutorial({ getFlow = () => null, onEnter = null, storage }
       if (foot && foot.offsetHeight) el.style.setProperty('bottom', `${foot.offsetHeight + 8}px`, 'important'); else el.style.removeProperty('bottom');
       return;
     }
-    if (!t) { el.style.left = '8px'; el.style.top = 'auto'; el.style.bottom = '8px'; arrow.style.display = 'none'; return; }
+    const avoidFor = () => [...document.querySelectorAll(document.querySelector('[data-ps="flow-root"]:not([hidden])') ? AVOID_FLOW : AVOID_EDITOR)].map((n) => n.getBoundingClientRect()).filter((b) => b.width > 40 && b.height > 40);
+    const corner = (rect) => {
+      const c = placeCorner(rect, { w: el.offsetWidth || 260, h: el.offsetHeight || 120 }, { w: innerWidth, h: innerHeight }, avoidFor());
+      el.style.left = `${c ? c.left : 8}px`; el.style.top = c ? `${c.top}px` : 'auto'; el.style.bottom = c ? 'auto' : '8px'; arrow.style.display = 'none';
+    };
+    if (!t) { corner(null); return; }
     const r = t.getBoundingClientRect();
     const avoid = [...document.querySelectorAll(document.querySelector('[data-ps="flow-root"]:not([hidden])') ? AVOID_FLOW : AVOID_EDITOR)].map((n) => n.getBoundingClientRect()).filter((b) => b.width > 40 && b.height > 40);
     const pos = placeBeside(r, { w: el.offsetWidth || 260, h: el.offsetHeight || 120 }, { w: innerWidth, h: innerHeight }, avoid);
     el.style.bottom = 'auto';
-    if (!pos) { el.style.left = '8px'; el.style.top = 'auto'; el.style.bottom = '8px'; arrow.style.display = 'none'; return; }
+    if (!pos) { corner(r); return; }
     el.style.left = `${pos.left}px`; el.style.top = `${pos.top}px`;
     arrow.style.display = '';
     const cx = r.left + r.width / 2 - pos.left, cy = r.top + r.height / 2 - pos.top;

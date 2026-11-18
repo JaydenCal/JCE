@@ -1,20 +1,20 @@
 // The portal page: sign in, forced password change, builder dashboard, client home. One module, hash routes for the tabs.
 
-import { h, clear, toast, icon, errorMessage } from './kit.js?v=20261119b';
-import { getPortalApi } from '../api.js?v=20261119b';
-import { appLink, designLink } from '../links.js?v=20261119b';
-import { signInView, forgotView, resetView, changePasswordView } from './auth-views.js?v=20261119b';
-import { renderHouses } from './houses-tab.js?v=20261119b';
-import { renderGlide } from './glide-tab.js?v=20261119b';
-import { renderClients } from './clients-tab.js?v=20261119b';
-import { renderBilling } from './billing-tab.js?v=20261119b';
-import { renderTeam } from './team-tab.js?v=20261119b';
-import { renderBranding } from './branding-tab.js?v=20261119b';
-import { ddmmyyyy } from '../billing.js?v=20261119b';
-import { trialBanner, handleBillingReturn } from './trial-ui.js?v=20261119b';
-import { CONFIG } from '../../config.js?v=20261119b';
-import { applyBrandTheme, clearBrandTheme, applyWhiteLabel } from '../theme-css.js?v=20261119b';
-import { readPick } from '../builders.js?v=20261119b';
+import { h, clear, toast, icon, errorMessage } from './kit.js?v=20261119c';
+import { getPortalApi } from '../api.js?v=20261119c';
+import { appLink, designLink } from '../links.js?v=20261119c';
+import { signInView, forgotView, resetView, changePasswordView } from './auth-views.js?v=20261119c';
+import { renderHouses } from './houses-tab.js?v=20261119c';
+import { renderGlide } from './glide-tab.js?v=20261119c';
+import { renderClients } from './clients-tab.js?v=20261119c';
+import { renderBilling } from './billing-tab.js?v=20261119c';
+import { renderTeam } from './team-tab.js?v=20261119c';
+import { renderBranding } from './branding-tab.js?v=20261119c';
+import { ddmmyyyy } from '../billing.js?v=20261119c';
+import { trialBanner, handleBillingReturn } from './trial-ui.js?v=20261119c';
+import { CONFIG } from '../../config.js?v=20261119c';
+import { applyBrandTheme, clearBrandTheme, applyWhiteLabel } from '../theme-css.js?v=20261119c';
+import { readPick } from '../builders.js?v=20261119c';
 
 const TABS = [
   { id: 'houses', label: 'House designs', render: renderHouses },

@@ -7,6 +7,7 @@ import { deleteLevelWithConfirm } from './level-actions.js';
 import { hasExtensionContent, levelsByElevation } from '../editor2d/math.js';
 import { CONFIG } from '../config.js';
 import { VIEWS, hasPlan } from './view-mode.js';
+import { createTopbarMore } from './topbar-more.js';
 
 const STATUS_VIEWS = [['existing', 'Existing'], ['proposed', 'Proposed'], ['both', 'Both']];
 const MOD = /Mac|iPhone|iPad/.test(globalThis.navigator?.platform || '') ? 'Cmd' : 'Ctrl';
@@ -189,6 +190,8 @@ export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, o
     }),
   ];
   syncAll();
+  // Under 600 px the secondary buttons live in a "More" menu so the bar is one or two rows.
+  const more = createTopbarMore(el, { keep: [backBtn, nameInput, historyGroup, viewSeg], slot: premiumSlot });
 
-  return { premiumSlot, nameInput, setDemo, refresh: syncAll, dispose: () => offs.forEach((o) => o?.()) };
+  return { premiumSlot, nameInput, setDemo, refresh: syncAll, dispose: () => { offs.forEach((o) => o?.()); more.dispose(); } };
 }

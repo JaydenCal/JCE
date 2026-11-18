@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { RESIDENTIAL_TUTORIAL, COMMERCIAL_TUTORIAL, CHAPTERS, BASICS_ID, chaptersFor, chapterById, chapterDone, markChapter, readChapters, chapterProgress, videoUrl, posterUrl, readTutorial, writeTutorial, shouldStartTutorial, stepIndexForFlow } from '../src/tutorial/steps.js';
 import { menuRows } from '../src/tutorial/menu.js';
-import { placeBeside } from '../src/tutorial/coach.js';
+import { placeBeside, placeCorner, otherPromptOpen, OTHER_PROMPTS } from '../src/tutorial/coach.js';
 
 const mem = () => { const m = new Map(); return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)) }; };
 const src = (f) => fs.readFileSync(new URL(`../src/${f}`, import.meta.url), 'utf8');
@@ -132,4 +132,20 @@ test('cards sit beside the control and never over the lot or 3D view; a crowded 
   const p = placeBeside(target, size, view, [stage]);
   assert.ok(p && (p.left + 260 <= stage.left || p.left >= stage.right || p.top >= stage.bottom || p.top + 120 <= stage.top));
   assert.equal(placeBeside(target, size, view, [{ left: 0, right: 1440, top: 0, bottom: 900 }]), null);
+});
+
+test('a crowded screen puts the card in a free corner, never over the lot card or the target', () => {
+  const view = { w: 1536, h: 730 }, size = { w: 260, h: 120 };
+  const lotCard = { left: 80, right: 520, top: 270, bottom: 670 }; // bottom left, as in split view
+  const c = placeCorner({ left: 700, right: 800, top: 100, bottom: 140 }, size, view, [lotCard]);
+  assert.ok(c && !(c.left < lotCard.right && c.left + 260 > lotCard.left && c.top < lotCard.bottom && c.top + 120 > lotCard.top));
+  assert.equal(placeCorner(null, size, view, [{ left: 0, right: 1536, top: 0, bottom: 730 }]), null);
+});
+
+test('the coach steps aside for dialogs and the profile prompt, but not for the guided flow it lives over', () => {
+  const doc = (hit) => ({ querySelector: (sel) => (sel === OTHER_PROMPTS ? hit : null) });
+  assert.equal(otherPromptOpen(doc(null)), false);
+  assert.equal(otherPromptOpen(doc({})), true);
+  for (const c of ['.ps-modal', '.ps-prof-prompt', '.gi-terms']) assert.ok(OTHER_PROMPTS.includes(c));
+  assert.ok(!OTHER_PROMPTS.includes('aria-modal'), 'the flow root is aria-modal and must not hide the coach');
 });

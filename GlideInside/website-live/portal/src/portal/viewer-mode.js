@@ -2,9 +2,9 @@
 // gives it the person's own designs (the lot card carousel) and the builder's name (the card line and the "Prepared for <builder>" PDF watermark).
 // With no portal session it does nothing, so the public viewer stays on the generic sample designs.
 
-import { CONFIG } from '../config.js?v=20261119b';
-import { getPortalApi } from './api.js?v=20261119b';
-import { createDesignSource } from './design-source.js?v=20261119b';
+import { CONFIG } from '../config.js?v=20261119c';
+import { getPortalApi } from './api.js?v=20261119c';
+import { createDesignSource } from './design-source.js?v=20261119c';
 
 export async function initPortalViewer(app, { api = getPortalApi() } = {}) {
   if (!CONFIG.portalEnabled) return null;

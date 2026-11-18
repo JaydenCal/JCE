@@ -4,6 +4,7 @@
 // Pure and Node compatible. No dashes in generated text.
 
 import RULES from './council-rules.json' with { type: 'json' };
+import { plainDashes } from '../../site/plain-text.js';
 
 export const NOT_FOUND = 'council value not found, default used';
 
@@ -61,7 +62,7 @@ export function councilRules(lot, data = RULES) {
     const recs = c?.rules?.[k.key];
     const rec = recs?.[0] || null;
     return rec
-      ? { ...k, found: true, text: valueText(rec), cite: citation(c, rec), quote: rec.q, condition: rec.c, rec, conflict: !!rec.x }
+      ? { ...k, found: true, text: valueText(rec), cite: citation(c, rec), quote: plainDashes(rec.q), condition: rec.c, rec, conflict: !!rec.x }
       : { ...k, found: false, text: NOT_FOUND, cite: '', quote: '', condition: '', rec: null };
   });
   return { found: !!c, council: c ? c.name : null, lga: lot?.lga || '', items, source: data.source, built: data.built };
