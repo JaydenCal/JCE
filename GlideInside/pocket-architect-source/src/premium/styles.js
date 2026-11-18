@@ -306,6 +306,23 @@ textarea.psp-input { resize: vertical; min-height: 64px; }
 @media (prefers-reduced-motion: reduce) {
   .psp-toast, .psp-spin, .psp-dots i, .psp-meter-fill { animation: none; transition: none; }
 }
+
+.psp-sc-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 6px 0 10px; }
+.psp-sc-table th, .psp-sc-table td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--psp-border); vertical-align: top; }
+.psp-sc-table .psp-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.psp-sc-table tr.psp-sc-group td { background: var(--psp-bg2); font-weight: 600; }
+.psp-sc-total td { font-weight: 700; border-top: 2px solid var(--psp-border-strong); }
+.psp-sc-note { color: var(--psp-muted); font-size: 12px; margin: 4px 0; }
+.psp-sc-rate { width: 84px; text-align: right; }
+.psp-sc-src { display: block; color: var(--psp-muted); font-size: 11.5px; font-weight: 400; }
+.psp-sc-custom { color: var(--psp-accent); font-weight: 600; }
+.psp-sc-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0; }
+.psp-order-list { display: grid; gap: 8px; margin: 8px 0; }
+.psp-order-item { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; text-align: left; width: 100%; padding: 10px 12px; border: 1px solid var(--psp-border); border-radius: var(--psp-radius); background: var(--psp-field); color: var(--psp-text); cursor: pointer; font: inherit; }
+.psp-order-item:hover { background: var(--psp-hover); }
+.psp-order-item strong { font-weight: 600; }
+.psp-order-item small { grid-column: 1; color: var(--psp-muted); font-size: 12.5px; }
+.psp-order-price { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-weight: 600; color: var(--psp-accent); white-space: nowrap; }
 `;
 
 export function injectStyles(doc = document) {

@@ -100,7 +100,8 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     app.getLogo = () => brand.logoDataUrl;
   }
   // The PDF plan set leads with the builder's name and logo and credits Glide Inside in small print.
-  app.builder = { name: brand.displayName || me.org.name, logo: brand.logoDataUrl || null };
+  // colours feed the siting report (src/premium/exporters/siting-report.js). No contact details: the only ones on file are the accounts contact, so the report says to contact the builder.
+  app.builder = { name: brand.displayName || me.org.name, logo: brand.logoDataUrl || null, colours: brand.colours || null };
   document.querySelector('.ps-welcome')?.remove();
   let aiTok = null; // the login's AI token (see refreshAiToken)
   const entitlement = () => ({
@@ -151,13 +152,15 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   const fullBtn = h('button', { class: 'pas-btn', type: 'button', id: 'pas-full-editor', title: 'Leave the client view and use the whole editor', onclick: () => { loc.href = fullEditorHref(loc.href); } }, 'Full editor');
   const designBtn = h('button', { class: 'pas-btn', type: 'button', id: 'pas-design-on-lot', title: 'Design on a lot the way your clients do', onclick: () => { loc.href = designNewHref(loc.href); } }, 'Design on a lot');
   const plansBtn = h('button', { class: 'pas-btn', type: 'button', onclick: () => premium?.previewPdf?.() }, 'Plans (PDF)');
+  const sitingBtn = h('button', { class: 'pas-btn', type: 'button', id: 'pas-siting-report', title: 'A short branded report with the site plan and indicative site costs', onclick: () => premium?.sitingReport?.() }, 'Siting report');
   const userMenu = menu(me.user.name || me.user.username, [
     ['Save project', () => saveProject()],
     ['My projects', () => projectsDialog()],
     ...(!isClient ? [['Save to house library', () => saveToLibrary()]] : []),
     ...(designMode ? [['Open full editor', () => { loc.href = fullEditorHref(loc.href); }]] : []),
     ...(!isClient && !designMode ? [['Design on a lot', () => { loc.href = designNewHref(loc.href); }]] : []),
-    ...(me.enquiry ? [['Send plans to a registered engineer', () => premium?.openEnquiry?.()]] : []),
+    ...(me.enquiry ? [['Send plans to a registered engineer', () => premium?.openEnquiry?.()], ['Order engineering', () => premium?.openOrderEngineering?.()]] : []),
+    ...(!isClient ? [['Site costs', () => premium?.openSiteCosts?.()]] : []),
     ...(!isClient ? [['Builder dashboard', () => { loc.href = portalUrl(); }]] : []),
     ['Sign out', signOut],
   ]);
@@ -165,7 +168,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     clear(strip);
     strip.append(...[
       h('div', { class: 'pas-brand' }, brand.logoDataUrl ? h('img', { src: brand.logoDataUrl, alt: '' }) : null, h('div', null, h('strong', null, brand.displayName || me.org.name), h('small', null, isClient ? 'Client login' : designMode ? 'Design on a lot' : 'Builder staff'))),
-      findBtn, housesBtn, plansBtn, ...(designMode ? [fullBtn] : !isClient ? [designBtn] : []), statusLine, h('span', { class: 'pas-spacer' }), brand.colours?.primary ? h('span', { class: 'gi-powered' }, 'Powered by Glide Inside') : null, aiChip, userMenu].filter(Boolean)); // native append would print null
+      findBtn, housesBtn, plansBtn, sitingBtn, ...(designMode ? [fullBtn] : !isClient ? [designBtn] : []), statusLine, h('span', { class: 'pas-spacer' }), brand.colours?.primary ? h('span', { class: 'gi-powered' }, 'Powered by Glide Inside') : null, aiChip, userMenu].filter(Boolean)); // native append would print null
     paintAi();
   };
   function paintAi() {
