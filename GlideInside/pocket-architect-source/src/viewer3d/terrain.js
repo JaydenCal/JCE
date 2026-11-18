@@ -295,9 +295,9 @@ const PADDOCK_TINT = [1.3, 1.0, 1.04]; // lawn green -> dry tan grass
 const AERIAL_BLEND = 0.6; // share of the aerial beyond the near zone (the full aerial stays within nearK of the lot)
 // Owner 16/11/2026: with Aerial on, the real photograph shows in full on and around our lot and fades out with distance into the
 // clean lawn and paddock look (a fade scale), so the lot reads as the real site while the far ground stays tidy.
-const AERIAL_NEAR_MIN_M = 70; // full photograph out to at least this far from the lot centre
-const AERIAL_FAR_FACTOR = 1.7; // fully faded to the subtle blend at this multiple of the near radius
-function lawnGroundMaterial(ctx, lot, ext, aerial = null) {
+const AERIAL_NEAR_MIN_M = 150; // full photograph out to at least this far from the lot centre
+const AERIAL_FAR_FACTOR = 2.0; // fully faded to the subtle blend at this multiple of the near radius
+function lawnGroundMaterial(ctx, lot, ext, aerial = null, hasWide = false) {
   if (typeof document === 'undefined') return null;
   const base = ctx.lib.get('grass', LAWN_COLOUR);
   if (!base?.map) return null;
@@ -365,9 +365,9 @@ ${aerial ? `  vec3 aerC = texture2D(uAerialTex, vAerUv).rgb;
   float nearK = 1.0 - smoothstep(uFadeR.x, uFadeR.y, dM);
   vec3 aerSoft = mix(vec3(dot(aerC, vec3(0.3333))), aerC, 0.85) * 1.08;
   vec3 aerFull = aerC * 1.06;
-  diffuseColor.rgb = mix(mix(diffuseColor.rgb, aerSoft, ${AERIAL_BLEND.toFixed(2)}), aerFull, nearK);` : ''}`);
+  diffuseColor.rgb = mix(mix(diffuseColor.rgb, aerSoft, ${(hasWide ? 0.92 : AERIAL_BLEND).toFixed(2)}), aerFull, nearK);` : ''}`);
   };
-  mat.customProgramCacheKey = () => (aerial ? 'lawn-ground-aerial-4' : 'lawn-ground-2');
+  mat.customProgramCacheKey = () => (aerial ? (hasWide ? 'lawn-ground-aerial-5w' : 'lawn-ground-aerial-5') : 'lawn-ground-2');
   return mat;
 }
 
@@ -411,7 +411,7 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   geo.setIndex(S.gridIndices(cols, rows));
   geo.computeVertexNormals();
   let mat = null;
-  const blended = hasAerial ? lawnGroundMaterial(ctx, lot, ext, texture) : null; // the clean lawn with the aerial let through subtly
+  const blended = hasAerial ? lawnGroundMaterial(ctx, lot, ext, texture, !!wideTexture) : null; // the clean lawn with the aerial let through subtly
   if (blended) mat = blended;
   else if (hasAerial) {
     // Sharp: the aerial at full resolution, bilinear when magnified, trilinear mipmaps and anisotropy when minified.
@@ -441,7 +441,7 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
 
   // Wide outer tile: a lower resolution aerial on a frame of ground around the sharp inner tile, so the visible ground is real imagery
   // well past the lot. Only the far edge of this tile fades (the ring below), into the neutral ground colour.
-  const wide = hasAerial && !blended && wideTexture ? addWideGround(root, lot, tm, ext, wideTexture) : null;
+  const wide = hasAerial && wideTexture ? addWideGround(root, lot, tm, ext, wideTexture) : null;
   const nodes = wide ? wide.nodes : S.perimeterNodes(cols, rows).map((n) => ({ x: pos[(n.j * cols + n.i) * 3], y: heights[n.j * cols + n.i], z: pos[(n.j * cols + n.i) * 3 + 2], dir: n.dir }));
   let edgeSum = 0;
   for (const n of nodes) edgeSum += n.y;
