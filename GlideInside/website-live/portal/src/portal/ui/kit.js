@@ -164,6 +164,7 @@ let fieldN = 0;
 export function field(label, make, { hint, required = false, wide = false } = {}) {
   const id = `pp-f${++fieldN}`;
   const control = make(id);
+  if (control && !control.id) control.id = id; // the label's for= must find the control even when the caller ignored the id
   const hintId = hint ? `${id}-hint` : null;
   if (hintId) control.setAttribute('aria-describedby', hintId);
   return h('div', { class: `pp-field${wide ? ' pp-field--wide' : ''}` },

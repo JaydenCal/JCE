@@ -14,7 +14,7 @@
 .pp-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 14px var(--font);padding:10px 16px;border-radius:10px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;text-decoration:none;line-height:1.2}
 .pp-btn:hover{background:var(--ink);color:var(--paper)}
 .pp-btn:focus-visible,.pp-tab:focus-visible,.pp-link:focus-visible,.pp-pick-item:focus-visible{outline:3px solid var(--deep);outline-offset:2px}
-.pp-btn--primary{background:var(--accent);border-color:var(--accent);color:#fff}.pp-btn--primary:hover{background:#8d4524;border-color:#8d4524;color:#fff}
+.pp-btn--primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink,#fff)}.pp-btn--primary:hover{background:#8d4524;border-color:#8d4524;color:#fff}
 .pp-btn--sm{padding:7px 12px;font-size:13px;border-radius:8px;border-color:var(--line);background:var(--card)}
 .pp-btn--lg{padding:14px 24px;font-size:16px}
 .pp-btn--block{width:100%}
@@ -129,7 +129,7 @@
 .pp-adm-kv{display:grid;gap:1px}.pp-adm-kv span{font-size:12px;color:var(--muted)}.pp-adm-kv strong{font-size:14px;word-break:break-word}
 .pp-adm-err{color:#7a2a14}
 /* review fixes: primary small buttons keep white text on the accent fill; one Actions menu per client row */
-.pp-btn--sm.pp-btn--primary{background:var(--accent);border-color:var(--accent);color:#fff}.pp-btn--sm.pp-btn--primary:hover{background:#8d4524;border-color:#8d4524;color:#fff}
+.pp-btn--sm.pp-btn--primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink,#fff)}.pp-btn--sm.pp-btn--primary:hover{background:#8d4524;border-color:#8d4524;color:#fff}
 .pp-menu{position:relative;display:inline-block}.pp-menu summary{list-style:none;cursor:pointer}.pp-menu summary::-webkit-details-marker{display:none}
 .pp-menu-list{position:absolute;right:0;z-index:20;min-width:190px;margin-top:4px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);display:grid;gap:2px}
 .pp-menu-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 10px;border:0;border-radius:6px;background:none;font:600 14px var(--font);color:var(--ink);cursor:pointer}.pp-menu-item:hover{background:var(--scene)}.pp-menu-item--danger{color:#9b2c1a}
