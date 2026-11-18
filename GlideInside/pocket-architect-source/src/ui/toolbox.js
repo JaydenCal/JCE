@@ -5,7 +5,7 @@ import { icon } from './icons.js';
 import { TOOL_DEFS } from '../editor2d/tools-meta.js';
 import { setTool } from './toolstate.js';
 
-const GROUPS = [['movehouse', 'select'], ['room', 'wall', 'door', 'window'], ['furniture', 'stairs', 'deck', 'tank'], ['pave'], ['hardstand'], ['measure', 'underlay', 'status']];
+const GROUPS = [['movehouse', 'select'], ['room', 'wall', 'door', 'window'], ['furniture', 'stairs', 'deck', 'tank'], ['pave', 'drivepi'], ['hardstand'], ['measure', 'underlay', 'status']];
 
 // Options: onWheel() opens the inventory wheel from the button at the foot of the toolbox (for touch, where Q is not available).
 export function createToolbox(el, store, { onWheel } = {}) {
@@ -59,6 +59,7 @@ export function createToolbox(el, store, { onWheel } = {}) {
       const on = def.id === tool || !!def.family?.includes(tool) || (comm && def.id === 'movehouse' && tool === 'commercial');
       const btn = buttons.get(def.id);
       btn?.setAttribute('aria-pressed', String(on));
+      if (def.residentialOnly && btn) btn.hidden = comm; // Driveway PIs edit the residential driveway only
       if (def.commercialOnly && btn) btn.hidden = !comm; // Hardstand is drawn in commercial layouts only
       if (def.id === 'movehouse' && btn) {
         const label = comm ? 'Move buildings' : def.label;
