@@ -25,6 +25,7 @@ async function startServer(port = Number(process.env.PORT || 8821), { commercial
     if (u.pathname === '/api/site/search') return json(res, { results: [{ label: ADDRESS, state: 'NSW', lon: 150.930273, lat: -31.090267 }] });
     if (u.pathname === '/api/site/lot') return json(res, lot ? lot(lotResp()) : lotResp());
     if (u.pathname === '/api/site/aerial') { res.writeHead(200, { 'content-type': 'image/jpeg', 'x-site-meta': encodeURIComponent(JSON.stringify(tam.aerial)) }); return res.end(jpg); }
+    if (u.pathname === '/api/site/overlays') return json(res, { state: 'NSW', srid: 0, origin: { e: 0, n: 0 }, retrieved: new Date().toISOString(), layers: [], warnings: [] });
     if (u.pathname === '/api/site/contours') return json(res, contours ? contours(tam.contours) : tam.contours);
     if (u.pathname.startsWith('/api/')) {
       const chunks = [];

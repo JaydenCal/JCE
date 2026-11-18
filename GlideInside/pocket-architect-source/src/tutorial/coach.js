@@ -1,7 +1,8 @@
 // The tutorial card: arrow to the real control, Back, Next and Skip tutorial. Beside the control, never over the lot or the 3D view;
 // at 390 px wide it becomes a bottom sheet. coach.start(kind) / restart(kind) / stop().
 import { h } from '../ui/dom.js';
-import { tutorialFor, readTutorial, writeTutorial, shouldStartTutorial, stepIndexForFlow } from './steps.js';
+import { tutorialFor, readTutorial, writeTutorial, shouldStartTutorial, stepIndexForFlow, chapterById, markChapter, BASICS_ID } from './steps.js';
+import { createHelpMenu } from './menu.js';
 
 const AVOID_FLOW = '.gf-stage,.gf-3d';
 const AVOID_EDITOR = '.lc-card,[data-ps="lot-card"],.ps-stage canvas';
@@ -35,8 +36,8 @@ export function placeBeside(r, size, view, avoid = []) {
   return null;
 }
 
-export function createTutorial({ getFlow = () => null, storage } = {}) {
-  let kind = null, steps = [], i = 0, active = false, timer = null;
+export function createTutorial({ getFlow = () => null, onEnter = null, storage } = {}) {
+  let kind = null, steps = [], i = 0, active = false, timer = null, chapterId = BASICS_ID, hint = '';
   const text = h('p'), count = h('div', { class: 'tut-count' });
   const back = h('button', { type: 'button', dataset: { ps: 'tutorial-back' }, onclick: () => go(i - 1) }, 'Back');
   const next = h('button', { type: 'button', class: 'tut-next', dataset: { ps: 'tutorial-next' }, onclick: () => go(i + 1) }, 'Next');
@@ -50,23 +51,36 @@ export function createTutorial({ getFlow = () => null, storage } = {}) {
     window.addEventListener('resize', () => active && paint());
   }
 
-  function end(value) { active = false; el.hidden = true; hl?.classList.remove('tut-hl'); hl = null; clearInterval(timer); if (value) writeTutorial(kind, value, storage); }
+  function end(value) {
+    active = false; el.hidden = true; hl?.classList.remove('tut-hl'); hl = null; clearInterval(timer);
+    // Finishing the Basics (or skipping the first visit tour) is remembered as before; any chapter that is finished is ticked in the menu.
+    if (value && chapterId === BASICS_ID) writeTutorial(kind, value, storage);
+    if (value === 'done') markChapter(kind, chapterId, true, storage);
+  }
   async function go(n) {
     if (n < 0) return;
     if (n >= steps.length) { end('done'); return; }
     const s = steps[n], flow = getFlow();
     // Moving to a control in another flow step takes the flow there first (the flow asks its own question if it has one).
     const want = s.where === 'editor' ? 5 : s.flowStep;
-    if (flow?.isOpen && flow.step !== want) {
+    if (s.where === 'flow' && !flow?.isOpen) {
+      // In the editor: the "Back to placement" pill reopens the flow at step 3, and the flow takes it from there.
+      const pill = document.querySelector('[data-ps="flow-back-to-placement"]');
+      if (pill && !pill.hidden) {
+        pill.click(); await new Promise((r) => setTimeout(r, 700));
+        const f2 = getFlow(); if (f2?.isOpen && f2.step !== want) await f2.go(want);
+      } else { hint = 'This step is in the guided flow. Press New to start a design, then try again.'; i = n; paint(); return; }
+    } else if (flow?.isOpen && flow.step !== want) {
       if (want > flow.step) {
         // Forward moves use the flow's own Next, so a step that still needs something (a lot, a home) is never skipped.
-        const nb = document.querySelector('[data-ps="flow-next"]');
-        if (!nb || nb.disabled) { text.textContent = 'Finish this step first, then press Next.'; return; }
-        nb.click(); await new Promise((r) => setTimeout(r, 600));
-        if (flow.step < want && flow.step !== 5) return paint();
+        for (let guard = 0; flow.isOpen && flow.step < want && guard < 5; guard += 1) {
+          const nb = document.querySelector('[data-ps="flow-next"]');
+          if (!nb || nb.disabled) { hint = 'Finish this step first, then press Next.'; paint(); return; }
+          nb.click(); await new Promise((r) => setTimeout(r, 700));
+        }
       } else await flow.go(want);
     }
-    i = n; paint();
+    hint = ''; i = n; try { onEnter?.(s); } catch { /* the tool is optional */ } paint();
   }
   // The card follows the flow: when the person moves on with the flow's own Next or Back (or opens the editor), the tutorial jumps to the first
   // step that belongs to where they are, so it never shows "Type your address" over the placement step.
@@ -82,8 +96,8 @@ export function createTutorial({ getFlow = () => null, storage } = {}) {
     if (!active) return;
     syncToFlow();
     const s = steps[i];
-    count.textContent = `Tutorial ${i + 1} of ${steps.length}`;
-    text.textContent = s.text;
+    count.textContent = `${chapterById(kind, chapterId)?.title || 'Tutorial'}: ${i + 1} of ${steps.length}`;
+    text.textContent = hint || s.text;
     back.disabled = i === 0;
     next.textContent = i === steps.length - 1 ? 'Done' : 'Next';
     hl?.classList.remove('tut-hl');
@@ -107,14 +121,25 @@ export function createTutorial({ getFlow = () => null, storage } = {}) {
     const cx = r.left + r.width / 2 - pos.left, cy = r.top + r.height / 2 - pos.top;
     Object.assign(arrow.style, { left: pos.side === 'right' ? '-6px' : pos.side === 'left' ? 'auto' : `${Math.max(12, Math.min(236, cx))}px`, right: pos.side === 'left' ? '-6px' : 'auto', top: pos.side === 'below' ? '-6px' : pos.side === 'above' ? 'auto' : `${Math.max(12, cy)}px`, bottom: pos.side === 'above' ? '-6px' : 'auto' });
   }
-  const begin = (k, from) => { kind = k; steps = tutorialFor(k); active = true; i = from ?? 0; clearInterval(timer); timer = setInterval(paint, 700); paint(); };
-  return {
-    el, get active() { return active; }, get index() { return i; },
+  const begin = (k, from, chapter = null) => {
+    kind = k; chapterId = chapter?.id || BASICS_ID; steps = chapter ? chapter.steps : tutorialFor(k); active = true; i = from ?? 0;
+    clearInterval(timer); timer = setInterval(paint, 700);
+    if (i > 0) go(i); else { paint(); go(0); }
+  };
+  const menu = createHelpMenu({ storage, onWalk: (k, id) => api.startChapter(k, id) });
+  const api = {
+    el, menu, get active() { return active; }, get index() { return i; },
     /** First visit only (not after Done or Skip). Returns whether it started. */
     startIfFirst(k, flowStep = 1) { if (!shouldStartTutorial(k, storage)) return false; begin(k, stepIndexForFlow(tutorialFor(k), flowStep) ?? 0); return true; },
-    /** The "Show me how" and "?" buttons: always restarts, from the first step. */
-    restart(k) { writeTutorial(k, null, storage); begin(k, 0); },
+    /** The "Show me how" and "?" buttons: opens the chapter menu (each chapter has a guided tour and a video). */
+    openMenu(k) { api.stop(); menu.show(k); },
+    /** Runs one chapter from its first step. The first step takes the app to the place it lives in. */
+    startChapter(k, id) { const c = chapterById(k, id); if (!c) return false; menu.hide(); menu.closeVideo(); if (id === BASICS_ID) writeTutorial(k, null, storage); begin(k, 0, c); return true; },
+    /** Restarts the Basics from its first step. */
+    restart(k) { api.startChapter(k, BASICS_ID); },
     stop() { end(null); },
     status: (k) => readTutorial(k, storage),
+    get chapter() { return chapterId; },
   };
+  return api;
 }

@@ -1,0 +1,70 @@
+{
+  "residential-find": {
+    "seconds": 26.4,
+    "bytes": 236231
+  },
+  "residential-design": {
+    "seconds": 26.1,
+    "bytes": 296826
+  },
+  "residential-place": {
+    "seconds": 50.4,
+    "bytes": 371687
+  },
+  "residential-edit": {
+    "seconds": 40.2,
+    "bytes": 631236
+  },
+  "residential-driveway": {
+    "seconds": 35.4,
+    "bytes": 453092
+  },
+  "residential-save": {
+    "seconds": 28.6,
+    "bytes": 567799
+  },
+  "commercial-find": {
+    "seconds": 24.4,
+    "bytes": 269422
+  },
+  "commercial-type": {
+    "seconds": 28.6,
+    "bytes": 530235
+  },
+  "commercial-place": {
+    "seconds": 27.9,
+    "bytes": 263498
+  },
+  "commercial-hardstand": {
+    "seconds": 21.2,
+    "bytes": 373180
+  },
+  "residential-overview": {
+    "seconds": 78.5,
+    "bytes": 1082134
+  },
+  "residential-view3d": {
+    "seconds": 96.8,
+    "bytes": 1534049
+  },
+  "residential-planset": {
+    "seconds": 20.4,
+    "bytes": 287596
+  },
+  "commercial-overview": {
+    "seconds": 110.7,
+    "bytes": 1344537
+  },
+  "commercial-editor": {
+    "seconds": 33.1,
+    "bytes": 483893
+  },
+  "commercial-planset": {
+    "seconds": 20.8,
+    "bytes": 233801
+  },
+  "commercial-numbers": {
+    "seconds": 28.6,
+    "bytes": 453667
+  }
+}
