@@ -1,12 +1,12 @@
 // Clients: Generate account (first name only), list with status, last sign in, projects, AI credits; reset, disable, delete, export.
 
-import { h, openDialog, confirmDialog, field, busy, toast, chip, icon, errorMessage, downloadText } from './kit.js?v=20261119a';
-import { credentialsCard } from './credentials-card.js?v=20261119a';
-import { ddmmyyyy } from '../billing.js?v=20261119a';
-import { appLink, designLink, portalUrl } from '../links.js?v=20261119a';
-import { slug } from '../../ui/dom.js?v=20261119a';
-import { TEMP_PASSWORD_DAYS } from '../mock-api.js?v=20261119a';
-import { accountOf, isReadOnly, addBillingButton } from './trial-ui.js?v=20261119a';
+import { h, openDialog, confirmDialog, field, busy, toast, chip, icon, errorMessage, downloadText } from './kit.js?v=20261119b';
+import { credentialsCard } from './credentials-card.js?v=20261119b';
+import { ddmmyyyy } from '../billing.js?v=20261119b';
+import { appLink, designLink, portalUrl } from '../links.js?v=20261119b';
+import { slug } from '../../ui/dom.js?v=20261119b';
+import { TEMP_PASSWORD_DAYS } from '../mock-api.js?v=20261119b';
+import { accountOf, isReadOnly, addBillingButton } from './trial-ui.js?v=20261119b';
 
 export const CHARGE_NOTICE = 'Client logins are free. There is no charge when you generate one or when your client first signs in.';
 

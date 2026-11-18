@@ -1,12 +1,12 @@
 // House library ("Default layouts"): the builder's own designs. Add by saving the open design, importing a file,
 // or starting from the Glide Inside library. Duplicate, archive, edit in Glide Inside Residential.
 
-import { h, openDialog, field, busy, toast, chip, icon, errorMessage } from './kit.js?v=20261119a';
-import { svgDataUri } from '../thumbnail.js?v=20261119a';
-import { sizeLabel } from '../house-stats.js?v=20261119a';
-import { appLink, designLink } from '../links.js?v=20261119a';
-import { parseDesign } from '../../ui/design-file.js?v=20261119a';
-import { houseStats } from '../house-stats.js?v=20261119a';
+import { h, openDialog, field, busy, toast, chip, icon, errorMessage } from './kit.js?v=20261119b';
+import { svgDataUri } from '../thumbnail.js?v=20261119b';
+import { sizeLabel } from '../house-stats.js?v=20261119b';
+import { appLink, designLink } from '../links.js?v=20261119b';
+import { parseDesign } from '../../ui/design-file.js?v=20261119b';
+import { houseStats } from '../house-stats.js?v=20261119b';
 
 export const statsLine = (s) => [
   s.bedrooms ? `${s.bedrooms} bed` : null, s.bathrooms ? `${s.bathrooms} bath` : null, s.garage ? `${s.garage} car` : null,

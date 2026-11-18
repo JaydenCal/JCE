@@ -1,8 +1,8 @@
 // The Glide Inside library: every model Glide Inside has made, always available to every builder and client.
 
-import { h, busy, toast, icon, chip, errorMessage } from './kit.js?v=20261119a';
-import { houseCard } from './houses-tab.js?v=20261119a';
-import { appLink } from '../links.js?v=20261119a';
+import { h, busy, toast, icon, chip, errorMessage } from './kit.js?v=20261119b';
+import { houseCard } from './houses-tab.js?v=20261119b';
+import { appLink } from '../links.js?v=20261119b';
 
 export async function renderGlide(host, { api, me, appLinkFor = appLink }) {
   const canWrite = me.permissions.includes('houses.write');
