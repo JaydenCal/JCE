@@ -22,7 +22,7 @@ export const MENU_CSS = `
 .tut-menu-ft{padding:10px 16px 14px;border-top:1px solid rgba(255,255,255,.12);font-size:12px}.tut-menu-ft a{color:#fff}
 .tut-vid{position:fixed;z-index:2147483002;right:16px;bottom:16px;width:min(420px,calc(100vw - 32px));box-sizing:border-box;border-radius:12px;background:#12263a;color:#fff;font:600 13px/1.3 system-ui,sans-serif;box-shadow:0 12px 40px rgba(0,0,0,.45);overflow:hidden}
 .tut-vid-hd{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 12px}.tut-vid-hd span{flex:1}
-.tut-vid video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.tut-vid video{display:block;width:100%;aspect-ratio:16/10;background:#000}
 .tut-vid-ft{padding:6px 12px 8px;font-size:11.5px;font-weight:500}.tut-vid-ft a{color:#fff}
 @media (max-width:600px){.tut-menu{top:auto;bottom:8px;right:8px;left:8px;width:auto;max-height:80vh}.tut-vid{right:8px;bottom:8px;width:calc(100vw - 16px)}}
 `;

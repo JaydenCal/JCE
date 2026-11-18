@@ -28,7 +28,7 @@ export function renderGrid(manifest = {}) {
       const title = c.id === BASICS_ID ? `${label} overview` : c.title;
       const blurb = DESC[kind][c.id] || c.blurb;
       out.push(`    <article class="card vid${c.id === BASICS_ID ? ' vid-wide' : ''}" id="${c.video}">`);
-      out.push(`      <video controls preload="none" playsinline width="1280" height="720" poster="videos/${c.video}.jpg" aria-label="${esc(title)}"><source src="videos/${c.video}.mp4" type="video/mp4"><a href="videos/${c.video}.mp4">Watch the video: ${esc(title)}</a></video>`);
+      out.push(`      <video controls preload="none" playsinline width="1280" height="800" poster="videos/${c.video}.jpg" aria-label="${esc(title)}"><source src="videos/${c.video}.mp4" type="video/mp4"><a href="videos/${c.video}.mp4">Watch the video: ${esc(title)}</a></video>`);
       out.push(`      <h3>${esc(title)}</h3>`);
       out.push(`      <p>${esc(blurb)}</p>`);
       out.push(`      <p class="muted vid-len">${m ? `${clock(m.seconds)} video` : 'Short video'}</p>`);
