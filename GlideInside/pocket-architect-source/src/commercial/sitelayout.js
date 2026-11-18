@@ -423,6 +423,23 @@ export function generateSiteWorks(project, opts = {}) {
   for (const b of src.bs) for (const e of b.extras) if (e.kind === 'canopy' || e.kind === 'entry-canopy') blockers.push(aabb(e.polygon, 0));
   for (const r of src.reserved) blockers.push(aabb(r, 0));
   for (const b of src.bs) for (const e of b.extras) if (e.kind === 'apron' || e.kind === 'fuel-canopy' || e.kind === 'truck-canopy') blockers.push({ ...aabb(e.polygon, e.kind === 'apron' ? 0 : 1500), apron: e.kind === 'apron' });
+  // A crossover that lands on something solid or on an existing paved row cannot carry a drive, and the car park (with its accessible bays) would
+  // be lost: slide it along the frontage to the nearest clear spot. Only a single crossover is moved.
+  if (!station && xs.length === 1) {
+    const clearAt = (s) => !blockers.some((a) => s - xoverW / 2 < a.s1 && s + xoverW / 2 > a.s0 && a.t0 < QUEUE_MM && a.t1 > 0);
+    if (!clearAt(xs[0].s)) {
+      const lo = sLo + sideLand + xoverW / 2 + 500; const hi = sHi - sideLand - xoverW / 2 - 500;
+      for (let k = 1; k <= 160; k++) {
+        const hitS = [xs[0].s + k * 500, xs[0].s - k * 500].find((s) => s >= lo && s <= hi && clearAt(s));
+        if (hitS !== undefined) {
+          xs[0].s = clampS(hitS);
+          const p = toWorldF(f, xs[0].s, 0);
+          Object.assign(crossovers[0], { x: p.x, y: p.y, s: xs[0].s, polygon: rectWorld(f, xs[0].s - xoverW / 2, xs[0].s + xoverW / 2, -VERGE_MM, 0) });
+          break;
+        }
+      }
+    }
+  }
   let apronPad = 0; // clear ground kept round a truck apron (the swing of the trucks): tried first, dropped when the lot is too tight for it
   const fpF = g.fp.map((q) => ({ x: q.s, y: q.t }));
   const edgesF = lot.boundary.map((a, i) => ({ a: toFrame(f, a), b: toFrame(f, lot.boundary[(i + 1) % lot.boundary.length]), m: frontEdges.has(i) ? frontLand : sideLand, front: frontEdges.has(i) }));

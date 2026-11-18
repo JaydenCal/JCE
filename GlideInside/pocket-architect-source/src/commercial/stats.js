@@ -2,7 +2,7 @@
 
 import { layoutUnits, mezzanineOf, officeOf } from './layout.js';
 import { parkingLayout } from './parking.js';
-import { DEFAULT_PARKING_RATE, DEFAULT_OFFICE_RATE } from './rules.js';
+import { DEFAULT_PARKING_RATE, DEFAULT_OFFICE_RATE, accessibleRequired } from './rules.js';
 import { buildingTotals } from './catalogue/buildings.js';
 import { buildingParking } from './catalogue/bays.js';
 import { bboxOf } from './catalogue/frame.js';
@@ -63,6 +63,11 @@ export function commercialStats(project) {
   const officeRaw = split ? rowsOffice * officeRate : 0;
   const rowsRequired = Math.ceil(otherRaw + officeRaw - 1e-9);
   const required = rowsRequired + bp.required;
+  // NCC D4D6 is a rate on the bays of the class as a whole: when the unit rows and the buildings each carry accessible bays, the requirement is taken once on
+  // the total rather than rounded up separately for each group.
+  const accTable = Number.isFinite(c?.parking?.accessiblePerBays) && c.parking.accessiblePerBays > 0 ? { perBays: c.parking.accessiblePerBays } : (c?.buildingClass || 'class_8');
+  const accSum = park.accessible.required + bp.accessible.required + cp.required;
+  const accRequired = park.accessible.required > 0 && bp.accessible.required > 0 && park.accessible.override == null ? Math.min(accSum, accessibleRequired(required, accTable)) : accSum;
   return {
     units: units.length,
     buildings: bt.buildings.map((b) => ({ n: b.n, id: b.id, type: b.type, label: b.label, planLabel: b.planLabel, gfaM2: r1(b.gfaM2), groundM2: r1(b.groundM2), perUse: Object.fromEntries(Object.entries(b.q.perUse || {}).map(([k, v]) => [k, r1(v)])) })),
@@ -77,6 +82,6 @@ export function commercialStats(project) {
     officeMezzM2: r1(officeMezz),
     lotM2: lotM2 == null ? null : Math.round(lotM2),
     coveragePct: lotM2 ? ((ground / lotM2) * 100 < 0.1 ? (ground / lotM2) * 100 : r1((ground / lotM2) * 100)) : null,
-    parking: { ratePerM2: rate, officeRatePerM2: officeRate, officeSplit: split, split: { officeM2: r1(split ? rowsOffice : 0), otherM2: r1(split ? rowsGfa - rowsOffice : rowsGfa), officeSpaces: Math.round(officeRaw * 100) / 100, otherSpaces: Math.round(otherRaw * 100) / 100 }, required, buildingRequired: bp.required, provided: park.totalBays + bp.totalBays + cp.bays, carparkBays: cp.bays, accessible: { ...park.accessible, required: park.accessible.required + bp.accessible.required + cp.required, provided: park.accessible.provided + bp.accessible.provided + cp.accessible } },
+    parking: { ratePerM2: rate, officeRatePerM2: officeRate, officeSplit: split, split: { officeM2: r1(split ? rowsOffice : 0), otherM2: r1(split ? rowsGfa - rowsOffice : rowsGfa), officeSpaces: Math.round(officeRaw * 100) / 100, otherSpaces: Math.round(otherRaw * 100) / 100 }, required, buildingRequired: bp.required, provided: park.totalBays + bp.totalBays + cp.bays, carparkBays: cp.bays, accessible: { ...park.accessible, required: accRequired, provided: park.accessible.provided + bp.accessible.provided + cp.accessible } },
   };
 }
