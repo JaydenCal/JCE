@@ -60,11 +60,12 @@ const CHAPTERS_RESIDENTIAL = [
     E('window', '[data-tool="window"]', 'The Window tool works the same way. Click on a wall to add a window.', { arm: 'window' }),
     E('select', '[data-tool="select"]', 'Select anything to change its size and type in the panel on the right. Undo is always one click away.', { arm: 'select' }),
   ] },
-  { id: 'driveway', title: 'Driveway and roads', blurb: 'Shape the driveway, then draw roads and paths with PIs and curves.', steps: [
+  { id: 'driveway', title: 'Driveway and PIs', blurb: 'Shape the driveway, then edit its bends with the Driveway PIs tool.', steps: [
     F('entry', 3, '[data-ps="flow-drive-handle"]', 'Drag the round handle at the street to slide the driveway entry along the frontage.'),
     F('bend', 3, '[data-ps="flow-drive-bend"]', 'Add bend puts a corner in the driveway. Drag the new point to shape the path.'),
-    E('pave', '[data-tool="pave"]', 'The Road or pavement tool (L) draws driveways, paths and roads. Click each PI, then double click to finish.', { arm: 'pave' }),
-    E('curve', '[data-ps="pave-add-curve"]', 'Turn on Add curve (C) and each PI is rounded. Set the radius, or click a PI to give it its own radius.', { arm: 'pave' }),
+    E('drivepi', '[data-tool="drivepi"]', 'The Driveway PIs tool (I) edits the driveway bends in the editor. Click the centreline to add a PI and drag a square to move it.', { arm: 'drivepi' }),
+    E('pidelete', '[data-ps="drivepi-delete"]', 'Select a PI and press Delete, or use Delete PI, to remove a bend. A right click on a PI does the same.', { arm: 'drivepi' }),
+    E('piradius', '[data-ps="drivepi-radius"]', 'Choose a bend radius to round every PI. Reset to auto brings the automatic driveway back.', { arm: 'drivepi' }),
   ] },
   { id: 'view3d', title: '3D and Walk', blurb: 'See the design in 3D and walk through it.', steps: [
     F('check3d', 4, '[data-ps="flow-3d"]', 'This 3D view shows the house on your lot. Drag to look around and scroll to zoom.'),
@@ -104,16 +105,14 @@ const CHAPTERS_COMMERCIAL = [
     F('width', 3, '[data-ps="flow-access-width"]', 'Choose the width of the entry and exit.'),
     F('layout', 3, '[data-ps="flow-layout-name"]', 'Use the layout arrows to try another arrangement, or Best fit to reset the building.'),
   ] },
-  { id: 'hardstand', title: 'Hardstand, roads and paving', blurb: 'Draw car parks, roads and paving areas.', steps: [
+  { id: 'hardstand', title: 'Hardstand and paving', blurb: 'Draw car park and paving areas.', steps: [
     E('tool', '[data-tool="hardstand"]', 'The Hardstand tool (P) draws car park and paving areas. Drag a rectangle or click a polygon.', { arm: 'hardstand' }),
-    E('roads', '[data-ps="hardstand-roads"]', 'The Roads and paving buttons pick the kind of road, driveway or footpath to draw.', { arm: 'hardstand' }),
-    E('pave', '[data-tool="pave"]', 'The Road or pavement tool (L) lays a road along PI points you click. Double click to finish.', { arm: 'pave' }),
-    E('curve', '[data-ps="pave-add-curve"]', 'Add curve (C) rounds each PI with the radius you set.', { arm: 'pave' }),
+    E('area', '[data-ps="hardstand-kind-area"]', 'Choose Area to draw a hardstand, car park or paving area as a rectangle or polygon.', { arm: 'hardstand' }),
     E('surface', '[data-ps="hardstand-type"]', 'Choose the pavement surface. Quantities and an indicative cost update as you draw.', { arm: 'hardstand' }),
   ] },
   { id: 'numbers', title: 'Numbers and feasibility', blurb: 'Read the yield, parking and feasibility notes.', steps: [
     F('summary', 4, '[data-ps="flow-summary"]', 'The check shows the floor area, site coverage and parking provided against the guide.'),
-    F('yield', 4, '[data-ps="flow-yield"]', 'The yield line shows what the site can carry. Figures are indicative.'),
+    F('yield', 4, '[data-ps="fin-cards"]', 'The finance cards show an indicative profit and yield for the layout. Figures are indicative only.'),
     F('estimates', 4, '[data-ps="flow-estimates"]', 'Rough estimates help you compare options. They are not a quote.'),
     E('feas', '[data-ps="cc-feas-open"]', 'See details opens the full feasibility numbers in the editor.'),
   ] },

@@ -36,7 +36,7 @@ const SHOTS = flag('shots'); // a screenshot at each caption, into the scratch f
 const FFMPEG = process.env.FFMPEG || '/usr/local/bin/ffmpeg';
 const FONT_B = '/usr/share/fonts/opentype/inter/Inter-Bold.otf';
 const FONT_S = '/usr/share/fonts/opentype/inter/Inter-SemiBold.otf';
-const W = 1280, H = 720, BAR = 80, GOLD = '0xe9b66f', NAVY = '0x0a111e';
+const W = 1280, H = 640, BAR = 80, GOLD = '0xe9b66f', NAVY = '0x0a111e';
 const T = Number(process.env.VIDEO_TIMEOUT || 240000); // generous: the machine that records may be busy
 
 const freePort = () => new Promise((res) => { const s = net.createServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
@@ -113,6 +113,12 @@ class Rec {
     await this.page.mouse.down(); await sleep(90); await this.page.mouse.up();
     await sleep(after);
   }
+  /** Click the first VISIBLE match by script-measured box (robust when the panel re-renders under load); returns false if none. */
+  async softClick(sel, { after = 1200 } = {}) {
+    const b = await this.page.evaluate((q) => { const el = [...document.querySelectorAll(q)].find((e) => e.getClientRects().length); if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; }, sel);
+    if (!b) return false;
+    await this.clickAt(b.x, b.y, { after }); return true;
+  }
   async clickAt(x, y, { after = 700 } = {}) { await this.glide(x, y, 600); await sleep(200); await this.page.mouse.down(); await sleep(80); await this.page.mouse.up(); await sleep(after); }
   async dblclickAt(x, y, { after = 900 } = {}) { await this.glide(x, y, 600); await sleep(200); await this.page.mouse.dblclick(x, y); await sleep(after); }
   async type(sel, text, { delay = 130, after = 900 } = {}) {
@@ -188,7 +194,7 @@ const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t 
 
 // Shared segments, reused by the chapter clips and the overviews
 const seg = {
-  async find(r, kind) {
+  async find(r, kind, short = false) {
     const page = r.page;
     await r.cap(kind === 'commercial' ? 'Type the address of your site' : 'Type your street address');
     await r.type('[data-ps="flow-address"]', '14 Sample', { delay: 150, after: 1500 });
@@ -197,11 +203,11 @@ const seg = {
     await r.click('[data-ps="flow-suggest"] li', { after: 500 });
     await r.cut(async () => { await page.waitForSelector('[data-ps="flow-lot-label"]', { timeout: T }); await page.waitForFunction(() => !document.querySelector('[data-ps="flow-loading-text"],[data-ps="flow-spinner"]'), null, { timeout: T }); await sleep(2500); });
     await r.cap('Check the lot and plan number');
-    await r.point('[data-ps="flow-lot-label"]', 0.5, 0.5); await r.hold(2200);
+    await r.point('[data-ps="flow-lot-label"]', 0.5, 0.5); await r.hold(short ? 1000 : 2200);
     await r.cap('The setbacks show where a building can go');
-    await r.point('[data-ps="flow-setbacks"]', 0.5, 0.4); await r.hold(3200);
-    await r.cap('No address? Use the sample lot to try it');
-    await r.point('[data-ps="flow-sample"]', 0.5, 0.5); await r.hold(2200);
+    await r.point('[data-ps="flow-setbacks"]', 0.5, 0.4); await r.hold(short ? 1200 : 3200);
+    if (!short) { await r.cap('No address? Use the sample lot to try it');
+    await r.point('[data-ps="flow-sample"]', 0.5, 0.5); await r.hold(2200); }
     await r.cap('Press This is my lot to continue');
     await r.click('[data-ps="flow-next"]', { after: 300 }); await r.step(2);
   },
@@ -230,15 +236,14 @@ SCENARIOS['residential-place'] = { kind: 'residential', setup: (p) => toStep(p, 
   await r.cap('The home is placed square to the street'); await r.hold(2500);
   const house = await r.at('[data-ps="flow-house"]', 0.5, 0.5);
   await r.cap('Drag the house to move it');
-  await r.drag(house, { x: house.x + 34, y: house.y - 26 }, { ms: 1100 }); await r.hold(1200);
+  await r.drag(house, { x: house.x + 34, y: house.y - 26 }, { ms: 1100 }); await r.quiet(600);
   await r.cap('Drag the gold ring to turn it');
   const hc = await r.at('[data-ps="flow-house"]', 0.5, 0.5); const hd = await r.at('[data-ps="flow-handle"]', 0.5, 0.5);
   const rad = Math.hypot(hd.x - hc.x, hd.y - hc.y), a0 = Math.atan2(hd.y - hc.y, hd.x - hc.x);
   const arc = [0.25, 0.5, 0.75, 1].map((k) => ({ x: hc.x + rad * Math.cos(a0 + k * Math.PI / 2), y: hc.y + rad * Math.sin(a0 + k * Math.PI / 2) }));
-  await r.drag(hd, null, { ms: 1400, steps: arc }); await r.hold(1000);
-  await r.cap('Turn and Mirror work in one click'); await r.click('[data-ps="flow-mirror"]', { after: 1400 });
+  await r.drag(hd, null, { ms: 1400, steps: arc }); await r.quiet(600);
   await r.cap('Push it outside the setbacks and the status turns red');
-  for (let i = 0; i < 7; i += 1) { await r.click('[data-ps="flow-nudge-left"]', { after: 120 }); }
+  for (let i = 0; i < 6; i += 1) { await r.click('[data-ps="flow-nudge-left"]', { after: 100 }); } await r.quiet();
   await r.hold(1800);
   await r.cap('Best fit is Auto fit: it puts the home right again'); await r.click('[data-ps="flow-bestfit"]', { after: 500 });
   await r.quiet(); await r.hold(2500);
@@ -270,18 +275,28 @@ SCENARIOS['residential-driveway'] = { kind: 'residential', setup: (p) => toStep(
   r.begin();
   await r.cap('Drag the round handle to slide the driveway entry');
   const dh = await r.at('[data-ps="flow-drive-handle"]', 0.5, 0.5);
-  await r.drag(dh, { x: dh.x + 36, y: dh.y }, { ms: 1000 }); await r.hold(1000);
-  await r.cap('Add bend puts a corner in the driveway'); await r.click('[data-ps="flow-drive-bend"]', { after: 1800 });
-  await r.cap('Choose the driveway width'); await r.point('[data-ps="flow-drive-width"]', 0.5, 0.5); await r.hold(1800);
-  await r.cap('Reset driveway starts it again'); await r.point('[data-ps="flow-drive-reset"]', 0.5, 0.5); await r.hold(1600);
-  await r.cut(async () => { await nextTo(page, 4); await idle(page); await openEditor(page); await q(page, '[data-ps="zoom-building"]').click({ timeout: 3000 }).catch(() => {}); });
-  await r.cap('In the editor, the Road or pavement tool draws roads'); await r.click('[data-tool="pave"]', { after: 1500 });
-  const lb = await lotBox(page);
-  const pts = [[0.5, 0.97], [0.5, 0.78], [0.62, 0.6], [0.7, 0.45]].map(([fx, fy]) => ({ x: lb.x0 + (lb.x1 - lb.x0) * fx, y: lb.y1 - (lb.y1 - lb.y0) * (1 - fy) }));
-  await r.cap('Turn on Add curve so each PI is rounded'); await r.click('[data-ps="pave-add-curve"]', { after: 1200 });
-  await r.cap('Click each PI along the route');
-  for (const p of pts) { const c = await r.plan(p); await r.clickAt(c.x, c.y, { after: 900 }); }
-  await r.cap('Double click to finish'); const e = await r.plan(pts[pts.length - 1]); await r.dblclickAt(e.x, e.y, { after: 2200 });
+  await r.drag(dh, { x: dh.x + 36, y: dh.y }, { ms: 1000 }); await r.hold(600);
+  await r.cap('Add bend puts a corner in the driveway');
+  await r.click('[data-ps="flow-drive-bend"]', { after: 1000 }); await r.click('[data-ps="flow-drive-bend"]', { after: 1200 });
+  await r.cut(async () => { await nextTo(page, 4); await idle(page); await openEditor(page); await q(page, '[data-ps="lc-minimise"]').click({ timeout: 3000 }).catch(() => {}); await q(page, '[data-view="2d"]').click({ timeout: 3000 }).catch(() => {}); await sleep(1500); await q(page, '[data-ps="zoom-development"]').click({ timeout: 3000 }).catch(() => {}); await sleep(800); });
+  await r.cap('In the editor, the Driveway PIs tool edits the bends'); await r.click('[data-tool="drivepi"]', { after: 1500 });
+  await page.click('[data-ps="prompt-notnow"]', { timeout: 1500 }).catch(() => {});
+  await page.evaluate(() => { const g = window.getSelection(); g && g.removeAllRanges(); });
+  const dr = () => page.evaluate(() => { const d = window.__ps.editor.drivepi.draft(); return { centre: d.centre.map((q) => ({ x: q.x, y: q.y })), pis: d.pis.map((q) => ({ x: q.x, y: q.y })) }; });
+  const before = await dr();
+  let bi = 0, bl = -1;
+  for (let i = 0; i + 1 < before.centre.length; i += 1) { const l = Math.hypot(before.centre[i + 1].x - before.centre[i].x, before.centre[i + 1].y - before.centre[i].y); if (l > bl) { bl = l; bi = i; } }
+  const mid = lerp(before.centre[bi], before.centre[bi + 1], 0.5);
+  await r.cap('Click the driveway centreline to add a PI');
+  const m = await r.plan(mid); await r.clickAt(m.x, m.y, { after: 1400 });
+  await r.cap('Drag a square to move the PI');
+  const after = await dr();
+  const nw = after.pis.find((q) => !before.pis.some((o) => Math.abs(o.x - q.x) < 5 && Math.abs(o.y - q.y) < 5)) || mid;
+  const from = await r.plan(nw);
+  await r.drag(from, { x: from.x + 30, y: from.y + 14 }, { ms: 1000 }); await r.hold(900);
+  await r.cap('Pick a bend radius to round every PI'); await r.softClick('[data-ps="drivepi-radius"] button:nth-child(3)', { after: 1600 });
+  await r.cap('Delete PI removes the selected bend'); await r.softClick('[data-ps="drivepi-delete"]', { after: 1500 });
+  await r.cap('Reset to auto brings the automatic driveway back'); await r.softClick('[data-ps="drivepi-reset"]', { after: 2200 });
 } };
 
 SCENARIOS['residential-view3d'] = { kind: 'residential', setup: (p) => toStep(p, 'residential', 4), run: async (r) => {
@@ -328,7 +343,7 @@ SCENARIOS['residential-planset'] = { kind: 'residential', setup: (p) => toEditor
 SCENARIOS['residential-overview'] = { kind: 'residential', run: async (r) => {
   const page = r.page;
   r.begin();
-  await seg.find(r, 'residential');
+  await seg.find(r, 'residential', true);
   await r.cap('Step 2: filter and choose a design');
   await r.pick('[data-ps="flow-filter-bedrooms"]', '4', { after: 1500 });
   await r.click('[data-ps="flow-home"]', { after: 1500 });
@@ -346,8 +361,6 @@ SCENARIOS['residential-overview'] = { kind: 'residential', run: async (r) => {
   await r.cap('3D shows the house on your lot'); await r.click('[data-view="3d"]', { after: 3000 });
   await r.click('[data-view="split"]', { after: 1500 });
   await r.cap('Wall, door and window tools edit the plan'); await r.click('[data-tool="wall"]', { after: 1200 }); await r.click('[data-tool="door"]', { after: 1200 }); await r.click('[data-tool="select"]', { after: 1200 });
-  await r.cap('The Road or pavement tool draws driveways and roads'); await r.click('[data-tool="pave"]', { after: 2500 });
-  await r.click('[data-tool="select"]', { after: 800 });
   await r.cap('Save design keeps it in a free profile'); await r.click('[data-action="profile-save"]', { after: 2500 });
   await page.click('[data-ps="prompt-notnow"]', { timeout: 1500 }).catch(() => {}); await page.keyboard.press('Escape');
   await r.cap('Site plan PDF builds the plan set'); await r.point('[data-ps="lc-pdf"]'); await r.hold(2500);
@@ -372,19 +385,13 @@ SCENARIOS['commercial-type'] = { kind: 'commercial', setup: (p) => toStep(p, 'co
 
 SCENARIOS['commercial-place'] = { kind: 'commercial', setup: (p) => toStep(p, 'commercial', 3), run: async (r) => {
   r.begin();
-  await r.cap('The building and car park are laid out for you'); await r.hold(2800);
+  await r.cap('The building and car park are laid out for you'); await r.hold(2200);
   const b = await r.at('[data-ps="flow-building"]', 0.5, 0.5);
-  await r.cap('Drag the building to slide it on the lot'); await r.drag(b, { x: b.x + 30, y: b.y - 20 }, { ms: 1100 }); await r.hold(1200);
-  await r.cap('Drag the gold ring to turn it');
-  const hc = await r.at('[data-ps="flow-building"]', 0.5, 0.5); const hd = await r.at('[data-ps="flow-handle"]', 0.5, 0.5);
-  const rad = Math.hypot(hd.x - hc.x, hd.y - hc.y), a0 = Math.atan2(hd.y - hc.y, hd.x - hc.x);
-  const arc = [0.3, 0.6, 1].map((k) => ({ x: hc.x + rad * Math.cos(a0 + k * Math.PI / 6), y: hc.y + rad * Math.sin(a0 + k * Math.PI / 6) }));
-  await r.drag(hd, null, { ms: 1200, steps: arc }); await r.hold(1000);
+  await r.cap('Drag the building to slide it on the lot'); await r.drag(b, { x: b.x + 30, y: b.y - 20 }, { ms: 1000 }); await r.quiet(600);
   await r.cap('Drag the entry and exit handles along the frontage');
-  const ah = await r.at('[data-ps="flow-access-handle"]', 0.5, 0.5); await r.drag(ah, { x: ah.x + 50, y: ah.y }, { ms: 1100 }); await r.hold(900);
-  await r.cap('Choose the width of the entry and exit'); await r.pick('[data-ps="flow-access-width"]', '8.0', { after: 1600 }).catch(async () => { await r.hold(1500); });
-  await r.cap('Try another layout with the arrows'); await r.click('[data-ps="flow-layout-next"]', { after: 2500 });
-  await r.cap('Best fit puts the building back'); await r.click('[data-ps="flow-bestfit"]', { after: 300 }); await r.quiet(); await r.hold(2000);
+  const ah = await r.at('[data-ps="flow-access-handle"]', 0.5, 0.5); await r.drag(ah, { x: ah.x + 50, y: ah.y }, { ms: 1000 }); await r.quiet(600);
+  await r.cap('Try another layout with the arrows'); await r.click('[data-ps="flow-layout-next"]', { after: 400 }); await r.quiet(800);
+  await r.cap('Best fit puts the building back'); await r.click('[data-ps="flow-bestfit"]', { after: 300 }); await r.quiet(); await r.hold(1500);
 } };
 
 SCENARIOS['commercial-hardstand'] = { kind: 'commercial', setup: async (p) => { await toEditor(p, 'commercial'); await q(p, '[data-ps="panel-close"], [data-action="panel-close"]').click({ timeout: 2000 }).catch(() => {}); }, run: async (r) => {
@@ -393,24 +400,17 @@ SCENARIOS['commercial-hardstand'] = { kind: 'commercial', setup: async (p) => { 
   const at = (fx, fy) => ({ x: lb.x0 + (lb.x1 - lb.x0) * fx, y: lb.y0 + (lb.y1 - lb.y0) * fy });
   r.begin();
   await r.cap('The Hardstand tool draws car parks and paving'); await r.click('[data-tool="hardstand"]', { after: 2000 });
-  await r.cap('Roads and paving buttons pick the kind of road'); await r.point('[data-ps="hardstand-roads"]', 0.5, 0.5, 800); await r.hold(2500);
   await r.cap('Choose the pavement surface'); await r.point('[data-ps="hardstand-type"]'); await r.hold(1800);
   await r.cap('Drag a rectangle to draw a hardstand area');
   const a = await r.plan(at(0.12, 0.12)), b = await r.plan(at(0.34, 0.3));
   await r.drag(a, b, { ms: 1400 }); await r.hold(1800);
-  await r.cap('The Road or pavement tool lays out a road'); await r.click('[data-tool="pave"]', { after: 1800 });
-  await r.cap('Add curve rounds each PI'); await r.click('[data-ps="pave-add-curve"]', { after: 1200 });
-  await r.cap('Click each PI, then double click to finish');
-  const pts = [at(0.5, 0.96), at(0.5, 0.8), at(0.64, 0.66), at(0.84, 0.62)];
-  for (const p of pts) { const c = await r.plan(p); await r.clickAt(c.x, c.y, { after: 900 }); }
-  const e = await r.plan(pts[pts.length - 1]); await r.dblclickAt(e.x, e.y, { after: 2500 });
 } };
 
 SCENARIOS['commercial-numbers'] = { kind: 'commercial', setup: (p) => toStep(p, 'commercial', 4), run: async (r) => {
   const page = r.page;
   r.begin();
   await r.cap('The Check step lists floor area, coverage and parking'); await r.point('[data-ps="flow-summary"]', 0.5, 0.2, 900); await r.hold(3000);
-  await r.cap('The yield line shows what the site can carry'); await r.point('[data-ps="flow-yield"]', 0.5, 0.5); await r.hold(2800);
+  await r.cap('The finance cards show the indicative profit and yield'); await r.point('[data-ps="fin-cards"]', 0.5, 0.5); await r.hold(2800);
   await r.cap('Rough estimates help you compare options'); await r.point('[data-ps="flow-estimates"]', 0.5, 0.5); await r.hold(2800);
   await r.cap('Figures are indicative, check with council'); await r.hold(2200);
   await r.cap('Open the editor for the full feasibility numbers'); await r.click('[data-ps="flow-next"]', { after: 300 }); await r.editor();
@@ -444,7 +444,7 @@ SCENARIOS['commercial-planset'] = { kind: 'commercial', setup: (p) => toEditor(p
 SCENARIOS['commercial-overview'] = { kind: 'commercial', run: async (r) => {
   const page = r.page;
   r.begin();
-  await seg.find(r, 'commercial');
+  await seg.find(r, 'commercial', true);
   await r.cap('Step 2: choose a building type'); await r.click('[data-ps="flow-type"]', { after: 2000 });
   await r.click('[data-ps="flow-type"][data-type="warehouse"]', { after: 1500 });
   await r.click('[data-ps="flow-next"]', { after: 300 }); await r.step(3);
@@ -458,7 +458,6 @@ SCENARIOS['commercial-overview'] = { kind: 'commercial', run: async (r) => {
   await r.cap('Open the editor'); await r.click('[data-ps="flow-next"]', { after: 300 }); await r.editor();
   await page.click('[data-ps="prompt-notnow"]', { timeout: 3000 }).catch(() => {});
   await r.cap('The Hardstand tool draws car parks'); await r.click('[data-tool="hardstand"]', { after: 2500 });
-  await r.cap('The Road or pavement tool draws roads'); await r.click('[data-tool="pave"]', { after: 2500 });
   await r.click('[data-tool="select"]', { after: 800 });
   await r.cap('Plan, Split and 3D change the view'); await r.click('[data-view="3d"]', { after: 3000 }); await r.click('[data-view="split"]', { after: 1500 });
   await r.cap('Save design keeps the layout in a free profile'); await r.click('[data-action="profile-save"]', { after: 2500 });
