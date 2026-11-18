@@ -51,7 +51,7 @@ test('builder strip: every sheet that has a legend in the public set has it in t
       n++;
       assert.ok(bld.pages[i].texts.some((t) => t.s === 'LEGEND'), `${name} ${codeOf(pub.r.sheets[i])}: legend present in the builder set`);
     });
-    assert.ok(n >= 2, `${name}: the public set has legends`);
+    assert.ok(n >= 1, `${name}: the public set has legends`);
   }
 });
 

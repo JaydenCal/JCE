@@ -439,7 +439,7 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
     if (f.coverage != null) rows.push({ cells: ['Site coverage (footprint over site area)', `${f.coverage.toFixed(1)} %`], bold: true, fill: PEN.band });
     if (f.roofM2 != null) rows.push(['Roof area (from the model, sloped)', `${f.roofM2.toFixed(1)} m²`]);
     if (f.driveM2 > 0) rows.push(['Driveway within the lot (indicative)', `${f.driveM2.toFixed(1)} m²`]);
-    if (f.crossM2 > 0) rows.push(['Crossover in the road reserve (indicative)', `${f.crossM2.toFixed(1)} m²`]);
+    if (f.crossM2 > 0) rows.push(['Crossover (indicative)', `${f.crossM2.toFixed(1)} m²`]);
     for (const e of f.paved.byMaterial) rows.push([`Drawn ${e.label.toLowerCase()} driveways and roads (with crossover)`, `${e.areaM2.toFixed(1)} m²`]);
     if (f.site && (f.driveM2 > 0 || f.extraM2 > 0)) rows.push(['Remaining site area (soft and other hard)', fmtArea(Math.max(0, f.site - f.footprint - f.driveM2 - f.extraM2))]);
     const t = table(doc, colA, top, [{ w: wA - 32, head: 'ITEM' }, { w: 32, head: 'AREA', align: 'right' }], rows, opt);

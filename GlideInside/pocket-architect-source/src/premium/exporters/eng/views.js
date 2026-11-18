@@ -391,6 +391,8 @@ export function drawElevations(doc, ctx, tris, area) {
     }
     viewTitle(doc, cx0 + 5, cy0 + ch - 5, `${cap(v.s.name.toLowerCase())} elevation`, `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.head });
   });
+  // One scale bar for the sheet, in the top left margin above the first elevation
+  scaleBar(doc, area.x0 + 6, area.y0 + 2.5, n, ds);
   return { n };
 }
 
@@ -714,6 +716,51 @@ export function drawSection(doc, ctx, tris, area) {
  * section looks, and a circle tag "A" at each end. `T` maps plan mm to sheet mm for that sheet.
  */
 /** The section line in plan millimetres: { p0, p1, right }, or null. */
+/** Moves the figure of a dimension string along the string when the section line would run through it. */
+export function clearOfLine(d, sl, ds) {
+  if (!sl || !d.textAt) return d;
+  const vertical = d.textRot === 90;
+  const ln = (u) => ({ x: sl.p0.x + (sl.p1.x - sl.p0.x) * u, y: sl.p0.y + (sl.p1.y - sl.p0.y) * u });
+  const dx = sl.p1.x - sl.p0.x;
+  const dy = sl.p1.y - sl.p0.y;
+  const pos = (pt) => (vertical ? pt.y : pt.x);
+  const across = vertical ? d.a.x : d.a.y;
+  // Where the section line meets the string's own line
+  const u = vertical ? (Math.abs(dx) < 1 ? null : (across - sl.p0.x) / dx) : (Math.abs(dy) < 1 ? null : (across - sl.p0.y) / dy);
+  if (u == null || u < 0 || u > 1) return d;
+  const at = pos(ln(u));
+  const lo = Math.min(pos(d.a), pos(d.b));
+  const hi = Math.max(pos(d.a), pos(d.b));
+  const tp = pos(d.textAt);
+  const clear = 5 * ds;
+  if (at < lo || at > hi || Math.abs(tp - at) > clear) return d;
+  const want = at + (tp >= at ? 1 : -1) * Math.min(clear, (hi - lo) / 2 + 0.6 * ds);
+  const textAt = vertical ? { x: d.textAt.x, y: want } : { x: want, y: d.textAt.y };
+  return { ...d, textAt };
+}
+
+/** How far (mm) a section line must be lengthened so its end and bubble sit past every dimension string it crosses, by `gapMm`. */
+export function sectionPadMm(project, dims, axis = 'short', gapMm = 450) {
+  const pl = sectionPlane(project, axis);
+  if (!pl.axes) return 0;
+  const e = pl.axes.widthMm / 2 + 1750;
+  const mid = pl.axes.centre;
+  const r = pl.right;
+  let far = 0;
+  for (const d of dims || []) {
+    const vertical = d.textRot === 90;
+    const lo = vertical ? Math.min(d.a.y, d.b.y) : Math.min(d.a.x, d.b.x);
+    const hi = vertical ? Math.max(d.a.y, d.b.y) : Math.max(d.a.x, d.b.x);
+    const k = vertical ? r.x : r.y; // component of the line direction across the string
+    if (Math.abs(k) < 0.2) continue;
+    const t = ((vertical ? d.a.x - mid.x : d.a.y - mid.y)) / k;
+    const along = vertical ? mid.y + r.y * t : mid.x + r.x * t;
+    if (along < lo || along > hi) continue;
+    far = Math.max(far, Math.abs(t));
+  }
+  return far ? Math.max(0, far + gapMm - e) : 0;
+}
+
 export function sectionLinePlan(project, halfMm = null, axis = 'short') {
   const pl = sectionPlane(project, axis);
   if (!pl.axes) return null;
@@ -723,11 +770,11 @@ export function sectionLinePlan(project, halfMm = null, axis = 'short') {
   return { p0: { x: mid.x - pl.right.x * e0, y: mid.y - pl.right.y * e0 }, p1: { x: mid.x + pl.right.x * e1, y: mid.y + pl.right.y * e1 }, right: pl.right };
 }
 
-export function drawSectionMarker(doc, project, T, sheetNo = null, halfMm = null, axis = 'short', letter = 'A') {
+export function drawSectionMarker(doc, project, T, sheetNo = null, halfMm = null, axis = 'short', letter = 'A', padMm = 0) {
   const pl = sectionPlane(project, axis);
   if (!pl.axes) return;
-  const e0 = halfMm?.neg ?? pl.axes.widthMm / 2 + 1750;
-  const e1 = halfMm?.pos ?? pl.axes.widthMm / 2 + 1750;
+  const e0 = (halfMm?.neg ?? pl.axes.widthMm / 2 + 1750) + padMm;
+  const e1 = (halfMm?.pos ?? pl.axes.widthMm / 2 + 1750) + padMm;
   const mid = pl.axes.centre;
   const p0 = { x: mid.x - pl.right.x * e0, y: mid.y - pl.right.y * e0 };
   const p1 = { x: mid.x + pl.right.x * e1, y: mid.y + pl.right.y * e1 };
@@ -930,7 +977,7 @@ export function drawRoofPlan(doc, ctx, tris, area) {
   const cx0 = (r.bounds.x0 + r.bounds.x1) / 2;
   const cy0 = (r.bounds.y0 + r.bounds.y1) / 2;
   const groundRoof = drawPlanGround(doc, {
-    ground: ctx.ground,
+    ground: null, // the roof plan carries no ground contours (site plan only)
     T: (p) => T(p.x, p.y),
     Ti: (q) => ({ x: cx0 + (q.x - (area.x0 + dw / 2)) * ds, y: cy0 + (q.y - (area.y0 + 10 + (ah - 10) / 2)) * ds }),
     rect: { x0: area.x0, y0: area.y0, x1: area.x0 + dw, y1: area.y1 },

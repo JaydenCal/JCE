@@ -8,7 +8,7 @@ import { levelContent } from '../drawing.js';
 import { planGeometry, scaleBar } from '../pdf.js';
 import { PEN, viewTitle, ink } from '../eng/kit.js';
 import { drawRoomLabels } from './labels.js';
-import { drawSectionMarker } from '../eng/views.js';
+import { drawSectionMarker, sectionLinePlan, clearOfLine, sectionPadMm } from '../eng/views.js';
 import { AREA } from './frame.js';
 import { areaTotals } from './lot.js';
 import { streamMark } from './contours.js';
@@ -76,9 +76,23 @@ export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 
   const T = (p) => ({ x: ox + (p.x - content.box.minX) / ds, y: oy + (p.y - content.box.minY) / ds });
   const Ti = (q) => ({ x: content.box.minX + (q.x - ox) * ds, y: content.box.minY + (q.y - oy) * ds });
   const gmark = streamMark(doc); // the ground contours sit under the plan
+  // A dimension figure that a section line would cut through moves along its string to clear the line
+  const sls = sections.map((sc) => sectionLinePlan(project, { neg: 90000, pos: 90000 }, sc.axis)).filter(Boolean);
+  const dims = (content.dims || []).map((d) => sls.reduce((acc, sl) => clearOfLine(acc, sl, ds), d));
   planGeometry(doc, { ...content, scale: ds }, T, true, catalogue);
   // Section markers: A-A across the short axis and B-B along the long axis, each pointing at its sheet
-  for (const sc of sections) drawSectionMarker(doc, project, T, sc.sheet, null, sc.axis, sc.letter);
+  for (const sc of sections) {
+    // The line ends past the dimension strings it crosses, as far as the bubble and its label still fit inside the sheet frame
+    const sl0 = sectionLinePlan(project, null, sc.axis);
+    let pad = sectionPadMm(project, dims, sc.axis);
+    if (sl0) {
+      const len = Math.hypot(sl0.p1.x - sl0.p0.x, sl0.p1.y - sl0.p0.y) || 1;
+      const u = { x: (sl0.p1.x - sl0.p0.x) / len, y: (sl0.p1.y - sl0.p0.y) / len };
+      const fits = (pm) => [{ x: sl0.p0.x - u.x * pm, y: sl0.p0.y - u.y * pm }, { x: sl0.p1.x + u.x * pm, y: sl0.p1.y + u.y * pm }].map(T).every((q) => q.x > AREA.x0 + 14 && q.x < AREA.x1 - 14 && q.y > AREA.y0 + 22 && q.y < AREA.y1 - 14);
+      while (pad > 0 && !fits(pad)) pad = Math.max(0, pad - 50);
+    }
+    drawSectionMarker(doc, project, T, sc.sheet, null, sc.axis, sc.letter, pad);
+  }
   const lf = drawRoomLabels(doc, { content, T, catalogue, bounds: { x0: AREA.x0 + 2, y0: AREA.y0 + 2, x1: AREA.x1 - 2, y1: AREA.y1 - 8 }, extra: [sh.slot, NORTH_RECT, BAR_RECT] });
   // Dimension strings: overall and running.
   doc.setLineDashPattern([], 0);
@@ -86,7 +100,7 @@ export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 
   ink(doc, [60, 66, 90]);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
-  for (const d of content.dims || []) {
+  for (const d of dims) {
     for (const e of d.ext) doc.line(T(e[0]).x, T(e[0]).y, T(e[1]).x, T(e[1]).y);
     doc.line(T(d.a).x, T(d.a).y, T(d.b).x, T(d.b).y);
     doc.setLineWidth(0.25);
@@ -154,9 +168,9 @@ export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 
   doc.setFontSize(7.5);
   doc.setTextColor(...PEN.ink);
   doc.text(`1:${ds} @ A3`, BAR_RECT.x0 + 4, BAR_RECT.y1 - 19.5);
-  // Existing ground contours outside the plan, its dimension strings and the reserved slots.
-  const cb = content.box;
-  const g = drawPlanGround(doc, { ground, T, Ti, rect: { x0: AREA.x0 + 2, y0: AREA.y0 + 2, x1: AREA.x1 - 2, y1: AREA.y1 - 8 }, keepOut: [{ x0: T({ x: cb.minX, y: cb.minY }).x - 3, y0: T({ x: cb.minX, y: cb.minY }).y - 3, x1: T({ x: cb.maxX, y: cb.maxY }).x + 3, y1: T({ x: cb.maxX, y: cb.maxY }).y + 3 }, sh.slot, NORTH_RECT, BAR_RECT, { x0: AREA.x0, y0: AREA.y0, x1: AREA.x1, y1: AREA.y0 + 15 }, ...(fflBox ? [fflBox] : [])], mark: gmark });
+  // Floor plans carry no ground contours: they belong on the site and grading sheets. The finished floor level tag above states the level.
+  const g = null;
+  void gmark; void Ti;
   const rows = lf.schedule || [];
   const blocks = rows.length ? [{
     title: 'ROOM SCHEDULE',

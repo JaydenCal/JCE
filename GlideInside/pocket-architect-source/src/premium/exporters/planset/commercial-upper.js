@@ -124,7 +124,7 @@ export function drawUpperPlans(doc, model, t, levels) {
       doc.setLineDashPattern([], 0);
     }
     field.addBox({ x0: bx.minX - 1, y0: bx.minY - 1, x1: bx.maxX + 1, y1: bx.maxY + 1 });
-    if (levels?.has && t.project?.site?.lot) {
+    if (false && levels?.has && t.project?.site?.lot) { // no ground contours on floor plans
       const g = drawGroundLayer(doc, { lot: t.project.site.lot, levels, S: T, Si: Ti, rect, field, masks: [poly], light: true, mark });
       if (g.drawn) ground = g;
     }

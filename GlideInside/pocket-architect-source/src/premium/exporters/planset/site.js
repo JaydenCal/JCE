@@ -721,7 +721,7 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
   const pavedSum = pavedSummary(project);
   const blocks = [legendBlock({ contours: gl.legend, paved: pavedSum.byMaterial, extra: overlayLegendItems(lot), ...drawnContext(lot), encroach: cl.status === 'breach' })];
   if (schedule.length) blocks.push(scheduleBlock(schedule));
-  const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines and dimensions are indicative.', 'Driveway and road reserve are typical values.'];
+  const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines and dimensions are indicative.', 'Driveway and crossover are typical values.'];
   notes.push(ground0 ? gl.note : `No ground levels for this lot.${hullPoly.length ? ' Floor level is on an assumed datum.' : ''}`);
   if (overlayLegendItems(lot).length) notes.push('Site constraint overlays are indicative, from open government mapping. Check with council.');
   if (schedule.length) notes.push('Edges too short to label are tagged E and listed in the boundary schedule.');
