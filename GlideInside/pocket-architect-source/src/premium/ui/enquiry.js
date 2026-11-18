@@ -44,7 +44,8 @@ export function openEnquiry({ layer, send, buildPdf, project, lot = {}, source =
     zone: input('zone', 'Zone', { props: { value: lot.zone || '' } }),
     notes: input('notes', 'Anything JCE should know', { tag: 'textarea', props: {} }),
   };
-  let need = 'both';
+  let need = NEEDS.some(([v]) => v === prefill.need) ? prefill.need : 'both'; // an "Order engineering" service sets this and the notes; nothing is sent until the person ticks consent and presses Send
+  if (prefill.notes) { f.notes.control.value = String(prefill.notes).slice(0, 4000); f.notes.control.textContent = String(prefill.notes).slice(0, 4000); }
   const needRow = el('fieldset', { style: { border: '0', padding: '0', margin: '0 0 10px' } }, el('legend', null, 'What do you need?'),
     ...NEEDS.map(([v, label]) => el('label', { style: { display: 'block', padding: '2px 0' } }, el('input', { type: 'radio', name: 'jce-need', value: v, checked: v === need, onchange: () => { need = v; } }), ` ${label}`)));
   const consent = el('input', { type: 'checkbox', id: 'jce-consent' });

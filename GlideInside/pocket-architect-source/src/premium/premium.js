@@ -16,11 +16,12 @@ import { createLayer } from './ui/modal.js';
 import { createFlows } from './ui/flows.js';
 import { createTopbarUI } from './ui/topbar.js';
 import { createAssistant } from './ui/assistant.js';
-import { runExport, exportLabel, EXPORT_ITEMS, isLocalHost } from './export-client.js';
+import { runExport, exportLabel, EXPORT_ITEMS, isLocalHost, coverImage, loadJsPDF } from './export-client.js';
+import { openOrderEngineering } from './ui/order-engineering.js';
 import { normaliseCredits } from './credits.js';
 import { friendlyError, isAuthLoss } from './messages.js';
 import { ApiError } from './api.js';
-import { el, track } from './util.js';
+import { el, track, downloadBlob } from './util.js';
 import { icon } from './icons.js';
 import { importPdf as runImportPdf } from './pdf-import.js';
 import { openPdfPreview } from './pdf-preview.js';
@@ -133,7 +134,7 @@ export function createPremium(store, options = {}) {
   // client login whose builder has turned sending off (allowClientEnquiries).
   const canSendPlans = () => (portalOn() ? state.portal.enquiry !== false : true);
   const isEntitled = () => dev() || !!state.token || portalOn() || csubOn();
-  const view = () => ({ entitled: isEntitled(), token: bearer(), csub: csubOn() ? { kind: state.csub.kind } : null, devUnlock: dev(), portalPending: !!state.portalPending, credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire(), commercial: commercialNow() });
+  const view = () => ({ entitled: isEntitled(), token: bearer(), csub: csubOn() ? { kind: state.csub.kind } : null, devUnlock: dev(), portalPending: !!state.portalPending, credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', role: state.portal.role || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire(), commercial: commercialNow() });
   // Builder and client logins have the AI included; mock mode lets the owner review it for any session.
   const aiEntitled = () => isEntitled() || orgSession || mockOn;
   const aiView = () => ({ ...view(), entitled: aiEntitled(), token: aiToken(), session: effSession });
@@ -316,7 +317,7 @@ export function createPremium(store, options = {}) {
     return btoa(bin);
   }
   function openEnquiryForm(extra = {}) {
-    const { anyone = false, ...rest } = extra;
+    const { anyone = false, prefill: servicePrefill = null, service: _service = null, ...rest } = extra; // servicePrefill: an Order engineering service (need and notes); the form still needs consent and a press of Send
     if (!(anyone ? canSendPlans() : canEnquire())) {
       layer.notify(portalOn() ? 'Your builder has turned off sending to JCE.' : 'Sending to JCE comes with the Plan Pack.', 'info', 6000);
       return null;
@@ -326,13 +327,61 @@ export function createPremium(store, options = {}) {
     const portalLot = (typeof window !== 'undefined' && window.__ps?.portal?.getLot?.()) || {};
     const lot = lotPrefill(store.project, portalLot);
     const user = (typeof window !== 'undefined' && window.__ps?.portal?.me?.user) || {};
-    const prefill = { name: user.name || '', email: user.email || '', phone: user.phone || '' };
+    const prefill = { name: user.name || '', email: user.email || '', phone: user.phone || '', ...(servicePrefill || {}) };
     track('ps_enquiry_open');
     return openEnquiry({
       layer, send, buildPdf: pdfBase64, project: store.project, lot, prefill,
       source: portalOn() ? (state.portal.role === 'client' ? 'client' : 'builder') : 'public', orgName: portalOn() ? state.portal.orgName || '' : '', ...rest,
     });
   }
+
+  // Siting report: a short branded PDF (cover render, site summary and siting plan, home design, indicative site costs, next steps). Built in this browser.
+  const toJpeg = (url) => new Promise((resolve) => {
+    try {
+      const img = new Image();
+      img.onload = () => { try { const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0); resolve(c.toDataURL('image/jpeg', 0.86)); } catch { resolve(url); } };
+      img.onerror = () => resolve(url);
+      img.src = url;
+    } catch { resolve(url); }
+  });
+  async function exportSitingReport() {
+    if (store.readOnly) { layer.notify('This shared design is view only, so a report cannot be made from it.', 'info', 6000); return null; }
+    if (!isEntitled()) { openUpgrade({ source: 'export-siting-report' }); return null; }
+    if (!store.project?.site?.lot) { layer.notify('Find the lot first. The siting report needs a lot on the design.', 'info', 6000); return null; }
+    if (state.exporting) return null;
+    if (!(await planTermsGate.require({ context: 'siting-report' }))) return null;
+    state.exporting = 'siting-report';
+    topbar?.setBusy('siting-report', 'Building the siting report');
+    try {
+      const { toSitingReport, sitingReportFilename } = await import('./exporters/siting-report.js');
+      const base = await loadJsPDF();
+      const { trialJsPDF } = await import('./exporters/watermark.js');
+      const jsPDF = portalOn() && state.portal.watermark ? trialJsPDF(base) : base;
+      const shot = await coverImage(getViewer, { width: 1500, height: 960, maxChars: 9_000_000, timeoutMs: 8000 });
+      const image = shot ? await toJpeg(shot) : null;
+      const bytes = await toSitingReport(store.project, { jsPDF, image });
+      const filename = sitingReportFilename(store.project);
+      (saveFile || downloadBlob)(new Blob([bytes], { type: 'application/pdf' }), filename);
+      track('ps_export', { type: 'siting-report' });
+      layer.notify(`Siting report downloaded as ${filename}.`, 'ok');
+      topbar?.announce('Siting report downloaded');
+      return { filename, bytes: bytes.length };
+    } catch (e) {
+      console.warn('[premium] siting report failed', e);
+      layer.notify('The siting report could not be built. Try again.', 'error', 8000);
+      return null;
+    } finally {
+      state.exporting = null;
+      topbar?.setBusy(null, '');
+    }
+  }
+  // The Site costs panel and estimate load on demand: they read the 3D grading, which the Plan Pack page must not carry up front.
+  const openSiteCostsPanel = async () => {
+    if (!store.project?.site?.lot) return layer.notify('Find the lot first. The site cost estimate needs a lot on the design.', 'info', 6000);
+    const { openSiteCosts } = await import('./site-costs/panel.js');
+    return openSiteCosts({ layer, getProject: () => store.project });
+  };
+  const openOrderPanel = () => (canEnquire() ? openOrderEngineering({ layer, openEnquiry: (extra) => openEnquiryForm(extra) }) : layer.notify(portalOn() ? 'Your builder has turned off sending to JCE.' : 'Ordering engineering comes with the Plan Pack.', 'info', 6000));
 
   // PDF plans: everyone sees the sheets first (watermarked and low resolution when free). Download is the paid path.
   let previewing = null;
@@ -386,6 +435,9 @@ export function createPremium(store, options = {}) {
         exportAs,
         previewPdf: () => previewPdf(),
         enquiry: () => openEnquiryForm(),
+        sitingReport: () => exportSitingReport(),
+        siteCosts: () => openSiteCostsPanel(),
+        orderEngineering: () => openOrderPanel(),
       },
     });
   }
@@ -566,6 +618,12 @@ export function createPremium(store, options = {}) {
     exportAs,
     previewPdf,
     openEnquiry: openEnquiryForm,
+    sitingReport: exportSitingReport,
+    openSiteCosts: openSiteCostsPanel,
+    openOrderEngineering: openOrderPanel,
+    // For the finance tool (async, because the estimate loads on demand): .total.likely, or siteCostsForFinance. A page module can also import src/premium/site-costs/index.js directly.
+    estimateSiteCosts: async (project = store.project, opts) => (await import('./site-costs/index.js')).estimateSiteCosts(project, opts),
+    siteCostsForFinance: async (project = store.project, opts) => (await import('./site-costs/index.js')).siteCostsForFinance(project, opts),
     canEnquire,
     canSendPlans,
     importPdf: () => runImportPdf(psApp(), { isEntitled, openUpgrade: () => openUpgrade({ source: 'pdf-import' }), layer, config: cfg }),
