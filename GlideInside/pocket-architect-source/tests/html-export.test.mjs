@@ -18,7 +18,7 @@ function house() {
   applyOp(p, 'add_room', { type: 'bedroom', name: 'Bed 1', x: 6000, y: 0, width: 3500, depth: 4500 });
   return p;
 }
-const config = { disclaimer: 'Concept design only.', seller: { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' } };
+const config = { disclaimer: 'Concept design only.', seller: { name: 'Glide Inside', abn: '11 549 431 925' } };
 
 test('html is a plan pack export type with a name and a label', () => {
   assert.ok(EXPORT_TYPES.html);
@@ -50,7 +50,7 @@ test('the interactive HTML is one file that works offline: no web address, no ex
   assert.match(html, /<h1>Smith &lt;residence&gt; &amp; Co<\/h1>/);
   assert.match(html, /J Smith \| 12 Example St, Tamworth/);
   assert.match(html, /Concept design only\./);
-  assert.match(html, /ABN 29 699 165 663/);
+  assert.match(html, /ABN 11 549 431 925/);
   assert.match(html, /<td>Living<\/td><td>Living<\/td><td class="n">27\.00 m²<\/td>/);
 
   // the 3D tab: viewer inlined, orbit controls, and the embedded model is a real GLB

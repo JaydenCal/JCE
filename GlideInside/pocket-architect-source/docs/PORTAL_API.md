@@ -110,7 +110,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
   "title": "Tax invoice",
   "number": "GI-SHM-202610",
   "issuedAt": "2026-11-01T...", "dueAt": "2026-11-15T...", "month": "2026-10",
-  "seller": { "name": "JCE Infrastructure Pty Ltd trading as Glide Inside", "abn": "29 699 165 663" },
+  "seller": { "name": "Glide Inside", "abn": "11 549 431 925" },
   "buyer": { "name": "<billing legalName>", "abn": "<billing ABN>", "email": "..." },
   "lines": [ { "description": "New client logins first signed in during October 2026 (A$30 each, incl. GST)", "quantity": 3, "unitCents": 3000, "totalCents": 9000 },
              { "description": "AI message top-ups of 100 messages (A$15 each, incl. GST)", "quantity": 1, "unitCents": 1500, "totalCents": 1500 } ],
@@ -164,7 +164,7 @@ Body:
 }
 ```
 
-Consent text shown: "I agree to my plans and details being sent to JCE Infrastructure Pty Ltd to prepare a quote".
+Consent text shown: "I agree to my plans and details being sent to JCE Infrastructure to prepare a quote".
 
 Behaviour: 503 `ENQUIRY_NOT_CONFIGURED` when `RESEND_API_KEY` is unset (the UI says it is not set up yet); 400 for missing consent, name, phone, email or `need`; 413 over the size limits (PDF `ENQUIRY_MAX_PDF_BYTES`, default 6,000,000; project 2,000,000); 429 over 5 sends per IP per hour or 3 per email address per day. Otherwise it saves a copy in the `jce_enquiries` table, then sends one email through the Resend REST API (`POST https://api.resend.com/emails`, `fetch`, no SDK) from `ENQUIRY_FROM` to `ENQUIRY_TO` (default enquiries@jceinfrastructure.com.au), reply-to the person, with a plain text summary and two attachments (the PDF and the design `.glideinside.json`), and answers `{ ok: true, reference: "GI-XXXXX" }`. If Resend refuses, the copy is kept and the answer is 502 `EMAIL_FAILED` with the `reference`. Success text: "Sent to JCE Infrastructure, reference GI-xxxx; JCE will be in touch." In mock mode no email is sent and a fake reference is returned. Resend setup is in `server/README.md`.
 
@@ -249,7 +249,7 @@ Routes still open while read only: sign in/out, password change, `PUT /billing/c
 
 **Card capture.** The Stripe webhook already receives `checkout.session.completed`. For `mode: "setup"` the server reads the SetupIntent, sets the payment method as the customer's `invoice_settings.default_payment_method`, stores it on the org (brand and last 4 are shown, the id is never sent to the browser), sets the org `active` and fills any missing billing contact from Stripe's customer details. No new webhook event is needed.
 
-**Monthly billing.** An org with a saved card gets a `charge_automatically` invoice with `default_payment_method`, finalized and paid at once (`POST /invoices/:id/pay`, off session); Stripe does not email it. A declined card leaves the invoice `due` with the reason in `error` (shown on the admin page). An org without a card is invoiced as before (`send_invoice`, 14 days). Tax invoice rules are unchanged: seller JCE Infrastructure Pty Ltd trading as Glide Inside, ABN 29 699 165 663; buyer legal name and ABN; the invoice snapshot adds `payment: { method: "card" | "invoice", brand, last4 }`. Test mode only; a live key is refused unless `STRIPE_LIVE_BILLING_APPROVED` is set.
+**Monthly billing.** An org with a saved card gets a `charge_automatically` invoice with `default_payment_method`, finalized and paid at once (`POST /invoices/:id/pay`, off session); Stripe does not email it. A declined card leaves the invoice `due` with the reason in `error` (shown on the admin page). An org without a card is invoiced as before (`send_invoice`, 14 days). Tax invoice rules are unchanged: seller Glide Inside, ABN 11 549 431 925; buyer legal name and ABN; the invoice snapshot adds `payment: { method: "card" | "invoice", brand, last4 }`. Test mode only; a live key is refused unless `STRIPE_LIVE_BILLING_APPROVED` is set.
 
 **Owner email.** On a new request, one email to `TRIAL_NOTIFY_TO` (default hello@glideinside.com.au) through Resend: subject `Trial request: <company>`, the details and a link to `/portal/admin/`. Skipped silently when `TRIAL_NOTIFY=0`, `RESEND_API_KEY` is unset or `TRIAL_NOTIFY_TO` is empty. A failure never loses the request. The builder is never emailed by the server.
 

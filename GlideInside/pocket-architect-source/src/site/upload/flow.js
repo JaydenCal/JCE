@@ -5,7 +5,7 @@ import { applyUploadedBoundary } from './apply-upload.js';
 import { needsCustomRules } from '../custom-rules.js';
 import { injectUploadCss } from './css.js';
 
-export const FOOT_BASE = 'Concept only · Glide Inside · JCE Infrastructure';
+export const FOOT_BASE = 'Concept only · Glide Inside';
 
 /** Extra words for the foot of a card: the user boundary line, the Mapbox credit, or the no aerial line. */
 export function creditText(lot) {

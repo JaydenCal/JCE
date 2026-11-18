@@ -127,7 +127,7 @@ The portal needs D1 (`createD1PortalStore`); on Upstash or other hosts it answer
 | `ENTITLEMENT_SECRET` | secret | Already needed. Also signs the org tokens the AI endpoints accept |
 | `STRIPE_SECRET_KEY` | secret | **Test key only** (`sk_test_...`) until the owner gives written go-ahead for live billing |
 | `PORTAL_ENABLED` | var | `1` opens builder and client logins. Default off |
-| `SELLER_NAME`, `SELLER_ABN` | var | Seller on tax invoices. Defaults: `JCE Infrastructure Pty Ltd trading as Glide Inside`, `29 699 165 663` |
+| `SELLER_NAME`, `SELLER_ABN` | var | Seller on tax invoices. Defaults: `Glide Inside`, `11 549 431 925` |
 | `ORG_MONTHLY_CREDITS` | var | 300 credits per login per month. The top-up pack (100 messages = 200 credits, A$15 = 1500 cents incl. GST) is fixed in code; `TOPUP_CREDITS` and `TOPUP_AMOUNT_CENTS` are no longer read |
 | `STRIPE_GST_TAX_RATE_ID` | var, optional | An existing inclusive 10% GST tax rate. If empty one is created on first use and remembered in `portal_settings` |
 | `BUILDER_JOB_PRICE_ID`, `BUILDER_STARTER_PRICE_ID`, `BUILDER_PRO_PRICE_ID`, `BUILDER_TEAMS_PRICE_ID` | var, optional | Stripe price ids the owner creates (A$20 one off; A$119, A$219, A$419 recurring). Unset = per job billing records jobs but charges nothing, and plans show Coming soon. See `../JOB-BILLING.md` |

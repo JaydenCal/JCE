@@ -184,7 +184,7 @@ test('PBKDF2: stored format, 100,000 iterations, per-user 16 byte salt, verify a
 });
 
 test('ABN checksum', () => {
-  assert.equal(abnValid('29 699 165 663'), true, 'the seller ABN');
+  assert.equal(abnValid('11 549 431 925'), true, 'the seller ABN');
   assert.equal(abnValid('51 824 753 556'), true);
   assert.equal(abnValid('51 824 753 557'), false);
   assert.equal(abnValid('123'), false);
@@ -1076,8 +1076,8 @@ for (const [label, d1] of stores) {
     assert.equal(inv.form.customer, 'cus_test_1');
     assert.equal(inv.form['default_tax_rates[0]'], 'txr_test_1');
     assert.equal(inv.form.pending_invoice_items_behavior, 'exclude');
-    assert.match(inv.form.footer, /JCE Infrastructure Pty Ltd trading as Glide Inside, ABN 29 699 165 663/);
-    assert.equal(inv.form['custom_fields[0][value]'], '29 699 165 663');
+    assert.match(inv.form.footer, /Glide Inside, ABN 11 549 431 925/);
+    assert.equal(inv.form['custom_fields[0][value]'], '11 549 431 925');
     assert.equal(inv.form['custom_fields[1][value]'], '51 824 753 556');
     assert.equal(inv.form['metadata[month]'], '2026-10');
     assert.deepEqual([item1.form.quantity, item1.form.unit_amount, item1.form['tax_rates[0]'], item1.form.invoice], ['2', '3000', 'txr_test_1', 'in_test_1']);
@@ -1094,7 +1094,7 @@ for (const [label, d1] of stores) {
     assert.equal(list[0].totalCents, 7500);
     const full = (await a.admin.get(`/portal/billing/invoices/${list[0].id}`)).data;
     assert.equal(full.title, 'Tax invoice');
-    assert.deepEqual(full.seller, { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' });
+    assert.deepEqual(full.seller, { name: 'Glide Inside', abn: '11 549 431 925' });
     assert.equal(full.buyer.legalName, 'Alpha Builders Pty Ltd');
     assert.equal(full.buyer.abn, '51 824 753 556');
     assert.deepEqual([full.subtotalExGstCents, full.gstCents, full.totalInclGstCents], [6818, 682, 7500]);
@@ -1110,7 +1110,7 @@ for (const [label, d1] of stores) {
     assert.equal(again.data.results.find((r) => r.orgId === a.orgId).status, 'exists');
     assert.equal(w.stripe.calls.length, 0);
     // Once Bravo has a billing contact it is skipped for having no charges, not invoiced for nothing.
-    await b.admin.put('/portal/billing/contact', { name: 'B', email: 'b@bravo.example', phone: '', legalName: 'Bravo Homes Pty Ltd', abn: '29 699 165 663' });
+    await b.admin.put('/portal/billing/contact', { name: 'B', email: 'b@bravo.example', phone: '', legalName: 'Bravo Homes Pty Ltd', abn: '11 549 431 925' });
     const none = await w.admin('POST', '/billing/run-month', { month: '2026-10', orgId: b.orgId });
     assert.equal(none.data.results[0].reason, 'no_charges');
     assert.equal((await w.admin('POST', '/billing/run-month', { month: '2026-10', orgId: 'org_missing' })).status, 404);
@@ -1244,10 +1244,10 @@ if (DatabaseSync) {
 }
 
 test('buildSnapshot carries the seller from config and GST of one eleventh', () => {
-  const config = { sellerName: 'JCE Infrastructure Pty Ltd trading as Glide Inside', sellerAbn: '29 699 165 663', topUpCredits: 200, topUpCents: 1500 };
+  const config = { sellerName: 'Glide Inside', sellerAbn: '11 549 431 925', topUpCredits: 200, topUpCents: 1500 };
   const usage = { logins: [], topUps: [], totals: { loginsCount: 3, loginsCents: 6000, topUpsCount: 1, topUpsCents: 1500, totalCents: 7500 } };
   const s = buildSnapshot({ org: { legalName: 'B Pty Ltd', abn: '51 824 753 556', billingEmail: 'b@x.example' }, config, month: '2026-10', usage, number: 'GI-B-202610', issuedAtMs: T0 });
   assert.deepEqual([s.subtotalExGstCents, s.gstCents, s.totalInclGstCents], [6818, 682, 7500]);
-  assert.equal(s.seller.name, 'JCE Infrastructure Pty Ltd trading as Glide Inside');
+  assert.equal(s.seller.name, 'Glide Inside');
   assert.equal(s.title, 'Tax invoice');
 });

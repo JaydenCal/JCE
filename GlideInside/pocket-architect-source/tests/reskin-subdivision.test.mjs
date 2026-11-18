@@ -7,7 +7,7 @@ const sample = `<!doctype html><html><head><meta charset="utf-8"><title>S</title
 <header class="old-head"><nav>old</nav></header>${MID}<footer class="old"><p>ABN 12 345 678 901</p></footer>
 <script>window.x=1</script></body></html>`;
 const H = '<header class="gi-head">H</header>';
-const F = '<footer class="gi-foot">F ABN 29 699 165 663</footer>';
+const F = '<footer class="gi-foot">F ABN 11 549 431 925</footer>';
 
 test('replaces the header and footer and keeps everything else byte for byte', () => {
   const { html, notes } = reskin(sample, { header: H, footer: F });
@@ -47,6 +47,6 @@ test('another ABN elsewhere in the page is reported, not edited', () => {
 test('the shipped snippets carry the right entity and no unscoped class', async () => {
   const { reskin: r } = await import('../tools/reskin-subdivision.mjs');
   const { html } = r('<html><head></head><body></body></html>');
-  assert.ok(html.includes('JCE Infrastructure Pty Ltd trading as Glide Inside, ABN 29 699 165 663'));
+  assert.ok(html.includes('Glide Inside, ABN 11 549 431 925'));
   for (const c of html.match(/class="[^"]+"/g)) assert.ok(c.slice(7, -1).split(' ').every((k) => k.startsWith('gi-')), c);
 });

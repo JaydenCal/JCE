@@ -2,7 +2,7 @@
 // One source, so the sentence a person sees beside a tick box is the sentence the server records. Plain words, no dashes.
 
 /** Version of the site terms and privacy policy a person accepts when they create a profile (the pages' "Last updated" date). */
-export const TERMS_VERSION = '2026-11-15';
+export const TERMS_VERSION = '2026-11-18';
 
 /**
  * The exact marketing consent wording, by version. Consent is recorded with the version AND the words, so a contact is only

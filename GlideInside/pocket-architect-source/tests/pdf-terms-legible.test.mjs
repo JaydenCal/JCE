@@ -12,7 +12,7 @@ const house = () => {
   applyOp(p, 'add_room', { type: 'living', name: 'Living', x: 0, y: 0, width: 6000, depth: 4500 });
   return p;
 };
-const terms = { version: '1.1', acceptedAt: '2026-11-15T01:00:00Z' };
+const terms = { version: '1.2', acceptedAt: '2026-11-15T01:00:00Z' };
 
 async function items(bytes) {
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
@@ -31,7 +31,7 @@ for (const [name, opts] of [['engineering builder', {}], ['engineering trial', {
     const r = await buildExport('pdf', house(), { jsPDF, catalogue, config: {}, terms, ...opts });
     const pages = await items(r.bytes);
     for (const [pi, its] of pages.entries()) {
-      const note = its.filter((i) => /CONCEPT ONLY|No third party|Inside, ABN|Issued under/.test(i.s) || /Plan set terms|terms of use v1\.1/.test(i.s));
+      const note = its.filter((i) => /CONCEPT ONLY|No third party|Inside, ABN|Issued under/.test(i.s) || /Plan set terms|terms of use v1\.2/.test(i.s));
       if (!note.length) continue;
       for (const t of note) assert.ok(t.h >= 5.9, `page ${pi + 1}: terms text ${t.h.toFixed(2)} pt`);
       const trial = its.find((i) => i.s.includes('Free trial export'));

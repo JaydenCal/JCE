@@ -119,7 +119,7 @@ test('plan set: a warehouse set says site layout, hides a zero unit count and pr
 test('plan set: the terms note is not followed by a second Terms of use stamp when nothing was accepted', async () => {
   const p = commercialProject({ plain: false });
   const text = await pdfText(p);
-  assert.ok(!/ABN 29 699 165 663\.\s*Terms of use v/.test(text.replace(/\n/g, ' ')));
+  assert.ok(!/ABN 11 549 431 925\.\s*Terms of use v/.test(text.replace(/\n/g, ' ')));
 });
 
 test('step 4 repeats the zone warning for a residential zone', () => {

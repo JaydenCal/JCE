@@ -109,7 +109,7 @@ test('viewer wiring: the card has Site plan PDF and House plan PDF buttons that 
   assert.match(src, /exportPlanSet\(\{ project: store\.project, lot, kind, builderName/);
   assert.match(src, /planset\/index\.js/);
   assert.match(src, /Search a NSW or QLD address/);
-  assert.match(src + readFileSync(new URL('../src/site/upload/flow.js', import.meta.url), 'utf8'), /Concept only · Glide Inside · JCE Infrastructure/); // the foot line lives in the shared upload flow module
+  assert.match(src + readFileSync(new URL('../src/site/upload/flow.js', import.meta.url), 'utf8'), /Concept only · Glide Inside/); // the foot line lives in the shared upload flow module
 });
 
 test('rules: no dashes and no "compliant" in the viewer UI text', () => {

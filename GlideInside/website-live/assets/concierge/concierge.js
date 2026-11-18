@@ -244,7 +244,7 @@
       el("label", { class: "gic-field", for: "gic-cb-when" }, ["Best time to call", when]),
       el("label", { class: "gic-field", for: "gic-cb-note" }, ["Note about the time (optional)", whenNote]),
       el("label", { class: "gic-field", for: "gic-cb-notes" }, ["Anything Jayden should know (optional)", notes]),
-      el("label", { class: "gic-check", for: "gic-cb-consent" }, [consent, el("span", { text: "I agree to JCE Infrastructure Pty Ltd, trading as Glide Inside, calling me back about my request using these details." })]),
+      el("label", { class: "gic-check", for: "gic-cb-consent" }, [consent, el("span", { text: "I agree to Glide Inside, calling me back about my request using these details." })]),
       el("label", { class: "gic-check", for: "gic-cb-mk" }, [mk, el("span", { text: "Optional: send me occasional Glide Inside updates and offers. You can say no and still ask for a call." })]),
       err,
     ]);
@@ -358,7 +358,7 @@
       el("p", { class: "gic-note", text: (t.label || "Booking") + ": " + state.slot.dayLabel + ", " + state.slot.timeLabel }),
       el("label", { class: "gic-field", for: "gic-name" }, ["Name", name]),
       el("label", { class: "gic-field", for: "gic-email" }, ["Email", email]),
-      el("label", { class: "gic-check", for: "gic-consent" }, [consent, el("span", { text: "I agree to JCE Infrastructure Pty Ltd, trading as Glide Inside, using my name and email to make and confirm this booking." })]),
+      el("label", { class: "gic-check", for: "gic-consent" }, [consent, el("span", { text: "I agree to Glide Inside, using my name and email to make and confirm this booking." })]),
       el("label", { class: "gic-check", for: "gic-mk" }, [mk, el("span", { text: "Optional: send me occasional Glide Inside updates and offers. You can say no and still book." })]),
       err,
     ]);

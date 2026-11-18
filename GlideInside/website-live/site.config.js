@@ -30,7 +30,7 @@ window.GI_CONFIG = {
   // PLANNED monthly plans (18/11/2026), shown on the pages as "Coming soon, contact us". Documentation only, nothing reads these. Add Stripe links here when the owner approves the products.
   //   builder: Starter A$149 (10 logins, extra A$25), Pro A$249 (20, extra A$22), Teams A$449 (40, extra A$20)
   //   commercial: Solo A$50 (live), Pro A$149, Team A$349
-  abn: "29 699 165 663",
+  abn: "11 549 431 925",
   email: "hello@glideinside.com.au",
   phone: "0477 207 027"
 };

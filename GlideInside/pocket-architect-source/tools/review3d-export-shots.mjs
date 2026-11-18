@@ -16,7 +16,7 @@ const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
 const OUT = resolve(process.argv[2] || '/home/claude/fable-3d-review');
 const REF = process.argv[3] || 'HEAD~1';
 mkdirSync(OUT, { recursive: true });
-const config = { disclaimer: 'Concept design only.', seller: { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' } };
+const config = { disclaimer: 'Concept design only.', seller: { name: 'Glide Inside', abn: '11 549 431 925' } };
 const project = migrate(catalogue.createFromTemplate('house_single'));
 const file = await buildExport('html', project, { catalogue, config, date: new Date('2026-11-15T00:00:00Z') });
 const after = new TextDecoder().decode(file.bytes);

@@ -34,7 +34,7 @@ export const INTENT_OPENERS = {
 
 export const FAQ = [
   { id: 'what', re: /\bwhat (is|does|do) (glide ?inside|this (tool|site|product|app|software|website)|it do)\b|\bhow does (it|this|glide ?inside) work\b|\btell me about (glide ?inside|the tool|this tool)\b/i,
-    a: 'Glide Inside Residential lets you type an address in NSW or Queensland and load the lot, its neighbours, the aerial, contours and indicative setbacks. You place a house, walk through it in 3D and take away a concept plan set. Glide Inside Commercial does industrial and commercial unit layouts. Glide Inside is a trading name of JCE Infrastructure Pty Ltd.', links: ['tool', 'accuracy'] },
+    a: 'Glide Inside Residential lets you type an address in NSW or Queensland and load the lot, its neighbours, the aerial, contours and indicative setbacks. You place a house, walk through it in 3D and take away a concept plan set. Glide Inside Commercial does industrial and commercial unit layouts. Glide Inside, ABN 11 549 431 925, makes and sells it.', links: ['tool', 'accuracy'] },
   { id: 'cost-homeowner', re: /\b(cost|price|pricing|how much|pay|free|plan pack)\b(?!.*\b(builder|login|commercial|subscription|subdivision|engineer))/i,
     a: 'Drawing and viewing are free with no sign up. A Plan Pack is A$30 per job including GST and unlocks a PDF plan set, a DXF, 3D model files, an offline interactive HTML file and 500 AI credits for that job. A 3D fly-through and complex renderings are A$10 each, made by the Glide Inside team and ordered by email.', links: ['pricing'] },
   { id: 'cost-builder', re: /\b(builder|builders|login|logins|trial)\b.*\b(cost|price|pricing|how much|pay|free|trial)\b|\b(cost|price|pricing|how much|pay)\b.*\b(builder|builders|client logins?)\b|\bfree trial\b/i,
@@ -56,7 +56,7 @@ export const FAQ = [
   { id: 'account', re: /\b(account|sign ?up|log ?in|register|password)\b/i,
     a: 'No account is needed to draw. Your work saves in your browser. When you pay, Stripe collects your email and it is used to restore your purchase. Builders and their clients use private portal logins.', links: ['tool'] },
   { id: 'engineering', re: /\b(engineer(ing)?|footings?|stormwater|site classification|jce)\b/i,
-    a: 'Glide Inside is run by JCE Infrastructure Pty Ltd, a civil and hydraulic engineering consultancy. Engineering input is provided by JCE under a separate engagement, and not every service is available in every area. I cannot give fees or quotes. Please send an enquiry and the team will reply.', links: ['enquiry'] },
+    a: 'Glide Inside, ABN 11 549 431 925, makes and sells the software. Engineering input is provided by JCE Infrastructure, a civil and hydraulic engineering consultancy, under a separate engagement, and not every service is available in every area. I cannot give fees or quotes. Please send an enquiry and the team will reply.', links: ['enquiry'] },
   { id: 'privacy', re: /\b(privacy|my data|personal information|stored|anthropic|data safe)\b/i,
     a: 'This assistant is AI. I do not keep a transcript of our chat. If you request a call back, your name, phone number, email and note are sent to Jayden at Glide Inside so he can call you, and a copy is kept so the request is not lost. Marketing is opt in and never ticked for you. The privacy policy has the full detail.', links: [] },
   { id: 'contact', re: /\b(contact (you|us|the team|someone)|your (email|phone( number)?)|phone number|email address|speak to|talk to|call (you|us|back)|real person|human)\b/i,
@@ -76,7 +76,7 @@ export const REFUSALS = [
 /** The plain text block given to the model. Keep it short: it is paid for on every uncached request. */
 export function knowledgeText() {
   return [
-    'Glide Inside is a trading name of JCE Infrastructure Pty Ltd. Products: Glide Inside Residential and Glide Inside Commercial. Built for regional NSW and Queensland.',
+    'Glide Inside, ABN 11 549 431 925, makes and sells the software. Products: Glide Inside Residential and Glide Inside Commercial. Built for regional NSW and Queensland.',
     'Residential: type an address, load lot boundary, neighbours, aerial, contours and indicative setbacks; place a house, 2D and 3D, walk through; concept plan set. Starting plans: granny flats, duplexes, 4 bedroom houses, sheds, extensions. Free to draw and view, no sign up.',
     'Residential prices (incl. GST): Plan Pack A$30 per job (PDF set A3 to scale, DXF, GLB and OBJ, offline HTML, 500 AI credits, re-export for 12 months). Add-ons A$10 each: 3D fly-through, complex renderings (ordered by email).',
     'Builders: private portal, own house designs, own colours and logo, a login per client, clients place the builder\'s designs on their real lot. Free 14 day trial for staff, no card. A$20 per job (one new project, confirmed before it is created), client logins free, no monthly fee, capped plans A$119 / A$219 / A$419 with 10 / 20 / 40 jobs coming soon. AI top ups 100 messages for A$15 incl. GST, on every option. Optional send to JCE for an engineering and DA plans quote, only if the builder leaves it on and the client consents.',

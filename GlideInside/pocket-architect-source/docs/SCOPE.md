@@ -7,7 +7,7 @@ Brief for Claude Code
 | Document | PS-SCOPE-001 |
 | Revision | A |
 | Date | 14/10/2026 |
-| Owner | Jayden Callen, JCE Infrastructure Pty Ltd |
+| Owner | Jayden Callen, Glide Inside (ABN 11 549 431 925) |
 | Status | For implementation. Prototype build in progress (see section 18) |
 | Working name | Plan Studio (final name and route to be confirmed, decision 17.2) |
 
@@ -732,7 +732,7 @@ A single file `plan-studio/brand.config.js` (or the site's equivalent) holds: pr
 
 | No. | Decision | Recommendation |
 |---|---|---|
-| 17.1 | Which website hosts the tool, and which entity sells the Plan Pack | Brand fit favours Glide Inside (3D homes for builders and owners). Liability containment favours selling through JCE Infrastructure Pty Ltd, since Glide Inside currently trades under the sole trader ABN. Option: host on Glide Inside and contract as the Pty Ltd, or move Glide Inside into the Pty Ltd first. The JCE site would take a teaser section and link. |
+| 17.1 | Which website hosts the tool, and which entity sells the Plan Pack | Brand fit favours Glide Inside (3D homes for builders and owners). Decided 18/11/2026 (owner): Glide Inside is sold and shown as Glide Inside, ABN 11 549 431 925, the owner's sole trader ABN. The JCE site would take a teaser section and link. |
 | 17.2 | Product name, nav label and route | Working name Plan Studio; route `/floor-plan-designer/` for search value. |
 | 17.3 | GST registration of the selling entity | Display "A$30 incl. GST" if registered. |
 | 17.4 | Plan Pack terms | Per project, 500 credits, 12 months re-export, no top-ups at launch. |
