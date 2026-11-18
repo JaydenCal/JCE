@@ -74,7 +74,7 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
           td('Requested', day(q.createdAt)),
           td('Actions', canGenerate ? h('div', { class: 'pp-actions' },
             h('button', { class: 'pp-btn pp-btn--sm pp-btn--primary', type: 'button', dataset: { act: 'approve' }, onclick: (e) => approveRequest(e.currentTarget, q) }, 'Approve'),
-            h('button', { class: 'pp-btn pp-btn--sm', type: 'button', dataset: { act: 'decline' }, onclick: () => declineRequest(q) }, 'Decline')) : h('span', { class: 'pp-sub' }, locked ? 'Add billing details to approve' : 'Read only')))))));
+            h('button', { class: 'pp-btn pp-btn--sm', type: 'button', dataset: { act: 'decline' }, onclick: () => declineRequest(q) }, 'Decline')) : h('span', { class: 'pp-sub' }, locked ? 'Add billing details to approve' : 'Read only'))))))));
   }
   async function approveRequest(btn, q) {
     await busy(btn, async () => {
