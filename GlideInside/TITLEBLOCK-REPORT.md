@@ -34,3 +34,6 @@ Details come only from the exporting login's own org (`/portal/me` returns the c
 - The existing diagonal watermark "Prepared for <builder>" and the cover line "Prepared for <builder>" are unchanged.
 - The client name on plan set sheets comes from the client login's name (client users). Staff exports show "Not stated" unless a client name is supplied; there is no client name field on a project yet.
 - Nothing deployed. Migration 0024 must be applied to D1 before the new code is.
+
+## Full suite result
+Full run under heavy machine load: the only failures were load timeouts (autosave, grading, perf budgets, and three files that timed out) plus one real failure that is now fixed (`live-merge.test.mjs` needed 0024 in its migration lists). Re-run alone after the fix: engplans, commercial-assistant, catalogue-framework, planset, portal, syntax-portal, live-merge, titleblock and the portal-server title block test all pass (226 tests, 0 fail in the grouped re-run). `engplans.test.mjs` was updated: a builder engineering sheet now says "Powered by Glide Inside" (was "Prepared with Glide Inside"). `live-merge.test.mjs` lists 0024: when merged with the branch adding 0023, the migration list there needs both.
