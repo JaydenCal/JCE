@@ -16,6 +16,7 @@ const PATHS = {
   'bt-home': '<path d="M3 19.5h18M4.5 19.5v-8L8 8.5l3.5 3v8M12.5 19.5v-8l3.5-3 3.5 3v8"/><path d="M6.5 15h1.5M14.5 15H16M17.5 15H19"/>',
   'bt-drive': '<rect x="4" y="8" width="11" height="11.5" rx="0.6"/><path d="M15 12h5M18 10l2 2-2 2M7.5 13h4"/>',
   movehouse: '<path d="M12 3l3 3.2h-2v4.3h4.3v-2L20.5 12l-3.2 3v-2h-4.3v4.3h2L12 20.5 8.8 17.3h2V13H6.7v2L3.5 12l3.2-3v2H11V6.2H9z"/>',
+  rotate: '<path d="M19.5 12a7.5 7.5 0 1 1-2.6-5.7"/><path d="M17.6 3.2l-.7 3.1 3.1.7"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>',
   select: '<path d="M6 3.5v15.2l4.2-3.9 3 5.7 2.4-1.2-3-5.6 5.6-.5z"/>',
   room: '<rect x="3.5" y="5" width="17" height="14" rx="0.6"/><path d="M3.5 11.5H10v7.5M14 5v4"/>',
   wall: '<path d="M4.5 17.5l15-11"/><circle cx="4.5" cy="17.5" r="1.7"/><circle cx="19.5" cy="6.5" r="1.7"/>',
