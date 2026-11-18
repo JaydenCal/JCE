@@ -11,6 +11,7 @@ import { projectToSvg, svgDataUri } from '../portal/thumbnail.js';
 import { mountLotStep, zoneText } from './lot-step.js';
 import { lotMapSvg, mapBox, roadSvg, aerialOf } from './lot-map.js';
 import { writeFlow, flowOf } from './state.js';
+import { gradingLinesOf } from './grading-lines.js';
 import { loadHomes, filterRows, placeBest, nudgeHouse, turnHouse, mirrorHouse, previewCopy, placementStatus, checkSummary, INDICATIVE } from './res-logic.js';
 import { mount3dPreview } from './preview3d.js';
 import { mountBuilderFinder } from './builder-finder.js';
@@ -602,7 +603,7 @@ function mountCheckStep(ctx, { catalogue, getHomes, want = {} }) {
         s.openSpaceM2 != null ? stat(`${Math.round(s.openSpaceM2)} m2`, `Open space${s.openSpacePct != null ? `, ${Math.round(s.openSpacePct)} percent` : ''}`) : null,
         stat(s.garage.has ? (s.garage.facesStreet ? 'Faces street' : 'Not to street') : 'No garage', s.garage.distanceM != null ? `Garage, ${s.garage.distanceM.toFixed(1)} m from street` : 'Garage'),
         stat(s.driveway.state === 'ok' ? `${s.driveway.lengthM.toFixed(1)} m` : s.driveway.state === 'none' ? 'None' : 'Not linked', 'Driveway to frontage')),
-      h('ul', { class: 'gf-lines', dataset: { ps: 'flow-lines' } }, ...s.lines.map((t) => h('li', null, t))),
+      h('ul', { class: 'gf-lines', dataset: { ps: 'flow-lines' } }, ...[...s.lines, ...gradingLinesOf(store.project)].map((t) => h('li', null, t))),
       h('p', { class: 'gf-note' }, h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(3); } }, 'Back to placement'), ' to move or turn the home.'));
   }
   const stat = (b, s) => h('div', { class: 'gf-stat' }, h('b', null, b), h('span', null, s));

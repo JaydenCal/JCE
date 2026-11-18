@@ -97,8 +97,9 @@ const CASES = [['warehouse', () => H.commercial('warehouse')], ['strata U shape'
 
 for (const [name, make] of CASES) {
   test(`grading: no terrain above any pad, paving, driveway or road surface (${name}), on a 4 m fall with cross slope and bumps`, () => {
-    const m = H.meshGrid(make());
-    const zones = H.probeZones(m);
+    const pr = make();
+    const m = H.meshGrid(pr);
+    const zones = H.probeZones(m, 400, pr.site.lot.boundary);
     assert.ok(zones.some((z) => z.road) && zones.some((z) => !z.road && z.n > 50), 'road and footprint zones sampled');
     for (const z of zones) {
       assert.ok(z.poke <= 0.005, `terrain pokes ${z.poke} m above a ${z.road ? 'road' : 'footprint'} surface`);

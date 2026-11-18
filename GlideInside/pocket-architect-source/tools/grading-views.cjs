@@ -96,7 +96,19 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
     const poseJson = process.env.POSES ? JSON.parse(process.env.POSES) : {};
     for (const name of VIEWS) {
       const pose = poseJson[name] || poses[name]; if (!pose) continue;
+      // camera height clamped above the visible ground: read the terrain mesh under the camera (and the design surface) and lift the pose when below
+      const fix = await page.evaluate(async (po) => {
+        const v = window.__ps.getViewer(); let t = null; v.scene.traverse((o) => { if (o.name === 'site-terrain') t = o; });
+        const pa = t.geometry.attributes.position; const n = pa.count; let cols = 0; const x0 = pa.getX(0); for (let i = 1; i < n; i++) { if (pa.getX(i) <= x0 + 1e-6 && i > 0 && pa.getX(i) < pa.getX(i - 1)) { cols = i; break; } }
+        const at = (x, z) => { let best = 1e9; let by = -1e9; for (let i = 0; i < n; i += 1) { const d = Math.abs(pa.getX(i) - x) + Math.abs(pa.getZ(i) - z); if (d < best) { best = d; by = pa.getY(i); } } return by; };
+        const g = Math.max(at(po.position.x, po.position.z), at(po.target.x, po.target.z) - 5);
+        const lift = g + 0.9 - po.position.y;
+        return { g, lift };
+      }, pose);
+      if (fix.lift > 0) { pose.position.y += fix.lift; console.log('lifted pose', name, fix.lift.toFixed(2)); }
       await page.evaluate(async (po) => { await window.__ps.getViewer().flyTo(po, { duration: 0.01 }); }, pose);
+      const cam = await page.evaluate(() => { const c = window.__ps.getViewer().camera.position; return [c.x, c.y, c.z]; });
+      console.log('camera', name, cam.map((q) => q.toFixed(1)).join(','), 'wanted', pose.position.x.toFixed(1), pose.position.y.toFixed(1), pose.position.z.toFixed(1));
       await page.waitForTimeout(1800);
       const f = path.join(OUT, `${PREFIX}-${scene}-${name}.png`);
       await page.screenshot({ path: f });

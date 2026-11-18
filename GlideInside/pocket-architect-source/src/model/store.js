@@ -4,6 +4,21 @@
 import { migrate } from './schema.js';
 import { applyOp, findEntity, OPS } from './ops.js';
 
+/**
+ * A deep copy of the project that SHARES the lot's elevation grid (site.lot.terrain). The grid is large, read only and replaced as a whole when it
+ * changes, so copying it on every change and every undo step only costs time and memory.
+ */
+export function cloneProject(project) {
+  const lot = project?.site?.lot;
+  const t = lot?.terrain;
+  if (!t) return structuredClone(project);
+  lot.terrain = undefined;
+  let c;
+  try { c = structuredClone(project); } finally { lot.terrain = t; }
+  c.site.lot.terrain = t;
+  return c;
+}
+
 export function createStore(project, opts = {}) {
   const listeners = new Map();
   const undoStack = [];
@@ -59,7 +74,7 @@ export function createStore(project, opts = {}) {
         err.name = 'ReadOnlyError';
         throw err;
       }
-      const before = structuredClone(store.project);
+      const before = cloneProject(store.project);
       let result;
       try {
         result = fn(store.project);
@@ -105,7 +120,7 @@ export function createStore(project, opts = {}) {
       if (undoStack.length <= floor) return false;
       const e = undoStack.pop();
       if (!e) return false;
-      redoStack.push({ label: e.label, snapshot: structuredClone(store.project) });
+      redoStack.push({ label: e.label, snapshot: cloneProject(store.project) });
       store.project = e.snapshot;
       changed(`Undo ${e.label}`);
       return true;
@@ -113,7 +128,7 @@ export function createStore(project, opts = {}) {
     redo() {
       const e = redoStack.pop();
       if (!e) return false;
-      undoStack.push({ label: e.label, snapshot: structuredClone(store.project) });
+      undoStack.push({ label: e.label, snapshot: cloneProject(store.project) });
       store.project = e.snapshot;
       changed(`Redo ${e.label}`);
       return true;

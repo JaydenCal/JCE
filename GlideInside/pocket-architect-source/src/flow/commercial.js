@@ -1,6 +1,7 @@
 // The commercial guided flow: 1 Find your lot, 2 Choose what to build, 3 Place it, 4 Check it, then the full editor (step 5).
 // Works on the real project, so the editor opens with exactly the buildings and site that were laid out. Wording: building, layout, site.
 
+import { gradingLinesOf } from './grading-lines.js';
 import { confirmBreach } from './breach.js';
 import { h } from '../ui/dom.js';
 import * as G from '../model/geometry.js';
@@ -499,7 +500,7 @@ function mountCheckStep(ctx, { catalogue }) {
         stat(s.yield.grossRent || 'n/a', 'Indicative gross rent a year'),
         stat(s.yield.yieldPct || 'n/a', 'Indicative gross yield on cost')) : null,
       h('p', { class: 'gf-note', dataset: { ps: 'flow-estimates' } }, s.caveat),
-      h('ul', { class: 'gf-lines', dataset: { ps: 'flow-lines' } }, ...s.lines.map((t) => h('li', null, t))),
+      h('ul', { class: 'gf-lines', dataset: { ps: 'flow-lines' } }, ...[...s.lines, ...gradingLinesOf(store.project)].map((t) => h('li', null, t))),
       h('p', { class: 'gf-note' }, h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(3); } }, 'Back to placement'), ' to move, add or turn a building.'));
   }
   paint();

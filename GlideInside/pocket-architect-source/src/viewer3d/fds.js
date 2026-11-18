@@ -81,7 +81,7 @@ const EMPTY = [];
  * createFDS({ rawAt, elements, cellM }) -> { elements, levelAt(x, y, raw?), heightAt(x, y, raw?), band, reach }
  * rawAt(x, y) is the natural ground in metres (the same Y scale as the element levels). Elements are in priority order, highest first.
  */
-export function createFDS({ rawAt, elements, cellM = 0.75, padBand = null }) {
+export function createFDS({ rawAt, elements, cellM = 0.75, padBand = null, lot = null, batterRun = S.BATTER_RUN }) {
   const band = Math.max(1.2, 1.5 * cellM); // flat band beyond an element: wider than a terrain cell so the mesh is on the plane under it
   const bandPad = padBand ?? Math.max(S.PAD_MARGIN_M, 1.5 * cellM);
   elements.forEach((z, k) => { z.rank = k; z.band = z.band ?? (z.kind === 'pad' ? bandPad : band); z.T = z.T ?? TRANSITION_M; z.boxes = z.polys.map(bboxOf); });
@@ -133,12 +133,15 @@ export function createFDS({ rawAt, elements, cellM = 0.75, padBand = null }) {
     if (!bz) { out.y = rawIn ?? rawAt(x, y); return out; }
     const bnd = bz.band;
     out.near = bz.id;
+    // Shoulders and batters stop at the lot boundary: beyond it the ground is the natural ground (the step at the boundary is a retaining edge,
+    // see retainingEdges). The road and its crossovers are the only design that continues past the boundary.
+    if (bd > 0 && lot && bz.kind !== 'road' && bz.kind !== 'crossover' && !G.pointInPolygon({ x, y }, lot)) { out.y = rawIn ?? rawAt(x, y); out.near = null; return out; }
     if (bd <= bnd) { out.y = blended(bz, x, y, cands); if (bd === 0) { out.id = bz.id; out.kind = bz.kind; } return out; }
     const raw = rawIn ?? rawAt(x, y);
     if (bd > REACH_M + bnd) { out.y = raw; out.near = null; return out; }
     const k = bnd / bd; // the batter starts from the level at the band edge, so it is a clean 1 in 3 band
     const lvl = blended(bz, bqx + (x - bqx) * k, bqy + (y - bqy) * k, cands);
-    out.y = S.padHeight(raw, lvl, bd - bnd + S.PAD_MARGIN_M); out.batter = true;
+    out.y = S.padHeight(raw, lvl, bd - bnd + S.PAD_MARGIN_M, batterRun); out.batter = true;
     return out;
   };
   const levelAt = (x, y, rawIn) => { const r = core(x, y, rawIn); return { y: r.y, id: r.id, kind: r.kind, near: r.near, batter: r.batter }; };

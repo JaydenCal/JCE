@@ -528,6 +528,7 @@ async function main() {
   }
   if (COMMERCIAL_TOOL) api.commercial = createCommercialPanel({ store, host: refs.stage, editor }); // the residential tool has no commercial panel
   createMapCredit(refs.stage, store);
+  if (VIEWER || COMMERCIAL_TOOL) import('./ui/panel-grading.js').then((m) => { const gp = m.createGradingPanel({ store }); refs.stage.append(gp.el); }).catch((e) => console.warn('[grading] panel not available', e)); // compact Grading panel, lower left, never over the 3D view
   { const fab = createAerialToggle({ store, className: 'ps-aerial-fab', dataPs: 'aerial-toggle-stage' }); refs.stage.append(fab.el); const own = createAerialSourceButton({ store, className: 'ps-aerial-src-fab', dataPs: 'aerial-source-stage' }); refs.stage.append(own.el); } // Aerial on/off over the 2D plan and the 3D view (hidden while the lot card shows its own)
   // The guided start flow (src/flow/) replaces the welcome card for a fresh open and for a flow that was part way through.
   const startsFlow = shouldStart({ project: store.project, search: location.search, viewer: VIEWER, demo: demoMode(), shareId, fromAutosave: state.fromAutosave }) && !params.get('template');

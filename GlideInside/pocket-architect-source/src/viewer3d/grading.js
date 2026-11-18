@@ -309,7 +309,7 @@ export const clipHalf = (poly, o, n) => {
  * existing road, see roadElement. crossovers: rings over the verge (a ramp from the layback to the verge level). cellM: terrain cell in metres.
  * Elements in priority order (the road and its crossovers are fixed): crossovers, roads, pads, then paving and driveways, solved to meet them.
  */
-export function planGrading({ rawAt, padY, fp = null, pads = null, paving = [], driveways = [], corridors = [], crossovers = [], cellM = 0.75 }) {
+export function planGrading({ rawAt, padY, fp = null, pads = null, paving = [], driveways = [], corridors = [], crossovers = [], cellM = 0.75, lot = null, batterRun = 3 }) {
   const padSrc = pads && pads.length ? pads : fp ? [[{ x: fp.minX, y: fp.minY }, { x: fp.maxX, y: fp.minY }, { x: fp.maxX, y: fp.maxY }, { x: fp.minX, y: fp.maxY }]] : [];
   const padList = padSrc.map((q, i) => (Array.isArray(q) ? { id: `pad:${i}`, poly: q, y: padY } : { id: q.id || `pad:${i}`, poly: q.poly, y: Number.isFinite(q.y) ? q.y : padY }))
     .filter((q) => Array.isArray(q.poly) && q.poly.length >= 3).map((q) => ({ ...q, bb: bboxOf(q.poly) }));
@@ -361,7 +361,7 @@ export function planGrading({ rawAt, padY, fp = null, pads = null, paving = [], 
   }
   const elements = [...cross, ...roads.map((r) => ({ id: r.id, kind: 'road', polys: [r.poly], level: r.level, fall: r.fall, road: true, crossfall: r.crossfall, frame: r.frame })), ...padEls, ...planes];
   if (!planes.length && !roads.length && !cross.length) return null;
-  const fds = createFDS({ rawAt, elements, cellM, padBand: Math.max(S.PAD_MARGIN_M, 1.5 * cellM) });
+  const fds = createFDS({ rawAt, elements, cellM, padBand: Math.max(S.PAD_MARGIN_M, 1.5 * cellM), lot, batterRun });
   return { elements: fds.elements, zones: fds.elements, fds, heightAt: fds.heightAt, band: fds.band, pads: padList };
 }
 

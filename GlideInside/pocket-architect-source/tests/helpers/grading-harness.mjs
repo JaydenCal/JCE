@@ -57,7 +57,7 @@ export function meshGrid(p) {
  * Over every footprint zone, the worst mesh height above (poke) and below (sunk) its design surface. A sample counts only where this zone is the
  * first (highest ranked) to contain it and it is at least one cell clear of every other zone, so two different planes meeting is not scored.
  */
-export function probeZones({ tm, grid, dims }, step = 400) {
+export function probeZones({ tm, grid, dims }, step = 400, lotRing = null) {
   const zs = tm.grading.zones;
   const clear = Math.max(dims.dx, dims.dy) * 1.6;
   const out = [];
@@ -67,6 +67,7 @@ export function probeZones({ tm, grid, dims }, step = 400) {
       const bb = z.boxes[k];
       for (let x = bb.minX + 100; x < bb.maxX; x += step) for (let y = bb.minY + 100; y < bb.maxY; y += step) {
         if (!G.pointInPolygon({ x, y }, z.polys[k])) continue;
+        if (lotRing && !z.road && (!G.pointInPolygon({ x, y }, lotRing) || lotRing.some((q, qi) => G.projectToSegment({ x, y }, q, lotRing[(qi + 1) % lotRing.length]).d < clear))) continue; // beyond (and within a cell of) the boundary the design stops: a retaining edge
         if (x < grid.x0 || x > grid.x0 + (grid.cols - 1) * grid.dx || y < grid.y0 || y > grid.y0 + (grid.rows - 1) * grid.dy) continue;
         let skip = false;
         zs.forEach((o, oi) => {
