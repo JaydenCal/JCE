@@ -96,3 +96,35 @@ test('engineering set: a second SITE PLAN NO AERIAL sheet follows the site plan,
     assert.ok(/site plan no aerial/i.test(textOf(pages[0])), 'drawing list');
   }
 });
+
+// ---- C100 on the aerial, C100A clean ----
+const aerialCase = () => {
+  const houses = JSON.parse(fs.readFileSync(new URL('../../golive/builder-houses/hunter-homes.json', import.meta.url), 'utf8'));
+  const rect = (x0, y0, x1, y1) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+  const lot = { boundaryM: rect(0, 0, 36, 60), frontEdge: 0, lotNumber: '12', planLabel: 'DP 1234567', address: '12 Sample Street', lga: 'Maitland City Council', setbacks: { front: 6, side: 0.9, rear: 3 }, neighbours: [] };
+  const aerial = { image: new Uint8Array(fs.readFileSync(new URL('./fixtures/aerial-test.jpg', import.meta.url))), extentM: { minE: -282, minN: -270, maxE: 318, maxN: 330 }, state: 'NSW' };
+  return { project: houses[0].project, lot, aerial };
+};
+
+test('residential C100 draws the lot aerial once under the plan, C100A none, and the cover list agrees', async () => {
+  const c = aerialCase();
+  for (const extra of [{}, { builder }]) {
+    const { Rec, pages } = recordingPDF();
+    const r = await exportPlanSet({ project: c.project, lot: c.lot, kind: 'site', download: false, jsPDF: Rec, fetchSite: null, aerial: c.aerial, date, ...extra });
+    const codes = r.sheets.map(codeOf);
+    const a = codes.indexOf('C100');
+    const b = codes.indexOf('C100A');
+    assert.equal(onDrawing(pages[a]).length, 1, 'C100: one aerial image');
+    assert.equal(onDrawing(pages[b]).length, 0, 'C100A: none');
+    assert.ok(!/Aerial not available for this sheet/.test(textOf(pages[a])));
+    assert.match(r.sheets[a].scale, /^1:\d+ @ A3$/);
+  }
+});
+
+test('residential C100 without an aerial falls back to the clean look and says so in the credits', async () => {
+  const { r, pages } = await resSet();
+  const a = r.sheets.map(codeOf).indexOf('C100');
+  assert.equal(onDrawing(pages[a]).length, 0);
+  assert.match(textOf(pages[a]), /Aerial not available for this sheet/);
+  assert.ok(!/Aerial not available for this sheet/.test(textOf(pages[a + 1])));
+});

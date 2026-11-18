@@ -384,7 +384,7 @@ const swatch = (fill, line, dash = null) => (doc, a, b) => {
 const lineSw = (colour, w, dash = null) => (doc, a, b) => { doc.setDrawColor(...colour); doc.setLineWidth(w); if (dash) doc.setLineDashPattern(dash, 0); doc.line(a, b, a + 12, b); doc.setLineDashPattern([], 0); };
 
 /** Draw the aerial under the plan with the 60 percent white wash, clipped to the viewport. */
-function aerialUnder(doc, aerial, T) {
+export function aerialUnder(doc, aerial, T) {
   if (!aerial) return false;
   const e = aerial.extent;
   const p0 = T({ x: e.x0, y: e.y0 });
