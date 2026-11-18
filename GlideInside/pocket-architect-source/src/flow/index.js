@@ -17,7 +17,7 @@ import { commercialSteps, COMMERCIAL_BRAND } from './commercial.js';
 export const kindOf = (project, wantCommercial = false) => (project?.mode === 'commercial' || flowOf(project)?.kind === 'commercial' || wantCommercial ? 'commercial' : 'residential');
 
 /** The one tutorial coach of this page (created on first use). */
-export const tutorialOf = (api) => (api.tutorial ||= createTutorial({ getFlow: () => api.flow }));
+export const tutorialOf = (api) => (api.tutorial ||= createTutorial({ getFlow: () => api.flow, onEnter: (s) => { if (s.arm) api.setTool?.(s.arm); } }));
 
 /** Whether a fresh app open should start the flow (pure, so it can be tested). */
 export function shouldStart({ project, search = '', viewer = false, demo = false, shareId = null, fromAutosave = false }) {
@@ -74,7 +74,7 @@ function makeFlow({ api, store, refs, catalogue, kind }) {
   const flow = createGuidedFlow({
     store, kind, steps, host: document.body,
     brand: kind === 'commercial' ? COMMERCIAL_BRAND : RESIDENTIAL_BRAND,
-    onHelp: () => tutorialOf(api).restart(kind),
+    onHelp: () => tutorialOf(api).openMenu(kind),
     onEditor: async () => {
       // The editor opens with the placed design. A residential home is selected on the plan so Move house is ready.
       store.setUI({ frontageEdit: false });

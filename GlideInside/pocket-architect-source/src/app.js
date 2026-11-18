@@ -284,7 +284,7 @@ async function main() {
     onBack: () => goBack(),
   });
   // "?" in the editor top bar restarts the tutorial for the tool in use.
-  if (!VIEWER && !demoMode()) refs.topbar.append(h('button', { class: 'ps-btn ps-tut-q', type: 'button', title: 'Show me how', 'aria-label': 'Show me how', dataset: { ps: 'tutorial-help' }, onclick: () => tutorialOf(api).restart(store.project.mode === 'commercial' ? 'commercial' : 'residential') }, '?'));
+  if (!VIEWER && !demoMode()) refs.topbar.append(h('button', { class: 'ps-btn ps-tut-q', type: 'button', title: 'Show me how', 'aria-label': 'Show me how', dataset: { ps: 'tutorial-help' }, onclick: () => tutorialOf(api).openMenu(store.project.mode === 'commercial' ? 'commercial' : 'residential') }, '?'));
   const backFacts = () => ({ here: location.href, referrer: document.referrer, back: new URLSearchParams(location.search).get('back'), portalUrl: portalUrl(), homeUrl: CONFIG.homeUrl });
   const backBtn = refs.topbar.querySelector('[data-action="back"]');
   if (backBtn) {
