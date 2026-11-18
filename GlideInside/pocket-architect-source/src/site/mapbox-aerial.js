@@ -225,7 +225,10 @@ export async function loadAerialForLot({ lot, frame, bbox, marginM = 30, wideM =
   const span = Math.max(inner.maxE - inner.minE, inner.maxN - inner.minN);
   const m = Math.min(700, Math.max(wideM, span * 0.75));
   const snap = (v, up) => (up ? Math.ceil(v / 50) : Math.floor(v / 50)) * 50;
-  const wide = { minE: snap(bbox.minE - m, false), minN: snap(bbox.minN - m, false), maxE: snap(bbox.maxE + m, true), maxN: snap(bbox.maxN + m, true) };
+  // The state imagery service refuses a box over 2000 m a side, so a big lot's wide margin is shrunk to keep the box under 1900 m.
+  const mE = Math.max(45, Math.min(m, (1900 - (bbox.maxE - bbox.minE)) / 2));
+  const mN = Math.max(45, Math.min(m, (1900 - (bbox.maxN - bbox.minN)) / 2));
+  const wide = { minE: snap(bbox.minE - mE, false), minN: snap(bbox.minN - mN, false), maxE: snap(bbox.maxE + mE, true), maxN: snap(bbox.maxN + mN, true) };
   onStep?.('aerial');
   let source = choice.source;
   const viaMapbox = async () => {
