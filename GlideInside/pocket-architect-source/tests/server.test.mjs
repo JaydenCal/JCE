@@ -691,7 +691,7 @@ test('the interactive HTML export is a Plan Pack file from the server: one offli
   assert.ok(text.startsWith('<!doctype html>'));
   assert.ok(text.includes('id="pa-glb"') && text.includes('window.PA3D'));
   assert.deepEqual(text.match(/https?:\/\//g) || [], []);
-  assert.match(text, /ABN 29 699 165 663/);
+  assert.match(text, /ABN 11 549 431 925/);
   assert.equal((await w.call('POST', '/api/export/html', { token, body: { project: sampleProject('p_other') } })).json.error.code, 'NOT_ENTITLED');
 });
 

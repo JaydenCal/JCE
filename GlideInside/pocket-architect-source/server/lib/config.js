@@ -77,8 +77,8 @@ export function readConfig(env = {}) {
     enquiryMaxPdfBytes: Math.round(num(env.ENQUIRY_MAX_PDF_BYTES, 6000000)),
     // Builder and client portal (lib/portal.js, lib/portal-billing.js). Secrets: ADMIN_TOKEN, STRIPE_SECRET_KEY.
     adminToken: str(env.ADMIN_TOKEN),
-    sellerName: str(env.SELLER_NAME, 'JCE Infrastructure Pty Ltd trading as Glide Inside'),
-    sellerAbn: str(env.SELLER_ABN, '29 699 165 663'),
+    sellerName: str(env.SELLER_NAME, 'Glide Inside'),
+    sellerAbn: str(env.SELLER_ABN, '11 549 431 925'),
     portalProjectMaxBytes: Math.round(num(env.PORTAL_PROJECT_MAX_BYTES, 1800000)), // D1 rows are limited to 2 MB
     portalLogoMaxBytes: Math.round(num(env.PORTAL_LOGO_MAX_BYTES, 400000)),
     loginMaxFailures: Math.round(num(env.LOGIN_MAX_FAILURES, 5)), // attempts per username AND address per 15 minutes (counted before the password is checked), then locked

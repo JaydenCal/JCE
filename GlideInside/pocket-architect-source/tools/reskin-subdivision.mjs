@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url)); // not URL.pathname: that gives /C:/... on Windows
 export const CSS_LINK = '<link rel="stylesheet" href="/assets/gi-chrome.css?v=20261111">';
-const NEW_ABN = 'ABN 29 699 165 663';
+const NEW_ABN = 'ABN 11 549 431 925';
 const mark = (name, html) => `<!--gi-chrome:${name}:start-->\n${html.trim()}\n<!--gi-chrome:${name}:end-->`;
 
 export function reskin(html, { header, footer } = {}) {

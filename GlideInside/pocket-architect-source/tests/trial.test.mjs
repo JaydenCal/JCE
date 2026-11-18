@@ -219,7 +219,7 @@ for (const [label, d1] of stores) {
     assert.equal(q.abn, '51 824 753 556');
     assert.equal(q.email, 'jo@coastalhomes.example');
     assert.equal(q.homesPerYear, null);
-    assert.equal(q.termsVersion, '11/11/2026');
+    assert.equal(q.termsVersion, '18/11/2026');
     assert.ok(q.consentAt);
     assert.ok(!('ipHash' in q), 'the IP hash is not sent to the admin page');
     assert.equal(w.resend.calls.length, 0, 'no email without RESEND_API_KEY');
@@ -613,7 +613,7 @@ for (const [label, d1] of stores) {
     assert.equal(create.form.collection_method, 'charge_automatically');
     assert.equal(create.form.default_payment_method, 'pm_test_1');
     assert.equal(create.form.days_until_due, undefined);
-    assert.equal(create.form['custom_fields[0][value]'], '29 699 165 663', 'seller ABN');
+    assert.equal(create.form['custom_fields[0][value]'], '11 549 431 925', 'seller ABN');
     assert.equal(create.form['custom_fields[1][value]'], '51 824 753 556', 'buyer ABN');
     const pay = w.stripe.calls.find((c) => c.path === '/invoices/in_test_1/pay');
     assert.equal(pay.form.payment_method, 'pm_test_1');
@@ -625,8 +625,8 @@ for (const [label, d1] of stores) {
     assert.equal(inv.status, 'paid');
     assert.equal(inv.totalCents, 4000);
     const full = (await org.admin.get(`/portal/billing/invoices/${inv.id}`)).data;
-    assert.equal(full.seller.name, 'JCE Infrastructure Pty Ltd trading as Glide Inside');
-    assert.equal(full.seller.abn, '29 699 165 663');
+    assert.equal(full.seller.name, 'Glide Inside');
+    assert.equal(full.seller.abn, '11 549 431 925');
     assert.equal(full.buyer.legalName, 'Coastal Homes Pty Ltd');
     assert.equal(full.buyer.abn, '51 824 753 556');
     assert.deepEqual(full.payment, { method: 'card', brand: 'visa', last4: '4242' });

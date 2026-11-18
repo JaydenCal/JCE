@@ -14,7 +14,7 @@ import { sydneyDayStartPlus, ddmmyyyy } from '../../src/portal/billing.js';
 export const TRIAL_DAYS = 14;
 export const TRIAL_EXTENSION_DAYS = 7;
 export const DATA_KEEP_DAYS = 90; // builder data is kept this long after a trial ends unless the builder asks for deletion
-export const TERMS_VERSION = '11/11/2026';
+export const TERMS_VERSION = '18/11/2026';
 export const ORG_STATES = ['trial', 'trial_ended', 'active', 'read_only'];
 const DAY = 86400000;
 

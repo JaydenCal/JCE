@@ -87,7 +87,7 @@ test('card button: opens the enquiry modal with the lot (address, lot, DP, LGA, 
   const zone = sl.zoning?.code ? `${sl.zoning.code}${sl.zoning.name ? ` ${sl.zoning.name}` : ''}` : '';
   assert.equal(byId(m.root, 'jce-zone').value, zone);
   const intro = textOf(m.root);
-  assert.match(intro, /JCE Infrastructure Pty Ltd, civil engineers/);
+  assert.match(intro, /JCE Infrastructure, civil engineers/);
   assert.match(intro, /quote on engineering and DA plans/);
   assert.ok(intro.includes(CONSENT_TEXT), 'the consent tick box stays');
 });

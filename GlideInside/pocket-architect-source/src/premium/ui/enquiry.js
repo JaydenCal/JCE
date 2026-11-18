@@ -3,7 +3,7 @@
 
 import { el } from '../util.js';
 
-export const CONSENT_TEXT = 'I agree to my plans and details being sent to JCE Infrastructure Pty Ltd to prepare a quote';
+export const CONSENT_TEXT = 'I agree to my plans and details being sent to JCE Infrastructure to prepare a quote';
 const NEEDS = [['engineering', 'Engineering'], ['da', 'DA plans'], ['both', 'Both engineering and DA plans']];
 
 /** The lot details for the form: the found lot (project.site.lot) first, then whatever the builder portal knows. The person fills in any gaps. */
@@ -51,7 +51,7 @@ export function openEnquiry({ layer, send, buildPdf, project, lot = {}, source =
   const status = el('p', { role: 'status', 'aria-live': 'polite', style: { margin: '8px 0 0' } });
   const sendBtn = el('button', { class: 'psp-btn psp-btn--primary', type: 'submit' }, 'Send to JCE Infrastructure');
   const form = el('form', { novalidate: true },
-    el('p', { style: { marginTop: 0 } }, `Your plans, the design and the lot details go to JCE Infrastructure Pty Ltd, civil engineers, for a quote on engineering and DA plans.${orgName ? ` Sent from ${orgName}.` : ''}`),
+    el('p', { style: { marginTop: 0 } }, `Your plans, the design and the lot details go to JCE Infrastructure, civil engineers, for a quote on engineering and DA plans.${orgName ? ` Sent from ${orgName}.` : ''}`),
     f.name.row, f.phone.row, f.email.row, needRow, f.address.row,
     el('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 10px' } }, f.lot.row, f.dp.row, f.lga.row, f.zone.row),
     f.notes.row,

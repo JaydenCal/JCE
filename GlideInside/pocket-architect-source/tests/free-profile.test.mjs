@@ -627,7 +627,7 @@ test('copy has no em or en dashes and never says compliant; no new Pocket Archit
   assert.ok(!/[–—]/.test(section) && !/complian/i.test(section));
   assert.match(section, /Marketing is opt in/);
   assert.match(section, /Delete my account/);
-  assert.match(privacy, /Last updated 15\/11\/2026/);
+  assert.match(privacy, /Last updated 18\/11\/2026/);
 });
 
 test('password strength hint', () => {

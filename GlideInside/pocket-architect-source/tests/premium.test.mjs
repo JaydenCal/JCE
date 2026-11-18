@@ -3,7 +3,7 @@
 // tests/pages/premium.html and is skipped when Playwright is not installed.
 
 import { sheetNote } from '../src/legal/plan-terms.js';
-const TERMS_TEXT = `${sheetNote} Terms of use v1.1.`;
+const TERMS_TEXT = `${sheetNote} Terms of use v1.2.`;
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';

@@ -30,7 +30,7 @@ import { designTypeOf } from '../src/ui/design-type.js';
 void THREE;
 const IDS = SPECS.map((s) => s.id);
 const make = (id) => createFromTemplate(id);
-const config = { disclaimer: 'Concept design only.', seller: { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' } };
+const config = { disclaimer: 'Concept design only.', seller: { name: 'Glide Inside', abn: '11 549 431 925' } };
 const ACCESS = new Set(['door', 'sliding_door', 'garage_door', 'roller_door', 'opening']);
 const EXTERNAL_ENTRY = new Set(['door', 'sliding_door', 'garage_door', 'roller_door']);
 const BUILDERS = /allworth|coral|gardner|hotondo|hunter|masterton|mcdonald|jones|mojo|montgomery|tulliplan/i;

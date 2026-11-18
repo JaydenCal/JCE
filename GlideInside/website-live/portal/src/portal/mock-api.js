@@ -21,7 +21,7 @@ export const DEFAULT_AI_MONTHLY_CAP = 300;
 export const TEMP_PASSWORD_DAYS = 7;
 export const MAX_FAILED_SIGN_INS = 5;
 export const LOCKOUT_MINUTES = 15;
-export const SELLER = { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' };
+export const SELLER = { name: 'Glide Inside', abn: '11 549 431 925' };
 export const DEMO_LOGINS = {
   admin: { identifier: 'priya@samplehomes.example', password: 'river-maple-47' },
   designer: { identifier: 'tom@samplehomes.example', password: 'olive-cedar-38' },
@@ -828,7 +828,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       await wait();
       const { db, org, user } = ctx();
       if (!isStaff(user) && org.allowClientEnquiries === false) throw err('FORBIDDEN', 'Your builder has turned off sending to JCE.', 403);
-      if (body.consent !== true) throw err('BAD_REQUEST', 'Please tick the box to agree to your plans and details being sent to JCE Infrastructure Pty Ltd.', 400);
+      if (body.consent !== true) throw err('BAD_REQUEST', 'Please tick the box to agree to your plans and details being sent to JCE Infrastructure.', 400);
       for (const k of ['name', 'phone', 'email']) if (!String(body[k] || '').trim()) throw err('BAD_REQUEST', `${k} is required.`, 400);
       if (!['engineering', 'da', 'both'].includes(body.need)) throw err('BAD_REQUEST', 'need must be engineering, da or both.', 400);
       const A = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';

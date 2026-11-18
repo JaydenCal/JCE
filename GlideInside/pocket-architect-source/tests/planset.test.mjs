@@ -69,8 +69,8 @@ test('the cover drawing list matches the sheets in the PDF', async () => {
 
 test('title block: entity, ABN, email, DD/MM/YYYY date, revision A', async () => {
   const { text } = await run('site');
-  assert.ok(text.includes('JCE Infrastructure Pty Ltd trading as Glide Inside'));
-  assert.ok(text.includes('ABN 29 699 165 663'));
+  assert.ok(text.includes('Glide Inside'));
+  assert.ok(text.includes('ABN 11 549 431 925'));
   assert.ok(text.includes('hello@glideinside.com.au'));
   assert.ok(text.includes('12/11/2026'));
   assert.ok(text.includes('Glide Inside customer'));
@@ -366,7 +366,7 @@ test('commercial kind: C000 to C105 sheets, one page each', async () => {
 test('commercial kind: PROPOSED UNIT n labels, areas, schedule and title block', async () => {
   const { text } = await crun({ builderName: '' });
   for (let n = 1; n <= 16; n++) assert.ok(text.includes(`PROPOSED UNIT ${n}`), `unit ${n} named`);
-  for (const want of ['UNIT SCHEDULE', 'SITE SUMMARY', 'ROLLER DOOR SCHEDULE', 'BOLLARD SCHEDULE', 'Indicative only. Rates and controls to be confirmed with council and a suitably qualified engineer', 'MEZZANINE OFFICE', 'LEGEND', '13/11/2026', 'ABN 29 699 165 663', 'Rate source', 'Parking required', 'Accessible bays', 'LANDSCAPING', 'OSD BASIN PLACEHOLDER']) assert.ok(text.includes(want), `missing ${want}`);
+  for (const want of ['UNIT SCHEDULE', 'SITE SUMMARY', 'ROLLER DOOR SCHEDULE', 'BOLLARD SCHEDULE', 'Indicative only. Rates and controls to be confirmed with council and a suitably qualified engineer', 'MEZZANINE OFFICE', 'LEGEND', '13/11/2026', 'ABN 11 549 431 925', 'Rate source', 'Parking required', 'Accessible bays', 'LANDSCAPING', 'OSD BASIN PLACEHOLDER']) assert.ok(text.includes(want), `missing ${want}`);
   assert.ok(text.includes('Concept only. Setbacks and planning controls shown are indicative'));
   assert.ok(!/VALUES NOT VERIFIED|TO VERIFY AGAINST|DO NOT RELY|Medium rigid vehicle turning radius/.test(text), 'no internal verification notes on a customer plan set');
   assert.ok(!/\d{4}-\d{2}-\d{2}/.test(text));

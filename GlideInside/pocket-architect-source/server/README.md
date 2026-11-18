@@ -127,7 +127,7 @@ The portal needs D1 (`createD1PortalStore`); on Upstash or other hosts it answer
 | `ENTITLEMENT_SECRET` | secret | Already needed. Also signs the org tokens the AI endpoints accept |
 | `STRIPE_SECRET_KEY` | secret | **Test key only** (`sk_test_...`) until the owner gives written go-ahead for live billing |
 | `PORTAL_ENABLED` | var | `1` opens builder and client logins. Default off |
-| `SELLER_NAME`, `SELLER_ABN` | var | Seller on tax invoices. Defaults: `JCE Infrastructure Pty Ltd trading as Glide Inside`, `29 699 165 663` |
+| `SELLER_NAME`, `SELLER_ABN` | var | Seller on tax invoices. Defaults: `Glide Inside`, `11 549 431 925` |
 | `ORG_MONTHLY_CREDITS`, `TOPUP_CREDITS`, `TOPUP_AMOUNT_CENTS` | var | 300 credits per login per month, 300 credits for A$10 (1000 cents) incl. GST |
 | `STRIPE_GST_TAX_RATE_ID` | var, optional | An existing inclusive 10% GST tax rate. If empty one is created on first use and remembered in `portal_settings` |
 | `STRIPE_LIVE_BILLING_APPROVED` | var | Leave unset. A live Stripe key (`sk_live_`, `rk_live_`) is refused unless this is exactly `owner-written-go-ahead` |

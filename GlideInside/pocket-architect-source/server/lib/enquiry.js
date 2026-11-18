@@ -22,7 +22,7 @@ const text = (v, name, { max = 200, required = false, multiline = false } = {}) 
 
 /** Checks and cleans the request body. Throws HttpError BAD_REQUEST. Returns the enquiry without the PDF bytes. */
 export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 6_000_000 } = {}) {
-  if (body.consent !== true) throw new HttpError('BAD_REQUEST', 'Please tick the box to agree to your plans and details being sent to JCE Infrastructure Pty Ltd.');
+  if (body.consent !== true) throw new HttpError('BAD_REQUEST', 'Please tick the box to agree to your plans and details being sent to JCE Infrastructure.');
   const name = text(body.name, 'Name', { required: true, max: 120 });
   const phone = text(body.phone, 'Phone', { required: true, max: 40 });
   const email = text(body.email, 'Email', { required: true, max: 200 }).toLowerCase();
@@ -97,7 +97,7 @@ export function summaryText(e, reference) {
     `LGA: ${lot.lga || 'not given'}`, `Zone: ${lot.zone || 'not given'}`,
     e.orgName ? `Sent from the builder portal of: ${e.orgName} (${e.source})` : `Sent by: ${e.source === 'public' ? 'a Plan Pack user' : e.source}`,
     '',
-    'The person ticked: "I agree to my plans and details being sent to JCE Infrastructure Pty Ltd to prepare a quote".',
+    'The person ticked: "I agree to my plans and details being sent to JCE Infrastructure to prepare a quote".',
     'Attached: the PDF plan set and the design file (.json, opens in Glide Inside).',
   ].filter((l) => l !== null).join('\n');
 }
