@@ -13,6 +13,7 @@ import { setbackInputsFor } from '../site/setback-stage.js';
 import { askConfirm } from './modal.js';
 import { plainSetbackReason, edgeWords } from '../site/lot-checks.js';
 import { buildingRings, boundaryDims } from '../site/lotplan.js';
+import { driveSiteCard } from './panel-drivepi.js';
 import { siteCredits, INDICATIVE } from '../site/credits.js';
 
 const LAYER_LABELS = [
@@ -80,6 +81,7 @@ export function buildSiteSection(ctx) {
         startArrange({ store, editor: ctx.editor });
       } catch (e) { sec.append(h('p', { class: 'ps-hint' }, e.message || 'Could not start.')); }
     }, { title: 'Drag, turn and mirror the house on the lot and see the clearance to each boundary' })));
+    sec.append(driveSiteCard(ctx));
     }
     const layers = h('div', { class: 'ps-sec', style: { marginTop: '8px' } }, h('h4', null, 'Layers'));
     for (const [id, label0] of LAYER_LABELS) {

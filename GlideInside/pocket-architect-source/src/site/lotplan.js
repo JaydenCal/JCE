@@ -251,11 +251,14 @@ export function circumradius(a, b, c) {
 }
 
 
+/** Most bend points (PIs) a stored driveway keeps. */
+export const MAX_DRIVE_PIS = 12;
+
 /** The stored, edited driveway on the project (project.site.driveway), or null. { endOffsetMm, pis[{x,y}], radiusM, widthMm } */
 export function storedDriveway(project) {
   const d = project?.site?.driveway;
   if (!d || typeof d !== 'object' || !Number.isFinite(d.endOffsetMm)) return null;
-  return { endOffsetMm: d.endOffsetMm, pis: (Array.isArray(d.pis) ? d.pis : []).filter((q) => Number.isFinite(q?.x) && Number.isFinite(q?.y)).slice(0, 6), radiusM: Number.isFinite(d.radiusM) ? Math.min(30, Math.max(2, d.radiusM)) : 6, widthMm: Number.isFinite(d.widthMm) ? d.widthMm : null };
+  return { endOffsetMm: d.endOffsetMm, pis: (Array.isArray(d.pis) ? d.pis : []).filter((q) => Number.isFinite(q?.x) && Number.isFinite(q?.y)).slice(0, MAX_DRIVE_PIS), radiusM: Number.isFinite(d.radiusM) ? Math.min(30, Math.max(2, d.radiusM)) : 6, widthMm: Number.isFinite(d.widthMm) ? d.widthMm : null };
 }
 
 /** Where on the kerb an edited driveway ends: the offset along the frontage from its first corner, kept clear of the corners. */
@@ -305,7 +308,7 @@ export function filletPath(pts, radiusMm) {
 export function setStoredDriveway(project, value) {
   if (!project?.site) return null;
   if (!value) { delete project.site.driveway; return null; }
-  project.site.driveway = { endOffsetMm: Math.round(value.endOffsetMm), pis: (value.pis || []).slice(0, 6).map((q) => ({ x: Math.round(q.x), y: Math.round(q.y) })), radiusM: value.radiusM || 6, widthMm: value.widthMm || null };
+  project.site.driveway = { endOffsetMm: Math.round(value.endOffsetMm), pis: (value.pis || []).slice(0, MAX_DRIVE_PIS).map((q) => ({ x: Math.round(q.x), y: Math.round(q.y) })), radiusM: value.radiusM || 6, widthMm: value.widthMm || null };
   return project.site.driveway;
 }
 
@@ -374,6 +377,7 @@ export function deriveDriveway(project, opts = {}) {
   let clear = (pts) => drivewayClear(pts, { lot, rings, door, r, wd });
   let storedInvalid = false;
   let routed = false;
+  let autoPis = [];
   if (stored && !opts.ignoreStored) {
     const end = drivewayEndOnKerb(lot, r, stored.endOffsetMm, wd, onKerb);
     const pts = filletPath([P0, G.add(P0, G.mul(door.normal, Math.max(1500, wd * 0.6))), ...stored.pis.map((q) => ({ x: q.x, y: q.y })), G.add(end, G.mul(r.outward, -1500)), end], (stored.radiusM || 6) * 1000);
@@ -402,6 +406,7 @@ export function deriveDriveway(project, opts = {}) {
         if (!clear(centre)) centre = path.pts.slice();
         usedStored = true; // same strip maths as an edited path (constant width along a polyline)
         routed = true;
+        autoPis = path.pts.slice(2, -2).map((q) => ({ x: q.x, y: q.y })); // the route's own bends, to seed an edit
       } else if (!facing) return { ok: false, reason: 'door_faces_away', door, storedInvalid };
     }
   }
@@ -446,7 +451,7 @@ export function deriveDriveway(project, opts = {}) {
   return {
     ok: true, widthMm: wd, centre, left, right, polygon, lengthMm: length, minRadiusM: Number.isFinite(rmin) ? rmin / 1000 : null,
     doorMid: P0, kerbPoint: kerbEnd, edge: r.edge, crossover, door, straight: Math.abs(G.dist(P0, kerbEnd) - length) < 5,
-    edited: usedStored && !routed, routed, facing, storedInvalid, edgeStart: edgeA, edgeU: u, edgeLenMm: edgeLen, endOffsetMm: G.dot(G.sub(kerbEnd, edgeA), u), pis: usedStored && !routed ? stored.pis : [], radiusM: stored?.radiusM || 6,
+    edited: usedStored && !routed, routed, autoPis, facing, storedInvalid, edgeStart: edgeA, edgeU: u, edgeLenMm: edgeLen, endOffsetMm: G.dot(G.sub(kerbEnd, edgeA), u), pis: usedStored && !routed ? stored.pis : [], radiusM: stored?.radiusM || 6,
     insideLot: centre.every((c) => side(c) >= 0 || G.pointInPolygon(c, lot.boundary)),
   };
 }
