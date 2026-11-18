@@ -26,7 +26,7 @@ export function accessPicker(houses, initial = 'all') {
     h('label', { class: 'pp-check' }, all, h('span', null, 'All of my designs')),
     h('label', { class: 'pp-check' }, some, h('span', null, 'Only the designs I select')),
     h('div', { class: 'pp-checklist' }, ...boxes),
-    h('p', { class: 'pp-hint' }, 'Clients see the Glide Inside library only when you tick Show Glide Inside sample designs to clients.'));
+    h('p', { class: 'pp-hint' }, 'Clients see only your own house designs.'));
   return { el, value: () => (all.checked ? 'all' : boxes.map((b) => b.querySelector('input')).filter((i) => i.checked).map((i) => i.value)) };
 }
 
@@ -126,7 +126,7 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
       row('showAiAssistant', 'Show AI design assistant to clients', 'On by default. Turn it off to hide the assistant entirely for your clients (their plans, colours and exports are unaffected). Your own staff logins keep it.'),
       row('directoryListed', 'List my business in the local builder search', 'Off by default. When on, visitors to Glide Inside Residential can find your business by name (you appear with your name, region and logo only) and ask you for a client login. Their request waits in the list on this page and nothing is emailed. You decide whether to approve it.'),
       regionRow(canSet),
-      row('showGlideToClients', 'Show Glide Inside sample designs to clients', 'Off (the default) means clients see only your own house designs.'),
+      me?.org?.internal === true ? row('showGlideToClients', 'Show Glide Inside sample designs to clients', 'Off (the default) means clients see only your own house designs.') : null, // builders: own designs only (owner 18/11/2026)
       row('allowClientEnquiries', 'Let clients send their plans to JCE for engineering and DA quotes', 'On by default. Nothing is sent until the client ticks consent and presses Send.'),
       row('allowClientCadExports', 'Let clients export DXF and 3D models as well as the PDF', 'Off by default: clients get your branded PDF plans only. The design files stay your property (see the terms: clients are licensed to use the plans for their own build only).'));
   }

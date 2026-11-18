@@ -9,7 +9,7 @@
 import { h } from '../ui/dom.js';
 import { createGuidedFlow } from './guided.js';
 import { createTutorial } from '../tutorial/coach.js';
-import { flowOf, flowInProgress, writeFlow, EDIT_STEP } from './state.js';
+import { flowOf, flowInProgress, writeFlow, EDIT_STEP, portalDeepLink } from './state.js';
 import { residentialSteps, RESIDENTIAL_BRAND } from './residential.js';
 import { commercialSteps, COMMERCIAL_BRAND } from './commercial.js';
 
@@ -24,6 +24,7 @@ export function shouldStart({ project, search = '', viewer = false, demo = false
   if (viewer || demo || shareId) return false;
   const q = new URLSearchParams(search);
   if (q.get('flow') === '0' || q.get('template')) return false;
+  if (portalDeepLink(search)) return false; // opened from the builder portal: the design and lot are known, so straight into the editor
   if (flowInProgress(project)) return true;
   if (flowOf(project)) return false; // already in the editor from the flow (step 5)
   if (fromAutosave && commercialAddressAsked(search)) return true; // a commercial address link goes through the steps, never straight to a kept layout

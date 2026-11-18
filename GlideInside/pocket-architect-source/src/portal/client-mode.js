@@ -18,6 +18,7 @@ import { getPortalApi } from './api.js';
 import { injectStripStyles } from './app-strip-styles.js';
 import { applyBrandTheme, clearBrandTheme, applyWhiteLabel } from './theme-css.js';
 import { signInUrl, portalUrl } from './links.js';
+import { forEditing } from '../flow/state.js';
 import { designMode as isDesignMode, clientLike as isClientLike, wantsGlide, fullEditorHref, designNewHref } from './design-mode.js';
 import { SAMPLE_LOT, lotEnvelope, portalLotToSiteLot } from './envelope.js';
 import { rankDesigns } from './fit.js';
@@ -371,7 +372,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   async function openProject(id) {
     try {
       const p = await api.openProject(id);
-      app.replaceProject(p.project);
+      app.replaceProject(forEditing(p.project)); // straight into the editor, never the guided steps
       currentProjectId = p.id;
       reviewOwner = !isClient && p.ownerId && p.ownerId !== me.user.id ? p.ownerName || 'the client' : null;
       if (p.lotAddress) { lot = { ...(lot || {}), address: p.lotAddress }; lotIsSample = false; }
@@ -394,11 +395,17 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     loc.href = signInUrl();
   }
 
+  // A house design has no lot yet: the editor opens with the design, and the Site panel's address search is offered.
+  function offerLotSearch() {
+    if (store.project.site?.lot) return;
+    toast('This design has no lot yet. Use Site on the right to find the address.', { kind: 'info', timeout: 12000, action: { label: 'Find the lot', onClick: () => { const i = document.querySelector('[data-ps="find-block-input"]'); i?.scrollIntoView?.({ block: 'center' }); i?.focus?.(); } } });
+  }
+
   // Deep links ----------------------------------------------------------------------------------------------------------------------
   try {
     if (params.get('project')) await openProject(params.get('project'));
-    else if (params.get('house')) { const r = await api.getHouse(params.get('house')); app.replaceProject(r.project); }
-    else if (params.get('glide') && wantsGlide(me, params)) { const r = await api.getGlideModel(params.get('glide')); app.replaceProject(r.project); }
+    else if (params.get('house')) { const r = await api.getHouse(params.get('house')); app.replaceProject(forEditing(r.project)); offerLotSearch(); }
+    else if (params.get('glide') && wantsGlide(me, params)) { const r = await api.getGlideModel(params.get('glide')); app.replaceProject(forEditing(r.project)); offerLotSearch(); }
   } catch (e) { toast(e.message || 'Could not open that design.', { kind: 'error' }); }
   return { strip, openPicker, refreshCredits };
 }

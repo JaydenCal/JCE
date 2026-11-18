@@ -30,6 +30,6 @@ export function createDesignSource({ api, me, params = new URLSearchParams(), cl
     load,
     invalidate() { cache = null; },
     /** The lot card provider: the cached designs ranked for the project's lot. */
-    async lotDesigns(project) { return builderDesigns(project, await load(), { allowGlide: !clientLike }); },
+    async lotDesigns(project) { return builderDesigns(project, await load(), { allowGlide: !clientLike && me?.org?.internal === true }); },
   };
 }
