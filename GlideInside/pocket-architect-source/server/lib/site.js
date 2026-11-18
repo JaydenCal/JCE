@@ -1032,7 +1032,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
       let lastErr = null;
       for (const layerUrl of src.urls) {
         try {
-          body = await upstream(`${layerUrl}/query`, { f: 'json', ...envelope(box, srid), outFields: src.outFields, returnGeometry: 'true', outSR: String(srid), maxAllowableOffset: '0.5' }, { timeoutMs: 9000, retries: 0 });
+          body = await upstream(`${layerUrl}/query`, { f: 'json', ...envelope(box, srid), outFields: src.outFields, returnGeometry: 'true', outSR: String(srid), maxAllowableOffset: '0.5' }, { timeoutMs: 6000, retries: 0 });
           if (body && Array.isArray(body.features)) break;
           body = null;
           lastErr = new Error('unexpected response');
