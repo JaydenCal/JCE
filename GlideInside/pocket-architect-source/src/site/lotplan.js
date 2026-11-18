@@ -473,7 +473,7 @@ function drivewayClear(pts, { lot, rings, door, r, wd }) {
   for (let i = 0; i < pts.length; i++) {
     if (!check(pts[i])) return false;
     if (i) {
-      const n = Math.ceil(G.dist(pts[i - 1], pts[i]) / 600);
+      const n = Math.min(120, Math.ceil(G.dist(pts[i - 1], pts[i]) / 600)); // capped: a 300 m driveway on a rural lot is not sampled every 0.6 m
       for (let k = 1; k < n; k++) if (!check(G.lerp(pts[i - 1], pts[i], k / n))) return false;
     }
   }
