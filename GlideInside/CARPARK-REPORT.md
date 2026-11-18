@@ -19,3 +19,16 @@ carpark-generator, carpark-auto, carpark, sitelayout, hardstand test files pass.
 - Small lot with a dock warehouse (40 x 60 m) cannot meet the rate (2 of 4 bays, flagged limited); the lot is too small for the truck apron.
 - Where a bay row fronts a door (office on the small lot) the vehicle reachable flag in summary stays false; the door is reached on foot over the footpath and bay row, and no warning is shown.
 - The spine can wander sideways from the crossover on small lots (visible in the small 3D shot).
+
+## Placement rules update (18/11/2026)
+- New src/commercial/carpark-side.js (side aisle generator) is tried first for every non station lot; the old comb (carpark-field.js) is only the fallback when it cannot meet the demand. It lays one drive from the crossover and one aisle with 90 degree rows on both sides: either a side aisle beside the drive joined by a connector ('v', along a side setback) or an aisle across the lot that the drive meets ('h', across the front of the building). Candidates are scored on walk to the door plus paving, double loaded preferred, rows anchored flush to the drive and connector (no ground between bays and aisles).
+- Truck apron and the drive to it are a no-bay, no-aisle zone: the crossover lines up with the apron, the drive is crossover wide and ends at the apron, 1.5 m clear is kept round the apron when the lot allows it (dropped only if that puts bays 25+ m further from the door). Drive aisles carry truckDrive: true.
+- 6 m of clear drive from the street before the first bay (bay t0 >= 6 m); an aisle with no bays may leave the drive from 4.5 m when the apron starts close to the street.
+- Door of a warehouse is now the office pod door (site.parking.zone), not the middle of the front; it is reached by a footpath (sw:foot, pedestrian) that avoids bay rows and the apron, never by an aisle through the apron. 1.5 m clear round buildings, entry canopies are not parked under.
+- carpark-field.js: comb spine must start at the street when used from sitelayout (spineFromStart), fixing a spine that started behind a building and was cut off after a building move.
+- draw-lotplan.js: the residential driveway strip is no longer drawn on a commercial lot that has site works.
+- 3D cars: placement data was already correct (long axis along bay depth); added a test for all three lots (axis within 2 degrees, centred, footprint inside the bay). Renders confirm nose in.
+- Angled bays: NOT added. The lots that are too narrow for a 90 degree row (deep narrow) already fit one row; 60/45 degree bays not implemented.
+- Tests: tests/carpark-generator.test.mjs now 22 tests (apron/dock approach clear, 6 m queue, 40 m walk on the large lot, shared edges, car orientation). carpark-auto test accepts rows square to the lot edge. carpark-auto, carpark-generator, sitelayout, carpark, hardstand: 103 pass. commercial-assistant has 3 failures that also fail without my changes. Full suite not completed (machine load).
+- Screenshots: /home/claude/shots/claude-carpark-tool/{large,small,deepnarrow}-{2d,2d-close,3d,3d-close}-v4.png (v3 for 2d-close).
+- Not done: rotated buildings (sitelayout-oriented.js) still use the old comb layout; one side aisle only (very large demand falls back to the comb).

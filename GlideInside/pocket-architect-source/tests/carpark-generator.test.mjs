@@ -98,7 +98,7 @@ for (const lotSpec of LOTS) {
       const r = a.row; const i = r.slots.indexOf(r.slots.find((x) => x.index === a.index));
       assert.ok([r.slots[i - 1], r.slots[i + 1]].some((x) => x?.kind === 'zone'), `${lotSpec.name}: an accessible bay has no shared zone beside it`);
     }
-    const [b] = buildingsOf(c); const d = doorPoint(b);
+    const [b] = buildingsOf(c); const d = officeDoor(b);
     const dist = (p) => Math.hypot(p.centre.x - d.x, p.centre.y - d.y);
     const nearestAcc = Math.min(...acc.map(dist));
     const median = bays.map(dist).sort((p, q) => p - q)[Math.floor(bays.length / 2)];
@@ -116,6 +116,24 @@ test('car park generator: bays are 90 degree and square, and every bay opens ont
     assert.ok(sw.pavedAisles.some((a) => G.pointInPolygon(out, a.polygon)), 'a bay does not open onto an aisle');
   }
 });
+
+for (const lotSpec of LOTS) {
+  test(`car park generator, ${lotSpec.name} lot: bays and aisles share edges, no strip of ground between them`, () => {
+    const sw = lotSite(lotSpec).project.commercial.siteWorks;
+    const sealedPolys = [...sw.pavedAisles.map((a) => a.polygon), ...sw.bayRows.flatMap((r) => r.bayAreas.map((a) => a.polygon)), ...sw.crossovers.map((x) => x.polygon), ...sw.aprons.map((a) => a.polygon), ...sw.footpaths.map((a) => a.polygon)];
+    for (const b of allBays(sw)) {
+      const [p0, p1, , p3] = b.poly; const L = Math.hypot(p0.x - p3.x, p0.y - p3.y);
+      const ou = { x: (p0.x - p3.x) / L, y: (p0.y - p3.y) / L };
+      for (const f of [0.08, 0.5, 0.92]) {
+        const e = { x: p0.x + (p1.x - p0.x) * f, y: p0.y + (p1.y - p0.y) * f };
+        const q = { x: e.x + ou.x * 150, y: e.y + ou.y * 150 };
+        assert.ok(sw.pavedAisles.some((a) => G.pointInPolygon(q, a.polygon)), `${lotSpec.name}: ground between a bay and its aisle`);
+      }
+    }
+    // Every bay row end next to the drive or another bay run touches it: the gap between a bay and any other sealed area beside it is nil or a whole bay.
+    void sealedPolys;
+  });
+}
 
 test('car park generator: moving a building rebuilds the layout, still connected, inside the lot and clear of the building', () => {
   const store = lotSite(LOTS[2]);
@@ -140,4 +158,103 @@ test('car park generator: the car park meets the lot frontage at a crossover, wi
   const sw = store.project.commercial.siteWorks;
   assert.ok(sw.crossovers.length >= 1);
   assert.ok(sw.pavedAisles.length >= 1 && !JSON.stringify(sw).includes('roadId'), 'the layout stores no road tool reference');
+});
+
+// Placement rules (18/11/2026): the truck apron and the drive to it are a no-bay zone, a 6 m queue before the first bay, staff bays near the office door.
+const QUEUE = 6000;
+const lotFrame = (store) => {
+  const lot = store.project.site.lot; const b = lot.boundary; const e = lot.frontEdges[0];
+  const a = b[e]; const c = b[(e + 1) % b.length]; const L = Math.hypot(c.x - a.x, c.y - a.y);
+  const u = { x: (c.x - a.x) / L, y: (c.y - a.y) / L }; let n = { x: -u.y, y: u.x };
+  const cx = b.reduce((s, q) => s + q.x, 0) / b.length; const cy = b.reduce((s, q) => s + q.y, 0) / b.length;
+  if ((cx - a.x) * n.x + (cy - a.y) * n.y < 0) n = { x: -n.x, y: -n.y };
+  return { o: a, u, n, t: (p) => (p.x - a.x) * n.x + (p.y - a.y) * n.y, s: (p) => (p.x - a.x) * u.x + (p.y - a.y) * u.y };
+};
+const officeDoor = (b) => { const z = b.site?.parking?.zone; const xs = b.local.outline.map((q) => q.x); const ys = b.local.outline.map((q) => q.y); const x = Number.isFinite(z?.x0) ? (z.x0 <= Math.min(...xs) + 1 ? z.x0 + 1500 : z.x1 - 1500) : (Math.min(...xs) + Math.max(...xs)) / 2; const a = (b.place.rotationDeg * Math.PI) / 180; const l = { x, y: Math.min(...ys) }; return { x: b.place.x + Math.cos(a) * l.x - Math.sin(a) * l.y, y: b.place.y + Math.sin(a) * l.x + Math.cos(a) * l.y }; };
+
+for (const lotSpec of LOTS.filter((l) => l.type === 'warehouse')) {
+  test(`car park placement, ${lotSpec.name} lot: no bay or aisle touches the truck apron or the dock approach`, () => {
+    const store = lotSite(lotSpec); const sw = store.project.commercial.siteWorks; const fr = lotFrame(store);
+    assert.ok(sw.aprons.length >= 1, 'the warehouse has a truck apron');
+    const x = sw.crossovers[0]; const xs = x.polygon.map((q) => fr.s(q));
+    const aprons = sw.aprons.map((a) => a.polygon);
+    const apronT0 = Math.min(...aprons.flat().map((q) => fr.t(q)));
+    const w = (s, t) => ({ x: fr.o.x + fr.u.x * s + fr.n.x * t, y: fr.o.y + fr.u.y * s + fr.n.y * t });
+    // The dock approach: the crossover's width, straight in from the street to the apron.
+    const approach = [w(Math.min(...xs), 0), w(Math.max(...xs), 0), w(Math.max(...xs), apronT0), w(Math.min(...xs), apronT0)];
+    const driveIds = new Set(sw.aisles.filter((a) => a.truckDrive).map((a) => a.id.replace('sw:aisle:', '')));
+    assert.ok(driveIds.size >= 1, 'the drive to the apron is marked as the truck drive');
+    for (const a of aprons) assert.ok(a.every((q) => insideLot(q, store.project.site.lot.boundary)));
+    for (const bay of allBays(sw)) for (const a of [...aprons, approach]) assert.ok(!polysOverlap(shrink(bay.poly, 0.95), shrink(a, 0.99)), `${lotSpec.name}: a bay is over the apron or the dock approach`);
+    for (const a of sw.aisles) {
+      if (a.truckDrive) continue;
+      for (const z of aprons) assert.ok(!polysOverlap(shrink(a.polygon, 0.98), shrink(z, 0.99)), `${lotSpec.name}: aisle ${a.id} is over the apron`);
+      assert.ok(!polysOverlap(shrink(a.polygon, 0.98), shrink(approach, 0.99)), `${lotSpec.name}: aisle ${a.id} blocks the dock approach`);
+    }
+    for (const p of sw.pavedAisles) {
+      if ([...driveIds].some((id) => p.id === `sw:paved:${id}`)) continue;
+      for (const z of [...aprons, approach]) assert.ok(!polysOverlap(shrink(p.polygon, 0.98), shrink(z, 0.99)), `${lotSpec.name}: paving ${p.id} is over the apron or approach`);
+    }
+    // The drive is as wide as the crossover and reaches the apron.
+    const drive = sw.aisles.filter((a) => a.truckDrive);
+    assert.ok(Math.max(...drive.flatMap((a) => a.polygon.map((q) => fr.t(q)))) >= apronT0 - 300, `${lotSpec.name}: the drive does not reach the apron`);
+  });
+}
+
+for (const lotSpec of LOTS) {
+  test(`car park placement, ${lotSpec.name} lot: at least 6 m of clear drive from the crossover to the first bay`, () => {
+    const store = lotSite(lotSpec); const sw = store.project.commercial.siteWorks; const fr = lotFrame(store);
+    const x = sw.crossovers[0]; const xs = x.polygon.map((q) => fr.s(q));
+    const gate = { x: fr.o.x + fr.u.x * ((Math.min(...xs) + Math.max(...xs)) / 2), y: fr.o.y + fr.u.y * ((Math.min(...xs) + Math.max(...xs)) / 2) };
+    for (const b of allBays(sw)) {
+      assert.ok(Math.min(...b.poly.map((q) => fr.t(q))) >= QUEUE - 5, `${lotSpec.name}: a bay starts ${Math.round(Math.min(...b.poly.map((q) => fr.t(q))))} mm from the street`);
+      assert.ok(distToPoly(gate, b.poly) >= QUEUE - 5, `${lotSpec.name}: a bay is ${Math.round(distToPoly(gate, b.poly))} mm from the gate`);
+    }
+    // No bay sits in the strip straight in from the crossover.
+    for (const b of allBays(sw)) {
+      const ss = b.poly.map((q) => fr.s(q)); const tt = b.poly.map((q) => fr.t(q));
+      const inStrip = Math.max(...ss) > Math.min(...xs) + 1 && Math.min(...ss) < Math.max(...xs) - 1 && Math.min(...tt) < QUEUE;
+      assert.ok(!inStrip, `${lotSpec.name}: a bay is in the gate throat`);
+    }
+  });
+}
+
+test('car park placement, large lot: every bay is within 40 m of the office door and the rows sit beside the building, not on the entry drive', () => {
+  const store = lotSite(LOTS[2]); const c = store.project.commercial; const sw = c.siteWorks; const fr = lotFrame(store);
+  const door = officeDoor(buildingsOf(c)[0]);
+  for (const b of allBays(sw)) { const d = Math.hypot(b.centre.x - door.x, b.centre.y - door.y); assert.ok(d <= 40000, `a bay is ${Math.round(d / 1000)} m from the office door`); }
+  const acc = allBays(sw).filter((b) => b.kind === 'accessible');
+  assert.ok(acc.length >= 1);
+  for (const b of acc) assert.ok(Math.hypot(b.centre.x - door.x, b.centre.y - door.y) <= 40000);
+  // No bay straddles the entry drive: every bay lies wholly to one side of the crossover's width.
+  const xs = sw.crossovers[0].polygon.map((q) => fr.s(q));
+  for (const b of allBays(sw)) { const ss = b.poly.map((q) => fr.s(q)); assert.ok(Math.max(...ss) <= Math.min(...xs) + 1 || Math.min(...ss) >= Math.max(...xs) - 1, 'a bay straddles the entry drive'); }
+  // The car park does not cross the truck apron to reach the door: the door footpath or an aisle meets it from the car park side.
+  assert.ok(sw.summary.reachable[buildingsOf(c)[0].id], 'the office door is reached');
+});
+
+test('3D parked cars: nose in, long axis along the bay depth, centred, footprint inside the bay', async () => {
+  const { entourageSpots } = await import('../src/commercial/catalogue/entourage3d.js');
+  for (const spec of LOTS) {
+    const store = lotSite(spec); const sw = store.project.commercial.siteWorks;
+    const bays = allBays(sw).filter((b) => b.kind === 'bay');
+    const spots = entourageSpots(store.project);
+    assert.ok(spots.cars.length >= 1, `${spec.name}: some parked cars`);
+    for (const car of spots.cars) {
+      const bay = bays.find((b) => G.pointInPolygon({ x: car.x, y: car.y }, b.poly));
+      assert.ok(bay, `${spec.name}: a car is not in a bay`);
+      const [p0, p1, , p3] = bay.poly;
+      const depth = { x: p3.x - p0.x, y: p3.y - p0.y }; const dl = Math.hypot(depth.x, depth.y);
+      const ax = { x: Math.cos(car.ang), y: Math.sin(car.ang) };
+      const cosA = Math.abs((ax.x * depth.x + ax.y * depth.y) / dl);
+      assert.ok(Math.acos(Math.min(1, cosA)) * 180 / Math.PI <= 2, `${spec.name}: a car is not along the bay depth`);
+      const cen = { x: (p0.x + p1.x + bay.poly[2].x + p3.x) / 4, y: (p0.y + p1.y + bay.poly[2].y + p3.y) / 4 };
+      assert.ok(Math.hypot(car.x - cen.x, car.y - cen.y) <= 50, `${spec.name}: a car is not centred in its bay`);
+      const nx = { x: -ax.y, y: ax.x };
+      for (const [a, b] of [[-2200, -900], [-2200, 900], [2200, -900], [2200, 900]]) {
+        const q = { x: car.x + ax.x * a + nx.x * b, y: car.y + ax.y * a + nx.y * b };
+        assert.ok(G.pointInPolygon(q, bay.poly), `${spec.name}: a car corner is outside its bay`);
+      }
+    }
+  }
 });

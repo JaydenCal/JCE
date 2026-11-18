@@ -204,6 +204,7 @@ function polyPath(ctx, st, pts) {
 export function drawDriveway(ctx, st) {
   const lot = lotOf(st.project);
   if (!lot || !layerOn(lot, 'driveway')) return;
+  if (st.project?.commercial?.siteWorks?.crossovers?.length) return; // a commercial lot draws its own crossover and drive (sitelayout.js), never the house driveway
   const d = deriveDriveway(st.project);
   if (!d?.ok || d.manual) return; // a driveway drawn with the Driveway and road tool is painted by draw-pave.js
   ctx.save();

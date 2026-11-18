@@ -17,6 +17,7 @@ import { parkingLayout } from './parking.js';
 import { accessibleRequired } from './rules.js';
 import { clipTo, boolean, holeFree, overlapArea } from './catalogue/pavements/polybool.js';
 import { fillField, betterField, fieldGeometry, markAccessible, carportsOf, BAY_W, BAY_L } from './carpark-field.js';
+import { sideField, sideGeometry, QUEUE_MM } from './carpark-side.js';
 import { polyArea } from './catalogue/pavements/geom.js';
 import { rowsSignature } from './estate.js';
 import { orientedWorks, isSkewed } from './sitelayout-oriented.js';
@@ -178,9 +179,14 @@ function entryTargets(project, src, g) {
     const apron = (b.site?.vehicles?.apronDepthMm || 0) > 0 || b.extras.some((x) => x.kind === 'apron');
     const depth = 3500;
     void apron;
-    const door = toW(b, { x: e.mid, y: e.y0 });
-    const front = toW(b, { x: e.mid, y: e.y0 - depth });
-    out.push({ buildingId: b.id, type: b.type, door, point: front, truck: apron || (b.site?.vehicles?.docks || 0) > 0, main: false });
+    // A building with a car zone beside its truck apron (a warehouse with an office pod) is entered on foot at the pod door, not at the middle of the front.
+    const z = b.site?.parking?.zone;
+    const hasApron = apron || (b.site?.vehicles?.docks || 0) > 0;
+    const podDoor = hasApron && Number.isFinite(z?.x0) && Number.isFinite(z?.x1);
+    const dx = podDoor ? (z.x0 <= e.x0 + 1 ? z.x0 + 1500 : z.x1 - 1500) : e.mid;
+    const door = toW(b, { x: dx, y: e.y0 });
+    const front = toW(b, { x: dx, y: e.y0 - depth });
+    out.push({ buildingId: b.id, type: b.type, door, point: front, truck: hasApron, ped: podDoor, main: false });
     if (canopy) {
       const cx = canopy.polygon.reduce((s, q) => s + q.x, 0) / canopy.polygon.length;
       const cy = canopy.polygon.reduce((s, q) => s + q.y, 0) / canopy.polygon.length;
@@ -376,7 +382,11 @@ export function generateSiteWorks(project, opts = {}) {
   const snap = (s) => g.s0 + (Math.floor((s - g.s0) / g.cell) + 0.5) * g.cell;
   const clampS = (s) => snap(Math.max(sLo + sideLand + xoverW / 2 + 500, Math.min(sHi - sideLand - xoverW / 2 - 500, s)));
   const mainT = targets.find((t) => t.main) || targets[0];
-  const mainS = mainT ? toFrame(f, mainT.door).s : (sLo + sHi) / 2;
+  // A building with a truck apron is entered by trucks straight in from the street: the crossover lines up with the middle of the apron.
+  const apronBoxF = src.bs.flatMap((b) => b.extras.filter((e) => e.kind === 'apron').map((e) => { const p = e.polygon.map((q) => toFrame(f, q)); return { s0: Math.min(...p.map((q) => q.s)), s1: Math.max(...p.map((q) => q.s)), t0: Math.min(...p.map((q) => q.t)), t1: Math.max(...p.map((q) => q.t)) }; }));
+  const truckLot = !station && apronBoxF.length > 0;
+  const apronMid = truckLot ? apronBoxF.reduce((sum, a) => sum + (a.s0 + a.s1) / 2, 0) / apronBoxF.length : null;
+  const mainS = truckLot ? apronMid : mainT ? toFrame(f, mainT.door).s : (sLo + sHi) / 2;
   const xs = [];
   if (station && frontLen > 2.4 * xoverW + 4000) {
     const sIn = Number.isFinite(ae?.in?.offsetMm) ? ae.in.offsetMm : sLo + frontLen * 0.18;
@@ -406,9 +416,14 @@ export function generateSiteWorks(project, opts = {}) {
   // row is parallel to the frontage. The checks below are exact (no grid), the grid is only used afterwards to route to other doors.
   const aabb = (poly, pad) => { const p = poly.map((q) => toFrame(f, q)); return { s0: Math.min(...p.map((q) => q.s)) - pad, s1: Math.max(...p.map((q) => q.s)) + pad, t0: Math.min(...p.map((q) => q.t)) - pad, t1: Math.max(...p.map((q) => q.t)) + pad }; };
   const blockers = [];
-  for (const s of [...src.solids, ...src.obstacles]) blockers.push(aabb(s, 500));
+  // 1.5 m clear round a building (the footpath along its face), 0.5 m round anything else solid; an entry canopy is not parked under.
+  for (const b of src.bs) blockers.push(aabb(b.outline, FOOTPATH_W));
+  for (const u of src.units) blockers.push(aabb(u.poly, 500));
+  for (const s of src.obstacles) blockers.push(aabb(s, 500));
+  for (const b of src.bs) for (const e of b.extras) if (e.kind === 'canopy' || e.kind === 'entry-canopy') blockers.push(aabb(e.polygon, 0));
   for (const r of src.reserved) blockers.push(aabb(r, 0));
-  for (const b of src.bs) for (const e of b.extras) if (e.kind === 'apron' || e.kind === 'fuel-canopy' || e.kind === 'truck-canopy') blockers.push(aabb(e.polygon, e.kind === 'apron' ? 0 : 1500));
+  for (const b of src.bs) for (const e of b.extras) if (e.kind === 'apron' || e.kind === 'fuel-canopy' || e.kind === 'truck-canopy') blockers.push({ ...aabb(e.polygon, e.kind === 'apron' ? 0 : 1500), apron: e.kind === 'apron' });
+  let apronPad = 0; // clear ground kept round a truck apron (the swing of the trucks): tried first, dropped when the lot is too tight for it
   const fpF = g.fp.map((q) => ({ x: q.s, y: q.t }));
   const edgesF = lot.boundary.map((a, i) => ({ a: toFrame(f, a), b: toFrame(f, lot.boundary[(i + 1) % lot.boundary.length]), m: frontEdges.has(i) ? frontLand : sideLand, front: frontEdges.has(i) }));
   const dSegF = (p, a, b) => { const dx = b.s - a.s; const dy = b.t - a.t; const t = Math.max(0, Math.min(1, ((p.x - a.s) * dx + (p.y - a.t) * dy) / (dx * dx + dy * dy || 1))); return Math.hypot(p.x - a.s - t * dx, p.y - a.t - t * dy); };
@@ -421,7 +436,7 @@ export function generateSiteWorks(project, opts = {}) {
     if (spine) t0 = Math.max(t0, 60);
     if (s1 - s0 < 1 || t1 - t0 < 1) return false;
     if (s0 < win.s0 - 1 || s1 > win.s1 + 1 || t1 > win.t1 + 1) return false;
-    for (const a of blockers) if (s0 < a.s1 && s1 > a.s0 && t0 < a.t1 && t1 > a.t0) return false;
+    for (const a of blockers) { const pd = a.apron ? apronPad : 0; const pt = spine ? 0 : pd; if (s0 < a.s1 + pd && s1 > a.s0 - pd && t0 < a.t1 + pt && t1 > a.t0 - pt) return false; }
     const ss = [s0, (s0 + s1) / 2, s1]; const tt = [t0, (t0 + t1) / 2, t1];
     for (let x = s0 + 1500; x < s1; x += 1500) ss.push(x);
     for (let y = t0 + 1500; y < t1; y += 1500) tt.push(y);
@@ -429,30 +444,55 @@ export function generateSiteWorks(project, opts = {}) {
     for (const q of fpF) if (q.x > s0 && q.x < s1 && q.y > t0 && q.y < t1) return false;
     return true;
   };
-  const tryField = (sp) => fillField({ ok: okRect, sp, spineW: carW, aisleW: carW, bayL, bayW, wanted: slotsWanted, near: mainPt, tStart: Math.abs(sp - xs[0].s) < 1 ? 0 : frontLand, tFirst: frontLand, tEnd: win.t1, sMin: win.s0, sMax: win.s1 });
+  // The truck route: a drive as wide as the crossover from the street straight to the apron. It is a no-bay zone like the apron itself.
+  const driveApron = truckLot ? (apronBoxF.filter((a) => xs[0].s >= a.s0 - 1 && xs[0].s <= a.s1 + 1).sort((p, q) => p.t0 - q.t0)[0] || apronBoxF[0]) : null;
+  const corridor = driveApron ? { s0: xs[0].s - xoverW / 2, s1: xs[0].s + xoverW / 2, t0: 0, t1: driveApron.t0 } : null;
+  const queueOk = (s0, s1, t0, t1, spine) => (spine || t0 >= QUEUE_MM - 1) && okRect(s0, s1, t0, t1, spine);
+  const clearOfCorridor = (s0, s1, t0, t1, spine) => queueOk(s0, s1, t0, t1, spine) && !(corridor && s0 < corridor.s1 - 1 && s1 > corridor.s0 + 1 && t0 < corridor.t1 - 1 && t1 > corridor.t0 + 1);
+  const tryField = (sp) => fillField({ spineFromStart: true, ok: clearOfCorridor, sp, spineW: carW, aisleW: carW, bayL, bayW, wanted: slotsWanted, near: mainPt, tStart: Math.abs(sp - xs[0].s) < 1 ? 0 : frontLand, tFirst: Math.max(frontLand, QUEUE_MM), tEnd: win.t1, sMin: win.s0, sMax: win.s1 });
   let field = null;
   if (slotsWanted > 0) {
-    field = tryField(xs[0].s);
-    if (!field || field.count < slotsWanted || !field.double) {
-      // The crossover line cannot carry enough bays, or only a single loaded aisle: try the spine elsewhere along the frontage (a drive joins
-      // it to the crossover) and keep the better layout.
-      let bestAlt = field;
-      const lo = sLo + sideLand + carW / 2 + 500; const hi = sHi - sideLand - carW / 2 - 500;
-      const cand = [];
-      for (let k = 1; k <= 14; k++) for (const sg of [-1, 1]) { const s = xs[0].s + sg * k * 3000; if (s >= lo && s <= hi) cand.push(s); }
-      // Flush with a building, apron or the lot margin: a spine that sits hard against its neighbour leaves no sliver of ground between them.
-      for (const a of blockers) for (const s of [a.s0 - carW / 2, a.s1 + carW / 2]) if (s >= lo && s <= hi) cand.push(s);
-      cand.sort((p, q) => Math.abs(p - xs[0].s) - Math.abs(q - xs[0].s));
-      for (const s of cand.slice(0, 30)) {
-        const alt = tryField(s);
-        if (betterField(alt, bestAlt, slotsWanted)) bestAlt = alt;
+    // First choice: one side aisle (or an aisle across the front) with rows facing the building, beside the drive and clear of the apron.
+    if (!station) {
+      // Kept 1.5 m clear of the apron when the lot allows it; hard against the apron only when that puts the bays much nearer the door.
+      for (const pad of truckLot ? [1500, 0] : [0]) {
+        apronPad = pad;
+        const cand = sideField({
+          ok: okRect, gate: xs[0].s, driveW: xoverW, driveEnd: corridor ? corridor.t1 : null, A: carW, D: bayL, bayW, wanted: slotsWanted, door: mainPt, win,
+          faces: blockers, tFaces: blockers.flatMap((a) => [a.t0, a.t1]), queue: QUEUE_MM,
+        });
+        if (!cand) continue;
+        const met = cand.count >= slotsWanted;
+        if (!field) { field = cand; continue; }
+        const fMet = field.count >= slotsWanted;
+        if ((met && !fMet) || (met === fMet && cand.cost + 25 < field.cost)) field = cand;
       }
-      field = bestAlt;
+      apronPad = 0;
+    }
+    if (!field || field.count < slotsWanted) {
+      let comb = tryField(xs[0].s);
+      if (!comb || comb.count < slotsWanted || !comb.double) {
+        // The crossover line cannot carry enough bays, or only a single loaded aisle: try the spine elsewhere along the frontage (a drive joins
+        // it to the crossover) and keep the better layout.
+        let bestAlt = comb;
+        const lo = sLo + sideLand + carW / 2 + 500; const hi = sHi - sideLand - carW / 2 - 500;
+        const cand = [];
+        for (let k = 1; k <= 14; k++) for (const sg of [-1, 1]) { const s = xs[0].s + sg * k * 3000; if (s >= lo && s <= hi) cand.push(s); }
+        // Flush with a building, apron or the lot margin: a spine that sits hard against its neighbour leaves no sliver of ground between them.
+        for (const a of blockers) for (const s of [a.s0 - carW / 2, a.s1 + carW / 2]) if (s >= lo && s <= hi) cand.push(s);
+        cand.sort((p, q) => Math.abs(p - xs[0].s) - Math.abs(q - xs[0].s));
+        for (const s of cand.slice(0, 30)) {
+          const alt = tryField(s);
+          if (betterField(alt, bestAlt, slotsWanted)) bestAlt = alt;
+        }
+        comb = bestAlt;
+      }
+      if (comb && (!field || comb.count > field.count)) field = comb;
     }
   }
   const world = (s, t) => toWorldF(f, s, t);
-  const geo = field ? fieldGeometry(field, world, { u: f.u, n: f.n }) : { aisles: [], rows: [], paved: [] };
-  const fieldRects = field ? [{ s0: field.spine.s0, s1: field.spine.s1, t0: field.spine.t0, t1: field.spine.t1 }, ...field.aisles.flatMap((a) => a.sides.map((sd) => ({ s0: sd.s0, s1: sd.s1, t0: a.qa - carW / 2, t1: a.qa + carW / 2 })))] : [];
+  const geo = field ? (field.kind === 'side' ? sideGeometry(field, world, { u: f.u, n: f.n }) : fieldGeometry(field, world, { u: f.u, n: f.n })) : { aisles: [], rows: [], paved: [] };
+  const fieldRects = !field ? [] : field.kind === 'side' ? field.rects.map((r) => ({ s0: r.s0, s1: r.s1, t0: r.t0, t1: r.t1 })) : [{ s0: field.spine.s0, s1: field.spine.s1, t0: field.spine.t0, t1: field.spine.t1 }, ...field.aisles.flatMap((a) => a.sides.map((sd) => ({ s0: sd.s0, s1: sd.s1, t0: a.qa - carW / 2, t1: a.qa + carW / 2 })))];
   const spineAtCrossover = !!field && Math.abs((field.spine.s0 + field.spine.s1) / 2 - xs[0].s) < 1;
 
   // Accessible groups [bay][zone][bay] nearest the main entry, then the allocation of bays to buildings.
@@ -513,6 +553,7 @@ export function generateSiteWorks(project, opts = {}) {
   if (routed.length || firstStart) {
     for (const tg of order) {
       const tf = toFrame(f, tg.point);
+      if (tg.ped && field) { tg.cell = null; continue; } // an office door beside a truck apron is reached by a footpath from the car park, never by an aisle through the apron
       if (field && tg.type !== 'fuel-canopy' && nearField(tf, 3500)) { tg.cell = null; continue; } // the field already passes the door
       const tc = cellOf(g, tf.s, tf.t);
       const goal = nearestFree(g, blocked, tc.i, tc.j, 40) || nearestFree(g, blockedNarrow, tc.i, tc.j, 40);
@@ -651,6 +692,40 @@ export function generateSiteWorks(project, opts = {}) {
       footpaths.push({ id: `sw:foot:${footpaths.length}`, buildingId: b.id, polygon: [tw({ x: x0, y: y0 - FOOTPATH_W }), tw({ x: x1, y: y0 - FOOTPATH_W }), tw({ x: x1, y: y0 }), tw({ x: x0, y: y0 })] });
     }
   }
+  // The footpath from the car park to an office door beside a truck apron: along the building face, then across to the nearest aisle.
+  const pedFoot = [];
+  for (const tg of targets) {
+    if (!tg.ped || !field) continue;
+    const d = toFrame(f, tg.door);
+    const W = FOOTPATH_W;
+    const aisleRects = (field.kind === 'side' ? field.rectsInfo.filter((r) => !r.truckDrive) : fieldRects);
+    const box = (poly) => { const p = poly.map((q) => toFrame(f, q)); return { s0: Math.min(...p.map((q) => q.s)), s1: Math.max(...p.map((q) => q.s)), t0: Math.min(...p.map((q) => q.t)), t1: Math.max(...p.map((q) => q.t)) }; };
+    const noGo = [...rows.flatMap((r) => r.bayAreas.map((ba) => box(ba.polygon))), ...apronBoxF, ...src.bs.map((b) => box(b.outline))];
+    const hits = (r) => noGo.some((a) => r.s0 < a.s1 - 1 && r.s1 > a.s0 + 1 && r.t0 < a.t1 - 1 && r.t1 > a.t0 + 1);
+    // The leg that crosses from the car park to the building face: as close to the door as it can be without crossing a bay row or the apron.
+    const xsC = new Set([d.s]);
+    for (const a of noGo) { xsC.add(a.s0 - W / 2 - 250); xsC.add(a.s1 + W / 2 + 250); }
+    for (const r of aisleRects) { xsC.add(r.s0 + W / 2); xsC.add(r.s1 - W / 2); }
+    let plan = null;
+    for (const sl of [...xsC].sort((p, q) => Math.abs(p - d.s) - Math.abs(q - d.s))) {
+      for (const r of aisleRects) {
+        if (sl - W / 2 < r.s0 - 1 || sl + W / 2 > r.s1 + 1 || r.t1 > d.t) continue;
+        const leg = { s0: sl - W / 2, s1: sl + W / 2, t0: r.t1, t1: d.t - W };
+        const along = { s0: Math.min(sl, d.s) - W / 2, s1: Math.max(sl, d.s) + W / 2, t0: d.t - W, t1: d.t };
+        const len = Math.abs(sl - d.s) + (d.t - W - r.t1);
+        if (leg.t1 - leg.t0 > 1 && hits(leg)) continue;
+        if (!plan || len < plan.len) plan = { leg, along, sl, len };
+      }
+      if (plan) break;
+    }
+    if (!plan) continue;
+    const legs = [];
+    if (Math.abs(plan.sl - d.s) > 500) legs.push(rectWorld(f, Math.min(plan.sl, d.s), Math.max(plan.sl, d.s), d.t - W, d.t));
+    if (plan.leg.t1 - plan.leg.t0 > 500) legs.push(rectWorld(f, plan.leg.s0, plan.leg.s1, plan.leg.t0, plan.leg.t1));
+    for (const poly of legs) pedFoot.push({ id: `sw:foot:${footpaths.length + pedFoot.length}`, buildingId: tg.buildingId, polygon: poly, pedestrian: true });
+    tg.footReached = true;
+  }
+  footpaths.push(...pedFoot);
   const landscape = [];
   const inLot = (poly) => poly.every((q) => G.pointInPolygon(q, lot.boundary));
   const gaps = crossovers.map((x) => [x.s - xoverW / 2 - 300, x.s + xoverW / 2 + 300]).sort((p, q) => p[0] - q[0]);
@@ -674,7 +749,7 @@ export function generateSiteWorks(project, opts = {}) {
     }) || forecourts.some((fc) => G.pointInPolygon(p, fc.polygon)) || aprons.some((ap) => G.pointInPolygon(p, ap.polygon));
   };
   const reachable = {};
-  for (const t of targets) if (t.type !== 'fuel-canopy') reachable[t.buildingId] = nearAisle(t.door) && !unreachable.includes(t.buildingId);
+  for (const t of targets) if (t.type !== 'fuel-canopy') reachable[t.buildingId] = (t.footReached || nearAisle(t.door)) && !unreachable.includes(t.buildingId);
 
   return {
     version: SITEWORKS_VERSION,

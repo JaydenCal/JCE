@@ -53,8 +53,9 @@ function network(sw) {
 function checkField(sw, frontAngle, label) {
   const bays = baysOf(sw);
   assert.ok(bays.length >= 8, `${label}: ${bays.length} bays`);
-  // Rows are parallel to the lot edge (the bay's open end, p0 to p1, runs along the row).
-  for (const b of bays) assert.ok(angDiff(dir(b.poly[0], b.poly[1]), frontAngle) < 0.5, `${label}: a bay row is skewed by ${angDiff(dir(b.poly[0], b.poly[1]), frontAngle).toFixed(2)} degrees`);
+  // Rows run parallel or square to the lot edge (the bay's open end, p0 to p1, runs along the row): across the front, or along a side setback.
+  const skew = (b) => { const d = angDiff(dir(b.poly[0], b.poly[1]), frontAngle); return Math.min(d, Math.abs(90 - d)); };
+  for (const b of bays) assert.ok(skew(b) < 0.5, `${label}: a bay row is skewed by ${skew(b).toFixed(2)} degrees`);
   // Bays are 2.6 x 5.4 m rectangles.
   for (const b of bays) {
     const [p0, p1, p2, p3] = b.poly;

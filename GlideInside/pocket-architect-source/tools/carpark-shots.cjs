@@ -100,6 +100,13 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
     } else await frame(b, 430);
     await page.locator('button[title*="Close"], button[aria-label="Close"]').first().click({ timeout: 800 }).catch(() => {});
     await shot('2d');
+    // Close plan view: the whole site works (aisles, bays, apron, crossover) filling the window.
+    const sw = await page.evaluate(() => { const c = window.__ps.store.project.commercial; const w = c.siteWorks; if (!w) return null; const pts = [...w.pavedAisles, ...w.aprons, ...w.footpaths, ...(w.bayRows || []).flatMap((r) => r.bayAreas), ...w.crossovers].flatMap((a) => a.polygon || []); const b = c.buildings.length ? null : null; return { x0: Math.min(...pts.map((q) => q.x)), x1: Math.max(...pts.map((q) => q.x)), y0: Math.min(...pts.map((q) => q.y)), y1: Math.max(...pts.map((q) => q.y)) }; });
+    if (sw) {
+      const pad = 6000; await frame({ x0: sw.x0 - pad, y0: sw.y0 - pad, x1: sw.x1 + pad, y1: sw.y1 + pad }, 430);
+      await shot('2d-close');
+      await frame(b, 430);
+    }
     await page.evaluate(() => window.__ps.store.setUI({ tool: 'select', view: '3d' }));
     await page.waitForTimeout(4500);
     const cx = spec.hardstand ? 72 : (b.x0 + b.x1) / 2000; const cz = spec.hardstand ? 35 : (b.y0 + b.y1) / 2000;

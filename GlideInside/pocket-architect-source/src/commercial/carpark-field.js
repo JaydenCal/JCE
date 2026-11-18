@@ -84,7 +84,7 @@ export function fillField(o) {
   for (let t = tStart; t < tEnd; t += 250) {
     if (ok(spL, spR, t, Math.min(tEnd, t + 250), true)) { if (t0 === null) t0 = t; reach = Math.min(tEnd, t + 250); } else if (t0 !== null) break;
   }
-  if (t0 === null) return null;
+  if (t0 === null || (o.spineFromStart && t0 > tStart + 500)) return null; // the spine has to start at the street (or at the drive that feeds it), never beyond a building or apron
   const tFirst = Math.max(o.tFirst, t0 + (o.leadIn || 0));
   if (reach - tFirst < A) return null;
   const memo = new Map();
