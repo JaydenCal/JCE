@@ -119,7 +119,9 @@ export const LOT_CARD_CSS = `
 .lc-compass{position:absolute;left:14px;top:72px;width:38px;height:38px;border-radius:50%;display:flex!important;align-items:center;justify-content:center}
 .lc-compass svg{width:26px;height:26px}
 .lc-compass:hover,.lc-menu:hover{background:rgba(40,40,46,.85)}
-.lc-embed .lc-find{right:64px;top:14px;height:42px;width:min(340px,calc(100% - 520px));max-width:none;padding:0 16px!important;border-radius:21px;gap:10px}
+.lc-root .lc-full{position:absolute;right:64px;top:14px;height:44px;padding:0 22px;border:0;border-radius:22px;background:#e9b66f;color:#1c1407;font:700 15px var(--lc-sans);letter-spacing:.01em;white-space:nowrap;cursor:pointer;z-index:5;box-shadow:0 4px 18px rgba(0,0,0,.35)}.lc-root .lc-full:hover{background:#f3c98d}.lc-root .lc-full:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.lc-root[data-view="2d"] .lc-full,.lc-root[data-view="split"] .lc-full{display:none}
+.lc-embed .lc-find{right:262px;top:14px;height:42px;width:min(340px,calc(100% - 700px));max-width:none;padding:0 16px!important;border-radius:21px;gap:10px}
 .lc-embed .lc-find-in{flex:1;min-width:0;height:100%;background:none;border:0;outline:0;color:var(--lc-t1);font:500 13.5px var(--lc-sans);padding:0}
 .lc-embed .lc-find-in::placeholder{color:var(--lc-t1);opacity:.92}
 .lc-embed .lc-find:focus-within{border-color:rgba(255,255,255,.55)}
@@ -147,10 +149,11 @@ export const LOT_CARD_CSS = `
 .lc-embed:not(.is-compact) .lc-pager{left:50%;right:auto;transform:translateX(-50%);width:auto;bottom:26px;justify-content:center}
 .lc-embed:not(.is-compact) .lc-pgt{min-width:150px;max-width:300px;flex:none;font-size:10.5px;letter-spacing:.16em}
 .lc-embed:not(.is-compact) .lc-mini{bottom:26px;right:14px;width:min(18%,200px)}
+.lc-root.lc-embed.is-compact .lc-full{right:12px;top:58px;height:42px;padding:0 16px;font-size:14px}
 .lc-embed.is-compact .lc-find{display:flex;left:12px;right:62px;top:12px;width:auto;height:40px}
 .lc-embed.is-compact .lc-menu{right:12px;top:12px;width:40px;height:40px}
 .lc-embed.is-compact .lc-menu-list{top:58px;right:12px}
-.lc-embed.is-compact .lc-head{left:12px;top:60px;max-width:calc(100% - 130px);padding:7px 10px 8px}
+.lc-embed.is-compact .lc-head{left:12px;top:60px;max-width:calc(100% - 200px);padding:7px 10px 8px}
 .lc-embed.is-compact .lc-head-t{font-size:11px}
 .lc-embed.is-compact .lc-compass{left:12px;top:104px;width:34px;height:34px}
 .lc-embed.is-compact .lc-rooms{top:150px}

@@ -370,7 +370,7 @@ function lawnGroundMaterial(ctx, lot, ext, aerial = null, hasWide = false, wideT
   diffuseColor.rgb = mix(padC, lawnC, lotM);
 ${aerial ? `  vec3 aerC = texture2D(uAerialTex, vAerUv).rgb;
   float dM = length((vAerUv - uFadeC) * uExtM);
-  float nearK = 1.0 - smoothstep(uFadeR.x, uFadeR.y, dM);
+  float nearK = ${hasWide ? '1.0' : '1.0 - smoothstep(uFadeR.x, uFadeR.y, dM)'}; // with the wide tile the photograph runs unbroken to the wide tile: no lawn disc around the lot
   vec3 aerSoft = mix(vec3(dot(aerC, vec3(0.3333))), aerC, 0.85) * 1.08;
   vec3 aerFull = aerC * 1.06;
   vec3 noAer = diffuseColor.rgb;
@@ -382,7 +382,7 @@ ${wideTex ? `  vec2 wUv = vec2(uWideMap.y + uWideMap.x * vAerUv.x, 1.0 - (uWideM
   vec3 beyond = texture2D(uWideTex, wUv).rgb * 1.04;` : '  vec3 beyond = noAer;'}
   diffuseColor.rgb = mix(diffuseColor.rgb, beyond, rimK);` : ''}`);
   };
-  mat.customProgramCacheKey = () => (aerial ? (hasWide ? 'lawn-ground-aerial-6w' : 'lawn-ground-aerial-6') : 'lawn-ground-2');
+  mat.customProgramCacheKey = () => (aerial ? (hasWide ? 'lawn-ground-aerial-7w' : 'lawn-ground-aerial-6') : 'lawn-ground-2');
   return mat;
 }
 

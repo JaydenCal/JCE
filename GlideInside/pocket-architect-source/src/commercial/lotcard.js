@@ -150,6 +150,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   const openUpload = () => runUpload(store, { viewer: true });
   injectUploadCss();
   const uploadBtn = h('button', { class: 'lc-upload lc-glass', type: 'button', dataset: { ps: 'lc-upload' }, title: 'Use your own lot boundary, anywhere in the world', onclick: () => openUpload() }, 'Upload boundary');
+  const fullBtn = h('button', { class: 'lc-full', type: 'button', dataset: { ps: 'lc-full-editor' }, title: 'Open this site and layout in the full editor', onclick: () => (onFullEditor || onEdit)?.() }, 'Open full editor', h('span', { 'aria-hidden': 'true' }, ' \u2197'));
   const menuItems = [
     ['Open full editor', () => (onFullEditor || onEdit)?.()],
     [PLAN_SET_LABEL, () => planSet()],
@@ -168,7 +169,7 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
   function paintMenu() { const it = menuList.lastElementChild; if (it) it.textContent = topView.isOpen() ? 'Close top view' : 'Enlarge top view'; }
   const foot = E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, FOOT_BASE);
   miniView = attachMiniView({ mini, cv, northDeg: () => Number(store.project?.site?.northDeg) || 0 });
-  const root = E('lc-root lc-embed cc-root', 'div', { dataset: { ps: 'lot-card-root', mode: 'commercial' } }, head, compass, findPill, uploadBtn, menuBtn, menuList, card, rooms, panel, typeBar, pager, aerialT.el, mini, foot);
+  const root = E('lc-root lc-embed cc-root', 'div', { dataset: { ps: 'lot-card-root', mode: 'commercial' } }, head, compass, fullBtn, findPill, uploadBtn, menuBtn, menuList, card, rooms, panel, typeBar, pager, aerialT.el, mini, foot);
   host.append(root);
 
   // Address search -------------------------------------------------------------------------------------------------------------
