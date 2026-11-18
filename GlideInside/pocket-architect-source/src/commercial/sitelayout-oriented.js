@@ -5,10 +5,11 @@
 import * as G from '../model/geometry.js';
 import { bayDemand } from './catalogue/bays.js';
 import { accessibleRequired } from './rules.js';
+import { fillField, betterField, fieldGeometry, markAccessible, carportsOf, BAY_W, BAY_L } from './carpark-field.js';
 
 const r0 = (v) => Math.round(v);
 const FOOT = 1500;
-const CAR_AISLE = 6000;
+const CAR_AISLE = 6200;
 const SKEW_TOL_DEG = 1.5;
 
 /** Degrees the building is turned off the lot's grid, folded to -45..45. */
@@ -70,8 +71,8 @@ function sampleHits(poly, others) {
  */
 export function orientedWorks(ctx) {
   const { c, lot, f, b, toFrame, toWorldF, fitToLot } = ctx;
-  const bayW = Number(c.parking?.bayW) || 2400;
-  const bayL = Number(c.parking?.bayL) || 5400;
+  const bayW = Math.max(BAY_W, Number(c.parking?.bayW) || 0);
+  const bayL = Math.max(BAY_L, Number(c.parking?.bayL) || 0);
   const aisleCar = Math.max(CAR_AISLE, Number(c.parking?.aisleMm) || 0);
   const frontLand = ctx.frontLand; const sideLand = ctx.sideLand;
   const frontEdges = new Set(lot.frontEdges);
@@ -102,78 +103,77 @@ export function orientedWorks(ctx) {
     mk('left', lw(x0, (y0 + y1) / 2), { x: -ux.x, y: -ux.y }, y1 - y0),
     mk('right', lw(x1, (y0 + y1) / 2), ux, y1 - y0),
   ];
-  const streetPt = lot.boundary[(lot.frontEdges[0] ?? 0)];
   const e0 = lot.frontEdges[0] ?? 0;
   const eA = lot.boundary[e0]; const eB = lot.boundary[(e0 + 1) % lot.boundary.length];
   const edgeLen = Math.hypot(eB.x - eA.x, eB.y - eA.y);
-  void streetPt;
   const order = [faces[0], ...faces.slice(1).sort((p, q) => distSeg(p.m, eA, eB).d - distSeg(q.m, eA, eB).d)];
 
-  const toW = (face, p, q) => ({ x: r0(face.m.x + face.tan.x * p + face.nrm.x * q), y: r0(face.m.y + face.tan.y * p + face.nrm.y * q) });
-  const rectF = (face, p0, p1, q0, q1) => [toW(face, p0, q0), toW(face, p1, q0), toW(face, p1, q1), toW(face, p0, q1)];
-
+  // The car park is laid out in the face's own frame: s along the face, t into the building (so the free ground is at t < 0), by the bay
+  // fill of carpark-field.js. Every row is parallel to the face. A spine runs out from the face toward the street and the drive joins its end.
+  const solidsM = [...obstacles.map((o) => [o, 500]), ...aprons.map((o) => [o, 0]), [b.outline, FOOT + 500]];
+  const lotPts = lot.boundary;
   const tryFace = (face) => {
-    const qA0 = FOOT; const qA1 = FOOT + bayL; const qAis1 = qA1 + aisleCar; const qB1 = qAis1 + bayL;
-    let best = null;
-    for (let ext = 0; ext <= 60000; ext += bayW * 2) {
-      const half = face.len / 2 + ext;
-      const nSlots = Math.floor((2 * half) / bayW);
-      const pStart = -((nSlots * bayW) / 2);
-      const cand = [];
-      for (let i = 0; i < nSlots; i++) {
-        const p0 = pStart + i * bayW;
-        const pc = p0 + bayW / 2;
-        for (const row of ['A', 'B']) {
-          const poly = row === 'A' ? rectF(face, p0, p0 + bayW, qA0, qA1) : rectF(face, p0, p0 + bayW, qAis1, qB1);
-          if (!polyInLot(poly)) continue;
-          if (solids.some((s) => overlaps(poly, s)) || aprons.some((s) => overlaps(poly, s))) continue;
-          const aisleCell = rectF(face, p0, p0 + bayW, qA1, qAis1);
-          if (!polyInLot(aisleCell) || solids.some((s) => overlaps(aisleCell, s)) || aprons.some((s) => overlaps(aisleCell, s))) continue;
-          cand.push({ row, p0, pc, poly, d: Math.abs(pc) + (row === 'B' ? 1 : 0) });
-        }
+    const nrm = face.nrm; const tan = face.tan; const O = face.m;
+    const toM = (q) => ({ s: (q.x - O.x) * tan.x + (q.y - O.y) * tan.y, t: -((q.x - O.x) * nrm.x + (q.y - O.y) * nrm.y) });
+    const fromM = (s, t) => ({ x: r0(O.x + tan.x * s - nrm.x * t), y: r0(O.y + tan.y * s - nrm.y * t) });
+    const blockers = solidsM.map(([poly, pad]) => { const m = poly.map(toM); return { s0: Math.min(...m.map((q) => q.s)) - pad, s1: Math.max(...m.map((q) => q.s)) + pad, t0: Math.min(...m.map((q) => q.t)) - pad, t1: Math.max(...m.map((q) => q.t)) + pad }; });
+    const lm = lotPts.map(toM);
+    const sMin = Math.min(...lm.map((q) => q.s)); const sMax = Math.max(...lm.map((q) => q.s));
+    const tMin = Math.min(...lm.map((q) => q.t));
+    const ok = (s0, s1, t0, t1) => {
+      if (s1 - s0 < 1 || t1 - t0 < 1) return false;
+      for (const a of blockers) if (s0 < a.s1 && s1 > a.s0 && t0 < a.t1 && t1 > a.t0) return false;
+      const ss = [s0, (s0 + s1) / 2, s1]; const tt = [t0, (t0 + t1) / 2, t1];
+      for (let x = s0 + 1500; x < s1; x += 1500) ss.push(x);
+      for (let y = t0 + 1500; y < t1; y += 1500) tt.push(y);
+      for (const s of ss) for (const t of tt) if (!inLotMargin(fromM(s, t))) return false;
+      return true;
+    };
+    const attempt = (sp) => fillField({ ok, sp, spineW: aisleCar, aisleW: aisleCar, bayL, bayW, wanted, near: { s: 0, t: -500 }, tStart: tMin, tFirst: tMin, leadIn: 9000, tEnd: 0, sMin, sMax });
+    let field = attempt(0);
+    if (!field || field.count < wanted || !field.double) {
+      let best = field;
+      for (let k = 1; k <= 12; k++) for (const sg of [-1, 1]) {
+        const alt = attempt(sg * k * 3000);
+        if (betterField(alt, best, wanted)) best = alt;
       }
-      cand.sort((p, q) => p.d - q.d);
-      const chosen = cand.slice(0, wanted);
-      if (!best || chosen.length > best.chosen.length) best = { chosen, nSlots, pStart, face, ext };
-      if (chosen.length >= wanted) break;
+      field = best;
     }
-    if (!best || !best.chosen.length) return null;
-    const ch = best.chosen;
-    const pMin = Math.min(...ch.map((s) => s.p0)); const pMax = Math.max(...ch.map((s) => s.p0 + bayW));
-    const useB = ch.some((s) => s.row === 'B');
-    const rowsUsed = { A: ch.some((s) => s.row === 'A'), B: useB };
-    // Row B only makes sense next to the aisle, which always runs across the full width.
-    const qTop = useB ? qB1 : rowsUsed.A ? qAis1 : qAis1;
-    const aisle = rectF(face, pMin, pMax, qA1, qAis1);
-    const carPark = rectF(face, pMin, pMax, 0, qTop);
-    if (!polyInLot(aisle)) return null;
-    return { face, ch, pMin, pMax, aisle, carPark, qA1, qAis1, qTop, useB };
+    if (!field) return null;
+    return { face, field, fromM, toM };
   };
-
   let layout = null;
-  for (const face of order) { layout = tryFace(face); if (layout) break; }
+  for (const face of order) { const l = tryFace(face); if (l && (!layout || betterField(l.field, layout.field, wanted))) { layout = l; if (l.field.count >= wanted && l.field.double) break; } }
   if (!layout) return null;
-  const { face, ch, pMin, pMax, aisle, carPark, qA1, qAis1 } = layout;
+  const { face, field, fromM } = layout;
+  const geo = fieldGeometry(field, fromM, { u: face.tan, n: { x: -face.nrm.x, y: -face.nrm.y } });
+  const poly = (s0, s1, t0, t1) => [fromM(s0, t0), fromM(s1, t0), fromM(s1, t1), fromM(s0, t1)];
+  const extent = geo.aisles.reduce((e, a) => ({ s0: Math.min(e.s0, ...a.polygon.map((q) => layout.toM(q).s)), s1: Math.max(e.s1, ...a.polygon.map((q) => layout.toM(q).s)), t0: Math.min(e.t0, ...a.polygon.map((q) => layout.toM(q).t)), t1: Math.max(e.t1, ...a.polygon.map((q) => layout.toM(q).t)) }), { s0: Infinity, s1: -Infinity, t0: Infinity, t1: -Infinity });
+  for (const r of geo.rows) for (const sl of r.slots) for (const q of sl.poly) { const m = layout.toM(q); extent.s0 = Math.min(extent.s0, m.s); extent.s1 = Math.max(extent.s1, m.s); extent.t0 = Math.min(extent.t0, m.t); extent.t1 = Math.max(extent.t1, m.t); }
+  const carPark = poly(extent.s0, extent.s1, extent.t0, extent.t1);
+  const aisle = geo.aisles[0].polygon; // the spine
+  const spineStart = { x: (geo.aisles[0].centre[0].x), y: (geo.aisles[0].centre[0].y) };
 
-  // The drive: crossover on the first frontage edge, then one connected run to the nearest end of the aisle.
+  // The drive: crossover on the first frontage edge, then one connected run to the street end of the spine.
   const xoverW = ctx.xoverW;
   const edgeU = { x: (eB.x - eA.x) / edgeLen, y: (eB.y - eA.y) / edgeLen };
-  const aisleMid = (p) => toW(face, p, (qA1 + qAis1) / 2);
-  const ends = [aisleMid(pMin), aisleMid(pMax)];
   const sOf = (pt) => (pt.x - eA.x) * edgeU.x + (pt.y - eA.y) * edgeU.y;
   const corner = 6000;
   const sLo = xoverW / 2 + sideLand + 500 + (frontEdges.has((e0 - 1 + lot.boundary.length) % lot.boundary.length) ? corner : 0);
   const sHi = edgeLen - xoverW / 2 - sideLand - 500 - (frontEdges.has((e0 + 1) % lot.boundary.length) ? corner : 0);
-  const bayPolys = ch.map((s) => s.poly);
+  const bayPolys = geo.rows.flatMap((r) => r.slots.map((sl) => sl.poly));
   let drive = null;
-  const lead = 9000; // the drive meets the aisle end head on, along the aisle's own axis, so it never cuts across a bay row
-  const endsOut = [{ tg: ends[0], dir: -1 }, { tg: ends[1], dir: 1 }].map((e) => ({ ...e, E: { x: r0(e.tg.x + face.tan.x * e.dir * lead), y: r0(e.tg.y + face.tan.y * e.dir * lead) } }));
-  for (const { tg, E } of endsOut.sort((p, q) => Math.abs(sOf(p.E) - (sLo + sHi) / 2) - Math.abs(sOf(q.E) - (sLo + sHi) / 2))) {
-    const sx = Math.max(sLo, Math.min(sHi, sOf(E)));
+  const lead = 9000; // the drive meets the spine end head on, along the spine's own axis, so it never cuts across a bay row (the spine starts 9 m before the first bay)
+  const E = { x: r0(spineStart.x + face.nrm.x * lead), y: r0(spineStart.y + face.nrm.y * lead) };
+  const tg = spineStart;
+  const sxBase = Math.max(sLo, Math.min(sHi, sOf(E)));
+  const sxList = [sxBase];
+  for (let k = 1; k <= 20; k++) for (const sg of [-1, 1]) { const v = sxBase + sg * k * 2000; if (v >= sLo && v <= sHi) sxList.push(v); }
+  for (const sx of sxList) {
     const X = { x: r0(eA.x + edgeU.x * sx), y: r0(eA.y + edgeU.y * sx) };
     const k = (E.x - X.x) * f.n.x + (E.y - X.y) * f.n.y;
     const mid = { x: r0(X.x + f.n.x * k), y: r0(X.y + f.n.y * k) };
-    const options = [[X, mid, E, tg], [X, E, tg]];
+    const options = [[X, E, tg], [X, mid, E, tg], [X, tg]];
     for (const pts of options) {
       const strips = [];
       for (let i = 0; i + 1 < pts.length; i++) if (Math.hypot(pts[i + 1].x - pts[i].x, pts[i + 1].y - pts[i].y) > 100) strips.push(stripPoly(pts[i], pts[i + 1], aisleCar, aisleCar / 2));
@@ -187,7 +187,7 @@ export function orientedWorks(ctx) {
     if (drive) break;
   }
   if (!drive) return null;
-  const roads = [aisle, ...drive.strips];
+  const roads = [...geo.aisles.map((a) => a.polygon), ...drive.strips];
 
   // Truck lanes from each hardstand to the drive or aisle, so the hardstand is connected.
   const links = [];
@@ -224,60 +224,29 @@ export function orientedWorks(ctx) {
   // Outputs.
   const crossoverPt = drive.pts[0];
   const crossovers = [{ id: 'sw:xover:0', x: crossoverPt.x, y: crossoverPt.y, widthMm: xoverW, role: 'both', dir: { x: -f.n.x, y: -f.n.y }, polygon: stripPoly(crossoverPt, { x: crossoverPt.x - f.n.x * 3000, y: crossoverPt.y - f.n.y * 3000 }, xoverW, 0) }];
-  const aisleCentre = [aisleMid(pMin), aisleMid(pMax)];
-  const aislesOut = [{ id: 'sw:aisle:0', polygon: aisle, centre: aisleCentre, widthMm: aisleCar, kind: 'aisle' }];
+  const aislesOut = geo.aisles.map((a) => ({ ...a }));
   drive.strips.forEach((sp, k) => {
     const a = drive.pts[k]; const z = drive.pts[k + 1];
-    aislesOut.push({ id: `sw:aisle:${k + 1}`, polygon: sp, centre: [a, z], widthMm: aisleCar, kind: 'aisle' });
+    aislesOut.push({ id: `sw:aisle:d${k}`, polygon: sp, centre: [a, z], widthMm: aisleCar, kind: 'aisle' });
   });
-  const pavedAisles = [{ id: 'sw:paved:0', polygon: aisle }, ...drive.strips.map((p, k) => ({ id: `sw:paved:${k + 1}`, polygon: p })), ...links.map((p, k) => ({ id: `sw:paved:l${k}`, polygon: p }))];
+  const pavedAisles = [...geo.paved, ...drive.strips.map((p, k) => ({ id: `sw:paved:d${k}`, polygon: p })), ...links.map((p, k) => ({ id: `sw:paved:l${k}`, polygon: p }))];
   const apronsOut = []; const warn2 = [];
   for (const ap of aprons) {
     const r = fitToLot(ap, lot);
     if (r.clipped) warn2.push(r.lost ? 'The truck apron does not fit inside the lot.' : 'The truck apron was cut back to the lot boundary.');
     if (r.polygon) apronsOut.push({ id: `sw:apron:${apronsOut.length}`, buildingId: b.id, polygon: r.polygon });
   }
-  const footpaths = [{ id: 'sw:foot:0', buildingId: b.id, polygon: rectF(face, -face.len / 2, face.len / 2, 0, FOOT) }];
+  const toW0 = (fc, p, q) => ({ x: r0(fc.m.x + fc.tan.x * p + fc.nrm.x * q), y: r0(fc.m.y + fc.tan.y * p + fc.nrm.y * q) });
+  const footpaths = [{ id: 'sw:foot:0', buildingId: b.id, polygon: [toW0(face, -face.len / 2, 0), toW0(face, face.len / 2, 0), toW0(face, face.len / 2, FOOT), toW0(face, -face.len / 2, FOOT)] }];
 
-  // Bay rows (one per bay row used), accessible group nearest the door, bays in order along the face.
-  const rowsOut = [];
-  for (const rowKey of ['A', 'B']) {
-    const slotsR = ch.filter((s) => s.row === rowKey).sort((p, q) => p.p0 - q.p0);
-    if (!slotsR.length) continue;
-    const qEdge = rowKey === 'A' ? qA1 : qAis1;
-    const vSign = rowKey === 'A' ? -1 : 1;
-    const o = toW(face, slotsR[0].p0, qEdge);
-    const slots = slotsR.map((s, i) => ({ index: i, kind: 'bay', poly: s.poly, centre: { x: r0(s.poly.reduce((a, q) => a + q.x, 0) / 4), y: r0(s.poly.reduce((a, q) => a + q.y, 0) / 4) }, _p: s.p0 + bayW / 2 }));
-    const runs = []; let cur = null;
-    slotsR.forEach((s) => { if (cur && Math.abs(s.p0 - cur.last - bayW) < 5) { cur.list.push(s); cur.last = s.p0; } else { cur = { list: [s], last: s.p0 }; runs.push(cur); } });
-    const bayAreas = runs.map((rn, q) => ({ id: `sw:bays:${rowKey === 'A' ? 0 : 1}:${q}`, polygon: rowKey === 'A' ? rectF(face, rn.list[0].p0, rn.last + bayW, qA1 - bayL, qA1) : rectF(face, rn.list[0].p0, rn.last + bayW, qAis1, qAis1 + bayL) }));
-    const vv = { x: face.nrm.x * vSign, y: face.nrm.y * vSign };
-    rowsOut.push({ rowId: `sw:bays:${rowKey === 'A' ? 0 : 1}`, buildingId: b.id, bayAreas, frame: { o, u: { x: face.tan.x, y: face.tan.y }, v: vv, f: { x: -vv.x, y: -vv.y } }, length: slots.length * bayW, x0: 0, depth: 0, offsetMm: 0, slots });
-  }
-  let accProvided = 0;
-  if (accReq > 0) {
-    const groups = [];
-    for (const row of rowsOut) for (let i = 0; i + 2 < row.slots.length; i++) groups.push({ row, i, d: Math.abs(row.slots[i + 1]._p) });
-    groups.sort((p, q) => p.d - q.d);
-    const taken = new Set();
-    for (const gr of groups) {
-      if (accProvided >= accReq) break;
-      const ids = [0, 1, 2].map((k) => `${gr.row.rowId}:${gr.i + k}`);
-      if (ids.some((x) => taken.has(x))) continue;
-      ids.forEach((x) => taken.add(x));
-      gr.row.slots[gr.i].kind = 'accessible'; gr.row.slots[gr.i + 1].kind = 'zone'; gr.row.slots[gr.i + 2].kind = 'accessible';
-      accProvided += 2;
-    }
-    for (const row of rowsOut) for (let i = 0; i + 1 < row.slots.length && accProvided < accReq; i++) {
-      const a = `${row.rowId}:${i}`; const z = `${row.rowId}:${i + 1}`;
-      if (taken.has(a) || taken.has(z) || row.slots[i].kind !== 'bay' || row.slots[i + 1].kind !== 'bay') continue;
-      taken.add(a); taken.add(z);
-      row.slots[i].kind = 'accessible'; row.slots[i + 1].kind = 'zone'; accProvided += 1;
-    }
-  }
-  for (const row of rowsOut) for (const s of row.slots) delete s._p;
+  // Bay rows from the fill, accessible group nearest the door, then the bays handed to the building.
+  const rowsOut = geo.rows;
+  const doorM = { x: face.m.x, y: face.m.y };
+  const accProvided = markAccessible(rowsOut, accReq, (sl) => Math.hypot(sl.centre.x - doorM.x, sl.centre.y - doorM.y));
+  for (const r of rowsOut) { r.buildingId = b.id; delete r._fr; }
   const zones = rowsOut.reduce((s, r) => s + r.slots.filter((x) => x.kind === 'zone').length, 0);
   const provided = rowsOut.reduce((s, r) => s + r.slots.length, 0) - zones;
+  const carports = c.parking?.covered ? carportsOf(rowsOut) : [];
 
   // Front landscape strip either side of the crossover.
   const landscape = [];
@@ -291,7 +260,7 @@ export function orientedWorks(ctx) {
   void toFrame; void toWorldF; void sub;
 
   return {
-    kind: 'general', aisleMm: aisleCar, crossovers, aisles: aislesOut, pavedAisles, forecourts: [], aprons: apronsOut, footpaths, landscape,
+    kind: 'general', aisleMm: aisleCar, crossovers, carports, field: { cols: field.cols, count: field.count, aisleMm: aisleCar, bayW, bayL }, aisles: aislesOut, pavedAisles, forecourts: [], aprons: apronsOut, footpaths, landscape,
     carPark: { id: 'sw:carpark:0', buildingId: b.id, polygon: carPark, face: face.name },
     drive: { id: 'sw:drive:0', points: drive.pts, widthMm: aisleCar, polygons: drive.strips, links },
     orientedTo: { buildingId: b.id, rotationDeg: b.place.rotationDeg, face: face.name },

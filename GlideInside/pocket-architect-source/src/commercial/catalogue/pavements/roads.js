@@ -419,3 +419,58 @@ export { HS_PREFIX, absArea };
 
 roadsHook.setRoad = setRoad;
 roadsHook.addRoad = addRoad;
+
+// Duplicate roads ---------------------------------------------------------------------------------------------------------------------
+
+export const DUPLICATE_FRACTION = 0.5;
+const segD = (p, a, b) => { const l2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2 || 1; const t = Math.max(0, Math.min(1, ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2)); return Math.hypot(p.x - a.x - (b.x - a.x) * t, p.y - a.y - (b.y - a.y) * t); };
+const pathD = (p, pts) => pts.reduce((m, a, i) => (i ? Math.min(m, segD(p, pts[i - 1], a)) : m), Infinity);
+
+/**
+ * The existing road or generated driveway, crossover, aisle or apron that road `id` mostly lies on (shared area over the smaller of the two above
+ * DUPLICATE_FRACTION), or null: { id, fraction, generated }. A road that only crosses another is not a duplicate.
+ */
+export function duplicateRoad(c, id, min = DUPLICATE_FRACTION) {
+  const me = roadById(c, id);
+  if (!me?.polygon?.length) return null;
+  const a = absArea(me.polygon);
+  if (!a) return null;
+  const cands = roadList(c).filter((r) => r.id !== id && r.polygon.length >= 3).map((r) => ({ id: r.id, polygon: r.polygon, generated: false }));
+  const sw = siteWorksOf(c);
+  for (const list of ['crossovers', 'aisles', 'pavedAisles', 'aprons']) for (const it of sw?.[list] || []) if (it?.id && it.polygon?.length >= 3) cands.push({ id: it.id, polygon: it.polygon, generated: true });
+  let best = null;
+  for (const o of cands) {
+    const b = absArea(o.polygon);
+    if (!b) continue;
+    const shared = boolean([me.polygon], [o.polygon], 'inter').reduce((s, r) => s + Math.abs(polyArea(r)), 0);
+    const fraction = shared / Math.min(a, b);
+    if (fraction > min && (!best || fraction > best.fraction)) best = { id: o.id, fraction, generated: o.generated };
+  }
+  return best;
+}
+
+/**
+ * Merge road `dropId` into `keepId` (a drawn road) or onto a generated item: the new road is removed, so there are never two parallel strips.
+ * A drawn road keeps the wider width and gains any run of the dropped centre line that goes on past one of its ends. Returns { merged, keepId }.
+ */
+export function mergeRoadInto(c, dropId, keepId, lot = null) {
+  const drop = roadById(c, dropId);
+  if (!drop) throw new Error('That road is gone.');
+  const keep = roadById(c, keepId);
+  if (keep) {
+    const reach = Math.max(keep.widthMm, drop.widthMm) / 2 + 300;
+    const ins = drop.centre.map((p) => pathD(p, keep.centre) <= reach);
+    const s0 = ins.indexOf(true); const e0 = ins.lastIndexOf(true);
+    let pts = keep.centre.map((p) => ({ ...p }));
+    if (s0 >= 0) {
+      const endNear = (p) => { const ds = Math.hypot(p.x - pts[0].x, p.y - pts[0].y); const de = Math.hypot(p.x - pts[pts.length - 1].x, p.y - pts[pts.length - 1].y); return ds <= de ? { end: 'start', d: ds } : { end: 'end', d: de }; };
+      const exit = (a, b) => { const l = Math.hypot(b.x - a.x, b.y - a.y); let last = a; for (let t = 500; t < l; t += 500) { const q = { x: a.x + ((b.x - a.x) * t) / l, y: a.y + ((b.y - a.y) * t) / l }; if (pathD(q, keep.centre) > reach) break; last = q; } return { x: Math.round(last.x), y: Math.round(last.y) }; };
+      if (s0 > 0) { const anchor = exit(drop.centre[s0], drop.centre[s0 - 1]); const lead = [...drop.centre.slice(0, s0), anchor]; const n = endNear(anchor); if (n.d <= reach * 2) pts = n.end === 'start' ? [...lead, ...pts] : [...pts, ...lead.slice().reverse()]; }
+      if (e0 < drop.centre.length - 1) { const anchor = exit(drop.centre[e0], drop.centre[e0 + 1]); const trail = [anchor, ...drop.centre.slice(e0 + 1)]; const n = endNear(anchor); if (n.d <= reach * 2) pts = n.end === 'end' ? [...pts, ...trail] : [...trail.slice().reverse(), ...pts]; }
+    }
+    setRoad(c, keepId, { centre: pts, widthMm: Math.max(keep.widthMm, drop.widthMm) }, lot);
+  }
+  const i = (c.pavements || []).findIndex((o) => o && o.id === dropId);
+  if (i >= 0) c.pavements.splice(i, 1);
+  return { merged: true, keepId };
+}

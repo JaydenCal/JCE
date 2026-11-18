@@ -29,7 +29,7 @@ export function hardstandPanel(ctx) {
     sel.addEventListener('change', () => {
       const type = sel.value;
       const picked = ctl()?.selectedArea?.();
-      if (picked && hsState.mode === 'edit') ctl().retype(picked.id, type);
+      if (picked) ctl().retype(picked.id, type);
       setHsState({ type });
     });
     return sel;
@@ -101,7 +101,11 @@ export function hardstandPanel(ctx) {
         h('div', { class: 'ps-row', style: { gap: '6px', flexWrap: 'wrap' } },
           button('Duplicate', () => ctl()?.duplicate?.(picked.id), { title: 'Copy this area 2 m across and down (D)' }),
           button('Delete area', () => ctl()?.remove?.(picked.id), { cls: 'ps-btn--danger', title: 'Delete the whole area (Delete)' }),
-          button('Edit corners', () => setHsState({ mode: 'edit' }), { title: 'Drag a corner, drag a midpoint dot to add one, double click a corner to remove it' })),
+          button('Turn 90', () => ctl()?.rotateSelected?.(90), { title: 'Rotate 90 degrees (. key, Shift and . for 15). The gold ring on the plan turns it freely.' }),
+          button('Fill with car park', () => { const cp = editor?.carpark; setHsState({ mode: 'edit' }); setTool(store, 'carpark'); cp?.applyCarpark?.(picked.id); }, { title: 'Open the Car park tool and fill this area with bays and aisles aligned to it' }),
+          button('Edit corners', () => setHsState({ mode: 'edit' }), { title: 'Drag a corner or an edge dot to resize, the gold ring to rotate. On a polygon drag a midpoint dot to add a corner, double click a corner to remove it' })),
+        h('div', { class: 'ps-seg ps-seg--sm', role: 'group', 'aria-label': 'Surface, one click', style: { flexWrap: 'wrap', marginTop: '6px' }, dataset: { ps: 'hardstand-quick-types' } },
+          ...hardstandTypes().filter((x) => ['asphalt-ac10-car', 'concrete-heavy', 'gravel-yard', 'permeable-pavers'].includes(x.id) || x.id === picked.type).map((x) => h('button', { class: 'ps-seg-btn', type: 'button', title: x.where, 'aria-pressed': String(picked.type === x.id), dataset: { ps: `hardstand-quick-${x.id}` }, onclick: () => ctl()?.retype?.(picked.id, x.id) }, x.short))),
         prompts[0] ? h('p', { class: 'ps-hint', style: { margin: '8px 0 0' }, dataset: { ps: 'hardstand-marking-prompt' } }, prompts[0].text, ' ', button('Add marking', () => commercialEdit(store, 'Add line marking', (cc) => addPromptMarking(cc, prompts[0])), { title: 'Adds one arrow or keep clear box to the plan' })) : null));
     }
 

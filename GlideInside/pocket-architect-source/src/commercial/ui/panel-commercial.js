@@ -398,6 +398,7 @@ export function createCommercialPanel({ store, host, editor }) {
     }
     dock.append(section('Site',
       siteChk('Parking rows (indicative)', () => c.parking.enabled, (cc, v) => { cc.parking.enabled = v; }),
+      siteChk('Covered bays (one carport over each row)', () => !!c.parking.covered, (cc, v) => { cc.parking.covered = v; }),
       siteNum('Car aisle width', () => c.parking.aisleMm, (cc, v) => { cc.parking.aisleMm = v; }, { unit: 'mm', min: 3000, max: 30000, step: 100 }),
       siteNum('Truck apron depth', () => c.parking.apronMm, (cc, v) => { cc.parking.apronMm = v; }, { unit: 'mm', min: 0, max: 40000, step: 500 }),
       siteNum('GFA per parking space', () => Math.round(1 / c.rates.parkingPerM2Gfa), (cc, v) => { cc.rates.parkingPerM2Gfa = 1 / Math.max(10, v); }, { unit: 'm²', min: 10, max: 500, step: 5 }),

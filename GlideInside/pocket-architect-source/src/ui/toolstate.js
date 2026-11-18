@@ -13,7 +13,7 @@ export function toolArgFor(tool) {
 // Switch tool. `arg` overrides the remembered argument.
 export function setTool(store, tool, arg) {
   if (tool === 'movehouse' && store.project?.mode === 'commercial') tool = 'commercial'; // Move house is Move units in a commercial layout
-  if (tool === 'hardstand' && store.project?.mode !== 'commercial') return; // hardstand drawing is commercial only
+  if ((tool === 'hardstand' || tool === 'carpark') && store.project?.mode !== 'commercial') return; // hardstand drawing is commercial only
   if (tool === 'drivepi' && store.project?.mode === 'commercial') return; // Driveway PIs are residential only
   if (arg !== undefined) remembered[tool] = arg;
   const patch = { tool, toolArg: toolArgFor(tool) };

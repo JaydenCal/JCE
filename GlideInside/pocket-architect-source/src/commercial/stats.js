@@ -6,6 +6,7 @@ import { DEFAULT_PARKING_RATE, DEFAULT_OFFICE_RATE } from './rules.js';
 import { buildingTotals } from './catalogue/buildings.js';
 import { buildingParking } from './catalogue/bays.js';
 import { bboxOf } from './catalogue/frame.js';
+import { carparkSummary } from './catalogue/pavements/logic.js';
 
 const r1 = (v) => Math.round(v * 10) / 10;
 
@@ -52,6 +53,7 @@ export function commercialStats(project) {
   const lotM2 = lotAreaM2(project.site?.lot);
   const rate = Number.isFinite(c?.rates?.parkingPerM2Gfa) ? c.rates.parkingPerM2Gfa : DEFAULT_PARKING_RATE;
   const park = parkingLayout(c);
+  const cp = carparkSummary(c);
   const officeRate = Number.isFinite(c?.rates?.officePerM2) ? c.rates.officePerM2 : DEFAULT_OFFICE_RATE;
   const split = office > 0 && c?.rates?.officeSeparate !== false;
   // Fractions round up once, on the total (Tamworth DCP, Step 3 Industrial Parking: fractions round up to the next whole space).
@@ -75,6 +77,6 @@ export function commercialStats(project) {
     officeMezzM2: r1(officeMezz),
     lotM2: lotM2 == null ? null : Math.round(lotM2),
     coveragePct: lotM2 ? ((ground / lotM2) * 100 < 0.1 ? (ground / lotM2) * 100 : r1((ground / lotM2) * 100)) : null,
-    parking: { ratePerM2: rate, officeRatePerM2: officeRate, officeSplit: split, split: { officeM2: r1(split ? rowsOffice : 0), otherM2: r1(split ? rowsGfa - rowsOffice : rowsGfa), officeSpaces: Math.round(officeRaw * 100) / 100, otherSpaces: Math.round(otherRaw * 100) / 100 }, required, buildingRequired: bp.required, provided: park.totalBays + bp.totalBays, accessible: { ...park.accessible, required: park.accessible.required + bp.accessible.required, provided: park.accessible.provided + bp.accessible.provided } },
+    parking: { ratePerM2: rate, officeRatePerM2: officeRate, officeSplit: split, split: { officeM2: r1(split ? rowsOffice : 0), otherM2: r1(split ? rowsGfa - rowsOffice : rowsGfa), officeSpaces: Math.round(officeRaw * 100) / 100, otherSpaces: Math.round(otherRaw * 100) / 100 }, required, buildingRequired: bp.required, provided: park.totalBays + bp.totalBays + cp.bays, carparkBays: cp.bays, accessible: { ...park.accessible, required: park.accessible.required + bp.accessible.required + cp.required, provided: park.accessible.provided + bp.accessible.provided + cp.accessible } },
   };
 }

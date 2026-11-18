@@ -9,7 +9,7 @@ import { makeMesh } from '../../viewer3d/model-util.js';
 import { addFloorPoly } from '../../viewer3d/site.js';
 import { buildingParking } from './bays.js';
 import { textureFor } from './pavements/view3d.js';
-import { buildingsOf } from './buildings.js';
+import { buildingsOf, siteWorksOf } from './buildings.js';
 import { runBuilding } from './materialise.js';
 import { toWorld, dirToWorld, toLocal, bboxOf } from './frame.js';
 
@@ -249,15 +249,31 @@ function bays3D(rows, builder) {
       const ext = (p) => ({ x: p.x + v.x * off, y: p.y + v.y * off });
       addFloorPoly(builder, 'asphalt', [ext(a[0]), ext(z[1]), z[1], a[0]], 0.024, true);
     }
+    // Side lines are shared between neighbours (drawn once); the line across the far end is drawn along the whole row once, not boxed per bay.
+    const seen = new Set();
+    const key = (q) => `${Math.round(q.x / 20)},${Math.round(q.y / 20)}`;
+    const line = (q0, q1) => { const k = [key(q0), key(q1)].sort().join('|'); if (seen.has(k)) return; seen.add(k); addFloorPoly(builder, 'marking', thin(q0, q1, 100), 0.04, true); };
     for (const s of sl) {
       const p = s.poly;
       if (s.kind === 'accessible') addFloorPoly(builder, 'accessible', p, 0.034, true);
       else if (s.kind === 'zone') addFloorPoly(builder, 'zone', p, 0.034, true);
-      addFloorPoly(builder, 'marking', thin(p[0], p[3], 100), 0.04, true);
-      addFloorPoly(builder, 'marking', thin(p[1], p[2], 100), 0.04, true);
-      addFloorPoly(builder, 'marking', thin(p[3], p[2], 100), 0.04, true);
+      line(p[0], p[3]); line(p[1], p[2]);
+      if (s.kind !== 'zone') line(p[3], p[2]);
     }
   });
+}
+
+/** Carports over the bay rows: one continuous flat canopy per row (neighbouring canopies touch) on posts along the closed edge. */
+function carports3D(list, builder) {
+  for (const cp of list) {
+    const p = cp.polygon;
+    const hu = Math.hypot(p[1].x - p[0].x, p[1].y - p[0].y) / 2000; const hv = Math.hypot(p[3].x - p[0].x, p[3].y - p[0].y) / 2000;
+    const ang = Math.atan2(p[1].y - p[0].y, p[1].x - p[0].x);
+    const cx = (p[0].x + p[2].x) / 2000; const cz = (p[0].y + p[2].y) / 2000;
+    const h = (cp.heightMm || 2700) / 1000;
+    addOrientedBox(builder, cx, cz, hu, hv, ang, h - 0.18, h, { py: 'canopy', ny: 'steel', pu: 'steel', nu: 'steel', pv: 'steel', nv: 'steel' });
+    for (const q of cp.posts || []) addOrientedBox(builder, q.x / 1000, q.y / 1000, 0.06, 0.06, ang, 0, h - 0.18, 'steel');
+  }
 }
 
 export function addCatalogue3D(ctx, root, project, { showRoof = true } = {}) {
@@ -287,6 +303,13 @@ export function addCatalogue3D(ctx, root, project, { showRoof = true } = {}) {
     typeExtras(b, project, eb, showRoof);
     const em = meshFromBuilder(ctx, eb, `extras:${b.id}`, { building: b.id });
     if (em) { root.add(em); n += 1; }
+  }
+  const swc = siteWorksOf(c)?.carports || [];
+  if (swc.length) {
+    const cb = new GeoBuilder();
+    carports3D(swc, cb);
+    const cm = meshFromBuilder(ctx, cb, 'carports', {});
+    if (cm) { root.add(cm); n += 1; }
   }
   return n;
 }

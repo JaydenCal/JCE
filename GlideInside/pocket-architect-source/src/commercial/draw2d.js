@@ -10,7 +10,8 @@ import { doorStrips } from './parking.js';
 import { siteAccess } from './access.js';
 import { drawBuildings, drawPanelJoints, buildingExtents, drawSiteWorks } from './catalogue/draw2d.js';
 import { siteWorksOf } from './catalogue/buildings.js';
-import { drawPavementArea, drawKerb } from './catalogue/pavements/draw2d.js';
+import { drawPavementArea, drawKerb, drawMarking } from './catalogue/pavements/draw2d.js';
+import { liveCarpark } from './catalogue/pavements/carpark.js';
 import { pavementById } from './catalogue/pavements/pavements.js';
 import { labelPoint, hardstandModel } from './catalogue/pavements/hardstand.js';
 import { roadList, roadKind } from './catalogue/pavements/roads.js';
@@ -39,6 +40,16 @@ function drawHardstand(ctx, st, labels) {
     drawPavementArea(ctx, pts, a.type, scale);
   }
   for (const k of m.kerbs) if (String(k.areaId || '').startsWith('hs_')) drawKerb(ctx, k, (q) => S(st, q), scale);
+  // Car park fill: landscaped end islands, then the bay lines, accessible symbols, shared zones and one way arrows (skipped while the area is being edited: the tool draws it live)
+  for (const cp of m.carparks || []) {
+    if (liveCarpark.id === cp.id) continue;
+    for (const isl of cp.layout.islands) {
+      const pts = isl.map((q) => S(st, q));
+      ctx.beginPath(); pts.forEach((q, i) => (i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y))); ctx.closePath();
+      ctx.fillStyle = 'rgba(93,142,74,0.55)'; ctx.fill(); ctx.strokeStyle = 'rgba(52,92,40,0.9)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+  }
+  for (const it of m.items) if (it.carpark && liveCarpark.id !== it.carpark) drawMarking(ctx, it, (q) => S(st, q), scale);
   const roads = new Map(roadList(st.project.commercial).map((r) => [r.id, r]));
   ctx.save();
   ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 1.2; ctx.setLineDash([9, 7]);

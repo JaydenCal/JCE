@@ -73,8 +73,10 @@ export function createPaveController({ store, scale, toast = () => {}, redraw = 
     const over = P.overBuildingM2(project(), d.g);
     if (over > 1.5) parts.push(`It crosses the building by ${fmtA(over)}. It is not blocked, check the route.`);
     say(parts.join(' '), (way.kind === 'driveway' && way.kerbEdge == null) || over > 1.5 ? 'warn' : 'ok');
+    const dup = P.duplicateOf(project(), way.id);
+    if (dup) say(`This lies ${Math.round(dup.fraction * 100)}% on an existing driveway or road. Merge them so there are not two strips side by side.`, 'info', { action: { label: 'Merge with existing', onClick: () => { const k = edit('Merge with existing', (p) => P.mergeWayInto(p, dup.other, way.id)); if (k) { setPaveState({ selected: k.id }); say('Merged. One strip remains.', 'ok'); } redraw(); } }, timeout: 12000 });
     const j = P.joinCandidate(project(), way.id);
-    if (j) say('It touches the end of another driveway or road.', 'info', { action: { label: 'Join them', onClick: () => joinWith(way.id, j.other) }, timeout: 9000 });
+    if (j && !dup) say('It touches the end of another driveway or road.', 'info', { action: { label: 'Join them', onClick: () => joinWith(way.id, j.other) }, timeout: 9000 });
     redraw();
     return way;
   }

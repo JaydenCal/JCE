@@ -244,7 +244,7 @@ test('site layout: a warehouse turned 25 degrees gets one connected car park, ai
     moveBuilding(store, b0.id, { x: 45000 - (Math.cos(ar) * cl.x - Math.sin(ar) * cl.y), y: 70000 - (Math.sin(ar) * cl.x + Math.cos(ar) * cl.y), rotationDeg: 25 });
     const sw = store.project.commercial.siteWorks;
     assert.ok(sw, 'regenerated after the rotation');
-    assert.equal(sw.version, 4);
+    assert.equal(sw.version, 5);
     assert.ok(sw.carPark?.polygon, `${type}: the car park is attached to the building`);
     const b = buildingsOf(store.project.commercial)[0];
     const inside = (pt, poly) => G.pointInPolygon(pt, poly) || distToPoly(pt, poly) <= 5;
@@ -254,8 +254,8 @@ test('site layout: a warehouse turned 25 degrees gets one connected car park, ai
     // The bays are turned with the building (parallel to its walls), not left in the street frame.
     const s0 = bays[0].poly; const ang = (Math.atan2(s0[1].y - s0[0].y, s0[1].x - s0[0].x) * 180) / Math.PI;
     assert.ok(Math.abs((((ang - 25) % 90) + 90) % 90) < 1 || Math.abs((((ang - 25) % 90) + 90) % 90 - 90) < 1, `${type}: bays follow the building angle`);
-    const touchPads = [b.outline, ...sw.aprons.map((a) => a.polygon)];
-    assert.ok(touchPads.some((pad) => sw.carPark.polygon.some((q) => distToPoly(q, pad) < 400) || pad.some((q) => distToPoly(q, sw.carPark.polygon) < 400)), `${type}: the car park touches the pad or apron`);
+    // The car park joins the building by the sealed network (aisles and hardstand), within a door's reach of the entry.
+    assert.ok(connected(sw).some((poly) => distToPoly(doorPoint(b), poly) <= 4000), `${type}: the building door is on the network`);
     const net = connected(sw);
     assert.ok(net.some((poly) => poly === sw.pavedAisles[0].polygon), `${type}: the aisle is joined to the crossover`);
     for (const a of sw.aprons) assert.ok(net.some((poly) => poly === a.polygon), `${type}: the hardstand is joined to the crossover`);

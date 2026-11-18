@@ -18,7 +18,7 @@ import { createSelectTool } from './tool-select.js';
 import { createMoveHouseTool } from './tool-movehouse.js';
 import { createCommercialTool } from '../commercial/ui/tool-commercial.js';
 import { drawCommercial, commercialExtents } from '../commercial/draw2d.js';
-import { createHardstandTool } from '../commercial/ui/tool-hardstand.js';
+import { createHardstandTool, createCarparkTool } from '../commercial/ui/tool-hardstand.js';
 import { createPaveTool } from './tool-pave.js';
 import { createDrivePITool } from './tool-drivepi.js';
 import { buildingHull, deriveDriveway } from '../site/lotplan.js';
@@ -865,6 +865,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     ...createMoveHouseTool(ed),
     ...createCommercialTool(ed),
     ...createHardstandTool(ed),
+    ...createCarparkTool(ed),
     ...createPaveTool(ed),
     ...createDrivePITool(ed),
     ...createDrawTools(ed),
@@ -873,6 +874,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
   };
 
   api.hardstand = tools.hardstand?.controller || null;
+  api.carpark = tools.carpark?.controller || null;
   api.pave = tools.pave?.controller || null;
   api.drivepi = tools.drivepi?.controller || null;
 

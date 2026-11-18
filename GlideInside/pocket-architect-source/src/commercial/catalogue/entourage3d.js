@@ -6,6 +6,7 @@
 
 import * as THREE from 'three';
 import { parkingLayout } from '../parking.js';
+import { carparkOf } from './pavements/logic.js';
 import { buildingParking } from './bays.js';
 import { buildingsOf } from './buildings.js';
 import { runBuilding } from './materialise.js';
@@ -90,6 +91,7 @@ export function entourageSpots(project) {
   const rows = [];
   try { rows.push(...parkingLayout(c).rows); } catch { /* no unit rows */ }
   try { rows.push(...buildingParking(c).rows); } catch { /* no building bays */ }
+  try { for (const cp of carparkOf(c)) rows.push({ slots: cp.layout.bays }); } catch { /* no car park fill */ }
   let k = 0;
   let prev = false;
   for (const r of rows) {
@@ -104,10 +106,11 @@ export function entourageSpots(project) {
       if (!take) continue;
       const cx = (p[0].x + p[1].x + p[2].x + p[3].x) / 4;
       const cy = (p[0].y + p[1].y + p[2].y + p[3].y) / 4;
-      // The bay runs from its aisle end (p0, p1) to its far end (p3, p2); nose in or reversed in.
-      const dx = p[3].x - p[0].x; const dy = p[3].y - p[0].y;
-      const flip = rnd(k * 13 + 1) < 0.3 ? Math.PI : 0;
-      out.cars.push({ x: cx, y: cy, ang: Math.atan2(dy, dx) + flip, colour: CAR_COLOURS[Math.floor(rnd(k * 31 + 9) * CAR_COLOURS.length)] });
+      // The car sits lengthwise: along the longer side of the bay (the bay depth), centred, nose in: the bay polygon runs from its open (aisle)
+      // edge p0-p1 to its closed end p2-p3, so the direction p0 to p3 points from the aisle to the end and the car's nose (+x) goes that way.
+      const e1 = { x: p[1].x - p[0].x, y: p[1].y - p[0].y }; const e3 = { x: p[3].x - p[0].x, y: p[3].y - p[0].y };
+      const [dx, dy] = Math.hypot(e3.x, e3.y) >= Math.hypot(e1.x, e1.y) ? [e3.x, e3.y] : [e1.x, e1.y];
+      out.cars.push({ x: cx, y: cy, ang: Math.atan2(dy, dx), colour: CAR_COLOURS[Math.floor(rnd(k * 31 + 9) * CAR_COLOURS.length)] });
     }
   }
   // One truck backed up to a raised dock door of each building that has them (the first dock, so the others stay visible).
