@@ -52,11 +52,11 @@ test('sheet set: cover, site plan, floor plans, roof, elevations, section, analy
   const bytes = await toEngineeringPDF(p, { jsPDF: Rec, catalogue, date: new Date(2026, 10, 11) });
   assert.equal(Buffer.from(bytes.subarray(0, 5)).toString(), '%PDF-');
   const kinds = bytes.layout.pages;
-  assert.deepEqual(kinds, ['cover', 'site', 'level', 'level', 'roof', 'elevations', 'section', 'analysis', 'schedule']);
-  assert.equal(bytes.layout.sheets.length, 9);
+  assert.deepEqual(kinds, ['cover', 'site', 'site', 'level', 'level', 'roof', 'elevations', 'section', 'analysis', 'schedule']);
+  assert.equal(bytes.layout.sheets.length, 10);
   const pageCount = (Buffer.from(bytes).toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
-  assert.equal(pageCount, 9);
-  assert.deepEqual(bytes.layout.sheets.map((s) => s.number), Array.from({ length: 9 }, (_, i) => `GI-TAM24-A-${String(i + 1).padStart(3, '0')}`));
+  assert.equal(pageCount, 10);
+  assert.deepEqual(bytes.layout.sheets.map((s) => s.number), Array.from({ length: 10 }, (_, i) => `GI-TAM24-A-${String(i + 1).padStart(3, '0')}`));
   assert.match(bytes.layout.sheets[1].scale, /^1:\d+ @ A3$/);
 });
 
@@ -142,7 +142,7 @@ test('without a lot or a building the set still builds and says so', async () =>
   const p = createProject({ name: 'Bare' });
   const { Rec, texts } = recorder();
   const bytes = await toEngineeringPDF(p, { jsPDF: Rec, catalogue });
-  assert.equal(bytes.layout.sheets.length, 8);
+  assert.equal(bytes.layout.sheets.length, 9);
   assert.ok(texts.some((t) => /NO LOT LOADED/.test(t)));
 });
 
@@ -165,7 +165,7 @@ test('buildExport makes the engineering set by default and the standard sheets o
 test('engineeringSheets lists the sheets without drawing', () => {
   const p = sample();
   const plan = engineeringSheets(p, { catalogue });
-  assert.equal(plan.list.length, 9);
+  assert.equal(plan.list.length, 10);
   assert.equal(plan.list[0].kind, 'cover');
 });
 
@@ -272,7 +272,7 @@ test('one ridge height on the roof data, elevations and section; no invented ini
   p.titleBlock.company = '';
   const { Rec, texts } = recorder();
   const bytes = await toEngineeringPDF(p, { jsPDF: Rec, catalogue, date: new Date(2026, 10, 11) });
-  assert.equal(bytes.layout.sheets.length, 9);
+  assert.equal(bytes.layout.sheets.length, 10);
   const ridge = texts.filter((t) => /^RIDGE( RL)? [\d.]+$/.test(t)).map((t) => t.replace(/[^\d.]/g, ''));
   assert.ok(ridge.length >= 5);
   assert.equal(new Set(ridge).size, 1);

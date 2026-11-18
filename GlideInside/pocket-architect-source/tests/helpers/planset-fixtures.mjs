@@ -80,7 +80,7 @@ export function recordingPDF() {
   const pages = [];
   const cur = () => {
     const n = ref.doc?.internal.getCurrentPageInfo().pageNumber || 1;
-    while (pages.length < n) pages.push({ texts: [], lines: [] });
+    while (pages.length < n) pages.push({ texts: [], lines: [], images: [] });
     return pages[n - 1];
   };
   const ref = { doc: null };
@@ -97,6 +97,7 @@ export function recordingPDF() {
       wrap('setDrawColor', (...c) => { colour = c.length === 1 && Array.isArray(c[0]) ? c[0] : c; });
       wrap('setLineWidth', (w) => { width = w; });
       wrap('setLineDashPattern', (d) => { dash = d || []; });
+      wrap('addImage', (...a) => { const o = a[0] && typeof a[0] === 'object' && !(typeof a[0] === 'string') && !a[0].length ? a[0] : null; cur().images.push(o ? { x: o.x, y: o.y, w: o.w, h: o.h } : { x: a[2], y: a[3], w: a[4], h: a[5] }); });
       wrap('text', (t, x, y, o = {}) => { cur().texts.push({ s: Array.isArray(t) ? t.join(' ') : String(t), x, y, size, angle: o.angle || 0, align: o.align || 'left' }); });
       wrap('line', (x1, y1, x2, y2) => { cur().lines.push({ x1, y1, x2, y2, colour: [...colour], width, dash: [...dash] }); });
       wrap('lines', (segs, x, y, scale = [1, 1], style) => {

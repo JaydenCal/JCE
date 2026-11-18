@@ -34,7 +34,7 @@ import { drawSections, sectionLetters } from './commercial-sections.js';
 import { drawUpperPlans } from './commercial-upper.js';
 import { drawLevelsPlan } from './commercial-levels.js';
 import { viewTargets } from './commercial-targets.js';
-import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, existingScale, drawLayout, drawMezzanine, drawYield, drawFinancePage, coverThumbnail, commercialNotes, layoutKind, cap1 } from './commercial.js';
+import { aerialUnder, withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, existingScale, drawLayout, drawMezzanine, drawYield, drawFinancePage, coverThumbnail, commercialNotes, layoutKind, cap1 } from './commercial.js';
 import { lotOf } from '../../../model/placement.js';
 
 void schemeColours;
@@ -64,7 +64,11 @@ async function loadJsPDF(given) {
 export function planSetSheets({ project, lot, kind, catalogue = null, feasibility = false, levels = null }) {
   if (kind === 'commercial') return commercialSheetPlan(project, toSiteLot(lot) || (lotOf(project) ? project.site.lot : null), { levels });
   const sheets = [{ id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX', scale: 'AS SHOWN' }];
-  if (kind === 'site') sheets.push({ id: 'site', code: 'C100', title: 'SITE PLAN', scale: lot ? `1:${siteView(project, lot).scale} @ A3` : 'NTS' });
+  if (kind === 'site') {
+    sheets.push({ id: 'site', code: 'C100', title: 'SITE PLAN', scale: lot ? `1:${siteView(project, lot).scale} @ A3` : 'NTS' });
+    // The same plan on a plain white sheet, straight after the first one (C100A keeps every later code as it was).
+    sheets.push({ id: 'siteclean', code: 'C100A', title: 'SITE PLAN NO AERIAL', scale: lot ? `1:${siteView(project, lot).scale} @ A3` : 'NTS' });
+  }
   const hs = houseSheets(alignProject(project).project, catalogue);
   hs.forEach((h, i) => {
     const name = `${ascii(h.level.name) || 'Level'} FLOOR PLAN`.toUpperCase();
@@ -176,6 +180,10 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
     if (ex) ex.scale = existingScale(wp, siteLot, { aerial: true });
   }
 
+  // Residential C100 sits on the lot aerial (washed, upright like the commercial C100) when one is available; C100A never does.
+  const siteAerial = !commercial && !preview && locality.aerial ? locality.aerial : null;
+  if (siteAerial && siteLot) { const sc = sheets.find((x) => x.id === 'site'); if (sc) sc.scale = `1:${siteView(wp, siteLot, { turn: false }).scale} @ A3`; }
+
   sheets.forEach((s, i) => {
     if (i > 0) raw.addPage('a3', 'landscape');
     doc.setLineDashPattern([], 0);
@@ -188,6 +196,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
         strip = { ...strip, subtitle: cap1(layoutKind(cmodel.stats)), kvTitle: 'SITE DATA', kv: [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`], ...(cmodel.stats.units ? [['Units', String(cmodel.stats.units)]] : [])], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
       } else {
         if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null, levels });
+        else if (s.id === 'existingclean') r = drawExisting(doc, wp, siteLot, { aerial: null, levels, clean: true });
         else if (s.id === 'layout') r = drawLayout(doc, cmodel);
         else if (s.id === 'levels') r = drawLevelsPlan(doc, cmodel, levels);
         else if (s.id === 'upper') r = s.upper === 'mezz' ? drawMezzanine(doc, cmodel) : drawUpperPlans(doc, cmodel, targetsByKey.get(s.target), levels);
@@ -195,14 +204,16 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
         else if (s.id === 'sect') r = drawSections(doc, cmodel, targetsByKey.get(s.target), letters.get(s.target), levels);
         else if (s.id === 'finance') r = drawFinancePage(doc, wp);
         else r = drawYield(doc, cmodel);
-        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' ? 'SITE DATA' : s.id === 'yield' || s.id === 'finance' ? 'KEY FIGURES' : s.id === 'upper' ? 'UPPER LEVEL DATA' : s.id === 'levels' ? 'LEVELS DATA' : s.id === 'elev' ? 'ELEVATION DATA' : s.id === 'sect' ? 'SECTION DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
+        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' || s.id === 'existingclean' ? 'SITE DATA' : s.id === 'yield' || s.id === 'finance' ? 'KEY FIGURES' : s.id === 'upper' ? 'UPPER LEVEL DATA' : s.id === 'levels' ? 'LEVELS DATA' : s.id === 'elev' ? 'ELEVATION DATA' : s.id === 'sect' ? 'SECTION DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
       }
     } else if (s.id === 'cover') {
       drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
       strip = { ...strip, subtitle: kind === 'site' ? 'Site plan and house plan' : 'House plan', kvTitle: 'SITE DATA', kv: siteLot ? [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`]] : [], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
-    } else if (s.id === 'site') {
-      Object.assign(facts, drawSite(doc, wp, siteLot, { levels }));
-      strip = { ...strip, subtitle: ascii(title), kvTitle: 'SITE DATA', kv: facts.kv, notes: facts.notes, blocks: facts.blocks };
+    } else if (s.id === 'site' || s.id === 'siteclean') {
+      // C100A is drawn with no aerial image: white sheet, cadastre and linework only. C100 goes over the washed aerial with red boundaries.
+      const over = s.id === 'site' && siteAerial ? aerialUnder(doc, siteAerial, siteView(wp, siteLot, { turn: false }).T) : false;
+      Object.assign(facts, drawSite(doc, wp, siteLot, { levels, overAerial: over, turn: !over }));
+      strip = { ...strip, subtitle: ascii(title), kvTitle: 'SITE DATA', kv: facts.kv, notes: s.id === 'site' && !siteAerial && !preview ? [...facts.notes, 'Aerial not available for this sheet.'] : facts.notes, blocks: facts.blocks };
     } else if (s.id === 'elev' || s.id === 'sect') {
       const empty = !tris.length;
       if (empty) { doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.text('The elevations and sections need a building with walls.', viewArea.x0 + 10, viewArea.y0 + 12); }

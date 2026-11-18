@@ -193,7 +193,7 @@ test('plan set: the C200 elevations sheet is present and labelled Concept only',
   assert.match(all, /RL/);
   assert.ok(!/[–—]/.test(all));
   const codes = planSetSheets({ project: p, lot: null, kind: 'commercial' }).map((x) => x.code);
-  assert.deepEqual(codes.filter((c) => !/^C[23]/.test(c)), ['C000', 'C100', 'C101', 'C110', 'C900', 'C910']);
+  assert.deepEqual(codes.filter((c) => !/^C[23]/.test(c)), ['C000', 'C100', 'C100A', 'C101', 'C110', 'C900', 'C910']);
 });
 
 test('AI: set_unit_options accepts the construction keys', () => {
