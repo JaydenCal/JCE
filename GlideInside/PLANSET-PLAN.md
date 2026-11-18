@@ -478,7 +478,9 @@ Each phase ends with `npm test` green, the matrix samples regenerated and a revi
 
 Order matters: phase 1 gives the levels model that phases 2, 3 and 6 use. Phase 4 can run in parallel with phase 3 if two implementers are used, but both touch `commercialSheetPlan()` and `index.js`, so merge phase 3 first.
 
-Open decisions for the owner before phase 2:
+Owner decisions (18/11/2026): 1. regroup sheet codes as in 3.1; 2. fix the `_kit.js` opening offset at the source (3D and drawings); 3. 0.5 m is the finest contour interval, flatter lots show spot levels.
+
+Open decisions for the owner before phase 2 (now answered above):
 
 1. Sheet codes: regroup as in 3.1, or keep C100 to C104 and append.
 2. The `_kit.js` opening offset question in 2.1 (it changes the 3D model as well as the drawings).
