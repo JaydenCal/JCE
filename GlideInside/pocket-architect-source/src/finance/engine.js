@@ -193,7 +193,7 @@ export function sanityNotes(r) {
   if (r.marginOnCostPct < -50) out.push('The margin is below -50%. Costs are far above the value at the rates used. Check the land price, the sale rate and the number of units before relying on it.');
   else if (r.marginOnCostPct < 0) out.push('A loss at these values.');
   if (r.mode === 'hold' && !(r.endValue > 0)) out.push('Enter a net yield to value the hold case.');
-  if (r.peakEquity > 0 && r.peakDebt > 0 && r.profit < 0) out.push('A lender would not usually fund a loss making project.');
+  if (r.peakEquity > 0 && r.peakDebt > 0 && r.profit < 0) out.push('Lenders usually look for a positive margin, so funding is uncertain at these values.');
   return out;
 }
 
