@@ -273,6 +273,7 @@ export function commercialSheetPlan(project, lot, { levels = null } = {}) {
   const out = [
     { id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX', scale: 'AS SHOWN' },
     { id: 'existing', code: 'C100', title: 'EXISTING SITE AND LEVELS', scale: 'NTS' },
+    { id: 'existingclean', code: 'C100A', title: 'EXISTING SITE AND LEVELS NO AERIAL', scale: 'NTS' },
     { id: 'layout', code: 'C101', title: 'PROPOSED LAYOUT', scale: 'NTS' },
   ];
   let model = null;
@@ -280,7 +281,8 @@ export function commercialSheetPlan(project, lot, { levels = null } = {}) {
     try {
       model = commercialModel(project, lot);
       out[1].scale = `1:${siteView(blankProject(project, lot), lot).scale} @ A3`;
-      out[2].scale = `1:${layoutView(model).scale} @ A3`;
+      out[2].scale = out[1].scale;
+      out[3].scale = `1:${layoutView(model).scale} @ A3`;
     } catch {
       model = null;
     }
@@ -575,7 +577,7 @@ function existingLegend(aerial, contours = [], lot = null) {
   ]);
 }
 
-export function drawExisting(doc, project, lot, { aerial = null, levels = null } = {}) {
+export function drawExisting(doc, project, lot, { aerial = null, levels = null, clean: plain = false } = {}) {
   const q = blankProject(project, lot);
   // An aerial is placed as an upright image, so the sheet keeps north up when there is one (see existingScale in the set).
   const turn = !aerial;
@@ -596,7 +598,8 @@ export function drawExisting(doc, project, lot, { aerial = null, levels = null }
   ].filter(Boolean);
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines are indicative, check with council.'];
   if (r.groundNote) notes.push(r.groundNote);
-  if (!over) notes.push('No aerial is shown for this lot.');
+  if (plain) notes.push('This sheet is the existing site sheet drawn without an aerial image.');
+  else if (!over) notes.push('No aerial is shown for this lot.');
   return { scale: r.scale, scaleLabel: r.scaleLabel, kv, notes, blocks: [existingLegend(over, r.legendContours || [], lot)] };
 }
 

@@ -51,7 +51,7 @@ test('sheet codes: C1xx plans, C2xx elevations, C3xx sections, C900 and C910 las
     const sheets = planSetSheets({ project: p, lot: lotOf(p), kind: 'commercial' });
     const codes = sheets.map((s) => s.code);
     assert.equal(new Set(codes).size, codes.length, `${id}: sheet codes are unique`);
-    assert.deepEqual(codes.slice(0, 3), ['C000', 'C100', 'C101']);
+    assert.deepEqual(codes.slice(0, 4), ['C000', 'C100', 'C100A', 'C101']);
     assert.deepEqual(codes.slice(-2), ['C900', 'C910']);
     assert.equal(codes.filter((c) => /^C2\d\d$/.test(c)).length, n, `${id}: one elevation sheet`);
     assert.equal(codes.filter((c) => /^C3\d\d$/.test(c)).length, n, `${id}: one section sheet`);

@@ -21,10 +21,10 @@ test('engineering set: one floor level on every sheet and no "not set" text', as
   const { pages, sheets } = await engSet();
   pages.forEach((pg, i) => assert.ok(!/not set/i.test(textOf(pg)), `no "not set" on ${sheets[i].number}`));
   const ffl = (n) => { const t = textOf(pages[sheets.findIndex((s) => s.number.endsWith(n))]); return new Set([...t.matchAll(/(?:FFL|RL|Floor level[^\n]*?)\s*(102\.59)/g)].map((m) => m[1])); };
-  for (const n of ['A-002', 'A-003', 'A-006', 'A-007', 'A-008']) assert.ok(ffl(n).has('102.59'), `${n} states FFL 102.59`);
+  for (const n of ['A-002', 'A-003', 'A-004', 'A-007', 'A-008', 'A-009']) assert.ok(ffl(n).has('102.59'), `${n} states FFL 102.59`);
   const all = pages.map(textOf).join('\n');
-  assert.ok(/NATURAL SURFACE RL/.test(textOf(pages[sheets.findIndex((s) => s.number.endsWith('A-006'))])), 'elevations carry the natural surface');
-  assert.ok(/NATURAL SURFACE RL/.test(textOf(pages[sheets.findIndex((s) => s.number.endsWith('A-007'))])), 'the section carries the natural surface');
+  assert.ok(/NATURAL SURFACE RL/.test(textOf(pages[sheets.findIndex((s) => s.number.endsWith('A-007'))])), 'elevations carry the natural surface');
+  assert.ok(/NATURAL SURFACE RL/.test(textOf(pages[sheets.findIndex((s) => s.number.endsWith('A-008'))])), 'the section carries the natural surface');
 });
 
 test('floor plans and roof plans carry no ground contours, site plans keep them', async () => {
@@ -94,12 +94,12 @@ test('engineering ridge RL and height above FFL match the residential sheets A20
   const engText = (n) => textOf(eng.pages[eng.sheets.findIndex((s) => s.number.endsWith(n))]);
   const want = ridge(resText('A200'));
   assert.equal(want.length, 1);
-  for (const t of [engText('A-006'), engText('A-007'), resText('A300')]) assert.deepEqual(ridge(t), want);
-  const hp = /(\d+\.\d\d) m above FFL, RL (\d+\.\d\d)/.exec(engText('A-005').replace(/\n/g, ' '));
+  for (const t of [engText('A-007'), engText('A-008'), resText('A300')]) assert.deepEqual(ridge(t), want);
+  const hp = /(\d+\.\d\d) m above FFL, RL (\d+\.\d\d)/.exec(engText('A-006').replace(/\n/g, ' '));
   assert.ok(hp, 'roof plan highest point');
   assert.equal(hp[2], want[0]);
   assert.equal(hp[1], above(resText('A300'))[0]);
-  assert.deepEqual(above(engText('A-007')), above(resText('A300')), 'height above FFL on the section');
+  assert.deepEqual(above(engText('A-008')), above(resText('A300')), 'height above FFL on the section');
 });
 
 test('a floor level the person set moves only the first pad: a second commercial building keeps its own level', async () => {

@@ -43,7 +43,7 @@ const plan = async (builder, extra = {}) => {
 
 test('builder plan set: every field of the builder title block is on the sheets, with Powered by Glide Inside', async () => {
   const { r, text } = await plan(A);
-  assert.equal(r.pages, 6, 'builder set after plansets-v3 (site, plans, A200 elevations, A300 and A301 sections)');
+  assert.equal(r.pages, 7, 'builder set (site, clean site plan, plans, A200 elevations, A300 and A301 sections)');
   for (const want of ['Sample Homes Pty Ltd', 'Builder licence 123456C', 'ABN 51 824 753 556', '4 Industrial Drive, Thornton NSW 2322', 'Ph 02 5550 0100', 'hello@samplehomes.com.au', 'www.samplehomes.com.au', 'Jordan Example', '18/11/2026', 'SITE PLAN', 'GI-L12DP1234567-C100', '1:250 @ A3', 'Powered by Glide Inside']) assert.ok(text.includes(want), `missing ${want}`);
   assert.equal(text.split('Powered by Glide Inside').length - 1, r.pages, 'the credit is on every sheet');
 });
@@ -81,7 +81,7 @@ test('public users keep the Glide Inside title block and have no Powered by cred
 test('long values stay inside the block (cut or wrapped, never dropped silently into overlap)', async () => {
   const long = { ...A, name: 'The Very Long Named Sample Home Builders and Developers Pty Ltd', details: { ...A.details, address: 'Level 12, Tower Two, 1234 Extremely Long Boulevard Name Business Park, Thornton North NSW 2322', email: 'a.very.long.email.address.for.the.accounts.team@samplehomes.com.au' } };
   const { r } = await plan(long);
-  assert.equal(r.pages, 6, 'builder set after plansets-v3 (site, plans, A200 elevations, A300 and A301 sections)');
+  assert.equal(r.pages, 7, 'builder set (site, clean site plan, plans, A200 elevations, A300 and A301 sections)');
 });
 
 test('engineering plans: builder block with details and Powered by Glide Inside, public unchanged', async () => {

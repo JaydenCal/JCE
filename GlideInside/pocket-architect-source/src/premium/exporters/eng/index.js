@@ -50,7 +50,7 @@ export function engineeringSheets(project, { paper = 'A3', scale = null, catalog
   const p = paperOf(paper || project.drawing?.paper);
   const contents = levels.map((l, i) => levelContent(project, l, i === 0, catalogue));
   const picked = chooseScale(contents, scale ?? project.drawing?.scale ?? 'auto', p.name);
-  const list = [{ kind: 'cover', title: 'COVER SHEET AND DRAWING LIST', scale: 'AS SHOWN' }, { kind: 'site', title: 'SITE PLAN', scale: 'AS SHOWN' }];
+  const list = [{ kind: 'cover', title: 'COVER SHEET AND DRAWING LIST', scale: 'AS SHOWN' }, { kind: 'site', title: 'SITE PLAN', scale: 'AS SHOWN' }, { kind: 'site', clean: true, title: 'SITE PLAN NO AERIAL', scale: 'AS SHOWN' }];
   levels.forEach((l, i) => list.push({ kind: 'level', level: l, content: contents[i], title: `${ascii(l.name) || 'Level'} FLOOR PLAN`.toUpperCase(), scale: `1:${picked.scale} @ ${p.name}` }));
   list.push({ kind: 'roof', title: 'ROOF PLAN', scale: 'AS SHOWN' }, { kind: 'elevations', title: 'ELEVATIONS', scale: 'AS SHOWN' }, { kind: 'section', title: 'SECTION', scale: 'AS SHOWN' }, { kind: 'analysis', title: 'SITE ANALYSIS AND SETBACKS', scale: 'NTS' });
   const n = scheduleCount(project);
@@ -196,12 +196,15 @@ export async function toEngineeringPDF(project0, options = {}) {
   plan.list.forEach((s, i) => {
     if (i > 0) raw.addPage(p.format, 'landscape');
     doc.setLineDashPattern([], 0);
-    drawFrame(doc, ctx, { n: s.n, title: s.title, scaleLabel: s.scale });
+    const sctx = s.clean ? { ...ctx, underlays: {}, hasAerial: false } : ctx; // the clean site plan carries no aerial image or aerial credit
+    drawFrame(doc, sctx, { n: s.n, title: s.title, scaleLabel: s.scale });
     if (s.kind === 'cover') drawCover(doc, ctx, plan.list);
     else if (s.kind === 'site') {
-      site = drawSitePlan(doc, ctx);
-      drawSitePanel(doc, ctx, site);
-      s.scale = site?.label || 'NTS';
+      // The clean site plan is the same drawing with no aerial anywhere on the sheet (site plan and key plan both plain white).
+      const sp = drawSitePlan(doc, sctx);
+      drawSitePanel(doc, sctx, sp);
+      if (!s.clean) site = sp;
+      s.scale = sp?.label || 'NTS';
     } else if (s.kind === 'level') {
       const cd = cleanedDoc(doc);
       const gmark = streamMark(doc); // the existing ground contours go under the plan
