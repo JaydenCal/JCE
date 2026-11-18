@@ -3,6 +3,7 @@
 import { h, field, busy, toast, scaleLogoFile, errorMessage } from './kit.js';
 import { GI_DEFAULT, normaliseHex, validateColours, deriveTheme, pickColoursFromLogo, hasBrand } from '../theme.js';
 import { previewStyle, injectSettingsStyles } from '../theme-css.js';
+import { DETAIL_KEYS, DETAIL_LABELS, validateDetails, cleanDetails } from '../brand-details.js';
 
 export function renderBranding(host, { api, me, refreshMe }) {
   injectSettingsStyles();
@@ -21,7 +22,23 @@ export function renderBranding(host, { api, me, refreshMe }) {
       toast(errorMessage(e), { kind: 'error' });
     }
   } });
-  const pv = h('div', { class: 'pp-titleblock', role: 'img', 'aria-label': 'Title block preview' });
+  injectTitleBlockStyles();
+  const savedDetails = me.org.branding.details || {};
+  const dIn = {};
+  const dErr = {};
+  const detailField = (k, hint, extra = {}) => field(DETAIL_LABELS[k], (id) => {
+    dIn[k] = h('input', { type: k === 'email' ? 'email' : 'text', id, maxlength: String(k === 'address' ? 120 : k === 'licence' ? 30 : 80), value: savedDetails[k] || '', readonly: !canWrite, autocomplete: 'off', oninput: () => { checkDetails(); preview(); }, ...extra });
+    return dIn[k];
+  }, { hint });
+  const errHost = h('p', { class: 'pp-hint pp-tb-errors', role: 'alert' });
+  function currentDetails() { return Object.fromEntries(DETAIL_KEYS.map((k) => [k, dIn[k]?.value ?? ''])); }
+  function checkDetails() {
+    const v = validateDetails(currentDetails());
+    for (const k of DETAIL_KEYS) { if (v.errors[k]) { dIn[k]?.setAttribute('aria-invalid', 'true'); dErr[k] = v.errors[k]; } else { dIn[k]?.removeAttribute('aria-invalid'); delete dErr[k]; } }
+    errHost.textContent = Object.values(v.errors).join(' ');
+    return v;
+  }
+  const pv = h('div', { class: 'pp-titleblock pp-tb-v2', role: 'img', 'aria-label': 'Title block preview' });
   const colPreview = h('div', { class: 'gi-prev', role: 'img', 'aria-label': 'Colour scheme preview' });
   const adjustNote = h('ul', { class: 'gi-adjust', 'aria-live': 'polite' });
   const inputs = {};
@@ -83,11 +100,19 @@ export function renderBranding(host, { api, me, refreshMe }) {
     h('div', null, h('h4', null, 'Preview'), colPreview, adjustNote));
   function preview() {
     paintColours();
+    const d = cleanDetails(currentDetails());
+    const line = (t) => (t ? h('div', null, t) : null);
     pv.replaceChildren(
-      h('div', { class: 'pp-tb-brand' }, logo ? h('img', { src: logo, alt: '' }) : h('span', { class: 'pp-tb-nologo' }, 'No logo'), h('strong', null, name.value || 'Your name')),
+      h('div', { class: 'pp-tb-brand' },
+        logo ? h('img', { src: logo, alt: '' }) : h('span', { class: 'pp-tb-nologo' }, 'No logo'),
+        h('strong', null, name.value || 'Your name'),
+        h('div', { class: 'pp-tb-details' }, line(d.licence && `Builder licence ${d.licence}`), line(d.abn && `ABN ${d.abn}`), line(d.address), line(d.phone && `Ph ${d.phone}`), line(d.email), line(d.website))),
+      h('div', { class: 'pp-tb-cell' }, h('small', null, 'Client'), 'Jordan and Sam Example'),
       h('div', { class: 'pp-tb-cell' }, h('small', null, 'Project'), 'Lot 14, 22 Banksia Rise'),
-      h('div', { class: 'pp-tb-cell' }, h('small', null, 'Sheet'), 'A-101 Ground floor plan'),
-      h('div', { class: 'pp-tb-credit' }, 'Made with Glide Inside'));
+      h('div', { class: 'pp-tb-cell' }, h('small', null, 'Drawing title'), 'SITE PLAN'),
+      h('div', { class: 'pp-tb-cell pp-tb-row' }, h('span', null, h('small', null, 'Scale'), '1:250 @ A3'), h('span', null, h('small', null, 'Date'), '18/11/2026'), h('span', null, h('small', null, 'Rev'), 'A')),
+      h('div', { class: 'pp-tb-cell' }, h('small', null, 'Drawing number'), 'GI-L14DP12345-C100'),
+      h('div', { class: 'pp-tb-credit' }, h('span', { class: 'pp-tb-g', 'aria-hidden': 'true' }, 'G'), 'Powered by Glide Inside'));
   }
   const save = h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: () => busy(save, async () => {
     let colours = null;
@@ -96,17 +121,50 @@ export function renderBranding(host, { api, me, refreshMe }) {
       if (!v.ok) { toast(Object.values(v.errors)[0], { kind: 'error' }); return; }
       colours = v.colours;
     }
-    await api.setBranding({ displayName: name.value, logoDataUrl: logo || null, colours });
+    const dv = checkDetails();
+    if (!dv.ok) { toast(Object.values(dv.errors)[0], { kind: 'error' }); return; }
+    await api.setBranding({ displayName: name.value, logoDataUrl: logo || null, colours, details: dv.details });
     toast('Branding saved. Your team and clients see it next time they sign in.', { kind: 'ok' });
     refreshMe?.();
   }) }, 'Save branding');
   host.append(
-    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'Branding'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Your logo and name appear in Glide Inside Residential for your clients and in the title block of every plan they produce. Glide Inside keeps a small credit line on the sheet.'))),
+    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'Branding'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Your logo and name appear in Glide Inside Residential for your clients and in the title block of every plan they produce. Your own title block is on every sheet, with a small "Powered by Glide Inside" credit in the bottom corner.'))),
     h('div', { class: 'pp-two' },
       h('div', { class: 'pp-form' }, field('Name shown on plans', () => name, { required: true }),
         field('Logo (PNG or JPG)', () => fileInput, { hint: 'Scaled to 600 px wide. A wide logo on a plain background works best.' }),
+        h('h3', null, 'Title block details'),
+        h('p', { class: 'pp-hint' }, 'Printed in the title block of every plan sheet your team and clients export. Leave a field blank to leave it off the sheet.'),
+        detailField('licence', 'As shown on your builder licence.'),
+        detailField('abn', '11 digits.'),
+        detailField('address', 'Street address for the title block.'),
+        detailField('phone', null),
+        detailField('email', null),
+        detailField('website', 'For example www.samplehomes.com.au.'),
+        errHost,
         h('div', { class: 'pp-actions' }, canWrite ? save : null, canWrite && logo ? h('button', { class: 'pp-btn', type: 'button', onclick: () => { logo = null; fileInput.value = ''; preview(); } }, 'Remove logo') : null)),
       h('div', null, h('h3', null, 'Title block preview'), pv)),
     colourSection);
   preview();
+}
+
+let tbStyled = false;
+function injectTitleBlockStyles() {
+  if (tbStyled || typeof document === 'undefined') return;
+  tbStyled = true;
+  const st = document.createElement('style');
+  const T = '.pp-titleblock.pp-tb-v2';
+  st.textContent = `${T}{display:block;width:100%;max-width:340px;border:2px solid #222;background:#fff;color:#111;font:12px/1.35 system-ui,sans-serif;margin-top:8px}
+${T}>div{display:block;padding:6px 10px;border-right:0;border-bottom:1px solid #222}
+${T}>.pp-tb-brand{padding:10px}
+${T} .pp-tb-brand img{display:block;max-width:100%;max-height:56px;object-fit:contain;margin:0 0 6px}
+${T} .pp-tb-nologo{display:block;color:#777;font-size:11px;margin-bottom:6px}
+${T} .pp-tb-brand strong{display:block;font-size:14px}
+${T} .pp-tb-details{color:#555;font-size:10.5px;margin-top:4px;overflow-wrap:anywhere}
+${T}>.pp-tb-cell{font-weight:600}
+${T} .pp-tb-cell small{display:block;font-weight:400;color:#666;font-size:9.5px}
+${T}>.pp-tb-row{display:flex;gap:14px}
+${T}>.pp-tb-credit{display:block;border-bottom:0;border-top:0;text-align:right;color:#5f636a;font-size:11px;padding:6px 10px!important}
+${T} .pp-tb-g{display:inline-block;margin-right:6px;font-weight:700;color:#0b7a85}
+.pp-tb-errors:empty{display:none}`;
+  document.head.append(st);
 }

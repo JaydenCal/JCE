@@ -6,6 +6,7 @@ import { migrate, validate } from '../../src/model/schema.js';
 import { GLIDE_LIBRARY } from '../../src/portal/glide-library.generated.js';
 import { houseStats } from '../../src/portal/house-stats.js';
 import { validateColours } from '../../src/portal/theme.js';
+import { validateDetails, cleanDetails } from '../../src/portal/brand-details.js';
 import { slugify, cleanSlug } from '../../src/portal/builders.js';
 import { projectToSvg } from '../../src/portal/thumbnail.js';
 import { generateUsername, generatePassword, passwordProblem } from '../../src/portal/credentials.js';
@@ -117,8 +118,9 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
 
   // Views -------------------------------------------------------------------------------------------------------------------
   const coloursOf = (o) => (o.brandPrimary ? { primary: o.brandPrimary, accent: o.brandAccent || null, darkInk: o.brandDarkInk || null, darkBg: o.brandDarkBg || null } : null);
+  const detailsOf = (o) => cleanDetails({ licence: o.brandLicence, abn: o.brandAbn, address: o.brandAddress, phone: o.brandPhone, email: o.brandEmail, website: o.brandWebsite });
   const publicOrg = (o, role) => ({
-    id: o.id, name: o.name, shortCode: o.shortCode, branding: { displayName: o.displayName || o.name, logoDataUrl: o.logoDataUrl || null, colours: coloursOf(o) },
+    id: o.id, name: o.name, shortCode: o.shortCode, branding: { displayName: o.displayName || o.name, logoDataUrl: o.logoDataUrl || null, colours: coloursOf(o), details: detailsOf(o) },
     allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true,
     showGlideLibrary: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, showAerialDefault: o.showAerialDefault !== false, showAiAssistant: o.showAiAssistant !== false, directoryListed: o.directoryListed === true, directoryRegion: o.directoryRegion || '', aiMonthlyCap: o.aiMonthlyCap,
     ...(o.internal === true ? { internal: true } : {}),
@@ -688,9 +690,15 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
         Object.assign(patch, { brandPrimary: v.colours.primary, brandAccent: v.colours.accent, brandDarkInk: v.colours.darkInk, brandDarkBg: v.colours.darkBg });
       }
     }
+    // Title block details: undefined leaves them alone, an object replaces all six (blank fields clear).
+    if (b.details !== undefined) {
+      const v = validateDetails(b.details);
+      if (!v.ok) throw new HttpError('BAD_REQUEST', Object.values(v.errors)[0]);
+      Object.assign(patch, { brandLicence: v.details.licence, brandAbn: v.details.abn, brandAddress: v.details.address, brandPhone: v.details.phone, brandEmail: v.details.email, brandWebsite: v.details.website });
+    }
     await pstore.updateOrg(org.id, patch);
     const after = { ...org, ...patch };
-    return json({ displayName: patch.displayName, logoDataUrl: 'logoDataUrl' in patch ? patch.logoDataUrl : org.logoDataUrl || null, colours: coloursOf(after) });
+    return json({ displayName: patch.displayName, logoDataUrl: 'logoDataUrl' in patch ? patch.logoDataUrl : org.logoDataUrl || null, colours: coloursOf(after), details: detailsOf(after) });
   }
   async function setSettings(r) {
     const { org, user } = await auth(r, { need: 'billing.write' });

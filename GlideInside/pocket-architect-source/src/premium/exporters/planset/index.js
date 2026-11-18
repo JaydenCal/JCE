@@ -17,6 +17,7 @@ import { alignProject } from '../eng/index.js';
 import { clean, cleanedDoc, withSuperscripts } from '../eng/kit.js';
 import { titleLotDp } from '../../../site/lotplan.js';
 import { prepare, toSiteLot } from './lot.js';
+import { builderOf } from './titleblock.js';
 import { drawStrip, drawConceptNote, drawWatermark, ddmmyyyy, ABN, ENTITY } from './frame.js';
 import { drawCover, localityScale, localityView } from './cover.js';
 import { resolveLocality } from './locality.js';
@@ -100,7 +101,7 @@ function withoutScales(JsPDF) {
  * @param {Date} [o.date]
  * @returns {Promise<{ blob: Blob, filename: string, sheets: Array, pages: number }>}
  */
-export async function exportPlanSet({ project, lot = null, kind = 'site', feasibility = false, builderName = '', download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null, terms = null } = {}) {
+export async function exportPlanSet({ project, lot = null, kind = 'site', feasibility = false, builderName = '', builder: builderIn = null, download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null, terms = null } = {}) {
   syncCurrency(project);
   if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Glide Inside project');
   if (kind !== 'site' && kind !== 'house' && kind !== 'commercial') throw new Error("exportPlanSet kind must be 'site', 'house' or 'commercial'");
@@ -116,7 +117,9 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
   // or client login, a commercial subscription or an internal account (the caller decides, see src/lotcard/lot-card.js).
   const baseJsPDF = await loadJsPDF(jsPDF);
   const JsPDF = preview ? trialJsPDF(withoutScales(baseJsPDF), PREVIEW_TITLE, PREVIEW_FOOTER) : baseJsPDF;
-  const builder = clean(builderName);
+  // Builder logins (and clients of a builder) get that builder's own title block; the object comes only from the exporting login's org.
+  const bld = builderOf(builderIn || builderName);
+  const builder = clean(bld?.name || builderName);
   const dateStr = clean(project.titleBlock?.date) || ddmmyyyy(date);
   const sheets = planSetSheets({ project: wp, lot: kind === 'site' || commercial ? siteLot : null, kind, catalogue, feasibility });
   const aligned = commercial ? { project: wp } : alignProject(wp);
@@ -126,11 +129,11 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
   sheets.forEach((s, i) => { s.n = i + 1; s.no = `GI-${id}-${s.code}`; if (preview) s.scale = 'NOT TO SCALE'; });
 
   const raw = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3', compress: true });
-  raw.setProperties({ title: `${ascii(title)} concept plan set`, subject: 'Concept design plans, to be checked by a suitably qualified person', author: ENTITY, creator: commercial ? 'Glide Inside commercial layout' : 'Glide Inside lot viewer' });
+  raw.setProperties({ title: `${ascii(title)} concept plan set`, subject: 'Concept design plans, to be checked by a suitably qualified person', author: bld?.name || ENTITY, creator: bld ? `${bld.name || 'Builder'} plan set` : commercial ? 'Glide Inside commercial layout' : 'Glide Inside lot viewer' });
   const doc = withSuperscripts(cleanedDoc(raw));
   const address = clean(wp.titleBlock?.address || siteLot?.address || '');
   const lotDp = clean(siteLot ? titleLotDp(wp) || siteLot.lotLabel || '' : '');
-  const base = { project: wp, client: builder || 'Glide Inside customer', projectTitle: title, address, lotDp, total: sheets.length, dateStr, jobId: id, terms };
+  const base = { project: wp, builder: bld, client: bld ? bld.client.name || 'Not stated' : 'Glide Inside customer', projectTitle: title, address, lotDp, total: sheets.length, dateStr, jobId: id, terms };
   const facts = {};
   // Real aerial and the wider cadastre for the cover locality plan. Never fatal: without them the sheet says so.
   const locality = siteLot ? await resolveLocality({ lot: siteLot, aerial, fetchSite, loadImage, view: localityView(siteLot).view, includeAerial }) : { aerial: null };
@@ -181,7 +184,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
 
   const bytes = new Uint8Array(raw.output('arraybuffer'));
   const blob = new Blob([bytes], { type: 'application/pdf' });
-  const filename = `Glide-Inside-${slugify(title, 'concept')}-${commercial ? 'commercial-plan-set' : kind === 'site' ? 'site-plan-set' : 'house-plan-set'}${preview ? '-preview' : ''}.pdf`;
+  const filename = `${bld?.name ? slugify(bld.name, 'builder') : 'Glide-Inside'}-${slugify(title, 'concept')}-${commercial ? 'commercial-plan-set' : kind === 'site' ? 'site-plan-set' : 'house-plan-set'}${preview ? '-preview' : ''}.pdf`;
   if (download && typeof document !== 'undefined') {
     const { downloadBlob } = await import('../download.js');
     downloadBlob(blob, filename);

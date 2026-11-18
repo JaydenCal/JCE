@@ -223,7 +223,13 @@ CREATE TABLE IF NOT EXISTS orgs (
   brand_dark_bg TEXT,
   slug TEXT,                         -- public builder slug for the home page picker, unique when set (migration 0011)
   directory_listed INTEGER NOT NULL DEFAULT 0, -- opt in to the public "Have a local builder in mind?" search (migration 0022)
-  directory_region TEXT              -- region shown beside the name and logo in that search (migration 0022)
+  directory_region TEXT,             -- region shown beside the name and logo in that search (migration 0022)
+  brand_licence TEXT,                -- title block details printed on the builder's plan sheets (migration 0024)
+  brand_abn TEXT,
+  brand_address TEXT,
+  brand_phone TEXT,
+  brand_email TEXT,
+  brand_website TEXT
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_orgs_slug ON orgs(slug);
 

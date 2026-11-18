@@ -6,6 +6,7 @@ import { clean, PEN, ink, wrap } from '../eng/kit.js';
 import { imageInfo, placeImage } from '../pdf.js';
 import { LOGO_PNG } from '../../brand/logo.js';
 import { termsStamp } from '../../../legal/sheet-note.js';
+import { BUILDER_BH, POWERED_H, drawBuilderBrand, drawPoweredBy, initialsOf } from './titleblock.js';
 
 export const SW = 420;
 export const SH = 297;
@@ -68,10 +69,13 @@ export function drawStrip(doc, ctx, sheet) {
   let y = 10;
 
   // Brand: Glide Inside wordmark, entity, ABN and contact.
-  const bh = 41;
+  const bld = ctx.builder || null; // builder login: their own title block (titleblock.js); null keeps the Glide Inside block
+  const bh = bld ? BUILDER_BH : 41;
   box(doc, x0, y, x1, y + bh);
-  const logo = imageInfo(LOGO_PNG);
+  if (bld) drawBuilderBrand(doc, bld, { x: x0, y, w: W, h: bh });
+  const logo = bld ? null : imageInfo(LOGO_PNG);
   if (logo) placeImage(doc, logo, { x: x0 + 3, y: y + 3, w: W - 6, h: 11 });
+  if (!bld) {
   doc.setFillColor(...TEAL);
   doc.rect(x0 + 3, y + 15.4, W - 6, 0.6, 'F');
   doc.setFont('helvetica', 'bold');
@@ -85,6 +89,7 @@ export function drawStrip(doc, ctx, sheet) {
   doc.text(EMAIL, x0 + 3, y + 32);
   doc.setTextColor(...TEAL);
   doc.text(WEBSITE, x0 + 3, y + 35.8);
+  }
   y += bh;
 
   // Client.
@@ -94,7 +99,7 @@ export function drawStrip(doc, ctx, sheet) {
   y += 12;
 
   // Project.
-  const ph = 33;
+  const ph = bld ? 28 : 33;
   box(doc, x0, y, x1, y + ph);
   label(doc, 'PROJECT', x0 + 2, y + 3.2);
   doc.setFont('helvetica', 'bold');
@@ -123,6 +128,7 @@ export function drawStrip(doc, ctx, sheet) {
 
   // Bottom up fixed blocks.
   let yb = SH - 10;
+  if (bld) { yb -= POWERED_H; box(doc, x0, yb, x1, yb + POWERED_H); drawPoweredBy(doc, { x: x0, y: yb, w: W, h: POWERED_H }); }
   const dh = 15;
   yb -= dh;
   box(doc, x0, yb, x1, yb + dh);
@@ -143,7 +149,7 @@ export function drawStrip(doc, ctx, sheet) {
   doc.line(x0, yb + (2 * sh) / 3, x1, yb + (2 * sh) / 3);
   doc.line(x0 + W / 2, yb, x0 + W / 2, yb + sh);
   const date = clean(tb.date) || ctx.dateStr;
-  const rows = [['SCALE (A3)', sheet.scale || 'NTS', 'DATE', date], ['DRAWN', clean(tb.drawnBy) || 'Glide Inside', 'CHECKED', clean(tb.checkedBy) || 'Not checked'], ['SHEET SIZE', 'A3 LANDSCAPE', 'JOB NO.', clean(tb.jobNumber) || ctx.jobId]];
+  const rows = [['SCALE (A3)', sheet.scale || 'NTS', 'DATE', date], ['DRAWN', clean(tb.drawnBy) || (bld ? bld.name : 'Glide Inside'), 'CHECKED', clean(tb.checkedBy) || 'Not checked'], ['SHEET SIZE', 'A3 LANDSCAPE', 'JOB NO.', clean(tb.jobNumber) || ctx.jobId]];
   rows.forEach((r, i) => {
     const top = yb + (i * sh) / 3;
     label(doc, r[0], x0 + 1.8, top + 2.4);
@@ -182,7 +188,7 @@ export function drawStrip(doc, ctx, sheet) {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(6.2);
   doc.setTextColor(...PEN.ink);
-  [sheet.rev || 'A', date, clean(tb.issuePurpose) || REV_TEXT, 'GI'].forEach((t, i) => doc.text(fit(doc, clean(t), cols[i + 1] - cols[i] - 2), cols[i] + 1.2, yb + (rh / 4) * 1.5 + 1.2));
+  [sheet.rev || 'A', date, clean(tb.issuePurpose) || REV_TEXT, bld ? initialsOf(bld.name) : 'GI'].forEach((t, i) => doc.text(fit(doc, clean(t), cols[i + 1] - cols[i] - 2), cols[i] + 1.2, yb + (rh / 4) * 1.5 + 1.2));
 
   // Data and notes in the space between.
   const top = y;

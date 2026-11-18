@@ -6,6 +6,7 @@
 import { clean } from './kit.js';
 import { BRAND, LOGO_PNG } from '../../brand/logo.js';
 import { imageInfo } from '../pdf.js';
+import { cleanDetails } from '../../../portal/brand-details.js';
 
 export const DISCLAIMER = 'CONCEPT ONLY. TO BE VERIFIED BY A SUITABLY QUALIFIED PERSON BEFORE ANY USE FOR APPROVAL OR CONSTRUCTION. Not a survey. Not a development application drawing.';
 
@@ -76,7 +77,7 @@ export function brandOf(project, options = {}) {
   }
   const asImg = (u) => { const i = u ? imageInfo(u) : null; return i && i.w > 0 && i.h > 0 ? i : null; };
   if (builder && (builder.name || builder.logo)) {
-    return { mode: 'builder', name: clean(builder.name) || clean(tb.company) || '', logo: asImg(builder.logo) || asImg(userLogo), glide, credit: `Prepared with ${BRAND.name}` };
+    return { mode: 'builder', name: clean(builder.name) || clean(tb.company) || '', logo: asImg(builder.logo) || asImg(userLogo), glide, credit: `Powered by ${BRAND.name}`, details: cleanDetails(builder.details), client: { name: clean(builder.client?.name), lotAddress: clean(builder.client?.lotAddress) } };
   }
   return { mode: 'public', name: clean(tb.company), logo: asImg(userLogo), glide, credit: '' };
 }

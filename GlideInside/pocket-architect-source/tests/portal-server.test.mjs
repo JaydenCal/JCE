@@ -855,6 +855,30 @@ for (const [label, d1] of stores) {
     assert.equal((await b.get('/portal/me')).data.org.branding.colours, null);
   });
 
+  t('builder title block details: saved per org, validated, seen by that org\'s clients only, never by another org, designers cannot write', async () => {
+    const w = makeWorld({ d1 });
+    const a = await w.makeOrg();
+    const other = await w.makeOrg('Other Builders Pty Ltd', 'Olga');
+    const det = { licence: '123456C', abn: '51824753556', address: '4 Industrial Drive, Thornton NSW 2322', phone: '02 5550 0100', email: 'hello@samplehomes.com.au', website: 'https://www.samplehomes.com.au/' };
+    assert.deepEqual((await a.admin.get('/portal/me')).data.org.branding.details, { licence: null, abn: null, address: null, phone: null, email: null, website: null }, 'blank until set');
+    const put = await a.admin.put('/portal/org/branding', { displayName: 'Sample', details: det });
+    assert.equal(put.status, 200, JSON.stringify(put.data));
+    assert.equal(put.data.details.abn, '51 824 753 556');
+    assert.equal(put.data.details.website, 'www.samplehomes.com.au');
+    assert.equal((await a.admin.get('/portal/me')).data.org.branding.details.licence, '123456C');
+    const client = await w.makeClient(a);
+    assert.equal((await client.browser.get('/portal/me')).data.org.branding.details.email, 'hello@samplehomes.com.au', 'a client sees their own builder details');
+    const o = (await other.admin.get('/portal/me')).data.org.branding.details;
+    assert.ok(Object.values(o).every((v) => v === null), 'another org sees none of it');
+    assert.equal((await a.admin.put('/portal/org/branding', { displayName: 'Sample' })).data.details.phone, '02 5550 0100', 'kept when not sent');
+    for (const bad of [{ abn: '123' }, { email: 'not an email' }, { phone: 'call me' }, { website: 'a b' }, { licence: '<script>' }, { address: 'x'.repeat(121) }]) {
+      assert.equal((await a.admin.put('/portal/org/branding', { displayName: 'Sample', details: bad })).status, 400, JSON.stringify(bad));
+    }
+    const d = await w.makeDesigner(a);
+    assert.equal((await d.browser.put('/portal/org/branding', { displayName: 'X', details: det })).status, 403);
+    assert.equal((await a.admin.put('/portal/org/branding', { displayName: 'Sample', details: {} })).data.details.licence, null, 'blank fields clear');
+  });
+
   t('owner admin route sets and clears an org colour scheme with validation and the admin token', async () => {
     const w = makeWorld({ d1 });
     const org = await w.makeOrg();
