@@ -39,3 +39,29 @@ test('FFL: every residential sheet states the same ground floor level, public an
     assert.equal(all.size, 1, `one ground floor level on every sheet (${[...all]})`);
   }
 });
+
+test('builder strip: every sheet that has a legend in the public set has it in the builder set', async () => {
+  for (const [name, proj, kind] of [['res', () => residentialCase('mid'), 'site'], ['com', () => commercialCase('warehouse', 'mid'), 'commercial']]) {
+    const pub = await run(proj(), kind);
+    const bld = await run(proj(), kind, { builder });
+    assert.equal(pub.r.sheets.length, bld.r.sheets.length);
+    let n = 0;
+    pub.pages.forEach((pg, i) => {
+      if (!pg.texts.some((t) => t.s === 'LEGEND')) return;
+      n++;
+      assert.ok(bld.pages[i].texts.some((t) => t.s === 'LEGEND'), `${name} ${codeOf(pub.r.sheets[i])}: legend present in the builder set`);
+    });
+    assert.ok(n >= 2, `${name}: the public set has legends`);
+  }
+});
+
+test('legends list only what is drawn: no road centreline or kerb and gutter without a drawn road', async () => {
+  for (const [proj, kind] of [[() => residentialCase('mid'), 'site'], [() => commercialCase('warehouse', 'mid'), 'commercial']]) {
+    const { pages } = await run(proj(), kind);
+    pages.forEach((pg) => {
+      const t = pg.texts.map((x) => x.s).join('\n');
+      assert.ok(!/^Road centreline$/m.test(t), 'no road centreline entry');
+      assert.ok(!/^Kerb and gutter$/m.test(t), 'no kerb and gutter entry');
+    });
+  }
+});

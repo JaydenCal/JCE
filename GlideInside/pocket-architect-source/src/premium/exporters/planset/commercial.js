@@ -31,7 +31,7 @@ import { COMMERCIAL_SHEET_LIST } from '../../../commercial/sheet-list.js';
 import { compute as financeCompute, compareScenarios as financeCompare, COMPARE_ROWS as FIN_COMPARE_ROWS, DISCLAIMER as FIN_DISCLAIMER } from '../../../finance/model.js';
 import { FINANCE_DATA as FIN_DATA } from '../../../finance/engine.js';
 import { AREA, fit } from './frame.js';
-import { drawSite, roadModel, siteView, fitView, northPoint, northDegOf, SITE_SCALES, SCALES_BEYOND, VP } from './site.js';
+import { drawSite, drawnContext, roadModel, siteView, fitView, northPoint, northDegOf, SITE_SCALES, SCALES_BEYOND, VP } from './site.js';
 import { hasGround, groundLevelFn, drawGroundLayer, streamMark, outwardSpots, cornersOf, intervalText } from './contours.js';
 import { levelsModel, fflText } from './levels.js';
 import { envelopePoly } from './lot.js';
@@ -554,13 +554,14 @@ function stairRect(u, m) {
 }
 
 // C100 existing site -------------------------------------------------------------------------------------------------------
-function existingLegend(aerial, contours = []) {
+function existingLegend(aerial, contours = [], lot = null) {
+  const dc = drawnContext(lot);
   return legendBlock([
     ['Lot boundary (DCDB)', lineSw(aerial ? PEN.cadRed : PEN.ink, 0.7)],
-    ['Adjoining lot boundary', lineSw(aerial ? [70, 74, 84] : GREYLINE, 0.18)],
-    ['Road centreline', lineSw(PEN.phantom, 0.3, [3, 0.8, 0.6, 0.8])],
+    ...(dc.neighbours ? [['Adjoining lot boundary', lineSw(aerial ? [70, 74, 84] : GREYLINE, 0.18)]] : []),
+    ...(dc.roads ? [['Road centreline', lineSw(PEN.phantom, 0.3, [3, 0.8, 0.6, 0.8])]] : []),
     ['Building setback line', lineSw(aerial ? PEN.envelopeAerial : GREYLINE, aerial ? 0.3 : 0.2, [1.6, 1])],
-    ['Kerb and gutter', (doc, a, b) => { doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.25); doc.line(a, b - 0.5, a + 12, b - 0.5); doc.line(a, b + 0.5, a + 12, b + 0.5); }],
+    ...(dc.roads ? [['Kerb and gutter', (doc, a, b) => { doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.25); doc.line(a, b - 0.5, a + 12, b - 0.5); doc.line(a, b + 0.5, a + 12, b + 0.5); }]] : []),
     ...contours,
   ]);
 }
@@ -587,7 +588,7 @@ export function drawExisting(doc, project, lot, { aerial = null, levels = null }
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines are indicative, check with council.'];
   if (r.groundNote) notes.push(r.groundNote);
   if (!over) notes.push('No aerial is shown for this lot.');
-  return { scale: r.scale, scaleLabel: r.scaleLabel, kv, notes, blocks: [existingLegend(over, r.legendContours || [])] };
+  return { scale: r.scale, scaleLabel: r.scaleLabel, kv, notes, blocks: [existingLegend(over, r.legendContours || [], lot)] };
 }
 
 // Catalogue buildings on C101: extras (apron, canopy, dock recess), walls, roller doors, the plan label with the GFA, dock and canopy lines,
@@ -678,12 +679,13 @@ function drawBuildingShells(doc, model, view, field) {
 }
 
 // C101 proposed layout -----------------------------------------------------------------------------------------------------
-function layoutLegend(model = null, contours = []) {
+function layoutLegend(model = null, contours = [], lot = null) {
+  const dc = drawnContext(lot);
   const hsTypes = [...new Set((model?.hardstand || []).map((x) => x.type))];
   return legendBlock([
     ['Lot boundary (existing)', lineSw(PEN.ink, 0.7)],
-    ['Adjoining lot (DCDB)', lineSw(GREYLINE, 0.18)],
-    ['Road centreline', lineSw(PEN.phantom, 0.3, [3, 0.8, 0.6, 0.8])],
+    ...(dc.neighbours ? [['Adjoining lot (DCDB)', lineSw(GREYLINE, 0.18)]] : []),
+    ...(dc.roads ? [['Road centreline', lineSw(PEN.phantom, 0.3, [3, 0.8, 0.6, 0.8])]] : []),
     ['Building setback line', lineSw(GREYLINE, 0.2, [1.6, 1])],
     [model?.stats?.units > 0 ? 'PROPOSED UNIT' : 'PROPOSED BUILDING', swatch(UNIT_FILL, PEN.ink)],
     ['Mezzanine outline', lineSw(PEN.ink, 0.25, [1.6, 0.9])],
@@ -1196,7 +1198,7 @@ export function drawLayout(doc, model) {
     'Site access and crossover are indicative and to be confirmed with council.',
   ];
   notes.push(levels.has ? ground.note : 'No ground levels for this lot. Floor levels are on an assumed datum.');
-  return { scale, kv, notes, blocks: [layoutLegend(model, ground.legend)], ground };
+  return { scale, kv, notes, blocks: [layoutLegend(model, ground.legend, lot)], ground };
 }
 
 // C102 mezzanine level plan --------------------------------------------------------------------------------------------------

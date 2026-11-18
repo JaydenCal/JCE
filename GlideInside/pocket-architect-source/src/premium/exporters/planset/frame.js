@@ -99,7 +99,14 @@ export function drawStrip(doc, ctx, sheet) {
   y += 12;
 
   // Project.
-  const ph = bld ? 28 : 33;
+  // The project cell is as tall as its text needs (title, address, lot, council), so the legend below it keeps its room on the builder strip.
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9.5);
+  const titleN = wrap(doc, ctx.projectTitle, W - 4).slice(0, 2).length;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  const detailN = [ctx.address, ctx.lotDp, [lot?.lga, lot?.zoning?.code].filter(Boolean).join('  ')].filter(Boolean).reduce((a, t) => a + wrap(doc, t, W - 4).slice(0, 2).length, 0);
+  const ph = Math.min(bld ? 28 : 33, Math.max(16, 8.2 + titleN * 4.2 + detailN * 3 + 1.5));
   box(doc, x0, y, x1, y + ph);
   label(doc, 'PROJECT', x0 + 2, y + 3.2);
   doc.setFont('helvetica', 'bold');
