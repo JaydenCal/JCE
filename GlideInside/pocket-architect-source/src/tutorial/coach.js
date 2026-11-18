@@ -68,8 +68,19 @@ export function createTutorial({ getFlow = () => null, storage } = {}) {
     }
     i = n; paint();
   }
+  // The card follows the flow: when the person moves on with the flow's own Next or Back (or opens the editor), the tutorial jumps to the first
+  // step that belongs to where they are, so it never shows "Type your address" over the placement step.
+  function syncToFlow() {
+    const flow = getFlow(); if (!flow) return;
+    const s = steps[i]; if (!s) return;
+    const open = !!flow.isOpen;
+    if (s.where === 'flow' && open && s.flowStep !== flow.step) { const j = stepIndexForFlow(steps, flow.step); if (j !== null) i = j; }
+    else if (s.where === 'flow' && !open) { const j = steps.findIndex((x) => x.where === 'editor'); if (j >= 0) i = j; }
+    else if (s.where === 'editor' && open) { const j = stepIndexForFlow(steps, flow.step); if (j !== null) i = j; }
+  }
   function paint() {
     if (!active) return;
+    syncToFlow();
     const s = steps[i];
     count.textContent = `Tutorial ${i + 1} of ${steps.length}`;
     text.textContent = s.text;
@@ -79,7 +90,12 @@ export function createTutorial({ getFlow = () => null, storage } = {}) {
     const t = document.querySelector(s.target);
     hl = t; t?.classList.add('tut-hl');
     el.hidden = false;
-    if (innerWidth <= 600) { el.style.left = el.style.top = el.style.bottom = ''; arrow.style.display = 'none'; return; } // bottom sheet (CSS)
+    if (innerWidth <= 600) { // bottom sheet (CSS), lifted above the flow footer so it never covers Back and Next
+      el.style.left = el.style.top = el.style.bottom = ''; arrow.style.display = 'none';
+      const foot = document.querySelector('[data-ps="flow-root"]:not([hidden]) .gf-foot');
+      if (foot && foot.offsetHeight) el.style.setProperty('bottom', `${foot.offsetHeight + 8}px`, 'important'); else el.style.removeProperty('bottom');
+      return;
+    }
     if (!t) { el.style.left = '8px'; el.style.top = 'auto'; el.style.bottom = '8px'; arrow.style.display = 'none'; return; }
     const r = t.getBoundingClientRect();
     const avoid = [...document.querySelectorAll(document.querySelector('[data-ps="flow-root"]:not([hidden])') ? AVOID_FLOW : AVOID_EDITOR)].map((n) => n.getBoundingClientRect()).filter((b) => b.width > 40 && b.height > 40);

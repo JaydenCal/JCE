@@ -16,7 +16,7 @@ export function breachList(status) {
 export function breachSentence(status) {
   if (!status || status.state !== 'outside') return '';
   const list = breachList(status);
-  if (!list.length) return status.text || 'The position is outside the setbacks.';
+  if (!list.length) { const t = String(status.text || 'The position is outside the setbacks').trim(); return /[.!?]$/.test(t) ? t : `${t}.`; }
   const parts = list.map((b) => `${b.m.toFixed(2)} m inside the ${b.name} setback`);
   return `This position is ${parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`}.`;
 }

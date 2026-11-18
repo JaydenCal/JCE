@@ -19,9 +19,9 @@ const CSS = `
 .fx-card b{display:block;font:600 17px/1.2 system-ui,sans-serif;white-space:nowrap}
 .fx-card span{display:block;opacity:.75;font-size:11.5px}
 .fx-card i{display:block;font-style:normal;opacity:.6;font-size:11px;margin-top:1px}
-.fx-card[data-neg="1"] b{color:#d0463b}
+.fx-card[data-neg="1"] b{color:#d0463b;color:color-mix(in srgb,#d0463b 50%,currentColor)}
 .fx-note{margin:4px 0;opacity:.8;font-size:11.5px}
-.fx-warn{margin:4px 0;font-size:12px;color:#c0782a}
+.fx-warn{margin:4px 0;font-size:12px;color:#c0782a;color:color-mix(in srgb,#c0782a 60%,currentColor)}
 .fx-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}
 .fx-btn{font:inherit;border:1px solid rgba(127,127,127,.5);background:rgba(127,127,127,.12);color:inherit;border-radius:8px;padding:5px 11px;cursor:pointer}
 .fx-btn:hover:not(:disabled){background:rgba(127,127,127,.25)}
@@ -49,7 +49,7 @@ const CSS = `
 .fx-chip[data-s="EDITED"]{border-color:#3b82c4;color:#3b82c4}
 .fx-grp{font-weight:600;margin:10px 0 2px;opacity:.9}
 .fx-grid td{text-align:center;min-width:64px}
-.fx-grid td[data-neg="1"]{color:#d0463b}
+.fx-grid td[data-neg="1"]{color:#d0463b;color:color-mix(in srgb,#d0463b 50%,currentColor)}
 .fx-grid td.fx-mid{font-weight:700;background:rgba(127,127,127,.15)}
 .fx-scn{display:flex;gap:6px;align-items:center;margin:4px 0;flex-wrap:wrap}
 .fx-scroll{overflow-x:auto}
