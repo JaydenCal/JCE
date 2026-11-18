@@ -81,3 +81,19 @@ test('residential A200, A300, A301: natural and finished surface lines with RLs,
     }
   }
 });
+
+test('C110: the upper level plan draws the mezzanine at a readable scale with the full room name, and is not issued when the building has no upper level content', async () => {
+  const { r, pages } = await run(commercialCase('warehouse', 'mid'), 'commercial');
+  const i = r.sheets.findIndex((s) => codeOf(s) === 'C110');
+  assert.ok(i >= 0, 'C110 issued');
+  const t = pages[i].texts.map((x) => x.s);
+  assert.ok(t.some((x) => /PROPOSED OFFICE FIRST FLOOR/i.test(x)), 'full room name');
+  assert.ok(!t.some((x) => /^PRO OFF FIR$/.test(x)), 'not abbreviated');
+  assert.ok(t.some((x) => /^8\.0 m$/.test(x.trim())), 'the mezzanine is dimensioned');
+  const n = Number(/1:(\d+)/.exec(r.sheets[i].scale)[1]);
+  assert.ok(n <= 100, `the mezzanine fills the sheet (1:${n})`);
+  const bare = commercialCase('warehouse', 'mid');
+  for (const l of bare.levels.slice(1)) { l.walls = []; l.rooms = []; l.openings = []; l.stairs = []; }
+  const r2 = await run(bare, 'commercial');
+  assert.ok(!r2.r.sheets.some((s) => codeOf(s) === 'C110'), 'no C110 without upper level content');
+});
