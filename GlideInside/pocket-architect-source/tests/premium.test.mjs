@@ -798,7 +798,8 @@ test('UI, locked by default: Unlock button, locked Exports menu, locked assistan
     await sleep(60);
     const items = $$('.psp-menu-item');
     out.items = items.map((b) => text(b.querySelector('span')));
-    out.itemsLocked = items.filter((b) => b.dataset.type !== 'pdf').every((b) => b.getAttribute('aria-disabled') === 'true' && /Locked/.test(b.textContent));
+    out.itemsLocked = items.filter((b) => !['pdf', 'siting-report', 'site-costs'].includes(b.dataset.type)).every((b) => b.getAttribute('aria-disabled') === 'true' && /Locked/.test(b.textContent));
+    out.sitingLocked = /Locked/.test(items.find((b) => b.dataset.type === 'siting-report')?.textContent || ''); // the siting report is a locked PDF like the others; Site costs is an estimate panel
     out.menuOpen = $('.psp-menu').hidden === false;
     out.prompts = $$('.psp-ai .psp-prompt').map((b) => [b.textContent, b.disabled]);
     out.aiButtons = $$('.psp-ai .psp-btn').map((b) => b.textContent.trim());
@@ -826,8 +827,9 @@ test('UI, locked by default: Unlock button, locked Exports menu, locked assistan
   `);
   assert.equal(r.topbar, 'Unlock plans, A$30');
   assert.ok(r.requestsAtStart <= 1, 'the locked state makes no network calls beyond the one health check (payments off switch)');
-  assert.deepEqual(r.items, ['PDF plans', 'DXF drawing', '3D model (GLB)', '3D model (OBJ)', 'Interactive HTML']);
+  assert.deepEqual(r.items, ['PDF plans', 'DXF drawing', '3D model (GLB)', '3D model (OBJ)', 'Interactive HTML', 'Siting report', 'Site costs']);
   assert.equal(r.itemsLocked, true);
+  assert.equal(r.sitingLocked, true);
   assert.equal(r.menuOpen, true);
   assert.equal(r.prompts.length, 4);
   assert.ok(r.prompts.every(([, disabled]) => disabled), 'example prompts are disabled chips');
