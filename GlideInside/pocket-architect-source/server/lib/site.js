@@ -4,6 +4,7 @@
 //   GET /api/site/lot?lon=&lat=&state=               the parcel at the point, neighbours within about 60 m, LGA, zone, road lines
 //   GET /api/site/aerial?state=&srid=&bbox=[&res=][&maxpx=]  image bytes (JPEG) with georeference in the x-site-meta header (URL encoded JSON)
 //   GET /api/site/contours?state=&srid=&bbox=&origin= elevation grid and contour lines (JSON)
+//   GET /api/site/overlays?state=&srid=&bbox=&origin= constraint overlays (flood, bushfire, heritage, easements) clipped to the box; partial results with warnings, never a 5xx for one dead service
 //   GET /api/site/health                             probes every upstream service
 //
 // UPSTREAM SERVICES. Each line says what was confirmed by reading the service's ?f=json description on 11/11/2026 (WebFetch, because the build
@@ -50,6 +51,8 @@ import {
 } from '../../src/site/geo.js';
 import { readTiff } from '../../src/site/tiff.js';
 import { contourLines, fillGaps, gridRange } from '../../src/site/contours.js';
+import { clipPolygonsToBox } from '../../src/site/overlays.js';
+import { overlaySourcesFor } from './site-overlay-sources.js';
 
 export const SERVICES = {
   nswLot: 'https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9',
@@ -70,8 +73,8 @@ export const SERVICES = {
   qldLidar: 'https://spatial-gis.information.qld.gov.au/arcgis/rest/services/Elevation/ElevationProjectExtents/MapServer/100',
 };
 
-const TTL = { search: 86400, lot: 7 * 86400, aerial: 7 * 86400, contours: 7 * 86400, health: 60 };
-const LIMITS = { search: [60, 60], lot: [20, 60], aerial: [20, 60], contours: [12, 60], health: [10, 60] }; // [hits, window seconds] per IP
+const TTL = { search: 86400, lot: 7 * 86400, aerial: 7 * 86400, contours: 7 * 86400, overlays: 86400, health: 60 };
+const LIMITS = { search: [60, 60], lot: [20, 60], aerial: [20, 60], contours: [12, 60], overlays: [12, 60], health: [10, 60] }; // [hits, window seconds] per IP
 // Search is the one endpoint shared offices hit in bursts, so it gets a second, short window on top of the 60 per minute: a burst of
 // up to 30 requests in any 10 second window (approximating a token bucket of 60 per minute, burst 30), then at most 60 per minute.
 // Requests answered from a cache cost the upstream nothing and are not counted at all. Abuse protection stays: 60 per minute and the
@@ -995,6 +998,68 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     ['qld-parcels', SERVICES.qldLot, true], ['qld-addresses', SERVICES.qldAddresses, true], ['qld-lga', SERVICES.qldLga, false],
     ['qld-imagery', SERVICES.qldImagery, false], ['qld-dem', SERVICES.qldDem, false], ['qld-lidar-extents', SERVICES.qldLidar, false],
   ];
+  // Constraint overlays ---------------------------------------------------------------------------------------------------------------
+  // One envelope query per configured layer (server/lib/site-overlay-sources.js), in parallel, each with its own short timeout. A layer that
+  // fails becomes status 'error' plus a warning; the response is still 200. Polygons come back in metres relative to `origin`, clipped to the box.
+  async function overlays(request, url) {
+    await rateLimit(request, 'overlays');
+    const state = stateParam(url, { required: true });
+    const { srid } = srsFor(url);
+    const box = parseBbox(url.searchParams.get('bbox'));
+    const [oe, on] = (url.searchParams.get('origin') || '').split(',').map(Number);
+    const origin = Number.isFinite(oe) && Number.isFinite(on) ? { e: oe, n: on } : { e: round((box.minE + box.maxE) / 2, 3), n: round((box.minN + box.maxN) / 2, 3) };
+    const key = `overlays1:${state}:${srid}:${[box.minE, box.minN, box.maxE, box.maxN].map((v) => round(v, 1)).join(',')}:${origin.e},${origin.n}`;
+    const hit = await bytesCache.get(key);
+    if (hit) return new Response(hit.body, { status: 200, headers: { ...hit.headers, 'cache-control': 'public, max-age=3600' } });
+    const result = await buildOverlays({ state, srid, box, origin });
+    const body = JSON.stringify(result.body);
+    const headers = { 'content-type': 'application/json; charset=utf-8' };
+    if (result.complete) {
+      await bytesCache.put(key, { body: new TextEncoder().encode(body).buffer, headers }, TTL.overlays);
+      return new Response(body, { status: 200, headers: { ...headers, 'cache-control': 'public, max-age=3600' } });
+    }
+    return new Response(body, { status: 200, headers: { ...headers, 'cache-control': 'no-store' } }); // a partial answer is never cached
+  }
+
+  async function buildOverlays({ state, srid, box, origin }) {
+    const relBox = { minX: box.minE - origin.e, minY: box.minN - origin.n, maxX: box.maxE - origin.e, maxY: box.maxN - origin.n };
+    const warnings = [];
+    let complete = true;
+    const layers = await Promise.all(overlaySourcesFor(state).map(async (src) => {
+      const base = { id: src.id, label: src.label, source: src.source, attribution: src.attribution || '', date: null, status: 'ok', note: '', features: [] };
+      if (!src.urls.length) return { ...base, status: 'unavailable', note: src.note || 'No open service is wired for this layer.' };
+      let body = null;
+      let lastErr = null;
+      for (const layerUrl of src.urls) {
+        try {
+          body = await upstream(`${layerUrl}/query`, { f: 'json', ...envelope(box, srid), outFields: src.outFields, returnGeometry: 'true', outSR: String(srid), maxAllowableOffset: '0.5' }, { timeoutMs: 9000, retries: 0 });
+          if (body && Array.isArray(body.features)) break;
+          body = null;
+          lastErr = new Error('unexpected response');
+        } catch (e) {
+          lastErr = e;
+        }
+      }
+      if (!body) {
+        complete = false;
+        warnings.push(`${src.label}: the map service did not answer (${String(lastErr?.extra?.detail || lastErr?.message || 'failed').slice(0, 80)}).`);
+        return { ...base, status: 'error', note: 'The government map service did not answer. Try again later.' };
+      }
+      let newest = null;
+      const features = [];
+      for (const f of body.features) {
+        const polys = clipPolygonsToBox(polysRel(ringsToPolygons(f.geometry?.rings || []), origin), relBox);
+        if (!polys.length) continue;
+        const c = src.classify(f.attributes || {});
+        if (c.dateMs && (!newest || c.dateMs > newest)) newest = c.dateMs;
+        features.push({ label: c.label, detail: c.detail, polygons: polys });
+      }
+      if (body.exceededTransferLimit) { complete = false; warnings.push(`${src.label}: more features than the service returns at once, some are missing.`); }
+      return { ...base, date: newest ? ddmmyyyy(newest) : null, features };
+    }));
+    return { complete, body: { state, srid, origin, retrieved: iso(), layers, warnings } };
+  }
+
   let healthMemo = null;
 
   async function health(request) {
@@ -1032,11 +1097,12 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     if (subpath === '/lot') return lot(request, url);
     if (subpath === '/aerial') return aerial(request, url);
     if (subpath === '/contours') return contours(request, url);
+    if (subpath === '/overlays') return overlays(request, url);
     if (subpath === '/health') return health(request);
     throw new HttpError('NOT_FOUND', 'No such endpoint.');
   }
 
-  return { handle, search, lot, aerial, contours, health, buildContours, sampleRaster };
+  return { handle, search, lot, aerial, contours, overlays, health, buildContours, sampleRaster };
 }
 
 export { zoneForSrid, lonLatToMga, lonLatToWeb };

@@ -5,7 +5,8 @@ import { h, clear } from './dom.js';
 import { icon } from './icons.js';
 import { section, numberField, checkField, selectField, button, formBuilder } from './panel-forms.js';
 import { createFindBlock } from './find-block.js';
-import { removeSiteLot } from '../site/apply.js';
+import { removeSiteLot, refreshOverlays } from '../site/apply.js';
+import { constraintSummary, drawableLayers, overlayOn, OVERLAY_LAYER_KEY, OVERLAY_STYLE, CHECK_WITH_COUNCIL } from '../site/overlays.js';
 import { CONFIG } from '../config.js';
 import { planView } from './view-mode.js';
 import { floorRLOf, defaultFloorRL, centroidRL } from '../site/model.js';
@@ -29,7 +30,7 @@ export function buildSiteSection(ctx) {
   let fb = formBuilder();
   let finder = null;
   const lotOf = () => store.project.site?.lot || null;
-  const keyOf = () => (lotOf() ? `lot:${lotOf().origin?.e}:${lotOf().lotLabel}:${(lotOf().frontEdges || []).join(',')}:${!!lotOf().frontageConfirmed}:${lotOf().setbacksKey || ''}:${lotOf().setbacksStatus || ''}` : 'none');
+  const keyOf = () => (lotOf() ? `lot:${lotOf().origin?.e}:${lotOf().lotLabel}:${(lotOf().frontEdges || []).join(',')}:${!!lotOf().frontageConfirmed}:${lotOf().setbacksKey || ''}:${lotOf().setbacksStatus || ''}:${lotOf().overlays ? lotOf().overlays.retrieved || 'o' : ''}` : 'none');
 
   const fact = (k, v) => h('tr', null, h('td', null, k), h('td', { class: 'num', style: { textAlign: 'right' } }, v));
 
@@ -89,7 +90,12 @@ export function buildSiteSection(ctx) {
       if (id === 'setbacks' && !lot.envelope) continue;
       layers.append(fb.add(checkField({ label, get: () => (id === 'houses' && lotOf()?.source !== 'sample' ? lotOf()?.layers?.houses === true : lotOf()?.layers?.[id] !== false), commit: (v) => { if (id === 'aerial') writeAerialChoice(v); ctx.apply(`${v ? 'Show' : 'Hide'} ${label.toLowerCase()}`, (p) => { p.site.lot.layers[id] = v; }); } })));
     }
+    // Site constraint overlays: off until switched on. Only layers that have mapped features are offered.
+    for (const l of drawableLayers(lot)) {
+      layers.append(fb.add(checkField({ label: `${l.label} (overlay)`, get: () => overlayOn(lotOf(), l.id), commit: (v) => ctx.apply(`${v ? 'Show' : 'Hide'} ${l.label.toLowerCase()} overlay`, (p) => { p.site.lot.layers[OVERLAY_LAYER_KEY(l.id)] = v; }) })));
+    }
     sec.append(layers);
+    sec.append(constraintsBlock(lot));
     sec.append(setbackBlock(lot));
 
     if (lot.aerial) {
@@ -126,6 +132,31 @@ export function buildSiteSection(ctx) {
           if (ok) removeSiteLot(store);
         }, { cls: 'ps-btn--danger', icon: icon('trash', { size: 16 }) })));
     root.append(sec);
+  }
+
+  // "Site constraints (indicative)": one row per overlay with the answer, what was found, and where it came from.
+  function constraintsBlock(lot) {
+    const box = h('div', { class: 'ps-sec ps-constraints', dataset: { ps: 'constraints' } }, h('h4', null, 'Site constraints (indicative)'));
+    if (!lot.overlays) {
+      box.append(h('p', { class: 'ps-hint', role: 'status', dataset: { ps: 'constraints-none' } }, 'Flood planning, bushfire prone land, heritage and easements have not been looked up for this lot.'),
+        h('div', { class: 'ps-sec' }, button('Check site constraints', async (e) => {
+          const b = e?.currentTarget; if (b) b.disabled = true;
+          const ok = await refreshOverlays(store, lot);
+          if (!ok) { if (b) b.disabled = false; box.append(h('p', { class: 'ps-hint', role: 'status' }, 'The map services did not answer. Try again later.')); }
+        }, { title: 'Look up open government mapping for this lot' })));
+      return box;
+    }
+    const rows = constraintSummary(lot).map((r) => h('div', { class: 'ps-constraint', dataset: { ps: `constraint-${r.id}` }, style: { padding: '6px 0', borderBottom: '1px solid rgba(128,128,128,0.2)' } },
+      h('div', { style: { display: 'flex', justifyContent: 'space-between', gap: '8px' } },
+        h('span', null, h('span', { class: 'ps-swatch', style: { display: 'inline-block', width: '9px', height: '9px', marginRight: '6px', background: `rgb(${OVERLAY_STYLE[r.id].rgb.join(',')})`, opacity: r.hit ? '1' : '0.35' } }), r.title),
+        h('strong', null, r.answer)),
+      r.detail ? h('div', { class: 'ps-hint', style: { margin: '2px 0 0' } }, r.detail) : null,
+      r.source ? h('div', { class: 'ps-hint', style: { margin: '2px 0 0' } }, `Source: ${r.source}${r.date ? `, data dated ${r.date}` : ''}.`) : null));
+    box.append(h('div', { dataset: { ps: 'constraints-table' } }, ...rows));
+    for (const w of lot.overlays.warnings || []) box.append(h('p', { class: 'ps-hint' }, w));
+    box.append(h('p', { class: 'ps-hint', dataset: { ps: 'constraints-note' } }, `${CHECK_WITH_COUNCIL} A mapped area is context for your own planning enquiry, not a planning decision, and an area with none mapped is not an all clear.`),
+      h('div', { class: 'ps-sec' }, button('Refresh', () => refreshOverlays(store, lot), { title: 'Look the constraints up again' })));
+    return box;
   }
 
   const fmtM = (v, slot) => (typeof v === 'number' ? `${v.toLocaleString('en-AU', { maximumFractionDigits: 2 })} m` : (slot && slot.behindBuildingLineM != null ? 'behind the building line' : 'see note'));
