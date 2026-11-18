@@ -12,8 +12,28 @@ function grid(w, h, cell, q, fall = 0.02) {
   for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const x = i * cell; const y = j * cell; const t = 300 - fall * x - fall * 0.6 * y + 1.2 * Math.sin(x / 160) * Math.cos(y / 130); values.push(Math.round(t / q) * q); }
   return { cols, rows, cell, x0: -w / 2, y0: h / 2, values };
 }
+// Elevation grid as the NSW service delivers it: 5 m source cells re-gridded to 4.29 m web pixels by nearest neighbour (repeats a row or column
+// about every sixth pixel). dedupe=false resamples that raster directly (the old terraced result); true collapses the repeats first.
+async function dupGrid(w, h, cell, fall, dedupe) {
+  const { dedupeRaster, reducedIndex } = await import(path.resolve(__dirname, '../src/site/dem-dedupe.js'));
+  const PX = 4.29; const SRC = 5;
+  const truth = (x, y) => 300 - fall * x - fall * 0.6 * y + 1.2 * Math.sin(x / 160) * Math.cos(y / 130);
+  const n = Math.ceil(Math.max(w, h) / PX) + 8; const data = new Float32Array(n * n);
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) data[j * n + i] = truth(Math.round((i * PX) / SRC) * SRC, Math.round((j * PX) / SRC) * SRC);
+  const raster = { width: n, height: n, data };
+  const d = dedupe ? dedupeRaster(raster, -9999) : { ...raster, xs: null, ys: null };
+  const bil = (fx, fy) => { const x0 = Math.floor(fx); const y0 = Math.floor(fy); const tx = fx - x0; const ty = fy - y0; const at = (x, y) => d.data[Math.min(d.height - 1, Math.max(0, y)) * d.width + Math.min(d.width - 1, Math.max(0, x))]; return at(x0, y0) * (1 - tx) * (1 - ty) + at(x0 + 1, y0) * tx * (1 - ty) + at(x0, y0 + 1) * (1 - tx) * ty + at(x0 + 1, y0 + 1) * tx * ty; };
+  const cols = Math.round(w / cell) + 1; const rows = Math.round(h / cell) + 1; const values = [];
+  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+    let fx = (i * cell) / PX; let fy = (j * cell) / PX;
+    if (dedupe) { fx = reducedIndex(d.xs, fx); fy = reducedIndex(d.ys, fy); }
+    values.push(Math.round(bil(fx, fy) * 100) / 100);
+  }
+  return { cols, rows, cell, x0: -w / 2, y0: h / 2, values };
+}
 const CASES = {
   rural: { w: 400, h: 1250, cell: 5, q: 1, fall: 0.02, address: '756 Quia' },
+  ruraldup: { w: 400, h: 1250, cell: 5, q: 1, fall: 0.02, address: '756 Quia', dup: true },
   resi: { w: 60, h: 120, cell: 2, q: 0.5, fall: 0.07, address: '14 Sample' },
 };
 (async () => {
@@ -22,10 +42,11 @@ const CASES = {
   const browser = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'] });
   for (const name of only) {
     const c = CASES[name]; const pad = 60;
+    const dupG = c.dup ? await dupGrid(c.w + 2 * pad + 40, c.h + 2 * pad + 40, c.cell, c.fall, TAG === 'after') : null;
     const { ORIGIN, close } = await startServer(Number(process.env.PORT || 8830) + only.indexOf(name), {
       lot: (r) => ({ ...r, sample: false, demo: false, neighbours: [], lot: { ...r.lot, lotNumber: '3', planLabel: 'DP 263990', lotLabel: 'Lot 3 DP 263990', lotPlan: '3/DP263990', polygons: [{ outer: [[-c.w / 2, c.h / 2], [c.w / 2, c.h / 2], [c.w / 2, -c.h / 2], [-c.w / 2, -c.h / 2]], holes: [] }], areaM2: c.w * c.h, registeredAreaM2: c.w * c.h, bboxMga: { minE: r.origin.e - c.w / 2, minN: r.origin.n - c.h / 2, maxE: r.origin.e + c.w / 2, maxN: r.origin.n + c.h / 2 } } }),
       aerial: (a) => ({ ...a, bbox: { minE: 302577.528 - c.w / 2 - pad, minN: 6558552.325 - c.h / 2 - pad, maxE: 302577.528 + c.w / 2 + pad, maxN: 6558552.325 + c.h / 2 + pad } }),
-      contours: (t) => ({ ...t, contours: [], grid: grid(c.w + 2 * pad + 40, c.h + 2 * pad + 40, c.cell, c.q, c.fall) }),
+      contours: (t) => ({ ...t, contours: [], grid: dupG || grid(c.w + 2 * pad + 40, c.h + 2 * pad + 40, c.cell, c.q, c.fall) }),
     });
     const page = await newPage(browser, { width: 1440, height: 900 }, log); page.setDefaultTimeout(120000);
     if (process.env.AERIAL === 'off') await page.addInitScript(() => { try { localStorage.setItem('gi.aerial.v1', 'off'); } catch { /* none */ } });
