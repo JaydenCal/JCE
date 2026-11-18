@@ -507,15 +507,12 @@ for (const [label, d1] of stores) {
   t('houses and the Glide library: library, saved designs, access filtering, archive, duplicate, tenant isolation', async () => {
     const w = makeWorld({ d1 });
     const org = await w.makeOrg();
-    const glide = (await org.admin.get('/portal/glide-library')).data;
-    assert.equal(glide.length, GLIDE_LIBRARY.length);
-    assert.ok(!glide.some((g) => g.project), 'no project JSON in the list');
-    const model = (await org.admin.get(`/portal/glide-library/${encodeURIComponent(glide[0].id)}`)).data;
-    assert.ok(model.project.levels.length >= 1, 'built from the src/catalogue/tpl templates');
-    assert.equal((await org.admin.get('/portal/glide-library/glide:nope')).status, 404);
-    const a = await org.admin.post('/portal/houses', { fromGlideId: 'glide:house_single', name: 'Banksia 25' });
+    // Builders get no Glide Inside library: own designs only (owner 18/11/2026).
+    assert.deepEqual((await org.admin.get('/portal/glide-library')).data, []);
+    assert.equal((await org.admin.get('/portal/glide-library/glide:house_single')).status, 404);
+    assert.equal((await org.admin.post('/portal/houses', { fromGlideId: 'glide:house_single', name: 'Banksia 25' })).status, 404);
+    const a = await org.admin.post('/portal/houses', { name: 'Banksia 25', project: createFromTemplate('house_single') });
     assert.equal(a.status, 200);
-    assert.equal(a.data.source.type, 'glide');
     assert.equal(a.data.stats.bedrooms, a.data.bedrooms);
     assert.ok(a.data.thumbnail.startsWith('<svg'));
     const opened = (await org.admin.get(`/portal/houses/${a.data.id}`)).data;
@@ -540,14 +537,11 @@ for (const [label, d1] of stores) {
     assert.equal((await org.admin.get('/portal/houses')).data.some((h) => h.id === saved.data.id), false);
     assert.equal((await org.admin.get('/portal/houses?includeArchived=true')).data.some((h) => h.id === saved.data.id), true);
     assert.equal((await org.admin.post(`/portal/houses/${saved.data.id}/archive`, { archived: false })).data.archived, false);
-    // The Glide Inside sample designs are hidden from client logins by default; the builder can turn them on.
-    assert.equal((await org.admin.get('/portal/org')).data.showGlideToClients ?? false, false, 'off by default');
+    // Clients never see the Glide Inside samples, even if the old setting is switched on.
+    assert.deepEqual((await cl.browser.get('/portal/glide-library')).data, []);
+    await org.admin.patch('/portal/org/settings', { showGlideToClients: true });
     assert.deepEqual((await cl.browser.get('/portal/glide-library')).data, []);
     assert.equal((await cl.browser.get('/portal/glide-library/glide:house_single')).status, 404);
-    assert.equal((await org.admin.patch('/portal/org/settings', { showGlideToClients: true })).data.showGlideToClients, true);
-    assert.equal((await cl.browser.get('/portal/glide-library')).data.length, GLIDE_LIBRARY.length);
-    assert.equal((await org.admin.patch('/portal/org/settings', { showGlideLibrary: false })).data.showGlideToClients, false);
-    assert.deepEqual((await cl.browser.get('/portal/glide-library')).data, []);
     // "Show aerial by default" (migration 0017): on unless the builder turns it off, boolean only.
     assert.equal((await org.admin.get('/portal/me')).data.org.showAerialDefault, true, 'aerial is on by default');
     assert.equal((await org.admin.patch('/portal/org/settings', { showAerialDefault: false })).data.showAerialDefault, false);
@@ -560,7 +554,7 @@ for (const [label, d1] of stores) {
     assert.equal((await org.admin.patch('/portal/org/settings', { showAiAssistant: 'no' })).status, 400);
     assert.equal((await org.admin.patch('/portal/org/settings', { showAiAssistant: true })).data.showAiAssistant, true);
     assert.equal((await cl.browser.get('/portal/glide-library/glide:house_single')).status, 404);
-    assert.equal((await org.admin.get('/portal/glide-library')).data.length, GLIDE_LIBRARY.length, 'staff still see it');
+    assert.deepEqual((await org.admin.get('/portal/glide-library')).data, [], 'builder staff do not see it either');
     // Another org sees none of this.
     const other = await w.makeOrg('Other Builders', 'Olga');
     assert.deepEqual((await other.admin.get('/portal/houses')).data, []);
