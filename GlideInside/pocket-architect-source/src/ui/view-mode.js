@@ -89,8 +89,10 @@ export const planView = (current, phone = isPhoneWidth()) => (current === 'split
 export function startView({ param, phone = false, remembered = null, demo = false }) {
   if (isView(param)) return param;
   if (phone) return '3d';
-  if (demo) return '2d';
-  return remembered && isView(remembered) ? remembered : 'split';
+  // Owner 18/11/2026: the editor always opens on the split screen (plan beside 3D), from the landing page, the portal or a reload.
+  // A ?view= link still wins; phones keep 3D. demo and remembered are accepted for older callers but no longer change the start.
+  void demo; void remembered;
+  return 'split';
 }
 
 /**

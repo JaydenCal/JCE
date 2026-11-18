@@ -63,11 +63,13 @@ test('last view is remembered per user, survives blocked storage, and walk comes
   assert.notEqual(V.lastViewKey('a b/c'), V.lastViewKey('a_b_c_'));
 });
 
-test('start view: ?view= wins, phones open 3D, the demo opens the plan, else the remembered view', () => {
+test('start view: ?view= wins, phones open 3D, otherwise always the split screen (owner 18/11/2026)', () => {
   assert.equal(V.startView({ param: 'split', remembered: '3d' }), 'split');
   assert.equal(V.startView({ param: 'x', phone: true, remembered: 'split' }), '3d');
   assert.equal(V.startView({ remembered: 'split' }), 'split');
-  assert.equal(V.startView({ remembered: 'split', demo: true }), '2d');
+  assert.equal(V.startView({ remembered: 'split', demo: true }), 'split');
+  assert.equal(V.startView({ remembered: '2d' }), 'split', 'a remembered plan view no longer overrides');
+  assert.equal(V.startView({ remembered: '3d', demo: true }), 'split');
   assert.equal(V.startView({}), 'split');
 });
 
