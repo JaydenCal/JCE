@@ -426,7 +426,7 @@ export function createCommercialPanel({ store, host, editor }) {
     clear(strip);
     strip.title = 'Bays shown are indicative. The full parking layout is added in the next stage.';
     strip.append(
-      cell('units', String(s.units), s.mix.map((x) => `${x.count} x ${x.label}`).join(', ') || 'units'),
+      cell('units', String(s.units || s.buildingCount || 0), s.mix.map((x) => `${x.count} x ${x.label}`).join(', ') || 'units', s.mix.map((x) => `${x.count} x ${x.label}`).join(', ')),
       cell('gfa', `${s.gfaM2.toLocaleString('en-AU')} m²`, s.mezzGfaM2 ? `GFA incl. ${s.mezzGfaM2} m² mezzanine` : 'GFA'),
       cell('coverage', s.coveragePct == null ? 'n/a' : `${s.coveragePct}%`, 'site coverage'),
       cell('parking', String(s.parking.required), `bays needed, 1 per ${Math.round(1 / s.parking.ratePerM2)} m²${s.parking.officeSplit ? ', office 1 per 40 m²' : ''}`, `${parkingSplitTip(s)}${facts('parkingUnits').tip}. ${s.parking.officeSplit ? 'Counting the office separately is a conservative reading, unverified. ' : ''}Indicative, check with council`),

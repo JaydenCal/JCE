@@ -102,7 +102,7 @@ function mountPlaceStep(ctx) {
   const parkEl = h('p', { class: 'gf-note', style: { margin: '0' }, dataset: { ps: 'flow-park-status' } });
   const noticeEl = h('p', { class: 'gf-note', role: 'status', dataset: { ps: 'flow-notice' } });
   const nameEl = h('div', { class: 'gf-note', style: { margin: '0' }, dataset: { ps: 'flow-selected' } });
-  const pagerEl = h('span', { class: 'gf-note', style: { margin: '0', textAlign: 'center', flex: '1' }, dataset: { ps: 'flow-layout-name' } });
+  const pagerEl = h('span', { class: 'gf-note', style: { margin: '0', textAlign: 'center', flex: '1 1 100%', order: '-1' }, dataset: { ps: 'flow-layout-name' } });
   const mk = (label, fn, ps, cls = '', attrs = {}) => h('button', { class: `gf-btn ${cls}`, type: 'button', dataset: { ps }, onclick: fn, ...attrs }, label);
   const stepSel = h('select', { 'aria-label': 'Nudge step', dataset: { ps: 'flow-nudge-step' }, onchange: () => { nudgeMm = Number(stepSel.value); } }, h('option', { value: '500' }, '0.5 m'), h('option', { value: '100' }, '0.1 m'), h('option', { value: '1000' }, '1 m'));
   const arrow = (t, dx, dy, ps) => mk(t, () => nudge(dx, dy), ps, 'gf-btn--sm');
@@ -123,7 +123,7 @@ function mountPlaceStep(ctx) {
   const side = h('div', { class: 'gf-side' },
     h('div', { class: 'gf-card' }, nameEl, h('div', { style: { height: '8px' } }), statusEl, parkEl),
     h('div', { class: 'gf-card' },
-      h('div', { class: 'gf-row', style: { gap: '6px' } }, mk('Previous layout', () => layoutBy(-1), 'flow-layout-prev', 'gf-btn--sm'), pagerEl, mk('Next layout', () => layoutBy(1), 'flow-layout-next', 'gf-btn--sm')),
+      h('div', { class: 'gf-row', style: { gap: '6px' } }, mk('Previous layout', () => layoutBy(-1), 'flow-layout-prev', 'gf-btn--sm', { style: { flex: '1' } }), pagerEl, mk('Next layout', () => layoutBy(1), 'flow-layout-next', 'gf-btn--sm', { style: { flex: '1' } })),
       h('div', { style: { height: '8px' } }),
       mk('Best fit', () => bestFit(), 'flow-bestfit', 'gf-btn--primary'),
       h('p', { class: 'gf-note' }, 'Best fit lays out the buildings square to the street, inside the setbacks, with the driveway and car park.'),
