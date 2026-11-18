@@ -184,6 +184,29 @@ export function fetchContours(lot, { fetchImpl, timeoutMs = CONTOURS_TIMEOUT_MS 
   return p;
 }
 
+export const OVERLAYS_TIMEOUT_MS = 20000;
+
+/**
+ * Site constraint overlays (flood, bushfire, heritage, easements) for a lot response or a stored site.lot. Never rejects: any failure
+ * gives null and the lot simply has no overlays. `request` is { state, srid, origin, bbox } (see overlayRequestFor in ./overlays.js).
+ */
+export async function fetchOverlays(request, { fetchImpl, timeoutMs = OVERLAYS_TIMEOUT_MS } = {}) {
+  if (!request) return null;
+  if (CONFIG.siteMock) {
+    const { mockOverlays } = await import('./fixtures/overlays.js');
+    return mockOverlays(request);
+  }
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  const timer = setTimeout(() => ctl?.abort(), timeoutMs);
+  try {
+    return await getJson('overlays', request, { signal: ctl?.signal, fetchImpl });
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /**
  * fetchSite(selection, { fetchImpl, signal, onStep, deferContours }) -> { lot, aerial: { blob, meta } | null, contours | null, warnings: [] }
  * selection: { label, state, lon, lat }. The lot is required. A failed aerial or elevation request only adds a warning.

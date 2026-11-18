@@ -1,6 +1,7 @@
 // "Find my block": look an address up and put the real lot into the open project (one undo step).
 
-import { fetchSite } from './client.js';
+import { fetchSite, fetchOverlays } from './client.js';
+import { buildOverlays, overlayRequestFor } from './overlays.js';
 import { planView } from '../ui/view-mode.js';
 import { buildSiteLot, underlayFor, buildContours, buildTerrain, defaultFloorRL } from './model.js';
 import { faceGarageAngle, buildingHull, orientedBox, roadReserve, AUTO_LOT_DP } from './lotplan.js';
@@ -82,6 +83,7 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
   });
   commitLot(store, lot, { label: 'Find my block', aerialKey, aerialWideKey });
   res.contoursPromise?.then((c) => addContours(store, lot, c)).catch(() => {});
+  refreshOverlays(store, lot, { fetchImpl }).catch(() => {}); // late, optional, never blocks or fails the lot
   return { lot, warnings };
 }
 
@@ -149,6 +151,28 @@ export function addContours(store, forLot, resp) {
   cur.provenance = { ...(cur.provenance || {}), elevation: resp.provenance || null };
   if (cur.floorRLAuto !== false) cur.floorRL = defaultFloorRL(cur);
   store.emit('project', { label: 'contours' });
+  return true;
+}
+
+/**
+ * Look up the site constraint overlays for the lot on the project and attach them as site.lot.overlays (no undo step: derived data, like the
+ * contours). Never throws: a failed or empty lookup leaves the lot as it was. Skipped when the lot was replaced meanwhile. Returns true when added.
+ */
+export async function refreshOverlays(store, forLot = null, { fetchImpl } = {}) {
+  const lot0 = forLot || store.project.site?.lot;
+  const req = overlayRequestFor(lot0);
+  if (!req) return false;
+  let resp = null;
+  try {
+    resp = await fetchOverlays(req, { fetchImpl });
+  } catch {
+    resp = null;
+  }
+  const model = buildOverlays(resp);
+  const cur = store.project.site?.lot;
+  if (!model || !cur || cur.origin?.e !== lot0.origin?.e || cur.origin?.n !== lot0.origin?.n || cur.lotLabel !== lot0.lotLabel) return false;
+  cur.overlays = model;
+  store.emit('project', { label: 'overlays' });
   return true;
 }
 

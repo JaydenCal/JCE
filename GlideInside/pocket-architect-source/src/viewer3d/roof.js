@@ -184,6 +184,16 @@ export function buildLevelRoof(opts) {
       }
     }
 
+    // Ridge capping: a low cap along the ridge of a hip or a gable.
+    if (type === 'hip' || type === 'gable') {
+      const rl2 = type === 'hip' ? Math.max(0, (W - D) / 2) : eu;
+      const yr = hr + lift;
+      if (rl2 > 0.2) {
+        if (alongX) addAxisBox(b, cx - rl2, cx + rl2, yr - 0.03, yr + 0.07, cz - 0.11, cz + 0.11);
+        else addAxisBox(b, cx - 0.11, cx + 0.11, yr - 0.03, yr + 0.07, cz - rl2, cz + rl2);
+      }
+    }
+
     // fascia and gutter along the eave edges, on free runs only
     let eaves;
     if (type === 'hip') eaves = ['u-', 'u+', 'v-', 'v+'];
@@ -218,6 +228,7 @@ export function buildLevelRoof(opts) {
         };
         face(line, line + sgn * 0.028, y0, y1);
         face(line + sgn * 0.028, line + sgn * 0.13, y0, y0 + 0.095);
+        if (o > 0.12) face(line - sgn * o, line, y0 + 0.002, y0 + 0.022); // soffit: the flat board under the overhang
       }
     }
     rectInfo.push({ x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1, type });
