@@ -244,7 +244,7 @@ test('site layout: a warehouse turned 25 degrees gets one connected car park, ai
     moveBuilding(store, b0.id, { x: 45000 - (Math.cos(ar) * cl.x - Math.sin(ar) * cl.y), y: 70000 - (Math.sin(ar) * cl.x + Math.cos(ar) * cl.y), rotationDeg: 25 });
     const sw = store.project.commercial.siteWorks;
     assert.ok(sw, 'regenerated after the rotation');
-    assert.equal(sw.version, 4);
+    assert.equal(sw.version, 5);
     assert.ok(sw.carPark?.polygon, `${type}: the car park is attached to the building`);
     const b = buildingsOf(store.project.commercial)[0];
     const inside = (pt, poly) => G.pointInPolygon(pt, poly) || distToPoly(pt, poly) <= 5;

@@ -168,6 +168,12 @@ export function drawSiteWorks(ctx, st) {
     ctx.save(); ctx.lineWidth = 3.5; ctx.strokeStyle = st.theme.c.canvas; ctx.globalAlpha = 0.85; ctx.strokeText(lab, m.x, m.y - 14); ctx.restore();
     ctx.fillText(lab, m.x, m.y - 14);
   }
+  // Carports: one outline per bay row, dashed, over the bay lines.
+  for (const cp of sw.carports || []) {
+    ctx.beginPath(); trace(ctx, st, cp.polygon);
+    ctx.fillStyle = 'rgba(255,255,255,0.10)'; ctx.fill();
+    ctx.setLineDash([6, 3]); ctx.strokeStyle = 'rgba(40,50,60,0.85)'; ctx.lineWidth = 1.3; ctx.stroke(); ctx.setLineDash([]);
+  }
   // Aisle centre lines with a two-way arrow at each end of a long run.
   ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1.2; ctx.setLineDash([9, 7]);
   for (const a of sw.aisles || []) {

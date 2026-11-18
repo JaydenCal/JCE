@@ -440,9 +440,10 @@ export function buildMarkings(commercial, carparks = null) {
         lines.push(long01 ? [p0, p1] : [p0, p3], long01 ? [p3, p2] : [p1, p2]);
       }
       items.push({ id: `baylines:${r.rowId}`, type: 'bay-lines', lines, count: r.slots.filter((x) => x.kind !== 'zone').length, rowId: r.rowId });
+      const rot = r.frame?.u ? (Math.atan2(r.frame.u.y, r.frame.u.x) * 180) / Math.PI : 0; // the symbol is upright to the row, whatever the lot's angle
       r.slots.forEach((sl, i) => {
-        if (sl.kind === 'accessible') items.push({ id: `access:${r.rowId}:${i}`, type: 'accessible-symbol', x: sl.centre.x, y: sl.centre.y, rotationDeg: 0, rowId: r.rowId });
-        else if (sl.kind === 'zone') items.push({ id: `zone:${r.rowId}:${i}`, type: 'accessible-hatch', polygon: sl.poly, x: sl.centre.x, y: sl.centre.y, rotationDeg: 0, rowId: r.rowId });
+        if (sl.kind === 'accessible') items.push({ id: `access:${r.rowId}:${i}`, type: 'accessible-symbol', x: sl.centre.x, y: sl.centre.y, rotationDeg: rot, rowId: r.rowId });
+        else if (sl.kind === 'zone') items.push({ id: `zone:${r.rowId}:${i}`, type: 'accessible-hatch', polygon: sl.poly, x: sl.centre.x, y: sl.centre.y, rotationDeg: rot, rowId: r.rowId });
       });
     }
   }

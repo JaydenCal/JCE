@@ -15,13 +15,14 @@ import { bayDemand } from './catalogue/bays.js';
 import { layoutUnits } from './layout.js';
 import { parkingLayout } from './parking.js';
 import { accessibleRequired } from './rules.js';
-import { clipTo } from './catalogue/pavements/polybool.js';
+import { clipTo, boolean, holeFree, overlapArea } from './catalogue/pavements/polybool.js';
+import { fillField, betterField, fieldGeometry, markAccessible, carportsOf, BAY_W, BAY_L } from './carpark-field.js';
 import { polyArea } from './catalogue/pavements/geom.js';
 import { rowsSignature } from './estate.js';
 import { orientedWorks, isSkewed } from './sitelayout-oriented.js';
 
-export const SITEWORKS_VERSION = 4; // 4: a building turned off the lot grid gets a car park, aisle, bays, hardstand lane and one drive laid out in its own frame (sitelayout-oriented.js)
-export const AISLE_MM = 6000;
+export const SITEWORKS_VERSION = 5; // 5: the car park is a spine aisle with double loaded cross aisles and contiguous bays (carpark-field.js); 4: 4: a building turned off the lot grid gets a car park, aisle, bays, hardstand lane and one drive laid out in its own frame (sitelayout-oriented.js)
+export const AISLE_MM = 6200;
 export const AISLE_TRUCK_MM = 7500;
 export const CROSSOVER_W = 6000;
 export const CROSSOVER_TRUCK_W = 9000;
@@ -311,8 +312,8 @@ export function generateSiteWorks(project, opts = {}) {
   const carW = Math.max(AISLE_MM, Number(c.parking?.aisleMm) || 0);
   const ae = c.accessEdit && typeof c.accessEdit === 'object' ? c.accessEdit : null;
   const xoverW = Number.isFinite(ae?.widthMm) ? Math.min(12000, Math.max(3000, ae.widthMm)) : truck ? CROSSOVER_TRUCK_W : CROSSOVER_W;
-  const bayW = Number(c.parking?.bayW) || 2400;
-  const bayL = Number(c.parking?.bayL) || 5400;
+  const bayW = Math.max(BAY_W, Number(c.parking?.bayW) || 0);
+  const bayL = Math.max(BAY_L, Number(c.parking?.bayL) || 0);
   const frontLand = Math.min(3000, Math.max(1500, ...src.bs.map((b) => Number(b.site?.landscapeFrontMm) || 0)));
   const sideLand = 1000;
   const frontEdges = new Set(lot.frontEdges);
@@ -382,76 +383,160 @@ export function generateSiteWorks(project, opts = {}) {
     return { id: `sw:xover:${k}`, x: p.x, y: p.y, widthMm: xoverW, role: x.role, dir: { x: -f.n.x, y: -f.n.y }, s: x.s, polygon: rectWorld(f, x.s - xoverW / 2, x.s + xoverW / 2, -VERGE_MM, 0) };
   });
 
-  // Aisles -----------------------------------------------------------------------------------------------------------------------------
+  // Demand -----------------------------------------------------------------------------------------------------------------------------
+  const need = (b) => Math.ceil(bayDemand(b).raw - 1e-9);
+  const perBuilding = src.bs.map((b) => ({ id: b.id, required: need(b), provided: 0 }));
+  const required = perBuilding.reduce((s, p) => s + p.required, 0);
+  const accReq = required >= 2 ? accessibleRequired(required, c.buildingClass || 'class_8') : 0;
+  const slotsWanted = required + Math.floor(accReq / 2) + (accReq % 2);
+  const mainPt = mainT ? toFrame(f, mainT.door) : { s: (sLo + sHi) / 2, t: 0 };
+
+  // Car park field: one spine from the crossover and double loaded cross aisles off it (carpark-field.js), laid in the lot frame so every
+  // row is parallel to the frontage. The checks below are exact (no grid), the grid is only used afterwards to route to other doors.
+  const aabb = (poly, pad) => { const p = poly.map((q) => toFrame(f, q)); return { s0: Math.min(...p.map((q) => q.s)) - pad, s1: Math.max(...p.map((q) => q.s)) + pad, t0: Math.min(...p.map((q) => q.t)) - pad, t1: Math.max(...p.map((q) => q.t)) + pad }; };
+  const blockers = [];
+  for (const s of [...src.solids, ...src.obstacles]) blockers.push(aabb(s, 500));
+  for (const r of src.reserved) blockers.push(aabb(r, 0));
+  for (const b of src.bs) for (const e of b.extras) if (e.kind === 'apron' || e.kind === 'fuel-canopy' || e.kind === 'truck-canopy') blockers.push(aabb(e.polygon, e.kind === 'apron' ? 0 : 1500));
+  const fpF = g.fp.map((q) => ({ x: q.s, y: q.t }));
+  const edgesF = lot.boundary.map((a, i) => ({ a: toFrame(f, a), b: toFrame(f, lot.boundary[(i + 1) % lot.boundary.length]), m: frontEdges.has(i) ? frontLand : sideLand, front: frontEdges.has(i) }));
+  const dSegF = (p, a, b) => { const dx = b.s - a.s; const dy = b.t - a.t; const t = Math.max(0, Math.min(1, ((p.x - a.s) * dx + (p.y - a.t) * dy) / (dx * dx + dy * dy || 1))); return Math.hypot(p.x - a.s - t * dx, p.y - a.t - t * dy); };
+  const pointOk = (s, t, spine) => {
+    if (!G.pointInPolygon({ x: s, y: t }, fpF)) return false;
+    for (const e of edgesF) { if (spine && e.front) continue; if (dSegF({ x: s, y: t }, e.a, e.b) < e.m - 1) return false; }
+    return true;
+  };
+  const okRect = (s0, s1, t0, t1, spine) => {
+    if (spine) t0 = Math.max(t0, 60);
+    if (s1 - s0 < 1 || t1 - t0 < 1) return false;
+    if (s0 < win.s0 - 1 || s1 > win.s1 + 1 || t1 > win.t1 + 1) return false;
+    for (const a of blockers) if (s0 < a.s1 && s1 > a.s0 && t0 < a.t1 && t1 > a.t0) return false;
+    const ss = [s0, (s0 + s1) / 2, s1]; const tt = [t0, (t0 + t1) / 2, t1];
+    for (let x = s0 + 1500; x < s1; x += 1500) ss.push(x);
+    for (let y = t0 + 1500; y < t1; y += 1500) tt.push(y);
+    for (const s of ss) for (const t of tt) if (!pointOk(s, t, spine)) return false;
+    for (const q of fpF) if (q.x > s0 && q.x < s1 && q.y > t0 && q.y < t1) return false;
+    return true;
+  };
+  const tryField = (sp) => fillField({ ok: okRect, sp, spineW: carW, aisleW: carW, bayL, bayW, wanted: slotsWanted, near: mainPt, tStart: Math.abs(sp - xs[0].s) < 1 ? 0 : frontLand, tFirst: frontLand, tEnd: win.t1, sMin: win.s0, sMax: win.s1 });
+  let field = null;
+  if (slotsWanted > 0) {
+    field = tryField(xs[0].s);
+    if (!field || field.count < slotsWanted || !field.double) {
+      // The crossover line cannot carry enough bays, or only a single loaded aisle: try the spine elsewhere along the frontage (a drive joins
+      // it to the crossover) and keep the better layout.
+      let bestAlt = field;
+      const lo = sLo + sideLand + carW / 2 + 500; const hi = sHi - sideLand - carW / 2 - 500;
+      const cand = [];
+      for (let k = 1; k <= 14; k++) for (const sg of [-1, 1]) { const s = xs[0].s + sg * k * 3000; if (s >= lo && s <= hi) cand.push(s); }
+      // Flush with a building, apron or the lot margin: a spine that sits hard against its neighbour leaves no sliver of ground between them.
+      for (const a of blockers) for (const s of [a.s0 - carW / 2, a.s1 + carW / 2]) if (s >= lo && s <= hi) cand.push(s);
+      cand.sort((p, q) => Math.abs(p - xs[0].s) - Math.abs(q - xs[0].s));
+      for (const s of cand.slice(0, 30)) {
+        const alt = tryField(s);
+        if (betterField(alt, bestAlt, slotsWanted)) bestAlt = alt;
+      }
+      field = bestAlt;
+    }
+  }
+  const world = (s, t) => toWorldF(f, s, t);
+  const geo = field ? fieldGeometry(field, world, { u: f.u, n: f.n }) : { aisles: [], rows: [], paved: [] };
+  const fieldRects = field ? [{ s0: field.spine.s0, s1: field.spine.s1, t0: field.spine.t0, t1: field.spine.t1 }, ...field.aisles.flatMap((a) => a.sides.map((sd) => ({ s0: sd.s0, s1: sd.s1, t0: a.qa - carW / 2, t1: a.qa + carW / 2 })))] : [];
+  const spineAtCrossover = !!field && Math.abs((field.spine.s0 + field.spine.s1) / 2 - xs[0].s) < 1;
+
+  // Accessible groups [bay][zone][bay] nearest the main entry, then the allocation of bays to buildings.
+  const frameDist = (sl) => { const q = toFrame(f, sl.centre); return Math.hypot(q.s - mainPt.s, q.t - mainPt.t); };
+  const rows = geo.rows;
+  const accProvided = markAccessible(rows, accReq, frameDist);
+  const zones = rows.reduce((s, r) => s + r.slots.filter((x) => x.kind === 'zone').length, 0);
+  const provided = rows.reduce((s, r) => s + r.slots.length, 0);
+  const providedBays = provided - zones;
+  const allSlots = rows.flatMap((r) => r.slots.map((sl) => { const q = toFrame(f, sl.centre); return { sl, row: r, _s: q.s, _t: q.t }; })).filter((x) => x.sl.kind !== 'zone');
+  const pool = [...allSlots];
+  const doorOf = new Map(targets.filter((t) => t.type !== 'fuel-canopy').map((t) => [t.buildingId, toFrame(f, t.door)]));
+  for (const pb of perBuilding) {
+    const d = doorOf.get(pb.id);
+    if (!d) continue;
+    pool.sort((p, q) => Math.hypot(p._s - d.s, p._t - d.t) - Math.hypot(q._s - d.s, q._t - d.t));
+    for (let k = 0; k < pb.required && pool.length; k++) { const x = pool.shift(); x.row.buildingId = x.row.buildingId || pb.id; pb.provided += 1; }
+  }
+  for (const x of pool) x.row.buildingId = x.row.buildingId || perBuilding[0]?.id || null;
+  for (const r of rows) { r.buildingId = r.buildingId || perBuilding[0]?.id || null; delete r._fr; }
+
+  // Paint the field on the grid, then route to every door and crossover the field does not already serve.
+  const baseKinds = g.a.slice();
+  for (const a of geo.aisles) paint(g, a.polygon, AISLE, [FREE, BLOCK, RESERVED]);
+  for (const r of rows) for (const ba of r.bayAreas) paint(g, ba.polygon, BAY, [FREE, BLOCK, RESERVED]);
+  const passable = (v) => v === FREE || v === RESERVED || v === AISLE;
   const rad = Math.max(1, Math.ceil((aisleW / 2) / g.cell - 0.5));
-  const blocked = erode(g, rad, (v) => v === FREE || v === RESERVED);
-  const blockedNarrow = erode(g, Math.max(1, Math.ceil((4000 / 2) / g.cell - 0.5)), (v) => v === FREE || v === RESERVED);
+  const blocked = erode(g, rad, passable);
+  const blockedNarrow = erode(g, Math.max(1, Math.ceil((4000 / 2) / g.cell - 0.5)), passable);
   const aisleCells = new Set();
   const segs = [];
   const unreachable = [];
-  const usable = (b, i, j) => !b[j * g.W + i];
-  const entryCell = (x) => {
-    const e = nearestFree(g, blocked, ...Object.values(cellOf(g, x.s, 0)).slice(0, 2).concat([]), 40);
-    return e;
-  };
-  void entryCell;
+  const routed = [];
+  for (let j = 0; j < g.H; j++) for (let i = 0; i < g.W; i++) if (g.a[j * g.W + i] === AISLE) aisleCells.add(j * g.W + i);
+  // Routes start from the field's centre lines only (a few hundred cells, not every paved cell).
+  for (const r of fieldRects) {
+    const wide = r.s1 - r.s0 > r.t1 - r.t0;
+    const n = Math.ceil((wide ? r.s1 - r.s0 : r.t1 - r.t0) / g.cell);
+    for (let k = 0; k <= n; k++) {
+      const cc = wide ? cellOf(g, r.s0 + k * g.cell, (r.t0 + r.t1) / 2) : cellOf(g, (r.s0 + r.s1) / 2, r.t0 + k * g.cell);
+      if (cc.i >= 0 && cc.j >= 0 && cc.i < g.W && cc.j < g.H) routed.push(cc.j * g.W + cc.i);
+    }
+  }
   const startCells = crossovers.map((x) => {
     const cc = cellOf(g, x.s, aisleW / 2 + 200);
     return nearestFree(g, blocked, cc.i, cc.j, 40) || nearestFree(g, blockedNarrow, cc.i, cc.j, 40);
   });
-  const routed = [];
   const costAt = (i, j) => (aisleCells.has(j * g.W + i) ? -0.7 : at(g, i, j) === RESERVED ? 0.2 : 0);
-  const order = [...targets].sort((p, q) => {
-    const a = toFrame(f, p.point); const b = toFrame(f, q.point);
-    return a.t - b.t;
-  });
   const addPath = (path, kind) => {
     for (const cc of path) aisleCells.add(cc.j * g.W + cc.i);
     for (const sgm of segmentsOf(g, path)) segs.push({ ...sgm, kind });
   };
-  const firstStart = startCells[0];
-  if (firstStart) {
+  const nearField = (p, d) => fieldRects.some((r) => p.s >= r.s0 - d && p.s <= r.s1 + d && p.t >= r.t0 - d && p.t <= r.t1 + d);
+  const fromCell = (k) => ({ i: k % g.W, j: Math.floor(k / g.W) });
+  const order = [...targets].sort((p, q) => toFrame(f, p.point).t - toFrame(f, q.point).t);
+  const firstStart = startCells[spineAtCrossover ? 1 : 0] || startCells[0];
+  if (!routed.length && startCells[0]) routed.push(startCells[0].j * g.W + startCells[0].i);
+  if (routed.length || firstStart) {
     for (const tg of order) {
       const tf = toFrame(f, tg.point);
+      if (field && tg.type !== 'fuel-canopy' && nearField(tf, 3500)) { tg.cell = null; continue; } // the field already passes the door
       const tc = cellOf(g, tf.s, tf.t);
       const goal = nearestFree(g, blocked, tc.i, tc.j, 40) || nearestFree(g, blockedNarrow, tc.i, tc.j, 40);
       if (!goal) { unreachable.push(tg.buildingId); continue; }
-      const srcCells = routed.length ? routed.map((k) => ({ i: k % g.W, j: Math.floor(k / g.W) })) : [firstStart];
+      const srcCells = [...new Set(routed)].map(fromCell).map((q) => ({ q, d: Math.abs(q.i - goal.i) + Math.abs(q.j - goal.j) })).sort((p, q) => p.d - q.d).slice(0, 16).map((x) => x.q); // the nearest few network cells are the only sensible starts
       const path = route(g, blocked, srcCells, goal, costAt) || route(g, blockedNarrow, srcCells, goal, costAt);
       if (!path) { unreachable.push(tg.buildingId); continue; }
       addPath(path, tg.type === 'fuel-canopy' ? 'forecourt' : 'aisle');
       for (const cc of path) routed.push(cc.j * g.W + cc.i);
       tg.cell = goal;
     }
-    // Each further crossover joins the network (or the first target when nothing is routed yet).
-    for (let k = 1; k < startCells.length; k++) {
+    // Each crossover the spine does not sit on joins the network, with an entry run from the boundary to its first cell.
+    for (let k = 0; k < startCells.length; k++) {
       const sc = startCells[k];
-      if (!sc) continue;
-      const srcCells = [...new Set(routed)].map((q) => ({ i: q % g.W, j: Math.floor(q / g.W) }));
-      const path = srcCells.length ? route(g, blocked, [sc], srcCells[0], null) : null;
-      // route from this start to the nearest routed cell: run a multi-target search by trying the closest candidates
+      if (!sc || (k === 0 && spineAtCrossover)) continue;
+      const net = [...new Set(routed)].map(fromCell);
       let best = null;
-      const cands = srcCells.map((q) => ({ q, d: Math.abs(q.i - sc.i) + Math.abs(q.j - sc.j) })).sort((p, q) => p.d - q.d).slice(0, 6);
+      let cands = net.map((q) => ({ q, d: Math.abs(q.i - sc.i) + Math.abs(q.j - sc.j) })).sort((p, q) => p.d - q.d).slice(0, 6);
+      if (k === 0 && field) { // the main crossover runs to the mouth of the spine first
+        const mc = cellOf(g, (field.spine.s0 + field.spine.s1) / 2, field.spine.t0 + 1500);
+        const goal = nearestFree(g, blocked, mc.i, mc.j, 12) || nearestFree(g, blockedNarrow, mc.i, mc.j, 12);
+        if (goal) cands = [{ q: goal, d: Math.abs(goal.i - sc.i) + Math.abs(goal.j - sc.j) }, ...cands];
+      }
       for (const cd of cands) {
+        if (cd.q.i === sc.i && cd.q.j === sc.j) { best = [sc]; break; }
         const pth = route(g, blocked, [sc], cd.q, costAt) || route(g, blockedNarrow, [sc], cd.q, costAt);
         if (pth && (!best || pth.length < best.length)) best = pth;
+        if (best && k === 0 && field) break; // the spine mouth is the one place the main crossover has to reach
       }
-      void path;
-      if (best) { addPath(best, 'aisle'); for (const cc of best) routed.push(cc.j * g.W + cc.i); }
-      else unreachable.push(`crossover:${k}`);
-    }
-    // Entry run from the boundary to the first path cell.
-    for (const [k, sc] of startCells.entries()) {
-      if (!sc) continue;
+      if (best) { addPath(best, 'aisle'); for (const cc of best) routed.push(cc.j * g.W + cc.i); } else if (net.length) unreachable.push(`crossover:${k}`);
       const cs = centreOf(g, sc.i, sc.j);
       segs.push({ a: { s: crossovers[k].s, t: 0 }, b: { s: cs.s, t: cs.t }, dir: 'v', kind: 'entry' });
       if (Math.abs(cs.s - crossovers[k].s) > 1) segs.push({ a: { s: crossovers[k].s, t: cs.t }, b: { s: cs.s, t: cs.t }, dir: 'h', kind: 'entry' });
-      aisleCells.add(sc.j * g.W + sc.i);
     }
   }
-  void usable;
-
-  // Paint aisle strips so bays keep clear of them.
   const strip = (sg, w0) => {
     const w = sg.w || w0;
     const h = w / 2;
@@ -463,203 +548,14 @@ export function generateSiteWorks(project, opts = {}) {
     const t0 = Math.min(sg.a.t, sg.b.t) - cap; const t1 = Math.max(sg.a.t, sg.b.t) + cap;
     return { s0: sg.a.s - h, s1: sg.a.s + h, t0, t1 };
   };
-  const baseKinds = g.a.slice();
-  for (const sg of segs) { const r = strip(sg, aisleW); paintRect(g, r.s0, r.s1, r.t0, r.t1, AISLE, [FREE, BLOCK, RESERVED]); }
-  // The carved entry corridor stays landscape where the aisle does not use it.
-  for (const x of xs) {
-    const a = cellOf(g, x.s - xoverW / 2 - 500, g.t0); const b = cellOf(g, x.s + xoverW / 2 + 500, frontLand + 500);
-    for (let j = Math.max(0, a.j); j <= Math.min(g.H - 1, b.j); j++) for (let i = Math.max(0, a.i); i <= Math.min(g.W - 1, b.i); i++) if (at(g, i, j) === FREE && centreOf(g, i, j).t < frontLand + 300) setAt(g, i, j, BLOCK);
-  }
+  const extraSegs = [];
 
-  // Bays -------------------------------------------------------------------------------------------------------------------------------
-  const need = (b) => Math.ceil(bayDemand(b).raw - 1e-9);
-  const perBuilding = src.bs.map((b) => ({ id: b.id, required: need(b), provided: 0 }));
-  const required = perBuilding.reduce((s, p) => s + p.required, 0);
-  const accReq = required >= 2 ? accessibleRequired(required, c.buildingClass || 'class_8') : 0;
-  const slotsWanted = required + Math.floor(accReq / 2) + (accReq % 2);
-  const mainPt = mainT ? toFrame(f, mainT.door) : { s: (sLo + sHi) / 2, t: 0 };
-  const placeBays = (limit, extraSegs) => {
-    const rows = [];
-    let total = 0;
-    const occ = g.a.slice();
-    const free = (v) => v === FREE || v === BLOCK + 99;
-    const okAt = (s0, s1, t0, t1) => {
-      const a = cellOf(g, s0 + 1, t0 + 1); const b = cellOf(g, s1 - 1, t1 - 1);
-      for (let j = a.j; j <= b.j; j++) for (let i = a.i; i <= b.i; i++) { const v = i < 0 || j < 0 || i >= g.W || j >= g.H ? SOLID : occ[j * g.W + i]; if (!free(v)) return false; }
-      return true;
-    };
-    const mark = (s0, s1, t0, t1) => {
-      const a = cellOf(g, s0 + 1, t0 + 1); const b = cellOf(g, s1 - 1, t1 - 1);
-      for (let j = a.j; j <= b.j; j++) for (let i = a.i; i <= b.i; i++) if (i >= 0 && j >= 0 && i < g.W && j < g.H) occ[j * g.W + i] = BAY;
-    };
-    const all = [...segs, ...extraSegs];
-    const ranked = all.map((sg) => ({ sg, d: Math.hypot((sg.a.s + sg.b.s) / 2 - mainPt.s, (sg.a.t + sg.b.t) / 2 - mainPt.t) })).sort((p, q) => p.d - q.d);
-    for (const { sg } of ranked) {
-      for (const side of [-1, 1]) {
-        if (total >= limit) break;
-        const slots = [];
-        if (sg.dir === 'h') {
-          const lo = Math.min(sg.a.s, sg.b.s); const hi = Math.max(sg.a.s, sg.b.s);
-          const tNear = sg.a.t + side * (sg.w || aisleW) / 2; const tFar = tNear + side * bayL;
-          const tA = Math.min(tNear, tFar); const tB = Math.max(tNear, tFar);
-          const ordered = [];
-          for (let s = lo; s + bayW <= hi + (sg.w || aisleW) / 2 + 1; s += bayW) ordered.push(s);
-          ordered.sort((p, q) => Math.abs(p + bayW / 2 - mainPt.s) - Math.abs(q + bayW / 2 - mainPt.s));
-          for (const s of ordered) {
-            if (total + slots.length >= limit) break;
-            if (!okAt(s, s + bayW, tA, tB)) continue;
-            mark(s, s + bayW, tA, tB);
-            slots.push({ s, poly: rectWorld(f, s, s + bayW, tA, tB), centre: toWorldF(f, s + bayW / 2, (tA + tB) / 2), sc: s + bayW / 2, tc: (tA + tB) / 2, dir: 'h', side });
-          }
-        } else {
-          const lo = Math.min(sg.a.t, sg.b.t); const hi = Math.max(sg.a.t, sg.b.t);
-          const sNear = sg.a.s + side * (sg.w || aisleW) / 2; const sFar = sNear + side * bayL;
-          const sA = Math.min(sNear, sFar); const sB = Math.max(sNear, sFar);
-          const ordered = [];
-          for (let t = lo; t + bayW <= hi + (sg.w || aisleW) / 2 + 1; t += bayW) ordered.push(t);
-          ordered.sort((p, q) => Math.abs(p + bayW / 2 - mainPt.t) - Math.abs(q + bayW / 2 - mainPt.t));
-          for (const t of ordered) {
-            if (total + slots.length >= limit) break;
-            if (!okAt(sA, sB, t, t + bayW)) continue;
-            mark(sA, sB, t, t + bayW);
-            slots.push({ t, poly: rectWorld(f, sA, sB, t, t + bayW), centre: toWorldF(f, (sA + sB) / 2, t + bayW / 2), sc: (sA + sB) / 2, tc: t + bayW / 2, dir: 'v', side });
-          }
-        }
-        if (slots.length) {
-          slots.sort((p, q) => (sg.dir === 'h' ? p.s - q.s : p.t - q.t));
-          total += slots.length;
-          rows.push({ sg, slots });
-        }
-      }
-    }
-    return { rows, total };
-  };
-
-  // Ribs: extra aisles branching off the spine when the spine alone cannot hold the bays.
-  let extraSegs = [];
-  let result = placeBays(slotsWanted, extraSegs);
-  const ribs = [];
-  for (let guard = 0; guard < 14 && result.total < slotsWanted; guard++) {
-    let best = null;
-    const base = [...segs, ...extraSegs];
-    for (const sg of base) {
-      const along = sg.dir === 'h' ? [Math.min(sg.a.s, sg.b.s), Math.max(sg.a.s, sg.b.s)] : [Math.min(sg.a.t, sg.b.t), Math.max(sg.a.t, sg.b.t)];
-      for (let p = along[0]; p <= along[1] + 1; p += 1500) {
-        for (const side of [-1, 1]) {
-          const pos = sg.dir === 'h' ? { s: p, t: sg.a.t } : { s: sg.a.s, t: p };
-          if (ribs.some((rb) => rb.dir === sg.dir && Math.abs(rb.at - p) < 2 * bayW + 1 && rb.side === side && Math.abs((rb.base) - (sg.dir === 'h' ? sg.a.t : sg.a.s)) < 1)) continue;
-          // Run outward from the spine edge while the rib aisle is clear; each side counts the length where its bay row is clear too.
-          let run = 0; let extA = 0; let extB = 0; let stA = 0; let stB = 0; let lastA = 0; let lastB = 0;
-          const edge = (sg.dir === 'h' ? sg.a.t : sg.a.s) + side * ((sg.w || aisleW) / 2);
-          const hw = carW / 2;
-          for (let L = 1500; L <= 60000; L += 1500) {
-            const lo = edge + (side > 0 ? L - 1500 : -L); const hi = edge + (side > 0 ? L : -L + 1500);
-            const strip1 = sg.dir === 'h' ? [pos.s - hw, pos.s + hw, lo, hi] : [lo, hi, pos.t - hw, pos.t + hw];
-            if (!rectIs(g, ...strip1, (v) => v === FREE || v === RESERVED)) break;
-            run = L;
-            const sideStrip = (k) => (sg.dir === 'h' ? [pos.s + k * hw, pos.s + k * (hw + bayL), lo, hi] : [lo, hi, pos.t + k * hw, pos.t + k * (hw + bayL)]);
-            const sideRect = (k) => { const r = sideStrip(k); return k > 0 ? r : (sg.dir === 'h' ? [r[1], r[0], r[2], r[3]] : [r[0], r[1], r[3], r[2]]); };
-            const okA = rectIs(g, ...sideRect(1), (v) => v === FREE);
-            const okB = rectIs(g, ...sideRect(-1), (v) => v === FREE);
-            if (okA && stA < 2) { stA = 1; extA += 1500; lastA = L; } else if (stA === 1) stA = 2;
-            if (okB && stB < 2) { stB = 1; extB += 1500; lastB = L; } else if (stB === 1) stB = 2;
-          }
-          const gain = Math.floor(extA / bayW) + Math.floor(extB / bayW);
-          if (gain < 2) continue;
-          run = Math.max(lastA, lastB);
-          const near = Math.hypot(pos.s - mainPt.s, pos.t - mainPt.t);
-          const score = gain - near / 8000;
-          if (!best || score > best.score) best = { score, sg, side, p, pos, run, edge };
-        }
-      }
-    }
-    if (!best) break;
-    const { sg, side, pos, run } = best;
-    const trim = Math.max(0, run - (run % 1500));
-    const far = best.edge + side * trim;
-    const rib = sg.dir === 'h'
-      ? { a: { s: pos.s, t: sg.a.t }, b: { s: pos.s, t: far }, dir: 'v', kind: 'rib', w: carW }
-      : { a: { s: sg.a.s, t: pos.t }, b: { s: far, t: pos.t }, dir: 'h', kind: 'rib', w: carW };
-    ribs.push({ dir: sg.dir, at: best.p, side, base: sg.dir === 'h' ? sg.a.t : sg.a.s });
-    extraSegs = [...extraSegs, rib];
-    const r = strip(rib, aisleW);
-    paintRect(g, r.s0, r.s1, r.t0, r.t1, AISLE, [FREE, RESERVED]);
-    result = placeBays(slotsWanted, extraSegs);
-  }
-  // Ribs that carry no bays are dropped again so the lot is not paved for nothing.
-  const usedSegs = new Set(result.rows.map((r) => r.sg));
-  extraSegs = extraSegs.filter((s) => usedSegs.has(s));
-
-  // Rows, accessible bays and allocation -----------------------------------------------------------------------------------------------
-  const rows = [];
-  let provided = 0;
-  result.rows.forEach((r, k) => {
-    const sg = r.sg;
-    const slots = r.slots.map((sl, i) => ({ index: i, kind: 'bay', poly: sl.poly, centre: sl.centre, _s: sl.sc, _t: sl.tc }));
-    const o = sg.dir === 'h' ? toWorldF(f, r.slots[0].s, r.slots[0].side > 0 ? sg.a.t + (sg.w || aisleW) / 2 : sg.a.t - (sg.w || aisleW) / 2) : toWorldF(f, r.slots[0].side > 0 ? sg.a.s + (sg.w || aisleW) / 2 : sg.a.s - (sg.w || aisleW) / 2, r.slots[0].t);
-    const u = sg.dir === 'h' ? { x: f.u.x, y: f.u.y } : { x: f.n.x, y: f.n.y };
-    const side = r.slots[0].side;
-    const v = sg.dir === 'h' ? { x: f.n.x * side, y: f.n.y * side } : { x: f.u.x * side, y: f.u.y * side };
-    // Contiguous runs of bays become one paving rectangle each.
-    const runs = [];
-    let cur = null;
-    for (const sl of r.slots) {
-      const key = sg.dir === 'h' ? sl.s : sl.t;
-      if (cur && Math.abs(key - cur.last - bayW) < 5) { cur.slots.push(sl); cur.last = key; } else { cur = { slots: [sl], last: key }; runs.push(cur); }
-    }
-    const bayAreas = runs.map((rn, q) => {
-      const pts = rn.slots.flatMap((sl) => sl.poly.map((pt) => toFrame(f, pt)));
-      return { id: `sw:bays:${k}:${q}`, polygon: rectWorld(f, Math.min(...pts.map((z) => z.s)), Math.max(...pts.map((z) => z.s)), Math.min(...pts.map((z) => z.t)), Math.max(...pts.map((z) => z.t))) };
-    });
-    rows.push({ rowId: `sw:bays:${k}`, buildingId: null, bayAreas, frame: { o, u, v, f: { x: -v.x, y: -v.y } }, length: slots.length * bayW, x0: 0, depth: 0, offsetMm: 0, slots, _sg: sg });
-    provided += slots.length;
-  });
-  // Accessible groups [bay][zone][bay] nearest the main entry.
-  let accProvided = 0;
-  if (accReq > 0) {
-    const dist = (sl) => Math.hypot(sl._s - mainPt.s, sl._t - mainPt.t);
-    const groups = [];
-    for (const row of rows) for (let i = 0; i + 2 < row.slots.length; i++) groups.push({ row, i, d: dist(row.slots[i + 1]) });
-    groups.sort((p, q) => p.d - q.d);
-    const taken = new Set();
-    for (const gr of groups) {
-      if (accProvided >= accReq) break;
-      const ids = [0, 1, 2].map((k) => `${gr.row.rowId}:${gr.i + k}`);
-      if (ids.some((x) => taken.has(x))) continue;
-      ids.forEach((x) => taken.add(x));
-      gr.row.slots[gr.i].kind = 'accessible'; gr.row.slots[gr.i + 1].kind = 'zone'; gr.row.slots[gr.i + 2].kind = 'accessible';
-      accProvided += 2;
-    }
-    if (accProvided < accReq) {
-      for (const row of rows) for (let i = 0; i + 1 < row.slots.length && accProvided < accReq; i++) {
-        const a = `${row.rowId}:${i}`; const b = `${row.rowId}:${i + 1}`;
-        if (taken.has(a) || taken.has(b)) continue;
-        taken.add(a); taken.add(b);
-        row.slots[i].kind = 'accessible'; row.slots[i + 1].kind = 'zone'; accProvided += 1;
-      }
-    }
-  }
-  const zones = rows.reduce((s, r) => s + r.slots.filter((x) => x.kind === 'zone').length, 0);
-  const providedBays = provided - zones;
-  // Allocate bays to buildings nearest-first up to each need, the rest to the nearest.
-  const allSlots = rows.flatMap((r) => r.slots.map((sl) => ({ sl, row: r }))).filter((x) => x.sl.kind !== 'zone');
-  const pool = [...allSlots];
-  const doorOf = new Map(targets.filter((t) => t.type !== 'fuel-canopy').map((t) => [t.buildingId, toFrame(f, t.door)]));
-  for (const pb of perBuilding) {
-    const d = doorOf.get(pb.id);
-    if (!d) continue;
-    pool.sort((p, q) => Math.hypot(p.sl._s - d.s, p.sl._t - d.t) - Math.hypot(q.sl._s - d.s, q.sl._t - d.t));
-    for (let k = 0; k < pb.required && pool.length; k++) { const x = pool.shift(); x.row.buildingId = x.row.buildingId || pb.id; pb.provided += 1; }
-  }
-  if (perBuilding.length) for (const x of pool) { perBuilding[0].provided += 0; x.row.buildingId = x.row.buildingId || perBuilding[0].id; }
-  for (const r of rows) { r.buildingId = r.buildingId || perBuilding[0]?.id || null; delete r._sg; for (const sl of r.slots) { delete sl._s; delete sl._t; } }
-
-  // Disjoint paving rectangles for the aisles: the aisle cells (not the aprons, forecourts or existing rows) merged into runs.
+  // Disjoint paving rectangles for the routed links (the grid cells of the connectors merged into runs), cut back where the field already paves.
   const mask = new Uint8Array(g.W * g.H);
-  for (const sg of [...segs, ...extraSegs]) { const r = strip(sg, aisleW); const a = cellOf(g, r.s0, r.t0); const b = cellOf(g, r.s1, r.t1);
+  for (const sg of segs) { const r = strip(sg, aisleW); const a = cellOf(g, r.s0, r.t0); const b = cellOf(g, r.s1, r.t1);
     for (let j = Math.max(0, a.j); j <= Math.min(g.H - 1, b.j); j++) for (let i = Math.max(0, a.i); i <= Math.min(g.W - 1, b.i); i++) {
       const cc = centreOf(g, i, j);
-      if (cc.s >= r.s0 && cc.s <= r.s1 && cc.t >= r.t0 && cc.t <= r.t1 && baseKinds[j * g.W + i] !== RESERVED && (baseKinds[j * g.W + i] !== SOLID)) mask[j * g.W + i] = 1;
+      if (cc.s >= r.s0 && cc.s <= r.s1 && cc.t >= r.t0 && cc.t <= r.t1 && baseKinds[j * g.W + i] !== RESERVED && baseKinds[j * g.W + i] !== SOLID) mask[j * g.W + i] = 1;
     } }
   const pavedAisles = [];
   { const open = new Map();
@@ -673,14 +569,38 @@ export function generateSiteWorks(project, opts = {}) {
     }
     for (const o of open.values()) pavedAisles.push(o);
   }
-  const pavedPolys = pavedAisles.map((o, k) => ({ id: `sw:paved:${k}`, polygon: rectWorld(f, g.s0 + o.i0 * g.cell, g.s0 + (o.i1 + 1) * g.cell, g.t0 + o.j0 * g.cell, g.t0 + (o.j1 + 1) * g.cell) }));
+  const fieldPolys = [...geo.aisles.map((a) => a.polygon), ...rows.map((r) => r.bayAreas[0].polygon)]; // connectors are cut back where the field already paves or holds bays
+  const cutField = (poly) => {
+    let pieces = [poly];
+    for (const fp of fieldPolys) {
+      const next = [];
+      for (const pc of pieces) {
+        const ov = overlapArea(pc, fp);
+        if (ov < 1) next.push(pc); else next.push(...holeFree(boolean([pc], [fp], 'diff')).filter((r) => polyArea(r) > 2e6));
+      }
+      pieces = next;
+    }
+    return pieces;
+  };
+  const bayPolys = rows.flatMap((r) => r.slots.map((sl) => sl.poly));
+  const pavedPolys = [...geo.paved];
+  let pk = 0;
+  for (const o of pavedAisles) {
+    const rect = rectWorld(f, g.s0 + o.i0 * g.cell, g.s0 + (o.i1 + 1) * g.cell, g.t0 + o.j0 * g.cell, g.t0 + (o.j1 + 1) * g.cell);
+    for (const pc of cutField(rect)) {
+      if (bayPolys.some((bp) => overlapArea(pc, bp) > 1e5)) continue; // a connector never runs over a bay
+      pavedPolys.push({ id: `sw:paved:r${pk++}`, polygon: pc });
+    }
+  }
 
   // Aisle polygons ---------------------------------------------------------------------------------------------------------------------
-  const finalSegs = [...segs.filter((s) => s.kind !== 'entry'), ...segs.filter((s) => s.kind === 'entry'), ...extraSegs];
-  const aisles = finalSegs.map((sg, k) => {
+  const finalSegs = [...segs.filter((s) => s.kind !== 'entry'), ...segs.filter((s) => s.kind === 'entry')];
+  const routedAisles = finalSegs.map((sg, k) => {
     const r = strip(sg, aisleW);
-    return { id: `sw:aisle:${k}`, polygon: rectWorld(f, r.s0, r.s1, r.t0, r.t1), centre: [toWorldF(f, sg.a.s, sg.a.t), toWorldF(f, sg.b.s, sg.b.t)], widthMm: sg.w || aisleW, kind: sg.kind === 'forecourt' ? 'forecourt' : 'aisle' };
+    return { id: `sw:aisle:r${k}`, polygon: rectWorld(f, r.s0, r.s1, r.t0, r.t1), centre: [toWorldF(f, sg.a.s, sg.a.t), toWorldF(f, sg.b.s, sg.b.t)], widthMm: sg.w || aisleW, kind: sg.kind === 'forecourt' ? 'forecourt' : 'aisle' };
   });
+  const aisles = [...geo.aisles, ...routedAisles];
+  const carports = c.parking?.covered ? carportsOf(rows) : [];
 
   // Forecourts, aprons, footpaths, landscape --------------------------------------------------------------------------------------------
   const forecourts = [];
@@ -729,7 +649,7 @@ export function generateSiteWorks(project, opts = {}) {
   // Reachability of every building (door point within 4 m of an aisle or forecourt) ---------------------------------------------------
   const nearAisle = (p) => {
     const q = toFrame(f, p);
-    return finalSegs.some((sg) => {
+    return nearField(q, 4000) || finalSegs.some((sg) => {
       const r = strip({ ...sg, w: aisleW + 8000 }, 0);
       return q.s >= r.s0 && q.s <= r.s1 && q.t >= r.t0 && q.t <= r.t1;
     }) || forecourts.some((fc) => G.pointInPolygon(p, fc.polygon)) || aprons.some((ap) => G.pointInPolygon(p, ap.polygon));
@@ -743,6 +663,8 @@ export function generateSiteWorks(project, opts = {}) {
     aisleMm: aisleW,
     crossovers: crossovers.map(({ s, ...x }) => x),
     aisles,
+    carports,
+    field: field ? { spineS: Math.round((field.spine.s0 + field.spine.s1) / 2), cols: field.cols, count: field.count, aisleMm: carW, bayW, bayL } : null,
     pavedAisles: pavedPolys,
     forecourts,
     aprons,
@@ -807,7 +729,7 @@ export function siteKey(project) {
     (c.buildings || []).map((b) => [b.id, b.type, r(b.place?.x), r(b.place?.y), Math.round((Number(b.place?.rotationDeg) || 0) * 10), b.params]),
     (c.rows || []).map((rw) => [rw.id, r(rw.x), r(rw.y), r(rw.rotationDeg), rw.count]),
     c.estate?.sig || null, (c.parking?.extra || []).length,
-    c.parking?.bayW, c.parking?.bayL, c.parking?.aisleMm, c.parking?.enabled, c.buildingClass,
+    c.parking?.bayW, c.parking?.bayL, c.parking?.aisleMm, c.parking?.enabled, c.parking?.covered, c.buildingClass,
     c.accessEdit ? [c.accessEdit.in?.offsetMm, c.accessEdit.out?.offsetMm, c.accessEdit.widthMm] : null,
   ]);
 }
