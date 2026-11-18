@@ -257,7 +257,13 @@ export function sectionModel(t, plane, levels = null) {
   for (const f of [...new Map(floors.filter((x) => x.z > 1).map((x) => [x.z, x])).values()]) tags.push({ z: f.z, text: `FFL ${String(f.name).toUpperCase()} ${rl(f.z)}` });
   tags.push({ z: eave, text: `EAVE ${rl(eave)}` });
   if (t.parapetMm > 0) tags.push({ z: eave + t.parapetMm, text: `TOP OF PARAPET ${rl(eave + t.parapetMm)}` });
-  else if (ridgeZ > eave + 80) tags.push({ z: ridgeZ, text: `${t.roof.type === 'gable' ? 'RIDGE' : 'HIGH EDGE OF ROOF'} ${rl(ridgeZ)}` });
+  else if (ridgeZ > eave + 80) {
+    // The ridge is the highest point of the roof; a section that does not run along it shows the roof at the cut only.
+    let trueRise = 0;
+    for (let i = 0; i <= 12; i++) for (let j = 0; j <= 12; j++) trueRise = Math.max(trueRise, roofRiseAt(t.roof, t.L, t.D, (t.L * i) / 12, (t.D * j) / 12));
+    const atCut = ridgeZ < t.wallTop + trueRise - 80;
+    tags.push({ z: ridgeZ, text: `${atCut ? 'ROOF AT CUT' : t.roof.type === 'gable' ? 'RIDGE' : 'HIGH EDGE OF ROOF'} ${rl(ridgeZ)}` });
+  }
   const roomsCut = rooms.flatMap((r) => polyCut(r.poly, axis, at).map(([a, b]) => ({ name: r.name, z: r.z, s0: a, s1: b })));
   if (t.kind === 'row') roomsCut.push({ name: 'UNIT', z: 0, s0: sMinW, s1: sMaxW });
   const extW = ext.slice().sort((a, b) => a.s0 - b.s0);

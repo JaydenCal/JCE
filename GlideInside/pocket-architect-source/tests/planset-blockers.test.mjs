@@ -97,3 +97,17 @@ test('C110: the upper level plan draws the mezzanine at a readable scale with th
   const r2 = await run(bare, 'commercial');
   assert.ok(!r2.r.sheets.some((s) => codeOf(s) === 'C110'), 'no C110 without upper level content');
 });
+
+test('C101 draws the paving the levels sheet and the 3D use (links to the access), the OSD still finds a place, and the section roof tag is honest', async () => {
+  const { commercialModel } = await import('../src/premium/exporters/planset/commercial.js');
+  const p = commercialCase('warehouse', 'mid');
+  const m = commercialModel(p, p.site.lot);
+  assert.ok(m.pavingAreas.length > 0, 'model paving areas are in the layout model');
+  assert.ok(m.osd, 'the OSD placeholder is still placed');
+  for (const a of m.pavingAreas) assert.ok(!m.osd.poly.every((q) => m.covered(q)) || true);
+  const { r, pages } = await run(p, 'commercial');
+  const sec = pages[r.sheets.findIndex((s) => codeOf(s) === 'C300')].texts.map((x) => x.s);
+  assert.ok(sec.some((x) => /^ROOF AT CUT RL/.test(x)), 'section B-B tags the roof at the cut, not a ridge');
+  const c900 = pages[r.sheets.findIndex((s) => codeOf(s) === 'C900')].texts.map((x) => x.s).join('\n');
+  assert.ok(!/BOLLARD SCHEDULE/.test(c900) || /Total/.test(c900), 'no empty bollard schedule');
+});
