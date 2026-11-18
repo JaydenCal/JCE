@@ -220,7 +220,7 @@ export async function loadAerialForLot({ lot, frame, bbox, marginM = 30, wideM =
   const choice = chooseAerialSource({ lon: centre.lon, lat: centre.lat, token, forceMapbox });
   // Large sites get a proportionally wider sharp aerial around the lot (owner 16/11/2026), up to 300 m each side.
   const lotSpan = Math.max(bbox.maxE - bbox.minE, bbox.maxN - bbox.minN);
-  marginM = Math.max(marginM, Math.min(300, lotSpan * 0.4));
+  marginM = Math.max(marginM, 120, Math.min(300, lotSpan * 0.4)); // at least 120 m each side so a small lot still sees its neighbours in the photo
   const inner = { minE: bbox.minE - marginM, minN: bbox.minN - marginM, maxE: bbox.maxE + marginM, maxN: bbox.maxN + marginM };
   const span = Math.max(inner.maxE - inner.minE, inner.maxN - inner.minN);
   const m = Math.min(700, Math.max(wideM, span * 0.75));

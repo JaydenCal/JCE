@@ -641,77 +641,82 @@ function foliageBlob(r, detail, squash = 1, phase = 0) {
   return g;
 }
 
-// Instanced trees: a trunk and a canopy of four overlapping blobs, one merged geometry. Canopy radius r, height h (metres).
-function addTrees(group, spots, H, stats) {
-  if (!spots.length) return;
-  const trunk = new THREE.CylinderGeometry(0.1, 0.17, 1, 7, 1).toNonIndexed();
-  trunk.translate(0, 0.5, 0);
-  const tc = new Float32Array(trunk.attributes.position.count * 3);
-  for (let i = 0; i < tc.length; i += 3) {
-    tc[i] = 0.43;
-    tc[i + 1] = 0.36;
-    tc[i + 2] = 0.29;
+// Instanced trees in the homepage hero look: a slender pale trunk with a few visible limbs under an open, airy eucalypt crown (loose leaf
+// clumps with gaps, flattened, soft light-to-mid tones). Three seeded crown shapes, each tree picks one by its seed and gets its own
+// size, lean and natural green (some grey-green), so the same site always looks the same. Unlit (no self shading), low poly for phones.
+function seeded(n) { let a = (n >>> 0) + 0x9e3779b9; return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function crownVariant(v) {
+  const rnd = seeded(97 + v * 31);
+  const n = [9, 11, 8][v];
+  const clumps = [];
+  for (let k = 0; k < n; k++) {
+    const a = rnd() * Math.PI * 2;
+    const rad = (v === 2 ? 0.2 + rnd() * 0.3 : 0.1 + rnd() * 0.42);
+    const y = (v === 1 ? 0.62 + rnd() * 0.42 : 0.58 + rnd() * 0.38);
+    clumps.push({ x: Math.cos(a) * rad, y, z: Math.sin(a) * rad, rr: 0.11 + rnd() * 0.07, sq: 0.5 + rnd() * 0.18, tone: 0.9 + (y - 0.58) * 0.45 + (rnd() - 0.5) * 0.1 });
   }
-  trunk.setAttribute('color', new THREE.BufferAttribute(tc, 3));
-  trunk.deleteAttribute('uv');
-  trunk.deleteAttribute('normal');
-  // An open eucalypt style crown (the homepage hero look): a loose scatter of leaf clumps with gaps between them, so the sky, the branches
-  // and the lawn show through, each baked lighter on top and on the sunny side and darker underneath. Unlit, so no tree is muddy.
-  const crown = [
-    [0.0, 0.78, 0.0, 0.2, 1, 1.0], [0.3, 0.64, 0.12, 0.17, 1, 0.94], [-0.3, 0.68, -0.1, 0.18, 1, 0.98], [0.08, 0.96, 0.1, 0.15, 1, 1.12],
-    [-0.14, 0.56, 0.3, 0.15, 1, 0.88], [0.22, 0.82, -0.28, 0.16, 1, 1.04], [-0.38, 0.84, 0.12, 0.14, 1, 1.08], [0.42, 0.78, -0.08, 0.13, 1, 1.0],
-    [0.1, 0.58, -0.38, 0.14, 1, 0.86], [-0.2, 1.02, -0.14, 0.13, 1, 1.16], [0.3, 0.98, 0.24, 0.12, 1, 1.14], [-0.1, 0.72, 0.42, 0.12, 1, 0.92],
-  ];
-  const blobs = crown.map(([x, y, z, rr, detail, tone], k) => {
-    const b = foliageBlob(rr * 1.1, detail, 0.8, k * 1.7);
-    const c = b.attributes.color;
-    for (let i = 0; i < c.count; i++) c.setXYZ(i, c.getX(i) * tone, c.getY(i) * tone, c.getZ(i) * tone);
-    b.translate(x, 0.34 + y * 0.7, z); // crown lifted so the trunk reads clear below it
-    return b;
-  });
-  // a few thin limbs from the top of the trunk out towards the main clumps, so the crown is held up by visible branches
-  const limbs = [];
-  for (const k of [1, 2, 4, 5, 6, 8]) {
-    const [x, y, z] = crown[k];
-    const top = new THREE.Vector3(0, 0.62, 0);
-    const end = new THREE.Vector3(x * 0.8, 0.34 + y * 0.7 - 0.05, z * 0.8);
+  const bark = [];
+  const barkCol = (g, r, gg, b) => { const c = new Float32Array(g.attributes.position.count * 3); for (let i = 0; i < c.length; i += 3) { c[i] = r; c[i + 1] = gg; c[i + 2] = b; } g.setAttribute('color', new THREE.BufferAttribute(c, 3)); g.deleteAttribute('uv'); g.deleteAttribute('normal'); return g; };
+  const trunk = new THREE.CylinderGeometry(0.035, 0.07, 0.72, 5, 1).toNonIndexed();
+  trunk.translate(0, 0.36, 0);
+  bark.push(barkCol(trunk, 0.74, 0.69, 0.62));
+  for (let k = 0; k < Math.min(5, n); k++) {
+    const c = clumps[k];
+    const top = new THREE.Vector3(0, 0.5 + (k % 2) * 0.08, 0);
+    const end = new THREE.Vector3(c.x * 0.85, 0.34 + c.y * 0.62 - 0.04, c.z * 0.85);
     const len = top.distanceTo(end);
-    const limb = new THREE.CylinderGeometry(0.018, 0.04, len, 4, 1).toNonIndexed();
+    const limb = new THREE.CylinderGeometry(0.012, 0.028, len, 3, 1).toNonIndexed();
     limb.translate(0, len / 2, 0);
     limb.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), end.clone().sub(top).normalize()));
     limb.translate(top.x, top.y, top.z);
-    const lc = new Float32Array(limb.attributes.position.count * 3);
-    for (let i = 0; i < lc.length; i += 3) { lc[i] = 0.4; lc[i + 1] = 0.33; lc[i + 2] = 0.26; }
-    limb.setAttribute('color', new THREE.BufferAttribute(lc, 3));
-    limb.deleteAttribute('uv');
-    limb.deleteAttribute('normal');
-    limbs.push(limb);
+    bark.push(barkCol(limb, 0.7, 0.65, 0.58));
   }
-  // a clear trunk to about 0.6 of the tree; the crown sits above (heights are fractions of h)
-  const geo = mergeGeometries([trunk.clone().scale(0.8, 0.7, 0.8), ...limbs, ...blobs], false);
-  if (!geo) return;
-  const m = basic('#ffffff', { vertexColors: true });
-  const mesh = new THREE.InstancedMesh(geo, m, spots.length);
-  const GREENS = ['#5e9448', '#6c9f4c', '#527f40', '#79a455', '#66934a', '#88aa5c'];
+  const leaf = clumps.map((c, k) => {
+    const g = foliageBlob(c.rr * 1.25, 1, c.sq, k * 1.9 + v);
+    const col = g.attributes.color;
+    for (let i = 0; i < col.count; i++) col.setXYZ(i, Math.min(1.25, col.getX(i) * c.tone + 0.12), Math.min(1.25, col.getY(i) * c.tone + 0.12), Math.min(1.25, col.getZ(i) * c.tone + 0.12));
+    g.translate(c.x, 0.34 + c.y * 0.7, c.z);
+    return g;
+  });
+  return { bark: mergeGeometries(bark, false), leaf: mergeGeometries(leaf, false) };
+}
+
+function addTrees(group, spots, H, stats) {
+  if (!spots.length) return;
+  const GREENS = ['#7aa85a', '#86ad63', '#6f9a58', '#8fb06a', '#79a266', '#93ab7c', '#a0b48a', '#7d9f78']; // natural greens, the last few grey-green
   const o = new THREE.Object3D();
   const col = new THREE.Color();
-  spots.forEach((s, i) => {
-    o.position.set(s.x, H(s.x, s.z) - 0.05, s.z);
-    o.scale.set(s.r * 2, s.h, s.r * 2);
-    o.rotation.set(0, (s.seed * 2.399) % 6.28, 0);
-    o.updateMatrix();
-    mesh.setMatrixAt(i, o.matrix);
-    col.set(GREENS[Math.floor(Math.abs(Math.sin(s.seed * 12.9898)) * 1000) % GREENS.length]);
-    mesh.setColorAt(i, col);
-  });
-  mesh.instanceMatrix.needsUpdate = true;
-  mesh.userData = { ground: true, extras: true };
-  mesh.castShadow = true; // long tree shadows across the lawn and the road (the trees themselves stay unlit, with no self shading)
-  mesh.receiveShadow = false;
-  mesh.name = 'trees';
-  group.add(mesh);
+  const barkMat = basic('#ffffff', { vertexColors: true });
+  for (let v = 0; v < 3; v++) {
+    const mine = spots.filter((s) => Math.abs(Math.floor(s.seed)) % 3 === v);
+    if (!mine.length) continue;
+    const { bark, leaf } = crownVariant(v);
+    if (!bark || !leaf) continue;
+    const lm = new THREE.InstancedMesh(leaf, basic('#ffffff', { vertexColors: true }), mine.length);
+    const bm = new THREE.InstancedMesh(bark, barkMat, mine.length);
+    mine.forEach((s, i) => {
+      const rnd = seeded(Math.floor(s.seed * 7) + i);
+      const wob = 0.82 + rnd() * 0.4;
+      o.position.set(s.x, H(s.x, s.z) - 0.05, s.z);
+      o.scale.set(s.r * 2 * wob, s.h * (0.86 + rnd() * 0.3), s.r * 2 * (1.15 - (wob - 0.82)));
+      o.rotation.set((rnd() - 0.5) * 0.06, (s.seed * 2.399) % 6.28, (rnd() - 0.5) * 0.06);
+      o.updateMatrix();
+      lm.setMatrixAt(i, o.matrix);
+      bm.setMatrixAt(i, o.matrix);
+      col.set(GREENS[Math.floor(rnd() * GREENS.length)]);
+      lm.setColorAt(i, col);
+    });
+    lm.instanceMatrix.needsUpdate = true;
+    bm.instanceMatrix.needsUpdate = true;
+    for (const [mesh, name] of [[lm, 'trees'], [bm, 'tree-trunks']]) {
+      mesh.userData = { ground: true, extras: true };
+      mesh.castShadow = true; // long tree shadows across the lawn and the road (the trees themselves stay unlit, with no self shading)
+      mesh.receiveShadow = false;
+      mesh.name = name;
+      group.add(mesh);
+    }
+  }
   stats.trees = spots.length;
-  trunk.dispose();
 }
 
 // Neighbour house as massing: walls, a hip roof with eaves, a lower garage wing, windows, front door and a garage door.

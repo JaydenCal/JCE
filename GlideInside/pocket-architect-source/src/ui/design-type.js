@@ -2,6 +2,7 @@
 // keeping the design's identity and title block details. One undo step. Used by the design summary and the template picker.
 
 import { migrate } from '../model/schema.js';
+import { lotOf, houseCentre, translateHouse, rotateHouse, footprint } from '../model/placement.js';
 import { toast } from './toast.js';
 import { convertToCommercial, commercialUi } from '../commercial/mode.js';
 
@@ -61,9 +62,26 @@ export function buildDesignType(current, typeId, catalogue) {
     createdAt: current.createdAt || fresh.createdAt,
     titleBlock: structuredClone(current.titleBlock || fresh.titleBlock),
     drawing: structuredClone(current.drawing || fresh.drawing),
-    site: { ...fresh.site, northDeg: current.site?.northDeg ?? fresh.site.northDeg, underlay: current.site?.underlay ?? null },
+    // The site belongs to the person, not the building: the lot, address, aerial, neighbours, roads, driveway and underlay all stay.
+    // Only the rainwater tanks come from the new template.
+    site: { ...fresh.site, ...structuredClone(current.site || {}), northDeg: current.site?.northDeg ?? fresh.site.northDeg, underlay: current.site?.underlay ?? null, tanks: fresh.site.tanks },
   };
-  return migrate(next);
+  const out = migrate(next);
+  // With a lot loaded the new building takes over the old one's place and turn: same centre, same alignment to the boundary.
+  if (lotOf(current) && footprint(current) && footprint(out)) {
+    try {
+      const walls = current.levels.flatMap((l) => l.walls || []);
+      let best = null;
+      for (const w of walls) { const len = Math.hypot(w.b.x - w.a.x, w.b.y - w.a.y); if (!best || len > best.len) best = { len, a: Math.atan2(w.b.y - w.a.y, w.b.x - w.a.x) * 180 / Math.PI }; }
+      let deg = best ? ((best.a % 90) + 90) % 90 : 0;
+      if (deg > 45) deg -= 90;
+      const c0 = houseCentre(current);
+      const c1 = houseCentre(out);
+      translateHouse(out, c0.x - c1.x, c0.y - c1.y);
+      if (Math.abs(deg) > 0.05) rotateHouse(out, deg, c0);
+    } catch { /* keep the template's own position */ }
+  }
+  return out;
 }
 
 /** Replace the store's project contents in place as one undoable step. */

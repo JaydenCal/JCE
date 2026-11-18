@@ -139,6 +139,12 @@ export function roofGeometry(b, roof, rinfo, builder = new GeoBuilder()) {
     const f = (u0, u1) => (ridgeY ? fbox(Math.min(u0, u1), eV0, Math.max(u0, u1), eV1, hEave - 170, hEave + 30) : fbox(eV0, Math.min(u0, u1), eV1, Math.max(u0, u1), hEave - 170, hEave + 30));
     f(eU0 - 30, eU0);
     f(eU1, eU1 + 30);
+    // gutters outside the fascia, soffits under the overhang and a ridge cap
+    const g = (u0, u1) => (ridgeY ? fbox(Math.min(u0, u1), eV0, Math.max(u0, u1), eV1, hEave - 170, hEave - 60) : fbox(eV0, Math.min(u0, u1), eV1, Math.max(u0, u1), hEave - 170, hEave - 60));
+    g(eU0 - 110, eU0 - 30);
+    g(eU1 + 30, eU1 + 110);
+    if (o > 120) { f(eU0, U0); f(U1, eU1); }
+    if (ridgeY) fbox(um - 110, eV0, um + 110, eV1, hr - 30, hr + 70); else fbox(eV0, um - 110, eV1, um + 110, hr - 30, hr + 70);
     return builder;
   }
   // skillion: u runs from the high edge (0) to the low edge (U), v along the eave.
@@ -165,6 +171,9 @@ export function roofGeometry(b, roof, rinfo, builder = new GeoBuilder()) {
   const along = Math.abs(dirU.x) > 0.5; // eave runs along y when the fall is horizontal
   if (along) fbox(cLow.x, y0 - o, cLow.x + (dirU.x > 0 ? 30 : -30), y1 + o, hAt(lowU) - 170, hAt(lowU) + 30);
   else fbox(x0 - o, cLow.y, x1 + o, cLow.y + (dirU.y > 0 ? 30 : -30), hAt(lowU) - 170, hAt(lowU) + 30);
+  // gutter outside the low fascia
+  if (along) fbox(cLow.x + (dirU.x > 0 ? 30 : -110), y0 - o, cLow.x + (dirU.x > 0 ? 110 : -30), y1 + o, hAt(lowU) - 170, hAt(lowU) - 60);
+  else fbox(x0 - o, cLow.y + (dirU.y > 0 ? 30 : -110), x1 + o, cLow.y + (dirU.y > 0 ? 110 : -30), hAt(lowU) - 170, hAt(lowU) - 60);
   return builder;
 }
 

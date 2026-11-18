@@ -185,13 +185,13 @@ test('plan set: C104 elevations sheet is present and labelled Concept only', asy
   const texts = [];
   class Rec extends jsPDF { constructor(...a) { super(...a); const t = this.text.bind(this); this.text = (s, ...rest) => (texts.push(Array.isArray(s) ? s.join(' ') : String(s)), t(s, ...rest)); } }
   const r = await exportPlanSet({ project: p, kind: 'commercial', download: false, jsPDF: Rec, fetchSite: null, date: new Date(2026, 10, 15) });
-  assert.equal(r.sheets.at(-1).no.split('-').pop(), 'C104');
+  assert.equal(r.sheets.at(-2).no.split('-').pop(), 'C104');
   const all = texts.join('\n');
   assert.match(all, /ELEVATION/);
   assert.match(all, /Concept only/);
   assert.match(all, /RL/);
   assert.ok(!/[–—]/.test(all));
-  assert.equal(planSetSheets({ project: p, lot: null, kind: 'commercial' }).length, 6);
+  assert.equal(planSetSheets({ project: p, lot: null, kind: 'commercial' }).length, 7);
 });
 
 test('AI: set_unit_options accepts the construction keys', () => {

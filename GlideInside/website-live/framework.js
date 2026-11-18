@@ -107,20 +107,19 @@
       a.setAttribute("href", u.pathname + u.search);
     });
   }
-  // "For the full tool set" tag beside Open full editor: pulses until it is hovered or the editor has been opened once.
+  // "Open full editor" (every embed, with or without the "For the full tool set" tag beside it): with a viewer loaded, the viewer hands its whole
+  // project over and opens the editor itself, so the editor continues that exact design. The tag pulses until hovered or the editor was opened once.
   (function () {
     var KEY = "gi.editorOpened";
     var seen = false;
     try { seen = localStorage.getItem(KEY) === "1"; } catch (e) {}
-    document.querySelectorAll("[data-edit-tag]").forEach(function (tag) {
-      var still = function () { tag.classList.add("is-still"); };
+    document.querySelectorAll(".lh-edit").forEach(function (link) {
+      var tag = link.parentNode && link.parentNode.querySelector("[data-edit-tag]");
+      var still = function () { if (tag) tag.classList.add("is-still"); };
       if (seen) still();
-      var link = tag.parentNode && tag.parentNode.querySelector(".lh-edit");
-      if (!link) return;
-      link.addEventListener("mouseenter", still); link.addEventListener("focus", still); tag.addEventListener("mouseenter", still);
+      link.addEventListener("mouseenter", still); link.addEventListener("focus", still); if (tag) tag.addEventListener("mouseenter", still);
       link.addEventListener("click", function (e) {
         still(); try { localStorage.setItem(KEY, "1"); } catch (er) {}
-        // With a lot loaded in the viewer, the viewer hands its whole state over and opens the editor itself (no empty start).
         if (live.frame && live.ready && !e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
           e.preventDefault();
           try { live.frame.contentWindow.postMessage({ type: "gi:open-editor" }, location.origin); } catch (er2) { location.assign(link.getAttribute("href")); return; }
@@ -319,20 +318,35 @@
     }
     root.addEventListener("change", upd); upd();
   });
-  // builder login cost calculator: [data-login-calc] with [data-calc-range], [data-calc-topups], [data-calc-n], [data-calc-total], [data-calc-line]
+  // builder login cost calculator: [data-login-calc] with [data-calc-range], [data-calc-topups], [data-calc-n], [data-calc-total], [data-calc-line], [data-calc-best]
   document.querySelectorAll("[data-login-calc]").forEach(function (root) {
-    var range = root.querySelector("[data-calc-range]"), tops = root.querySelector("[data-calc-topups]"), nOut = root.querySelector("[data-calc-n]"), total = root.querySelector("[data-calc-total]"), line = root.querySelector("[data-calc-line]");
+    var range = root.querySelector("[data-calc-range]"), tops = root.querySelector("[data-calc-topups]"), nOut = root.querySelector("[data-calc-n]"), total = root.querySelector("[data-calc-total]"), line = root.querySelector("[data-calc-line]"), best = root.querySelector("[data-calc-best]");
     function cost(n) { return n <= 15 ? n * 30 : 15 * 30 + (Math.min(n, 50) - 15) * 25; }
+    // planned monthly plans: price, included client logins, price of each extra login
+    var PLANS = [{ name: "Builder Starter", fee: 149, inc: 10, extra: 25 }, { name: "Builder Pro", fee: 249, inc: 20, extra: 22 }, { name: "Builder Teams", fee: 449, inc: 40, extra: 20 }];
+    function planCost(p, n) { return p.fee + Math.max(0, n - p.inc) * p.extra; }
+    function money(v) { return "A$" + v.toLocaleString("en-AU"); }
     function upd() {
       var n = Math.max(0, Math.min(60, parseInt(range.value, 10) || 0)), t = Math.max(0, Math.min(50, parseInt(tops.value, 10) || 0));
       var billed = Math.min(n, 50), sum = cost(n) + t * 10, parts = [];
       if (nOut) nOut.textContent = n;
       if (billed > 0) { parts.push(billed <= 15 ? billed + " logins at A$30" : "15 logins at A$30 and " + (billed - 15) + " at A$25"); }
       if (t > 0) parts.push(t + (t === 1 ? " top up" : " top ups") + " at A$10");
-      total.textContent = "A$" + sum.toLocaleString("en-AU");
-      var msg = parts.length ? parts.join(", ") + ". A$" + sum.toLocaleString("en-AU") + " in total." : "No client logins, nothing to pay.";
-      if (n > 50) { total.textContent = "A$" + sum.toLocaleString("en-AU") + " for the first 50"; msg = "Above 50 logins in a month the price is custom, so the figure covers the first 50 only. " + msg; }
+      total.textContent = money(sum);
+      var msg = parts.length ? parts.join(", ") + ". " + money(sum) + " in total, pay per login." : "No client logins, nothing to pay.";
+      if (n > 50) { total.textContent = money(sum) + " for the first 50"; msg = "Above 50 logins in a month the price is custom, so the figure covers the first 50 only. " + msg; }
       line.textContent = msg;
+      if (best) {
+        if (n === 0) { best.textContent = "Pay per login costs nothing until a client signs in."; return; }
+        var pick = null;
+        PLANS.forEach(function (p) { var c = planCost(p, n); if (!pick || c < pick.c) pick = { p: p, c: c }; });
+        var payg = n <= 50 ? cost(n) : null;
+        if (payg === null || pick.c < payg) {
+          best.textContent = "Cheapest for " + n + " logins: " + pick.p.name + " at " + money(pick.c + t * 10) + " a month" + (payg === null ? "" : ", against " + money(sum) + " pay per login") + ". Monthly plans are coming soon, contact us to be first.";
+        } else {
+          best.textContent = "Pay per login is the cheapest option at " + n + " logins (" + money(payg + t * 10) + "). The monthly plans start to win from 5 logins a month.";
+        }
+      }
     }
     range.addEventListener("input", upd); tops.addEventListener("input", upd); upd();
   });
@@ -340,7 +354,7 @@
   if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
     document.documentElement.classList.add("js");
     var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { threshold: .12 });
-    document.querySelectorAll(".section-head,.sec-head,.feature,.audience .card,.price-card,.flow,.rules,.steps li,.seq li,.split>.shot,.sheets,.rooms-stage,.tiers,.rate,.trust").forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+    document.querySelectorAll(".section-head,.sec-head,.feature,.audience .card,.price-card,.flow,.rules,.steps li,.seq li,.split>.shot,.sheets,.rooms-stage,.tiers,.rate,.trust,.gx-fig,.gx-card,.gx-cmp,.gx-plans .price-card").forEach(function (el) { if (el.classList.contains("reveal")) return; el.classList.add("reveal"); io.observe(el); });
   }
   // home hero stage: address types in, the render settles, the card rises; then the card UI gently cycles colours and rooms
   var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;

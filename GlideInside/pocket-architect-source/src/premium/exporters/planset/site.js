@@ -7,6 +7,7 @@
 // point in the emptiest corner of the viewport.
 
 import { gradingLinesOf } from '../../../flow/grading-lines.js';
+import { drawOverlayOutlines, overlayLegendItems } from './overlays.js';
 import * as G from '../../../model/geometry.js';
 import { classifyEdges, requiredFor } from '../../../model/placement.js';
 import { boundaryDims, roadReserve, ROAD_DEFAULTS, deriveDriveway, clearances, buildingHull, lotLabelLines, inwardNormalOf } from '../../../site/lotplan.js';
@@ -205,7 +206,7 @@ export function northPoint(doc, cx, cy, deg) {
 }
 
 /** Legend block for the title strip. */
-export function legendBlock({ contours = false, paved = null } = {}) {
+export function legendBlock({ contours = false, paved = null, extra = [] } = {}) {
   const items = [
     ['Lot boundary (DCDB)', (doc, a, b) => { doc.setLineWidth(0.7); doc.setDrawColor(...PEN.ink); doc.line(a, b, a + 12, b); }],
     ['Adjoining lot boundary', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.line(a, b, a + 12, b); }],
@@ -217,6 +218,7 @@ export function legendBlock({ contours = false, paved = null } = {}) {
     ...((paved && paved.length ? paved : [{ material: 'concrete' }]).map((e) => [paved && paved.length ? `${PAVE_MATERIALS[e.material].label} paving, ${Math.round(e.areaM2)} m2` : 'Concrete driveway', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.rect(a, b - 1.4, 12, 2.8, 'S'); hatch(doc, [{ x: a, y: b - 1.4 }, { x: a + 12, y: b - 1.4 }, { x: a + 12, y: b + 1.4 }, { x: a, y: b + 1.4 }], HATCH_KIND[e.material]); }])),
     ...(contours ? [['Contour (minor, major)', (doc, a, b) => { doc.setLineDashPattern([], 0); doc.setLineWidth(0.12); doc.setDrawColor(...PEN.contourMinor); doc.line(a, b - 0.7, a + 5.5, b - 0.7); doc.setLineWidth(0.26); doc.setDrawColor(...PEN.contourMajor); doc.line(a + 6.5, b + 0.7, a + 12, b + 0.7); }]] : []),
     ['Setback encroachment', (doc, a, b) => { doc.setLineWidth(0.3); doc.setDrawColor(...RED); doc.line(a, b, a + 12, b); }],
+    ...extra, // optional site constraint overlays (planset/overlays.js)
   ];
   return {
     title: 'LEGEND',
@@ -277,6 +279,8 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
     if (!n.ring || n.ring.length < 3 || n.isRoad) continue;
     polyLine(doc, n.ring.map(S));
   }
+  drawOverlayOutlines(doc, lot, S, (a, b) => segLine(doc, a, b)); // optional site constraint overlays (switched on in the Site panel)
+  dashOff();
   const ground0 = hasGround(lot);
   const contourLines = ground0 ? prepareContours(lot, S) : [];
   // The contours are stroked last (so they can leave gaps around labels and the house) and moved back in the page stream to here.
@@ -718,10 +722,11 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
     ['Setback check', cl.status === 'ok' ? 'Inside setbacks (indicative)' : cl.status === 'breach' ? 'Outside setbacks (indicative)' : 'Setbacks not loaded'],
   ].filter(Boolean);
   const pavedSum = pavedSummary(project);
-  const blocks = [legendBlock({ contours: ground0, paved: pavedSum.byMaterial })];
+  const blocks = [legendBlock({ contours: ground0, paved: pavedSum.byMaterial, extra: overlayLegendItems(lot) })];
   if (schedule.length) blocks.push(scheduleBlock(schedule));
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines and dimensions are indicative.', 'Driveway and road reserve are typical values.'];
   notes.push(ground0 ? `Levels are indicative only, from the ${lot.state === 'QLD' ? 'Queensland' : 'NSW'} 5 m DEM, not survey. Contours at 1.0 m intervals. A registered survey is required.` : 'No ground levels for this lot.');
+  if (overlayLegendItems(lot).length) notes.push('Site constraint overlays are indicative, from open government mapping. Check with council.');
   if (schedule.length) notes.push('Edges too short to label are tagged E and listed in the boundary schedule.');
   { const gl = gradingLinesOf(project); if (gl.length) notes.push(gl[0], ...gl.slice(1).filter((t) => /steeper|retaining|towards/.test(t)).slice(0, 2)); } // indicative cut and fill, and any grade line over typical guidance
   void clean;

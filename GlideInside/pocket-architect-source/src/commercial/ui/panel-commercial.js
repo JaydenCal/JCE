@@ -18,6 +18,7 @@ import { effectiveClass, zoneClass, ZONE_CLASS_LABEL } from '../zones.js';
 import { rowLength } from '../layout.js';
 import { facts, NCC_CLASSES, PARKING_M2_PER_SPACE } from '../dataset.js';
 import { needsZone, ensureZone, lotKey } from '../zone-lookup.js';
+import { createFinance } from '../../finance/ui.js';
 import { feasibility, AREAS, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT, DATA_DATE, money, band, pct1, summaryRows, costRows, headlineRows, areaStatusLine, INPUT_MAX } from '../feasibility.js';
 
 const getPath = (o, path) => path.split('.').reduce((a, k) => (a == null ? a : a[k]), o);
@@ -210,6 +211,8 @@ export function createCommercialPanel({ store, host, editor }) {
 
 
   // Indicative yield and value: inputs prefilled from the portal and market data, each with its source chip; outputs live with the layout.
+  let fx = null;
+  const fxHost = () => { fx ||= createFinance(store, { mode: 'full' }); return fx.el; };
   function feasibilitySection(c, p) {
     const f = feasibility(c, p.site?.lot);
     const setFz = (label, fn) => edit(label, (cc) => { cc.feasibility ??= { area: null, v: {} }; cc.feasibility.v ??= {}; fn(cc.feasibility); });
@@ -280,7 +283,8 @@ export function createCommercialPanel({ store, host, editor }) {
       h('p', { class: 'cm-hint' }, `${GST_NOTE} ${RENT_NOTE} Developed area ${Math.round(f.devM2).toLocaleString('en-AU')} m² (building footprint plus hardstand), rest of lot ${Math.round(f.restM2).toLocaleString('en-AU')} m².`),
       h('b', { class: 'cm-fz-h' }, 'Cost build up'), ...costs,
       h('b', { class: 'cm-fz-h' }, 'Per unit'), unitTable,
-      h('p', { class: 'cm-hint' }, `Low to high uses the ends of the published ranges: low revenue with high cost, and high revenue with low cost. ${SOURCES_TEXT}`));
+      h('p', { class: 'cm-hint' }, `Low to high uses the ends of the published ranges: low revenue with high cost, and high revenue with low cost. ${SOURCES_TEXT}`),
+      h('b', { class: 'cm-fz-h' }, 'Development feasibility (duty, finance, GST, scenarios)'), fxHost());
   }
 
   // Render ---------------------------------------------------------------------------------------------------------------
