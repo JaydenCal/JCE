@@ -74,7 +74,7 @@
 .ptm .pdftag{position:absolute;left:24px;top:10px;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gold2)}
 .ptm .slot iframe{transition:none}
 .ptm .stagewrap{position:relative}
-.ptm .vcol{position:absolute;right:10px;top:10px;max-height:calc(100% - 20px);z-index:5;display:flex;flex-direction:column;gap:5px;overflow-y:auto;padding:6px;background:rgba(10,10,9,.82);border:1px solid var(--line);scrollbar-width:thin}
+.ptm .vcol{position:static;margin-top:6px;display:flex;flex-direction:row;gap:5px;overflow-x:auto;overflow-y:hidden;padding:6px;background:rgba(10,10,9,.82);border:1px solid var(--line);scrollbar-width:thin}
 .ptm .vcol[hidden]{display:none}
 .ptm .vbtn{flex:none;min-height:32px;padding:0 10px;background:transparent;color:var(--gold2);border:1px solid var(--line);font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;text-align:left;cursor:pointer;white-space:nowrap}
 .ptm .vbtn:hover{border-color:var(--gold)}
