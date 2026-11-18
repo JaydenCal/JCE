@@ -134,8 +134,8 @@ function bestMove(hull, poly) {
   };
   let best = score(G.clamp(0, x0, x1), G.clamp(0, y0, y1));
   let step = Math.min(2500, Math.max(250, Math.max(x1 - x0, y1 - y0) / 22));
-  // A huge lot (a rural 500 m x 1 km block) would need a 80,000 cell grid for each of ~70 turns: cap the grid at about 40 x 40 cells.
-  step = Math.max(step, Math.max(x1 - x0, y1 - y0) / 40);
+  // A huge lot (a rural 500 m x 1 km block) would need a 80,000 cell grid for each of ~70 turns: cap the grid at about 40 x 40 cells (20 x 20 past 100 m).
+  step = Math.max(step, Math.max(x1 - x0, y1 - y0) / (Math.max(x1 - x0, y1 - y0) > 100000 ? 20 : 40));
   for (let y = y0; y <= y1 + 1; y += step) for (let x = x0; x <= x1 + 1; x += step) { const c = score(x, y); if (c.s > best.s) best = c; }
   for (let pass = 0; pass < 4; pass++) {
     step /= 2;

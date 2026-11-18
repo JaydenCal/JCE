@@ -15,6 +15,7 @@ import { buildLevelRoof } from './roof.js';
 import * as F from './footprint.js';
 import { makeMesh, modelBounds } from './model-util.js';
 import { addSiteTerrain } from './terrain.js';
+import { addBuildingTrim } from './trim.js';
 import { siteReady } from './site-geom.js';
 import { rotateHouse } from '../model/placement.js';
 import { addCatalogue3D } from '../commercial/catalogue/three.js';
@@ -222,6 +223,8 @@ export function buildModel(project, opts = {}) {
   const panelTopLi = new Map();
   levels.forEach((lv, i) => { for (const w of lv.walls) if (w.panel) panelTopLi.set(w.building || '_rows', Math.max(panelTopLi.get(w.building || '_rows') ?? -1, i)); });
 
+  const trimEntries = [];
+
   // Level by level -----------------------------------------------------------------------------
   levels.forEach((level, li) => {
     if (!levelShown(li)) return;
@@ -308,6 +311,7 @@ export function buildModel(project, opts = {}) {
       const cls = statusView === 'both' ? { kind: w.kind, outside: w.outside || 0 } : viewClass(w, shownIndoor);
       const outSide = cls.kind === 'interior' ? 0 : cls.outside;
       const wallOpenings = level.openings.filter((o) => o.wallId === w.id && vis(o.status));
+      if (outSide && cls.kind !== 'interior' && tint(w.status) !== 'demolish') trimEntries.push({ w, elev, H, outSide, ops: wallOpenings, li });
       // Construction system: concrete panels are built by panels3d.js (real joints and openings); blockwork is a block textured wall with a parapet.
       const pSys = w.panel && cls.kind !== 'interior' && outSide ? w.panel.system : null;
       const topLevel = (panelTopLi.get(w.building || '_rows') ?? li) === li;
@@ -424,6 +428,9 @@ export function buildModel(project, opts = {}) {
     }
     root.add(group);
   });
+
+  // trim: base course, downpipes, awnings, porch, sills, signage
+  try { addBuildingTrim(ctx, root, trimEntries, { detail }); } catch (e) { console.warn('[trim]', e?.message); }
 
   // tanks (site items, shown with the ground level)
   for (const tank of project.site?.tanks || []) {
