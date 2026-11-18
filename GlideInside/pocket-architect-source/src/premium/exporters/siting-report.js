@@ -10,12 +10,15 @@ import { houseStats, areaBreakdown, sizeLabel } from '../../portal/house-stats.j
 import { schemeById, effectiveSchemeId, schemeLine } from '../../model/colour-schemes.js';
 import { BRAND, LOGO_PNG } from '../brand/logo.js';
 import { imageInfo, northArrow, placeImage, polygon, polyline, ink } from './pdf.js';
-import { PEN, clean, wrap } from './eng/kit.js';
+import { PEN, clean, wrap, hatchSegments, clipPolygon } from './eng/kit.js';
+import { OVERLAY_STYLE } from '../../site/overlays.js';
 import { ddmmyyyy, projectTitle, attribution } from './eng/brand.js';
 import { siteAreaOf, fmtArea } from './eng/area.js';
 import { estimateSiteCosts, frontageM, fmtAud } from '../site-costs/estimate.js';
 import { ENGINEERING_SERVICES } from '../engineering-services.js';
 import { NOT_FOUND } from '../site-costs/council.js';
+import { lotFacts, constraintFacts, lotFall, fallSentence, buildingFacts, REPORT_LIMITATIONS, CHECK_WITH_COUNCIL } from './siting-facts.js';
+import { estimateForProject, fmtAUD as fmtAUD2, ESTIMATE_NOTE } from '../site-costs/commercial-estimate.js';
 
 export const PAGE_W = 210;
 export const PAGE_H = 297;
@@ -177,6 +180,29 @@ export function drawSitingPlan(doc, project, box, brand) {
   // lot boundary
   doc.setFillColor(...brand.soft);
   polygon(doc, lot.boundary.map(T), 'F');
+  // overlay areas (hatched, indicative) and contours inside the lot
+  for (const layer of lot.overlays?.layers || []) {
+    const st = OVERLAY_STYLE[layer.id];
+    if (!st || !layer.features?.length) continue;
+    doc.setDrawColor(...st.rgb); doc.setLineWidth(0.12);
+    const ang = { flood: 45, bushfire: 135, heritage: 90, easement: 0 }[layer.id] || 45;
+    for (const f of layer.features) for (const r of f.rings || []) {
+      const cp = clipPolygon(r.outer, { x0: bb.minX - padMm, y0: bb.minY - padMm, x1: bb.maxX + padMm, y1: bb.maxY + padMm });
+      if (cp.length < 3) continue;
+      for (const [a, c] of hatchSegments(cp.map(T), ang, 1.8)) clipLine(a, c);
+    }
+  }
+  doc.setLineDashPattern([], 0);
+  for (const c of lot.contours || []) {
+    const flat = c.pts || []; doc.setDrawColor(...(c.major ? [150, 98, 40] : [205, 170, 125])); doc.setLineWidth(c.major ? 0.2 : 0.1);
+    let prev = null;
+    for (let i = 0; i + 1 < flat.length; i += 2) {
+      const q = { x: flat[i], y: flat[i + 1] };
+      const inside = G.pointInPolygon(q, lot.boundary);
+      if (prev && inside) clipLine(T(prev), T(q));
+      prev = inside ? q : null;
+    }
+  }
   // driveway
   if (dw?.ok && dw.polygon?.length > 2) { doc.setFillColor(205, 208, 214); doc.setDrawColor(...PEN.hard); doc.setLineWidth(0.15); polygon(doc, dw.polygon.map(T), 'FD'); }
   doc.setDrawColor(...PEN.boundary);
@@ -274,10 +300,14 @@ export async function toSitingReport(project, options = {}) {
   const brand = reportBrand(options);
   const dateText = options.date instanceof Date ? ddmmyyyy(options.date) : options.date || ddmmyyyy(new Date());
   const lot = project.site?.lot || null;
+  const commercial = project.mode === 'commercial' && !!project.commercial;
   const facts = siteFactsOf(project);
-  const stats = (() => { try { return houseStats(project); } catch { return null; } })();
-  const areas = (() => { try { return areaBreakdown(project); } catch { return null; } })();
-  const est = options.estimate || (lot ? estimateSiteCosts(project, { settings: options.settings }) : { ok: false });
+  const stats = commercial ? null : (() => { try { return houseStats(project); } catch { return null; } })();
+  const areas = commercial ? null : (() => { try { return areaBreakdown(project); } catch { return null; } })();
+  const bfacts = commercial ? await buildingFacts(project) : null;
+  // Commercial layouts have no house, so the house estimator does not apply: they use the plain allowance estimator (one figure, editable rates).
+  const cest = commercial && lot ? await estimateForProject(project, { rates: options.rates }).catch(() => null) : null;
+  const est = commercial ? { ok: false } : (options.estimate || (lot ? estimateSiteCosts(project, { settings: options.settings }) : { ok: false }));
   const title = projectTitle(project);
   const sections = [];
   const img = options.image ? imageInfo(options.image) : null;
@@ -308,7 +338,9 @@ export async function toSitingReport(project, options = {}) {
   if (facts.areaM2) figs.push([fmtArea(facts.areaM2), 'Lot area']);
   if (facts.frontageM) figs.push([`${facts.frontageM} m`, 'Frontage']);
   if (stats) { figs.push([`${stats.bedrooms} bed ${stats.bathrooms} bath`, 'Home']); figs.push([`${areas?.total ?? stats.floorAreaM2} m²`, 'Total area under roof']); }
+  if (bfacts) { figs.push([`${bfacts.gfaM2} m²`, 'Gross floor area']); if (bfacts.coveragePct != null) figs.push([`${bfacts.coveragePct} %`, 'Site coverage']); }
   if (est.ok) figs.push([`${fmtAud(est.total.likely)}`, 'Indicative site costs']);
+  else if (cest) figs.push([fmtAud(cest.estimate.total), 'Indicative site costs']);
   const cellW = CW / Math.max(1, figs.length);
   figs.forEach(([v, l], i) => {
     const x = M + i * cellW;
@@ -333,7 +365,7 @@ export async function toSitingReport(project, options = {}) {
   if (lot) {
     const plan = drawSitingPlan(doc, project, { x0: M, y0: y, x1: M + CW, y1: y + 112 }, brand);
     y += 112 + 4;
-    const items = [['Lot boundary', PEN.boundary, []], ['Indicative setback envelope', PEN.envelope, [2.2, 1.2]], ['Distance from house to boundary', PEN.dim, []], ['Street centreline', PEN.phantom, [4, 0.8, 0.8, 0.8]]];
+    const items = [['Lot boundary', PEN.boundary, []], ['Indicative setback envelope', PEN.envelope, [2.2, 1.2]], ['Distance from house to boundary', PEN.dim, []], ['Street centreline', PEN.phantom, [4, 0.8, 0.8, 0.8]], ['Contours', [150, 98, 40], []]];
     let lx = M;
     for (const [name, col, dash] of items) {
       doc.setDrawColor(...col); doc.setLineWidth(0.5); doc.setLineDashPattern(dash, 0); doc.line(lx, y, lx + 9, y); doc.setLineDashPattern([], 0);
@@ -350,19 +382,47 @@ export async function toSitingReport(project, options = {}) {
     y = para(doc, 'Setback figures are guidance from the planning data loaded for this council. The council holds the accurate controls and is to confirm them.', M, y + 3, CW, { size: 7.6, colour: PEN.grey });
   } else y = para(doc, lot?.setbacks ? 'The house is not placed on the lot yet, so setbacks are not shown.' : 'Council setbacks are not loaded for this lot. The council is to confirm the controls.', M, y + 1, CW, { size: 8.4 });
 
+  // Ground page: site constraints, contours and fall, limitations -------------------------------------------------------------------
+  doc.addPage('a4', 'portrait');
+  sections.push('ground');
+  band(doc, brand, 'SITE CONSTRAINTS AND GROUND');
+  y = heading(doc, brand, 'Site constraints (indicative)', 32);
+  const cf = constraintFacts(lot);
+  y = table(doc, brand, M, y, [{ w: 34, head: 'CONSTRAINT' }, { w: 24, head: 'ANSWER' }, { w: CW - 34 - 24 - 40, head: 'WHAT WAS FOUND' }, { w: 40, head: 'SOURCE' }],
+    cf.map((r) => [r.title, r.answer, r.detail || (r.checkMap ? 'Check the council map.' : ''), r.source ? `${r.source}${r.date ? `, dated ${r.date}` : ''}` : 'Council map']), { size: 7.6, lead: 3.4 });
+  y = para(doc, `${CHECK_WITH_COUNCIL} A mapped area is context for your own planning enquiry, not a planning decision, and an area with none mapped is not an all clear.`, M, y + 3, CW, { size: 7.4, colour: PEN.grey, lead: 3.4 }) + 3;
+  const fall = lotFall(lot);
+  y = heading(doc, brand, 'Contours and fall across the lot', y);
+  y = para(doc, fallSentence(fall), M, y, CW, { size: 8.6 }) + 1;
+  if (fall) {
+    const fr = [['Highest ground RL', `${fall.highRL.toFixed(2)} m`], ['Lowest ground RL', `${fall.lowRL.toFixed(2)} m`], ['Relief across the lot', `${fall.reliefM.toFixed(2)} m`], ['Average fall', `${fall.fallPct} % (${fall.fallRatio})${fall.bearingDeg == null ? '' : `, towards the ${fall.direction}`}`]];
+    if (fall.fromStreetPct != null) fr.push(['From the street frontage', `${fall.fromStreetPct > 0 ? 'rises' : fall.fromStreetPct < 0 ? 'falls' : 'level'} ${Math.abs(fall.fromStreetPct)} % into the lot`]);
+    if (lot?.contourInterval) fr.push(['Contour interval', `${lot.contourInterval.minor} m minor, ${lot.contourInterval.major} m major`]);
+    y = table(doc, brand, M, y, [{ w: 50, head: 'ITEM' }, { w: CW - 50, head: 'DETAIL' }], fr, { size: 8 }) + 2;
+    y = para(doc, `Ground levels come from an elevation model${fall.source ? ` (${fall.source})` : ''}. They are not a survey.`, M, y, CW, { size: 7.4, colour: PEN.grey, lead: 3.4 }) + 3;
+  }
+  y = heading(doc, brand, 'Limitations', y + 1);
+  for (const l of REPORT_LIMITATIONS) y = para(doc, l, M, y, CW, { size: 7.6, lead: 3.5 }) + 1.6;
+
   // Page 3: home design summary and site costs -------------------------------------------------------------------------------
   doc.addPage('a4', 'portrait');
   sections.push('design');
   band(doc, brand, 'HOME DESIGN AND SITE COSTS');
-  y = heading(doc, brand, 'Home design summary', 32);
+  y = heading(doc, brand, commercial ? 'Building summary' : 'Home design summary', 32);
   const sid = effectiveSchemeId(project);
-  const rowsD = [['Design', title]];
+  const rowsD = commercial ? [['Design', title], ...bfacts.items] : [['Design', title]];
   if (stats) rowsD.push(['Bedrooms and bathrooms', `${stats.bedrooms} bedrooms, ${stats.bathrooms} bathrooms`], ['Garage', stats.garage ? `${stats.garage} car` : 'None'], ['Storeys', String(stats.storeys)], ['Building size', sizeLabel(stats)]);
   if (areas) rowsD.push(['Living area', `${areas.living} m²`], ['Total under roof (including garage and covered outdoor)', `${Math.round((areas.living + areas.garage + areas.alfresco + areas.porch + areas.otherRoofed) * 10) / 10} m²`]);
   if (sid) rowsD.push(['Colour scheme', schemeLine(schemeById(sid))]);
   y = table(doc, brand, M, y, [{ w: 78, head: 'ITEM' }, { w: CW - 78, head: 'DETAIL' }], rowsD, { size: 8.4 }) + 5;
   y = heading(doc, brand, 'Indicative site cost estimate', y);
-  if (est.ok) {
+  if (cest) {
+    const ce = cest.estimate;
+    const rowsC = ce.lines.filter((l) => l.qty > 0).map((l) => [l.label, `${fmtQty(l.qty)} ${l.unit}`, fmtAUD2(l.rate), fmtAUD2(l.amount)]);
+    rowsC.push({ cells: [`Contingency ${ce.contingencyPct} %`, '', '', fmtAUD2(ce.contingency)] }, { cells: ['Indicative total, GST excluded', '', '', fmtAUD2(ce.total)], bold: true, fill: brand.soft });
+    y = table(doc, brand, M, y, [{ w: 80, head: 'ITEM' }, { w: 32, head: 'QUANTITY' }, { w: 30, head: 'RATE', align: 'right' }, { w: CW - 142, head: 'ALLOWANCE', align: 'right' }], rowsC, { size: 7.6, lead: 3.4, pad: 1.3 });
+    y = para(doc, `${ESTIMATE_NOTE} ${(cest.notes || []).join(' ')}`, M, y + 3, CW, { size: 7.4, colour: PEN.grey, lead: 3.4 });
+  } else if (est.ok) {
     const groups = [];
     for (const l of [...est.lines, ...est.surcharges, est.contingency]) { let g = groups.find((x) => x.name === l.group); if (!g) { g = { name: l.group, low: 0, likely: 0, high: 0, rows: [] }; groups.push(g); } g.low += l.low; g.likely += l.likely; g.high += l.high; g.rows.push(l); }
     const rows = [];

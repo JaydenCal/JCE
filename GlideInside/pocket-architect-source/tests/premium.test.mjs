@@ -760,7 +760,7 @@ test('UI, commercial mode: Exports menu and the buttons are back, no "coming soo
     out.unlock = text($('#tp-topbar .psp-btn--primary'));
   `);
   assert.equal(r.exportsShown, true);
-  assert.deepEqual(r.items, ['Commercial plan set (PDF)', 'DXF drawing']);
+  assert.deepEqual(r.items, ['Commercial plan set (PDF)', 'DXF drawing', 'Siting report']);
   assert.equal(r.soon, false);
   assert.equal(r.unlock, 'Subscribe, A$50 per month');
 });

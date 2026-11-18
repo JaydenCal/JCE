@@ -28,8 +28,8 @@ test('siting report: 2 to 4 A4 portrait pages with every section', async () => {
   const { Rec, texts } = recorder();
   const bytes = await toSitingReport(proj(), { jsPDF: Rec, builder, settings: defaultSettings() });
   assert.equal(String.fromCharCode(...bytes.slice(0, 5)), '%PDF-');
-  assert.ok(bytes.layout.pages >= 2 && bytes.layout.pages <= 4, `pages ${bytes.layout.pages}`);
-  assert.deepEqual(bytes.layout.sections, ['cover', 'site', 'design', 'next']);
+  assert.ok(bytes.layout.pages >= 2 && bytes.layout.pages <= 5, `pages ${bytes.layout.pages}`);
+  assert.deepEqual(bytes.layout.sections, ['cover', 'site', 'ground', 'design', 'next']);
   const all = texts.join('\n');
   for (const want of ['SITING REPORT AND PROPOSAL', 'Site summary', 'Siting plan', 'Setbacks', 'Home design summary', 'Indicative site cost estimate', 'Next steps', 'Contact', 'Lot area', 'Street frontage', 'Zone', 'Council', 'Total, GST excluded']) {
     assert.ok(all.toUpperCase().includes(want.toUpperCase()), `missing ${want}`);
@@ -100,7 +100,7 @@ test('siting report: the estimate in the report equals estimateSiteCosts and sta
 test('siting report: a design with no lot still makes a short report, never more than 4 pages', async () => {
   const p = createProject({ name: 'No lot' });
   const bytes = await toSitingReport(p, { jsPDF, builder });
-  assert.ok(bytes.layout.pages >= 2 && bytes.layout.pages <= 4);
+  assert.ok(bytes.layout.pages >= 2 && bytes.layout.pages <= 5);
   assert.equal(bytes.layout.estimate, null);
   await assert.rejects(() => toSitingReport(p, {}), /jsPDF is required/);
 });

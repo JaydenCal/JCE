@@ -75,11 +75,11 @@ test('report: cites the council clause, and says default used when the council h
   class Rec extends jsPDF { constructor(...a) { super(...a); const t = this.text.bind(this); this.text = (s, ...r) => (texts.push(Array.isArray(s) ? s.join(' ') : String(s)), t(s, ...r)); } }
   const a = await toSitingReport(proj('TAMWORTH REGIONAL'), { jsPDF: Rec, builder: null, settings: defaultSettings() });
   const all = texts.join('\n');
-  assert.ok(a.layout.pages <= 4);
+  assert.ok(a.layout.pages <= 5);
   assert.ok(/Council rules used/i.test(all) && /clause 7\.5\.1/.test(all) && /Tamworth Regional Council/.test(all));
   assert.ok(all.includes(NOT_FOUND), 'a rule with no record says so');
   texts.length = 0;
   const b = await toSitingReport(proj('Nowhere Shire'), { jsPDF: Rec, builder: null, settings: defaultSettings() });
   assert.ok(texts.join(' ').replace(/\s+/g, ' ').includes(NOT_FOUND));
-  assert.ok(b.layout.pages <= 4);
+  assert.ok(b.layout.pages <= 5);
 });

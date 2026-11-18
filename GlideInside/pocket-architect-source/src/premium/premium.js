@@ -346,7 +346,6 @@ export function createPremium(store, options = {}) {
   });
   async function exportSitingReport() {
     if (store.readOnly) { layer.notify('This shared design is view only, so a report cannot be made from it.', 'info', 6000); return null; }
-    if (store.project?.mode === 'commercial') { layer.notify('The siting report is for house designs. Commercial layouts have their own plan set.', 'info', 6000); return null; }
     if (!isEntitled()) { openUpgrade({ source: 'export-siting-report' }); return null; }
     if (!store.project?.site?.lot) { layer.notify('Find the lot first. The siting report needs a lot on the design.', 'info', 6000); return null; }
     if (state.exporting) return null;

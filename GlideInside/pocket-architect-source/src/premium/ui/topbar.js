@@ -64,10 +64,10 @@ export function createTopbarUI({ root, config, getState, actions }) {
       menu.append(el('button', { class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: 'enquiry' }, onclick: () => { closeMenu(false); actions.enquiry(); } },
         el('span', null, 'Send plans to a registered engineer'), icon('check', 16), el('small', null, 'Quote from JCE Infrastructure, civil engineers')));
     }
-    if (!st.commercial && actions.sitingReport) {
+    if (actions.sitingReport) {
       menu.append(el('button', { class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: 'siting-report' }, onclick: () => { closeMenu(false); actions.sitingReport(); } },
         el('span', null, 'Siting report'), icon(locked ? 'lock' : 'download', 16), el('small', null, locked ? 'Branded PDF with site plan and indicative site costs. Locked.' : 'Branded PDF with site plan and indicative site costs')));
-      if (st.portal?.role !== 'client' && actions.siteCosts) menu.append(el('button', { class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: 'site-costs' }, onclick: () => { closeMenu(false); actions.siteCosts(); } },
+      if (!st.commercial && st.portal?.role !== 'client' && actions.siteCosts) menu.append(el('button', { class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: 'site-costs' }, onclick: () => { closeMenu(false); actions.siteCosts(); } },
         el('span', null, 'Site costs'), icon('eye', 16), el('small', null, 'Indicative estimate and your rates')));
     }
     if (st.enquiry && actions.orderEngineering) {
