@@ -10,6 +10,8 @@ import { PEN, viewTitle, ink } from '../eng/kit.js';
 import { drawRoomLabels } from './labels.js';
 import { AREA } from './frame.js';
 import { areaTotals } from './lot.js';
+import { streamMark } from './contours.js';
+import { drawPlanGround, drawLevelFfl } from './plan-context.js';
 
 // Plan region above a reserved bottom band that carries the scale bar (left), north point (middle) and area totals (right).
 export const HOUSE_REGION = { x0: AREA.x0 + 6, y0: AREA.y0 + 16, x1: AREA.x1 - 6, y1: AREA.y1 - 42 };
@@ -68,9 +70,11 @@ export function houseSheets(project, catalogue = null) {
 const levelName = (l) => `${ascii(l.name) || 'Level'} floor plan`.toUpperCase();
 
 /** Draws one floor plan sheet. `project` is squared to the page (alignProject). Returns { scale, scaleLabel, totals, kv }. */
-export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 0 } = {}) {
+export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 0, ground = null } = {}) {
   const { content, ox, oy, scale: ds, level } = sh;
   const T = (p) => ({ x: ox + (p.x - content.box.minX) / ds, y: oy + (p.y - content.box.minY) / ds });
+  const Ti = (q) => ({ x: content.box.minX + (q.x - ox) * ds, y: content.box.minY + (q.y - oy) * ds });
+  const gmark = streamMark(doc); // the ground contours sit under the plan
   planGeometry(doc, { ...content, scale: ds }, T, true, catalogue);
   const lf = drawRoomLabels(doc, { content, T, catalogue, bounds: { x0: AREA.x0 + 2, y0: AREA.y0 + 2, x1: AREA.x1 - 2, y1: AREA.y1 - 8 }, extra: [sh.slot, NORTH_RECT, BAR_RECT] });
   // Dimension strings: overall and running.
@@ -98,6 +102,7 @@ export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 
     else doc.text(d.text, at.x, at.y, { align: 'center' });
   }
   viewTitle(doc, AREA.x0 + 6, AREA.y0 + 11, levelName(level), `1:${ds} @ A3`);
+  const fflBox = ground?.levels ? drawLevelFfl(doc, ground.levels, level.elevation, AREA.x0 + 100, AREA.y0 + 4.6) : null;
 
   // Area totals box in its reserved slot.
   const totals = areaTotals(project);
@@ -146,6 +151,9 @@ export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 
   doc.setFontSize(7.5);
   doc.setTextColor(...PEN.ink);
   doc.text(`1:${ds} @ A3`, BAR_RECT.x0 + 4, BAR_RECT.y1 - 19.5);
+  // Existing ground contours outside the plan, its dimension strings and the reserved slots.
+  const cb = content.box;
+  const g = drawPlanGround(doc, { ground, T, Ti, rect: { x0: AREA.x0 + 2, y0: AREA.y0 + 2, x1: AREA.x1 - 2, y1: AREA.y1 - 8 }, keepOut: [{ x0: T({ x: cb.minX, y: cb.minY }).x - 3, y0: T({ x: cb.minX, y: cb.minY }).y - 3, x1: T({ x: cb.maxX, y: cb.maxY }).x + 3, y1: T({ x: cb.maxX, y: cb.maxY }).y + 3 }, sh.slot, NORTH_RECT, BAR_RECT, { x0: AREA.x0, y0: AREA.y0, x1: AREA.x1, y1: AREA.y0 + 15 }, ...(fflBox ? [fflBox] : [])], mark: gmark });
   const rows = lf.schedule || [];
   const blocks = rows.length ? [{
     title: 'ROOM SCHEDULE',
@@ -157,5 +165,5 @@ export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 
       rows.forEach((r, i) => { d.text(String(r.n), x + 3, y + 2.6 + i * 3.4); d.text(r.name, x + 8, y + 2.6 + i * 3.4); if (r.area) d.text(r.area, x + w - 3, y + 2.6 + i * 3.4, { align: 'right' }); });
     },
   }] : [];
-  return { blocks, scale: ds, scaleLabel: `1:${ds} @ A3`, totals, kv: [['Living', `${totals.living.toFixed(1)} m²`], ['Garage', `${totals.garage.toFixed(1)} m²`], ['Alfresco / porch', `${totals.alfresco.toFixed(1)} m²`], ['Total', `${totals.total.toFixed(1)} m²`]] };
+  return { ground: g, blocks, scale: ds, scaleLabel: `1:${ds} @ A3`, totals, kv: [['Living', `${totals.living.toFixed(1)} m²`], ['Garage', `${totals.garage.toFixed(1)} m²`], ['Alfresco / porch', `${totals.alfresco.toFixed(1)} m²`], ['Total', `${totals.total.toFixed(1)} m²`]] };
 }

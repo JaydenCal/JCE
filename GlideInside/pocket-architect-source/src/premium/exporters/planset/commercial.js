@@ -30,7 +30,8 @@ import { PEN, PHANTOM, clipSegment, hatch, hatchSegments, dimLine, haloText, alo
 import { COMMERCIAL_SHEET_LIST } from '../../../commercial/sheet-list.js';
 import { AREA, fit } from './frame.js';
 import { drawSite, roadModel, siteView, fitView, northPoint, northDegOf, SITE_SCALES, SCALES_BEYOND, VP } from './site.js';
-import { hasGround, groundLevelFn } from './contours.js';
+import { hasGround, groundLevelFn, drawGroundLayer, streamMark, outwardSpots, cornersOf, intervalText } from './contours.js';
+import { levelsModel, fflText } from './levels.js';
 import { envelopePoly } from './lot.js';
 import { elevationScaleOf } from './commercial-elevations.js';
 
@@ -176,7 +177,7 @@ function landscapeShare(lot, covered) {
 }
 
 /** Everything the commercial sheets quote, computed once. */
-export function commercialModel(project, lot) {
+export function commercialModel(project, lot, { levels = null } = {}) {
   const c = project.commercial;
   const a = analyse(project);
   const wp = { ...project, site: { ...(project.site || {}), lot } };
@@ -195,7 +196,7 @@ export function commercialModel(project, lot) {
   const land = lot ? landscapeShare(lot, covered) : { pct: null, areaM2: null };
   const cls = effectiveClass(wp) || 'industrial';
   const rules = { ...defaultRulesFor(cls), ...effectiveRules(wp, cls) };
-  return { project: wp, c, a, lot, units: a.units, stats: a.stats, osd, covered, land, cls, rules, off: bayOffsetMm(c.parking), hardstand, hardstandKerbs };
+  return { project: wp, c, a, lot, units: a.units, stats: a.stats, osd, covered, land, cls, rules, off: bayOffsetMm(c.parking), hardstand, hardstandKerbs, levels: levels || (lot ? levelsModel(wp, lot) : null) };
 }
 
 // Sheet list ----------------------------------------------------------------------------------------------------------------
@@ -308,11 +309,13 @@ function drawRoads(doc, view, lot, field, roadName) {
   }
 }
 
-function legendBlock(items) {
-  const rowH = Math.min(3.7, 52 / Math.max(1, items.length)); // 14 rows fit at 3.7 mm; with hardstand rows added the rows close up to keep the block on the sheet
+function legendBlock(items, rowMax = 3.7, avail = null) {
+  const rowH = Math.min(rowMax, avail ? (avail - 6) / Math.max(1, items.length) : 52 / Math.max(1, items.length)); // 14 rows fit at 3.7 mm; with hardstand rows added the rows close up to keep the block on the sheet
   return {
     title: 'LEGEND',
     h: 4 + items.length * rowH + 2,
+    // The title strip asks a legend that does not fit to close up its rows (down to 2.6 mm) instead of being dropped.
+    fitTo: (h) => ((h - 6) / Math.max(1, items.length) >= 2.6 ? legendBlock(items, rowMax, h) : null),
     draw(doc, x, y) {
       items.forEach(([t, draw], i) => {
         const ly = y + 2.4 + i * rowH;
@@ -523,24 +526,24 @@ function stairRect(u, m) {
 }
 
 // C100 existing site -------------------------------------------------------------------------------------------------------
-function existingLegend(aerial) {
+function existingLegend(aerial, contours = []) {
   return legendBlock([
     ['Lot boundary (DCDB)', lineSw(aerial ? PEN.cadRed : PEN.ink, 0.7)],
     ['Adjoining lot boundary', lineSw(aerial ? [70, 74, 84] : GREYLINE, 0.18)],
     ['Road centreline', lineSw(PEN.phantom, 0.3, [3, 0.8, 0.6, 0.8])],
     ['Building setback line', lineSw(aerial ? PEN.envelopeAerial : GREYLINE, aerial ? 0.3 : 0.2, [1.6, 1])],
     ['Kerb and gutter', (doc, a, b) => { doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.25); doc.line(a, b - 0.5, a + 12, b - 0.5); doc.line(a, b + 0.5, a + 12, b + 0.5); }],
-    ['Contour (minor, major)', (doc, a, b) => { doc.setLineWidth(0.12); doc.setDrawColor(...PEN.contourMinor); doc.line(a, b - 0.7, a + 5.5, b - 0.7); doc.setLineWidth(0.26); doc.setDrawColor(...PEN.contourMajor); doc.line(a + 6.5, b + 0.7, a + 12, b + 0.7); }],
+    ...contours,
   ]);
 }
 
-export function drawExisting(doc, project, lot, { aerial = null } = {}) {
+export function drawExisting(doc, project, lot, { aerial = null, levels = null } = {}) {
   const q = blankProject(project, lot);
   // An aerial is placed as an upright image, so the sheet keeps north up when there is one (see existingScale in the set).
   const turn = !aerial;
   const view = siteView(q, lot, { turn });
   const over = aerialUnder(doc, aerial, view.T);
-  const r = drawSite(doc, q, lot, { overAerial: over, turn });
+  const r = drawSite(doc, q, lot, { overAerial: over, turn, levels });
   const zone = lot.zoning ? [lot.zoning.code, lot.zoning.name].filter(Boolean).join(' ') : 'Not known';
   const sb = lot.setbacks || {};
   const mv = (v) => (typeof v === 'number' ? v : v?.minM);
@@ -550,11 +553,13 @@ export function drawExisting(doc, project, lot, { aerial = null } = {}) {
     ['Zone', zone],
     ['Council', lot.lga || 'Not known'],
     ['Setbacks F / S / R', [mv(sb.front), mv(sb.side), mv(sb.rear)].map((v) => (typeof v === 'number' ? v.toFixed(2) : 'n/a')).join(' / ') + ' m'],
+    r.kv.find((x) => x[0] === 'Contours'),
     ['Ground levels', hasGround(lot) ? 'Indicative, from the DEM' : 'None for this lot'],
   ].filter(Boolean);
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines are indicative, check with council.'];
+  if (r.groundNote) notes.push(r.groundNote);
   if (!over) notes.push('No aerial is shown for this lot.');
-  return { scale: r.scale, scaleLabel: r.scaleLabel, kv, notes, blocks: [existingLegend(over)] };
+  return { scale: r.scale, scaleLabel: r.scaleLabel, kv, notes, blocks: [existingLegend(over, r.legendContours || [])] };
 }
 
 // Catalogue buildings on C101: extras (apron, canopy, dock recess), walls, roller doors, the plan label with the GFA, dock and canopy lines,
@@ -620,7 +625,14 @@ function drawBuildingShells(doc, model, view, field) {
     const w = (Math.max(...xs) - Math.min(...xs)) / scale;
     const size = Math.max(4.2, Math.min(7.5, w / 14));
     haloText(doc, b.planLabel, mid.x, mid.y - 0.6, { size, bold: true, align: 'center', halo: 0.8 });
-    haloText(doc, `B${b.n}  ${Math.round(b.gfaM2).toLocaleString('en-AU')} m2 GFA`, mid.x, mid.y + size * 0.42 + 0.6, { size: Math.max(4, size - 1.4), align: 'center', halo: 0.8 });
+    const gfaTxt = `B${b.n}  ${Math.round(b.gfaM2).toLocaleString('en-AU')} m2 GFA`;
+    haloText(doc, gfaTxt, mid.x, mid.y + size * 0.42 + 0.6, { size: Math.max(4, size - 1.4), align: 'center', halo: 0.8 });
+    // The labels are in the field so the FFL tag and the contour labels keep clear of them.
+    setText(doc, size, true);
+    const lw = doc.getTextWidth(clean(b.planLabel));
+    setText(doc, Math.max(4, size - 1.4), false);
+    const gw = doc.getTextWidth(clean(gfaTxt));
+    field.addBox({ x0: mid.x - Math.max(lw, gw) / 2 - 0.5, y0: mid.y - 0.6 - size * MM - 0.4, x1: mid.x + Math.max(lw, gw) / 2 + 0.5, y1: mid.y + size * 0.42 + 1.4 });
     const centreOf = (poly) => { const q = poly.map(T); return { x: q.reduce((s, p) => s + p.x, 0) / q.length, y: q.reduce((s, p) => s + p.y, 0) / q.length }; };
     let k = 0;
     const lines = dockLines(b);
@@ -638,7 +650,7 @@ function drawBuildingShells(doc, model, view, field) {
 }
 
 // C101 proposed layout -----------------------------------------------------------------------------------------------------
-function layoutLegend(model = null) {
+function layoutLegend(model = null, contours = []) {
   const hsTypes = [...new Set((model?.hardstand || []).map((x) => x.type))];
   return legendBlock([
     ['Lot boundary (existing)', lineSw(PEN.ink, 0.7)],
@@ -656,6 +668,7 @@ function layoutLegend(model = null) {
     ['Landscaping (indicative)', (doc, a, b) => { doc.setDrawColor(...GREEN); doc.setLineWidth(0.1); for (let k = 0; k < 6; k++) doc.line(a + k * 2, b + 1.2, a + k * 2 + 2, b - 1.2); }],
     ...hsTypes.map((id) => [`Hardstand: ${pavementById(id).short}, ${m2f((model.hardstand || []).filter((x) => x.type === id).reduce((s, x) => s + (x.areaM2 || 0), 0))} m2`, pavementSwatch(pavementById(id))]),
     ...((model?.hardstandKerbs || []).length ? [['Kerb, drawn hardstand', lineSw(PEN.ink, 0.45)]] : []),
+    ...contours,
     ['OSD placeholder, waste, hydrant', (doc, a, b) => { doc.setDrawColor(...BLUE); doc.setLineWidth(0.2); doc.setLineDashPattern([1.2, 0.8], 0); doc.rect(a, b - 1.2, 5, 2.4, 'S'); doc.setLineDashPattern([], 0); doc.setFillColor(214, 196, 168); doc.rect(a + 6, b - 1.2, 3, 2.4, 'F'); doc.setFillColor(192, 57, 43); doc.circle(a + 11, b, 0.9, 'F'); }],
   ]);
 }
@@ -818,6 +831,10 @@ export function drawLayout(doc, model) {
     polygon(doc, sp, 'FD');
     field.addRing(sp);
   }
+
+  // The existing ground contours sit here: over the paving and landscape, under the buildings and every other line.
+  const levels = model.levels || levelsModel(project, lot);
+  const gmark = streamMark(doc);
 
   // Units, doors, mezzanine outlines.
   drawUnitShells(doc, model, view, field);
@@ -1097,6 +1114,19 @@ export function drawLayout(doc, model) {
     placeNote(doc, field, 'LANDSCAPING', spots.slice(0, 120), { size: 7.5, bold: true, colour: [40, 100, 52] });
   }
 
+  // Ground levels: FFL tag per building or row, spot levels at the lot corners, RL labels, then the contours under the linework.
+  const bld = buildingsOf(c);
+  const masks = [...units.map((u) => u.poly), ...buildingPolys(c), ...(c.waste ? [wastePoly(c.waste)] : []), ...(osd ? [osd.poly] : [])].map((poly) => poly.map(T));
+  const ffl = bld.filter((b) => b.outline?.length >= 3).map((b) => ({ poly: b.outline.map(T), text: fflText(levels, levels.fflOf(b.outline)) }));
+  for (const row of c.rows || []) {
+    const pts = units.filter((u) => u.rowId === row.id).flatMap((u) => u.poly);
+    if (!pts.length) continue;
+    const bb = G.bbox(pts);
+    const plan = [{ x: bb.minX, y: bb.minY }, { x: bb.maxX, y: bb.minY }, { x: bb.maxX, y: bb.maxY }, { x: bb.minX, y: bb.maxY }];
+    ffl.push({ poly: plan.map(T), text: fflText(levels, levels.fflOf(plan)) });
+  }
+  const ground = drawGroundLayer(doc, { lot, levels, S: T, Si: view.Ti, rect: VP, field, masks, spots: outwardSpots(cornersOf(lot.boundary), T), ffl, mark: gmark });
+
   northAndScale(doc, field, project, scale, view);
 
   const ratio = stats.parking;
@@ -1108,17 +1138,20 @@ export function drawLayout(doc, model) {
     ['Site coverage', stats.coveragePct != null ? `${stats.coveragePct} %` : 'n/a'],
     ['Landscaping (indicative)', model.land.pct != null ? `${model.land.pct} %` : 'n/a'],
     ['Bays, shown / required', `${ratio.provided} / ${ratio.required}`],
-  ];
+    ground.interval && ground.stroked ? ['Contours', intervalText(ground.interval)] : null,
+    levels.has ? null : ['Ground levels', 'None for this lot'],
+  ].filter(Boolean);
   const notes = [
     'Layout, parking and setbacks are indicative, check with council.',
     'Blue dimensions are the clearance from the buildings to the lot boundary.',
     'Site access and crossover are indicative and to be confirmed with council.',
   ];
-  return { scale, kv, notes, blocks: [layoutLegend(model)] };
+  notes.push(levels.has ? ground.note : 'No ground levels for this lot. Floor levels are on an assumed datum.');
+  return { scale, kv, notes, blocks: [layoutLegend(model, ground.legend)], ground };
 }
 
 // C102 mezzanine level plan --------------------------------------------------------------------------------------------------
-function mezzLegend() {
+function mezzLegend(contours = []) {
   return legendBlock([
     ['PROPOSED UNIT wall', lineSw(PEN.ink, 0.5)],
     ['Mezzanine floor', swatch([228, 238, 252], PEN.ink)],
@@ -1127,6 +1160,7 @@ function mezzLegend() {
     ['Ground floor office or amenity', swatch(null, GREYLINE)],
     ['Roller door (ground floor)', lineSw(RED, 0.9)],
     ['Personnel door (ground floor)', lineSw(BLUE, 0.9)],
+    ...contours,
   ]);
 }
 
@@ -1135,6 +1169,8 @@ export function drawMezzanine(doc, model) {
   const view = mezzView(model);
   const { T, scale } = view;
   const field = new LabelField(VP);
+  const lv = model.levels || levelsModel(project, model.lot);
+  const gmark = streamMark(doc); // the existing contours sit under everything, outside the buildings
   drawUnitShells(doc, model, view, field);
   const balPad = 0.0;
   void balPad;
@@ -1242,6 +1278,9 @@ export function drawMezzanine(doc, model) {
     if (box) field.addBox(box);
     field.addSeg(pa, pb);
   }
+  // Existing ground contours outside the buildings (the site context of the level plan), in pale pens.
+  const mmasks = [...units.map((u) => u.poly), ...buildingsOf(model.c).map((b) => b.outline)].filter((q) => q?.length >= 3).map((poly) => poly.map(T));
+  const ground = drawGroundLayer(doc, { lot: model.lot, levels: lv, S: T, Si: view.Ti, rect: VP, field, masks: mmasks, light: true, mark: gmark });
   northAndScale(doc, field, project, scale, view);
   const mz = model.stats;
   const levels = [...new Set(mezzUnits.map(({ m }) => m.level))];
@@ -1257,7 +1296,8 @@ export function drawMezzanine(doc, model) {
     'The mezzanine may count as a storey above its area limit, check with council and the NCC.',
     'Clear height under the mezzanine is unverified, see C103.',
   ];
-  return { scale, kv, notes, blocks: [mezzLegend()] };
+  if (lv.has) { kv.push(['Contours', ground.interval ? intervalText(ground.interval) : 'None at this view']); notes.push(ground.note); }
+  return { scale, kv, notes, blocks: [mezzLegend(ground.legend)] };
 }
 
 // C103 yield summary --------------------------------------------------------------------------------------------------------

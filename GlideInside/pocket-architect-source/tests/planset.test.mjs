@@ -227,29 +227,30 @@ function recorderXY() {
 
 test('contours: drawn when the lot has ground data, with RL labels, spot levels and the legend entry', async () => {
   const { text } = await runWith(project, groundLot());
-  assert.match(text, /Contour \(minor, major\)/);
+  assert.match(text, /Existing contour, 0\.5 m/);
   assert.match(text, /\b2[05]\.0\b/);
-  assert.ok(!/FFL/i.test(text), 'no floor level is stated');
+  assert.match(text, /FFL \d/, 'the floor level is tagged at the house');
   const flat = await runWith(project, { ...lot });
-  assert.ok(!/Contour \(minor, major\)/.test(flat.text));
+  assert.ok(!/Existing contour/.test(flat.text));
+  assert.match(flat.text, /FFL [\d.]+ \(ASSUMED DATUM\)/);
 });
 
 test('contours: the levels note names the state DEM, and a lot without ground data says so', async () => {
   const nsw = (await runWith(project, groundLot())).text.replace(/\s+/g, ' ');
-  assert.match(nsw, /Levels are indicative only, from the NSW 5 m DEM, not survey\. Contours at 1\.0 m intervals\. A registered survey is required\./);
+  assert.match(nsw, /Levels are indicative, interpolated from the NSW 5 m elevation model, not survey\. Contours at 0\.5 m are an interpolation and show the fall only\. A registered surveyor must confirm levels\./);
   const qld = (await runWith(project, groundLot({ state: 'QLD' }))).text.replace(/\s+/g, ' ');
-  assert.match(qld, /from the Queensland 5 m DEM, not survey/);
+  assert.match(qld, /from the Queensland 5 m elevation model, not survey/);
   const none = (await runWith(project, { ...lot })).text.replace(/\s+/g, ' ');
   assert.match(none, /No ground levels for this lot\./);
-  assert.ok(!/Levels are indicative only/.test(none));
+  assert.ok(!/interpolated/.test(none));
   assert.ok(!/[–—]/.test(nsw + qld + none));
 });
 
-test('contours: ground level from the grid and from the contours, whole metre lines only', async () => {
+test('contours: ground level from the grid and from the contours, stored lines kept at every level', async () => {
   const { groundLevelFn, contourLines, hasGround } = await import('../src/premium/exporters/planset/contours.js');
   const g = groundLot();
   assert.ok(hasGround(g));
-  assert.equal(contourLines({ contours: [{ level: 20.5, pts: [0, 0, 10, 10] }] }).length, 0);
+  assert.equal(contourLines({ contours: [{ level: 20.5, pts: [0, 0, 10, 10] }] }).length, 1);
   const z = groundLevelFn({ contours: fallContours() });
   const fall = z({ x: 18000, y: -60000 }) - z({ x: 18000, y: 0 });
   assert.ok(Math.abs(fall - 6) < 0.5, `fall ${fall}`);
@@ -261,7 +262,7 @@ test('contours: RL labels and spot levels never sit on the lot label, dimensions
   const { Rec, items } = recorderXY();
   await exportPlanSet({ project, lot: groundLot(), kind: 'site', download: false, jsPDF: Rec, catalogue, date: new Date(2026, 10, 12), fetchSite: null });
   for (let i = items.length - 1; i >= 0; i--) if (items[i].page !== 2) items.splice(i, 1); // the site plan sheet only
-  const isLevel = (it) => /^\d{2}\.\d$/.test(it.s) && it.size < 5.5;
+  const isLevel = (it) => /^\d{2}\.\d$/.test(it.s) && it.size === 5.6;
   const levels = items.filter(isLevel);
   assert.ok(levels.length > 4, 'level labels were drawn');
   const boxOf = (it) => {

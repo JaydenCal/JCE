@@ -23,6 +23,9 @@ import { collectTriangles, drawElevations, drawSection, drawRoofPlan, roofAreaM2
 import { drawRoomLabels } from './roomlabels.js';
 import { stairGeometry } from '../shared.js';
 import { drawLevelPanel, analysisScale, analysisView } from './sheets.js';
+import { levelsModel, loadTerrainModel } from '../planset/levels.js';
+import { streamMark } from '../planset/contours.js';
+import { drawPlanGround } from '../planset/plan-context.js';
 
 /**
  * The house turned square to the page for the floor plans, roof plan and elevations (a house turned on its lot would otherwise be
@@ -30,14 +33,14 @@ import { drawLevelPanel, analysisScale, analysisView } from './sheets.js';
  */
 export function alignProject(project) {
   const box = orientedBox(buildingHull(project));
-  if (!box) return { project, deg: 0, unalign: null };
+  if (!box) return { project, deg: 0, unalign: null, align: null };
   let m = ((box.angleDeg % 90) + 90) % 90;
   if (m > 45) m -= 90;
-  if (Math.abs(m) < 0.5) return { project, deg: 0, unalign: null };
+  if (Math.abs(m) < 0.5) return { project, deg: 0, unalign: null, align: null };
   const c = structuredClone(project);
   rotateHouse(c, -m, box.centre);
   c.site = { ...(c.site || {}), northDeg: (Number(c.site?.northDeg) || 0) - m };
-  return { project: c, deg: -m, unalign: (p) => G.rotatePoint(p, box.centre, m) };
+  return { project: c, deg: -m, unalign: (p) => G.rotatePoint(p, box.centre, m), align: (p) => G.rotatePoint(p, box.centre, -m) };
 }
 
 /** The ordered sheet plan. No drawing happens here, so the drawing list on the cover and the page count agree. */
@@ -142,6 +145,10 @@ export async function toEngineeringPDF(project0, options = {}) {
   const doc = withSuperscripts(scaledDoc(raw, p.k));
   const total = plan.list.length;
   const ctx = { colours: schemeColours(project), project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, terms: options.terms || null, extraCredit: options.aerialCredit || '', analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
+  // Ground levels (the same model the 3D uses), shared by every plan sheet: contours, RL labels, floor levels.
+  const lotG = project.site?.lot || null;
+  ctx.levels = lotG ? levelsModel(project, lotG, { tm: await loadTerrainModel(project) }) : null;
+  ctx.ground = ctx.levels ? { lot: lotG, levels: ctx.levels, align: aligned.align || null, unalign: aligned.unalign || null } : null;
   // The aerial is composited once per view (the site plan, the key plan and the cover locality), turned and cropped as each is drawn.
   const bytes0 = await resolveAerial(project, { aerial });
   const lotA = project.site?.lot;
@@ -212,6 +219,7 @@ export async function toEngineeringPDF(project0, options = {}) {
       s.scale = site?.label || 'NTS';
     } else if (s.kind === 'level') {
       const cd = cleanedDoc(doc);
+      const gmark = streamMark(doc); // the existing ground contours go under the plan
       // The transform drawLevel uses, so the section line, the room labels and the notes line up with the plan
       const ds = plan.scale.scale * p.k;
       const ox = AREA.x + (AREA.w - s.content.box.w / ds) / 2;
@@ -233,7 +241,13 @@ export async function toEngineeringPDF(project0, options = {}) {
       if (sl) drawSectionMarker(doc, aligned.project, T, sectionSheet, half);
       const stairBoxes = drawStairNotes(doc, aligned.project, s.level, T);
       drawRoomLabels(doc, { extra: stairBoxes, content, T, catalogue, section: sl ? [T(sl.p0), T(sl.p1)] : null, bounds: { x0: BODY.x0, y0: BODY.y0, x1: BODY.x1, y1: BODY.y1 } });
-      drawLevelPanel(doc, apr, s.level, ox, { sectionSheet });
+      // Existing ground contours outside the plan and its dimension strings (the site context of the floor plan)
+      const cb = s.content.box;
+      const Ti = (q) => ({ x: cb.minX + (q.x - ox) * ds, y: cb.minY + (q.y - oy) * ds });
+      const a0 = T({ x: cb.minX, y: cb.minY });
+      const a1 = T({ x: cb.maxX, y: cb.maxY });
+      s.ground = drawPlanGround(doc, { ground: ctx.ground, T, Ti, rect: { x0: ox - 12 > BODY.x0 + 70 ? ox - 12 : BODY.x0, y0: BODY.y0, x1: BODY.x1, y1: BODY.y1 }, keepOut: [{ x0: a0.x - 4, y0: a0.y - 4, x1: a1.x + 4, y1: a1.y + 4 }, { x0: BODY.x0, y0: BODY.y0, x1: BODY.x1, y1: BODY.y0 + 14 }], mark: gmark, light: true });
+      drawLevelPanel(doc, apr, s.level, ox, { sectionSheet, ground: s.ground });
     } else if (s.kind === 'roof') drawRoofPlan(doc, apr, tris, area);
     else if (s.kind === 'elevations') {
       if (tris.length) drawElevations(doc, apr, tris, area); else emptySheet(doc, area, 'Elevations need a building with walls.');

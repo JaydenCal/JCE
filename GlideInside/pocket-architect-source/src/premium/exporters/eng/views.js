@@ -7,6 +7,8 @@ import { terrainAt } from '../../../site/model.js';
 import { buildingHull, orientedBox } from '../../../site/lotplan.js';
 import { PEN, TXT, clean, ink, viewTitle, wrap, polygon, hatch, LabelField, haloText, alongLabel, vtext } from './kit.js';
 import { scaleBar } from '../pdf.js';
+import { streamMark, contourPen, fmtM } from '../planset/contours.js';
+import { drawPlanGround } from '../planset/plan-context.js';
 import { compactPages } from '../shared.js';
 
 const KINDS = [['wall', 'wall'], ['opening', 'opening'], ['leaf', 'leaf'], ['roof', 'roof'], ['slab', 'slab'], ['floor', 'floor'], ['stair', 'stair']];
@@ -786,6 +788,7 @@ export function drawRoofPlan(doc, ctx, tris, area) {
     doc.text('No roof is modelled on this design.', area.x0 + aw / 2, area.y0 + ah / 2, { align: 'center' });
     return { n: null };
   }
+  const gmark = streamMark(doc); // the existing ground contours go under the roof plan
   const r = renderView(doc, roofTris, { top: true, cull: true, skipInner: false });
   const n = roofScale(tris, area, k);
   const ds = n * k;
@@ -890,6 +893,17 @@ export function drawRoofPlan(doc, ctx, tris, area) {
   for (const y of [by0, by1]) doc.line(tx - 1.4, y + 1.4, tx + 1.4, y - 1.4);
   vtext(doc, `${Math.round(r.bounds.y1 - r.bounds.y0)}`, tx - 1.6, (by0 + by1) / 2);
 
+  // Existing ground contours outside the roof, its dimension strings, the title and the data panel
+  const cx0 = (r.bounds.x0 + r.bounds.x1) / 2;
+  const cy0 = (r.bounds.y0 + r.bounds.y1) / 2;
+  const groundRoof = drawPlanGround(doc, {
+    ground: ctx.ground,
+    T: (p) => T(p.x, p.y),
+    Ti: (q) => ({ x: cx0 + (q.x - (area.x0 + dw / 2)) * ds, y: cy0 + (q.y - (area.y0 + 10 + (ah - 10) / 2)) * ds }),
+    rect: { x0: area.x0, y0: area.y0, x1: area.x0 + dw, y1: area.y1 },
+    keepOut: [{ x0: bx0 - 4, y0: by0 - 4, x1: tx + 10, y1: ty + 5 }, { x0: area.x0, y0: area.y0, x1: area.x0 + 96, y1: area.y0 + 13 }, { x0: area.x0 + 2, y0: area.y1 - 16, x1: area.x0 + 80, y1: area.y1 - 2 }],
+    mark: gmark,
+  });
   viewTitle(doc, area.x0 + 3, area.y0 + 8.4, 'Roof plan', `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.title });
   scaleBar(doc, area.x0 + 6, area.y1 - 9, n, ds);
 
@@ -941,12 +955,13 @@ export function drawRoofPlan(doc, ctx, tris, area) {
   const sample = (label, fn) => { fn(px0 + 4, y); doc.setFont('helvetica', 'normal'); doc.setFontSize(TXT.body); doc.setTextColor(...PEN.ink); doc.text(label, px0 + 22, y + 1); y += 6.4; };
   sample('Ridge, hip and valley', (x, yy) => { doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.3); doc.line(x, yy, x + 14, yy); });
   sample('Direction of fall, with pitch', (x, yy) => { doc.setDrawColor(...PEN.dim); doc.setLineWidth(0.3); doc.line(x, yy, x + 11, yy); doc.setFillColor(...PEN.dim); polygon(doc, [{ x: x + 14, y: yy }, { x: x + 11, y: yy - 1.5 }, { x: x + 11, y: yy + 1.5 }], 'F'); });
+  if (groundRoof?.stroked) sample(`Existing ground contour, ${fmtM(groundRoof.interval.minor)} m`, (x, yy) => { const pm = contourPen({ major: false, light: true }); doc.setDrawColor(...pm.colour); doc.setLineWidth(pm.width); doc.setLineDashPattern(pm.dash, 0); doc.line(x, yy, x + 14, yy); doc.setLineDashPattern([], 0); });
   sample('Exterior walls below', (x, yy) => { doc.setDrawColor(...PEN.grey); doc.setLineWidth(0.18); doc.setLineDashPattern([1.8, 1.2], 0); doc.line(x, yy, x + 14, yy); doc.setLineDashPattern([], 0); });
   y += 2;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(TXT.min);
   doc.setTextColor(...PEN.grey);
-  wrap(doc, 'Roof geometry is taken from the same model as the 3D view. Sheeting, gutters, downpipes, battens and roof framing are not designed here and are to be confirmed by the builder and a structural engineer. Dimensions are in millimetres.', ROOF_PANEL_W - 8).forEach((l, i) => doc.text(l, px0 + 4, y + i * 2.9));
+  wrap(doc, `Roof geometry is taken from the same model as the 3D view. Sheeting, gutters, downpipes, battens and roof framing are not designed here and are to be confirmed by the builder and a structural engineer. Dimensions are in millimetres.${groundRoof?.stroked ? ` ${groundRoof.note}` : ''}`, ROOF_PANEL_W - 8).forEach((l, i) => doc.text(l, px0 + 4, y + i * 2.9));
   return { n, roofM2 };
 }
 

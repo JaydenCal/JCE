@@ -18,6 +18,8 @@ import {
 import { placeUnderlay } from './aerial.js';
 import { nearestTown } from './towns.js';
 import { BODY } from './frame.js';
+import { drawGroundLayer, streamMark, contourPen, levelsNote, fmtM } from '../planset/contours.js';
+import { levelsModel } from '../planset/levels.js';
 import { siteAreaOf, fmtArea, lotIdLines } from './area.js';
 
 export const SITE_SCALES = [100, 200, 250, 500, 1000, 2000];
@@ -268,18 +270,8 @@ export function drawSitePlan(doc, ctx) {
   const stroke = (pts, closed = true) => clippedPolyline(doc, pts.map(T), rect, closed);
   const HALO = 1.0;
 
-  // 1. Contours (under everything)
-  const contourLabels = [];
-  for (const c of lot.contours || []) {
-    if (Math.abs(c.level - Math.round(c.level)) > 1e-6) continue; // contours at 1.0 m minimum (5 m DEM)
-    const pts = ptsOf(c.pts || []).map(T);
-    if (pts.length < 2) continue;
-    doc.setDrawColor(...(c.major ? PEN.contourMajor : PEN.contourMinor));
-    doc.setLineWidth(c.major ? 0.28 : 0.12);
-    doc.setLineDashPattern([], 0);
-    clippedPolyline(doc, pts, rect, false);
-    contourLabels.push({ c, pts });
-  }
+  // 1. Contours (under everything): the shared ground layer strokes them at the end, with gaps at labels and the house, and moves them back to here.
+  const gmark = streamMark(doc);
 
   // 2. Neighbouring lots (DCDB)
   doc.setDrawColor(...pal.neighbour);
@@ -490,33 +482,10 @@ export function drawSitePlan(doc, ctx) {
     field.place(length, { lines: true });
   }
 
-  // 10. Contour RL labels
-  for (const { c, pts } of contourLabels) {
-    const segs = [];
-    let total = 0;
-    for (let i = 0; i + 1 < pts.length; i++) {
-      const s = clipSegment(pts[i], pts[i + 1], rect);
-      if (s) { const len = Math.hypot(s[1].x - s[0].x, s[1].y - s[0].y); segs.push({ s, len }); total += len; }
-    }
-    if (total < 26) continue;
-    for (const f of [0.5, 0.3, 0.7, 0.18, 0.82, 0.4, 0.6]) {
-      let at = total * f;
-      let seg = null;
-      for (const g of segs) { if (at <= g.len) { seg = g; break; } at -= g.len; }
-      if (!seg || seg.len < 10) continue;
-      const t = at / seg.len;
-      const p = { x: seg.s[0].x + (seg.s[1].x - seg.s[0].x) * t, y: seg.s[0].y + (seg.s[1].y - seg.s[0].y) * t };
-      const txt = Number(c.level).toFixed(1);
-      doc.setFont('helvetica', c.major ? 'bold' : 'normal');
-      doc.setFontSize(TXT.min);
-      const w = doc.getTextWidth(txt) + 1.4;
-      const box = boxOfPts([{ x: p.x - w / 2, y: p.y - 1.9 }, { x: p.x + w / 2, y: p.y + 1.9 }]);
-      if (!field.free(box, { lines: false })) continue;
-      field.addBox(box);
-      haloText(doc, txt, p.x, p.y + 0.9, { size: TXT.min, bold: !!c.major, colour: c.major ? PEN.contourMajor : [150, 108, 50], align: 'center', halo: HALO });
-      break;
-    }
-  }
+  // 10. Ground contours and their RL labels (the shared layer), in the space the other labels left
+  const levels = ctx.levels || levelsModel(project, lot);
+  const hullS = buildingHull(project).map(T);
+  const gl = drawGroundLayer(doc, { lot, levels, S: T, rect, field, masks: hullS.length >= 3 ? [hullS] : [], mark: gmark, labelSize: TXT.min, bbox: view.windowPlan ? G.bbox(view.windowPlan) : null });
 
   // 11. Neighbour labels: lot number, then the DP one size larger beneath it
   for (const nb of lot.neighbours || []) {
@@ -617,7 +586,7 @@ export function drawSitePlan(doc, ctx) {
   doc.setLineDashPattern([], 0);
   doc.setLineWidth(0.5);
   doc.rect(vp.x0, vp.y0, vp.x1 - vp.x0, vp.y1 - vp.y0);
-  return { n, ds, label, T, turnDeg: view.turnDeg, northDeg: view.northDeg, focus: view.focus, windowPlan: view.windowPlan, facts, aerial, palette: pal };
+  return { n, ds, label, T, turnDeg: view.turnDeg, northDeg: view.northDeg, focus: view.focus, windowPlan: view.windowPlan, facts, aerial, palette: pal, ground: gl };
 }
 
 function noLotMessage(doc, ctx, vp) {
@@ -692,7 +661,7 @@ export function drawSitePanel(doc, ctx, site) {
     ['Indicative setback envelope', sample((cx, cy) => { doc.setDrawColor(...pal.envelope); doc.setLineWidth(0.5); doc.setLineDashPattern([4, 2], 0); doc.line(cx, cy, cx + sw, cy); doc.setLineDashPattern([], 0); })],
     ['Road centreline (phantom, indicative)', sample((cx, cy) => { doc.setDrawColor(...PEN.phantom); doc.setLineWidth(0.5); doc.setLineDashPattern([5, 1.2, 1.2, 1.2, 1.2, 1.2], 0); doc.line(cx, cy, cx + sw, cy); doc.setLineDashPattern([], 0); })],
     ['Kerb and gutter', sample((cx, cy) => { doc.setDrawColor(...PEN.road); doc.setLineWidth(0.4); doc.line(cx, cy, cx + sw, cy); })],
-    ['Contour (minor, major)', sample((cx, cy) => { doc.setDrawColor(...PEN.contourMinor); doc.setLineWidth(0.12); doc.line(cx, cy - 0.9, cx + 6, cy - 0.9); doc.setDrawColor(...PEN.contourMajor); doc.setLineWidth(0.28); doc.line(cx + 7, cy + 0.9, cx + sw, cy + 0.9); })],
+    ...(site?.ground?.stroked ? [[`Existing contour, ${fmtM(site.ground.interval.minor)} m`, sample((cx, cy) => { const pm = contourPen({ major: false }); const pj = contourPen({ major: true }); doc.setDrawColor(...pm.colour); doc.setLineWidth(pm.width); doc.setLineDashPattern(pm.dash, 0); doc.line(cx, cy - 0.9, cx + 6, cy - 0.9); doc.setDrawColor(...pj.colour); doc.setLineWidth(pj.width); doc.setLineDashPattern(pj.dash, 0); doc.line(cx + 7, cy + 0.9, cx + sw, cy + 0.9); doc.setLineDashPattern([], 0); })]] : []),
     ['Dimension to boundary', sample((cx, cy) => { doc.setDrawColor(...PEN.dim); doc.setLineWidth(0.13); doc.line(cx, cy, cx + sw, cy); doc.setLineWidth(0.25); doc.line(cx, cy - 1, cx, cy + 1); doc.line(cx + sw, cy - 1, cx + sw, cy + 1); })],
     ['Proposed works', sample((cx, cy) => { const p = rectP(cx, cy); hatch(doc, p, 'proposed'); doc.setDrawColor(...PEN.proposed); doc.setLineWidth(0.4); polygon(doc, p, 'S'); })],
     ...(site?.facts?.paved?.length
@@ -721,7 +690,7 @@ export function drawSitePanel(doc, ctx, site) {
   y += legH + 3;
 
   // Notes
-  const notes = siteNotes(project, { aerial, sheet: ctx.analysisNumber, focus: !!site?.focus });
+  const notes = siteNotes(project, { aerial, sheet: ctx.analysisNumber, focus: !!site?.focus, ground: site?.ground || null });
   const nh = BODY.y1 - y;
   doc.setLineWidth(0.5);
   ink(doc, PEN.ink);
@@ -741,7 +710,7 @@ export function drawSitePanel(doc, ctx, site) {
   }
 }
 
-export function siteNotes(project, { aerial = false, sheet = null, focus = false } = {}) {
+export function siteNotes(project, { aerial = false, sheet = null, focus = false, ground = null } = {}) {
   const lot = project.site?.lot || null;
   const out = [
     'Concept only. To be verified by a suitably qualified person before any use for approval or construction.',
@@ -751,7 +720,8 @@ export function siteNotes(project, { aerial = false, sheet = null, focus = false
   if (aerial) out.push('The aerial underlay is reduced in resolution and is for orientation only. It is not for measurement. Cadastre drawn in red over the aerial.'.replace(lot?.source === 'upload' ? 'Cadastre drawn' : '', lot?.source === 'upload' ? 'Boundary drawn' : ''));
   if (lot?.setbacks) out.push(`Setbacks are indicative${lot.setbacks.council ? ` (${clean(lot.setbacks.council)})` : ''}. The sources, the figures provided and the items to confirm are on ${sheet ? `sheet ${sheet}` : 'the site analysis sheet'}. A figure marked check with council is not confirmed.`);
   else if (lot) out.push('Council setbacks are not loaded for this lot. The envelope is not shown.');
-  if (lot?.terrain || lot?.contours?.length) out.push(`Levels are indicative only, from the ${lot.state === 'QLD' ? 'Queensland' : 'NSW'} 5 m DEM, and are not survey. Contours are at 1.0 m intervals and spot levels are to 0.1 m. A registered survey is required.`);
+  if (ground?.note) out.push(ground.note);
+  else if (lot?.terrain || lot?.contours?.length) out.push(levelsNote(lot, { minor: 0.5 }));
   if (lot?.floorRL != null) out.push(`FFL ${lot.floorRL.toFixed(2)} m AHD ${lot.floorRLAuto ? 'is assumed from the ground level at the house, not designed' : 'as set by the designer'}. NSL is the natural surface level from the terrain model at each house corner.`);
   if (lot?.floorRL != null && lot?.terrain) {
     const bx = orientedBox(buildingHull(project));

@@ -23,6 +23,8 @@ import { resolveLocality } from './locality.js';
 import { syncCurrency } from '../../../site/custom-rules.js';
 import { sheetNotes } from '../../../site/upload/sheet-text.js';
 import { drawSite, siteView } from './site.js';
+import { levelsModel, loadTerrainModel } from './levels.js';
+import { groundLegendBlock, intervalText } from './contours.js';
 import { drawHouseSheet, houseSheets } from './house.js';
 import { zoneMismatch, RESIDENTIAL_NOTE } from '../../../commercial/zones.js';
 import { drawElevations } from './commercial-elevations.js';
@@ -121,7 +123,9 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
   const aligned = commercial ? { project: wp } : alignProject(wp);
   const id = projectCode(wp);
   const title = commercial ? commercialTitle(wp) : projectTitle(wp);
-  const cmodel = commercial ? commercialModel(wp, siteLot) : null;
+  // Ground and floor levels, from the same model the 3D uses (loaded on demand; none when the lot has no ground data).
+  const levels = siteLot ? levelsModel(wp, siteLot, { tm: await loadTerrainModel(wp) }) : null;
+  const cmodel = commercial ? commercialModel(wp, siteLot, { levels }) : null;
   sheets.forEach((s, i) => { s.n = i + 1; s.no = `GI-${id}-${s.code}`; if (preview) s.scale = 'NOT TO SCALE'; });
 
   const raw = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3', compress: true });
@@ -151,7 +155,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
         drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes([...(zoneMismatch(siteLot) ? [`${RESIDENTIAL_NOTE}.`] : []), ...commercialNotes(cmodel.stats)], siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
         strip = { ...strip, subtitle: cap1(layoutKind(cmodel.stats)), kvTitle: 'SITE DATA', kv: [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`], ...(cmodel.stats.units ? [['Units', String(cmodel.stats.units)]] : [])], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
       } else {
-        if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null });
+        if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null, levels });
         else if (s.id === 'layout') r = drawLayout(doc, cmodel);
         else if (s.id === 'mezz') r = drawMezzanine(doc, cmodel);
         else if (s.id === 'elev') r = drawElevations(doc, cmodel);
@@ -162,11 +166,15 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
       drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
       strip = { ...strip, subtitle: kind === 'site' ? 'Site plan and house plan' : 'House plan', kvTitle: 'SITE DATA', kv: siteLot ? [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`]] : [], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
     } else if (s.id === 'site') {
-      Object.assign(facts, drawSite(doc, wp, siteLot));
+      Object.assign(facts, drawSite(doc, wp, siteLot, { levels }));
       strip = { ...strip, subtitle: ascii(title), kvTitle: 'SITE DATA', kv: facts.kv, notes: facts.notes, blocks: facts.blocks };
     } else {
-      const h = drawHouseSheet(doc, aligned.project, s.house, { catalogue, northDeg: Number(aligned.project.site?.northDeg) || 0 });
-      strip = { ...strip, subtitle: ascii(title), kvTitle: 'AREAS (INDICATIVE)', kv: h.kv, blocks: h.blocks, notes: ['Dimensions in millimetres.', 'Room areas to internal wall faces.', 'Door swings and window positions are shown as designed.', 'Confirm all dimensions on site before ordering.'] };
+      const h = drawHouseSheet(doc, aligned.project, s.house, { catalogue, northDeg: Number(aligned.project.site?.northDeg) || 0, ground: levels ? { lot: siteLot, levels, align: aligned.align || null, unalign: aligned.unalign || null } : null });
+      const notes = ['Dimensions in millimetres.', 'Room areas to internal wall faces.', 'Door swings and window positions are shown as designed.', 'Confirm all dimensions on site before ordering.'];
+      const kv = [...h.kv];
+      const lg = groundLegendBlock(h.ground);
+      if (h.ground?.stroked) { notes.push(h.ground.note); kv.push(['Contours', intervalText(h.ground.interval)]); }
+      strip = { ...strip, subtitle: ascii(title), kvTitle: 'AREAS (INDICATIVE)', kv, blocks: [...(lg ? [lg] : []), ...h.blocks], notes };
     }
     strip.notes = sheetNotes(strip.notes, siteLot, { aerialShown: !!locality.aerial && ['cover', 'existing', 'site'].includes(s.id), aerial: locality.aerial });
     drawConceptNote(doc);

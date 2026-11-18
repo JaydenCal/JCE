@@ -20,7 +20,7 @@ export const PEN = {
   proposed: [10, 50, 150],
   proposedFill: [214, 226, 248],
   hard: [150, 150, 150],
-  contourMinor: [196, 160, 112],
+  contourMinor: [178, 136, 84],
   contourMajor: [150, 98, 40],
   road: [60, 62, 68],
   phantom: [200, 20, 20],

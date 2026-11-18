@@ -12,7 +12,8 @@ import { boundaryDims, roadReserve, ROAD_DEFAULTS, deriveDriveway, clearances, b
 import { extraWays, pavedSummary, HATCH_KIND, SHEET_LABEL, MATERIALS as PAVE_MATERIALS } from '../../../site/pavedways.js';
 import { wallShapes } from '../shared.js';
 import { planGeometry, scaleBar } from '../pdf.js';
-import { hasGround, prepareContours, strokeContours, boxMask, placeContourLabels, drawSpotLevels, groundLevelFn, cornersOf, houseCorners } from './contours.js';
+import { drawGroundLayer, streamMark, outwardSpots, cornersOf, houseCorners, intervalText } from './contours.js';
+import { levelsModel, fflText } from './levels.js';
 import { PEN, PHANTOM, clipSegment, hatch, dimLine, haloText, alongLabel, LabelField, boxOfPts, clean } from '../eng/kit.js';
 import { AREA } from './frame.js';
 import { groundLevel, envelopePoly, groundFootprintM2 } from './lot.js';
@@ -204,7 +205,7 @@ export function northPoint(doc, cx, cy, deg) {
 }
 
 /** Legend block for the title strip. */
-export function legendBlock({ contours = false, paved = null } = {}) {
+export function legendBlock({ contours = [], paved = null } = {}, avail = null) {
   const items = [
     ['Lot boundary (DCDB)', (doc, a, b) => { doc.setLineWidth(0.7); doc.setDrawColor(...PEN.ink); doc.line(a, b, a + 12, b); }],
     ['Adjoining lot boundary', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.line(a, b, a + 12, b); }],
@@ -214,15 +215,18 @@ export function legendBlock({ contours = false, paved = null } = {}) {
     ['Roof line (eaves)', (doc, a, b) => { doc.setLineWidth(0.25); doc.setDrawColor(...PEN.ink); doc.setLineDashPattern([3, 1.2], 0); doc.line(a, b, a + 12, b); doc.setLineDashPattern([], 0); }],
     ['Kerb and gutter', (doc, a, b) => { doc.setLineWidth(0.25); doc.setDrawColor(...PEN.ink); doc.line(a, b - 0.5, a + 12, b - 0.5); doc.line(a, b + 0.5, a + 12, b + 0.5); }],
     ...((paved && paved.length ? paved : [{ material: 'concrete' }]).map((e) => [paved && paved.length ? `${PAVE_MATERIALS[e.material].label} paving, ${Math.round(e.areaM2)} m2` : 'Concrete driveway', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.rect(a, b - 1.4, 12, 2.8, 'S'); hatch(doc, [{ x: a, y: b - 1.4 }, { x: a + 12, y: b - 1.4 }, { x: a + 12, y: b + 1.4 }, { x: a, y: b + 1.4 }], HATCH_KIND[e.material]); }])),
-    ...(contours ? [['Contour (minor, major)', (doc, a, b) => { doc.setLineDashPattern([], 0); doc.setLineWidth(0.12); doc.setDrawColor(...PEN.contourMinor); doc.line(a, b - 0.7, a + 5.5, b - 0.7); doc.setLineWidth(0.26); doc.setDrawColor(...PEN.contourMajor); doc.line(a + 6.5, b + 0.7, a + 12, b + 0.7); }]] : []),
+    ...(contours || []),
     ['Setback encroachment', (doc, a, b) => { doc.setLineWidth(0.3); doc.setDrawColor(...RED); doc.line(a, b, a + 12, b); }],
   ];
+  const rowH = avail ? Math.min(4, (avail - 6.5) / items.length) : 4;
   return {
     title: 'LEGEND',
-    h: 4 + items.length * 4 + 2.5,
+    h: 4 + items.length * rowH + 2.5,
+    // The title strip asks a legend that does not fit to close up its rows (down to 2.6 mm) instead of being dropped.
+    fitTo: (h) => ((h - 6.5) / items.length >= 2.6 ? legendBlock({ contours, paved }, h) : null),
     draw(doc, x, y) {
       items.forEach(([t, draw], i) => {
-        const ly = y + 2.4 + i * 4;
+        const ly = y + 2.4 + i * rowH;
         draw(doc, x + 3, ly);
         doc.setLineDashPattern([], 0);
         doc.setFont('helvetica', 'normal');
@@ -257,8 +261,9 @@ function scheduleBlock(rows) {
 
 // The sheet ---------------------------------------------------------------------------------------------------------------------
 /** Draws the site plan; returns { scale, scaleLabel, kv, blocks, notes, clearance, tooBig }. */
-export function drawSite(doc, project, lot, { overAerial = false, turn = true } = {}) {
+export function drawSite(doc, project, lot, { overAerial = false, turn = true, levels: levelsIn = null } = {}) {
   const view = siteView(project, lot, { turn });
+  const levels = levelsIn || levelsModel(project, lot);
   const { T: S, scale } = view;
   const field = new LabelField(VP);
   const bd = boundaryDims(lot);
@@ -276,11 +281,9 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
     if (!n.ring || n.ring.length < 3 || n.isRoad) continue;
     polyLine(doc, n.ring.map(S));
   }
-  const ground0 = hasGround(lot);
-  const contourLines = ground0 ? prepareContours(lot, S) : [];
+  const ground0 = levels.has;
   // The contours are stroked last (so they can leave gaps around labels and the house) and moved back in the page stream to here.
-  const pageStream = doc.internal.pages[doc.internal.getCurrentPageInfo().pageNumber];
-  const contourMark = pageStream.length;
+  const gmark = streamMark(doc);
   const neighbourLabels = [];
   for (const n of lot.neighbours || []) {
     if (!n.ring || n.ring.length < 3 || n.isRoad || (!n.lotNumber && !n.planLabel)) continue;
@@ -620,20 +623,17 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
     doc.text(areaTxt, cands[0].x, cands[0].y + 4, { align: 'center' });
   }
 
-  // Ground levels: spot levels at the lot and house corners, then RL labels along the contours, in the space that is left.
-  if (ground0) {
-    const zAt = groundLevelFn(lot);
-    const lc = S(G.polygonCentroid(lot.boundary));
-    const unit = (a, b) => { const d = G.sub(a, b); const l = Math.hypot(d.x, d.y) || 1; return { x: d.x / l, y: d.y / l }; };
-    const spots = cornersOf(lot.boundary).map((p) => ({ p, out: unit(S(p), lc) }));
-    if (hullPoly.length) {
-      const hc = S(G.polygonCentroid(hullPoly));
-      for (const p of houseCorners(hullPoly)) spots.push({ p, out: unit(S(p), hc) });
-    }
-    drawSpotLevels(doc, field, spots, zAt, S);
-    if (hullPoly.length) { const hb = G.bbox(hullPoly.map(S)); field.addBox({ x0: hb.minX, y0: hb.minY, x1: hb.maxX, y1: hb.maxY, nomask: true }); }
-    placeContourLabels(doc, field, contourLines, VP);
-  }
+  // Ground levels: FFL tag, spot levels at the lot and house corners, then RL labels along the contours in the space that is left, then the
+  // contour strokes (with gaps at every label, the house and the paving) moved back under the linework.
+  const spots = ground0 ? outwardSpots(cornersOf(lot.boundary), S) : [];
+  if (ground0 && hullPoly.length) spots.push(...outwardSpots(houseCorners(hullPoly), S));
+  const masks = [];
+  if (hullPoly.length) masks.push(hullPoly.map(S));
+  if (dw?.ok) for (const poly of [dw.polygon, dw.crossover?.polygon].filter(Boolean)) masks.push(poly.map(S));
+  for (const e of extraWays(project)) for (const pc of e.geom.pieces) masks.push(pc.ring.map(S));
+  const reserve = hullPoly.length ? [(() => { const hb = G.bbox(hullPoly.map(S)); return { x0: hb.minX, y0: hb.minY, x1: hb.maxX, y1: hb.maxY, nomask: true }; })()] : [];
+  const ffl = hullPoly.length ? [{ poly: hullPoly.map(S), text: fflText(levels, levels.fflOf(hullPoly)) }] : [];
+  const gl = drawGroundLayer(doc, { lot, levels, S, Si: view.Ti, rect: VP, field, masks, spots, ffl, reserve, mark: gmark });
 
   // Enlarged house at 1:200 when the plan is too small to read the house (scale above 1:500).
   if (scale > 500 && hullPoly.length) {
@@ -684,18 +684,6 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
   doc.setTextColor(...PEN.ink);
   doc.text(`1:${scale} @ A3`, VP.x0 + 6 + barLen + 14, VP.y1 + 6.2);
 
-  // Contours: stroked now with gaps at every label block, dimension text and the house and driveway, then placed under the linework.
-  if (ground0) {
-    const masks = field.boxes.filter((b) => !b.nomask).map((b) => boxMask(b));
-    if (hullPoly.length) masks.push(hullPoly.map(S));
-    if (dw?.ok) for (const poly of [dw.polygon, dw.crossover?.polygon].filter(Boolean)) masks.push(poly.map(S));
-    for (const e of extraWays(project)) for (const pc of e.geom.pieces) masks.push(pc.ring.map(S));
-    const before = pageStream.length;
-    strokeContours(doc, contourLines, VP, masks);
-    const added = pageStream.splice(before);
-    pageStream.splice(contourMark, 0, 'q', ...added, 'Q');
-  }
-
   // Facts for the strip.
   const fp = groundFootprintM2(project);
   const sb = lot.setbacks || {};
@@ -714,14 +702,16 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
     ['House footprint', hb2 ? `${(hb2.w / 1000).toFixed(1)} x ${(hb2.h / 1000).toFixed(1)} m` : 'n/a'],
     ['Site coverage', lot.areaM2 ? `${((fp / lot.areaM2) * 100).toFixed(1)} %` : 'n/a'],
     ['Setbacks F / S / R', [m(sb.front), m(sb.side), m(sb.rear)].map((v) => (typeof v === 'number' ? v.toFixed(2) : 'n/a')).join(' / ') + ' m'],
+    gl.interval && gl.stroked ? ['Contours', intervalText(gl.interval)] : null,
+    ground0 ? null : ['Ground levels', 'None for this lot'],
     ['Setback check', cl.status === 'ok' ? 'Inside setbacks (indicative)' : cl.status === 'breach' ? 'Outside setbacks (indicative)' : 'Setbacks not loaded'],
   ].filter(Boolean);
   const pavedSum = pavedSummary(project);
-  const blocks = [legendBlock({ contours: ground0, paved: pavedSum.byMaterial })];
+  const blocks = [legendBlock({ contours: gl.legend, paved: pavedSum.byMaterial })];
   if (schedule.length) blocks.push(scheduleBlock(schedule));
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines and dimensions are indicative.', 'Driveway and road reserve are typical values.'];
-  notes.push(ground0 ? `Levels are indicative only, from the ${lot.state === 'QLD' ? 'Queensland' : 'NSW'} 5 m DEM, not survey. Contours at 1.0 m intervals. A registered survey is required.` : 'No ground levels for this lot.');
+  notes.push(ground0 ? gl.note : `No ground levels for this lot.${hullPoly.length ? ' Floor level is on an assumed datum.' : ''}`);
   if (schedule.length) notes.push('Edges too short to label are tagged E and listed in the boundary schedule.');
   void clean;
-  return { scale, scaleLabel: `1:${scale} @ A3`, kv, blocks, notes, clearance: cl, tooBig };
+  return { scale, scaleLabel: `1:${scale} @ A3`, kv, blocks, notes, clearance: cl, tooBig, ground: gl, legendContours: gl.legend, groundNote: ground0 ? gl.note : 'No ground levels for this lot.' };
 }
