@@ -40,6 +40,9 @@ export function createAdminApi({ token, base = CONFIG.apiBase, fetchImpl = null 
     listClientRequests: () => call('GET', '/client-requests'),
     extendTrial: (id) => call('POST', `/orgs/${encodeURIComponent(id)}/extend-trial`, {}),
     convert: (id, note) => call('POST', `/orgs/${encodeURIComponent(id)}/convert`, { note }),
+    /** Jobs charged to one org for a month (default this month), and the capped plan: setJobPlan(id, 'starter' | 'pro' | 'teams' | null). */
+    orgJobs: (id, month) => call('GET', `/orgs/${encodeURIComponent(id)}/jobs${month ? `?month=${encodeURIComponent(month)}` : ''}`),
+    setJobPlan: (id, plan) => call('POST', `/orgs/${encodeURIComponent(id)}/job-plan`, { plan }),
     setLoginRate: (id, cents) => call('POST', `/orgs/${encodeURIComponent(id)}/login-rate`, { cents }),
     setBrandColours: (id, colours) => call('POST', `/orgs/${encodeURIComponent(id)}/brand-colours`, { colours }),
     // Commercial mode (server/lib/commercial.js): the one shared trial login, and the actual AI usage and cost per account.

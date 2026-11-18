@@ -404,8 +404,30 @@ CREATE TABLE IF NOT EXISTS org_accounts (
   card_last4 TEXT,
   card_added_at TEXT,
   owner_note TEXT,
-  internal INTEGER NOT NULL DEFAULT 0        -- 1 = owner's internal test account: no charges, no trial, not in reports (migration 0014)
+  internal INTEGER NOT NULL DEFAULT 0,       -- 1 = owner's internal test account: no charges, no trial, not in reports (migration 0014)
+  job_plan TEXT,                             -- starter | pro | teams: the capped monthly job plan, NULL = pay per job (migration 0023)
+  job_plan_subscription_id TEXT,
+  job_plan_since TEXT
 );
+
+-- Builder per job billing (migration 0023_job_billing.sql): one row per new project a builder staff login starts.
+CREATE TABLE IF NOT EXISTS job_charges (
+  id TEXT PRIMARY KEY,
+  request_id TEXT NOT NULL UNIQUE,
+  org_id TEXT NOT NULL,
+  user_id TEXT,
+  user_name TEXT,
+  project_id TEXT,
+  project_name TEXT,
+  month TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  kind TEXT NOT NULL,                        -- charged | plan_included | plan_extra | trial_free | internal | unbilled
+  amount_cents INTEGER NOT NULL DEFAULT 0,
+  plan TEXT,
+  stripe_invoice_id TEXT,
+  note TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_job_charges_org ON job_charges(org_id, month);
 
 -- ===== 15. Plan set terms acceptance (migration 0017_terms_acceptance.sql) =====
 -- One row per (account or entitlement, terms version). ip_hash = SHA-256 of IP_HASH_SALT + address; the raw address is never stored.

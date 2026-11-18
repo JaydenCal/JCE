@@ -143,6 +143,11 @@ function makeWorld({ d1 = false, env = {} } = {}) {
     const out = { browser: b, client: r.data.client, credentials: r.data.credentials, relogin };
     return out;
   };
+  /** A login charge row as made before 18/11/2026 (client logins are free now): history that month end invoices still bill. */
+  world.legacyLogin = async (org, name, cents = 3000) => {
+    const at = new Date(world.clock.t).toISOString();
+    assert.equal(await world.pstore.addLoginIssue({ loginId: `legacy_${name}_${world.clock.t}`, id: `li_legacy_${name}_${world.clock.t}`, orgId: org.orgId, clientName: name, issuedAt: at, month: monthKey(world.clock.t), amountCents: cents }), true);
+  };
   world.makeDesigner = async (org, firstName = 'Tom') => {
     const r = await org.admin.post('/portal/team', { firstName, role: 'designer', email: `${firstName.toLowerCase()}@x.example` });
     assert.equal(r.status, 201, JSON.stringify(r.data));
@@ -445,7 +450,7 @@ for (const [label, d1] of stores) {
     assert.equal(issued.status, 201);
     assert.match(issued.data.credentials.username, /^sarah-[2-9]{4}$/);
     assert.match(issued.data.credentials.password, /^[2-9a-hjkmnp-z]{4}(-[2-9a-hjkmnp-z]{4}){3}$/);
-    assert.deepEqual(issued.data.charge, { amountCents: 3000, trigger: 'first_sign_in', note: 'A$30 incl. GST is charged on your monthly invoice once your client first signs in.' });
+    assert.deepEqual(issued.data.charge, { amountCents: 0, trigger: 'none', note: 'No charge for client logins.' }, 'client logins are free');
     assert.equal(issued.data.client.billed, false);
     assert.equal(issued.data.client.mustChangePassword, true);
     assert.ok(issued.data.client.tempPasswordExpiresAt);
@@ -483,7 +488,7 @@ for (const [label, d1] of stores) {
     assert.equal((await other.admin.get('/portal/clients')).data.length, 0);
   });
 
-  t('delete client: removes projects, a billed login keeps its charge, an unused login is free', async () => {
+  t('delete client: removes projects, a login charged before logins became free keeps its charge, an unused login is free', async () => {
     const w = makeWorld({ d1 });
     const org = await w.makeOrg();
     const used = await w.makeClient(org, 'Used');
@@ -494,13 +499,16 @@ for (const [label, d1] of stores) {
     assert.equal(exp.projects.length, 1);
     assert.equal(exp.client.username, used.client.username);
     assert.ok(exp.projects[0].project.levels);
+    // Client logins are free now: a first sign in leaves no billing row. A login charged BEFORE that keeps its row (the financial record).
+    assert.equal(await w.pstore.getLoginIssue(used.client.id), null, 'a first sign in creates no charge row');
+    await w.pstore.addLoginIssue({ loginId: used.client.id, id: 'li_legacy_used', orgId: org.orgId, clientName: 'Used', issuedAt: new Date(w.clock.t).toISOString(), month: monthKey(w.clock.t), amountCents: 3000 });
     const d1r = await org.admin.del(`/portal/clients/${used.client.id}`);
     assert.deepEqual(d1r.data, { ok: true, removedProjects: 1, charged: true });
     const d2r = await org.admin.del(`/portal/clients/${unused.client.id}`);
     assert.deepEqual(d2r.data, { ok: true, removedProjects: 0, charged: false });
     assert.equal((await org.admin.get('/portal/projects')).data.length, 0);
     const usage = (await org.admin.get('/portal/billing/usage')).data;
-    assert.equal(usage.totals.loginsCount, 1, 'the billed login stays on the month; the unused one never appears');
+    assert.equal(usage.totals.loginsCount, 1, 'the earlier billed login stays on the month; the unused one never appears');
     assert.equal((await org.admin.del(`/portal/clients/${used.client.id}`)).status, 404);
   });
 
@@ -638,7 +646,12 @@ for (const [label, d1] of stores) {
     // The client saving again clears the staff mark.
     assert.equal((await s1.browser.post('/portal/projects', { id, name: 'Thornton', project: createFromTemplate('house_single') })).data.editedByStaff, false);
     // A staff login's own new design belongs to staff.
-    const own = await designer.browser.post('/portal/projects', { name: 'Show home', project: createFromTemplate('house_single') });
+    // It is a new job, so it needs the on screen confirm first (nothing is created without it).
+    const unconfirmed = await designer.browser.post('/portal/projects', { name: 'Show home', project: createFromTemplate('house_single') });
+    assert.equal(unconfirmed.status, 409);
+    assert.equal(unconfirmed.data.error.code, 'JOB_CONFIRM_REQUIRED');
+    assert.equal((await org.admin.get(`/portal/projects?clientId=${designer.user.id}`)).data.length, 0, 'no project until the job is confirmed');
+    const own = await designer.browser.post('/portal/projects', { name: 'Show home', project: createFromTemplate('house_single'), confirmJob: true });
     assert.equal(own.data.ownerId, designer.user.id);
     assert.equal(own.data.editedByStaff, false);
     // No billing side effects: no login issue, no usage change, no AI charge.
@@ -670,93 +683,66 @@ for (const [label, d1] of stores) {
     assert.equal(intact.editedByStaff, false);
   });
 
-  t('billing: A$30 once at the first sign in, staff are free, month boundary follows Sydney time, GST is one eleventh', async () => {
+  t('billing: client logins are not charged (no row at first sign in); rows charged before that stay on their Sydney month, GST is one eleventh', async () => {
     const w = makeWorld({ d1 });
     w.clock.t = Date.UTC(2026, 9, 31, 12, 30); // 31/10/2026 23:30 Sydney (AEDT)
     const org = await w.makeOrg();
     const issued = await org.admin.post('/portal/clients', { firstName: 'Late' });
     assert.equal((await org.admin.get('/portal/billing/usage?month=2026-10')).data.totals.loginsCount, 0, 'generating a login is free');
+    // History from before client logins became free: one row just before midnight on 31/10 Sydney, one just after (13:00 UTC).
+    assert.equal(await w.pstore.addLoginIssue({ loginId: 'old1', id: 'li_old1', orgId: org.orgId, clientName: 'Late', issuedAt: new Date(Date.UTC(2026, 9, 31, 12, 59)).toISOString(), month: '2026-10', amountCents: 3000 }), true);
+    assert.equal(await w.pstore.addLoginIssue({ loginId: 'old2', id: 'li_old2', orgId: org.orgId, clientName: 'Next', issuedAt: new Date(Date.UTC(2026, 9, 31, 13, 0)).toISOString(), month: '2026-11', amountCents: 3000 }), true);
+    // First sign ins now create nothing, however many there are.
     const cl = w.browser();
-    w.clock.t = Date.UTC(2026, 9, 31, 12, 59); // 23:59 on 31/10 Sydney
-    await cl.post('/portal/session', { identifier: issued.data.credentials.username, password: issued.data.credentials.password });
-    // A second client signs in just after midnight on 01/11 Sydney (13:00 UTC).
+    w.clock.t = Date.UTC(2026, 9, 31, 12, 59);
+    assert.equal((await cl.post('/portal/session', { identifier: issued.data.credentials.username, password: issued.data.credentials.password })).status, 200);
+    const second = await org.admin.post('/portal/clients', { firstName: 'Newer' });
     w.clock.t = Date.UTC(2026, 9, 31, 13, 0);
-    const second = await org.admin.post('/portal/clients', { firstName: 'Next' });
-    await w.browser().post('/portal/session', { identifier: second.data.credentials.username, password: second.data.credentials.password });
+    assert.equal((await w.browser().post('/portal/session', { identifier: second.data.credentials.username, password: second.data.credentials.password })).status, 200);
+    assert.equal((await w.pstore.listLoginIssues(org.orgId)).length, 2, 'only the two history rows exist');
     const oct = (await org.admin.get('/portal/billing/usage?month=2026-10')).data;
     const nov = (await org.admin.get('/portal/billing/usage?month=2026-11')).data;
     assert.equal(oct.totals.loginsCount, 1);
     assert.equal(nov.totals.loginsCount, 1);
     assert.equal(oct.logins[0].clientName, 'Late');
     assert.equal(oct.logins[0].amountCents, 3000);
+    assert.equal(oct.loginPricing, null, 'there is no login price any more');
     assert.equal(nov.timezone, 'Australia/Sydney');
     assert.deepEqual(oct.totals, { loginsCount: 1, loginsCents: 3000, topUpsCount: 0, topUpsCents: 0, totalCents: 3000, gstCents: 273 });
-    // Signing in again (or after a password change) never creates a second charge, and later months stay empty.
-    const again = w.browser();
-    w.clock.t += 2 * DAY;
-    assert.equal((await again.post('/portal/session', { identifier: issued.data.credentials.username, password: issued.data.credentials.password })).status, 200, 'second sign in');
-    w.clock.t += 40 * DAY;
+    w.clock.t += 42 * DAY;
     await org.relogin();
     assert.equal((await org.admin.get('/portal/billing/usage?month=2026-10')).data.totals.loginsCount, 1);
     assert.equal((await org.admin.get('/portal/billing/usage?month=2026-12')).data.totals.loginsCount, 0);
     assert.equal((await org.admin.get('/portal/billing/usage?month=2026-13')).status, 400);
     assert.equal((await org.admin.get('/portal/billing/usage?month=nope')).status, 400);
-    // Staff sign in (admin above) were not charged: only client rows exist.
-    assert.equal(nov.logins.every((l) => l.loginId !== org.adminUser.id), true);
-    // The default month is the current Sydney month.
     assert.equal((await org.admin.get('/portal/billing/usage')).data.month, monthKey(w.clock.t));
-    // Another org cannot see these charges.
     const other = await w.makeOrg('Other Builders', 'Olga');
     assert.equal((await other.admin.get('/portal/billing/usage?month=2026-10')).data.totals.totalCents, 0);
   });
 
-  t('volume pricing: logins 1 to 15 A$30, 16 to 50 A$25, over 50 flagged, a custom rate applies to the whole month and can be cleared', async () => {
+  t('history of the old login tiers: seeded rows still total and invoice correctly, new first sign ins add none, the old custom rate route still reprices history', async () => {
     const w = makeWorld({ d1 });
     const org = await w.makeOrg();
     const month = monthKey(w.clock.t);
-    const seed = async (from, to) => {
-      for (let n = from; n <= to; n += 1) {
-        assert.equal(await w.pstore.addLoginIssue({ loginId: `seed${n}`, id: `li_seed${n}`, orgId: org.orgId, clientName: `C${n}`, issuedAt: new Date(w.clock.t + n * 1000).toISOString(), month, amountCents: priceForNthLoginThisMonth(n) }), true);
-      }
-    };
-    await seed(1, 14);
-    await w.makeClient(org, 'Fifteenth'); // 15th: A$30
-    const u1 = (await org.admin.get(`/portal/billing/usage?month=${month}`)).data;
-    assert.equal(u1.totals.loginsCount, 15);
-    assert.equal(u1.logins.find((l) => l.clientName === 'Fifteenth').amountCents, 3000);
-    assert.deepEqual([u1.loginPricing.count, u1.loginPricing.currentRateCents, u1.loginPricing.customRateCents, u1.loginPricing.over50NeedsCustomRate], [15, 2500, null, false], 'the next login is the 16th');
-    const gen = await org.admin.post('/portal/clients', { firstName: 'Sixteenth' });
-    assert.equal(gen.data.charge.amountCents, 2500, 'the Generate screen shows the rate the next login will be charged');
-    w.clock.t += 60000;
-    const s16 = await w.browser().post('/portal/session', { identifier: gen.data.credentials.username, password: gen.data.credentials.password });
-    assert.equal(s16.status, 200);
-    const u2 = (await org.admin.get(`/portal/billing/usage?month=${month}`)).data;
-    assert.equal(u2.logins.find((l) => l.clientName === 'Sixteenth').amountCents, 2500, 'the 16th is A$25');
-    await seed(17, 50);
-    await w.makeClient(org, 'Fiftyfirst'); // 51st, no custom rate: still A$25 and flagged
+    for (let n = 1; n <= 51; n += 1) {
+      assert.equal(await w.pstore.addLoginIssue({ loginId: `seed${n}`, id: `li_seed${n}`, orgId: org.orgId, clientName: `C${n}`, issuedAt: new Date(w.clock.t + n * 1000).toISOString(), month, amountCents: priceForNthLoginThisMonth(n) }), true);
+    }
+    const gen = await org.admin.post('/portal/clients', { firstName: 'Fiftysecond' });
+    assert.equal(gen.data.charge.amountCents, 0);
+    w.clock.t += 120000;
+    assert.equal((await w.browser().post('/portal/session', { identifier: gen.data.credentials.username, password: gen.data.credentials.password })).status, 200);
     const u3 = (await org.admin.get(`/portal/billing/usage?month=${month}`)).data;
-    assert.equal(u3.logins.find((l) => l.clientName === 'Fiftyfirst').amountCents, 2500);
-    assert.equal(u3.loginPricing.over50NeedsCustomRate, true);
+    assert.equal(u3.totals.loginsCount, 51, 'the 52nd login added nothing');
     assert.equal(u3.totals.loginsCents, 15 * 3000 + 36 * 2500);
-    const row = async () => (await w.admin('POST', `/portal/admin/orgs/${org.orgId}/login-rate`, { cents: undefined })).status;
-    assert.equal(await row(), 400, 'cents is required');
-    assert.equal((await w.admin('POST', `/portal/admin/orgs/${org.orgId}/login-rate`, { cents: 50 })).status, 400, 'below A$1');
+    assert.equal(u3.loginPricing, null);
+    assert.equal((await w.admin('POST', `/portal/admin/orgs/${org.orgId}/login-rate`, { cents: undefined })).status, 400, 'cents is required');
     assert.equal((await w.admin('POST', `/portal/admin/orgs/${org.orgId}/login-rate`, { cents: 2000 }, 'wrong-token')).status, 401, 'admin token needed');
-    const list0 = (await w.admin('POST', '/portal/admin/orgs/none/login-rate', { cents: 2000 }));
-    assert.equal(list0.status, 404);
-    // Custom rate: applies to every login this month, including those already charged; the flag clears.
     const set = await w.admin('POST', `/portal/admin/orgs/${org.orgId}/login-rate`, { cents: 2000 });
     assert.equal(set.status, 200, JSON.stringify(set.data));
-    assert.equal(set.data.loginPricing.customRateCents, 2000);
-    assert.equal(set.data.loginPricing.over50Flag, null);
     const u4 = (await org.admin.get(`/portal/billing/usage?month=${month}`)).data;
-    assert.equal(u4.logins.every((l) => l.amountCents === 2000), true);
     assert.equal(u4.totals.loginsCents, 51 * 2000);
-    assert.equal(u4.loginPricing.currentRateCents, 2000);
-    // Clearing goes back to the tiers for this month.
     const clr = await w.admin('POST', `/portal/admin/orgs/${org.orgId}/login-rate`, { cents: null });
     assert.equal(clr.status, 200);
-    assert.equal(clr.data.loginPricing.over50Flag, 'over 50 this month, set custom rate');
     const u5 = (await org.admin.get(`/portal/billing/usage?month=${month}`)).data;
     assert.equal(u5.totals.loginsCents, 15 * 3000 + 36 * 2500);
     // The invoice has one line per distinct unit price.
@@ -1047,6 +1033,8 @@ for (const [label, d1] of stores) {
     await a.admin.put('/portal/billing/contact', { name: 'Accounts', email: 'accounts@alpha.example', phone: '', legalName: 'Alpha Builders Pty Ltd', abn: '51 824 753 556' });
     const c1 = await w.makeClient(a, 'Sarah');
     await w.makeClient(a, 'Daniel');
+    await w.legacyLogin(a, 'Sarah');
+    await w.legacyLogin(a, 'Daniel');
     await c1.browser.post('/portal/ai/top-up');
     const b = await w.makeOrg('Bravo Homes', 'Bob');
     await w.makeClient(b, 'Nobody', {}, { signIn: false });
@@ -1056,6 +1044,7 @@ for (const [label, d1] of stores) {
     await a.relogin();
     await b.relogin();
     await w.makeClient(a, 'Later');
+    await w.legacyLogin(a, 'Later');
     assert.equal((await w.admin('POST', '/billing/run-month', { month: '2026-11' })).status, 400, 'the current month is not finished');
     assert.equal((await w.admin('POST', '/billing/run-month', { month: '2027-05' })).status, 400, 'a future month');
     assert.equal((await w.admin('POST', '/billing/run-month', { month: 'bad' })).status, 400);
@@ -1135,6 +1124,8 @@ for (const [label, d1] of stores) {
     await a.admin.put('/portal/billing/contact', { name: 'Accounts', email: 'accounts@alpha.example', phone: '', legalName: 'Alpha Builders Pty Ltd', abn: '51 824 753 556' });
     const sarah = await w.makeClient(a, 'Sarah');
     await w.makeClient(a, 'Daniel');
+    await w.legacyLogin(a, 'Sarah');
+    await w.legacyLogin(a, 'Daniel');
     await sarah.browser.post('/portal/ai/top-up');
     w.clock.t = Date.UTC(2026, 10, 1, 0, 0); // 11:00 on 01/11/2026 Sydney: not the run time
     assert.equal(await w.app.scheduled(), null, 'cron at the wrong Sydney hour does nothing');
@@ -1169,6 +1160,7 @@ for (const [label, d1] of stores) {
     const a = await w.makeOrg('Alpha Builders Pty Ltd', 'Priya');
     await a.admin.put('/portal/billing/contact', { name: 'A', email: 'a@alpha.example', phone: '', legalName: 'Alpha Builders Pty Ltd', abn: '51 824 753 556' });
     await w.makeClient(a, 'Sarah');
+    await w.legacyLogin(a, 'Sarah');
     w.clock.t = Date.UTC(2026, 10, 11, 1, 0);
     const r = await w.admin('POST', '/billing/run-month', { month: '2026-10' });
     assert.equal(r.data.results[0].status, 'failed');

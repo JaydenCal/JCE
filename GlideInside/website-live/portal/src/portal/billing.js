@@ -1,8 +1,11 @@
 // Billing rules (docs/PORTAL_API.md 4). Pure functions, no storage, so the rules can be tested.
-//   Per NEW client login, charged once when the client FIRST SIGNS IN, in the calendar month (Australia/Sydney) of that first sign in.
-//   Volume pricing per builder org, counted by first sign ins in that month, GST included: logins 1 to 15 A$30 each, logins 16 to 50 A$25 each,
-//   above 50 a custom rate set by the owner (org.customLoginCents; until it is set the A$25 rate keeps applying and the admin page flags the org). Generating a login is free, and an unused login can be deleted free. No monthly charge.
-//   A$10 incl. GST per AI top-up of 300 credits, added at once, on the same end of month invoice.
+//   BUILDER JOBS (owner decision 18/11/2026): every NEW project a builder staff login starts is one job, A$20 incl. GST (JOB_FEE_CENTS), confirmed on
+//   screen and charged to the saved card at that moment. Optional capped monthly plans (JOB_PLANS) include a number of jobs each Sydney month; jobs
+//   over the allowance are A$20 each and unused jobs do not roll over. A trial is free, an internal test account is never charged.
+//   Client logins are NO LONGER charged. The login tier constants and functions below stay ONLY so the history of logins already charged (rows,
+//   past invoices, the usage view) keeps reading correctly. New first sign ins create no charge row.
+//   Legacy rule, history only: logins 1 to 15 in a month A$30 each, 16 to 50 A$25 each, above 50 a custom rate (org.customLoginCents).
+//   A$10 incl. GST per AI top-up of 300 credits, added at once, on the end of month invoice.
 // Resetting a password, disabling, enabling or editing a login never creates a charge.
 // A billing row is { loginId, chargedAt (the first sign in), amountCents }.
 
@@ -12,6 +15,36 @@ export const VOLUME_LOGIN_FEE_CENTS = 2500;
 export const LOGIN_TIER_1_MAX = 15; // logins 1 to 15 in a month are NEW_LOGIN_FEE_CENTS
 export const LOGIN_TIER_2_MAX = 50; // logins 16 to 50 are VOLUME_LOGIN_FEE_CENTS; above this the owner sets a custom rate
 export const TOPUP_FEE_CENTS = 1000;
+export const JOB_FEE_CENTS = 2000; // one new builder job, GST included
+/** Capped monthly builder plans. Prices GST included. Jobs reset each Sydney calendar month and do not roll over. */
+export const JOB_PLANS = {
+  starter: { id: 'starter', name: 'Builder Starter', monthlyCents: 11900, jobs: 10 },
+  pro: { id: 'pro', name: 'Builder Pro', monthlyCents: 21900, jobs: 20 },
+  teams: { id: 'teams', name: 'Builder Teams', monthlyCents: 41900, jobs: 40 },
+};
+export const jobPlanOf = (id) => (typeof id === 'string' && Object.hasOwn(JOB_PLANS, id) ? JOB_PLANS[id] : null);
+export const JOB_KINDS = ['charged', 'plan_included', 'plan_extra', 'trial_free', 'internal', 'unbilled'];
+
+/**
+ * What the next new job costs. `planId` is the org's plan (or null), `planJobsUsed` the jobs already counted against the plan allowance this
+ * Sydney month (rows of kind plan_included). Returns { kind, cents, plan, remaining } where remaining is the plan jobs left AFTER this one.
+ * Trial and internal accounts are decided by the caller (they never reach this).
+ */
+export function jobPriceFor({ planId = null, planJobsUsed = 0 } = {}) {
+  const plan = jobPlanOf(planId);
+  if (!plan) return { kind: 'charged', cents: JOB_FEE_CENTS, plan: null, remaining: null };
+  if (planJobsUsed < plan.jobs) return { kind: 'plan_included', cents: 0, plan: plan.id, remaining: plan.jobs - planJobsUsed - 1 };
+  return { kind: 'plan_extra', cents: JOB_FEE_CENTS, plan: plan.id, remaining: 0 };
+}
+
+/** Totals for a list of job rows { kind, amountCents } (one month). */
+export function summariseJobs(rows = []) {
+  const n = (k) => rows.filter((r) => r.kind === k).length;
+  return {
+    count: rows.length, chargedCount: n('charged') + n('plan_extra'), chargedCents: rows.reduce((s, r) => s + (r.amountCents || 0), 0),
+    planIncludedCount: n('plan_included'), planExtraCount: n('plan_extra'), trialFreeCount: n('trial_free'), internalCount: n('internal'), unbilledCount: n('unbilled'),
+  };
+}
 export const TOPUP_CREDITS = 300;
 
 const fmt = new Intl.DateTimeFormat('en-AU', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });

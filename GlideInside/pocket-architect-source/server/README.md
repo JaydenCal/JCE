@@ -130,6 +130,7 @@ The portal needs D1 (`createD1PortalStore`); on Upstash or other hosts it answer
 | `SELLER_NAME`, `SELLER_ABN` | var | Seller on tax invoices. Defaults: `JCE Infrastructure Pty Ltd trading as Glide Inside`, `29 699 165 663` |
 | `ORG_MONTHLY_CREDITS`, `TOPUP_CREDITS`, `TOPUP_AMOUNT_CENTS` | var | 300 credits per login per month, 300 credits for A$10 (1000 cents) incl. GST |
 | `STRIPE_GST_TAX_RATE_ID` | var, optional | An existing inclusive 10% GST tax rate. If empty one is created on first use and remembered in `portal_settings` |
+| `BUILDER_JOB_PRICE_ID`, `BUILDER_STARTER_PRICE_ID`, `BUILDER_PRO_PRICE_ID`, `BUILDER_TEAMS_PRICE_ID` | var, optional | Stripe price ids the owner creates (A$20 one off; A$119, A$219, A$419 recurring). Unset = per job billing records jobs but charges nothing, and plans show Coming soon. See `../JOB-BILLING.md` |
 | `STRIPE_LIVE_BILLING_APPROVED` | var | Leave unset. A live Stripe key (`sk_live_`, `rk_live_`) is refused unless this is exactly `owner-written-go-ahead` |
 | `PORTAL_PROJECT_MAX_BYTES`, `PORTAL_LOGO_MAX_BYTES` | var | 1,800,000 (D1 rows are limited to 2 MB) and 400,000 |
 | `LOGIN_MAX_FAILURES`, `LOGIN_IP_MAX_FAILURES`, `SESSION_DAYS` | var | 5 per username, 20 per IP (both then locked 15 minutes), 30 day sliding session |

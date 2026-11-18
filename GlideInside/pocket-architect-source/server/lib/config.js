@@ -87,6 +87,12 @@ export function readConfig(env = {}) {
     sessionDays: num(env.SESSION_DAYS, 30), // sliding
     stripeLiveBillingApproved: str(env.STRIPE_LIVE_BILLING_APPROVED).toLowerCase() === 'owner-written-go-ahead',
     stripeGstTaxRateId: str(env.STRIPE_GST_TAX_RATE_ID),
+    // Builder per job billing (owner decision 18/11/2026). The owner creates these prices in Stripe himself; unset = the feature degrades safely
+    // (the confirm step still shows, nothing is charged, the admin view says the price is not configured). Never put a price amount in code.
+    builderJobPriceId: str(env.BUILDER_JOB_PRICE_ID), // one off price, A$20 incl. GST, one job
+    builderStarterPriceId: str(env.BUILDER_STARTER_PRICE_ID), // recurring, A$119 per month, 10 jobs
+    builderProPriceId: str(env.BUILDER_PRO_PRICE_ID), // recurring, A$219 per month, 20 jobs
+    builderTeamsPriceId: str(env.BUILDER_TEAMS_PRICE_ID), // recurring, A$419 per month, 40 jobs
     // Printed on the PDF title block. Defaults come from src/config.js (decision 17.1).
     disclaimer: str(env.DISCLAIMER),
     // Carried over from the live Glide Inside API (Worker "pocket-architect-api", 15/10/2026).

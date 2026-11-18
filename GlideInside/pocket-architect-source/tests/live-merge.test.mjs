@@ -172,7 +172,7 @@ test('migrations: a fresh database built by the migrations has the same shape as
   live.exec(rd('../server/schema.sql'));
   assert.equal(JSON.stringify([columns(live), indexes(live)]), shape);
   // 0001 to 0005 and 0007 are repeatable (the live database has run 0001 to 0005 already); 0006 and 0008 add a column, so each is applied once
-  for (const f of migrationFiles()) if (!['0006_release.sql', '0008_trial_volume.sql', '0010_org_brand_colours.sql', '0011_org_slug.sql', '0012_project_staff_edits.sql', '0014_internal_org.sql', '0017_org_show_aerial_default.sql', '0018_org_show_ai_assistant.sql', '0019_security_hardening.sql', '0022_client_access_requests.sql'].includes(f)) live.exec(rd(MIG + f));
+  for (const f of migrationFiles()) if (!['0006_release.sql', '0008_trial_volume.sql', '0010_org_brand_colours.sql', '0011_org_slug.sql', '0012_project_staff_edits.sql', '0014_internal_org.sql', '0017_org_show_aerial_default.sql', '0018_org_show_ai_assistant.sql', '0019_security_hardening.sql', '0022_client_access_requests.sql', '0023_job_billing.sql'].includes(f)) live.exec(rd(MIG + f));
   assert.equal(JSON.stringify([columns(live), indexes(live)]), shape);
   assert.throws(() => live.exec(rd(`${MIG}0006_release.sql`)), /duplicate column/i, '0006 is not repeatable, which is why it is applied with "d1 migrations apply"');
   assert.throws(() => live.exec(rd(`${MIG}0008_trial_volume.sql`)), /duplicate column/i, '0008 adds orgs.custom_login_cents once');
@@ -183,8 +183,9 @@ test('migrations: a fresh database built by the migrations has the same shape as
   assert.throws(() => live.exec(rd(`${MIG}0012_project_staff_edits.sql`)), /duplicate column/i, '0012 adds the portal_projects.edited_by_* columns once');
   assert.throws(() => live.exec(rd(`${MIG}0017_org_show_aerial_default.sql`)), /duplicate column/i, '0017 adds orgs.show_aerial_default once');
   assert.throws(() => live.exec(rd(`${MIG}0018_org_show_ai_assistant.sql`)), /duplicate column/i, '0018 adds orgs.show_ai_assistant once');
+  assert.throws(() => live.exec(rd(`${MIG}0023_job_billing.sql`)), /duplicate column/i, '0023 adds the org_accounts.job_plan columns once');
   // numbering is continuous, so "d1 migrations apply" runs them in the intended order
-  assert.deepEqual(migrationFiles().map((f) => f.slice(0, 4)), ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014', '0015', '0016', '0017', '0018', '0019', '0020', '0021', '0022']);
+  assert.deepEqual(migrationFiles().map((f) => f.slice(0, 4)), ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014', '0015', '0016', '0017', '0018', '0019', '0020', '0021', '0022', '0023']);
 });
 
 test('migrations: nothing destructive in any release migration', opts, () => {

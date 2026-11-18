@@ -2,14 +2,14 @@
 
 import { h, openDialog, field, busy, toast, chip, icon, errorMessage } from './kit.js';
 import { formatAud, ddmmyyyyTime, ddmmyyyy, monthLabel } from '../billing.js';
-import { CHARGE_NOTICE } from './clients-tab.js?v=20261118a';
+import { CHARGE_NOTICE } from './clients-tab.js?v=20261118b';
 import { accountOf, isReadOnly, addBillingButton, TRIAL_PRICING_TEXT } from './trial-ui.js';
 
 export async function renderBilling(host, { api, me, refreshMe, goBilling }) {
   const acct = accountOf(me);
   const canWrite = me.permissions.includes('billing.write');
   const canSettings = canWrite && !isReadOnly(me);
-  const [usage, invoices, contact] = await Promise.all([api.monthUsage(), api.listInvoices(), api.getBillingContact()]);
+  const [usage, invoices, contact, jobs] = await Promise.all([api.monthUsage(), api.listInvoices(), api.getBillingContact(), api.getJobs().catch(() => null)]);
   const t = usage.totals;
   const missingDetails = !contact.legalName || !contact.abn;
 
@@ -93,26 +93,58 @@ export async function renderBilling(host, { api, me, refreshMe, goBilling }) {
     }
     return h('section', { class: 'pp-card pp-account', id: 'account-status' },
       h('div', { class: 'pp-card-head' }, h('h3', null, 'Account'), chip('Active', 'ok')),
-      h('p', null, card ? `Charges are taken automatically from your ${card} at the end of each month.` : 'Charges are invoiced at the end of each month.'),
+      h('p', null, card ? `Jobs and month end charges are taken automatically from your ${card}.` : 'Add a card so new jobs can be charged when you start them. Other charges are invoiced at the end of each month.'),
       canWrite ? h('div', { class: 'pp-actions' }, addBillingButton(api, { label: card ? 'Change card' : 'Add card details', primary: false, goBilling: () => form.scrollIntoView({ behavior: 'smooth' }) })) : null);
   }
 
-  const lp = usage.loginPricing || null;
+  // Jobs and capped plans -----------------------------------------------------------------------------------------------------
+  const KIND_LABEL = { charged: 'Charged', plan_extra: 'Charged (over plan)', plan_included: 'Included in plan', trial_free: 'Free (trial)', internal: 'Internal test', unbilled: 'Not charged yet' };
+  async function chooseJobPlan(btn, plan) {
+    await busy(btn, async () => {
+      const r = await api.startJobPlan({ plan });
+      location.href = r.url;
+    });
+  }
+  async function endJobPlan(btn) {
+    const ok = await confirmDialog({ title: 'End your plan?', message: 'Your plan ends at the end of the period you have paid for. Until then your included jobs still apply. After that each new job is A$20 incl. GST.', confirmLabel: 'End plan', danger: true });
+    if (!ok) return;
+    await busy(btn, async () => { const r = await api.cancelJobPlan(); toast(r.note || 'Your plan will end at the end of the paid period.', { kind: 'ok' }); });
+  }
+  function jobsSection() {
+    if (!jobs) return null;
+    const sum = jobs.summary;
+    const cur = jobs.plan;
+    const planCards = jobs.plans.map((p) => h('div', { class: 'pp-planpick', id: `job-plan-${p.id}` },
+      h('strong', null, p.name), h('div', null, `${formatAud(p.monthlyCents)} a month incl. GST`), h('div', { class: 'pp-sub' }, `${p.jobs} jobs included. Extra jobs ${formatAud(jobs.feeCents)} each.`),
+      p.current ? chip('Your plan', 'ok')
+        : p.available ? (canWrite && !cur ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => chooseJobPlan(e.currentTarget, p.id) }, 'Choose this plan') : null)
+          : chip('Coming soon', 'muted')));
+    const rows = jobs.items.map((j) => h('tr', null, h('td', null, j.projectName || 'Project'), h('td', null, j.userName || ''), h('td', null, ddmmyyyyTime(j.createdAt)), h('td', null, KIND_LABEL[j.kind] || j.kind), h('td', { class: 'pp-num' }, formatAud(j.amountCents))));
+    const q = jobs.quote || {};
+    return h('section', { class: 'pp-card', id: 'jobs-card' },
+      h('div', { class: 'pp-card-head' }, h('h3', null, `Jobs in ${monthLabel(jobs.month)}`), h('p', { class: 'pp-total' }, `${sum.count}`, h('small', null, sum.count === 1 ? ' job' : ' jobs'))),
+      h('p', { class: 'pp-notice pp-notice--quiet', id: 'job-rate' }, icon('info', 18), `Each new project your staff start is one job, ${formatAud(jobs.feeCents)} incl. GST, charged to your card when you confirm it. There is no monthly fee. Opening and saving the same project again is free, and client logins are free.`),
+      cur ? h('p', { class: 'pp-notice', id: 'job-plan-now' }, icon('info', 18), `${cur.name}: ${q.plan ? `${q.plan.used} of ${cur.jobs} included jobs used this month. ` : ''}Unused jobs do not roll over. Jobs over ${cur.jobs} are ${formatAud(jobs.feeCents)} each.`, canWrite ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', style: { marginLeft: '8px' }, onclick: (e) => endJobPlan(e.currentTarget) }, 'End plan') : null) : null,
+      q.message ? h('p', { class: 'pp-sub', id: 'job-next' }, `Next new job: ${q.message}`) : null,
+      table([{ label: 'Project' }, { label: 'Started by' }, { label: 'Started (DD/MM/YYYY)' }, { label: 'How it was billed' }, { label: 'Charge', num: true }], rows, 'No new jobs this month.'),
+      h('h4', null, 'Capped monthly plans'),
+      h('p', { class: 'pp-sub' }, 'For busy builders. Jobs reset each calendar month and unused jobs do not roll over.'),
+      h('div', { class: 'pp-planpicks', style: { display: 'grid', gap: '12px', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' } }, ...planCards));
+  }
+
   host.append(...[
-    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'Billing'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Charges are collected on one invoice at the end of each calendar month, Sydney time. There is no monthly fee.'))),
+    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'Billing'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Jobs are charged to your card when you start them. Other charges, such as AI credit top-ups, are collected on one invoice at the end of each calendar month, Sydney time. There is no monthly fee.'))),
     accountCard(),
+    jobsSection(),
     missingDetails ? h('p', { class: 'pp-notice pp-notice--warn', role: 'alert' }, icon('warning', 18), 'Add your legal business name and ABN below. They are needed on your tax invoice.') : null,
     h('section', { class: 'pp-card' },
       h('div', { class: 'pp-card-head' }, h('h3', null, `${monthLabel(usage.month)} so far`), h('p', { class: 'pp-total' }, formatAud(t.totalCents), h('small', null, ' incl. GST'))),
       h('p', { class: 'pp-notice pp-notice--quiet' }, icon('info', 18), `${CHARGE_NOTICE} Each AI credit top-up of 300 credits is A$10 incl. GST. Resetting passwords, disabling logins and staff logins are free.`),
-      lp ? h('p', { class: 'pp-notice pp-notice--quiet', id: 'login-rate' }, icon('info', 18), lp.customRateCents
-        ? `${lp.count} new client ${lp.count === 1 ? 'login' : 'logins'} this month. Your agreed rate is ${formatAud(lp.customRateCents)} incl. GST per new client login.`
-        : `${lp.count} new client ${lp.count === 1 ? 'login' : 'logins'} this month. The next one is ${formatAud(lp.currentRateCents)} incl. GST. Logins 1 to 15 in a month are A$30 each, logins 16 to 50 are A$25 each, above 50 is a custom rate.`) : null,
-      h('h4', null, `New client logins (first sign in this month): ${t.loginsCount} = ${formatAud(t.loginsCents)}`),
-      table([{ label: 'Client' }, { label: 'First sign in (DD/MM/YYYY)' }, { label: 'Charge', num: true }], loginRows, 'No clients have signed in for the first time this month.'),
+      t.loginsCount ? h('h4', null, `Client logins charged before client logins became free: ${t.loginsCount} = ${formatAud(t.loginsCents)}`) : null,
+      t.loginsCount ? table([{ label: 'Client' }, { label: 'First sign in (DD/MM/YYYY)' }, { label: 'Charge', num: true }], loginRows, '') : null,
       h('h4', null, `AI credit top-ups: ${t.topUpsCount} at A$10 = ${formatAud(t.topUpsCents)}`),
       table([{ label: 'Login' }, { label: 'Added (DD/MM/YYYY)' }, { label: 'Credits' }, { label: 'Charge', num: true }], topRows, 'No AI top-ups this month.'),
-      h('dl', { class: 'pp-totals' }, h('dt', null, `New client logins (${t.loginsCount})`), h('dd', null, formatAud(t.loginsCents)), h('dt', null, `AI top-ups (${t.topUpsCount} x A$10)`), h('dd', null, formatAud(t.topUpsCents)), h('dt', null, 'Month total incl. GST'), h('dd', null, h('strong', null, formatAud(t.totalCents))))),
+      h('dl', { class: 'pp-totals' }, ...(t.loginsCount ? [h('dt', null, `Earlier client logins (${t.loginsCount})`), h('dd', null, formatAud(t.loginsCents))] : []), h('dt', null, `AI top-ups (${t.topUpsCount} x A$10)`), h('dd', null, formatAud(t.topUpsCents)), h('dt', null, 'Month total incl. GST'), h('dd', null, h('strong', null, formatAud(t.totalCents))))),
     h('section', { class: 'pp-card' }, h('h3', null, 'Past invoices'),
       table([{ label: 'Invoice' }, { label: 'Month' }, { label: 'Issued' }, { label: 'Logins', num: true }, { label: 'Top-ups', num: true }, { label: 'Total incl. GST', num: true }, { label: 'Status' }, { label: '' }],
         invoices.map((i) => h('tr', null, h('td', null, i.number), h('td', null, monthLabel(i.month)), h('td', null, ddmmyyyy(i.issuedAt)), h('td', { class: 'pp-num' }, String(i.loginsCount)), h('td', { class: 'pp-num' }, String(i.topUpsCount)), h('td', { class: 'pp-num' }, formatAud(i.totalCents)), h('td', null, chip(i.status === 'paid' ? 'Paid' : 'Due', i.status === 'paid' ? 'ok' : 'warn')), h('td', null, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => invoiceDialog(i.id) }, 'View tax invoice')))), 'No past invoices yet.')),

@@ -1,13 +1,14 @@
 // Portal billing (docs/PORTAL_API.md 4 and 5): month usage, tax invoice snapshots and Stripe invoices for the previous month.
-//   Per client login, once, at the login's first sign in (login_issues, created by lib/portal.js). A$30 incl. GST each for the first 15 in a
-//   month, A$25 for logins 16 to 50, a custom rate above that (priceForNthLoginThisMonth in src/portal/billing.js).
+//   Builder JOBS (18/11/2026): A$20 incl. GST per new project, charged off session to the saved card at the moment the builder confirms it
+//   (chargeJob below, one Stripe invoice per job, its amount read from BUILDER_JOB_PRICE_ID). Jobs are listed in the usage view but are not on the month end invoice.
+//   Client logins are no longer charged. Login rows from before 18/11/2026 (login_issues, amount A$30 or A$25) are history and still invoice as they always did.
 //   A$10 incl. GST per AI top-up of 300 credits (the AI branch's `ai_topup` events in the main store).
 // Stripe is used only through its REST API with fetch. An org with no card on file gets a send_invoice invoice (Stripe emails it; this
 // server sends nothing). An org that added card details (Checkout in setup mode, see lib/portal.js) gets a charge_automatically
 // invoice paid at once with its saved card.
 // TEST MODE ONLY unless STRIPE_LIVE_BILLING_APPROVED=owner-written-go-ahead (see server/README.md).
 
-import { monthKey, monthStartMs, previousMonthKey, summariseMonth, gstOfTotal, NEW_LOGIN_FEE_CENTS, VOLUME_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, TOPUP_FEE_CENTS, TOPUP_CREDITS, sydneyParts } from '../../src/portal/billing.js';
+import { JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, summariseJobs, monthKey, monthStartMs, previousMonthKey, summariseMonth, gstOfTotal, NEW_LOGIN_FEE_CENTS, VOLUME_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, TOPUP_FEE_CENTS, TOPUP_CREDITS, sydneyParts } from '../../src/portal/billing.js';
 import { HttpError } from './http.js';
 
 const DAY = 86400000;
@@ -31,10 +32,14 @@ export async function usageForMonth({ pstore, store, orgId, month, names }) {
   const issues = (await pstore.listLoginIssues(orgId)).map((i) => ({ id: i.id, loginId: i.loginId, clientName: i.clientName, chargedAt: i.issuedAt, amountCents: i.amountCents }));
   const s = summariseMonth({ issues, topUps: await topUpRows(store, orgId) }, month);
   const org = await pstore.getOrg(orgId);
+  // Jobs are charged to the saved card when each project is started, so they are listed here but are NOT part of totals (the month end invoice).
+  const jobRows = await pstore.listJobCharges(orgId, month);
   return {
     month, timezone: 'Australia/Sydney',
-    loginPricing: loginRateInfo(s.totals.loginsCount, org),
-    rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, volumeLoginCents: VOLUME_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS },
+    // Client logins are no longer charged (18/11/2026). Rows from before then are history and still list below.
+    loginPricing: null,
+    rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, volumeLoginCents: VOLUME_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS, jobCents: JOB_FEE_CENTS },
+    jobs: { ...summariseJobs(jobRows), feeCents: JOB_FEE_CENTS, items: jobRows.map((j) => ({ id: j.id, projectName: j.projectName || '', userName: j.userName || '', createdAt: j.createdAt, kind: j.kind, amountCents: j.amountCents, plan: j.plan || null })) },
     logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName || '', firstSignInAt: i.chargedAt, amountCents: i.amountCents, ...(org?.internal === true ? { label: 'internal test, no charge' } : {}) })),
     topUps: s.topUps.map((t) => ({ id: t.id, loginId: t.loginId, clientName: names.get(t.loginId) || '', credits: t.credits, amountCents: t.amountCents, createdAt: t.createdAt })),
     totals: { ...s.totals, gstCents: gstOfTotal(s.totals.totalCents) },
@@ -71,6 +76,65 @@ export function buildSnapshot({ org, config, month, usage, number, issuedAtMs, p
   };
 }
 
+// Builder jobs -----------------------------------------------------------------------------------------------------------------
+/** The Stripe price id the owner configured for a plan id, or ''. */
+export const planPriceId = (config, planId) => ({ starter: config.builderStarterPriceId, pro: config.builderProPriceId, teams: config.builderTeamsPriceId })[planId] || '';
+
+/**
+ * Can a job be charged right now? Needs the Stripe secret key, the job price id, and (for a live key) the owner's written go ahead.
+ * `message` is for the admin side only: it names the missing setting. Builders only ever see "not switched on yet".
+ */
+export function jobBillingReadiness(config) {
+  if (!config.stripeSecretKey) return { ready: false, reason: 'no_stripe_key', message: 'Job billing is off: STRIPE_SECRET_KEY is not set. New jobs are recorded but not charged.' };
+  if (!config.builderJobPriceId) return { ready: false, reason: 'price_not_configured', message: 'Job billing is off: the A$20 job price is not configured (set BUILDER_JOB_PRICE_ID). New jobs are recorded but not charged.' };
+  if (/^(sk|rk)_live_/.test(config.stripeSecretKey) && !config.stripeLiveBillingApproved) return { ready: false, reason: 'live_not_approved', message: 'Job billing is off: a live Stripe key is set but STRIPE_LIVE_BILLING_APPROVED is not. New jobs are recorded but not charged.' };
+  return { ready: true, reason: null, message: null };
+}
+
+/** Which capped plans can be bought: a plan is available only when its Stripe price id is set (and billing could run at all). */
+export function jobPlansView(config) {
+  const base = jobBillingReadiness(config);
+  return Object.values(JOB_PLANS).map((p) => ({ ...p, available: !!planPriceId(config, p.id) && !!config.stripeSecretKey && (base.reason !== 'live_not_approved') }));
+}
+
+/**
+ * Charge one job, off session, to the org's saved card, as a one line Stripe invoice built from the owner's BUILDER_JOB_PRICE_ID (the amount
+ * always comes from that Stripe price; it is checked to be exactly A$20 in AUD before anything is charged). A declined card voids the invoice
+ * and throws JOB_PAYMENT_FAILED so no project is created. `requestId` is the idempotency key, so a retry never charges twice.
+ * Returns { stripeInvoiceId }.
+ */
+export async function chargeJob({ config, pstore, fetchImpl, org, requestId }) {
+  const call = (opts) => stripeCall({ config, fetchImpl, ...opts });
+  const price = await call({ method: 'GET', path: `/prices/${encodeURIComponent(config.builderJobPriceId)}` });
+  if (!price || price.active === false || price.currency !== 'aud' || price.unit_amount !== JOB_FEE_CENTS || price.type === 'recurring' || price.recurring) {
+    throw new HttpError('JOB_PRICE_MISMATCH', 'The job price in Stripe is not a one off A$20 price in AUD, so nothing was charged. Contact Glide Inside.');
+  }
+  const customer = await ensureCustomer({ config, pstore, fetchImpl, org });
+  const taxRate = await gstTaxRate({ config, pstore, fetchImpl });
+  const inv = await call({
+    path: '/invoices', idempotencyKey: `gi-job-inv-${org.id}-${requestId}`,
+    form: {
+      customer, currency: 'aud', auto_advance: 'false', pending_invoice_items_behavior: 'exclude', collection_method: 'charge_automatically', default_payment_method: org.paymentMethodId,
+      description: 'Glide Inside builder job: one new project. Tax invoice. Price includes GST.',
+      footer: `Tax invoice. Supplier: ${config.sellerName}, ABN ${config.sellerAbn}. Prices include GST.`,
+      'custom_fields[0][name]': 'Supplier ABN', 'custom_fields[0][value]': config.sellerAbn, 'custom_fields[1][name]': 'Buyer ABN', 'custom_fields[1][value]': org.abn || '',
+      'default_tax_rates[0]': taxRate, 'metadata[org_id]': org.id, 'metadata[purpose]': 'gi_job', 'metadata[request_id]': requestId,
+    },
+  });
+  try {
+    await call({ path: '/invoiceitems', idempotencyKey: `gi-job-item-${inv.id}`, form: { customer, invoice: inv.id, currency: 'aud', price: config.builderJobPriceId, 'tax_rates[0]': taxRate, 'metadata[org_id]': org.id, 'metadata[purpose]': 'gi_job' } });
+    await call({ path: `/invoices/${inv.id}/finalize`, idempotencyKey: `gi-job-fin-${inv.id}`, form: { auto_advance: 'false' } });
+    const res = await call({ path: `/invoices/${inv.id}/pay`, idempotencyKey: `gi-job-pay-${inv.id}`, form: { payment_method: org.paymentMethodId, off_session: 'true' } });
+    if (res?.status !== 'paid') throw new HttpError('BILLING_UNAVAILABLE', 'The card payment did not complete.');
+  } catch (e) {
+    await call({ path: `/invoices/${inv.id}/void`, idempotencyKey: `gi-job-void-${inv.id}` }).catch(() => null); // never leave an open invoice behind a project that was not created
+    if (e instanceof HttpError && e.code === 'JOB_PRICE_MISMATCH') throw e;
+    const why = String(e?.message || e).replace(/^Stripe refused the request: /, '').slice(0, 200);
+    throw new HttpError('JOB_PAYMENT_FAILED', `Your card was not charged, so the project was not created. ${why}`, { reason: why });
+  }
+  return { stripeInvoiceId: inv.id };
+}
+
 // Stripe ----------------------------------------------------------------------------------------------------------------------
 export async function stripeCall({ config, fetchImpl, method = 'POST', path, form, idempotencyKey }) {
   const key = config.stripeSecretKey;
@@ -96,7 +160,7 @@ export async function stripeCall({ config, fetchImpl, method = 'POST', path, for
   return data;
 }
 
-async function gstTaxRate({ config, pstore, fetchImpl }) {
+export async function gstTaxRate({ config, pstore, fetchImpl }) {
   if (config.stripeGstTaxRateId) return config.stripeGstTaxRateId;
   const saved = await pstore.getSetting('stripe_gst_tax_rate');
   if (saved) return saved;

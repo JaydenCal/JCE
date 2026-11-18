@@ -152,17 +152,20 @@ test('client login issues for an internal org are 0 cents, labelled, and the iss
     const c = w.browser();
     assert.equal((await c.post('/portal/session', { identifier: r.data.credentials.username, password: r.data.credentials.password })).status, 200);
     const rows = await w.pstore.listLoginIssues(i.orgId);
-    assert.equal(rows.length, 1);
-    assert.equal(rows[0].amountCents, 0, 'recorded at 0 cents');
+    assert.equal(rows.length, 0, 'client logins are free, so no billing row exists for anyone');
     const month = '2026-11';
     const usage = (await i.b.get(`/portal/billing/usage?month=${month}`)).data;
     assert.equal(usage.totals.totalCents, 0);
-    assert.equal(usage.logins[0].label, 'internal test, no charge');
+    // a row recorded before client logins became free is still labelled for an internal org
+    await w.pstore.addLoginIssue({ loginId: 'legacy_int', id: 'li_legacy_int', orgId: i.orgId, clientName: 'Old', issuedAt: new Date(w.clock.t).toISOString(), month, amountCents: 0 });
+    const usage2 = (await i.b.get(`/portal/billing/usage?month=${month}`)).data;
+    assert.equal(usage2.logins[0].label, 'internal test, no charge');
     // an ordinary org is still charged
     const ord = await w.builder('Ordinary Homes Pty Ltd', 'Pat');
     await w.admin('POST', `/portal/admin/orgs/${ord.orgId}/convert`, {});
     const r2 = await ord.b.post('/portal/clients', { firstName: 'Bob', email: 'bob@x.example' });
-    assert.equal(r2.data.charge.amountCents, 3000);
+    assert.equal(r2.data.charge.amountCents, 0, 'client logins are free for every org now');
+    assert.equal((await w.pstore.listLoginIssues(ord.orgId)).length, 0);
   } finally { w.restoreConsole(); }
 });
 
@@ -430,22 +433,21 @@ test('H6: the assistant never shows a Dev badge or Plan Pack wording to a signed
   assert.match(c, /api\.aiToken/);
 });
 
-test('H7: an active builder needs billing details or a card before issuing client logins; internal is exempt; admin sees who month end will skip', async () => {
+test('H7 (revised 18/11/2026): client logins are free, so no billing details are needed to issue one; the admin flag now means something billable has no way to be invoiced', async () => {
   const w = world();
   try {
     const org = await w.builder('Nobill Homes Pty Ltd', 'Ned', { noBilling: true });
-    const refused = await org.b.post('/portal/clients', { firstName: 'Sarah' });
-    assert.equal(refused.status, 409);
-    assert.equal(refused.data.error?.code || refused.data.code, 'BILLING_DETAILS_REQUIRED');
-    assert.match(JSON.stringify(refused.data), /legal business name, ABN and billing email/);
-    assert.equal((await w.pstore.listUsers(org.orgId, false)).length, 0, 'no login was created');
-    // a card on file also unlocks it
-    await w.pstore.updateOrg(org.orgId, { paymentMethodId: 'pm_test' });
-    assert.equal((await org.b.post('/portal/clients', { firstName: 'Sarah' })).status, 201);
-    await w.pstore.updateOrg(org.orgId, { paymentMethodId: null });
-    const view = (await w.admin('GET', '/portal/admin/orgs')).data.find((o) => o.id === org.orgId);
-    assert.equal(view.billingSkipRisk, true, 'issued a login this month with no contact details');
+    const made = await org.b.post('/portal/clients', { firstName: 'Sarah' });
+    assert.equal(made.status, 201, JSON.stringify(made.data));
+    assert.equal(made.data.charge.amountCents, 0);
+    assert.equal((await w.pstore.listUsers(org.orgId, false)).length, 1);
+    let view = (await w.admin('GET', '/portal/admin/orgs')).data.find((o) => o.id === org.orgId);
+    assert.equal(view.billingSkipRisk, false, 'nothing is billable at month end, so nothing would be skipped');
     assert.equal(view.billingReady, false);
+    // A login charged before client logins became free, with no details to invoice it, is flagged.
+    await w.pstore.addLoginIssue({ loginId: 'legacy_nb', id: 'li_legacy_nb', orgId: org.orgId, clientName: 'Old', issuedAt: new Date(w.clock.t).toISOString(), month: '2026-11', amountCents: 3000 });
+    view = (await w.admin('GET', '/portal/admin/orgs')).data.find((o) => o.id === org.orgId);
+    assert.equal(view.billingSkipRisk, true);
     // saving the details clears it
     assert.equal((await org.b.call('PUT', '/portal/billing/contact', { name: 'Ned', email: 'n@nobill.example', phone: '', legalName: 'Nobill Homes Pty Ltd', abn: '51824753556' })).status, 200);
     const after = (await w.admin('GET', '/portal/admin/orgs')).data.find((o) => o.id === org.orgId);

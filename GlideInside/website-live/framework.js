@@ -318,33 +318,33 @@
     }
     root.addEventListener("change", upd); upd();
   });
-  // builder login cost calculator: [data-login-calc] with [data-calc-range], [data-calc-topups], [data-calc-n], [data-calc-total], [data-calc-line], [data-calc-best]
+  // builder job cost calculator: [data-login-calc] with [data-calc-range], [data-calc-topups], [data-calc-n], [data-calc-total], [data-calc-line], [data-calc-best]
+  // Pay per job is A$20 incl. GST per new project. Client logins are free. Plans: price, included jobs; jobs over the allowance are A$20 each.
   document.querySelectorAll("[data-login-calc]").forEach(function (root) {
     var range = root.querySelector("[data-calc-range]"), tops = root.querySelector("[data-calc-topups]"), nOut = root.querySelector("[data-calc-n]"), total = root.querySelector("[data-calc-total]"), line = root.querySelector("[data-calc-line]"), best = root.querySelector("[data-calc-best]");
-    function cost(n) { return n <= 15 ? n * 30 : 15 * 30 + (Math.min(n, 50) - 15) * 25; }
-    // planned monthly plans: price, included client logins, price of each extra login
-    var PLANS = [{ name: "Builder Starter", fee: 149, inc: 10, extra: 25 }, { name: "Builder Pro", fee: 249, inc: 20, extra: 22 }, { name: "Builder Teams", fee: 449, inc: 40, extra: 20 }];
+    var JOB = 20;
+    function cost(n) { return n * JOB; }
+    // planned monthly plans: price, included jobs per month, price of each extra job
+    var PLANS = [{ name: "Builder Starter", fee: 119, inc: 10, extra: JOB }, { name: "Builder Pro", fee: 219, inc: 20, extra: JOB }, { name: "Builder Teams", fee: 419, inc: 40, extra: JOB }];
     function planCost(p, n) { return p.fee + Math.max(0, n - p.inc) * p.extra; }
     function money(v) { return "A$" + v.toLocaleString("en-AU"); }
     function upd() {
       var n = Math.max(0, Math.min(60, parseInt(range.value, 10) || 0)), t = Math.max(0, Math.min(50, parseInt(tops.value, 10) || 0));
-      var billed = Math.min(n, 50), sum = cost(n) + t * 10, parts = [];
+      var sum = cost(n) + t * 10, parts = [];
       if (nOut) nOut.textContent = n;
-      if (billed > 0) { parts.push(billed <= 15 ? billed + " logins at A$30" : "15 logins at A$30 and " + (billed - 15) + " at A$25"); }
+      if (n > 0) parts.push(n + (n === 1 ? " job" : " jobs") + " at A$20");
       if (t > 0) parts.push(t + (t === 1 ? " top up" : " top ups") + " at A$10");
       total.textContent = money(sum);
-      var msg = parts.length ? parts.join(", ") + ". " + money(sum) + " in total, pay per login." : "No client logins, nothing to pay.";
-      if (n > 50) { total.textContent = money(sum) + " for the first 50"; msg = "Above 50 logins in a month the price is custom, so the figure covers the first 50 only. " + msg; }
-      line.textContent = msg;
+      line.textContent = parts.length ? parts.join(", ") + ". " + money(sum) + " in total, pay per job." : "No new jobs, nothing to pay.";
       if (best) {
-        if (n === 0) { best.textContent = "Pay per login costs nothing until a client signs in."; return; }
+        if (n === 0) { best.textContent = "Pay per job costs nothing until you start a new project."; return; }
         var pick = null;
         PLANS.forEach(function (p) { var c = planCost(p, n); if (!pick || c < pick.c) pick = { p: p, c: c }; });
-        var payg = n <= 50 ? cost(n) : null;
-        if (payg === null || pick.c < payg) {
-          best.textContent = "Cheapest for " + n + " logins: " + pick.p.name + " at " + money(pick.c + t * 10) + " a month" + (payg === null ? "" : ", against " + money(sum) + " pay per login") + ". Monthly plans are coming soon, contact us to be first.";
+        var payg = cost(n);
+        if (pick.c < payg) {
+          best.textContent = "Cheapest for " + n + " jobs: " + pick.p.name + " at " + money(pick.c + t * 10) + " a month, against " + money(sum) + " pay per job. Monthly plans are coming soon, contact us to be first.";
         } else {
-          best.textContent = "Pay per login is the cheapest option at " + n + " logins (" + money(payg + t * 10) + "). The monthly plans start to win from 5 logins a month.";
+          best.textContent = "Pay per job is the cheapest option at " + n + " jobs (" + money(payg + t * 10) + "). The monthly plans start to win from 6 jobs a month.";
         }
       }
     }

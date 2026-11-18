@@ -12,7 +12,7 @@ import { validateColours } from './theme.js';
 import { projectToSvg } from './thumbnail.js';
 import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js';
 import { gstOfTotal, monthLabel } from './billing.js';
-import { NEW_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, formatAud, TOPUP_FEE_CENTS, TOPUP_CREDITS, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js';
+import { NEW_LOGIN_FEE_CENTS, JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, jobPriceFor, summariseJobs, formatAud, TOPUP_FEE_CENTS, TOPUP_CREDITS, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js';
 
 const DB_KEY = 'gi.portal.mock.v1';
 const SESSION_KEY = 'gi.portal.session.v1';
@@ -233,6 +233,25 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     return { ...publicUser(u, org), lotAddress: u.lotAddress || '', houseAccess: u.houseAccess, projectCount: db.projects.filter((p) => p.ownerId === u.id).length, billed: db.issues.some((i) => i.loginId === u.id) };
   }
 
+
+  /** Review build only: what the next new job would cost the sample builder. The sample builder is on a paid account with a card. */
+  function jobQuoteFor(db, org) {
+    const rows = (db.jobs || []).filter((j) => j.orgId === org.id && j.month === monthKey(now()));
+    const plan = jobPlanOf(org.jobPlan);
+    const pr = jobPriceFor({ planId: org.jobPlan, planJobsUsed: rows.filter((j) => j.kind === 'plan_included').length });
+    const lead = pr.kind === 'plan_extra' ? `You have used all ${plan.jobs} jobs in your ${plan.name} plan this month. This extra job is ${formatAud(JOB_FEE_CENTS)} incl. GST` : `This job is ${formatAud(JOB_FEE_CENTS)} incl. GST`;
+    return {
+      kind: pr.kind, cents: pr.cents, priceCents: JOB_FEE_CENTS, priceText: `${formatAud(JOB_FEE_CENTS)} incl. GST`, charging: true, needsCard: false, cardOnFile: true, cardLast4: '4242', month: monthKey(now()),
+      covers: 'One job is one new project. It covers all the design work, edits, saves and exports on that project. Opening and saving the same project again is free.',
+      plan: plan ? { id: plan.id, name: plan.name, jobs: plan.jobs, used: rows.filter((j) => j.kind === 'plan_included').length } : null,
+      message: pr.kind === 'plan_included' ? `Included in your ${plan.name} plan. ${pr.remaining} of ${plan.jobs} jobs left this month after this one.` : `${lead}, charged to your card ending 4242 when you confirm.`,
+    };
+  }
+  function jobsFor(db, org, key) {
+    const rows = (db.jobs || []).filter((j) => j.orgId === org.id && j.month === key);
+    return { ...summariseJobs(rows), feeCents: JOB_FEE_CENTS, items: rows.map((j) => ({ id: j.id, projectName: j.projectName, userName: j.userName, createdAt: j.createdAt, kind: j.kind, amountCents: j.amountCents, plan: j.plan })) };
+  }
+
   const api = {
     /** Public: the branded sign in page. Only the sample builder exists in review mode. */
     async getBrand(slug) {
@@ -267,8 +286,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       user.failedSignIns = 0;
       user.lockedUntil = null;
       user.lastSignInAt = iso();
-      // The charge for a client login happens here, on the first sign in, and never again for that login (A$30, A$25 from the 16th in a month).
-      if (user.role === 'client' && !db.issues.some((i) => i.loginId === user.id)) db.issues.push({ id: rid('lc'), orgId: user.orgId, loginId: user.id, clientName: user.name, chargedAt: iso(), amountCents: priceForNthLoginThisMonth(db.issues.filter((i) => i.orgId === user.orgId && monthKey(i.chargedAt) === monthKey(now())).length + 1, db.orgs.find((o) => o.id === user.orgId)) });
+      // Client logins are not charged any more (18/11/2026): first sign in creates no charge row.
       save(db);
       storage.set(SESSION_KEY, JSON.stringify({ userId: user.id, at: iso() }));
       return api.me();
@@ -450,8 +468,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const access = cleanAccess(db, org, houseAccess);
       const { user, credentials } = createAccount(db, org, { firstName, email, role: 'client', lotAddress, houseAccess: access });
       save(db);
-      const rateNow = priceForNthLoginThisMonth(db.issues.filter((i) => i.orgId === org.id && monthKey(i.chargedAt) === monthKey(now())).length + 1, org);
-      return { client: clientView(db, org, user), credentials, charge: { amountCents: rateNow, trigger: 'first_sign_in', note: `${formatAud(rateNow)} incl. GST is charged on your monthly invoice once your client first signs in.` } };
+      return { client: clientView(db, org, user), credentials, charge: { amountCents: 0, trigger: 'none', note: 'No charge for client logins.' } };
     },
     async updateClient(id, { firstName, email, lotAddress, houseAccess } = {}) {
       await wait();
@@ -538,7 +555,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const { project: _p, glideRef, ...meta } = p;
       return { ...clone(meta), ownerName: owner?.name || '', ...staffEdit(meta), project };
     },
-    async saveProject({ id, name, project, lotAddress, houseNames } = {}) {
+    async saveProject({ id, name, project, lotAddress, houseNames, confirmJob, jobRequestId } = {}) {
       await wait();
       const { db, user } = ctx();
       let p = id ? db.projects.find((x) => x.id === id && x.orgId === user.orgId) : null;
@@ -550,8 +567,17 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
         throw err('BAD_REQUEST', e.message || 'That is not a Glide Inside design.');
       }
       if (JSON.stringify(proj).length > 4_000_000) throw err('PAYLOAD_TOO_LARGE', 'That design is too large to save.', 413);
+      let job = null;
       if (!p) {
         p = { id: rid('pr'), orgId: user.orgId, ownerId: user.id, createdAt: iso(), glideRef: null };
+        // A new project started by builder staff is a job: confirm first (review build: no real card or charge).
+        if (isStaff(user)) {
+          const org = db.orgs.find((o) => o.id === user.orgId);
+          const q = jobQuoteFor(db, org);
+          if (confirmJob !== true) throw new ApiError('JOB_CONFIRM_REQUIRED', 'Confirm the new job before it is created.', { status: 409, details: { quote: q } });
+          job = { id: rid('jc'), requestId: jobRequestId || rid('job'), orgId: org.id, userId: user.id, userName: user.name, projectId: p.id, projectName: text(name ?? proj.name, 'Name', { required: true, max: 80 }), month: monthKey(now()), createdAt: iso(), kind: q.kind, amountCents: q.cents, plan: q.plan?.id || null };
+          (db.jobs ||= []).push(job);
+        }
         db.projects.push(p);
       }
       Object.assign(p, { name: text(name ?? proj.name, 'Name', { required: true, max: 80 }), updatedAt: iso(), project: proj });
@@ -563,7 +589,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       p.houseNames = Array.isArray(houseNames) ? houseNames.slice(0, 20).map(String) : p.houseNames || [];
       save(db);
       const { project: _p, glideRef, ...meta } = p;
-      return { ...clone(meta), ...staffEdit(meta) };
+      return { ...clone(meta), ...staffEdit(meta), ...(job ? { job: clone(job) } : {}) };
     },
 
     // Billing ----------------------------------------------------------------------------------------------------------------
@@ -577,12 +603,34 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const s = summariseMonth({ issues: db.issues.filter((i) => i.orgId === org.id), topUps: db.topUps.filter((t) => t.orgId === org.id) }, key);
       return {
         month: key, timezone: 'Australia/Sydney',
-        loginPricing: loginRateInfo(s.totals.loginsCount, org),
-        rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS },
+        loginPricing: null,
+        rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS, jobCents: JOB_FEE_CENTS },
+        jobs: jobsFor(db, org, key),
         logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName, firstSignInAt: i.chargedAt ?? i.issuedAt, amountCents: i.amountCents })),
         topUps: s.topUps.map((t) => ({ id: t.id, loginId: t.loginId, clientName: names.get(t.loginId) || '', credits: t.credits, amountCents: t.amountCents, createdAt: t.createdAt })),
         totals: s.totals,
       };
+    },
+    /** This month's jobs, the cost of the next one and the capped plans (review build: plans are Coming soon). */
+    async getJobs() {
+      await wait();
+      const { db, org } = ctx('billing.read');
+      const key = monthKey(now());
+      const plan = jobPlanOf(org.jobPlan);
+      return { month: key, feeCents: JOB_FEE_CENTS, quote: jobQuoteFor(db, org), summary: summariseJobs((db.jobs || []).filter((j) => j.orgId === org.id && j.month === key)), items: jobsFor(db, org, key).items, plan: plan ? { id: plan.id, name: plan.name, jobs: plan.jobs, monthlyCents: plan.monthlyCents, since: null } : null, plans: Object.values(JOB_PLANS).map((x) => ({ id: x.id, name: x.name, monthlyCents: x.monthlyCents, jobs: x.jobs, available: false, current: org.jobPlan === x.id })) };
+    },
+    async startJobPlan({ plan } = {}) {
+      await wait();
+      ctx('billing.write');
+      throw err('JOB_PLAN_UNAVAILABLE', `${jobPlanOf(plan)?.name || 'That plan'} is coming soon. Until then each new job is ${formatAud(JOB_FEE_CENTS)} incl. GST with no monthly fee.`, 503);
+    },
+    async confirmJobPlan() {
+      await wait();
+      throw err('NOT_FOUND', 'That plan checkout was not found or is not finished.', 404);
+    },
+    async cancelJobPlan() {
+      await wait();
+      throw err('NOT_FOUND', 'You are not on a capped plan.', 404);
     },
     /** One invoice per past calendar month with charges, raised on the 1st of the next month, due 14 days later. */
     async listInvoices() {
@@ -809,8 +857,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const { user, credentials } = createAccount(db, org, { firstName: q.name.split(' ')[0], email: q.email, role: 'client', lotAddress: q.lotAddress, houseAccess: 'all' });
       Object.assign(q, { status: 'approved', decidedAt: iso(), clientId: user.id });
       save(db);
-      const rate = priceForNthLoginThisMonth(db.issues.filter((i) => i.orgId === org.id && monthKey(i.chargedAt) === monthKey(now())).length + 1, org);
-      return { request: clone(q), client: clientView(db, org, user), credentials, charge: { amountCents: rate, trigger: 'first_sign_in', note: `${formatAud(rate)} incl. GST is charged on your monthly invoice once your client first signs in.` } };
+      return { request: clone(q), client: clientView(db, org, user), credentials, charge: { amountCents: 0, trigger: 'none', note: 'No charge for client logins.' } };
     },
     async declineClientRequest(id, { note } = {}) {
       await wait();

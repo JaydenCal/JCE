@@ -8,7 +8,7 @@ import { slug } from '../../ui/dom.js';
 import { TEMP_PASSWORD_DAYS } from '../mock-api.js';
 import { accountOf, isReadOnly, addBillingButton } from './trial-ui.js';
 
-export const CHARGE_NOTICE = 'A$30 incl. GST is charged on your monthly invoice once your client first signs in (A$25 each from the 16th new client login in a month).';
+export const CHARGE_NOTICE = 'Client logins are free. There is no charge when you generate one or when your client first signs in.';
 
 const houseAccessText = (a) => (a === 'all' ? 'All designs' : `${a.length} selected`);
 const day = (iso) => (iso ? ddmmyyyy(iso) : null);
@@ -244,7 +244,7 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
   }
   function deleteDialog(c) {
     confirmDialog({ title: `Delete ${c.name}?`, danger: true, confirmLabel: 'Delete login and projects',
-      message: `This removes the login ${c.username} and all ${c.projectCount} of their projects. It cannot be undone. Export their projects first if you want to keep a copy. ${c.billed ? 'The charge for this login stays on your invoice.' : 'This login has not been used, so there is no charge.'}` }).then(async (ok) => {
+      message: `This removes the login ${c.username} and all ${c.projectCount} of their projects. It cannot be undone. Export their projects first if you want to keep a copy. ${c.billed ? 'A charge made for this login before client logins became free stays on your invoice.' : 'There is no charge for removing a login.'}` }).then(async (ok) => {
       if (!ok) return;
       try {
         const r = await api.deleteClient(c.id);
