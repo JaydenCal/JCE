@@ -1107,3 +1107,37 @@ svg { display: block; }
   .ps-tool svg { width: 20px; height: 20px; }
   .ps-tool-sep { flex: 0 0 100%; width: 100%; height: 1px; margin: 2px 8px; }
 }
+
+/* Top bar under 600 px: Back, name, More, undo and redo, view switch and Save design only; the rest lives in the More menu (src/ui/topbar-more.js). */
+.ps-more-wrap { position: relative; display: inline-flex; }
+.ps-more-wrap[hidden], .ps-more-pop[hidden] { display: none !important; }
+.ps-more-pop {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 80; width: min(344px, calc(100vw - 16px)); box-sizing: border-box;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px;
+  background: var(--ps-panel); border: 1px solid var(--ps-border-strong); border-radius: var(--ps-radius-lg); box-shadow: var(--ps-shadow);
+}
+.ps-more-pop > * { margin: 0 !important; }
+.ps-more-pop .ps-btn-text { display: inline !important; }
+.ps-more-pop [data-action="find-block"].ps-btn--wide:has(.ps-btn-text) { width: auto !important; padding: 0 10px !important; }
+.ps-more-pop .ps-levels { flex-wrap: wrap; }
+.ps-more-pop .ps-more-sep { flex-basis: 100%; }
+@media (max-width: 599.98px) {
+  .ps-topbar[data-more] { flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+  .ps-topbar[data-more] .ps-brand { display: none; }
+  .ps-topbar[data-more] > .ps-back { order: 1; }
+  .ps-topbar[data-more] > .ps-name { order: 2; flex: 1 1 60px; min-width: 60px; width: auto; }
+  .ps-topbar[data-more] > .ps-group { order: 3; }
+  .ps-topbar[data-more] > .ps-more-wrap { order: 4; }
+  .ps-topbar[data-more] > .ps-view-switch { order: 5; }
+  .ps-topbar[data-more] > .ps-premium-slot { order: 6; margin-left: auto; }
+  .ps-topbar[data-more] .ps-more-btn .ps-btn-text { display: none; }
+  .ps-topbar[data-more] .ps-more-btn { width: 34px; padding: 0; justify-content: center; }
+}
+
+/* Phone: while the Confirm frontage card is up, the lot card and its design pager step aside (they sat over it and over the plan). */
+@media (max-width: 599.98px) {
+  .ps-stage:has(.ps-frontage:not([hidden])) .lc-root .lc-pager,
+  .ps-stage:has(.ps-frontage:not([hidden])) .lc-root .lc-card { display: none !important; }
+}
+.ps-more-pop .ps-group { flex-wrap: wrap; }
+.ps-more-pop .ps-group .ps-btn { width: auto !important; padding: 0 10px !important; }

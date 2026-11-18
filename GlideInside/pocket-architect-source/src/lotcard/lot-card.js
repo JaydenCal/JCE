@@ -9,8 +9,8 @@
 
 import { attachMiniView } from './mini-view.js';
 import { zoneDwellingNote } from '../site/default-setbacks.js';
-import { h, debounce } from '../ui/dom.js';
-import { smartSearch } from '../site/address-search.js';
+import { h } from '../ui/dom.js';
+import { createLiveSearch } from '../site/address-search.js';
 import { downloadBlob } from '../premium/exporters/download.js';
 import { requirePlanTerms, planTermsLinkText, PLAN_TERMS_URL } from '../legal/terms-gate.js';
 import { toast } from '../ui/toast.js';
@@ -227,11 +227,12 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     findList.hidden = !sugg.length;
   };
   if (findInput) {
-    const ask = debounce(async () => {
-      const q = findInput.value.trim();
-      if (q.length < 3) { sugg = []; paintSugg(); return; }
-      try { const r = await smartSearch(q, { onRetry: () => { findList.replaceChildren(h('li', { class: 'lc-find-item lc-find-busy', role: 'status' }, h('span', null, 'Busy, trying again'))); findList.hidden = false; } }); if (findInput.value.trim() === q) { sugg = Array.isArray(r) ? r : []; suggI = -1; paintSugg(); } } catch { sugg = []; paintSugg(); }
-    }, 220);
+    const live = createLiveSearch({
+      getText: () => findInput.value,
+      onBusy: () => { findList.replaceChildren(h('li', { class: 'lc-find-item lc-find-busy', role: 'status' }, h('span', null, 'Busy, trying again'))); findList.hidden = false; },
+      onResults: (r) => { sugg = r; suggI = -1; paintSugg(); },
+    });
+    const ask = () => live.trigger();
     findInput.addEventListener('input', ask);
     findInput.addEventListener('focus', () => findInput.select());
     findInput.addEventListener('blur', () => setTimeout(closeSugg, 120));

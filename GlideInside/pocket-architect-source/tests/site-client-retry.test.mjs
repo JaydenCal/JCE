@@ -26,7 +26,7 @@ test('search: an empty answer is retried once after 1.5 s and the second answer 
   assert.equal(out.length, 1);
   assert.equal(calls.length, 2);
   assert.deepEqual(d, [1500]);
-  assert.equal(busy, 1);
+  assert.equal(busy, 0, 'an empty answer retries quietly, without "Busy, trying again"');
 });
 
 test('search: two empty answers is a genuine no match (one retry only)', async () => {
@@ -62,9 +62,24 @@ test('search: a timeout counts as a retryable failure', async () => {
   assert.equal(n, 2);
 });
 
-test('search: a rate limit (429) is not retried', async () => {
-  const { f, calls } = seq(status(429), ok(R));
-  await assert.rejects(searchAddresses('12 smith street', { fetchImpl: f }), /Too many/);
+test('search: a 429 waits and retries once quietly (no error), and a second 429 gives no rows', async () => {
+  const a = seq(status(429), ok(R));
+  const { d, sleepImpl } = fastSleep();
+  let busy = 0;
+  assert.equal((await searchAddresses('12 smith street', { fetchImpl: a.f, sleepImpl, onRetry: () => busy++ })).length, 1);
+  assert.equal(a.calls.length, 2);
+  assert.ok(d[0] >= 1500);
+  assert.equal(busy, 1);
+  const b = seq(status(429), status(429), ok(R));
+  const out = await searchAddresses('12 smith street', { fetchImpl: b.f, sleepImpl });
+  assert.deepEqual([...out], []);
+  assert.equal(out.rateLimited, true);
+  assert.equal(b.calls.length, 2);
+});
+
+test('search: a 4xx other than 429 is still not retried', async () => {
+  const { f, calls } = seq(status(400), ok(R));
+  await assert.rejects(searchAddresses('12 smith street', { fetchImpl: f }));
   assert.equal(calls.length, 1);
 });
 

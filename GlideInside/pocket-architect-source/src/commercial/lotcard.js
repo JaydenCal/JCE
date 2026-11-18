@@ -8,10 +8,10 @@
 // store.apply (a layout, a colour), so each change is one undo step and the full editor ("Customise") opens the same project.
 
 import { attachMiniView } from '../lotcard/mini-view.js';
-import { h, debounce } from '../ui/dom.js';
+import { h } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { toast } from '../ui/toast.js';
-import { smartSearch } from '../site/address-search.js';
+import { createLiveSearch } from '../site/address-search.js';
 import { downloadBlob } from '../premium/exporters/download.js';
 import { requirePlanTerms, planTermsLinkText, PLAN_TERMS_URL } from '../legal/terms-gate.js';
 import { lotOf } from '../model/placement.js';
@@ -201,14 +201,12 @@ export function createCommercialCard({ store, host, viewerHost = host, getApp = 
     findList.replaceChildren(...sugg.slice(0, 6).map((r, i) => h('li', { class: 'lc-find-item', role: 'option', 'aria-selected': String(i === suggI), onpointerdown: (e) => { e.preventDefault(); pickAddress(r.label); } }, h('span', null, r.label), h('i', null, r.state || ''))));
     findList.hidden = !sugg.length;
   };
-  const ask = debounce(async () => {
-    const q = findInput.value.trim();
-    if (q.length < 3) { sugg = []; paintSugg(); return; }
-    try {
-      const r = await smartSearch(q, { onRetry: () => { findList.replaceChildren(h('li', { class: 'lc-find-item lc-find-busy', role: 'status' }, h('span', null, 'Busy, trying again'))); findList.hidden = false; } });
-      if (findInput.value.trim() === q) { sugg = r || []; suggI = -1; paintSugg(); }
-    } catch { sugg = []; paintSugg(); }
-  }, 220);
+  const live = createLiveSearch({
+    getText: () => findInput.value,
+    onBusy: () => { findList.replaceChildren(h('li', { class: 'lc-find-item lc-find-busy', role: 'status' }, h('span', null, 'Busy, trying again'))); findList.hidden = false; },
+    onResults: (r) => { sugg = r; suggI = -1; paintSugg(); },
+  });
+  const ask = () => live.trigger();
   findInput.addEventListener('input', ask);
   findInput.addEventListener('focus', () => findInput.select());
   findInput.addEventListener('blur', () => setTimeout(closeSugg, 120));

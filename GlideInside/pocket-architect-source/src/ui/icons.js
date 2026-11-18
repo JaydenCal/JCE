@@ -34,6 +34,7 @@ const PATHS = {
   underlay: '<rect x="3.5" y="4.5" width="17" height="15" rx="1"/><circle cx="9" cy="10" r="1.7"/><path d="M4 18l5-5 4 4 3-3 4.5 4.5"/>',
   status: '<path d="M17.5 3.5l3 3-8.5 8.5-3-3z"/><path d="M9 12.5c-3 0-4.2 2-4.2 3.8 0 1.2-.8 2.2-1.8 3 3 .4 6.2-.2 7.2-3.3"/>',
   wheel: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/><path d="M12 3.5v5.5M12 15v5.5M3.5 12H9M15 12h5.5"/>',
+  more: '<circle cx="5.5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="18.5" cy="12" r="1.3" fill="currentColor"/>',
   undo: '<path d="M9 14L4.5 9.5 9 5"/><path d="M4.5 9.5h9a5.5 5.5 0 0 1 0 11H10"/>',
   redo: '<path d="M15 14l4.5-4.5L15 5"/><path d="M19.5 9.5h-9a5.5 5.5 0 0 0 0 11H14"/>',
   back: '<path d="M19 12H5.5M11 5.5L4.5 12l6.5 6.5"/>',

@@ -45,9 +45,17 @@ export function createAcceptanceMemory({ storage = null } = {}) {
 export function createTermsGate(host = {}) {
   const cfg = { terms: PLAN_TERMS, memory: createAcceptanceMemory(), getIdentity: () => ({ subject: 'anon', record: false }), record: null, openDialog: null, now: () => new Date(), ...host };
   let pending = null; // two exports started at once share one dialog
-  const needsAccount = () => (typeof cfg.accountMissing === 'function' ? !!cfg.accountMissing() : false);
+  // Once a profile exists (made or signed into here) the sign up dialog is never shown again in this session or on this device.
+  // The device flag is cleared when the person signs out (noteAccount(false)).
+  let accountSeen = false;
+  const ACCOUNT = '__account';
+  const haveAccount = () => accountSeen || !!cfg.memory.get(ACCOUNT, '1');
+  const needsAccount = () => !haveAccount() && (typeof cfg.accountMissing === 'function' ? !!cfg.accountMissing() : false);
   return {
     configure(next = {}) { Object.assign(cfg, next); },
+    /** The host calls this when a profile is signed in (true) or the person signs out (false). */
+    noteAccount(on) { accountSeen = !!on; if (on) cfg.memory.set(ACCOUNT, '1', cfg.now().toISOString()); else cfg.memory.clear(ACCOUNT); },
+    get hasAccount() { return haveAccount(); },
     get terms() { return cfg.terms; },
     /** True when the current person has accepted the current version (no dialog). */
     isAccepted() { const { subject } = cfg.getIdentity(); return !!cfg.memory.get(subject, cfg.terms.version); },
@@ -63,6 +71,8 @@ export function createTermsGate(host = {}) {
       if (typeof cfg.ensureAccount === 'function' && needsAccount()) {
         const ok = await cfg.ensureAccount({ context });
         if (!ok) return null;
+        accountSeen = true;
+        cfg.memory.set(ACCOUNT, '1', cfg.now().toISOString());
       }
       const id = cfg.getIdentity();
       const have = cfg.memory.get(id.subject, cfg.terms.version);

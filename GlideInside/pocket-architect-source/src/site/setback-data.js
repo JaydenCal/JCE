@@ -4,6 +4,7 @@
 
 import { CONFIG } from '../config.js';
 import { findCouncil } from './setbacks.js';
+import { plainDeep } from './plain-text.js';
 
 export class SetbackDataError extends Error {
   constructor(message) {
@@ -33,7 +34,7 @@ function getJson(url, fetchImpl) {
   const p = f(url, { credentials: 'omit' })
     .then((r) => {
       if (!r.ok) throw new SetbackDataError(`Setback data not available (${r.status}).`);
-      return r.json();
+      return r.json().then(plainDeep); // quoted council text never carries an en dash
     })
     .catch((e) => {
       cache.delete(url);

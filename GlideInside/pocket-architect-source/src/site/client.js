@@ -47,6 +47,7 @@ function friendly(body, status) {
 export const RETRY_DELAY_MS = 1500;
 export const SLOW_TEXT = 'The address service is slow, try again.';
 export const SEARCH_TIMEOUT_MS = 16000; // the server allows its prefix query up to 6.5 s plus one retry
+export const RATE_RETRY_MS = 2500; // a 429 waits a little longer before its one quiet retry
 export const BUSY_MESSAGE = 'Busy, trying again';
 
 // A failure worth one more try: the network, a timeout or a 5xx. Never a 4xx, a rate limit or the user's own abort.
@@ -101,16 +102,28 @@ export async function searchAddresses(q, opts = {}) {
     if (body?.hint) rows.hint = body.hint;
     return rows;
   };
+  // One quiet retry. A real timeout, 5xx or 429 shows "Busy, trying again" (onRetry); an empty answer for partial text retries without it.
+  const isRate = (e) => e?.code === 'RATE_LIMITED' || e?.code === 'HTTP_429';
+  const quietEmpty = () => { const r = []; r.rateLimited = true; return r; };
   let first;
+  let showBusy = true;
+  let delay = retryDelayMs;
   try {
     first = await once();
     if (first.length) return first;
+    showBusy = false; // an empty answer is not a failure: retry without a "busy" notice
   } catch (e) {
-    if (!isRetryable(e)) throw e;
+    if (isRate(e)) delay = Math.max(retryDelayMs, RATE_RETRY_MS);
+    else if (!isRetryable(e)) throw e;
   }
-  onRetry?.();
-  await wait(retryDelayMs, signal, sleepImpl);
-  return once();
+  if (showBusy) onRetry?.();
+  await wait(delay, signal, sleepImpl);
+  try {
+    return await once();
+  } catch (e) {
+    if (isRate(e)) return quietEmpty(); // still limited: show nothing rather than an error (rows.rateLimited is set)
+    throw e;
+  }
 }
 
 /** The lot lookup with one retry after about 1.5 s on a 5xx, timeout or network failure (onRetry shows "Busy, trying again"). */

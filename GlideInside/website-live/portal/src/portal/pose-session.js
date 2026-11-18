@@ -9,13 +9,13 @@
 // Nothing changes in the design until Place or Done, which commits ONE undo step. Mirroring changes the house only: the lot is
 // not part of the design geometry, so it can never be mirrored with the house.
 
-import { h } from '../ui/dom.js?v=20261119b';
-import { planView } from '../ui/view-mode.js?v=20261119b';
-import { clearances, clearanceText, deriveDriveway, faceGarageAngle } from '../site/lotplan.js?v=20261119b';
-import { ringOf, OK, BAD, UNKNOWN } from '../editor2d/draw-lotplan.js?v=20261119b';
-import { lotOf } from '../model/placement.js?v=20261119b';
-import { lotChecks } from '../site/lot-checks.js?v=20261119b';
-import { injectStripStyles } from './app-strip-styles.js?v=20261119b';
+import { h } from '../ui/dom.js?v=20261119c';
+import { planView } from '../ui/view-mode.js?v=20261119c';
+import { clearances, clearanceText, deriveDriveway, faceGarageAngle } from '../site/lotplan.js?v=20261119c';
+import { ringOf, OK, BAD, UNKNOWN } from '../editor2d/draw-lotplan.js?v=20261119c';
+import { lotOf } from '../model/placement.js?v=20261119c';
+import { lotChecks } from '../site/lot-checks.js?v=20261119c';
+import { injectStripStyles } from './app-strip-styles.js?v=20261119c';
 
 const CSS = `
 .pas-pose{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--ps-panel,#fff);border-top:1px solid var(--ps-border-strong,#b6b8bd);box-shadow:0 -4px 16px rgba(0,0,0,.12);padding:8px 14px;display:grid;grid-template-columns:minmax(180px,1.1fr) minmax(262px,auto) minmax(200px,1fr) auto;gap:6px 18px;align-items:start;max-height:34%;overflow:auto;font:500 13px var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-text,#1a1c20)}
@@ -282,7 +282,7 @@ export function runPoseSession({ store, editor, host = document.getElementById('
       if (c.crossesBoundary) { live.textContent = blockLine.textContent = `Cannot place here: ${c.messages.find((m) => m.kind === 'boundary').text}`; return; }
       if (c.messages.length && !anyway) { live.textContent = c.messages.map((m) => m.text).join(' '); return; }
       if (c.messages.length && anyway) {
-        const { confirmBreach, statusFromMessages } = await import('../flow/breach.js?v=20261119b');
+        const { confirmBreach, statusFromMessages } = await import('../flow/breach.js?v=20261119c');
         if (!(await confirmBreach(statusFromMessages(c.messages), { what: 'house' }))) return;
       }
     }

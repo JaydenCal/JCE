@@ -14,6 +14,7 @@
 export const BASIS_LABELS = Object.freeze({ council: 'Council DCP', NSW: 'Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)', QLD: 'QDC MP1.1 (default; council planning scheme or the Queensland Housing Code may vary)',
   NSW_INLAND: 'Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)' });
 const SLOTS = ['front', 'secondaryFront', 'side', 'rear', 'garage'];
+import { plainDeep } from './plain-text.js';
 import { isNonResidentialZone } from './zone-class.js';
 
 const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
@@ -609,5 +610,5 @@ export function siteLotSetbacks(lot, ruleSet, design = {}) {
   const council = state === 'NSW' ? findCouncil(ruleSet && ruleSet.councils, lot.lga) : null;
   const d = pickRulesDetailed(council, inputs, { fallbacks: (ruleSet && ruleSet.fallbacks) || {} });
   if (!d.picked) return { setbacks: null, envelope: null, attempts: d.attempts };
-  return { setbacks: { ...d.picked, edgeKinds, inputs }, envelope: buildEnvelope(lot.boundary, lot.frontEdges || [], d.picked), attempts: d.attempts };
+  return { setbacks: plainDeep({ ...d.picked, edgeKinds, inputs }), envelope: buildEnvelope(lot.boundary, lot.frontEdges || [], d.picked), attempts: d.attempts };
 }

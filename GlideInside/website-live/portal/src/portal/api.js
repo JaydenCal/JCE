@@ -2,9 +2,9 @@
 // CONFIG.portalMock = true uses the in-browser mock (mock-api.js). Otherwise the same calls go to {apiBase}/portal/... over fetch
 // with the HttpOnly session cookie (gi_session, Path=/api) and the CSRF header X-GI-Request: 1 on every call. Both resolve plain data and reject with ApiError (src/premium/api.js).
 
-import { CONFIG } from '../config.js?v=20261119b';
-import { ApiError } from '../premium/api.js?v=20261119b';
-import { createMockApi } from './mock-api.js?v=20261119b';
+import { CONFIG } from '../config.js?v=20261119c';
+import { ApiError } from '../premium/api.js?v=20261119c';
+import { createMockApi } from './mock-api.js?v=20261119c';
 
 export const CALLS = [
   'signIn', 'signOut', 'me', 'changePassword', 'requestPasswordReset', 'completePasswordReset',
@@ -76,11 +76,20 @@ const ROUTES = {
 };
 const ID_CALLS = new Set(['approveClientRequest', 'declineClientRequest', 'getBrand', 'getHouse', 'duplicateHouse', 'archiveHouse', 'getGlideModel', 'updateClient', 'resetClientPassword', 'disableClient', 'enableClient', 'deleteClient', 'exportClientProjects', 'getInvoice', 'openProject', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff']);
 
+// The session cookie is HttpOnly (JavaScript cannot see it), so a plain localStorage flag is set at sign in and cleared at sign out or on a 401.
+// With no flag an anonymous visitor never calls /portal/me, so public pages log no 401 in the console. Server auth is unchanged.
+export const SESSION_HINT_KEY = 'gi.portal.hint';
+const hintStore = () => { try { return globalThis.localStorage || null; } catch { return null; } };
+export const hasSessionHint = () => { const ls = hintStore(); if (!ls) return true; try { return ls.getItem(SESSION_HINT_KEY) === '1'; } catch { return true; } }; // storage blocked: cannot tell, so ask the server
+export const setSessionHint = (on) => { const ls = hintStore(); if (!ls) return; try { if (on) ls.setItem(SESSION_HINT_KEY, '1'); else ls.removeItem(SESSION_HINT_KEY); } catch { /* storage blocked */ } };
+const SIGNS_IN = new Set(['signIn', 'changePassword', 'completePasswordReset']);
+
 /** Real HTTP implementation of the same calls. `me` resolves null on 401. `archiveHouse(id, archived)` sends { archived }. */
 export function createHttpApi({ base = CONFIG.apiBase, fetchImpl = null } = {}) {
   const root = String(base || '/api').replace(/\/+$/, '');
   const doFetch = (...a) => (fetchImpl || globalThis.fetch).call(globalThis, ...a);
   async function call(name, args) {
+    if (name === 'me' && !hasSessionHint()) return null; // anonymous: no request, no console 401
     const [method, tpl] = ROUTES[name];
     let path = tpl;
     let rest = args;
@@ -101,10 +110,12 @@ export function createHttpApi({ base = CONFIG.apiBase, fetchImpl = null } = {}) 
     }
     const data = await res.json().catch(() => null);
     if (!res.ok) {
-      if (name === 'me' && res.status === 401) return null;
+      if (name === 'me' && res.status === 401) { setSessionHint(false); return null; }
       const e = data?.error && typeof data.error === 'object' ? data.error : data || {};
       throw new ApiError(e.code || 'ERROR', e.message || 'Something went wrong.', { status: res.status, details: e });
     }
+    if (SIGNS_IN.has(name) || (name === 'me' && data?.user)) setSessionHint(true);
+    else if (name === 'signOut') setSessionHint(false);
     return data;
   }
   return Object.fromEntries(CALLS.map((n) => [n, (...args) => call(n, args)]));

@@ -2,6 +2,7 @@
 // Reset puts every default back. Rates are kept in this browser (see rates.js). Indicative only, not a quote.
 
 import { el, clear } from '../util.js';
+import { plainDashes } from '../../site/plain-text.js';
 import { estimateSiteCosts, fmtAud, DISCLAIMER } from './estimate.js';
 import { NOT_FOUND } from './council.js';
 import { RATE_DEFS, REGIONS, RATES_DATE, loadSettings, saveSettings, resetSettings, regionOf, rateOf, isCustomised } from './rates.js';
@@ -41,7 +42,7 @@ export function openSiteCosts({ layer, getProject, onChange = null } = {}) {
       out.append(el('h3', { style: { margin: '14px 0 4px' } }, est.council.found ? `Council rules, ${est.council.council}` : 'Council rules'));
       if (!est.council.found) out.append(el('p', { class: 'psp-sc-note' }, `This lot's council is not in the council database. ${NOT_FOUND}.`));
       else out.append(el('p', { class: 'psp-sc-note' }, `The council's own wording, from its documents. Source: ${est.council.source}.`),
-        el('table', { class: 'psp-sc-table', 'aria-label': 'Council rules' }, el('tbody', null, ...est.checks.map((c) => el('tr', null, el('td', null, c.label), el('td', { class: c.status === 'exceeds' ? 'psp-sc-custom' : '' }, c.status === 'not_found' ? NOT_FOUND : c.text, c.status === 'not_found' ? null : el('span', { class: 'psp-sc-src' }, `Council: ${c.council} (${c.cite}) "${c.quote}"`)))))));
+        el('table', { class: 'psp-sc-table', 'aria-label': 'Council rules' }, el('tbody', null, ...est.checks.map((c) => el('tr', null, el('td', null, c.label), el('td', { class: c.status === 'exceeds' ? 'psp-sc-custom' : '' }, c.status === 'not_found' ? NOT_FOUND : c.text, c.status === 'not_found' ? null : el('span', { class: 'psp-sc-src' }, plainDashes(`Council: ${c.council} (${c.cite}) "${c.quote}"`))))))));
     }
     // Rates
     out.append(el('h3', { style: { margin: '14px 0 4px' } }, `Rates, ${REGIONS[region]} (dollars, GST excluded)`), el('p', { class: 'psp-sc-note' }, `Defaults dated ${RATES_DATE}. Change a figure to use your own. Low and high follow from the likely rate.`));

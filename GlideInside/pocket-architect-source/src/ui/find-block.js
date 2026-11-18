@@ -6,10 +6,11 @@ import { icon } from './icons.js';
 import { toast } from './toast.js';
 import { openModal } from './modal.js';
 import { CONFIG } from '../config.js';
-import { smartSearch, NOT_FOUND_TEXT } from '../site/address-search.js';
+import { smartSearch, NOT_FOUND_TEXT, SEARCH_DEBOUNCE_MS } from '../site/address-search.js';
 import { demoSite } from '../site/demo-lot.js';
 import { applySiteLookup } from '../site/apply.js';
 import { runUpload } from '../site/upload/flow.js';
+import { arrangeOnLoadWatching } from '../flow/arrange-on-load.js';
 
 const STEPS = { lot: 'Finding the lot', aerial: 'Loading the aerial image', contours: 'Loading ground levels', busy: 'Busy, trying again' };
 let seq = 0;
@@ -81,6 +82,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     try {
       results = await smartSearch(q, { signal: controller.signal, onRetry: () => say('Busy, trying again') });
       if (results.length) cache.set(ck, results);
+      if (!results.length && results.rateLimited) { active = -1; paint(); say(''); return; } // still rate limited after the quiet retry: no error, no "not found"
       active = -1;
       paint();
       say(results.length ? '' : NOT_FOUND_TEXT, results.length ? '' : 'warn');
@@ -93,7 +95,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
       if (e?.code === 'SLOW') status.append(' ', h('button', { class: 'ps-btn ps-btn--ghost', type: 'button', dataset: { ps: 'find-retry' }, onclick: () => search() }, 'Try again'));
     }
   }
-  const debounced = debounce(search, 150);
+  const debounced = debounce(search, SEARCH_DEBOUNCE_MS);
 
   // Enter before any suggestion came back: search now and take the top match, or say it was not found.
   async function enterSearch() {
@@ -111,6 +113,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
       sample.hidden = true;
       toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' });
       for (const w of warnings) toast(w, { kind: 'warn', timeout: 6000 });
+      arrangeOnLoadWatching(store, { swap: false }).catch(() => {}); // the sample lot opens with the house fitting inside its setbacks
       if (!disposed) onDone?.(lot);
     } catch (e) {
       say(e?.message || 'The sample lot could not be loaded.', 'warn');
@@ -133,6 +136,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
       say('');
       toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' });
       for (const w of warnings) toast(w, { kind: 'warn', timeout: 6000 });
+      arrangeOnLoadWatching(store, { swap: false }).catch(() => {});
       if (!disposed) onDone?.(lot);
     } catch (e) {
       if (e?.name === 'AbortError') return;
@@ -143,7 +147,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     }
   }
 
-  input.addEventListener('input', debounced);
+  input.addEventListener('input', () => { controller?.abort(); debounced(); }); // every keystroke aborts the request in flight
   input.addEventListener('focus', () => { if (results.length) paint(); });
   input.addEventListener('blur', () => setTimeout(closeList, 120));
   input.addEventListener('keydown', (e) => {

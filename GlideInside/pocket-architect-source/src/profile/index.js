@@ -29,7 +29,7 @@ export async function initProfiles(app, { refs, fetchImpl = null, api = createPr
     status: () => (controller.state.status === 'in' ? 'in' : controller.state.status === 'out' ? 'out' : 'none'),
     otherAccount: () => hasOtherAccount(app),
     // Never mid drag (pointer is down), never over another dialog, never while walking through the 3D view.
-    isBusy: () => pointerDown || !!document.querySelector('.ps-modal, .pso-card, .pso-pop:not([hidden]), .gf-root:not([hidden]):not([data-step="4"])') || store.ui.view === 'walk', // also the first run tour
+    isBusy: () => pointerDown || !!document.querySelector('.ps-modal, .pso-card, .pso-pop:not([hidden]), .gf-root:not([hidden]):not([data-step="4"]), .tut-card:not([hidden])') || store.ui.view === 'walk', // also the first run tour
     show: (reason) => ui.showPrompt(reason),
     session: safeSession(),
   });
@@ -55,6 +55,17 @@ export async function initProfiles(app, { refs, fetchImpl = null, api = createPr
   window.addEventListener('pagehide', flush);
   // Save and Share while signed out offer a profile (they carry on as usual).
   refs.topbar?.querySelector('[data-action="share"]')?.addEventListener('click', () => policy.onSaveOrShare('share'), true);
+
+  // The export gate remembers a profile so its sign up dialog is not shown again (this session or this device) once one was made or signed into.
+  // Only an explicit sign out or deleting the account forgets it (a dropped session does not: the person still has a profile).
+  import('../legal/terms-gate.js').then(({ planTermsGate }) => {
+    const note = () => { if (controller.state.status === 'in') planTermsGate.noteAccount(true); };
+    controller.subscribe(note); note();
+    for (const name of ['signOut', 'deleteAccount']) {
+      const orig = controller[name];
+      if (typeof orig === 'function') controller[name] = async (...a) => { const r = await orig(...a); planTermsGate.noteAccount(false); return r; };
+    }
+  }).catch(() => { /* the gate asks as before */ });
 
   await controller.init();
   ui.refresh();

@@ -50,3 +50,19 @@ test('no profile service on the page: nothing extra is asked', async () => {
   await gate.require({ context: 'x' });
   assert.deepEqual(log, ['terms']);
 });
+
+test('once a profile was made the account dialog never comes back (this session, and this device through the memory)', async () => {
+  const store = new Map();
+  const storage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v), removeItem: (k) => store.delete(k) };
+  const log = [];
+  const mk = () => createTermsGate({ memory: createAcceptanceMemory({ storage }), openDialog: async ({ onConfirm }) => { log.push('terms'); await onConfirm(); return true; }, accountMissing: () => true, ensureAccount: async () => { log.push('account'); return true; } });
+  const gate = mk();
+  await gate.require({ context: 'a' });
+  await gate.require({ context: 'b' });
+  await gate.require({ context: 'c' });
+  assert.deepEqual(log, ['account', 'terms'], 'one account dialog, one terms dialog, then straight through');
+  const later = mk(); // a new page on the same device
+  assert.equal(later.needsAccount(), false);
+  later.noteAccount(false); // signed out
+  assert.equal(later.needsAccount(), true);
+});

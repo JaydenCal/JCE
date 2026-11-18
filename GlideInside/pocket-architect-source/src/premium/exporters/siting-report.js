@@ -5,6 +5,7 @@
 // Wording is indicative throughout. never a compliance claim (clean() removes it). Dates DD/MM/YYYY. No dashes in the text. Node compatible.
 
 import * as G from '../../model/geometry.js';
+import { plainDashes } from '../../site/plain-text.js';
 import { buildingRings, buildingHull, clearances, boundaryDims, roadReserve, deriveDriveway, titleLotDp, lotLabelLines } from '../../site/lotplan.js';
 import { houseStats, areaBreakdown, sizeLabel } from '../../portal/house-stats.js';
 import { schemeById, effectiveSchemeId, schemeLine } from '../../model/colour-schemes.js';
@@ -461,7 +462,7 @@ export async function toSitingReport(project, options = {}) {
   if (est.ok && est.council?.found) {
     const cut = (t, n) => (t.length > n ? `${t.slice(0, n - 3)}...` : t);
     const crow = est.checks.map((c) => ({
-      cells: [c.label, c.status === 'not_found' ? NOT_FOUND : `${c.text} Council: ${cut(c.council, 120)}. ${c.cite} "${cut(c.quote, 110)}"`],
+      cells: [c.label, c.status === 'not_found' ? NOT_FOUND : plainDashes(`${c.text} Council: ${cut(c.council, 120)}. ${c.cite} "${cut(c.quote, 110)}"`)],
       colours: [null, c.status === 'exceeds' ? PEN.envelope : c.status === 'not_found' ? PEN.grey : PEN.ink],
     }));
     y = table(doc, brand, M, y, [{ w: 42, head: 'RULE' }, { w: CW - 42, head: `${est.council.council.toUpperCase()}` }], crow, { size: 6.8, lead: 3, pad: 1.1 });

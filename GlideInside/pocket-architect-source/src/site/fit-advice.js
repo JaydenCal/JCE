@@ -295,7 +295,19 @@ export function issueSentence(issue) {
  *   { show, tone: 'bad' | 'warn', title, lines[], sides[{ a, b, type }], actions[{ id, label, primary }], verdict, slope, driveway }
  * Action ids: 'auto', 'rotate', 'square', 'designs', 'narrower', 'engineer'.
  */
-export function fitCardModel(project, { withPlan = true, canDesigns = true, canNarrower = true, canEngineer = true } = {}) {
+export function fitCardModel(project, opts = {}) {
+  const m = fitCardModelBase(project, opts);
+  return project?.mode === 'commercial' ? commercialWords(m) : m;
+}
+
+/** A commercial layout is a building, not a house: the same advice in the right words. */
+export function commercialWords(m) {
+  if (!m || !m.show) return m;
+  const w = (t) => String(t).replace(/\bThis house\b/g, 'This building').replace(/\bThe house\b/g, 'The building').replace(/\bthe house\b/g, 'the building').replace(/\bthis house\b/g, 'this building').replace(/\bhouse\b/g, 'building');
+  return { ...m, title: w(m.title), lines: (m.lines || []).map(w) };
+}
+
+function fitCardModelBase(project, { withPlan = true, canDesigns = true, canNarrower = true, canEngineer = true } = {}) {
   const facts = fitFacts(project);
   const slope = slopeNote(project);
   const none = { show: false, tone: 'ok', title: '', lines: [], sides: [], actions: [], verdict: 'fits', slope, driveway: null };
