@@ -494,8 +494,9 @@ const AERIAL_BLEND = 0.6; // share of the aerial beyond the near zone (the full 
 // Owner 16/11/2026: with Aerial on, the real photograph shows in full on and around our lot and fades out with distance into the
 // clean lawn and paddock look (a fade scale), so the lot reads as the real site while the far ground stays tidy.
 const AERIAL_NEAR_MIN_M = 150; // full photograph out to at least this far from the lot centre
-const AERIAL_FAR_FACTOR = 2.0; // fully faded to the subtle blend at this multiple of the near radius
-function lawnGroundMaterial(ctx, lot, ext, aerial = null, hasWide = false) {
+const AERIAL_FAR_FACTOR = 2.0;
+const RIM_BLEND_M = 45; // the sharp tile fades into the wide tile (or paddock) over its last this many metres // fully faded to the subtle blend at this multiple of the near radius
+function lawnGroundMaterial(ctx, lot, ext, aerial = null, hasWide = false, wideTex = null, wideExt = null) {
   if (typeof document === 'undefined') return null;
   const base = ctx.lib.get('grass', LAWN_COLOUR);
   if (!base?.map) return null;
@@ -547,9 +548,15 @@ function lawnGroundMaterial(ctx, lot, ext, aerial = null, hasWide = false) {
     shader.uniforms.uFadeR = { value: new THREE.Vector2(nearR, nearR * AERIAL_FAR_FACTOR) };
     shader.uniforms.uExtM = { value: new THREE.Vector2(w, h) };
     if (aerial) shader.uniforms.uAerialTex = { value: aerial };
+    if (aerial && wideTex && wideExt) {
+      // where the sharp tile meets the wide tile: this tile's coordinates -> the wide tile's (x scale, x offset, y scale, y offset)
+      const ww = wideExt.x1 - wideExt.x0; const wh = wideExt.y1 - wideExt.y0;
+      shader.uniforms.uWideTex = { value: wideTex };
+      shader.uniforms.uWideMap = { value: new THREE.Vector4((ext.x1 - ext.x0) / ww, (ext.x0 - wideExt.x0) / ww, (ext.y1 - ext.y0) / wh, (ext.y0 - wideExt.y0) / wh) };
+    }
     shader.uniforms.uPaddock = { value: new THREE.Vector3(...PADDOCK_TINT) };
     shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nvarying vec2 vLotUv;\nvarying vec2 vAerUv;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvLotUv = vec2(uv.x, 1.0 - uv.y);\nvAerUv = uv;');
-    shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uLotMask;\nuniform vec3 uPaddock;\nvarying vec2 vLotUv;\nvarying vec2 vAerUv;' + (aerial ? '\nuniform sampler2D uAerialTex;\nuniform vec2 uFadeC;\nuniform vec2 uFadeR;\nuniform vec2 uExtM;' : ''))
+    shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uLotMask;\nuniform vec3 uPaddock;\nvarying vec2 vLotUv;\nvarying vec2 vAerUv;' + (aerial ? '\nuniform sampler2D uAerialTex;\nuniform vec2 uFadeC;\nuniform vec2 uFadeR;\nuniform vec2 uExtM;' : '') + (aerial && wideTex ? '\nuniform sampler2D uWideTex;\nuniform vec4 uWideMap;' : ''))
       .replace('#include <map_fragment>', `#include <map_fragment>
   float lotM = texture2D(uLotMask, vLotUv).r;
   // outside the lots: the dry paddock tone, with the mowing bands flattened (fine grain kept)
@@ -560,13 +567,97 @@ function lawnGroundMaterial(ctx, lot, ext, aerial = null, hasWide = false) {
   diffuseColor.rgb = mix(padC, lawnC, lotM);
 ${aerial ? `  vec3 aerC = texture2D(uAerialTex, vAerUv).rgb;
   float dM = length((vAerUv - uFadeC) * uExtM);
-  float nearK = 1.0 - smoothstep(uFadeR.x, uFadeR.y, dM);
+  float nearK = ${hasWide ? '1.0' : '1.0 - smoothstep(uFadeR.x, uFadeR.y, dM)'}; // with the wide tile the photograph runs unbroken to the wide tile: no lawn disc around the lot
   vec3 aerSoft = mix(vec3(dot(aerC, vec3(0.3333))), aerC, 0.85) * 1.08;
   vec3 aerFull = aerC * 1.06;
-  diffuseColor.rgb = mix(mix(diffuseColor.rgb, aerSoft, ${(hasWide ? 0.92 : AERIAL_BLEND).toFixed(2)}), aerFull, nearK);` : ''}`);
+  vec3 noAer = diffuseColor.rgb;
+  diffuseColor.rgb = mix(mix(diffuseColor.rgb, aerSoft, ${(hasWide ? 0.92 : AERIAL_BLEND).toFixed(2)}), aerFull, nearK);
+  // the sharp tile's own rim melts into what lies beyond it (the wide aerial, else the paddock ground), so there is no square edge
+  float rimD = min(min(vAerUv.x, 1.0 - vAerUv.x) * uExtM.x, min(vAerUv.y, 1.0 - vAerUv.y) * uExtM.y);
+  float rimK = 1.0 - smoothstep(0.0, ${RIM_BLEND_M.toFixed(1)}, rimD);
+${wideTex ? `  vec2 wUv = vec2(uWideMap.y + uWideMap.x * vAerUv.x, 1.0 - (uWideMap.w + uWideMap.z * (1.0 - vAerUv.y)));
+  vec3 beyond = texture2D(uWideTex, wUv).rgb * 1.04;` : '  vec3 beyond = noAer;'}
+  diffuseColor.rgb = mix(diffuseColor.rgb, beyond, rimK);` : ''}`);
   };
-  mat.customProgramCacheKey = () => (aerial ? (hasWide ? 'lawn-ground-aerial-5w' : 'lawn-ground-aerial-5') : 'lawn-ground-2');
+  mat.customProgramCacheKey = () => (aerial ? (hasWide ? 'lawn-ground-aerial-7w' : 'lawn-ground-aerial-6') : 'lawn-ground-2');
   return mat;
+}
+
+// ---- Wide ground, rim blend and horizon ring ----------------------------------------------------------------------------------------------
+// The wide tile only counts when it surrounds the sharp tile (and the aerial layer is on).
+function usableWideExtent(lot, inner) {
+  const w = lot.aerialWide?.extent;
+  if (!w || ![w.x0, w.y0, w.x1, w.y1].every(Number.isFinite) || !(w.x1 > w.x0 && w.y1 > w.y0)) return null;
+  if (!(w.x0 <= inner.x0 && w.y0 <= inner.y0 && w.x1 >= inner.x1 && w.y1 >= inner.y1)) return null;
+  if (!S.layerOn(lot, 'aerial')) return null;
+  return w;
+}
+
+const HAZE = '#cfe3f7'; // the sky's horizon colour (viewer.js SKY.horizon): the far ground melts into it
+const HAZE_MAX = 0.9;
+
+// The ground beyond the terrain, out to the horizon. Textured, not a flat colour: with the wide aerial the picture's own (blurred) edge pixels
+// are carried outwards; without it a dry paddock tone. Both get a world space grain (three scales, each faded out before it could alias) so it
+// reads as land, and the colour fades into the sky's horizon colour with distance. Lit like the terrain, so there is no seam where they meet.
+export function buildHorizonRing(ring, { wide = null, wideTexture = null, wideEdgeColour = null, grey = false, tint = PADDOCK } = {}) {
+  const base = new THREE.Color(grey ? GREY_GROUND : wide ? (wideEdgeColour || GRASS) : tint);
+  const pos = ring.positions;
+  const n = pos.length / 3;
+  const rc = [];
+  const fade = new Float32Array(n);
+  const uv = new Float32Array(n * 2);
+  for (let i = 0; i < n; i++) {
+    rc.push(base.r, base.g, base.b);
+    fade[i] = ring.colourT[i];
+    if (wide) {
+      const ww = wide.extent.x1 - wide.extent.x0; const wh = wide.extent.y1 - wide.extent.y0;
+      uv[i * 2] = (pos[i * 3] * 1000 - wide.extent.x0) / ww;
+      uv[i * 2 + 1] = 1 - (pos[i * 3 + 2] * 1000 - wide.extent.y0) / wh;
+    }
+  }
+  const rgeo = new THREE.BufferGeometry();
+  rgeo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  rgeo.setAttribute('color', new THREE.Float32BufferAttribute(rc, 3));
+  rgeo.setAttribute('aFade', new THREE.BufferAttribute(fade, 1));
+  if (wide) rgeo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  rgeo.setIndex(ring.indices);
+  rgeo.computeVertexNormals();
+  const useWide = !!(wide && wideTexture);
+  const rmat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0, envMapIntensity: 0.25, side: THREE.DoubleSide, ...(useWide ? { map: wideTexture } : {}) });
+  rmat.userData.shared = false;
+  rmat.onBeforeCompile = (shader) => {
+    shader.uniforms.uHaze = { value: new THREE.Color(grey ? GREY_HORIZON : HAZE) };
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nattribute float aFade;\nvarying float vFade;\nvarying vec3 vRingW;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvFade = aFade;\nvRingW = (modelMatrix * vec4(position, 1.0)).xyz;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', `#include <common>
+uniform vec3 uHaze;
+varying float vFade;
+varying vec3 vRingW;
+float rgHash(vec2 p) { p = fract(p * vec2(0.1031, 0.1030)); p += dot(p, p.yx + 33.33); return fract((p.x + p.y) * p.x); }
+float rgNoise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(rgHash(i), rgHash(i + vec2(1.0, 0.0)), f.x), mix(rgHash(i + vec2(0.0, 1.0)), rgHash(i + vec2(1.0, 1.0)), f.x), f.y); }`)
+      .replace('#include <map_fragment>', '')
+      .replace('#include <color_fragment>', `
+  vec3 rBase = vColor.rgb;
+#ifdef USE_MAP
+  rBase = textureLod(map, clamp(vMapUv, 0.0, 1.0), 7.0).rgb * 1.04;
+#endif
+  float rW = max(length(dFdx(vRingW.xz)), length(dFdy(vRingW.xz)));
+  float rG = (rgNoise(vRingW.xz / 2.5) - 0.5) * 0.16 * (1.0 - smoothstep(0.6, 2.5, rW))
+           + (rgNoise(vRingW.xz / 11.0 + 5.0) - 0.5) * 0.20 * (1.0 - smoothstep(2.5, 11.0, rW))
+           + (rgNoise(vRingW.xz / 55.0 + 11.0) - 0.5) * 0.26 * (1.0 - smoothstep(12.0, 55.0, rW))
+           + (rgNoise(vRingW.xz / 260.0 + 23.0) - 0.5) * 0.30 * (1.0 - smoothstep(60.0, 260.0, rW));
+  rBase *= 1.0 + rG * smoothstep(0.0, 0.12, vFade + 0.05);
+  diffuseColor.rgb = mix(rBase, uHaze, vFade * ${HAZE_MAX.toFixed(2)});`);
+  };
+  rmat.customProgramCacheKey = () => (useWide ? 'horizon-ring-2w' : 'horizon-ring-2');
+  const rmesh = new THREE.Mesh(rgeo, rmat);
+  rmesh.name = 'site-horizon';
+  rmesh.userData = { ground: true, horizon: true };
+  rmesh.frustumCulled = false;
+  return rmesh;
 }
 
 /**
@@ -718,7 +809,8 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   geo.computeVertexNormals();
   lap('geometry');
   let mat = null;
-  const blended = hasAerial ? lawnGroundMaterial(ctx, lot, ext, texture, !!wideTexture) : null; // the clean lawn with the aerial let through subtly
+  const wideExt = wideTexture ? usableWideExtent(lot, ext) : null;
+  const blended = hasAerial ? lawnGroundMaterial(ctx, lot, ext, texture, !!wideExt, wideExt ? wideTexture : null, wideExt) : null; // the clean lawn with the aerial let through subtly
   if (blended) mat = blended;
   else if (hasAerial) {
     // Sharp: the aerial at full resolution, bilinear when magnified, trilinear mipmaps and anisotropy when minified.
@@ -756,31 +848,13 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   // Wide outer tile: a lower resolution aerial on a frame of ground around the sharp inner tile, so the visible ground is real imagery
   // well past the lot. Only the far edge of this tile fades (the ring below), into the neutral ground colour.
   lap('material');
-  const wide = hasAerial && wideTexture ? addWideGround(root, lot, tm, ext, wideTexture) : null;
+  const wide = hasAerial && wideTexture && wideExt ? addWideGround(root, lot, tm, ext, wideTexture) : null;
   const nodes = wide ? wide.nodes : S.perimeterNodes(cols, rows).map((n) => ({ x: pos[(n.j * cols + n.i) * 3], y: heights[n.j * cols + n.i], z: pos[(n.j * cols + n.i) * 3 + 2], dir: n.dir }));
   let edgeSum = 0;
   for (const n of nodes) edgeSum += n.y;
   const edgeY = nodes.length ? edgeSum / nodes.length : tm.padY;
   const ring = S.fadeRing(nodes, edgeY - 0.05);
-  // The aerial edge is often road, so lean on grass: the ring reads as open ground that fades to the horizon.
-  // With the wide tile the ring starts from that picture's own edge colour (no seam); without it the old grass lean applies.
-  const inner = grey ? new THREE.Color(GREY_GROUND) : wide ? new THREE.Color(wideEdgeColour || GRASS) : (!hasAerial || blended) ? new THREE.Color(PADDOCK) : new THREE.Color(edgeColour || GRASS).lerp(new THREE.Color(GRASS), 0.55).multiplyScalar(1.12);
-  const outer = new THREE.Color(grey ? GREY_HORIZON : (!hasAerial || blended) ? PADDOCK : HORIZON);
-  const rc = [];
-  for (const t of ring.colourT) {
-    const c = inner.clone().lerp(outer, t);
-    rc.push(c.r, c.g, c.b);
-  }
-  const rgeo = new THREE.BufferGeometry();
-  rgeo.setAttribute('position', new THREE.Float32BufferAttribute(ring.positions, 3));
-  rgeo.setAttribute('color', new THREE.Float32BufferAttribute(rc, 3));
-  rgeo.setIndex(ring.indices);
-  const rmat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide });
-  rmat.userData.shared = false;
-  const rmesh = new THREE.Mesh(rgeo, rmat);
-  rmesh.name = 'site-horizon';
-  rmesh.userData = { ground: true, horizon: true };
-  rmesh.frustumCulled = false;
+  const rmesh = buildHorizonRing(ring, { wide, wideTexture, wideEdgeColour, grey, tint: (!hasAerial || blended) ? PADDOCK : (edgeColour ? new THREE.Color(edgeColour).lerp(new THREE.Color(GRASS), 0.55).multiplyScalar(1.12).getStyle() : GRASS) });
   root.add(rmesh);
 
   lap('wide');

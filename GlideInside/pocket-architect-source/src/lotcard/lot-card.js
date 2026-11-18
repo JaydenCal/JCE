@@ -165,6 +165,8 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   ] : [];
   injectUploadCss();
   const uploadBtn = embed ? h('button', { class: 'lc-upload lc-glass', type: 'button', dataset: { ps: 'lc-upload' }, title: 'Use your own lot boundary, anywhere in the world', onclick: () => runUpload(store, { viewer: true, catalogue }) }, 'Upload boundary') : null;
+  // The main call to action: a big gold button, a real button so Tab reaches it and Enter or Space opens the full editor.
+  const fullBtn = embed ? h('button', { class: 'lc-full', type: 'button', dataset: { ps: 'lc-full-editor' }, title: 'Open this lot and design in the full editor', onclick: () => (onFullEditor || onEdit)?.() }, 'Open full editor', h('span', { 'aria-hidden': 'true' }, ' \u2197')) : null;
   const menuList = embed ? h('div', { class: 'lc-menu-list lc-glass', role: 'menu', hidden: true }, ...menuItems.map(([label, fn]) => h('button', { class: 'lc-menu-item', type: 'button', role: 'menuitem', onclick: () => { menuList.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); fn(); paintMenu(); } }, label))) : null;
   const menuBtn = embed ? (() => {
     const b = h('button', { class: 'lc-menu lc-glass', type: 'button', 'aria-label': 'Menu', 'aria-haspopup': 'menu', 'aria-expanded': 'false', dataset: { ps: 'lc-menu' }, onclick: () => { paintMenu(); menuList.hidden = !menuList.hidden; b.setAttribute('aria-expanded', String(!menuList.hidden)); } });
@@ -174,7 +176,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   // The last menu item names what it will do: "Enlarge top view" or "Shrink top view".
   function paintMenu() { const it = menuList?.lastElementChild; if (it) it.textContent = topView.isOpen() ? 'Close top view' : 'Enlarge top view'; }
   const foot = embed ? E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, FOOT_BASE) : null;
-  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, ...(compass ? [compass] : []), findPill, ...(uploadBtn ? [uploadBtn] : []), ...(menuBtn ? [menuBtn, menuList] : []), card, rooms, pager, ...(embed ? [aerialT.el] : []), mini, ...(foot ? [foot] : []));
+  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, ...(compass ? [compass] : []), ...(fullBtn ? [fullBtn] : []), findPill, ...(uploadBtn ? [uploadBtn] : []), ...(menuBtn ? [menuBtn, menuList] : []), card, rooms, pager, ...(embed ? [aerialT.el] : []), mini, ...(foot ? [foot] : []));
   if (embed) {
     root.classList.add('lc-embed');
     const tips = createTips();

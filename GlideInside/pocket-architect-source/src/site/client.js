@@ -136,12 +136,21 @@ export const WIDE_MAX_M = 700;
 export const WIDE_PX = 2048;
 export const WIDE_PX_NSW = 3072; // NSW imagery can be asked for more pixels: the ground beside the lot stays sharp (about 0.2 m per pixel)
 export const INNER_RES = '0.05'; // finest the service allows; it lowers the pixel count itself to fit its size limit
+// The imagery service refuses a box longer than 2000 m a side (server MAX_SPAN_M, a 400 BAD_REQUEST). A big lot (over about 600 m long) used to
+// ask for lot + 2 x 700 m, got that refusal, and the optional wide tile was silently dropped: the ground then ended at the sharp tile's edge.
+// So each side's margin shrinks until the whole box fits under WIDE_MAX_SPAN_M (1900 m, 100 m spare for the 50 m rounding out).
+export const WIDE_MAX_SPAN_M = 1900;
+export const WIDE_MIN_MARGIN_M = 45; // never narrower than the sharp inner tile's own margin
 export function wideBbox(b, minM = WIDE_MIN_M) {
-  const span = Math.max(b.maxE - b.minE, b.maxN - b.minN);
-  const m = Math.min(WIDE_MAX_M, Math.max(minM, span * 0.75));
+  const spanE = b.maxE - b.minE;
+  const spanN = b.maxN - b.minN;
+  const m = Math.min(WIDE_MAX_M, Math.max(minM, Math.max(spanE, spanN) * 0.75));
+  const side = (span) => Math.max(WIDE_MIN_MARGIN_M, Math.min(m, (WIDE_MAX_SPAN_M - span) / 2));
+  const mE = side(spanE);
+  const mN = side(spanN);
   const lo = (v) => Math.floor(v / 50) * 50;
   const hi = (v) => Math.ceil(v / 50) * 50;
-  return { minE: lo(b.minE - m), minN: lo(b.minN - m), maxE: hi(b.maxE + m), maxN: hi(b.maxN + m) };
+  return { minE: lo(b.minE - mE), minN: lo(b.minN - mN), maxE: hi(b.maxE + mE), maxN: hi(b.maxN + mN) };
 }
 export function wideAerialParams(b, px = WIDE_PX) {
   const w = wideBbox(b);

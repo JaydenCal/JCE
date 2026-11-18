@@ -373,14 +373,23 @@ test('wide aerial box reaches at least 300 m beyond the lot on every side and gr
   assert.ok(small.minE - w.minE >= WIDE_MIN_M && w.maxE - small.maxE >= WIDE_MIN_M);
   assert.ok(small.minN - w.minN >= WIDE_MIN_M && w.maxN - small.maxN >= WIDE_MIN_M);
   assert.equal(w.minE % 50, 0);
-  const big = { minE: 0, minN: 0, maxE: 800, maxN: 500 };
+  const big = { minE: 0, minN: 0, maxE: 700, maxN: 500 };
   const wb = wideBbox(big);
-  assert.ok(big.minE - wb.minE >= 600 && wb.maxN - big.maxN >= 600);
+  assert.ok(big.minE - wb.minE >= 500 && wb.maxN - big.maxN >= 500);
   const prm = wideAerialParams(small);
   assert.equal(prm.maxpx, '2048');
   assert.ok(Number(prm.res) <= 2 && Number(prm.res) >= 0.1);
   const [a, , c] = prm.bbox.split(',').map(Number);
   assert.ok((c - a) / Number(prm.res) <= 2048 + 1);
+});
+
+test('wide aerial box never exceeds the imagery service span limit (2000 m), even for a 51 ha lot 1130 m long', () => {
+  for (const [w, h] of [[450, 1130], [800, 500], [1500, 600], [60, 80]]) {
+    const b = { minE: 302000, minN: 6558000, maxE: 302000 + w, maxN: 6558000 + h };
+    const wb = wideBbox(b);
+    assert.ok(wb.maxE - wb.minE <= 2000 && wb.maxN - wb.minN <= 2000, `${w}x${h}`);
+    assert.ok(b.minE - wb.minE >= 45 && wb.maxE - b.maxE >= 45 && b.minN - wb.minN >= 45 && wb.maxN - b.maxN >= 45, 'still surrounds the lot with the inner margin');
+  }
 });
 
 test('buildSiteLot keeps the wide tile only with the inner one, and it surrounds the inner extent', () => {
