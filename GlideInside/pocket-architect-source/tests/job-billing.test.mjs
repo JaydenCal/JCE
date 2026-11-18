@@ -43,7 +43,7 @@ function world({ d1 = false, env = PRICES } = {}) {
   const db = d1 ? makeD1() : null;
   const store = d1 ? createD1Store(db) : createMemoryStore();
   const pstore = d1 ? createD1PortalStore(db) : createMemoryPortalStore();
-  const stripe = { calls: [], invoices: 0, payResult: 'paid', price: { id: 'price_job_test', active: true, currency: 'aud', unit_amount: 2000, type: 'one_time', recurring: null }, sessions: {} };
+  const stripe = { calls: [], invoices: 0, payResult: 'paid', planPrices: { price_starter_test: { id: 'price_starter_test', active: true, currency: 'aud', unit_amount: 11900, type: 'recurring', recurring: { interval: 'month', interval_count: 1 } }, price_pro_test: { id: 'price_pro_test', active: true, currency: 'aud', unit_amount: 21900, type: 'recurring', recurring: { interval: 'month', interval_count: 1 } }, price_teams_test: { id: 'price_teams_test', active: true, currency: 'aud', unit_amount: 41900, type: 'recurring', recurring: { interval: 'month', interval_count: 1 } } }, price: { id: 'price_job_test', active: true, currency: 'aud', unit_amount: 2000, type: 'one_time', recurring: null }, sessions: {} };
   const logs = [];
   const fetchImpl = async (url, init = {}) => {
     const u = new URL(String(url));
@@ -52,6 +52,7 @@ function world({ d1 = false, env = PRICES } = {}) {
     const method = init.method || 'GET';
     const form = init.body ? Object.fromEntries(new URLSearchParams(init.body)) : {};
     stripe.calls.push({ method, path, form, headers: init.headers });
+    if (method === 'GET' && stripe.planPrices[path.replace('/prices/', '')]) return jsonRes(stripe.planPrices[path.replace('/prices/', '')]);
     if (method === 'GET' && path.startsWith('/prices/')) return stripe.price && path.endsWith(stripe.price.id) ? jsonRes(stripe.price) : jsonRes({ error: { message: 'No such price' } }, 404);
     if (method === 'POST' && path === '/customers') return jsonRes({ id: 'cus_test_1' });
     if (method === 'POST' && path === '/tax_rates') return jsonRes({ id: 'txr_test_1' });
@@ -364,9 +365,10 @@ for (const [label, d1] of stores) {
     assert.equal((await w.pstore.listLoginIssues(o.orgId)).length, 0);
     const usage = (await o.b.get('/portal/billing/usage')).data;
     assert.deepEqual([usage.totals.loginsCount, usage.totals.totalCents, usage.loginPricing], [0, 0, null]);
-    // History is intact: a login charged before this change still shows and still totals.
+    // History is intact: a login charged before this change still shows, labelled waived, and adds nothing to the total.
     await w.pstore.addLoginIssue({ loginId: 'old_login', id: 'li_old', orgId: o.orgId, clientName: 'Old', issuedAt: new Date(w.clock.t).toISOString(), month: monthKey(w.clock.t), amountCents: 3000 });
-    assert.equal((await o.b.get('/portal/billing/usage')).data.totals.loginsCents, 3000);
+    const hist = (await o.b.get('/portal/billing/usage')).data;
+    assert.deepEqual([hist.logins.length, hist.logins[0].label, hist.totals.loginsCents], [1, 'waived', 0]);
   });
 
   t('the admin sees jobs charged per org, with a per org list for any month', async (w) => {
@@ -385,6 +387,105 @@ for (const [label, d1] of stores) {
     // Another builder cannot see these jobs.
     const other = await w.org({ name: 'Other Builders Pty Ltd' }).catch(() => null);
     assert.ok(!other || (await other.b.get('/portal/billing/jobs')).data.summary.count === 0);
+  });
+
+  t('retry after a declined card: a new card is a fresh Stripe attempt, the same card and request still replays, a plain network retry never double charges', async (w) => {
+    const o = await w.org();
+    w.stripe.payResult = 'declined';
+    const body = { ...proj(), confirmJob: true, jobRequestId: 'job_req_retry_01' };
+    assert.equal((await o.b.post('/portal/projects', body)).data.error.code, 'JOB_PAYMENT_FAILED');
+    const invKey = () => w.stripe.calls.filter((c) => c.path === '/invoices').map((c) => c.headers['idempotency-key']);
+    assert.equal((await o.b.post('/portal/projects', body)).data.error.code, 'JOB_PAYMENT_FAILED');
+    const [k1, k2] = invKey();
+    assert.equal(k1, k2, 'the same card and request id is the same attempt (a network retry replays, never a second charge)');
+    await w.pstore.updateOrg(o.orgId, { paymentMethodId: 'pm_test_2', cardLast4: '1111' });
+    w.stripe.payResult = 'paid';
+    const ok = await o.b.post('/portal/projects', body);
+    assert.equal(ok.status, 200, JSON.stringify(ok.data));
+    const keys = invKey();
+    assert.notEqual(keys[2], k1, 'a new card makes a fresh invoice attempt');
+    // A network retry of the successful request returns the same job and creates no second invoice.
+    const before = w.stripe.calls.filter((c) => c.path === '/invoices').length;
+    const again = await o.b.post('/portal/projects', body);
+    assert.equal(again.status, 200);
+    assert.equal(again.data.job.id, ok.data.job.id);
+    assert.equal(w.stripe.calls.filter((c) => c.path === '/invoices').length, before);
+    assert.equal((await w.pstore.listJobCharges(o.orgId)).length, 1);
+  });
+
+  t('the client forgets its pending job id after JOB_PAYMENT_FAILED or JOB_CARD_REQUIRED so the next try is a fresh request', async () => {
+    const src = fs.readFileSync(new URL('../src/portal/client-mode.js', import.meta.url), 'utf8');
+    assert.match(src, /JOB_PAYMENT_FAILED' \|\| err\?\.code === 'JOB_CARD_REQUIRED'\) pendingJobId = null/);
+  });
+
+  t('starting a plan checks the live approval and that the Stripe price is an active recurring monthly AUD price of the plan amount', async (w) => {
+    const o = await w.org();
+    for (const bad of [{ unit_amount: 11900 }, { currency: 'usd' }, { active: false }, { recurring: { interval: 'year', interval_count: 1 } }, { recurring: null, type: 'one_time' }]) {
+      w.stripe.planPrices.price_pro_test = { ...w.stripe.planPrices.price_pro_test, ...bad };
+      const r = await o.b.post('/portal/billing/job-plan', { plan: 'pro' });
+      assert.equal(r.data.error.code, 'JOB_PRICE_MISMATCH', JSON.stringify(bad));
+      assert.ok(!w.paths().includes('POST /checkout/sessions'));
+    }
+    w.stripe.planPrices.price_pro_test = { id: 'price_pro_test', active: true, currency: 'aud', unit_amount: 21900, type: 'recurring', recurring: { interval: 'month', interval_count: 1 } };
+    assert.equal((await o.b.post('/portal/billing/job-plan', { plan: 'pro' })).status, 200);
+    // A live key without approval refuses before any Stripe call.
+    const w2 = world({ d1: false, env: { ...PRICES, STRIPE_SECRET_KEY: 'sk_live_abc' } });
+    try {
+      const o2 = await w2.org();
+      const r = await o2.b.post('/portal/billing/job-plan', { plan: 'pro' });
+      assert.equal(r.data.error.code, 'JOB_PLAN_UNAVAILABLE');
+      assert.equal(w2.stripe.calls.length, 0);
+    } finally { w2.restore(); }
+  });
+
+  t('the admin org view returns staffCount', async (w) => {
+    const o = await w.org();
+    const view = (await w.admin('GET', '/portal/admin/orgs')).data.find((x) => x.id === o.orgId);
+    assert.equal(typeof view.staffCount, 'number');
+    assert.ok(view.staffCount >= 1);
+  });
+
+  t('two simultaneous new projects cannot both take the last included plan job', async (w) => {
+    const o = await w.org();
+    assert.equal((await w.admin('POST', `/portal/admin/orgs/${o.orgId}/job-plan`, { plan: 'starter' })).status, 200);
+    const month = monthKey(w.clock.t);
+    for (let i = 0; i < 9; i++) await w.pstore.addJobCharge({ id: `jc_seed_${i}`, requestId: `seed_req_${i}000`, orgId: o.orgId, month, createdAt: new Date(w.clock.t).toISOString(), kind: 'plan_included', amountCents: 0, plan: 'starter' });
+    // Force both requests to read the count (9 of 10) before either inserts: the stale read is what the atomic insert must survive.
+    const realList = w.pstore.listJobCharges;
+    w.pstore.listJobCharges = async (...args) => { const rows = await realList(...args); if (args[1]) await new Promise((r) => setTimeout(r, 60)); return rows; };
+    const [a, b] = await Promise.all([
+      o.b.post('/portal/projects', { ...proj('A'), confirmJob: true, jobRequestId: 'job_req_race_a1' }),
+      o.b.post('/portal/projects', { ...proj('B'), confirmJob: true, jobRequestId: 'job_req_race_b1' }),
+    ]);
+    const statuses = [a.status, b.status].sort();
+    assert.deepEqual(statuses, [200, 409], JSON.stringify([a.data, b.data]));
+    const lose = a.status === 409 ? a : b;
+    assert.equal(lose.data.error.code, 'JOB_CONFIRM_REQUIRED');
+    assert.equal(lose.data.error.quote.kind, 'plan_extra');
+    const rows = await w.pstore.listJobCharges(o.orgId, month);
+    assert.equal(rows.filter((r) => r.kind === 'plan_included').length, 10);
+    assert.equal((await o.b.get('/portal/projects')).data.length, 1);
+  });
+
+  t('showGlideLibrary is only reported for the internal account', async (w) => {
+    const o = await w.org();
+    await w.pstore.updateOrg(o.orgId, { showGlideToClients: true });
+    const me = await o.b.get('/portal/me');
+    assert.equal(JSON.stringify(me.data).includes('"showGlideLibrary":true'), false);
+  });
+
+  t('old client login rows are waived: no login lines on the month end invoice, rows stay visible as waived, nothing deleted', async (w) => {
+    const o = await w.org();
+    const month = monthKey(w.clock.t);
+    await w.pstore.addLoginIssue({ loginId: 'u_old_1', id: 'li_old_1', orgId: o.orgId, clientName: 'Sarah', issuedAt: new Date(w.clock.t).toISOString(), month, amountCents: 3000 });
+    const usage = await o.b.get(`/portal/billing/usage?month=${month}`);
+    assert.equal(usage.status, 200);
+    assert.deepEqual([usage.data.logins.length, usage.data.logins[0].amountCents, usage.data.logins[0].label, usage.data.totals.totalCents], [1, 0, 'waived', 0]);
+    assert.equal((await w.pstore.listLoginIssues(o.orgId)).length, 1, 'history is kept');
+    const { runMonth } = await import('../server/lib/portal-billing.js');
+    const cfg = readConfig({ SITE_URL: SITE, STRIPE_SECRET_KEY: 'sk_test_abc', ...PRICES });
+    await runMonth({ pstore: w.pstore, store: w.store, config: cfg, fetchImpl: async () => { throw new Error('no stripe'); }, now: () => w.clock.t + 40 * DAY, month, orgId: o.orgId });
+    assert.equal(await w.pstore.getInvoiceByMonth(o.orgId, month), null, 'nothing else billable, so no invoice');
   });
 
   t('buying a plan: Checkout in subscription mode with the owner\'s price id, the webhook starts it, cancelling ends it at Stripe', async (w) => {

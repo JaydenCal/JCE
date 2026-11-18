@@ -16,7 +16,7 @@ import { hashPassword, verifyPassword, dummyVerify, newSessionToken, sha256Hex, 
 import { countLoginAttempt, clearLoginCounters, LOCKOUT_MS as GUARD_LOCKOUT_MS } from './login-guard.js';
 import { enforceClientTopUpCap } from './credits.js';
 import { aiSnapshot, addTopUp, aiToken, reconcileTopUps, orgPoolIds } from './portal-ai.js';
-import { usageForMonth, runMonth, isMonthlyRunTime, contactComplete, topUpRows, stripeCall, ensureCustomer, gstTaxRate, jobBillingReadiness, jobPlansView, planPriceId, chargeJob, MONTH_RE } from './portal-billing.js';
+import { usageForMonth, runMonth, isMonthlyRunTime, contactComplete, topUpRows, stripeCall, ensureCustomer, gstTaxRate, jobBillingReadiness, LOGIN_WAIVER_FROM_MS, jobPlansView, planPriceId, chargeJob, MONTH_RE } from './portal-billing.js';
 import { readTrialConfig, orgState, accountView, trialEndFor, extendedEnd, parseTrialRequest, notifyOwner, trialNoClients, trialNoTopUps, readOnlyError, TRIAL_EXTENSION_DAYS, TERMS_VERSION } from './trial.js';
 
 export const COOKIE = 'gi_session';
@@ -122,7 +122,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   const publicOrg = (o, role) => ({
     id: o.id, name: o.name, shortCode: o.shortCode, branding: { displayName: o.displayName || o.name, logoDataUrl: o.logoDataUrl || null, colours: coloursOf(o), details: detailsOf(o) },
     allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true,
-    showGlideLibrary: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, showAerialDefault: o.showAerialDefault !== false, showAiAssistant: o.showAiAssistant !== false, directoryListed: o.directoryListed === true, directoryRegion: o.directoryRegion || '', aiMonthlyCap: o.aiMonthlyCap,
+    showGlideLibrary: o.internal === true && o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, showAerialDefault: o.showAerialDefault !== false, showAiAssistant: o.showAiAssistant !== false, directoryListed: o.directoryListed === true, directoryRegion: o.directoryRegion || '', aiMonthlyCap: o.aiMonthlyCap,
     ...(o.internal === true ? { internal: true } : {}),
     ...(role === 'admin' ? { billingContact: billingContact(o) } : {}),
   });
@@ -536,6 +536,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const prior = given ? await pstore.getJobByRequest(org.id, given) : null;
     if (prior) return { row: prior, existing: prior.projectId ? await pstore.getProject(org.id, prior.projectId) : null, projectId: prior.projectId };
     const q = await jobQuote(org, state);
+    const plan = jobPlanOf(org.jobPlan);
     if (b.confirmJob !== true) throw new HttpError('JOB_CONFIRM_REQUIRED', 'Confirm the new job before it is created.', { quote: q });
     const requestId = given || rid('job');
     const charge = q.cents > 0 && q.charging;
@@ -550,7 +551,14 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       kind: unbilled ? 'unbilled' : q.kind, amountCents: charge ? q.cents : 0, plan: q.plan?.id || null, stripeInvoiceId,
       note: unbilled ? 'Job billing was not configured, so nothing was charged.' : null,
     };
-    await pstore.addJobCharge(row);
+    if (q.kind === 'plan_included') {
+      // Atomic allowance check: the insert only happens while the month's included count is under the plan cap, so two simultaneous saves cannot both take the last job.
+      if (!(await pstore.addJobChargeWithinCap(row, plan.jobs))) {
+        const again = await pstore.getJobByRequest(org.id, requestId);
+        if (again) return { row: again, existing: again.projectId ? await pstore.getProject(org.id, again.projectId) : null, projectId: again.projectId };
+        throw new HttpError('JOB_CONFIRM_REQUIRED', 'Your plan allowance was just used up by another save. Confirm the new price to continue.', { quote: await jobQuote(org, state) });
+      }
+    } else await pstore.addJobCharge(row);
     return { row, existing: null, projectId: p.id };
   }
   const jobView = (j) => ({ id: j.id, projectId: j.projectId || null, projectName: j.projectName || '', userName: j.userName || '', createdAt: j.createdAt, kind: j.kind, amountCents: j.amountCents, plan: j.plan || null, note: j.note || null });
@@ -667,6 +675,12 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (!plan) throw new HttpError('BAD_REQUEST', 'Choose Builder Starter, Builder Pro or Builder Teams.');
     const priceId = planPriceId(config, plan.id);
     if (!priceId || !config.stripeSecretKey) throw new HttpError('JOB_PLAN_UNAVAILABLE', `${plan.name} is coming soon. Until then each new job is ${formatAud(JOB_FEE_CENTS)} incl. GST with no monthly fee.`);
+    const ready = jobBillingReadiness(config);
+    if (!ready.ready) throw new HttpError('JOB_PLAN_UNAVAILABLE', `${plan.name} is coming soon. Until then each new job is ${formatAud(JOB_FEE_CENTS)} incl. GST with no monthly fee.`);
+    const price = await stripeCall({ config, fetchImpl, method: 'GET', path: `/prices/${encodeURIComponent(priceId)}` });
+    if (!price || price.active === false || price.currency !== 'aud' || price.unit_amount !== plan.monthlyCents || price.recurring?.interval !== 'month' || (price.recurring?.interval_count ?? 1) !== 1) {
+      throw new HttpError('JOB_PRICE_MISMATCH', `The ${plan.name} price in Stripe is not an active monthly ${formatAud(plan.monthlyCents)} price in AUD, so nothing was started. Contact Glide Inside.`);
+    }
     if (org.jobPlan) throw new HttpError('CONFLICT', 'You already have a plan. Cancel it first if you want a different one.');
     if (!contactComplete(org)) throw new HttpError('BAD_REQUEST', 'Save your legal business name, ABN and billing email first. They are needed on your tax invoices.');
     const customer = await ensureCustomer({ config, pstore, fetchImpl, org });
@@ -1149,7 +1163,8 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       admin: admin ? { id: admin.id, name: admin.name, username: admin.username, email: admin.email || '', mustChangePassword: !!admin.mustChangePassword, lastSignInAt: admin.lastSignInAt || null } : null,
       directoryListed: org.directoryListed === true, pendingClientRequests: await pstore.countPendingClientRequests(org.id),
       billingContact: billingContact(org), billingReady: org.internal === true || contactComplete(org) || !!org.paymentMethodId,
-      billingSkipRisk: org.internal !== true && accountView(org, nowMs).status === 'active' && !contactComplete(org) && !org.paymentMethodId && (topUps > 0 || issues.some((i) => i.month === month)), // something is billable at month end (AI top-ups, or logins charged before they became free) but there is no way to invoice it staffCount: staff.length,
+      billingSkipRisk: org.internal !== true && accountView(org, nowMs).status === 'active' && !contactComplete(org) && !org.paymentMethodId && (topUps > 0 || issues.some((i) => i.month === month && Date.parse(i.issuedAt) < LOGIN_WAIVER_FROM_MS)), // something is billable at month end (AI top-ups, or login rows from before 11/11/2026; later login rows are waived) but there is no way to invoice it
+      staffCount: staff.length,
       clientLogins: { generated: clients.length, issued: issues.length, firstSignedIn: clients.filter((c) => c.firstSignInAt).length },
       // Client logins are no longer charged (18/11/2026); `issued` counts the legacy rows charged before then.
       loginPricing: null,
