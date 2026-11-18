@@ -743,7 +743,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const { user, org, state } = await auth(r);
     if (state.internal) throw new HttpError('NOT_ENTITLED', 'An internal test account has a generous monthly AI allowance and no top-ups.', {}, 403);
     if (state.isTrial) throw trialNoTopUps();
-    if (!isStaff(user) && !org.allowClientTopUps) throw new HttpError('TOPUPS_DISABLED', 'Your builder has turned off AI credit top-ups.');
+    if (!isStaff(user) && !org.allowClientTopUps) throw new HttpError('TOPUPS_DISABLED', 'Your builder has turned off AI top-ups.');
     if ((await store.hitRate(`topup:${org.id}:${user.id}`, 3600, now())) > 10) throw new HttpError('RATE_LIMITED', 'Too many top-ups in the last hour.', { retryAfter: 600 });
     // L2: a client login spends the builder's money, so it also has a monthly ceiling (CLIENT_TOPUP_MONTHLY_MAX); builder staff are not capped.
     if (!isStaff(user)) await enforceClientTopUpCap({ store, config, orgId: org.id, loginId: user.id, nowMs: now(), HttpError });

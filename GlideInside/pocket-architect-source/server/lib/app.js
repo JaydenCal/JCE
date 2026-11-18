@@ -285,7 +285,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   // A request is paid for either by a Plan Pack (one entitlement row for the project) or by a builder or client login
   // (a monthly pool per login per Sydney calendar month, then a carry-over top-up pool). Both expose the same small
   // interface so the AI handlers do not care which one they have.
-  const TOPUP_OFFER = () => ({ credits: config.topUpCredits, amountCents: config.topUpCents, gstInclusive: true, currency: 'aud' });
+  const TOPUP_OFFER = () => ({ messages: config.topUpMessages, credits: config.topUpCredits, amountCents: config.topUpCents, gstInclusive: true, currency: 'aud' });
 
   async function topUpAllowed(payload, internal = false) {
     if (internal) return false; // an internal test account is never charged, so it has no top-ups

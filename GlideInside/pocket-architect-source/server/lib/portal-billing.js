@@ -2,13 +2,13 @@
 //   Builder JOBS (18/11/2026): A$20 incl. GST per new project, charged off session to the saved card at the moment the builder confirms it
 //   (chargeJob below, one Stripe invoice per job, its amount read from BUILDER_JOB_PRICE_ID). Jobs are listed in the usage view but are not on the month end invoice.
 //   Client logins are no longer charged. Login rows from before 18/11/2026 (login_issues, amount A$30 or A$25) are history and still invoice as they always did.
-//   A$10 incl. GST per AI top-up of 300 credits (the AI branch's `ai_topup` events in the main store).
+//   AI top-up: 100 messages for A$15 incl. GST (200 stored credits) from 18/11/2026; older events keep 300 credits for A$10 (the AI branch's `ai_topup` events in the main store).
 // Stripe is used only through its REST API with fetch. An org with no card on file gets a send_invoice invoice (Stripe emails it; this
 // server sends nothing). An org that added card details (Checkout in setup mode, see lib/portal.js) gets a charge_automatically
 // invoice paid at once with its saved card.
 // TEST MODE ONLY unless STRIPE_LIVE_BILLING_APPROVED=owner-written-go-ahead (see server/README.md).
 
-import { JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, summariseJobs, monthKey, monthStartMs, previousMonthKey, summariseMonth, gstOfTotal, NEW_LOGIN_FEE_CENTS, VOLUME_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, TOPUP_FEE_CENTS, TOPUP_CREDITS, sydneyParts } from '../../src/portal/billing.js';
+import { JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, summariseJobs, monthKey, monthStartMs, previousMonthKey, summariseMonth, gstOfTotal, NEW_LOGIN_FEE_CENTS, VOLUME_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, TOPUP_FEE_CENTS, TOPUP_CREDITS, TOPUP_MESSAGES, LEGACY_TOPUP_FEE_CENTS, LEGACY_TOPUP_CREDITS, topUpInvoiceLines, formatAud, sydneyParts } from '../../src/portal/billing.js';
 import { HttpError } from './http.js';
 
 const DAY = 86400000;
@@ -24,7 +24,7 @@ export const contactComplete = (org) => !!(org.legalName && /^\d{11}$/.test(Stri
 export async function topUpRows(store, orgId) {
   return (await store.listEvents('ai_topup'))
     .filter((e) => e.detail?.orgId === orgId)
-    .map((e) => ({ id: e.id, loginId: e.detail.loginId, credits: Number(e.detail.credits) || TOPUP_CREDITS, amountCents: Number.isFinite(e.detail.amountCents) ? e.detail.amountCents : TOPUP_FEE_CENTS, createdAt: e.detail.createdAt || e.createdAt }));
+    .map((e) => ({ id: e.id, loginId: e.detail.loginId, credits: Number(e.detail.credits) || LEGACY_TOPUP_CREDITS, amountCents: Number.isFinite(e.detail.amountCents) ? e.detail.amountCents : LEGACY_TOPUP_FEE_CENTS, createdAt: e.detail.createdAt || e.createdAt }));
 }
 
 /** GET /portal/billing/usage for one Sydney calendar month. */
@@ -38,7 +38,7 @@ export async function usageForMonth({ pstore, store, orgId, month, names }) {
     month, timezone: 'Australia/Sydney',
     // Client logins are no longer charged (18/11/2026). Rows from before then are history and still list below.
     loginPricing: null,
-    rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, volumeLoginCents: VOLUME_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS, jobCents: JOB_FEE_CENTS },
+    rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, volumeLoginCents: VOLUME_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS, topUpMessages: TOPUP_MESSAGES, jobCents: JOB_FEE_CENTS },
     jobs: { ...summariseJobs(jobRows), feeCents: JOB_FEE_CENTS, items: jobRows.map((j) => ({ id: j.id, projectName: j.projectName || '', userName: j.userName || '', createdAt: j.createdAt, kind: j.kind, amountCents: j.amountCents, plan: j.plan || null })) },
     logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName || '', firstSignInAt: i.chargedAt, amountCents: i.amountCents, ...(org?.internal === true ? { label: 'internal test, no charge' } : {}) })),
     topUps: s.topUps.map((t) => ({ id: t.id, loginId: t.loginId, clientName: names.get(t.loginId) || '', credits: t.credits, amountCents: t.amountCents, createdAt: t.createdAt })),
@@ -64,7 +64,7 @@ export function buildSnapshot({ org, config, month, usage, number, issuedAtMs, p
   const pay = payment || (card ? { method: 'card', brand: org.cardBrand || '', last4: org.cardLast4 || '' } : { method: 'invoice' });
   const lines = [
     ...loginLines(usage.logins, month),
-    { description: `AI credit top-ups of ${config.topUpCredits} credits (A$${config.topUpCents / 100} each, incl. GST)`, quantity: t.topUpsCount, unitCents: t.topUpsCount ? Math.round(t.topUpsCents / t.topUpsCount) : config.topUpCents, totalCents: t.topUpsCents },
+    ...(usage.topUps?.length ? topUpInvoiceLines(usage.topUps) : [{ description: `AI message top-ups of ${TOPUP_MESSAGES} messages (${formatAud(config.topUpCents)} each, incl. GST)`, quantity: t.topUpsCount, unitCents: t.topUpsCount ? Math.round(t.topUpsCents / t.topUpsCount) : config.topUpCents, totalCents: t.topUpsCents }]),
   ].filter((l) => l.quantity > 0);
   return {
     title: 'Tax invoice', number, month,

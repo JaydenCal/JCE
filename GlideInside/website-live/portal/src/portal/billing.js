@@ -5,7 +5,10 @@
 //   Client logins are NO LONGER charged. The login tier constants and functions below stay ONLY so the history of logins already charged (rows,
 //   past invoices, the usage view) keeps reading correctly. New first sign ins create no charge row.
 //   Legacy rule, history only: logins 1 to 15 in a month A$30 each, 16 to 50 A$25 each, above 50 a custom rate (org.customLoginCents).
-//   A$10 incl. GST per AI top-up of 300 credits, added at once, on the end of month invoice.
+//   AI top-up (owner decision 18/11/2026): 100 messages for A$15 incl. GST everywhere (the same pack as Commercial), added at once, on the end of
+//   month invoice. The builder AI meters COST based credits (1 credit = US$0.001, a typical edit is 2 credits), so one message is
+//   AI_CREDITS_PER_MESSAGE (2) credits and a pack stores TOPUP_MESSAGES x 2 = 200 credits. Records made before 18/11/2026 (300 credits, A$10) keep
+//   their stored credits and amountCents; LEGACY_TOPUP_* only fills rows that carry no amount.
 // Resetting a password, disabling, enabling or editing a login never creates a charge.
 // A billing row is { loginId, chargedAt (the first sign in), amountCents }.
 
@@ -14,7 +17,11 @@ export const NEW_LOGIN_FEE_CENTS = 3000;
 export const VOLUME_LOGIN_FEE_CENTS = 2500;
 export const LOGIN_TIER_1_MAX = 15; // logins 1 to 15 in a month are NEW_LOGIN_FEE_CENTS
 export const LOGIN_TIER_2_MAX = 50; // logins 16 to 50 are VOLUME_LOGIN_FEE_CENTS; above this the owner sets a custom rate
-export const TOPUP_FEE_CENTS = 1000;
+export const TOPUP_FEE_CENTS = 1500; // one AI top-up pack, GST included
+export const TOPUP_MESSAGES = 100; // messages in one pack
+export const AI_CREDITS_PER_MESSAGE = 2; // the builder meter counts credits; a typical assistant message costs 2
+export const LEGACY_TOPUP_FEE_CENTS = 1000; // packs bought before 18/11/2026: 300 credits for A$10
+export const LEGACY_TOPUP_CREDITS = 300;
 export const JOB_FEE_CENTS = 2000; // one new builder job, GST included
 /** Capped monthly builder plans. Prices GST included. Jobs reset each Sydney calendar month and do not roll over. */
 export const JOB_PLANS = {
@@ -45,7 +52,28 @@ export function summariseJobs(rows = []) {
     planIncludedCount: n('plan_included'), planExtraCount: n('plan_extra'), trialFreeCount: n('trial_free'), internalCount: n('internal'), unbilledCount: n('unbilled'),
   };
 }
-export const TOPUP_CREDITS = 300;
+export const TOPUP_CREDITS = TOPUP_MESSAGES * AI_CREDITS_PER_MESSAGE; // credits stored for one pack (200)
+/** Messages a stored credit amount stands for. A pack bought before 18/11/2026 (300 credits, A$10) is described in credits, so history reads true. */
+export const topUpIsLegacy = (t) => Number(t?.credits) === LEGACY_TOPUP_CREDITS && Number(t?.amountCents) === LEGACY_TOPUP_FEE_CENTS;
+export const topUpMessages = (credits) => Math.round(Number(credits) / AI_CREDITS_PER_MESSAGE);
+/** "100 AI messages" for a current pack, "300 AI credits" for a legacy one. */
+export const topUpQuantityText = (t) => (topUpIsLegacy(t) ? `${t.credits} AI credits` : `${topUpMessages(t.credits)} AI messages`);
+/** Invoice lines for a month of top-ups, one per distinct pack and price (a month that spans the change shows both). */
+export function topUpInvoiceLines(topUps = []) {
+  const groups = new Map();
+  for (const t of topUps) {
+    const credits = Number(t.credits) || LEGACY_TOPUP_CREDITS;
+    const cents = Number.isFinite(t.amountCents) ? t.amountCents : LEGACY_TOPUP_FEE_CENTS;
+    const k = `${credits}|${cents}`;
+    const g = groups.get(k) || { credits, cents, quantity: 0 };
+    g.quantity += 1;
+    groups.set(k, g);
+  }
+  return [...groups.values()].sort((a, b) => b.cents - a.cents).map((g) => ({
+    description: `AI ${topUpIsLegacy({ credits: g.credits, amountCents: g.cents }) ? `credit top-ups of ${g.credits} credits` : `message top-ups of ${topUpMessages(g.credits)} messages`} (${formatAud(g.cents)} each, incl. GST)`,
+    quantity: g.quantity, unitCents: g.cents, totalCents: g.cents * g.quantity,
+  }));
+}
 
 const fmt = new Intl.DateTimeFormat('en-AU', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
 
@@ -144,7 +172,7 @@ export function summariseMonth({ issues = [], topUps = [] }, key) {
   const logins = loginsInMonth(issues, key);
   const tops = topUpsInMonth(topUps, key);
   const loginsCents = logins.reduce((s, i) => s + (i.amountCents ?? NEW_LOGIN_FEE_CENTS), 0);
-  const topUpsCents = tops.reduce((s, t) => s + (t.amountCents ?? TOPUP_FEE_CENTS), 0);
+  const topUpsCents = tops.reduce((s, t) => s + (t.amountCents ?? LEGACY_TOPUP_FEE_CENTS), 0);
   return {
     month: key,
     logins,

@@ -75,7 +75,7 @@ their single guarded write (no schema change):
 | Pool | Row id | Size | Resets |
 |---|---|---|---|
 | Monthly | `org:<orgId>:<loginId>:<YYYY-MM>` | `ORG_MONTHLY_CREDITS` (default 300) or the token `cap` | At the start of each calendar month in Australia/Sydney (the row is created lazily, so a new month is a new row) |
-| Top-up | `orgtop:<orgId>:<loginId>` | grows by `TOPUP_CREDITS` per top-up | Never; carries over until used |
+| Top-up | `orgtop:<orgId>:<loginId>` | grows by 200 credits (100 messages) per top-up | Never; carries over until used |
 
 Requests are paid from the monthly pool first, then the top-up pool (`planSpend`). The estimate is reserved across both
 pools and the actual charge is settled monthly first (`splitCharge`). The 50, 80 and 95% warnings count the monthly pool
@@ -87,8 +87,8 @@ first day of next month in Sydney) so the panel can show the reset date and the 
 `{ kind: 'org', total, used, remaining, reserved, warnLevel, topUpRemaining, available, monthResetsOn, topUp }`.
 Plan Pack replies keep their original shape.
 
-**Top-ups.** `POST /api/ai/topup` (org token) adds `TOPUP_CREDITS` (default 300) at once and charges nothing by card. The
-charge, `TOPUP_AMOUNT_CENTS` (default 1000, A$10 including GST), goes on the builder's end-of-month invoice. Each top-up is
+**Top-ups.** `POST /api/ai/topup` (org token) adds one pack (100 messages = 200 stored credits, `config.topUpCredits`) at once and charges nothing by card. The
+charge, A$15 including GST (`config.topUpCents`, fixed in code from `src/portal/billing.js`; the old `TOPUP_CREDITS` and `TOPUP_AMOUNT_CENTS` variables are ignored), goes on the builder's end-of-month invoice. Each top-up is
 logged as a billable event so billing can invoice it: `store.listEvents('ai_topup')` returns rows whose `detail` is
 
 ```
@@ -128,7 +128,7 @@ The portal needs D1 (`createD1PortalStore`); on Upstash or other hosts it answer
 | `STRIPE_SECRET_KEY` | secret | **Test key only** (`sk_test_...`) until the owner gives written go-ahead for live billing |
 | `PORTAL_ENABLED` | var | `1` opens builder and client logins. Default off |
 | `SELLER_NAME`, `SELLER_ABN` | var | Seller on tax invoices. Defaults: `JCE Infrastructure Pty Ltd trading as Glide Inside`, `29 699 165 663` |
-| `ORG_MONTHLY_CREDITS`, `TOPUP_CREDITS`, `TOPUP_AMOUNT_CENTS` | var | 300 credits per login per month, 300 credits for A$10 (1000 cents) incl. GST |
+| `ORG_MONTHLY_CREDITS` | var | 300 credits per login per month. The top-up pack (100 messages = 200 credits, A$15 = 1500 cents incl. GST) is fixed in code; `TOPUP_CREDITS` and `TOPUP_AMOUNT_CENTS` are no longer read |
 | `STRIPE_GST_TAX_RATE_ID` | var, optional | An existing inclusive 10% GST tax rate. If empty one is created on first use and remembered in `portal_settings` |
 | `BUILDER_JOB_PRICE_ID`, `BUILDER_STARTER_PRICE_ID`, `BUILDER_PRO_PRICE_ID`, `BUILDER_TEAMS_PRICE_ID` | var, optional | Stripe price ids the owner creates (A$20 one off; A$119, A$219, A$419 recurring). Unset = per job billing records jobs but charges nothing, and plans show Coming soon. See `../JOB-BILLING.md` |
 | `STRIPE_LIVE_BILLING_APPROVED` | var | Leave unset. A live Stripe key (`sk_live_`, `rk_live_`) is refused unless this is exactly `owner-written-go-ahead` |

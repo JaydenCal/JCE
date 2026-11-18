@@ -51,3 +51,14 @@ The in memory test store has the same shape (`createMemoryPortalStore`).
 - The trial terms page and `TERMS_VERSION` were updated to 18/11/2026 because the pricing section changed.
 - The first save by staff is where the job is confirmed (work on a new design stays on the device until saved). Client logins autosave and are never asked.
 - No emails are sent by this feature.
+
+## AI top-up pack (owner decision 18/11/2026, same branch)
+
+The AI top-up is now **100 messages for A$15 incl. GST** for builder staff, builder clients and Commercial alike (Commercial already used `COMMERCIAL_AI_TOPUP_PRICE_ID`, A$15 for 100 messages).
+
+How the builder side meters AI: it counts **credits, not messages**. A credit is US$0.001 of model cost (`creditsForCost`, minimum 1), so a message costs a variable number of credits: the design basis in `tests/server.test.mjs` is 2 credits for a typical edit, a reply with no operations is free, and a large request can cost more. Commercial is different (exactly 1 credit per message). So the pack is converted at the typical rate, **1 message = 2 credits (`AI_CREDITS_PER_MESSAGE`), 100 messages = 200 stored credits**, and users are told "100 messages". The meter still shows credits (the 300 credit monthly allowance is about 150 typical messages); the top-up confirm and notices say "100 messages (200 credits)" and "a message is about 2 credits". The billing path is unchanged: added at once, charged on the month end invoice.
+
+- Constants live in `src/portal/billing.js` (`TOPUP_FEE_CENTS` 1500, `TOPUP_MESSAGES` 100, `AI_CREDITS_PER_MESSAGE` 2, `TOPUP_CREDITS` 200). `server/lib/config.js` takes them from there. **The old `TOPUP_CREDITS` and `TOPUP_AMOUNT_CENTS` variables (300 and 1000) are still set in the wrangler files (live, staging, example), which were not touched. The config now ignores them**, so nothing can undercharge or mismatch. Tidy them out of the wrangler files when you next edit those.
+- History stays true: existing `ai_topup` events keep their stored `credits` (300) and `amountCents` (1000). Month totals use stored amounts. The invoice has one line per distinct pack and price (`topUpInvoiceLines`), so a month that spans the change shows both "credit top-ups of 300 credits (A$10 each)" and "message top-ups of 100 messages (A$15 each)". Issued invoice snapshots are not rewritten. Rows with no stored amount fall back to the legacy A$10.
+- Wording changed in: portal Billing tab, client app top-up button and confirm, trial pricing text, mock APIs, concierge answers, `pricing`, `for-builders`, `trial-terms`, break even calculator (top-ups now A$15 each), server README and PORTAL_API docs.
+- Not changed: the 300 credit monthly allowance and its "credits" meter wording, the Plan Pack 500 credits, the 12 month carry over of top-up credits.

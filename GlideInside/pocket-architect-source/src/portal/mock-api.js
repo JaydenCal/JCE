@@ -12,7 +12,7 @@ import { validateColours } from './theme.js';
 import { projectToSvg } from './thumbnail.js';
 import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js';
 import { gstOfTotal, monthLabel } from './billing.js';
-import { NEW_LOGIN_FEE_CENTS, JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, jobPriceFor, summariseJobs, formatAud, TOPUP_FEE_CENTS, TOPUP_CREDITS, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js';
+import { NEW_LOGIN_FEE_CENTS, JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, jobPriceFor, summariseJobs, formatAud, TOPUP_FEE_CENTS, TOPUP_CREDITS, TOPUP_MESSAGES, topUpInvoiceLines, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js';
 
 const DB_KEY = 'gi.portal.mock.v1';
 const SESSION_KEY = 'gi.portal.session.v1';
@@ -604,7 +604,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       return {
         month: key, timezone: 'Australia/Sydney',
         loginPricing: null,
-        rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS, jobCents: JOB_FEE_CENTS },
+        rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS, topUpMessages: TOPUP_MESSAGES, jobCents: JOB_FEE_CENTS },
         jobs: jobsFor(db, org, key),
         logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName, firstSignInAt: i.chargedAt ?? i.issuedAt, amountCents: i.amountCents })),
         topUps: s.topUps.map((t) => ({ id: t.id, loginId: t.loginId, clientName: names.get(t.loginId) || '', credits: t.credits, amountCents: t.amountCents, createdAt: t.createdAt })),
@@ -658,7 +658,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const c = org.billingContact || {};
       const lines = [
         ...[...usage.logins.reduce((m, l) => m.set(l.amountCents, (m.get(l.amountCents) || 0) + 1), new Map())].sort((a, b) => b[0] - a[0]).map(([c, q]) => ({ description: `New client logins first signed in during ${monthLabel(inv.month)} (${formatAud(c)} each, incl. GST)`, quantity: q, unitCents: c, totalCents: c * q })),
-        { description: `AI credit top-ups of ${TOPUP_CREDITS} credits (A$10 each, incl. GST)`, quantity: usage.totals.topUpsCount, unitCents: TOPUP_FEE_CENTS, totalCents: usage.totals.topUpsCents },
+        ...topUpInvoiceLines(usage.topUps),
       ].filter((l) => l.quantity > 0);
       const total = usage.totals.totalCents;
       return { ...inv, title: 'Tax invoice', seller: { ...SELLER }, buyer: { legalName: c.legalName || '', abn: c.abn || '', contact: c.name || '', email: c.email || '' }, lines, gstCents: gstOfTotal(total), subtotalExGstCents: total - gstOfTotal(total), totalInclGstCents: total, logins: usage.logins, topUps: usage.topUps };
@@ -692,11 +692,11 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const { user, org } = ctx();
       return aiBalance(user, org);
     },
-    /** A$10 incl. GST for 300 credits, added at once and charged on the end of month invoice. */
+    /** A$15 incl. GST for 100 messages (200 stored credits), added at once and charged on the end of month invoice. */
     async aiTopUp() {
       await wait();
       const { db, user, org } = ctx();
-      if (!isStaff(user) && !org.allowClientTopUps) throw err('TOPUPS_DISABLED', 'Your builder has turned off AI credit top-ups.', 403);
+      if (!isStaff(user) && !org.allowClientTopUps) throw err('TOPUPS_DISABLED', 'Your builder has turned off AI top-ups.', 403);
       user.ai = user.ai || { used: {}, topUpBalance: 0 };
       user.ai.topUpBalance = (user.ai.topUpBalance || 0) + TOPUP_CREDITS;
       const topUp = { id: rid('tu'), orgId: org.id, loginId: user.id, credits: TOPUP_CREDITS, amountCents: TOPUP_FEE_CENTS, createdAt: iso() };
@@ -797,7 +797,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       save(db);
       return clone(b);
     },
-    /** Organisation settings. allowClientTopUps (default on) lets client logins buy AI credit top-ups. */
+    /** Organisation settings. allowClientTopUps (default on) lets client logins buy AI top-ups. */
     async setOrgSettings({ allowClientTopUps, allowClientEnquiries, showGlideToClients, allowClientCadExports, showAerialDefault, showAiAssistant, directoryListed, directoryRegion } = {}) {
       await wait();
       const { db, org } = ctx('billing.write');

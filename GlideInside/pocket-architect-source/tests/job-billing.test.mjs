@@ -461,3 +461,25 @@ test('new copy has no em or en dashes and never the word compliant', () => {
   const added = read('src/portal/client-mode.js').split('\n').filter((l) => /job|Job/.test(l)).join('\n');
   assert.doesNotMatch(added, /[–—]/);
 });
+
+// AI top-up pack (owner decision 18/11/2026): 100 messages for A$15 incl. GST, 2 credits a message on the builder meter.
+test('AI top-up pack: 100 messages, A$15, 200 stored credits; older 300 credit A$10 rows keep their own amounts on the invoice', async () => {
+  const B = await import('../src/portal/billing.js');
+  const { readConfig } = await import('../server/lib/config.js');
+  assert.deepEqual([B.TOPUP_MESSAGES, B.TOPUP_FEE_CENTS, B.TOPUP_CREDITS, B.AI_CREDITS_PER_MESSAGE], [100, 1500, 200, 2]);
+  const cfg = readConfig({ TOPUP_CREDITS: '300', TOPUP_AMOUNT_CENTS: '1000' });
+  assert.deepEqual([cfg.topUpMessages, cfg.topUpCredits, cfg.topUpCents], [100, 200, 1500], 'old wrangler variables are ignored');
+  const rows = [
+    { id: 'a', credits: 300, amountCents: 1000, createdAt: '2026-11-10T00:00:00Z' },
+    { id: 'b', credits: 200, amountCents: 1500, createdAt: '2026-11-20T00:00:00Z' },
+    { id: 'c', credits: 200, amountCents: 1500, createdAt: '2026-11-21T00:00:00Z' },
+  ];
+  const s = B.summariseMonth({ topUps: rows }, '2026-11');
+  assert.equal(s.totals.topUpsCents, 4000);
+  const lines = B.topUpInvoiceLines(rows);
+  assert.deepEqual(lines.map((l) => [l.quantity, l.unitCents, l.totalCents]), [[2, 1500, 3000], [1, 1000, 1000]]);
+  assert.match(lines[0].description, /100 messages/);
+  assert.match(lines[1].description, /300 credits/);
+  assert.equal(B.topUpQuantityText(rows[0]), '300 AI credits');
+  assert.equal(B.topUpQuantityText(rows[1]), '100 AI messages');
+});

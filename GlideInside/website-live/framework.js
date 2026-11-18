@@ -330,10 +330,10 @@
     function money(v) { return "A$" + v.toLocaleString("en-AU"); }
     function upd() {
       var n = Math.max(0, Math.min(60, parseInt(range.value, 10) || 0)), t = Math.max(0, Math.min(50, parseInt(tops.value, 10) || 0));
-      var sum = cost(n) + t * 10, parts = [];
+      var sum = cost(n) + t * 15, parts = [];
       if (nOut) nOut.textContent = n;
       if (n > 0) parts.push(n + (n === 1 ? " job" : " jobs") + " at A$20");
-      if (t > 0) parts.push(t + (t === 1 ? " top up" : " top ups") + " at A$10");
+      if (t > 0) parts.push(t + (t === 1 ? " top up" : " top ups") + " at A$15");
       total.textContent = money(sum);
       line.textContent = parts.length ? parts.join(", ") + ". " + money(sum) + " in total, pay per job." : "No new jobs, nothing to pay.";
       if (best) {
@@ -342,9 +342,9 @@
         PLANS.forEach(function (p) { var c = planCost(p, n); if (!pick || c < pick.c) pick = { p: p, c: c }; });
         var payg = cost(n);
         if (pick.c < payg) {
-          best.textContent = "Cheapest for " + n + " jobs: " + pick.p.name + " at " + money(pick.c + t * 10) + " a month, against " + money(sum) + " pay per job. Monthly plans are coming soon, contact us to be first.";
+          best.textContent = "Cheapest for " + n + " jobs: " + pick.p.name + " at " + money(pick.c + t * 15) + " a month, against " + money(sum) + " pay per job. Monthly plans are coming soon, contact us to be first.";
         } else {
-          best.textContent = "Pay per job is the cheapest option at " + n + " jobs (" + money(payg + t * 10) + "). The monthly plans start to win from 6 jobs a month.";
+          best.textContent = "Pay per job is the cheapest option at " + n + " jobs (" + money(payg + t * 15) + "). The monthly plans start to win from 6 jobs a month.";
         }
       }
     }

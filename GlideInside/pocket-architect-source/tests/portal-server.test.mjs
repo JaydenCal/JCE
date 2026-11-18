@@ -746,7 +746,7 @@ for (const [label, d1] of stores) {
     const u5 = (await org.admin.get(`/portal/billing/usage?month=${month}`)).data;
     assert.equal(u5.totals.loginsCents, 15 * 3000 + 36 * 2500);
     // The invoice has one line per distinct unit price.
-    const snap = buildSnapshot({ org: { id: org.orgId, shortCode: 'X', legalName: 'X', abn: '' }, config: { topUpCredits: 300, topUpCents: 1000, sellerName: 's', sellerAbn: 'a' }, month, usage: u5, number: 'N', issuedAtMs: w.clock.t });
+    const snap = buildSnapshot({ org: { id: org.orgId, shortCode: 'X', legalName: 'X', abn: '' }, config: { topUpCredits: 200, topUpCents: 1500, sellerName: 's', sellerAbn: 'a' }, month, usage: u5, number: 'N', issuedAtMs: w.clock.t });
     assert.deepEqual(snap.lines.map((l) => [l.quantity, l.unitCents, l.totalCents]), [[15, 3000, 45000], [36, 2500, 90000]]);
   });
 
@@ -760,19 +760,19 @@ for (const [label, d1] of stores) {
     assert.equal(ai.monthResetsOn, '2026-12-01');
     const top = await cl.browser.post('/portal/ai/top-up');
     assert.equal(top.status, 200);
-    assert.equal(top.data.topUp.credits, 300);
-    assert.equal(top.data.topUp.amountCents, 1000);
-    assert.equal(top.data.ai.topUpBalance, 300);
-    assert.equal(top.data.ai.remaining, 600);
+    assert.equal(top.data.topUp.credits, 200, '100 messages at 2 credits each');
+    assert.equal(top.data.topUp.amountCents, 1500, 'A$15 incl. GST');
+    assert.equal(top.data.ai.topUpBalance, 200);
+    assert.equal(top.data.ai.remaining, 500);
     const events = await w.store.listEvents('ai_topup');
     assert.equal(events.length, 1);
-    assert.deepEqual(events[0].detail, { orgId: org.orgId, loginId: cl.client.id, credits: 300, amountCents: 1000, currency: 'aud', gstInclusive: true, createdAt: new Date(T0).toISOString(), role: 'client' });
+    assert.deepEqual(events[0].detail, { orgId: org.orgId, loginId: cl.client.id, credits: 200, amountCents: 1500, currency: 'aud', gstInclusive: true, createdAt: new Date(T0).toISOString(), role: 'client' });
     // The pool rows follow the AI branch naming, so its endpoints and this code share them.
     assert.ok(await w.store.getEntitlement(`orgtop:${org.orgId}:${cl.client.id}`));
     assert.ok(await w.store.getEntitlement(`org:${org.orgId}:${cl.client.id}:2026-11`));
     // Used credits come from the monthly pool first.
     await w.store.settleCredits(`org:${org.orgId}:${cl.client.id}:2026-11`, 0, 120);
-    assert.deepEqual(((await cl.browser.get('/portal/ai')).data), { ...(await cl.browser.get('/portal/ai')).data, used: 120, monthlyRemaining: 180, remaining: 480 });
+    assert.deepEqual(((await cl.browser.get('/portal/ai')).data), { ...(await cl.browser.get('/portal/ai')).data, used: 120, monthlyRemaining: 180, remaining: 380 });
     // Token for the AI endpoints.
     const tok = (await cl.browser.post('/portal/ai/token')).data;
     assert.equal(tok.role, 'client');
@@ -801,18 +801,18 @@ for (const [label, d1] of stores) {
     const org = await w.makeOrg();
     const cl = await w.makeClient(org);
     const topId = `orgtop:${org.orgId}:${cl.client.id}`;
-    await cl.browser.post('/portal/ai/top-up'); // 11/11/2026, 300
+    await cl.browser.post('/portal/ai/top-up'); // 11/11/2026, 200
     w.clock.t += 100 * DAY;
     await cl.relogin();
-    await cl.browser.post('/portal/ai/top-up'); // 19/02/2027, 300
-    await w.store.settleCredits(topId, 0, 250); // 250 used: all from the oldest purchase
+    await cl.browser.post('/portal/ai/top-up'); // 19/02/2027, 200
+    await w.store.settleCredits(topId, 0, 150); // 150 used: all from the oldest purchase
     let ai = (await cl.browser.get('/portal/ai')).data;
-    assert.equal(ai.topUpBalance, 350);
+    assert.equal(ai.topUpBalance, 250);
     w.clock.t = Date.UTC(2027, 10, 12); // first purchase is now over 12 months old
     await cl.relogin();
     ai = (await cl.browser.get('/portal/ai')).data;
-    assert.equal(ai.topUpBalance, 300, 'the unused 50 of the old purchase expired; the newer purchase is whole');
-    assert.equal((await cl.browser.get('/portal/ai')).data.topUpBalance, 300, 'idempotent');
+    assert.equal(ai.topUpBalance, 200, 'the unused 50 of the old purchase expired; the newer purchase is whole');
+    assert.equal((await cl.browser.get('/portal/ai')).data.topUpBalance, 200, 'idempotent');
     w.clock.t = Date.UTC(2028, 1, 20);
     await cl.relogin();
     assert.equal((await cl.browser.get('/portal/ai')).data.topUpBalance, 0, 'the second purchase has expired too');
@@ -1060,7 +1060,7 @@ for (const [label, d1] of stores) {
     assert.equal(run.data.month, '2026-10');
     const byOrg = Object.fromEntries(run.data.results.map((r) => [r.orgId, r]));
     assert.equal(byOrg[a.orgId].status, 'issued');
-    assert.equal(byOrg[a.orgId].totalCents, 7000, '2 logins x A$30 + 1 top-up x A$10');
+    assert.equal(byOrg[a.orgId].totalCents, 7500, '2 logins x A$30 + 1 top-up x A$15');
     assert.equal(byOrg[b.orgId].status, 'skipped');
     assert.equal(byOrg[b.orgId].reason, 'billing_contact_incomplete');
     const paths = w.stripe.calls.map((c) => `${c.method} ${c.path}`);
@@ -1081,9 +1081,9 @@ for (const [label, d1] of stores) {
     assert.equal(inv.form['custom_fields[1][value]'], '51 824 753 556');
     assert.equal(inv.form['metadata[month]'], '2026-10');
     assert.deepEqual([item1.form.quantity, item1.form.unit_amount, item1.form['tax_rates[0]'], item1.form.invoice], ['2', '3000', 'txr_test_1', 'in_test_1']);
-    assert.deepEqual([item2.form.quantity, item2.form.unit_amount], ['1', '1000']);
+    assert.deepEqual([item2.form.quantity, item2.form.unit_amount], ['1', '1500']);
     assert.match(item1.form.description, /New client logins first signed in during 2026-10/);
-    assert.match(item2.form.description, /AI credit top-ups of 300 credits/);
+    assert.match(item2.form.description, /AI message top-ups of 100 messages \(A\$15 each/);
     for (const c of w.stripe.calls) assert.match(c.headers.authorization, /^Bearer sk_test_/);
     assert.ok(w.stripe.calls.filter((c) => c.method === 'POST').every((c) => c.headers['idempotency-key']), 'every write carries an idempotency key');
     // The builder sees the tax invoice.
@@ -1091,14 +1091,14 @@ for (const [label, d1] of stores) {
     assert.equal(list.length, 1);
     assert.equal(list[0].number, `GI-${a.shortCode}-202610`);
     assert.equal(list[0].status, 'due');
-    assert.equal(list[0].totalCents, 7000);
+    assert.equal(list[0].totalCents, 7500);
     const full = (await a.admin.get(`/portal/billing/invoices/${list[0].id}`)).data;
     assert.equal(full.title, 'Tax invoice');
     assert.deepEqual(full.seller, { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' });
     assert.equal(full.buyer.legalName, 'Alpha Builders Pty Ltd');
     assert.equal(full.buyer.abn, '51 824 753 556');
-    assert.deepEqual([full.subtotalExGstCents, full.gstCents, full.totalInclGstCents], [6364, 636, 7000]);
-    assert.deepEqual(full.lines.map((l) => [l.quantity, l.unitCents, l.totalCents]), [[2, 3000, 6000], [1, 1000, 1000]]);
+    assert.deepEqual([full.subtotalExGstCents, full.gstCents, full.totalInclGstCents], [6818, 682, 7500]);
+    assert.deepEqual(full.lines.map((l) => [l.quantity, l.unitCents, l.totalCents]), [[2, 3000, 6000], [1, 1500, 1500]]);
     assert.equal(full.dueAt.slice(0, 10), '2026-11-25', 'due 14 days after issue');
     assert.equal(full.hostedInvoiceUrl, 'https://invoice.stripe.com/i/test');
     // Tenant isolation.
@@ -1244,10 +1244,10 @@ if (DatabaseSync) {
 }
 
 test('buildSnapshot carries the seller from config and GST of one eleventh', () => {
-  const config = { sellerName: 'JCE Infrastructure Pty Ltd trading as Glide Inside', sellerAbn: '29 699 165 663', topUpCredits: 300, topUpCents: 1000 };
-  const usage = { logins: [], topUps: [], totals: { loginsCount: 3, loginsCents: 6000, topUpsCount: 1, topUpsCents: 1000, totalCents: 7000 } };
+  const config = { sellerName: 'JCE Infrastructure Pty Ltd trading as Glide Inside', sellerAbn: '29 699 165 663', topUpCredits: 200, topUpCents: 1500 };
+  const usage = { logins: [], topUps: [], totals: { loginsCount: 3, loginsCents: 6000, topUpsCount: 1, topUpsCents: 1500, totalCents: 7500 } };
   const s = buildSnapshot({ org: { legalName: 'B Pty Ltd', abn: '51 824 753 556', billingEmail: 'b@x.example' }, config, month: '2026-10', usage, number: 'GI-B-202610', issuedAtMs: T0 });
-  assert.deepEqual([s.subtotalExGstCents, s.gstCents, s.totalInclGstCents], [6364, 636, 7000]);
+  assert.deepEqual([s.subtotalExGstCents, s.gstCents, s.totalInclGstCents], [6818, 682, 7500]);
   assert.equal(s.seller.name, 'JCE Infrastructure Pty Ltd trading as Glide Inside');
   assert.equal(s.title, 'Tax invoice');
 });

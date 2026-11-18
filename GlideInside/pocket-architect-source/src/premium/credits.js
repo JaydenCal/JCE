@@ -5,7 +5,7 @@ import { storage, plural, formatAud, ddmmyyyy } from './util.js';
 /**
  * Accepts the server's balance shapes ({ total, used, remaining, warnLevel } or the edit reply's `credits`). Builder and
  * client logins also carry monthResetsOn ('YYYY-MM-DD', the first day of next month in Sydney), topUpRemaining (carry-over
- * credits, spent after the monthly ones) and topUp { allowed, credits, amountCents } for the top-up offer.
+ * credits, spent after the monthly ones) and topUp { allowed, messages, credits, amountCents } (messages is what the owner sells; credits is what is stored) for the top-up offer.
  */
 export function normaliseCredits(raw) {
   if (!raw || typeof raw !== 'object') return null;
@@ -29,7 +29,7 @@ export function normaliseCredits(raw) {
     out.commercialTopUp = o && typeof o === 'object' ? { allowed: o.allowed !== false, available: o.available === true, messages: Math.round(Number(o.messages)) || 0, priceAud: Number(o.priceAud) || 0 } : null;
   }
   const offer = raw.topUp;
-  if (offer && Number(offer.credits) > 0 && Number(offer.amountCents) > 0) out.topUp = { allowed: offer.allowed !== false, credits: Math.round(Number(offer.credits)), amountCents: Math.round(Number(offer.amountCents)) };
+  if (offer && Number(offer.credits) > 0 && Number(offer.amountCents) > 0) out.topUp = { allowed: offer.allowed !== false, credits: Math.round(Number(offer.credits)), messages: Math.round(Number(offer.messages)) > 0 ? Math.round(Number(offer.messages)) : 0, amountCents: Math.round(Number(offer.amountCents)) };
   return out;
 }
 
@@ -71,7 +71,7 @@ export const canTopUp = (c) => !!c?.kind && c.kind === 'org' && !!c.topUp?.allow
 export function topUpLabel(c, role = 'client') {
   const t = c?.topUp;
   if (!t) return '';
-  return `Top up ${t.credits} credits, ${formatAud(t.amountCents / 100)} on ${role === 'builder' ? 'your' : "your builder's"} monthly invoice`;
+  return `Top up ${t.messages > 0 ? `${t.messages} messages` : `${t.credits} credits`}, ${formatAud(t.amountCents / 100)} incl. GST on ${role === 'builder' ? 'your' : "your builder's"} monthly invoice`;
 }
 
 /** 'ok' | 'warn' (80% used or more) | 'danger' (95% used or more). */

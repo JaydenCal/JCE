@@ -68,7 +68,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
 ### AI credits
 
 - `aiBalance()` `GET /portal/ai`: monthly allowance per login (default cap 150, org setting `aiMonthlyCap`), a top-up balance, `remaining = monthlyRemaining + topUpBalance`. Monthly credits are used first. **Hard stop at zero**: the AI proxy answers `CREDITS_EXHAUSTED` 402.
-- `aiTopUp()` `POST /portal/ai/top-up`: 300 credits for A$10 incl. GST, added at once. Creates the billable event `{ orgId, loginId, credits: 300, amountCents: 1000, createdAt }` (table `ai_topups`), charged on the builder's end of month invoice. Clients may only do this when `allowClientTopUps` is true (default true); staff always can.
+- `aiTopUp()` `POST /portal/ai/top-up`: 100 messages (200 stored credits) for A$15 incl. GST, added at once. Creates the billable event `{ orgId, loginId, credits: 200, amountCents: 1500, createdAt }` (events before 18/11/2026 keep 300 credits and 1000 cents) (table `ai_topups`), charged on the builder's end of month invoice. Clients may only do this when `allowClientTopUps` is true (default true); staff always can.
 - `spendAiCredits({ credits })`: server side use by the AI proxy, not called from screens.
 
 ### Team (admin)
@@ -113,7 +113,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
   "seller": { "name": "JCE Infrastructure Pty Ltd trading as Glide Inside", "abn": "29 699 165 663" },
   "buyer": { "name": "<billing legalName>", "abn": "<billing ABN>", "email": "..." },
   "lines": [ { "description": "New client logins first signed in during October 2026 (A$30 each, incl. GST)", "quantity": 3, "unitCents": 3000, "totalCents": 9000 },
-             { "description": "AI credit top-ups of 300 credits (A$10 each, incl. GST)", "quantity": 1, "unitCents": 1000, "totalCents": 1000 } ],
+             { "description": "AI message top-ups of 100 messages (A$15 each, incl. GST)", "quantity": 1, "unitCents": 1500, "totalCents": 1500 } ],
   "subtotalExGstCents": 9091, "gstCents": 909, "totalInclGstCents": 10000,
   "status": "due"
 }

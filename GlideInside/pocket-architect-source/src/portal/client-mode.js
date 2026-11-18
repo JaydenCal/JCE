@@ -411,8 +411,8 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
 
   // AI credits ----------------------------------------------------------------------------------------------------------------------
   function aiDialog() {
-    const note = h('p', null, `${credits.monthlyRemaining} of ${credits.monthlyCap} monthly credits left, plus ${credits.topUpBalance} top-up credits. Monthly credits reset on the 1st; the AI design assistant stops at zero.`);
-    const actions = me.canTopUp ? [{ label: 'Top up 300 credits, A$10 incl. GST', primary: true, keep: true, fn: async (close) => { try { await api.aiTopUp(); await refreshCredits(); toast(`Added 300 credits. ${isClient ? 'Charged to your builder.' : 'Charged on your end of month invoice.'}`, { kind: 'ok' }); close(); } catch (e) { toast(e.message, { kind: 'error' }); } } }] : [];
+    const note = h('p', null, `${credits.monthlyRemaining} of ${credits.monthlyCap} monthly credits left, plus ${credits.topUpBalance} top-up credits. A message is about 2 credits. Monthly credits reset on the 1st; the AI design assistant stops at zero.`);
+    const actions = me.canTopUp ? [{ label: 'Top up 100 messages, A$15 incl. GST', primary: true, keep: true, fn: async (close) => { try { await api.aiTopUp(); await refreshCredits(); toast(`Added 100 messages. ${isClient ? 'Charged to your builder.' : 'Charged on your end of month invoice.'}`, { kind: 'ok' }); close(); } catch (e) { toast(e.message, { kind: 'error' }); } } }] : [];
     modal('AI credits', h('div', null, note, me.canTopUp ? h('p', null, 'Top-ups are added at once and billed on the builder end of month invoice.') : h('p', null, 'Your builder has turned off top-ups.')), actions);
   }
 

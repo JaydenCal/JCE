@@ -85,7 +85,7 @@ export async function aiSnapshot({ store, config, org, user, nowMs, reconcile = 
   return { month: key, monthlyCap: cap, used, monthlyRemaining, topUpBalance, remaining: monthlyRemaining + topUpBalance, total: cap + topUpBalance, monthResetsOn: `${nextMonthKey(key)}-01` };
 }
 
-/** Add one top-up and log the billable event that the month end invoice reads. The charge is A$10 incl. GST for 300 credits. */
+/** Add one top-up and log the billable event that the month end invoice reads. The charge is A$15 incl. GST for 100 messages (config.topUpCredits credits). */
 export async function addTopUp({ store, config, org, user, nowMs, randomId }) {
   const { topUpId } = await ensurePools({ store, config, org, user, nowMs });
   await store.addCredits(topUpId, config.topUpCredits);

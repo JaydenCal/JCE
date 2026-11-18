@@ -57,7 +57,7 @@ test('A$30 per NEW client login in the calendar month, once per login, no recurr
   assert.equal(summariseMonth({ issues }, '2026-12').totals.totalCents, 0, 'a login issued earlier is not charged again');
 });
 
-test('month total is A$30 per new login plus A$10 per top-up, and GST is one eleventh', () => {
+test('month total is A$30 per new login plus A$15 per top-up, and GST is one eleventh', () => {
   const issues = [{ loginId: 'a', issuedAt: '2026-11-02T01:00:00Z' }, { loginId: 'b', issuedAt: '2026-11-03T01:00:00Z' }];
   const topUps = [{ createdAt: '2026-11-04T01:00:00Z' }, { createdAt: '2026-11-05T01:00:00Z' }, { createdAt: '2026-12-01T01:00:00Z' }];
   const t = summariseMonth({ issues, topUps }, '2026-11').totals;
@@ -335,7 +335,7 @@ test('client data handling: export a client\'s projects, then delete the client 
   assert.ok((await api.monthUsage({ month: '2026-10' })).logins.some((l) => l.loginId === 'u_daniel'));
 });
 
-test('AI credits: monthly cap per login with a hard stop, top-ups of 300 for A$10, allowClientTopUps switch', async () => {
+test('AI credits: monthly cap per login with a hard stop, top-ups of 100 messages for A$15, allowClientTopUps switch', async () => {
   const { api, clock } = fresh();
   await api.signIn(DEMO_LOGINS.client); // Sarah: 124 of 300 used
   let ai = await api.aiBalance();
@@ -347,14 +347,14 @@ test('AI credits: monthly cap per login with a hard stop, top-ups of 300 for A$1
   assert.equal(top.topUp.loginId, 'u_sarah');
   assert.equal(top.topUp.orgId, 'org_sample');
   ai = top.ai;
-  assert.equal(ai.remaining, 6 + 300);
+  assert.equal(ai.remaining, 6 + TOPUP_CREDITS);
   await api.spendAiCredits({ credits: 20 }); // monthly allowance first (6 left), then top-up balance
   ai = await api.aiBalance();
-  assert.deepEqual([ai.monthlyRemaining, ai.topUpBalance], [0, 286]);
+  assert.deepEqual([ai.monthlyRemaining, ai.topUpBalance], [0, 186]);
   // Allowance resets next month; the top-up balance carries over.
   clock.set(iso('2026-12-02T02:00:00Z'));
   ai = await api.aiBalance();
-  assert.deepEqual([ai.used, ai.monthlyRemaining, ai.topUpBalance], [0, 300, 286]);
+  assert.deepEqual([ai.used, ai.monthlyRemaining, ai.topUpBalance], [0, 300, 186]);
   clock.set(NOW);
   // The builder can switch client top-ups off.
   await api.signOut();
@@ -366,11 +366,11 @@ test('AI credits: monthly cap per login with a hard stop, top-ups of 300 for A$1
   await rejects(api.aiTopUp(), 'TOPUPS_DISABLED');
 });
 
-test('the month total on the Billing tab and invoice is the earlier login charges plus A$10 per top-up (new logins add nothing)', async () => {
+test('the month total on the Billing tab and invoice is the earlier login charges plus A$15 per top-up (new logins add nothing)', async () => {
   const { api } = fresh();
   await admin(api);
   const before = (await api.monthUsage()).totals;
-  assert.equal(before.totalCents, before.loginsCount * 3000 + before.topUpsCount * 1000);
+  assert.equal(before.totalCents, before.loginsCount * 3000 + before.topUpsCount * 1500);
   const ivy = await api.issueClientLogin({ firstName: 'Ivy' });
   assert.deepEqual((await api.monthUsage()).totals, before, 'no charge for generating a login');
   await api.signOut();
@@ -380,8 +380,8 @@ test('the month total on the Billing tab and invoice is the earlier login charge
   await admin(api);
   await api.aiTopUp();
   const after = (await api.monthUsage()).totals;
-  assert.equal(after.totalCents, before.totalCents + 1000, 'only the top-up is added; the first sign in is free');
-  assert.equal((await api.monthUsage()).topUps.at(-1).amountCents, 1000);
+  assert.equal(after.totalCents, before.totalCents + 1500, 'only the top-up is added; the first sign in is free');
+  assert.equal((await api.monthUsage()).topUps.at(-1).amountCents, 1500);
   // Past invoices are tax invoices with the seller ABN, GST and total incl. GST.
   const [first] = await api.listInvoices();
   const inv = await api.getInvoice(first.id);
