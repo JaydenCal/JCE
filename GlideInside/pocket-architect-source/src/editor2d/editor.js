@@ -31,6 +31,7 @@ import { toast } from '../ui/toast.js';
 import { openPopover } from '../ui/popover.js';
 import { h, isTyping } from '../ui/dom.js';
 import { setTool } from '../ui/toolstate.js';
+import { driveClick, DRIVE_ENTER_FROM } from './drivepi-autoenter.js';
 
 const RIGHT_DRAG_PX = 4;
 
@@ -470,6 +471,22 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       ed.closePopover();
       return;
     }
+    // Driveway PIs: a click on the driveway with Select or Move house switches to the Driveway PIs tool and counts as a centreline click there;
+    // a click off the driveway returns to the tool the person was on, and is handled by it.
+    if (store.ui.tool === 'drivepi' && state.drivePrev) {
+      if (!driveClick(store.project, ev.world, state.view.scale)) { const back = state.drivePrev; state.drivePrev = null; setTool(store, back); }
+    } else if (DRIVE_ENTER_FROM.includes(store.ui.tool)) {
+      const dc = driveClick(store.project, ev.world, state.view.scale);
+      if (dc) {
+        const from = store.ui.tool;
+        setTool(store, 'drivepi');
+        if (store.ui.tool === 'drivepi') {
+          state.drivePrev = from;
+          if (dc.hit) current?.pointerDown?.(ev);
+          return;
+        }
+      }
+    }
     current?.pointerDown?.(ev);
   }
 
@@ -608,6 +625,13 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       return;
     }
     if (e.ctrlKey || e.metaKey) return;
+    if (e.key === 'Escape' && store.ui.tool === 'drivepi' && state.drivePrev) { // entered by clicking the driveway: Escape goes straight back
+      const back = state.drivePrev;
+      state.drivePrev = null;
+      e.preventDefault();
+      setTool(store, back);
+      return;
+    }
     if (current?.keyDown?.(e)) {
       e.preventDefault();
       return;
@@ -663,6 +687,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       state.popover?.close();
       state.popover = null;
       current?.deactivate?.();
+      if (id !== 'drivepi') state.drivePrev = null; // the return target only lives while the tool is the one entered from a driveway click
       state.toolId = id;
       current = tools[id];
       current.activate?.();

@@ -7,7 +7,8 @@
 // and the project is left as it was. The functions mutate the project they are given (call them inside store.apply to get one undo step).
 
 import * as G from '../model/geometry.js';
-import { deriveDriveway, storedDriveway, setStoredDriveway, MAX_DRIVE_PIS } from './lotplan.js';
+import { deriveDriveway, storedDriveway, setStoredDriveway, MAX_DRIVE_PIS, roadReserve, nearestOnBuilding, buildingRings } from './lotplan.js';
+import { lotOf } from '../model/placement.js';
 
 const round = (q) => ({ x: Math.round(q.x), y: Math.round(q.y) });
 
@@ -15,19 +16,72 @@ const round = (q) => ({ x: Math.round(q.x), y: Math.round(q.y) });
 export function driveEditState(project) {
   let d = null;
   try { d = deriveDriveway(project); } catch { d = null; }
-  if (!d) return { ok: false, reason: 'no_driveway', d: null };
+  if (!d) return { ok: false, reason: 'no_driveway', d: null, canDraw: canDraw(project) };
   if (!d.ok) return { ok: false, reason: d.reason || 'no_driveway', d };
   if (d.manual) return { ok: false, reason: 'manual', manual: true, d };
   const st = storedDriveway(project);
-  return { ok: true, d, manual: false, edited: !!d.edited, routed: !!d.routed, pis: (d.pis || []).map((q) => ({ x: q.x, y: q.y })), radiusM: st?.radiusM || (d.routed ? 5 : 6), widthMm: st?.widthMm || null, endOffsetMm: d.endOffsetMm };
+  return { ok: true, drawn: !!st?.drawn, d, manual: false, edited: !!d.edited, routed: !!d.routed, pis: (d.pis || []).map((q) => ({ x: q.x, y: q.y })), radiusM: st?.radiusM || (d.routed ? 5 : 6), widthMm: st?.widthMm || null, endOffsetMm: d.endOffsetMm };
+}
+
+/** A driveway can be drawn when the lot is loaded, a building stands on it and the street frontage is known. */
+export function canDraw(project) {
+  const lot = lotOf(project);
+  return !!lot && roadReserve(lot).length > 0 && buildingRings(project).length > 0;
+}
+
+export const DRAW_HINT = 'No driveway yet. Click the street frontage to start, click to add PIs, then double click or press Enter at the building to finish. Escape cancels.';
+
+/** The nearest point on the kerb of a street frontage to a world point: { point, edge, offsetMm, distMm } or null. */
+export function kerbSnap(project, pt) {
+  const lot = lotOf(project);
+  if (!lot) return null;
+  let best = null;
+  for (const r of roadReserve(lot)) {
+    const a = lot.boundary[r.edge];
+    const b = lot.boundary[(r.edge + 1) % lot.boundary.length];
+    const off = G.add(G.add(a, G.mul(r.outward, r.vergeM * 1000)), G.mul(r.u, 0));
+    const len = G.dist(a, b);
+    const s = Math.min(len, Math.max(0, G.dot(G.sub(pt, off), r.u)));
+    const point = G.add(off, G.mul(r.u, s));
+    const d = G.dist(point, pt);
+    if (!best || d < best.distMm) best = { point, edge: r.edge, offsetMm: s, distMm: d };
+  }
+  return best;
+}
+
+/**
+ * Create a driveway from the points the person clicked: pts[0] on the street frontage, any PIs, and the last point at the building. The last point
+ * is moved onto the building outline. Stored on project.site.driveway ({ drawn: true, start, edge, endOffsetMm, pis }) so it is edited, shown in 3D
+ * and drawn in the plan sets like the automatic one, with no garage door needed (granny flat, shed house). Returns { ok, reason }.
+ */
+export function createDrawnDriveway(project, pts, { widthMm = 3500, radiusM = 5 } = {}) {
+  if (!Array.isArray(pts) || pts.length < 2) return { ok: false, reason: 'Click the frontage, then at least one more point at the building.' };
+  if (!canDraw(project)) return { ok: false, reason: 'Place a building on a lot with a confirmed street frontage first.' };
+  const snap = kerbSnap(project, pts[0]);
+  if (!snap) return { ok: false, reason: 'Start on the street frontage.' };
+  const start = nearestOnBuilding(project, pts.at(-1));
+  const before = project.site.driveway ? structuredClone(project.site.driveway) : undefined;
+  setStoredDriveway(project, { endOffsetMm: snap.offsetMm, pis: pts.slice(1, -1), radiusM, widthMm, drawn: true, start, edge: snap.edge });
+  const after = deriveDriveway(project);
+  if (after?.ok && after.edited) return { ok: true };
+  if (before === undefined) delete project.site.driveway; else project.site.driveway = before;
+  return { ok: false, reason: 'That driveway could not be drawn there. Start on the street frontage and end at the building.' };
+}
+
+/** Delete a drawn driveway. Returns true when one was removed. */
+export function deleteDrawnDriveway(project) {
+  if (!storedDriveway(project)?.drawn) return false;
+  setStoredDriveway(project, null);
+  return true;
 }
 
 /** The reason a driveway cannot be edited, in plain words, or '' when it can. */
 export function driveEditBlock(state) {
   if (state.ok) return '';
+  if (state.canDraw) return DRAW_HINT;
   if (state.reason === 'manual') return 'This driveway was drawn with the Road or pavement tool. Edit its points with that tool, or delete it to go back to the automatic driveway.';
   if (state.reason === 'door_faces_away') return 'The garage door faces away from the street and there is no room to route the driveway round the house.';
-  return 'There is no driveway to edit yet. Place a house with a garage door on a lot with a street frontage.';
+  return 'To draw a driveway, place a building on a lot and confirm its street frontage first.';
 }
 
 /** The corner points of the driveway's control line: garage door, the PIs, kerb end. */
@@ -74,7 +128,8 @@ function validate(project, before, why) {
 function baseValue(project) {
   const s = driveEditState(project);
   if (!s.ok) return null;
-  return { endOffsetMm: s.endOffsetMm, pis: s.edited ? s.pis : s.d.autoPis || [], radiusM: s.radiusM, widthMm: s.widthMm };
+  const st = storedDriveway(project);
+  return { endOffsetMm: s.endOffsetMm, pis: s.edited ? s.pis : s.d.autoPis || [], radiusM: s.radiusM, widthMm: s.widthMm, ...(st?.drawn ? { drawn: true, start: st.start, edge: st.edge } : {}) };
 }
 
 function commit(project, value, why) {

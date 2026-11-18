@@ -82,18 +82,31 @@ export function drawContours(ctx, st) {
         else ctx.lineTo(sx, sy);
       }
       if (c.closed) ctx.closePath();
-      if (major && pts.length >= 8) {
-        // label at the middle vertex, turned along the line and kept upright
-        const k = Math.floor(pts.length / 4) * 2;
-        const a = { x: pts[Math.max(0, k - 2)] * view.scale + view.ox, y: pts[Math.max(0, k - 1)] * view.scale + view.oy };
-        const b = { x: pts[Math.min(pts.length - 2, k + 2)] * view.scale + view.ox, y: pts[Math.min(pts.length - 1, k + 3)] * view.scale + view.oy };
-        const len = Math.hypot(b.x - a.x, b.y - a.y);
-        if (len > 6) labels.push({ x: pts[k] * view.scale + view.ox, y: pts[k + 1] * view.scale + view.oy, ang: Math.atan2(b.y - a.y, b.x - a.x), text: c.level.toFixed(1) });
+      // RL labels, readable at normal zoom: every contour line is labelled where it is long enough on screen, turned along the line and
+      // kept upright; a major line is labelled again about every 420 px.
+      if (pts.length >= 8) {
+        const sp = [];
+        for (let i = 0; i < pts.length; i += 2) sp.push({ x: pts[i] * view.scale + view.ox, y: pts[i + 1] * view.scale + view.oy });
+        const cum = [0];
+        for (let i = 1; i < sp.length; i++) cum.push(cum[i - 1] + Math.hypot(sp[i].x - sp[i - 1].x, sp[i].y - sp[i - 1].y));
+        const total = cum[cum.length - 1];
+        const gap = major ? 420 : 100000;
+        if (total > (major ? 90 : 200)) {
+          for (let at = total / 2 - Math.floor(total / 2 / gap) * gap; at < total; at += gap) {
+            let j = 1;
+            while (j < cum.length - 1 && cum[j] < at) j++;
+            const a0 = sp[j - 1]; const b0 = sp[j];
+            const f = b0 === a0 || cum[j] === cum[j - 1] ? 0 : (at - cum[j - 1]) / (cum[j] - cum[j - 1]);
+            const x = a0.x + (b0.x - a0.x) * f; const y = a0.y + (b0.y - a0.y) * f;
+            const a1 = sp[Math.max(0, j - 2)]; const b1 = sp[Math.min(sp.length - 1, j + 1)];
+            if (Math.hypot(b1.x - a1.x, b1.y - a1.y) > 6) labels.push({ x, y, ang: Math.atan2(b1.y - a1.y, b1.x - a1.x), text: c.level.toFixed(1), major });
+          }
+        }
       }
     }
     ctx.stroke();
   }
-  ctx.font = `600 10.5px ${st.theme.f.ui}`;
+  ctx.font = `700 12.5px ${st.theme.f.ui}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = CONTOUR_MAJOR;

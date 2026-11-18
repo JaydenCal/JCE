@@ -134,6 +134,11 @@ export function kerbDropScale(d, span, ramp = 0.6) {
   return Math.min(1, k / ramp);
 }
 
+// Master switch for the stand-in neighbour context (massing houses, industrial sheds, rear trees and sheds). Off by default everywhere
+// (owner 19/11/2026: no neighbouring houses). The code is kept; set to true, or pass project.site.lot.layers.houses with the
+// opt-in below, to bring it back.
+export const NEIGHBOUR_CONTEXT_ENABLED = false;
+
 export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = null, realAerial = false, fds = null } = {}) {
   const lot = project.site?.lot;
   if (!lot?.boundary?.length) return null;
@@ -401,7 +406,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   const nbRings = [lot.boundary, ...(lot.neighbours || []).filter((n) => !n.isRoad && n.ring?.length > 2).map((n) => n.ring)];
   const rings = nbRings.map((r) => r.map(asArr));
   // With a real aerial under the scene the photograph already shows the existing houses, so no stand-in houses are drawn (owner 16/11/2026).
-  const housesOn = !realAerial && (lot.source === 'sample' ? layerOn(lot, 'houses') : lot.layers?.houses === true);
+  const housesOn = NEIGHBOUR_CONTEXT_ENABLED && !realAerial && (lot.source === 'sample' ? layerOn(lot, 'houses') : lot.layers?.houses === true);
   const treeSpots = [];
   // Around a commercial site the neighbours are drawn as plain industrial sheds, not houses.
   if (housesOn) (project.mode === 'commercial' ? buildNeighbourSheds : buildNeighbourHouses)(group, rings, H, stats, treeSpots);

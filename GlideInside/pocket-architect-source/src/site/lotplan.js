@@ -258,7 +258,25 @@ export const MAX_DRIVE_PIS = 12;
 export function storedDriveway(project) {
   const d = project?.site?.driveway;
   if (!d || typeof d !== 'object' || !Number.isFinite(d.endOffsetMm)) return null;
-  return { endOffsetMm: d.endOffsetMm, pis: (Array.isArray(d.pis) ? d.pis : []).filter((q) => Number.isFinite(q?.x) && Number.isFinite(q?.y)).slice(0, MAX_DRIVE_PIS), radiusM: Number.isFinite(d.radiusM) ? Math.min(30, Math.max(2, d.radiusM)) : 6, widthMm: Number.isFinite(d.widthMm) ? d.widthMm : null };
+  return { endOffsetMm: d.endOffsetMm, pis: (Array.isArray(d.pis) ? d.pis : []).filter((q) => Number.isFinite(q?.x) && Number.isFinite(q?.y)).slice(0, MAX_DRIVE_PIS), radiusM: Number.isFinite(d.radiusM) ? Math.min(30, Math.max(2, d.radiusM)) : 6, widthMm: Number.isFinite(d.widthMm) ? d.widthMm : null, drawn: d.drawn === true && Number.isFinite(d.start?.x) && Number.isFinite(d.start?.y) && Number.isInteger(d.edge), start: d.drawn === true && Number.isFinite(d.start?.x) ? { x: d.start.x, y: d.start.y } : null, edge: Number.isInteger(d.edge) ? d.edge : null };
+}
+
+/** A driveway the person drew from the street to the building (no garage door needed): { start, edge } or null. See drivepi.js createDrawnDriveway. */
+export function drawnDriveway(project) {
+  const s = storedDriveway(project);
+  return s?.drawn ? { start: s.start, edge: s.edge } : null;
+}
+
+/** The nearest point on the outline of the building(s) to a point: where a drawn driveway meets the building. Returns the point itself when there is no building. */
+export function nearestOnBuilding(project, pt) {
+  let best = null;
+  for (const ring of buildingRings(project)) {
+    for (let i = 0; i < ring.length; i++) {
+      const pr = G.projectToSegment(pt, ring[i], ring[(i + 1) % ring.length]);
+      if (!best || pr.d < best.d) best = pr;
+    }
+  }
+  return best ? { x: best.point.x, y: best.point.y } : { x: pt.x, y: pt.y };
 }
 
 /** Where on the kerb an edited driveway ends: the offset along the frontage from its first corner, kept clear of the corners. */
@@ -309,6 +327,7 @@ export function setStoredDriveway(project, value) {
   if (!project?.site) return null;
   if (!value) { delete project.site.driveway; return null; }
   project.site.driveway = { endOffsetMm: Math.round(value.endOffsetMm), pis: (value.pis || []).slice(0, MAX_DRIVE_PIS).map((q) => ({ x: Math.round(q.x), y: Math.round(q.y) })), radiusM: value.radiusM || 6, widthMm: value.widthMm || null };
+  if (value.drawn && value.start && Number.isInteger(value.edge)) Object.assign(project.site.driveway, { drawn: true, start: { x: Math.round(value.start.x), y: Math.round(value.start.y) }, edge: value.edge });
   return project.site.driveway;
 }
 
@@ -324,7 +343,9 @@ export function deriveDriveway(project, opts = {}) {
   // A driveway drawn with the Driveway and road tool is the person's own: it stands in for the automatic one (same shape). The auto router
   // asks for its own with { ignoreManual: true } and checks drivewayIsDrawn() from pavedways.js before it replaces anything.
   if (!opts.ignoreManual) { const drawn = manualDriveway(project); if (drawn) return drawn; }
-  const door = garageDoor(project);
+  // A driveway drawn by the person (Driveway PIs tool, no garage door needed) starts at the building edge and ends on the kerb of its street.
+  const drawnRec = opts.ignoreStored ? null : drawnDriveway(project);
+  let door = drawnRec ? { mid: nearestOnBuilding(project, drawnRec.start), normal: { x: 0, y: -1 }, widthMm: storedDriveway(project)?.widthMm || 3500, wallId: null, openingId: null, kind: 'drawn' } : garageDoor(project);
   if (!door) return null;
   const reserves = roadReserve(lot);
   if (!reserves.length) return { ok: false, reason: 'no_street', door };
@@ -336,6 +357,7 @@ export function deriveDriveway(project, opts = {}) {
   }
   // The door faces a street: the driveway runs straight or on a smooth curve. When it faces away, the driveway is routed round the house
   // to the nearest street frontage (opts.route false keeps the old answer: no driveway).
+  if (drawnRec) { const forced = reserves.find((x) => x.edge === drawnRec.edge) || reserves[0]; best = { r: forced, score: 1 }; }
   const facing = best.score >= 0.2;
   if (!facing && opts.route === false) return { ok: false, reason: 'door_faces_away', door };
   if (!facing) {
@@ -358,6 +380,12 @@ export function deriveDriveway(project, opts = {}) {
   const hi = Math.max(edgeLen - wd / 2 - 500, edgeLen / 2);
   const t = G.clamp(along, lo, hi);
   const onKerb = (s) => G.add(G.add(edgeA, G.mul(r.outward, r.vergeM * 1000)), G.mul(u, s));
+  if (drawnRec) { // the first leg leaves the building towards the first PI (or the kerb end)
+    const end0 = drivewayEndOnKerb(lot, r, storedDriveway(project).endOffsetMm, wd, onKerb);
+    const first = storedDriveway(project).pis[0] || end0;
+    const n0 = G.norm(G.sub(first, door.mid));
+    door = { ...door, normal: Number.isFinite(n0.x) && (n0.x || n0.y) ? n0 : r.outward };
+  }
   const P3 = onKerb(t);
   const P0 = door.mid;
   const D = G.dist(P0, P3);
@@ -382,7 +410,7 @@ export function deriveDriveway(project, opts = {}) {
     const end = drivewayEndOnKerb(lot, r, stored.endOffsetMm, wd, onKerb);
     const pts = filletPath([P0, G.add(P0, G.mul(door.normal, Math.max(1500, wd * 0.6))), ...stored.pis.map((q) => ({ x: q.x, y: q.y })), G.add(end, G.mul(r.outward, -1500)), end], (stored.radiusM || 6) * 1000);
     // An edit made for another position of the house (it now runs through the house, or the door has turned away from it) is not used.
-    if (opts.keepStored || (facing ? clear(pts) : clear(pts) && stored.pis.length > 0)) {
+    if (opts.keepStored || drawnRec || (facing ? clear(pts) : clear(pts) && stored.pis.length > 0)) {
       kerbEnd = end;
       centre = pts.map((c) => c);
       usedStored = true;

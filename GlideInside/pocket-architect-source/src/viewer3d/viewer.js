@@ -308,7 +308,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   // Model ---------------------------------------------------------------------------------------------
   // Site layers the person can switch in the 3D view (a small chip at the bottom). Remembered per browser.
   const LAYERS_KEY = 'ps.view3d.layers';
-  const layers = { contours: false };
+  const layers = { contours: true }; // on by default whenever the lot has contours (owner 19/11/2026); a saved choice still wins
   try {
     const saved = JSON.parse(localStorage.getItem(LAYERS_KEY) || 'null');
     if (saved && typeof saved.contours === 'boolean') layers.contours = saved.contours;

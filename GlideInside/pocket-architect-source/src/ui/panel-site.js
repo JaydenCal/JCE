@@ -87,6 +87,7 @@ export function buildSiteSection(ctx) {
     const layers = h('div', { class: 'ps-sec', style: { marginTop: '8px' } }, h('h4', null, 'Layers'));
     for (const [id, label0] of LAYER_LABELS) {
       const label = id === 'houses' && store.project.mode === 'commercial' ? 'Neighbouring buildings (3D)' : label0;
+      if (id === 'houses') continue; // neighbour context is switched off in the viewer (NEIGHBOUR_CONTEXT_ENABLED), so no toggle
       if (id === 'aerial' && !lot.aerial) continue;
       if (id === 'contours' && !lot.contours?.length) continue;
       if (id === 'setbacks' && !lot.envelope) continue;

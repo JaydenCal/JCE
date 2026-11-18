@@ -55,6 +55,19 @@ export function lotHeading(lot) {
   return `Lot ${num}${dp ? ` ${dp}` : ''}`.trim();
 }
 
+/**
+ * The one place the lot's identity text comes from, so the card heading and the address pill can never read different lots:
+ * { heading: "Lot 79 DP 707719", address: "39 River Drive, Karabar", pill: "39 River Drive, Karabar · 612 m2" }. Everything comes from the lot
+ * that is loaded on the project; the pill is empty for the sample lot.
+ */
+export function lotIdentity(lot) {
+  if (!lot) return { heading: '', address: '', pill: '' };
+  const sample = !!(lot.demo || lot.lotLabel === 'Sample lot');
+  const address = sample ? '' : String(lot.address || '').trim();
+  const area = lot.areaM2 ? ` · ${Math.round(lot.areaM2).toLocaleString('en-AU')} m²` : '';
+  return { heading: lotHeading(lot), address, pill: sample ? '' : `${address || lot.lotLabel || ''}${area}` };
+}
+
 const hullOf = (pts) => {
   const p = pts.map((q) => ({ x: q.x, y: q.y })).sort((a, b) => a.x - b.x || a.y - b.y);
   if (p.length < 3) return p;

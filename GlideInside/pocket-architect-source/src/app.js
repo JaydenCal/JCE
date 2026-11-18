@@ -170,6 +170,9 @@ async function main() {
     let floorKey = keyOf(store.project);
     store.on('project', () => { const k = keyOf(store.project); if (k && k !== floorKey) store.setUndoFloor(); floorKey = k; }); }
 
+  // A restored project (autosave, saved file, handoff) with a lot but no aerial picture in this browser asks for it again, once and quietly.
+  if (!demoMode() && CONFIG.siteLookupEnabled) import('./site/restore-site.js').then((m) => m.watchRestoredSite(store)).catch(() => {});
+
   // Indicative setbacks and building envelope for a looked-up lot, loaded per council (src/site/setback-stage.js).
   if (CONFIG.siteLookupEnabled) attachSetbacks(store);
 

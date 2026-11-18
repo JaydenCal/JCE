@@ -85,7 +85,7 @@ export function createTopbarUI({ root, config, getState, actions }) {
     menu.append(el('div', { class: 'psp-menu-foot psp-menu-terms' }, el('a', { class: 'psp-btn psp-btn--link', href: PLAN_TERMS_URL, target: '_blank', rel: 'noopener', dataset: { ps: 'terms-link' } }, planTermsLinkText())));
   }
 
-  const billingHref = () => { try { return new URL('portal/#/billing', new URL('../', window.location.href)).href; } catch { return '#'; } };
+  const billingHref = () => { return '/portal/#/billing'; };
   function trialNote() {
     return el('div', { class: 'psp-trial', role: 'note' },
       el('span', { class: 'psp-trial-badge' }, 'Trial'),

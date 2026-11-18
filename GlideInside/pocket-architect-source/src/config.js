@@ -48,7 +48,7 @@ export const CONFIG = {
   portalEnabled: hasWindow && typeof window.GI_CONFIG?.portalEnabled === 'boolean' ? window.GI_CONFIG.portalEnabled : REVIEW_BUILD,
   portal: {
     appUrl: './', // Glide Inside, relative to the portal page; the site sets GI_CONFIG.portalAppUrl
-    signInUrl: '../../portal/', // the portal sign in page, relative to Glide Inside; the site sets GI_CONFIG.portalSignInUrl
+    signInUrl: '/portal/', // the portal sign in page, an absolute path (a relative one resolved to /plan-studio/portal/, a 404); the site sets GI_CONFIG.portalSignInUrl
     jobFeeAud: 20, // per NEW project a builder staff login starts, incl. GST (client logins are free since 18/11/2026)
     aiTopUp: { credits: 300, priceAud: 10 }, // incl. GST, charged on the end of month invoice
     aiMonthlyCredits: 300, // per login per month, hard stop at zero

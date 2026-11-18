@@ -197,6 +197,14 @@ export const LOT_CARD_CSS = `
 .lc-btn{height:30px;padding:0 12px!important;font-size:12px;border-radius:15px}
 .lc-fit{min-height:30px;font-size:11.5px}
 .lc-card:has(.lc-fit[hidden]) .lc-acts{margin-bottom:12px}
+.lc-ttl{display:flex;align-items:center;gap:6px}
+.lc-chev{flex:none;width:22px;height:22px;border-radius:11px;border:1px solid rgba(255,255,255,.25)!important;background:transparent;color:inherit;font:600 12px/1 var(--lc-sans);cursor:pointer}
+.lc-swaplist{max-height:240px;overflow:auto;margin:6px 0 2px;padding:4px;border-radius:10px;background:rgba(10,10,12,.55);border:1px solid rgba(255,255,255,.18)}
+.lc-swaplist[hidden]{display:none}
+.lc-swap-g{font:500 10px var(--lc-sans);letter-spacing:.12em;text-transform:uppercase;opacity:.65;padding:6px 8px 2px}
+.lc-swap-i{display:flex;width:100%;justify-content:space-between;gap:8px;text-align:left;padding:6px 8px;border-radius:7px;border:0;background:transparent;color:inherit;font:400 13px var(--lc-sans);cursor:pointer}
+.lc-swap-i:hover,.lc-swap-i:focus-visible{background:rgba(255,255,255,.14)}
+.lc-swap-i[aria-selected="true"]{background:rgba(199,162,86,.28)}
 .lc-min{flex:none;width:28px;height:28px;border-radius:14px;border:1px solid rgba(255,255,255,.22)!important;display:inline-flex;align-items:center;justify-content:center;font:600 16px/1 var(--lc-sans)}
 .lc-min:hover{background:rgba(255,255,255,.1)}
 .lc-card.is-min{width:max-content;max-width:calc(100% - 24px);padding:8px 10px 8px 14px}

@@ -110,6 +110,6 @@ export function turnHouseBy(project, deg, c, opts) {
   // An edited driveway (the Driveway PI tool, project.site.driveway) turns with the house, so its PIs keep their place against the garage.
   // The kerb end stays on the frontage. settleSiteItems then drops the edit only if it no longer works, and the automatic route takes over.
   const sd = storedDriveway(project);
-  if (sd) setStoredDriveway(project, { ...sd, pis: sd.pis.map((q) => G.rotatePoint(q, c, deg)) });
+  if (sd) setStoredDriveway(project, { ...sd, pis: sd.pis.map((q) => G.rotatePoint(q, c, deg)), ...(sd.drawn ? { start: G.rotatePoint(sd.start, c, deg) } : {}) });
   return settleSiteItems(project, opts);
 }
