@@ -7,7 +7,7 @@ import { hsState, setHsState, setCpDefaults, onHsState, CP_MODES } from './hards
 import { BAY_TYPES, CARPARK_NOTE, cpConfig } from '../catalogue/pavements/carpark.js';
 import { hardstandTypes, areaM2 } from '../catalogue/pavements/hardstand.js';
 import { pavementById } from '../catalogue/pavements/pavements.js';
-import { stats as commercialStats } from '../stats.js';
+import { commercialStats } from '../stats.js';
 
 const QUICK_TYPES = ['asphalt-ac10-car', 'concrete-heavy', 'gravel-yard', 'permeable-pavers'];
 
@@ -18,7 +18,7 @@ export function carparkPanel(ctx) {
   const comm = () => store.project.mode === 'commercial' && !!store.project.commercial;
 
   /** Settings shown: the selected car park's own when one is selected, else the defaults for the next one. */
-  const current = () => { const a = ctl()?.selectedArea?.(); return a?.carpark ? { ...hsState.cp, ...a.carpark } : hsState.cp; };
+  const current = () => { const a = ctl()?.selectedArea?.(); return cpConfig(a?.carpark ? { ...hsState.cp, ...a.carpark } : hsState.cp); };
   const change = (patch) => {
     const a = ctl()?.selectedArea?.();
     if (a?.carpark) ctl().applyCarpark(a.id, patch);

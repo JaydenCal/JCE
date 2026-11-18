@@ -330,19 +330,19 @@ test('edit: select, move, drag a corner, add a corner, remove a corner, change t
   store.undo();
   // drag a corner
   s0 = snap();
-  ctl.pointerDown({ x: 82000, y: 30000 }, { screen: { x: 0, y: 0 } });
-  ctl.pointerMove({ x: 84000, y: 34000 }, { screen: { x: 30, y: 30 } });
-  ctl.pointerUp({ x: 84000, y: 34000 }, { screen: { x: 30, y: 30 } });
+  ctl.pointerDown({ x: 82000, y: 30000 }, { screen: { x: 0, y: 0 }, shift: true }); // Shift: a free corner (a plain drag resizes the rectangle)
+  ctl.pointerMove({ x: 84000, y: 34000 }, { screen: { x: 30, y: 30 }, shift: true });
+  ctl.pointerUp({ x: 84000, y: 34000 }, { screen: { x: 30, y: 30 }, shift: true });
   assert.deepEqual(hs()[0].polygon[2], { x: 84000, y: 34000 });
   close(measure(hs()[0].polygon).areaM2, 130);
   store.undo();
   assert.equal(snap(), s0, 'reshape is one undo step');
-  // add a corner by dragging a midpoint dot
+  // the edge dot of a rectangle resizes that side
   ctl.pointerDown({ x: 77000, y: 20000 }, { screen: { x: 0, y: 0 } });
   ctl.pointerMove({ x: 77000, y: 17000 }, { screen: { x: 0, y: 30 } });
   ctl.pointerUp({ x: 77000, y: 17000 }, { screen: { x: 0, y: 30 } });
-  assert.equal(hs()[0].polygon.length, 5);
-  assert.deepEqual(hs()[0].polygon[1], { x: 77000, y: 17000 });
+  assert.equal(hs()[0].polygon.length, 4, 'on a rectangle the edge dot resizes that side (a corner is added by double clicking the edge)');
+  assert.equal(Math.min(...hs()[0].polygon.map((q) => q.y)), 17000);
   store.undo();
   assert.equal(snap(), s0, 'adding a corner by dragging is one undo step');
   // add a corner by double clicking an edge, remove it by double clicking it
@@ -608,7 +608,7 @@ test('wiring: toolbar button and key P, commercial only; panel hook; editor regi
   assert.match(read('src/editor2d/editor.js'), /createHardstandTool\(ed\)/);
   assert.match(read('src/ui/panel-tool.js'), /hardstandPanel\(ctx\)/);
   assert.match(read('src/commercial/lotcard.js'), /hardstand: topviewHardstand\(\)/);
-  assert.match(read('src/ui/toolbox.js'), /\['hardstand'\]/);
+  assert.match(read('src/ui/toolbox.js'), /\['hardstand', 'carpark'\]/);
 });
 
 test('wording: the new files have no dashes, no "compliant" and no Pocket Architect', () => {

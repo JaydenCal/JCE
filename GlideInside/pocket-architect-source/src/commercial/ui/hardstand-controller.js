@@ -313,7 +313,7 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
     const base = { id: sel.id, polygon: poly.map((q) => ({ ...q })), moved: false, screen: mods.screen || null };
     const rh = rotateHandle(poly);
     if (dist(w, rh) <= tol * 1.4) { const c = HS.centreOf(poly); drag = { ...base, kind: 'rotate', centre: c, a0: angleOf(c, w), deg: 0 }; return true; }
-    const rect = HS.isRect(poly);
+    const rect = HS.isRect(poly) && !mods.shift; // Shift drags a corner of a rectangle freely
     for (let i = 0; i < poly.length; i++) {
       const a = poly[i]; const b = poly[(i + 1) % poly.length];
       const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
