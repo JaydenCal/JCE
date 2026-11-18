@@ -1,0 +1,167 @@
+{
+  "schema": "finance.v1",
+  "generated": "18/11/2026",
+  "label": "Indicative, not a valuation. Check with a quantity surveyor, valuer and your accountant.",
+  "statusKey": {
+    "VERIFIED_REPORT": "A figure read from a published page or report this session",
+    "VERIFIED_SECONDARY": "Read from a secondary page that reproduces an official rate",
+    "ESTIMATE": "Analyst judgement, anchored to the evidence named in the row"
+  },
+  "duty": {
+    "NSW": {
+      "name": "NSW transfer duty",
+      "asAt": "18/11/2026",
+      "status": "VERIFIED_REPORT",
+      "scaleFrom": "01/07/2025",
+      "source": "https://www.revenue.nsw.gov.au/taxes-duties-levies-royalties/transfer-duty/understanding-transfer-duty/calculate-transfer-duty/past-thresholds-and-rates",
+      "note": "Scale for contracts from 01/07/2025. Thresholds are indexed each 01/07, so the current scale may differ slightly. Premium property duty and concessions are not modelled.",
+      "bands": [
+        { "from": 0, "base": 0, "per100": 1.25, "min": 20 },
+        { "from": 17000, "base": 212, "per100": 1.5 },
+        { "from": 37000, "base": 512, "per100": 1.75 },
+        { "from": 99000, "base": 1597, "per100": 3.5 },
+        { "from": 372000, "base": 11152, "per100": 4.5 },
+        { "from": 1240000, "base": 50212, "per100": 5.5 }
+      ]
+    },
+    "QLD": {
+      "name": "Queensland transfer duty (general rates, no home concession)",
+      "asAt": "18/11/2026",
+      "status": "VERIFIED_SECONDARY",
+      "scaleFrom": "unknown",
+      "source": "https://www.finder.com.au/queensland-stamp-duty",
+      "note": "Read from a secondary page that reproduces the Queensland Revenue Office general rates. Concessions and the first home and vacant land concessions are not modelled.",
+      "bands": [
+        { "from": 0, "base": 0, "per100": 0 },
+        { "from": 5000, "base": 0, "per100": 1.5 },
+        { "from": 75000, "base": 1050, "per100": 3.5 },
+        { "from": 540000, "base": 17325, "per100": 4.5 },
+        { "from": 1000000, "base": 38025, "per100": 5.75 }
+      ]
+    }
+  },
+  "gst": { "rate": 0.1, "note": "Indicative. The margin scheme needs the land to have been acquired in a way that allows it, and an agreement with the buyer. Confirm with your accountant." },
+  "defaults": {
+    "common": {
+      "legalPct": { "value": 0.6, "low": 0.3, "high": 1.0, "unit": "% of land price", "label": "Legal, searches and due diligence", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance for conveyancing, searches and a valuation. No published scale." },
+      "ratesPct": { "value": 0.6, "low": 0.3, "high": 1.0, "unit": "% of land price a year", "label": "Council and water rates on the land", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance, regional council rates on vacant land. Check the current rates notice." },
+      "insurancePct": { "value": 0.4, "low": 0.2, "high": 0.8, "unit": "% of construction a year", "label": "Site and contract works insurance", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance. Get a broker quote." },
+      "daFeePct": { "value": 0.25, "low": 0.15, "high": 0.4, "unit": "% of construction", "label": "DA or application fee", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance, council fee scales are a small percentage of the cost of works. Check the council fee schedule." },
+      "lcrPct": { "value": 65, "low": 60, "high": 80, "unit": "% of total cost", "label": "Loan to cost ratio", "status": "VERIFIED_REPORT", "asAt": "15/11/2026", "source": "https://www.feasly.com.au/guides/construction-finance-property-developers-australia (60 to 80 per cent of total development cost)" },
+      "ratePct": { "value": 9.5, "low": 8, "high": 11, "unit": "% a year", "label": "Interest rate", "status": "ESTIMATE", "asAt": "15/11/2026", "source": "https://www.feasly.com.au/guides/construction-finance-property-developers-australia (non-bank construction facility 8.00 to 11.95 per cent); RBA cash rate 4.85 per cent from 03/11/2026" },
+      "feePct": { "value": 1.5, "low": 1, "high": 2, "unit": "% of the loan", "label": "Loan establishment fee", "status": "VERIFIED_REPORT", "asAt": "15/11/2026", "source": "https://www.feasly.com.au/guides/construction-finance-property-developers-australia (1 to 2 per cent of the facility)" },
+      "targetMarginPct": { "value": 15, "low": 10, "high": 25, "unit": "% on cost", "label": "Target margin on cost", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Common lender and developer hurdle, used for the residual land value. Set your own." }
+    },
+    "commercial": {
+      "professionalPct": { "from": "feesPct", "label": "Design and professional fees" },
+      "contPct": { "from": "contPct", "label": "Contingency" },
+      "approvalsFixed": { "value": 25000, "low": 10000, "high": 60000, "unit": "$", "label": "Approvals reports (survey, geotech, traffic, flood, stormwater)", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance for a small regional commercial DA. Get consultant quotes." },
+      "approvalMonths": { "value": 6, "low": 3, "high": 12, "unit": "months", "label": "Design and approvals", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance. Land is held and interest accrues on the land loan." },
+      "buildMonths": { "value": 9, "low": 6, "high": 14, "unit": "months", "label": "Construction", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance for a small shed or strata unit complex." },
+      "tailMonths": { "value": 3, "low": 1, "high": 9, "unit": "months", "label": "Sell down or lease up", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance. Interest runs until the units settle or the lease is signed." },
+      "agentPct": { "value": 1.5, "low": 1, "high": 2.5, "unit": "% of sale price", "label": "Agent commission", "status": "ESTIMATE", "asAt": "15/11/2026", "source": "market.json softCosts (selling 1.5 to 2.5 per cent, agent and marketing). No commercial scale found." },
+      "marketingPct": { "value": 0.5, "low": 0.2, "high": 1, "unit": "% of sale price", "label": "Marketing", "status": "ESTIMATE", "asAt": "15/11/2026", "source": "market.json softCosts (selling 1.5 to 2.5 per cent, agent and marketing)." },
+      "sellLegalPerUnit": { "value": 1500, "low": 800, "high": 3000, "unit": "$ per unit", "label": "Sale legal costs per unit", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance." },
+      "leasingMonths": { "value": 1.5, "low": 1, "high": 2, "unit": "months of gross rent", "label": "Leasing commission", "status": "ESTIMATE", "asAt": "15/11/2026", "source": "market.json softCosts (leasing 1 to 2 months of gross rent). No published scale." },
+      "vacancyPct": { "value": 5, "low": 0, "high": 15, "unit": "% of gross rent", "label": "Vacancy allowance", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance, see the vacancy notes in market.json." },
+      "cutRate": { "value": 18, "low": 10, "high": 35, "unit": "$ per m3", "label": "Cut and haul rate", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance. Get an earthworks quote." },
+      "fillRate": { "value": 28, "low": 15, "high": 45, "unit": "$ per m3", "label": "Imported or compacted fill rate", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance. Get an earthworks quote." }
+    },
+    "residential": {
+      "professionalPct": { "value": 6, "low": 4, "high": 9, "unit": "% of construction", "label": "Design and professional fees", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance for design, engineering, certification and survey on a house." },
+      "contPct": { "value": 7.5, "low": 5, "high": 12, "unit": "% of construction", "label": "Contingency", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance, aligned with the commercial contingency range." },
+      "approvalsFixed": { "value": 9000, "low": 4000, "high": 20000, "unit": "$", "label": "Approvals reports (survey, geotech, BASIX or energy, bushfire)", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance. Get consultant quotes." },
+      "approvalMonths": { "value": 3, "low": 1, "high": 9, "unit": "months", "label": "Design and approvals", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance." },
+      "buildMonths": { "value": 9, "low": 6, "high": 14, "unit": "months", "label": "Construction", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance for a single house." },
+      "tailMonths": { "value": 2, "low": 1, "high": 6, "unit": "months", "label": "Sale or lease up", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance." },
+      "agentPct": { "value": 2, "low": 1.5, "high": 2.5, "unit": "% of sale price", "label": "Agent commission", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Typical regional residential commission range. Agents set their own rate." },
+      "marketingPct": { "value": 0.5, "low": 0.2, "high": 1, "unit": "% of sale price", "label": "Marketing", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance." },
+      "sellLegalPerUnit": { "value": 1500, "low": 800, "high": 3000, "unit": "$ per home", "label": "Sale legal costs", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance." },
+      "leasingMonths": { "value": 1, "low": 0.5, "high": 2, "unit": "months of gross rent", "label": "Letting fee", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance." },
+      "vacancyPct": { "value": 4, "low": 0, "high": 10, "unit": "% of gross rent", "label": "Vacancy allowance", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance." },
+      "outgoingsPct": { "value": 22, "low": 15, "high": 30, "unit": "% of gross rent", "label": "Outgoings (rates, insurance, management, repairs)", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance for a house let on a residential lease." },
+      "capRatePct": { "value": 3.6, "low": 3, "high": 5, "unit": "%", "label": "Net yield for the hold value", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Gross yield 4.6 per cent less outgoings. Analyst allowance, check a local agent rental appraisal." },
+      "grossYieldPct": { "value": 4.6, "low": 3.8, "high": 6, "unit": "% of value a year", "label": "Gross rental yield", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance for regional NSW and Queensland houses. Check a local agent rental appraisal." },
+      "pavingRate": { "value": 120, "low": 80, "high": 200, "unit": "$ per m2", "label": "Driveway and paving", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance for concrete or asphalt paving." },
+      "servicesLump": { "value": 22000, "low": 10000, "high": 45000, "unit": "$", "label": "Services connections (water, sewer, power, stormwater)", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance. Get plumber, electrician and council quotes." },
+      "prepRate": { "value": 55, "low": 25, "high": 120, "unit": "$ per m2 of footprint", "label": "Site preparation and slab pad", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance. Depends on slope and soil, get a geotechnical and quote." },
+      "cutRate": { "value": 18, "low": 10, "high": 35, "unit": "$ per m3", "label": "Cut and haul rate", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance. Get an earthworks quote." },
+      "fillRate": { "value": 28, "low": 15, "high": 45, "unit": "$ per m3", "label": "Imported or compacted fill rate", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance. Get an earthworks quote." }
+    }
+  },
+  "contributions": {
+    "residentialPerDwelling": {
+      "NSW": { "value": 18000, "low": 8000, "high": 35000, "unit": "$ per dwelling", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance for s7.11 or s7.12 plus water and sewer headworks in regional NSW. Not read from a council plan this session. Confirm with council." },
+      "QLD": { "value": 26000, "low": 15000, "high": 40000, "unit": "$ per dwelling", "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance anchored to the order of the Queensland prescribed infrastructure charge for a 3 or more bedroom dwelling. Not read this session. Confirm with council." }
+    }
+  },
+  "residential": {
+    "build": {
+      "tiers": {
+        "budget": { "label": "Budget or project home", "low": 1600, "high": 2700, "value": 2150 },
+        "standard": { "label": "Mid range custom", "low": 2700, "high": 3500, "value": 3100 },
+        "premium": { "label": "Premium or architectural", "low": 3500, "high": 4500, "value": 4000 }
+      },
+      "unit": "$ per m2 of floor area, ex GST, whole house cost (build and fit out)",
+      "status": "VERIFIED_REPORT",
+      "asAt": "18/11/2026",
+      "sourceDate": "02/07/2026",
+      "source": "https://www.aussie.com.au/insights/articles/costs-of-building-a-house/ (build cost per m2 by tier, 2025-26 data; regional NSW 2,200 to 3,200)",
+      "note": "The value is the middle of each published range. Regional NSW is quoted at 2,200 to 3,200 per m2, so the regional factor stays at 1.00 until a quantity surveyor says otherwise."
+    },
+    "valueTierFactor": {
+      "budget": { "value": 0.88, "status": "ESTIMATE", "note": "Value of a new budget home against the median existing dwelling. Analyst factor." },
+      "standard": { "value": 1.0, "status": "ESTIMATE", "note": "New mid range home at about the median existing dwelling value. Analyst factor." },
+      "premium": { "value": 1.3, "status": "ESTIMATE", "note": "Premium finish and larger floor area. Analyst factor." }
+    },
+    "landShareOfValue": { "value": 0.35, "low": 0.25, "high": 0.5, "status": "ESTIMATE", "asAt": "18/11/2026", "source": "Analyst allowance, the land share of a regional dwelling value for a 600 m2 lot. Use the actual lot price when known." },
+    "typicalLotM2": 600,
+    "areas": {
+      "tamworth": { "label": "Tamworth", "state": "NSW", "medianDwelling": 610037 },
+      "dubbo": { "label": "Dubbo", "state": "NSW", "medianDwelling": 649204 },
+      "armidale": { "label": "Armidale", "state": "NSW", "medianDwelling": 591347 },
+      "coffs-harbour": { "label": "Coffs Harbour", "state": "NSW", "medianDwelling": 883406 },
+      "orange": { "label": "Orange", "state": "NSW", "medianDwelling": 734665 },
+      "wagga-wagga": { "label": "Wagga Wagga", "state": "NSW", "medianDwelling": 693521 },
+      "newcastle": { "label": "Newcastle and Maitland", "state": "NSW", "medianDwelling": 977740 },
+      "bundaberg": { "label": "Bundaberg", "state": "QLD", "medianDwelling": 685625 },
+      "cairns": { "label": "Cairns", "state": "QLD", "medianDwelling": 753400 },
+      "mackay": { "label": "Mackay", "state": "QLD", "medianDwelling": 696818 },
+      "rockhampton": { "label": "Rockhampton", "state": "QLD", "medianDwelling": 644369 },
+      "toowoomba": { "label": "Toowoomba", "state": "QLD", "medianDwelling": 843620 },
+      "townsville": { "label": "Townsville", "state": "QLD", "medianDwelling": 674579 }
+    },
+    "areaAlias": { "maitland": "newcastle", "lake-macquarie": "newcastle", "port-stephens": "newcastle" },
+    "areaStatus": "VERIFIED_REPORT",
+    "areaAsAt": "18/11/2026",
+    "areaSourceDate": "30/04/2026",
+    "areaSource": "https://discover.cotality.com/hubfs/441896203/Gated-Content/Regional-Report-May-2026.pdf (Summary of all SUAs dwellings, values, data to April 2026). Median dwelling value for the urban area, houses and units together.",
+    "defaults": {
+      "NSW": { "label": "Regional NSW default", "medianDwelling": 650000, "status": "ESTIMATE", "note": "Middle of the regional NSW urban areas above (Armidale, Dubbo, Orange, Tamworth, Wagga Wagga)." },
+      "QLD": { "label": "Regional QLD default", "medianDwelling": 690000, "status": "ESTIMATE", "note": "Middle of the regional QLD urban areas above (Bundaberg, Cairns, Mackay, Rockhampton, Toowoomba, Townsville)." }
+    }
+  },
+  "commercialTypes": {
+    "note": "Factors against the area's strata unit rates (market.json and the portal evidence). Where market.json has an area figure for showroom, office or retail rent, that figure is used instead of the factor. These are analyst factors anchored to the area rows and the yield tiers in market.json yieldMethod. Not published type rates.",
+    "asAt": "18/11/2026",
+    "status": "ESTIMATE",
+    "types": {
+      "strata": { "label": "Strata units", "saleF": 1.0, "rentF": 1.0, "capAdd": 0.0, "rentField": null },
+      "warehouse": { "label": "Warehouse or large shed", "saleF": 0.75, "rentF": 0.8, "capAdd": 0.0, "rentField": null, "note": "Larger buildings sell for less per m2 than small strata units, as in market.json." },
+      "shed": { "label": "Sheds and storage", "saleF": 0.55, "rentF": 0.6, "capAdd": 0.5, "rentField": null },
+      "showroom": { "label": "Showroom", "saleF": null, "rentF": 1.35, "capAdd": 0.25, "rentField": "showroomRentPerM2PerYr", "note": "Sale rate is the capitalised net rent." },
+      "office": { "label": "Office", "saleF": null, "rentF": 1.6, "capAdd": 0.5, "rentField": "smallOfficeRentPerM2PerYr", "note": "Sale rate is the capitalised net rent." },
+      "retail": { "label": "Retail", "saleF": null, "rentF": 1.8, "capAdd": 0.25, "rentField": "smallRetailRentPerM2PerYr", "note": "Sale rate is the capitalised net rent." },
+      "service-station": { "label": "Service station", "saleF": null, "rentF": 2.2, "capAdd": -0.5, "rentField": null, "note": "Usually valued on the site and the lease, not on floor area. Sale rate is the capitalised net rent. Get a valuer opinion." }
+    },
+    "typeOf": {
+      "strata-units": "strata", "business-mixed": "strata", "vehicle-workshop": "strata",
+      "warehouse": "warehouse", "cold-store": "warehouse", "transport-depot": "warehouse", "portal-shed": "warehouse", "industrial-sheds": "warehouse",
+      "sheds": "shed", "garage": "shed", "self-storage": "shed",
+      "showroom": "showroom", "machinery-dealership": "showroom",
+      "office": "office", "community-centre": "office",
+      "retail-strip": "retail",
+      "service-station": "service-station", "drive-through": "service-station"
+    }
+  }
+}

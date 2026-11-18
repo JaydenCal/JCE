@@ -9,6 +9,7 @@ import { commercialStats, lotAreaM2 } from './stats.js';
 import { isCommercial } from './schema.js';
 import { zoneClass } from './zones.js';
 import { feasibility, money, pct1 } from './feasibility.js';
+import { compute as financeCompute } from '../finance/model.js';
 import { unitGfas } from './feasibility.js';
 import { parkingLayout } from './parking.js';
 import { buildingsOf } from './catalogue/buildings.js';
@@ -139,7 +140,9 @@ export function commercialSummaryLine(project) {
   parts.push(`${fmt(Math.round(s.gfaM2))} m² GFA`);
   parts.push(`${s.parking.provided} parking bays (${s.parking.required} indicated)`);
   const m = f.mid;
-  const pct = m.marginSalePct;
+  // The same figure as the finance cards (duty, finance, selling costs, contributions), so the sentence and the cards agree.
+  let pct = m.marginSalePct;
+  try { const fc = financeCompute(project); if (fc.result) pct = fc.result.sell.marginOnCostPct; } catch { /* the simple figure stays */ }
   const head = parts.join(', ');
   if (pct >= 0) return { tone: 'ok', text: `${head}. Indicative margin if sold: ${pct1(pct)} on cost, ex GST. Change any rate to test your own figures.` };
   const why = m.land + m.siteWorks > m.build * 0.6

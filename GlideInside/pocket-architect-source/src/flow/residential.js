@@ -20,6 +20,7 @@ import { createCoach, FLOW_COACH } from '../ui/fit-coach.js';
 import { createSendToEngineer } from '../lotcard/send-engineer.js';
 import { ENGINEER_LABEL, NOTHING_FITS } from '../site/fit-advice.js';
 import { toast } from '../ui/toast.js';
+import { createFinance } from '../finance/ui.js';
 
 // The fit card's host side, shared by steps 3 and 4: the designs that are loaded (for the other sizes), a guide handed to the editor,
 // and send to a registered engineer.
@@ -585,6 +586,7 @@ function mountCheckStep(ctx, { catalogue, getHomes, want = {} }) {
   const fitCard = createFitCard({ store, theme: 'light', getDesigns: acts.getDesigns, onSwapped: acts.onSwapped, onGuide: acts.onGuide, onEngineer: acts.onEngineer, canEngineer: acts.canEngineer });
   acts.ready.then(() => fitCard.update({ now: true }));
   const el = h('div', { class: 'gf-check' }, h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '0' } }, fitCard.el, card), view);
+  const fin = createFinance(store, { mode: 'step' });
   let preview = null;
   let disposed = false;
 
@@ -602,6 +604,7 @@ function mountCheckStep(ctx, { catalogue, getHomes, want = {} }) {
         s.openSpaceM2 != null ? stat(`${Math.round(s.openSpaceM2)} m2`, `Open space${s.openSpacePct != null ? `, ${Math.round(s.openSpacePct)} percent` : ''}`) : null,
         stat(s.garage.has ? (s.garage.facesStreet ? 'Faces street' : 'Not to street') : 'No garage', s.garage.distanceM != null ? `Garage, ${s.garage.distanceM.toFixed(1)} m from street` : 'Garage'),
         stat(s.driveway.state === 'ok' ? `${s.driveway.lengthM.toFixed(1)} m` : s.driveway.state === 'none' ? 'None' : 'Not linked', 'Driveway to frontage')),
+      fin.el,
       h('ul', { class: 'gf-lines', dataset: { ps: 'flow-lines' } }, ...s.lines.map((t) => h('li', null, t))),
       h('p', { class: 'gf-note' }, h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(3); } }, 'Back to placement'), ' to move or turn the home.'));
   }
@@ -613,7 +616,7 @@ function mountCheckStep(ctx, { catalogue, getHomes, want = {} }) {
     el,
     nextLabel: 'Open the editor',
     async onEnter() { await ensureFlowAerial(store); preview = await mount3dPreview(view, store, catalogue); if (disposed) preview?.dispose?.(); },
-    dispose() { disposed = true; off?.(); preview?.dispose?.(); fitCard.dispose(); },
+    dispose() { disposed = true; off?.(); fin.dispose(); preview?.dispose?.(); fitCard.dispose(); },
   };
 }
 
