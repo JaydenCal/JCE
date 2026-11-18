@@ -16,7 +16,7 @@ import { wallShapes } from '../shared.js';
 import { planGeometry, scaleBar } from '../pdf.js';
 import { drawGroundLayer, streamMark, outwardSpots, cornersOf, houseCorners, intervalText } from './contours.js';
 import { levelsModel, fflText } from './levels.js';
-import { PEN, PHANTOM, clipSegment, hatch, dimLine, haloText, alongLabel, LabelField, boxOfPts, clean } from '../eng/kit.js';
+import { PEN, PHANTOM, clipSegment, clipPolygon, hatch, dimLine, haloText, alongLabel, LabelField, boxOfPts, clean } from '../eng/kit.js';
 import { AREA } from './frame.js';
 import { groundLevel, envelopePoly, groundFootprintM2 } from './lot.js';
 
@@ -184,6 +184,12 @@ export function siteView(project, lot, { turn = true } = {}) {
 // Drawing helpers -----------------------------------------------------------------------------------------------------------------
 const segLine = (doc, a, b) => { const s = clipSegment(a, b, VP); if (s) doc.line(s[0].x, s[0].y, s[1].x, s[1].y); };
 const polyLine = (doc, pts, closed = true) => { const n = closed ? pts.length : pts.length - 1; for (let i = 0; i < n; i++) segLine(doc, pts[i], pts[(i + 1) % pts.length]); };
+/** A filled or hatched polygon kept inside the viewport (a driveway or crossover running off the edge stops at the frame). Returns the clipped ring or []. */
+const fillClipped = (doc, sp, style) => {
+  const q = clipPolygon(sp, VP);
+  if (q.length >= 3) doc.lines(q.slice(1).map((p, i) => [p.x - q[i].x, p.y - q[i].y]), q[0].x, q[0].y, [1, 1], style, true);
+  return q;
+};
 const inVP = (p) => p.x >= VP.x0 && p.x <= VP.x1 && p.y >= VP.y0 && p.y <= VP.y1;
 const lenOf = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const regRing = (field, pts, closed = true, soft = false) => field.addRing(pts, closed, soft);
@@ -359,7 +365,7 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
   doc.setFillColor(238, 241, 246);
   for (const r of ground.rooms.filter((q) => q.status !== 'demolish' && (!q.outdoor || q.roofed) && q.polygon?.length >= 3)) {
     const sp = r.polygon.map(S);
-    doc.lines(sp.slice(1).map((p, i) => [p.x - sp[i].x, p.y - sp[i].y]), sp[0].x, sp[0].y, [1, 1], 'F', true);
+    fillClipped(doc, sp, 'F');
   }
   planGeometry(doc, { level: ground, shapes, scale }, S, false, null);
   doc.setLineWidth(0.25);
@@ -380,8 +386,8 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
     for (const poly of [dw.polygon, dw.crossover?.polygon].filter(Boolean)) {
       const sp = poly.map(S);
       doc.setFillColor(246, 246, 246);
-      doc.lines(sp.slice(1).map((p, i) => [p.x - sp[i].x, p.y - sp[i].y]), sp[0].x, sp[0].y, [1, 1], 'FD', true);
-      hatch(doc, sp, dw.manual ? HATCH_KIND[dw.material] || 'concrete' : 'concrete');
+      const cq = fillClipped(doc, sp, 'FD');
+      if (cq.length >= 3) hatch(doc, cq, dw.manual ? HATCH_KIND[dw.material] || 'concrete' : 'concrete');
       regRing(field, sp);
     }
     driveCentre = dw.centre.map(S);
@@ -393,8 +399,8 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
     for (const pc of geom.pieces) {
       const sp = pc.ring.map(S);
       doc.setFillColor(246, 246, 246);
-      doc.lines(sp.slice(1).map((p, i) => [p.x - sp[i].x, p.y - sp[i].y]), sp[0].x, sp[0].y, [1, 1], 'FD', true);
-      hatch(doc, sp, HATCH_KIND[way.material] || 'concrete');
+      const cq = fillClipped(doc, sp, 'FD');
+      if (cq.length >= 3) hatch(doc, cq, HATCH_KIND[way.material] || 'concrete');
       regRing(field, sp);
     }
   }
@@ -555,7 +561,7 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
       const i = Math.min(driveCentre.length - 2, Math.floor(f * (driveCentre.length - 1)));
       const p = driveCentre[i];
       const q = driveCentre[i + 1];
-      if (lenOf(p, q) < 0.01) continue;
+      if (lenOf(p, q) < 0.01 || !inVP(p) || !inVP(q)) continue;
       cands.push(() => alongLabel(doc, dw?.manual ? `${SHEET_LABEL[dw.material] || 'CONC.'} DRIVEWAY` : 'CONC. DRIVEWAY', G.lerp(p, q, 0.5), G.norm(G.sub(q, p)), -6.8 * 0.3528 / 2, { size: 6.8, colour: [70, 74, 82], halo: 0.9 }));
     }
     field.place(cands, { lines: false });
