@@ -143,6 +143,7 @@ export function commercialChecks(project) {
       if (pr.slots.some((sl) => bsAll.some((b) => G.convexOverlap(sl.poly, b.outline, 100)) || units.some((u) => G.convexOverlap(sl.poly, u.poly, 100)))) warn(`park-bldg-${pr.rowId}`, 'A parking row overlaps a building, move the building or the row');
     }
   }
+  if (stats.parking.carparkBays > 0) info('carpark', `Car park fill: ${stats.parking.carparkBays} bays counted towards ${stats.parking.provided} provided against ${stats.parking.required} indicated. Layout is indicative to AS/NZS 2890.1, check with council`);
   if (units.some((u) => mezzanineOf(u.spec).enabled)) info('barrier', 'Barrier height at the mezzanine edge is 1000 mm and at the stair 865 mm, check the NCC', 'barrier');
   const awc = units.filter((u) => u.spec.office.enabled && u.spec.office.accessibleWc);
   if (awc.length) info('awc', `Accessible WC shown in the office of ${awc.map((u) => `unit ${u.n}`).join(', ')}, internal layout to be confirmed with an access consultant`);

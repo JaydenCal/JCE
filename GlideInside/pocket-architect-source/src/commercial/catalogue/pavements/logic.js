@@ -26,6 +26,8 @@ import { KERBS, KERB_DEFAULTS, kerbById, isKerbType } from './kerbs.js';
 import { MARKINGS, WHEEL_STOP, markingById, isMarkingType } from './markings.js';
 import { absArea, polyArea, pointInPoly, bbox, bboxOverlap, segCross, convexOverlap } from './geom.js';
 import { boolean, holeFree, overlapArea } from './polybool.js';
+import { carparkAreas, carparkTotals, carparkMarkings, carparkFor } from './carpark.js';
+import { buildingsOf } from '../buildings.js';
 
 export const RATES = rates;
 export const DATA_DATE = rates._meta.asAt;
@@ -112,7 +114,7 @@ export function pavementAreas(commercial) {
       if (Array.isArray(o.polygon) && o.polygon.length >= 3) { a.polygon = o.polygon; a.overridden = true; }
     } else if (Array.isArray(o.polygon) && o.polygon.length >= 3 && isPavementType(o.type)) {
       const drawn = String(o.id || '').startsWith('hs_'); // drawn with the Hardstand tool (see hardstand.js)
-      extras.push({ id: o.id || `extra:${n++}`, role: drawn ? 'hardstand' : 'extra', rowId: null, type: o.type, polygon: o.polygon, auto: false, overridden: true, drawn });
+      extras.push({ id: o.id || `extra:${n++}`, role: drawn ? 'hardstand' : 'extra', rowId: null, type: o.type, polygon: o.polygon, auto: false, overridden: true, drawn, road: !!o.road, carpark: !!o.carpark });
     }
   }
   const list = [...extras, ...base.filter((a) => !removed.has(a.id))];
@@ -366,8 +368,30 @@ export function buildWheelStops(commercial, areas) {
   return items;
 }
 
+/** The laid out car parks (drawn hardstands with a car park fill): [{ id, polygon, layout }], with entry gaps and obstacles from the model. */
+export function carparkOf(commercial) {
+  const c = commercial || {};
+  if (!Array.isArray(c.pavements) || !c.pavements.some((o) => o?.carpark)) return [];
+  return carparkAreas(c, { areas: pavementAreas(c), buildings: buildingRings(c) });
+}
+
+/** The buildings (unit and catalogue outlines) a car park may not cover. */
+function buildingRings(c) {
+  try { return [...layoutUnits(c).map((u) => u.poly), ...buildingsOf(c).map((b) => b.outline)].filter((r) => r?.length >= 3); } catch { return []; }
+}
+
+/** Layout of drawn area `id` for `polygon` with a settings patch (the live view while the area is dragged, rotated or a row slid). null when it has no car park. */
+export function carparkLayoutFor(commercial, id, polygon, patch = null) {
+  const e = (commercial?.pavements || []).find((o) => o && o.id === id && o.carpark);
+  if (!e) return null;
+  return carparkFor(e, polygon || e.polygon, patch, { areas: pavementAreas(commercial), buildings: buildingRings(commercial) });
+}
+
+/** Bay count and accessible bays over every car park: { bays, accessible, required, zones, areas }. Feeds the parking checks and feasibility. */
+export const carparkSummary = (commercial) => carparkTotals(carparkOf(commercial));
+
 /** Marking items from the layout: bay lines, accessible symbols and zone hatch, the pedestrian crossing, plus project.commercial.markings. */
-export function buildMarkings(commercial) {
+export function buildMarkings(commercial, carparks = null) {
   const c = commercial || {};
   const park = parkingLayout(c);
   const items = [];
@@ -422,6 +446,7 @@ export function buildMarkings(commercial) {
       });
     }
   }
+  for (const cp of carparks || carparkOf(c)) items.push(...carparkMarkings(cp.id, cp.layout));
   (Array.isArray(c.markings) ? c.markings : []).forEach((m, i) => {
     if (m && isMarkingType(m.type) && Number.isFinite(m.x) && Number.isFinite(m.y)) items.push({ id: m.id || `marking:${i}`, rotationDeg: 0, ...m, manual: true });
   });
@@ -440,7 +465,8 @@ export function pavementModel(commercial, lot = null) {
   const areas = pavementAreas(c);
   const kerbs = buildKerbs(c, areas, lot);
   const wheelStops = buildWheelStops(c, areas);
-  const markings = buildMarkings(c);
+  const carparks = carparkOf(c);
+  const markings = buildMarkings(c, carparks);
   const items = [...markings, ...wheelStops];
   const net = netAreasM2(areas);
   for (const a of areas) a.areaM2 = net.get(a.id) || 0;
@@ -476,7 +502,7 @@ export function pavementModel(commercial, lot = null) {
     markings: order(mByType, MARKINGS.map((m) => m.id)),
     wheelStops: wheelStops.length,
   };
-  return { areas, kerbs, markings, wheelStops, items, quantities };
+  return { areas, kerbs, markings, wheelStops, items, quantities, carparks };
 }
 
 // Cost ------------------------------------------------------------------------------------------------------------------------------

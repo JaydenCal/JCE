@@ -240,13 +240,16 @@ function bays3D(rows, builder) {
       const ext = (p) => ({ x: p.x + v.x * off, y: p.y + v.y * off });
       addFloorPoly(builder, 'asphalt', [ext(a[0]), ext(z[1]), z[1], a[0]], 0.024, true);
     }
+    // Side lines are shared between neighbours (drawn once); the line across the far end is drawn along the whole row once, not boxed per bay.
+    const seen = new Set();
+    const key = (q) => `${Math.round(q.x / 20)},${Math.round(q.y / 20)}`;
+    const line = (q0, q1) => { const k = [key(q0), key(q1)].sort().join('|'); if (seen.has(k)) return; seen.add(k); addFloorPoly(builder, 'marking', thin(q0, q1, 100), 0.04, true); };
     for (const s of sl) {
       const p = s.poly;
       if (s.kind === 'accessible') addFloorPoly(builder, 'accessible', p, 0.034, true);
       else if (s.kind === 'zone') addFloorPoly(builder, 'zone', p, 0.034, true);
-      addFloorPoly(builder, 'marking', thin(p[0], p[3], 100), 0.04, true);
-      addFloorPoly(builder, 'marking', thin(p[1], p[2], 100), 0.04, true);
-      addFloorPoly(builder, 'marking', thin(p[3], p[2], 100), 0.04, true);
+      line(p[0], p[3]); line(p[1], p[2]);
+      if (s.kind !== 'zone') line(p[3], p[2]);
     }
   });
 }

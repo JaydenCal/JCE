@@ -195,7 +195,8 @@ export function commercialModel(project, lot) {
   const land = lot ? landscapeShare(lot, covered) : { pct: null, areaM2: null };
   const cls = effectiveClass(wp) || 'industrial';
   const rules = { ...defaultRulesFor(cls), ...effectiveRules(wp, cls) };
-  return { project: wp, c, a, lot, units: a.units, stats: a.stats, osd, covered, land, cls, rules, off: bayOffsetMm(c.parking), hardstand, hardstandKerbs };
+  const carparks = hs?.carparks || [];
+  return { project: wp, c, a, lot, units: a.units, stats: a.stats, osd, covered, land, cls, rules, off: bayOffsetMm(c.parking), hardstand, hardstandKerbs, carparks };
 }
 
 // Sheet list ----------------------------------------------------------------------------------------------------------------
@@ -697,6 +698,25 @@ function placeNote(doc, field, text, cands, { size = 5.8, bold = false, colour =
   return null;
 }
 
+/** Car park fill on a hardstand: bay lines, accessible bays and shared zone hatch, end islands, one way arrows and the bay count. */
+function drawCarparkLines(doc, cp, view) {
+  const T = view.T;
+  const lay = cp.layout;
+  if (!lay?.bays.length) return;
+  dashOff(doc);
+  doc.setFillColor(196, 214, 244);
+  for (const b of lay.bays) if (b.kind !== 'bay') { doc.setFillColor(...(b.kind === 'zone' ? [255, 244, 190] : [196, 214, 244])); polygon(doc, b.poly.map(T), 'F'); }
+  doc.setFillColor(176, 204, 160);
+  for (const isl of lay.islands) polygon(doc, isl.map(T), 'F');
+  doc.setDrawColor(...GREYLINE);
+  doc.setLineWidth(0.1);
+  for (const b of lay.bays) { const q = b.poly.map(T); doc.line(q[0].x, q[0].y, q[3].x, q[3].y); doc.line(q[1].x, q[1].y, q[2].x, q[2].y); if (b.kind !== 'zone') doc.line(q[0].x, q[0].y, q[1].x, q[1].y); }
+  for (const b of lay.bays) if (b.kind === 'accessible' && cp.cfg.bayW / view.scale >= 2.2) { const c = T(b.centre); haloText(doc, 'A', c.x, c.y + 0.9, { size: 6, bold: true, colour: BLUE, align: 'center', halo: 0.6 }); }
+  doc.setDrawColor(...PEN.ink);
+  doc.setLineWidth(0.18);
+  for (const a of lay.arrows) { const r = (a.rotationDeg * Math.PI) / 180; const p = T({ x: a.x - Math.cos(r) * 1200, y: a.y - Math.sin(r) * 1200 }); const q = T({ x: a.x + Math.cos(r) * 1200, y: a.y + Math.sin(r) * 1200 }); doc.line(p.x, p.y, q.x, q.y); const l = (d) => T({ x: a.x + Math.cos(r) * 1200 - Math.cos(r + d) * 700, y: a.y + Math.sin(r) * 1200 - Math.sin(r + d) * 700 }); const h1 = l(0.5); const h2 = l(-0.5); doc.line(q.x, q.y, h1.x, h1.y); doc.line(q.x, q.y, h2.x, h2.y); }
+}
+
 /** Hardstand drawn with the Hardstand tool: each area in the pale tint and hatch of its pavement type, its kerbs, and a label. */
 function drawHardstandAreas(doc, model, view) {
   const T = view.T;
@@ -721,6 +741,7 @@ function drawHardstandAreas(doc, model, view) {
   doc.setLineWidth(0.45);
   dashOff(doc);
   for (const k of model.hardstandKerbs || []) { const a = T(k.polyline[0]); const b = T(k.polyline[1]); doc.line(a.x, a.y, b.x, b.y); }
+  for (const cp of model.carparks || []) drawCarparkLines(doc, cp, view);
   for (const x of model.hardstand || []) {
     const id = String(x.id).split('~')[0];
     if (done.has(id)) continue;
@@ -730,7 +751,8 @@ function drawHardstandAreas(doc, model, view) {
     if (bb.x1 - bb.x0 < 22 || bb.y1 - bb.y0 < 6) continue;
     const at = T(labelPoint(x.polygon));
     const t = pavementById(x.type);
-    haloText(doc, `${t.short.toUpperCase()} ${m2f(x.areaM2 || 0)} m2`, at.x, at.y, { size: 4.6, bold: true, align: 'center', halo: 0.7 });
+    const cpl = (model.carparks || []).find((q) => q.id === id);
+    haloText(doc, `${cpl ? 'CAR PARK, ' + cpl.layout.count + ' BAYS, ' : ''}${t.short.toUpperCase()} ${m2f(x.areaM2 || 0)} m2`, at.x, at.y, { size: 4.6, bold: true, align: 'center', halo: 0.7 });
   }
 }
 

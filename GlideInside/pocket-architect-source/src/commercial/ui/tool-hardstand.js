@@ -5,7 +5,7 @@
 import { worldToScreen } from '../../editor2d/math.js';
 import { createHardstandController } from './hardstand-controller.js';
 import { hsState, onHsState, setHsState } from './hardstand-state.js';
-import { drawPavementArea } from '../catalogue/pavements/draw2d.js';
+import { drawPavementArea, drawMarking } from '../catalogue/pavements/draw2d.js';
 import { pavementById } from '../catalogue/pavements/pavements.js';
 
 const GOLD = '#c7a256';
@@ -88,6 +88,7 @@ export function drawDraft(ctx, st, d) {
     ctx.beginPath(); path(ctx, st, d.ghost);
     ctx.strokeStyle = 'rgba(120,120,120,0.8)'; ctx.lineWidth = 1.4; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
   }
+  if (d.cpIslands) for (const isl of d.cpIslands) { ctx.beginPath(); path(ctx, st, isl); ctx.fillStyle = 'rgba(93,142,74,0.55)'; ctx.fill(); ctx.strokeStyle = 'rgba(52,92,40,0.9)'; ctx.lineWidth = 1; ctx.stroke(); }
   const warn = d.warn.length > 0;
   if (d.ring && d.ring.length >= 2) {
     const t = pavementById(d.type);
@@ -102,6 +103,9 @@ export function drawDraft(ctx, st, d) {
     ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 1.6; ctx.setLineDash([10, 7]); ctx.stroke(); ctx.setLineDash([]);
     if (d.mode === 'road') for (const p of d.centre.slice(0, -1)) { const s = worldToScreen(st.view, p); ctx.beginPath(); ctx.arc(s.x, s.y, 4, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 2; ctx.stroke(); }
   }
+  if (d.cpItems) for (const it of d.cpItems) drawMarking(ctx, it, (q) => worldToScreen(st.view, q), st.view.scale);
+  if (d.cpEntries) for (const e of d.cpEntries) { ctx.beginPath(); path(ctx, st, e); ctx.fillStyle = 'rgba(46,160,90,0.16)'; ctx.fill(); ctx.strokeStyle = 'rgba(27,143,74,0.9)'; ctx.lineWidth = 1.2; ctx.setLineDash([5, 4]); ctx.stroke(); ctx.setLineDash([]); }
+  if (d.cpBay) { ctx.beginPath(); path(ctx, st, d.cpBay); ctx.fillStyle = 'rgba(199,162,86,0.35)'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 2; ctx.stroke(); }
   ctx.font = `600 11px ${st.theme.f.ui}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   for (const l of d.labels) {
     const s = worldToScreen(st.view, l);
@@ -111,9 +115,22 @@ export function drawDraft(ctx, st, d) {
   for (const hd of d.handles) {
     const s = worldToScreen(st.view, hd);
     ctx.beginPath();
+    if (hd.kind === 'rotate') {
+      const t = worldToScreen(st.view, { x: hd.stemX, y: hd.stemY });
+      ctx.moveTo(t.x, t.y); ctx.lineTo(s.x, s.y); ctx.strokeStyle = GOLD; ctx.lineWidth = 1.6; ctx.stroke();
+      ctx.beginPath(); ctx.arc(s.x, s.y, 9, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 3; ctx.stroke();
+      ctx.beginPath(); ctx.arc(s.x, s.y, 3, 0, Math.PI * 2); ctx.fillStyle = GOLD; ctx.fill();
+      continue;
+    }
+    if (hd.kind === 'mid' && hd.rect) { ctx.rect(s.x - 6, s.y - 3.5, 12, 7); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 2; ctx.stroke(); continue; }
     if (hd.kind === 'vertex') { ctx.rect(s.x - 5, s.y - 5, 10, 10); ctx.fillStyle = hd.active ? GOLD : '#fff'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 2; ctx.stroke(); }
     else if (hd.kind === 'width') { ctx.moveTo(s.x, s.y - 7); ctx.lineTo(s.x + 7, s.y); ctx.lineTo(s.x, s.y + 7); ctx.lineTo(s.x - 7, s.y); ctx.closePath(); ctx.fillStyle = GOLD; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.6; ctx.stroke(); }
     else { ctx.arc(s.x, s.y, 3.5, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.fill(); ctx.strokeStyle = GOLD; ctx.lineWidth = 1.4; ctx.stroke(); }
+  }
+  if (d.cp && d.selected && !d.readout) {
+    const sp = d.selected.map((p) => worldToScreen(st.view, p));
+    const lines = [`Car park: ${d.cp.count} bays`, `${d.cp.accessible} accessible, bays at ${Math.round(d.cp.angleDeg)} degrees`];
+    pill(ctx, st, lines, Math.min(...sp.map((q) => q.x)) + 6, Math.min(...sp.map((q) => q.y)) - 46);
   }
   if (d.snap) {
     const s = worldToScreen(st.view, d.snap);
@@ -127,4 +144,44 @@ export function drawDraft(ctx, st, d) {
     if (last) { const s = worldToScreen(st.view, last); pill(ctx, st, [d.readout, ...d.warn], s.x + 16, s.y + 16, { warn }); }
   }
   ctx.restore();
+}
+
+
+/** The Car park tool: the same controller and plan drawing as the Hardstand tool, with the car park modes (drag out, fill a hardstand, edit) and drop support. */
+export function createCarparkTool(ed) {
+  const { store } = ed;
+  const ctl = createHardstandController({ store, scale: () => ed.view.scale, toast: (m, o) => ed.toast(m, o), redraw: () => ed.draw(), carparkTool: true });
+  let off = null;
+  let offDrop = [];
+  const isOn = () => store.project.mode === 'commercial' && !!store.project.commercial;
+  const mods = (ev) => ({ alt: ev.alt, shift: ev.shift, screen: ev.screen });
+  const worldOf = (e) => { const r = ed.canvas.getBoundingClientRect(); return { x: (e.clientX - r.left - ed.view.ox) / ed.view.scale, y: (e.clientY - r.top - ed.view.oy) / ed.view.scale }; };
+  const tool = {
+    id: 'carpark',
+    controller: ctl,
+    cursor: () => (hsState.mode === 'edit' ? 'default' : 'crosshair'),
+    hint: () => ctl.hint(),
+    activate() {
+      ctl.reset();
+      if (!['cp-rect', 'cp-apply', 'edit'].includes(hsState.mode)) setHsState({ mode: 'cp-rect' });
+      off = onHsState(() => { ed.setHint(ctl.hint()); ed.canvas.style.cursor = tool.cursor(); ed.draw(); });
+      const over = (e) => { if (e.dataTransfer?.types?.includes('application/x-ps-carpark')) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } };
+      const drop = (e) => { if (!e.dataTransfer?.types?.includes('application/x-ps-carpark')) return; e.preventDefault(); if (isOn()) ctl.dropCarpark(worldOf(e)); };
+      ed.canvas.addEventListener('dragover', over); ed.canvas.addEventListener('drop', drop);
+      offDrop = [() => ed.canvas.removeEventListener('dragover', over), () => ed.canvas.removeEventListener('drop', drop)];
+      if (!isOn()) ed.toast('The car park tool is for commercial layouts.', { kind: 'warn' });
+    },
+    deactivate() { off?.(); off = null; offDrop.forEach((f) => f()); offDrop = []; ctl.reset(); setHsState({ selected: null, activeBay: null }); ed.draw(); },
+    pointerDown(ev) { if (!isOn()) { ed.startPan(ev); return; } if (!ctl.pointerDown(ev.world, mods(ev))) ed.startPan(ev); },
+    pointerMove(ev) { ctl.pointerMove(ev.world, mods(ev)); },
+    pointerUp(ev) { ctl.pointerUp(ev.world, mods(ev)); },
+    dblClick(ev) { ctl.dblClick(ev.world); },
+    modifiersChanged() { ed.draw(); },
+    cancel() { return ctl.cancel(); },
+    keyDown(e) { return ctl.keyDown(e); },
+    pointerLeave() { ed.draw(); },
+    projectChanged() { if (hsState.selected && !ctl.selectedArea() && !ctl.selectedGenerated()) setHsState({ selected: null, activeBay: null }); },
+    draw(ctx, st) { drawDraft(ctx, st, ctl.draft()); },
+  };
+  return { carpark: tool };
 }

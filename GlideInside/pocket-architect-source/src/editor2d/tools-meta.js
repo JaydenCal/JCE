@@ -15,6 +15,7 @@ export const TOOL_DEFS = [
   { id: 'tank', key: 'T', label: 'Rainwater tank', icon: 'tank' },
   { id: 'pave', key: 'L', label: 'Road or pavement', icon: 'road', tip: 'Click to drop PI points along the centreline, then curve any PI. Double click or Enter finishes.' },
   { id: 'hardstand', key: 'P', label: 'Hardstand', icon: 'hardstand', commercialOnly: true },
+  { id: 'carpark', key: 'C', label: 'Car park', icon: 'carpark', commercialOnly: true, tip: 'Drag out a car park or drop bays on a hardstand: bays and aisles fill to its orientation and re-flow live.' },
   { id: 'measure', key: 'M', label: 'Measure', icon: 'measure' },
   { id: 'underlay', key: 'U', label: 'Underlay', icon: 'underlay' },
   { id: 'status', key: 'X', label: 'Status brush', icon: 'status' },

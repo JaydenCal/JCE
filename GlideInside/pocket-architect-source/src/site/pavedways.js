@@ -726,3 +726,66 @@ export function overBuildingM2(project, geom) {
   }
   return m2;
 }
+
+// Duplicate drives ------------------------------------------------------------------------------------------------------------------
+
+export const DUPLICATE_FRACTION = 0.5;
+const ringsOf = (project, w) => wayGeometry(project, w).pieces.map((pc) => pc.ring).filter((r) => r?.length >= 3);
+const areaOfRings = (rs) => rs.reduce((s, r) => s + Math.abs(polyArea(r)), 0);
+
+/**
+ * The other drawn way that this one mostly lies on top of, or null: { other, fraction } where fraction is the shared area over the smaller of
+ * the two (more than `min` means a duplicate strip, not a crossing).
+ */
+export function duplicateOf(project, id, min = DUPLICATE_FRACTION) {
+  const me = getWay(project, id);
+  if (!me) return null;
+  const mine = ringsOf(project, me);
+  const a = areaOfRings(mine);
+  let best = null;
+  for (const o of getWays(project)) {
+    if (o.id === id) continue;
+    const theirs = ringsOf(project, o);
+    const b = areaOfRings(theirs);
+    if (!a || !b) continue;
+    let shared = 0;
+    for (const r of mine) for (const t of theirs) shared += boolean([r], [t], 'inter').reduce((s, q) => s + Math.abs(polyArea(q)), 0);
+    const fraction = shared / Math.min(a, b);
+    if (fraction > min && (!best || fraction > best.fraction)) best = { other: o.id, fraction };
+  }
+  return best;
+}
+
+const segDist = (p, a, b) => { const l2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2 || 1; const t = Math.max(0, Math.min(1, ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2)); return Math.hypot(p.x - a.x - (b.x - a.x) * t, p.y - a.y - (b.y - a.y) * t); };
+const distToPath = (p, pts) => pts.reduce((m, a, i) => (i ? Math.min(m, segDist(p, pts[i - 1], a)) : m), Infinity);
+
+/**
+ * Merge a way into the one it lies on: the kept way takes the wider width, and any end of the dropped way that runs on beyond it is added to the
+ * kept way's matching end. The dropped way is removed, so there are never two parallel strips. Returns the kept way.
+ */
+export function mergeWayInto(project, keepId, dropId) {
+  const keep = entry(project, keepId);
+  const drop = entry(project, dropId);
+  if (!keep || !drop || keepId === dropId) throw new Error('Pick two different ways to merge.');
+  const kc = clean(keep); const dc = clean(drop);
+  const reach = Math.max(kc.widthMm, dc.widthMm) / 2 + 300;
+  const inside = (p) => distToPath(p, kc.pts) <= reach;
+  let pts = kc.pts.map((p) => ({ ...p }));
+  const dp = dc.pts.map((p) => ({ ...p }));
+  // the parts of the dropped way that run on past an end of the kept way are added to that end
+  const ins = dp.map(inside);
+  const s0 = ins.indexOf(true);
+  const e0 = ins.lastIndexOf(true);
+  if (s0 >= 0) {
+    const endNear = (p) => { const ds = G.dist(p, pts[0]); const de = G.dist(p, pts[pts.length - 1]); return ds <= de ? { end: 'start', d: ds } : { end: 'end', d: de }; };
+    const exit = (a, b) => { const l = G.dist(a, b); let last = a; for (let t = 500; t < l; t += 500) { const q = { x: a.x + ((b.x - a.x) * t) / l, y: a.y + ((b.y - a.y) * t) / l }; if (!inside(q)) break; last = q; } return { x: Math.round(last.x), y: Math.round(last.y) }; };
+    if (s0 > 0) { const anchor = exit(dp[s0], dp[s0 - 1]); const lead = [...dp.slice(0, s0), anchor]; const n = endNear(anchor); if (n.d <= reach * 2) pts = n.end === 'start' ? [...lead, ...pts] : [...pts, ...lead.slice().reverse()]; }
+    if (e0 < dp.length - 1) { const anchor = exit(dp[e0], dp[e0 + 1]); const trail = [anchor, ...dp.slice(e0 + 1)]; const n = endNear(anchor); if (n.d <= reach * 2) pts = n.end === 'end' ? [...pts, ...trail] : [...trail.slice().reverse(), ...pts]; }
+  }
+  keep.pts = dedupe(pts, 60);
+  keep.widthMm = Math.max(kc.widthMm, dc.widthMm);
+  if (keep.kerbEdge == null && drop.kerbEdge != null) keep.kerbEdge = drop.kerbEdge;
+  list(project).splice(list(project).indexOf(drop), 1);
+  syncCommercialMirror(project);
+  return keep;
+}

@@ -14,6 +14,7 @@ import { pavementById, isPavementType, PAVEMENTS } from './pavements.js';
 import { pavementAreas, pavementModel, pavementCost } from './logic.js';
 import { layoutUnits } from '../../layout.js';
 import { buildingsOf } from '../buildings.js';
+import { cpConfig, CARPARK_DEFAULTS, longestEdgeAngle } from './carpark.js';
 
 // roads.js registers itself here (it imports this file, so this file cannot import it)
 export const roadsHook = { setRoad: null, addRoad: null };
@@ -53,7 +54,7 @@ const ptsOf = (ring) => (Array.isArray(ring) ? ring.filter((q) => num(q?.x) && n
 export function hardstandList(commercial) {
   const out = [];
   (Array.isArray(commercial?.pavements) ? commercial.pavements : []).forEach((o, index) => {
-    if (o && isHardstandId(o.id) && Array.isArray(o.polygon) && o.polygon.length >= 3 && isPavementType(o.type)) out.push({ id: o.id, type: o.type, polygon: ptsOf(o.polygon), index, road: o.road || null });
+    if (o && isHardstandId(o.id) && Array.isArray(o.polygon) && o.polygon.length >= 3 && isPavementType(o.type)) out.push({ id: o.id, type: o.type, polygon: ptsOf(o.polygon), index, road: o.road || null, carpark: o.carpark || null });
   });
   return out;
 }
@@ -218,14 +219,14 @@ export function clipToLot(poly, lot) {
 }
 
 /** Add a drawn area, clipped to the lot. Returns { ids, clipped, outside }. The new area is first in the list, so it sits on top. */
-export function addHardstand(c, { type, polygon, lot = null }) {
+export function addHardstand(c, { type, polygon, lot = null, carpark = null }) {
   if (!isPavementType(type)) throw new Error('Choose a pavement type.');
   const { pieces, clipped } = clipToLot(polygon, lot);
   if (!pieces.length) return { ids: [], clipped, outside: true };
   if (!Array.isArray(c.pavements)) c.pavements = [];
   let n = nextNumber(c);
   const ids = [];
-  const made = pieces.map((p) => { const id = `${HS_PREFIX}${n++}`; ids.push(id); return { id, type, polygon: own(p) }; });
+  const made = pieces.map((p) => { const id = `${HS_PREFIX}${n++}`; ids.push(id); return { id, type, polygon: own(p), ...(carpark ? { carpark: { ...carpark } } : {}) }; });
   c.pavements.unshift(...made);
   return { ids, clipped, outside: false };
 }
@@ -241,7 +242,7 @@ export function setHardstandPolygon(c, id, polygon, lot = null) {
   delete e.road; // a free reshape of the outline turns a road into a plain area
   const ids = [id];
   let n = nextNumber(c);
-  const extra = sorted.slice(1).map((p) => { const nid = `${HS_PREFIX}${n++}`; ids.push(nid); return { id: nid, type: e.type, polygon: own(p) }; });
+  const extra = sorted.slice(1).map((p) => { const nid = `${HS_PREFIX}${n++}`; ids.push(nid); return { id: nid, type: e.type, polygon: own(p), ...(e.carpark ? { carpark: { ...e.carpark, removed: [], shifts: {} } } : {}) }; });
   if (extra.length) c.pavements.splice(c.pavements.indexOf(e) + 1, 0, ...extra);
   return { ids, clipped, outside: false };
 }
@@ -431,3 +432,111 @@ export function hardstandSummary(commercial, lot = null) {
 }
 
 export { inRegion };
+
+
+// Dynamic editing: rotate, resize, car park settings ----------------------------------------------------------------------------------
+
+const cen = (poly) => { const a = polyArea(poly); if (Math.abs(a) < 1) return { x: poly.reduce((s, p) => s + p.x, 0) / poly.length, y: poly.reduce((s, p) => s + p.y, 0) / poly.length }; return centroidOf(poly); };
+export const centreOf = cen;
+
+/** Rotate a polygon by `deg` about `about` (default its centre). */
+export function rotatePolygon(poly, deg, about = null) {
+  const o = about || cen(poly);
+  const a = (deg * Math.PI) / 180; const co = Math.cos(a); const si = Math.sin(a);
+  return poly.map((p) => ({ x: r1(o.x + (p.x - o.x) * co - (p.y - o.y) * si), y: r1(o.y + (p.x - o.x) * si + (p.y - o.y) * co) }));
+}
+
+/** True when the polygon is a four cornered rectangle (any rotation, corners square to within 1 degree). */
+export function isRect(poly) {
+  if (!Array.isArray(poly) || poly.length !== 4) return false;
+  for (let i = 0; i < 4; i++) {
+    const a = poly[i]; const b = poly[(i + 1) % 4]; const c = poly[(i + 2) % 4];
+    const u = { x: b.x - a.x, y: b.y - a.y }; const v = { x: c.x - b.x, y: c.y - b.y };
+    const l = Math.hypot(u.x, u.y) * Math.hypot(v.x, v.y);
+    if (l < 1 || Math.abs((u.x * v.x + u.y * v.y) / l) > 0.0175) return false;
+  }
+  return true;
+}
+
+/**
+ * Resize a rectangle by dragging a corner (kind 'corner', index = the corner) or an edge midpoint (kind 'edge', index = the edge, from vertex
+ * index to index + 1) to point p. The opposite corner or edge stays put and the shape stays a rectangle at its own angle.
+ */
+export function resizeRect(poly, kind, index, p) {
+  const n = 4;
+  const out = poly.map((q) => ({ ...q }));
+  if (kind === 'corner') {
+    const o = poly[(index + 2) % n]; const n1 = poly[(index + 1) % n]; const n3 = poly[(index + 3) % n];
+    const lu = Math.hypot(n1.x - o.x, n1.y - o.y) || 1; const lv = Math.hypot(n3.x - o.x, n3.y - o.y) || 1;
+    const ou = { x: (n1.x - o.x) / lu, y: (n1.y - o.y) / lu }; const ov = { x: (n3.x - o.x) / lv, y: (n3.y - o.y) / lv };
+    const d = { x: p.x - o.x, y: p.y - o.y };
+    const a = d.x * ou.x + d.y * ou.y; const b = d.x * ov.x + d.y * ov.y;
+    out[index] = { x: r1(o.x + ou.x * a + ov.x * b), y: r1(o.y + ou.y * a + ov.y * b) };
+    out[(index + 1) % n] = { x: r1(o.x + ou.x * a), y: r1(o.y + ou.y * a) };
+    out[(index + 3) % n] = { x: r1(o.x + ov.x * b), y: r1(o.y + ov.y * b) };
+    return out;
+  }
+  const a = poly[index]; const b = poly[(index + 1) % n];
+  const l = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+  const nrm = { x: (b.y - a.y) / l, y: -(b.x - a.x) / l };
+  const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  const t = (p.x - mid.x) * nrm.x + (p.y - mid.y) * nrm.y;
+  out[index] = { x: r1(a.x + nrm.x * t), y: r1(a.y + nrm.y * t) };
+  out[(index + 1) % n] = { x: r1(b.x + nrm.x * t), y: r1(b.y + nrm.y * t) };
+  return out;
+}
+
+/** Angle (degrees, 0 to 180) of every edge of the lot, setback line and buildings: what a rotating hardstand snaps to. */
+export function edgeAngles(ctx) {
+  const set = [];
+  const rings = [ctx.lot, ctx.envelope, ...(ctx.buildings || []).map((b) => b.ring)].filter(Boolean);
+  for (const ring of rings) ring.forEach((a, i) => { const b = ring[(i + 1) % ring.length]; if (Math.hypot(b.x - a.x, b.y - a.y) > 1000) set.push((((Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI) % 180 + 180) % 180); });
+  return set;
+}
+
+/** Snap a polygon's long edge angle change: turns `deg` into a nicer turn when the result lines up with an edge or a 15 degree step. */
+export function snapTurn(poly, deg, ctx, { alt = false, shift = false } = {}) {
+  if (alt) return Math.round(deg * 10) / 10;
+  if (shift) return Math.round(deg / 15) * 15;
+  const base = longestEdgeAngle(poly);
+  const want = base + deg;
+  for (const e of edgeAngles(ctx)) for (const k of [0, 90]) {
+    let d = (((want - e - k) % 180) + 270) % 180 - 90;
+    if (Math.abs(d) <= 2.5) return Math.round((deg - d) * 10) / 10;
+  }
+  return Math.round(deg * 2) / 2;
+}
+
+/** Set (or merge into) the car park fill of a drawn area; `patch` null removes the fill. Returns the stored settings or null. */
+export function setHardstandCarpark(c, id, patch) {
+  const e = entry(c, id);
+  if (!e) throw new Error('That hardstand area is gone.');
+  if (e.road) throw new Error('A road cannot hold a car park. Draw an area.');
+  if (patch === null) { delete e.carpark; return null; }
+  const merged = { ...CARPARK_DEFAULTS, ...(e.carpark || {}), ...patch };
+  if (patch.bayAngle !== undefined) { merged.removed = []; merged.shifts = {}; }
+  e.carpark = { ...merged, removed: [...(merged.removed || [])], shifts: { ...(merged.shifts || {}) } };
+  cpConfig(e.carpark);
+  return e.carpark;
+}
+
+/** Slide one bay row along its length by dMm (keeps the sum of earlier slides). */
+export function shiftBayRow(c, id, row, dMm) {
+  const e = entry(c, id);
+  if (!e?.carpark) throw new Error('That area has no car park fill.');
+  const shifts = { ...(e.carpark.shifts || {}) };
+  shifts[row] = r1((Number(shifts[row]) || 0) + dMm);
+  e.carpark = { ...e.carpark, shifts };
+}
+
+/** Delete (or bring back) one bay by its key "row:col". */
+export function removeBay(c, id, key, back = false) {
+  const e = entry(c, id);
+  if (!e?.carpark) throw new Error('That area has no car park fill.');
+  const set = new Set(e.carpark.removed || []);
+  if (back) set.delete(key); else set.add(key);
+  e.carpark = { ...e.carpark, removed: [...set] };
+}
+
+/** Turn a polygon into a rotated copy of itself to the long edge angle (used to align a car park with its hardstand). */
+export const hardstandAngle = (poly) => longestEdgeAngle(poly);

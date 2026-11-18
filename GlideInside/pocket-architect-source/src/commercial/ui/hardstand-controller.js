@@ -8,7 +8,10 @@ import { commercialEdit } from '../mode.js';
 import * as HS from '../catalogue/pavements/hardstand.js';
 import { pavementById } from '../catalogue/pavements/pavements.js';
 import * as R from '../catalogue/pavements/roads.js';
-import { hsState, setHsState, HS_MODES, typeLabel } from './hardstand-state.js';
+import { hsState, setHsState, HS_MODES, CP_MODES, typeLabel } from './hardstand-state.js';
+import { carparkLayoutFor, carparkOf } from '../catalogue/pavements/logic.js';
+import { carparkMarkings, liveCarpark, bayAt, cpConfig } from '../catalogue/pavements/carpark.js';
+import { rotationStep } from '../../editor2d/tools-meta.js';
 
 const isSw = (id) => String(id || '').startsWith('sw:');
 
@@ -22,7 +25,7 @@ const fmtA = (v) => `${(Math.round(v * 10) / 10).toFixed(1)} m2`;
  * createHardstandController({ store, scale, toast, redraw }): scale() is pixels per plan mm; toast(message, { kind, action }) reports;
  * redraw() asks the host to repaint after the draft changes.
  */
-export function createHardstandController({ store, scale, toast = () => {}, redraw = () => {} }) {
+export function createHardstandController({ store, scale, toast = () => {}, redraw = () => {}, carparkTool = false }) {
   let drag = null; // { kind: 'rect' | 'vertex' | 'move', ... }
   let pts = []; // polygon in progress
   let hover = null; // last snap result
@@ -59,6 +62,11 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
   let roadPts = []; // road in progress
   let roadRubber = null;
 
+  const setLive = (id) => { liveCarpark.id = id; };
+  const cpOpts = () => ({ ...hsState.cp });
+  /** The laid out car park of the selected area as stored, or null. */
+  const selectedCarpark = () => { const a = selectedArea(); return a?.carpark ? carparkOf(store.project.commercial).find((x) => x.id === a.id) || null : null; };
+
   function say(msg, kind = 'ok', extra = {}) { try { toast(msg, { kind, ...extra }); } catch { /* no toast host */ } }
 
   function edit(label, fn) {
@@ -84,8 +92,10 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
     if (res.clipped) parts.push('Cut off at the lot boundary.');
     const w = polys.flatMap((p) => HS.drawnWarnings(p, ctx).buildings);
     if (w.length) parts.push(`Crosses ${[...new Set(w)].join(', ')}. It is not blocked, check the layout.`);
+    const placed = carparkOf(store.project.commercial).find((x) => x.id === ids[0]);
+    if (placed) parts.push(`${placed.layout.count} bays, ${placed.layout.accessible} accessible.`);
     say(parts.join(' '), w.length ? 'warn' : 'ok');
-    const prompts = HS.markingPrompts(store.project.commercial, ids);
+    const prompts = placed ? [] : HS.markingPrompts(store.project.commercial, ids);
     if (prompts[0]) {
       const pr = prompts[0];
       say(pr.text, 'info', { action: { label: 'Add marking', onClick: () => edit('Add line marking', (c) => HS.addPromptMarking(c, pr)) }, timeout: 9000 });
@@ -93,14 +103,14 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
   }
 
   /** Add one or more polygons of the current type as one undo step. */
-  function create(polys, label = 'Add hardstand') {
+  function create(polys, label = 'Add hardstand', carpark = null) {
     if (!isOn()) return null;
     const ctx = ctxFor();
     const lot = lotRing();
     const res = edit(label, (c) => {
       const all = { ids: [], clipped: false };
       for (const polygon of polys) {
-        const r = HS.addHardstand(c, { type: hsState.type, polygon, lot });
+        const r = HS.addHardstand(c, { type: hsState.type, polygon, lot, carpark });
         all.ids.push(...r.ids); all.clipped = all.clipped || r.clipped;
       }
       return all;
@@ -142,6 +152,46 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
     redraw();
   }
 
+  /** Fill a drawn area with a car park layout (aligned to its longest edge unless an angle is set), or change its options. */
+  function applyCarpark(id = hsState.selected, patch = null) {
+    if (!id || isSw(id)) return null;
+    const res = edit(patch && selectedArea()?.carpark ? 'Change car park' : 'Fill with car park', (c) => HS.setHardstandCarpark(c, id, patch ? patch : cpOpts()));
+    if (res) {
+      const found = carparkOf(store.project.commercial).find((x) => x.id === id);
+      if (found) say(`Car park: ${found.layout.count} bays, ${found.layout.accessible} accessible, bays run at ${Math.round(found.layout.angleDeg)} degrees.`, 'ok');
+    }
+    redraw();
+    return res;
+  }
+  function clearCarpark(id = hsState.selected) { const r = edit('Remove car park fill', (c) => { HS.setHardstandCarpark(c, id, null); return true; }); hsState.activeBay && setHsState({ activeBay: null }); redraw(); return r; }
+  function deleteBay(key = hsState.activeBay) {
+    const a = selectedArea();
+    if (!a?.carpark || !key) return false;
+    const r = edit('Delete bay', (c) => { HS.removeBay(c, a.id, key); return true; });
+    setHsState({ activeBay: null }); redraw();
+    return !!r;
+  }
+  function restoreBays(id = hsState.selected) {
+    const a = list().find((x) => x.id === id);
+    if (!a?.carpark) return;
+    edit('Restore bays', (c) => { const e = c.pavements.find((o) => o.id === id); e.carpark = { ...e.carpark, removed: [], shifts: {} }; return true; });
+    redraw();
+  }
+  /** Turn the selected area by `deg` about its centre (one undo step). */
+  function rotateSelected(deg) {
+    const a = selectedArea();
+    if (!a || a.road) return;
+    commitEdit(a.id, HS.rotatePolygon(a.polygon, deg), 'Rotate hardstand');
+  }
+  /** Drop a car park layout at a plan point: onto the hardstand under it, else a 30 m by 20 m car park centred there. */
+  function dropCarpark(w) {
+    const hit = HS.hardstandAt(store.project.commercial, w);
+    if (hit && !hit.road) { setHsState({ selected: hit.id, mode: 'edit' }); return applyCarpark(hit.id); }
+    const poly = HS.rectPolygon({ x: Math.round(w.x - 15000), y: Math.round(w.y - 10000) }, { x: Math.round(w.x + 15000), y: Math.round(w.y + 10000) });
+    const r = create([poly], 'Add car park', cpOpts());
+    if (r?.ids?.length) setHsState({ mode: 'edit' });
+    return r;
+  }
   function retype(id, type) { edit('Change hardstand type', (c) => HS.setHardstandType(c, id, type)); redraw(); }
   function duplicate(id = hsState.selected) {
     if (!id) return null;
@@ -176,10 +226,21 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
         const w = HS.drawnWarnings(road.polygon, ctx).buildings;
         if (w.length && kind.id !== 'pavement') parts.push(`Crosses ${[...new Set(w)].join(', ')}. It is not blocked, check the layout.`);
         say(parts.join(' '), w.length ? 'warn' : 'ok');
+        offerMerge(res.ids[0]);
       }
     }
     redraw();
     return res;
+  }
+
+  /** When a road lies mostly on an existing road or driveway, offer to merge it (never two parallel strips). */
+  function offerMerge(id) {
+    const dup = R.duplicateRoad(store.project.commercial, id);
+    if (!dup) return null;
+    say(`This lies ${Math.round(dup.fraction * 100)}% on an existing ${dup.generated ? 'driveway or road' : 'road'}. Merge them so there are not two strips side by side.`, 'info', {
+      action: { label: 'Merge with existing', onClick: () => { const r = edit('Merge with existing road', (c) => R.mergeRoadInto(c, id, dup.id, lotRing())); if (r) { setHsState({ selected: dup.generated ? null : dup.id }); say('Merged. One strip remains.', 'ok'); } redraw(); } }, timeout: 12000,
+    });
+    return dup;
   }
 
   function commitRoad(id, patch, label) {
@@ -240,6 +301,33 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
     return { x: Math.round(from.x + Math.cos(a) * l), y: Math.round(from.y + Math.sin(a) * l) };
   }
 
+  const rotateHandle = (poly) => { const c = HS.centreOf(poly); const top = Math.min(...poly.map((q) => q.y)); return { x: Math.round(c.x), y: Math.round(top - 34 * mmPerPx()) }; };
+  const angleOf = (c, p) => (Math.atan2(p.y - c.y, p.x - c.x) * 180) / Math.PI;
+
+  /** A press on a handle of the selected area (rotate ring, corner, edge dot, vertex, midpoint): starts that drag and returns true. */
+  function startHandle(w, mods) {
+    const sel = selectedArea();
+    if (!sel || sel.road) return false;
+    const tol = tolMm();
+    const poly = sel.polygon;
+    const base = { id: sel.id, polygon: poly.map((q) => ({ ...q })), moved: false, screen: mods.screen || null };
+    const rh = rotateHandle(poly);
+    if (dist(w, rh) <= tol * 1.4) { const c = HS.centreOf(poly); drag = { ...base, kind: 'rotate', centre: c, a0: angleOf(c, w), deg: 0 }; return true; }
+    const rect = HS.isRect(poly);
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i]; const b = poly[(i + 1) % poly.length];
+      const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      if (dist(w, a) <= tol) { drag = { ...base, kind: rect ? 'corner' : 'vertex', index: i }; activeVertex = i; return true; }
+      if (dist(w, mid) <= tol * 0.8 && dist(a, b) > tol * 3) {
+        if (rect) { drag = { ...base, kind: 'edge', index: i }; return true; }
+        const np = poly.map((q) => ({ ...q }));
+        np.splice(i + 1, 0, { x: Math.round(mid.x), y: Math.round(mid.y) });
+        drag = { ...base, kind: 'vertex', polygon: np, index: i + 1, inserted: true }; activeVertex = i + 1; return true;
+      }
+    }
+    return false;
+  }
+
   /** Mouse or pen press at plan point w. Returns false when the press is not for the tool (the host may pan). */
   function pointerDown(w, mods = {}) {
     if (!isOn()) return false;
@@ -253,7 +341,8 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
       redraw();
       return true;
     }
-    if (mode === 'rect') {
+    if (!(mode === 'poly' && pts.length) && startHandle(w, mods)) return true;
+    if (mode === 'rect' || mode === 'cp-rect') {
       const s = snap(w, mods);
       drag = { kind: 'rect', p0: s, along: HS.edgeDirection(s), p1: s, moved: false, screen: mods.screen || null };
       hover = s;
@@ -273,6 +362,13 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
       fillAt(w);
       return true;
     }
+    if (mode === 'cp-apply') {
+      const hit = HS.hardstandAt(store.project.commercial, w);
+      if (!hit || hit.road) { say('Click a hardstand area to fill it with bays, or drag a rectangle with the Drag out mode.', 'warn'); return true; }
+      setHsState({ selected: hit.id, mode: 'edit' });
+      applyCarpark(hit.id);
+      return true;
+    }
     // edit
     const sel = selectedArea();
     const road = sel?.road ? roadOf(sel.id) : null;
@@ -289,25 +385,19 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
         if (hd.kind === 'width') { drag = { kind: 'rwidth', id: road.id, seg: hd.index, widthMm: road.widthMm, moved: false, screen: mods.screen || null }; return true; }
       }
     }
-    if (sel && !road) {
-      const tol = tolMm();
-      const poly = sel.polygon;
-      for (let i = 0; i < poly.length; i++) {
-        const a = poly[i]; const b = poly[(i + 1) % poly.length];
-        const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-        if (dist(w, a) <= tol) { drag = { kind: 'vertex', id: sel.id, index: i, polygon: poly.map((q) => ({ ...q })), moved: false, screen: mods.screen || null }; activeVertex = i; return true; }
-        if (dist(w, mid) <= tol * 0.8 && dist(a, b) > tol * 3) {
-          const np = poly.map((q) => ({ ...q }));
-          np.splice(i + 1, 0, { x: Math.round(mid.x), y: Math.round(mid.y) });
-          drag = { kind: 'vertex', id: sel.id, index: i + 1, polygon: np, moved: false, inserted: true, screen: mods.screen || null };
-          activeVertex = i + 1;
-          return true;
-        }
+    if (sel?.carpark && !road) {
+      const sc = selectedCarpark();
+      const bay = sc && bayAt(sc.layout, w);
+      if (bay) {
+        setHsState({ activeBay: bay.key });
+        drag = { kind: 'bayrow', id: sel.id, row: bay.row, start: w, u: sc.layout.dims.uAxis, d: 0, moved: false, base: Number(cpConfig(sel.carpark).shifts[bay.row]) || 0, screen: mods.screen || null };
+        redraw();
+        return true;
       }
     }
     const hit = HS.hardstandAt(store.project.commercial, w);
     if (hit) {
-      setHsState({ selected: hit.id });
+      setHsState({ selected: hit.id, activeBay: null });
       activeVertex = null;
       // snap the move through the corner of the area nearest the press
       let ref = hit.polygon[0];
@@ -324,11 +414,39 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
 
   const movedEnough = (d, mods) => d.moved || !d.screen || !mods.screen || Math.hypot(mods.screen.x - d.screen.x, mods.screen.y - d.screen.y) >= DRAG_PX;
 
+  let live = null; // { id, layout } the car park laid out for the shape being dragged
+  function liveFor(id, polygon, patch = null) {
+    const a = list().find((x) => x.id === id);
+    if (!a?.carpark) { live = null; setLive(null); return; }
+    live = { id, layout: carparkLayoutFor(store.project.commercial, id, polygon || a.polygon, patch) };
+    setLive(id);
+  }
+
   function pointerMove(w, mods = {}) {
     if (!isOn()) return;
     const mode = hsState.mode;
     if (drag) {
-      if (drag.kind === 'rect') {
+      if (drag.kind === 'corner' || drag.kind === 'edge') {
+        if (!movedEnough(drag, mods)) return;
+        drag.moved = true;
+        const s = snap(w, mods, drag.id);
+        drag.work = HS.resizeRect(drag.polygon, drag.kind, drag.index, s);
+        hover = s;
+        liveFor(drag.id, drag.work);
+      } else if (drag.kind === 'rotate') {
+        if (!movedEnough(drag, mods)) return;
+        drag.moved = true;
+        const raw = ((angleOf(drag.centre, w) - drag.a0 + 540) % 360) - 180;
+        drag.deg = HS.snapTurn(drag.polygon, raw, ctxFor(drag.id), mods);
+        drag.work = HS.rotatePolygon(drag.polygon, drag.deg, drag.centre);
+        hover = null;
+        liveFor(drag.id, drag.work);
+      } else if (drag.kind === 'bayrow') {
+        if (!movedEnough(drag, mods)) return;
+        drag.moved = true;
+        drag.d = Math.round(((w.x - drag.start.x) * drag.u.x + (w.y - drag.start.y) * drag.u.y) / 100) * 100;
+        liveFor(drag.id, null, { shifts: { ...(cpConfig(selectedArea()?.carpark).shifts || {}), [drag.row]: drag.base + drag.d } });
+      } else if (drag.kind === 'rect') {
         if (!movedEnough(drag, mods)) return;
         drag.moved = true;
         let s = snap(w, mods);
@@ -348,6 +466,7 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
         const s = snap(w, mods, drag.id);
         drag.polygon[drag.index] = { x: s.x, y: s.y };
         hover = s;
+        liveFor(drag.id, drag.polygon);
       } else if (drag.kind === 'rpoint') {
         if (!movedEnough(drag, mods)) return;
         drag.moved = true;
@@ -367,6 +486,7 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
         const s = snap(want, mods, drag.id);
         drag.dx = s.x - drag.ref.x; drag.dy = s.y - drag.ref.y;
         hover = s;
+        liveFor(drag.id, drag.polygon.map((q) => ({ x: q.x + drag.dx, y: q.y + drag.dy })));
       }
       redraw();
       return;
@@ -376,7 +496,7 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
       if (roadPts.length) s = { ...s, ...R.lockTo15(s, roadPts[roadPts.length - 1], mods.shift && s.kind !== 'door' && s.kind !== 'frontage') };
       hover = s; roadRubber = roadPts.length ? s : null;
       redraw();
-    } else if (mode === 'rect' || mode === 'poly') {
+    } else if (mode === 'rect' || mode === 'poly' || mode === 'cp-rect') {
       let s = snap(w, mods);
       if (mode === 'poly') { s = lockAngle(s, pts[pts.length - 1], mods); rubber = pts.length ? s : null; }
       hover = s;
@@ -387,12 +507,21 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
   function pointerUp(w, mods = {}) {
     if (!drag) return;
     const d = drag;
-    drag = null;
+    drag = null; live = null; setLive(null);
     if (!d.moved) { redraw(); return; }
     if (d.kind === 'rect') {
       const poly = HS.rectPolygon(d.p0, d.p1, d.along);
       if (HS.areaM2(poly) < MIN_M2) { say('That area is too small. Drag across a larger area.', 'warn'); redraw(); return; }
-      create([poly], 'Add hardstand rectangle');
+      if (hsState.mode === 'cp-rect') {
+        const r = create([poly], 'Add car park', cpOpts());
+        if (r?.ids?.length) setHsState({ mode: 'edit' });
+      } else create([poly], 'Add hardstand rectangle');
+    } else if (d.kind === 'corner' || d.kind === 'edge') {
+      commitEdit(d.id, d.work, 'Resize hardstand');
+    } else if (d.kind === 'rotate') {
+      commitEdit(d.id, d.work, 'Rotate hardstand');
+    } else if (d.kind === 'bayrow') {
+      if (d.d) { edit('Slide bay row', (c) => HS.shiftBayRow(c, d.id, d.row, d.d)); redraw(); }
     } else if (d.kind === 'vertex') {
       commitEdit(d.id, d.polygon, d.inserted ? 'Add hardstand corner' : 'Reshape hardstand');
     } else if (d.kind === 'rpoint') {
@@ -413,6 +542,7 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
     if (hsState.mode !== 'edit') return;
     const sel = selectedArea();
     if (!sel) return;
+    if (sel.carpark && !sel.road) { const sc = selectedCarpark(); const bay = sc && bayAt(sc.layout, w); if (bay) { deleteBay(bay.key); return; } }
     if (sel.road) {
       const road = roadOf(sel.id);
       const pt = road && R.roadHandles(road).find((hd) => hd.kind === 'point' && dist(hd, w) <= tolMm());
@@ -430,7 +560,7 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
   }
 
   function cancel() {
-    if (drag) { drag = null; redraw(); return true; }
+    if (drag) { drag = null; live = null; setLive(null); redraw(); return true; }
     if (pts.length) { pts = []; rubber = null; redraw(); return true; }
     if (roadPts.length) { roadPts = []; roadRubber = null; redraw(); return true; }
     return false;
@@ -451,8 +581,10 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
       return false;
     }
     if (k === 'l' && !e.altKey) return false; // L opens the Road or pavement tool (its own button), handled by the editor
-    const mode = HS_MODES.find((m) => m.key.toLowerCase() === k);
+    const mode = [...HS_MODES, ...CP_MODES].filter((m) => m.id !== 'edit' || true).find((m) => m.key.toLowerCase() === k && (!['cp-rect', 'cp-apply'].includes(m.id) || carparkTool));
     if (mode && !e.altKey) { cancel(); setHsState({ mode: mode.id }); redraw(); return true; }
+    const turn = rotationStep(e);
+    if (turn && selectedArea() && !selectedArea().road) { rotateSelected(turn); return true; }
     if (k === 'Backspace' && hsState.mode === 'poly' && pts.length) { pts.pop(); rubber = pts.length ? rubber : null; redraw(); return true; }
     if (k === 'Backspace' && hsState.mode === 'road' && roadPts.length) { roadPts.pop(); roadRubber = roadPts.length ? roadRubber : null; redraw(); return true; }
     if (isSw(hsState.selected) && selectedGenerated()) {
@@ -461,6 +593,7 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
     }
     const sel = selectedArea();
     if (!sel) return false;
+    if ((k === 'Delete' || k === 'Backspace') && sel.carpark && hsState.activeBay) { deleteBay(); return true; }
     if (k === 'Delete' || k === 'Backspace') {
       const nPts = sel.road ? roadOf(sel.id)?.centre.length : sel.polygon.length;
       if (activeVertex != null && nPts > (sel.road ? 2 : 3) && !sel.road) removeVertexOf(sel.id, activeVertex);
@@ -526,6 +659,11 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
       out.ring = drag.polygon; out.ghost = sel?.polygon || null;
       out.readout = fmtA(HS.areaM2(out.ring));
       out.labels = sideLabels(out.ring);
+    } else if ((drag?.kind === 'corner' || drag?.kind === 'edge' || drag?.kind === 'rotate') && drag.moved) {
+      out.ring = drag.work; out.ghost = sel?.polygon || null;
+      const m = HS.measure(out.ring);
+      out.readout = drag.kind === 'rotate' ? `Turned ${drag.deg.toFixed(1)} degrees, ${fmtA(m.areaM2)}` : m.w != null ? `${fmtM(m.w)} x ${fmtM(m.d)}, ${fmtA(m.areaM2)}` : fmtA(m.areaM2);
+      out.labels = sideLabels(out.ring);
     } else if (drag?.kind === 'move' && drag.moved) {
       out.ring = drag.polygon.map((q) => ({ x: q.x + drag.dx, y: q.y + drag.dy })); out.ghost = sel?.polygon || null;
       out.readout = fmtA(HS.areaM2(out.ring));
@@ -548,13 +686,30 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
         if (hd.kind === 'mid' && dist(live.centre[hd.index], live.centre[hd.index + 1]) * scale() < 36) continue;
         out.handles.push({ x: hd.x, y: hd.y, kind: hd.kind === 'point' ? 'vertex' : hd.kind, index: hd.index, active: hd.kind === 'point' && hd.index === activeVertex });
       }
-    } else if (hsState.mode === 'edit' && sel && !sel.road && !(drag && drag.moved && drag.kind === 'move')) {
-      const poly = drag?.kind === 'vertex' ? drag.polygon : sel.polygon;
+    } else if (hsState.mode !== 'road' && !(hsState.mode === 'poly' && pts.length) && sel && !sel.road && !(drag && drag.moved && (drag.kind === 'move' || drag.kind === 'bayrow'))) {
+      const poly = drag && drag.moved && drag.work ? drag.work : drag?.kind === 'vertex' ? drag.polygon : sel.polygon;
+      const rect = HS.isRect(poly);
       poly.forEach((p, i) => {
         out.handles.push({ x: p.x, y: p.y, kind: 'vertex', index: i, active: i === activeVertex });
         const q = poly[(i + 1) % poly.length];
-        if (dist(p, q) * scale() > 36) out.handles.push({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2, kind: 'mid', index: i });
+        if (dist(p, q) * scale() > 36) out.handles.push({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2, kind: 'mid', index: i, rect });
       });
+      const rh = rotateHandle(poly);
+      const top = Math.min(...poly.map((q) => q.y));
+      out.handles.push({ x: rh.x, y: rh.y, kind: 'rotate', stemX: rh.x, stemY: top });
+    }
+    // Car park: the layout as it stands (or live while the area is dragged, rotated or a row slid), entry gaps and the picked bay
+    const cpSel = sel?.carpark && !sel.road ? sel : null;
+    if (cpSel) {
+      const lay = live && live.id === cpSel.id && live.layout ? live.layout : selectedCarpark()?.layout || null;
+      if (lay) {
+        out.cp = { count: lay.count, accessible: lay.accessible, required: lay.required, angleDeg: lay.angleDeg };
+        if (live) { out.cpItems = carparkMarkings(cpSel.id, lay); out.cpIslands = lay.islands; }
+        out.cpEntries = lay.entries.map((e) => e.clear);
+        const bay = hsState.activeBay ? lay.bays.find((b) => b.key === hsState.activeBay) : null;
+        if (bay) out.cpBay = bay.poly;
+        if (drag?.moved && live) out.readout = `${out.readout ? `${out.readout}, ` : ''}${lay.count} bays`;
+      }
     }
     return out;
   }
@@ -564,7 +719,7 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
   return {
     pointerDown, pointerMove, pointerUp, dblClick, keyDown, cancel, draft, reset,
     create, fillAt, finishPoly, finishRoad, commitRoad, setRoadWidth, setRoadKind, removeGenerated, makeEditable, selectedGenerated, roadOf, retype, duplicate, remove, removeVertexOf, nudge,
-    selectedArea, list,
+    selectedArea, selectedCarpark, applyCarpark, clearCarpark, deleteBay, restoreBays, rotateSelected, dropCarpark, list,
     get busy() { return !!drag || pts.length > 0 || roadPts.length > 0; },
     get activeVertex() { return activeVertex; },
     hint: () => HS_MODES.find((m) => m.id === hsState.mode)?.hint || '',
