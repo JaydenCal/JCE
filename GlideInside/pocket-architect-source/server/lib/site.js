@@ -50,7 +50,7 @@ import {
   ringsToPolygons, polygonArea, ringCentroid, interiorPoint, bboxOf, formatPlan, formatLotLabel, round, mgaToWeb,
 } from '../../src/site/geo.js';
 import { readTiff } from '../../src/site/tiff.js';
-import { dedupeRaster, reducedIndex } from '../../src/site/dem-dedupe.js';
+import { dedupeRaster } from '../../src/site/dem-dedupe.js';
 import { contourLines, fillGaps, gridRange, smoothTerraces } from '../../src/site/contours.js';
 import { clipPolygonsToBox } from '../../src/site/overlays.js';
 import { overlaySourcesFor } from './site-overlay-sources.js';
@@ -894,7 +894,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     major = Math.max(minor, Math.round(major / minor) * minor);
     const [oe, on] = (url.searchParams.get('origin') || '').split(',').map(Number);
     const origin = Number.isFinite(oe) && Number.isFinite(on) ? { e: oe, n: on } : { e: round((lotBox.minE + lotBox.maxE) / 2, 3), n: round((lotBox.minN + lotBox.maxN) / 2, 3) };
-    const key = `contours:v2:${state}:${srid}:${[lotBox.minE, lotBox.minN, lotBox.maxE, lotBox.maxN].map((v) => round(v, 1)).join(',')}:${buffer}:${minor}:${major}:${origin.e},${origin.n}:${url.searchParams.get('cell') || ''}`;
+    const key = `contours:v3:${state}:${srid}:${[lotBox.minE, lotBox.minN, lotBox.maxE, lotBox.maxN].map((v) => round(v, 1)).join(',')}:${buffer}:${minor}:${major}:${origin.e},${origin.n}:${url.searchParams.get('cell') || ''}`;
     const hit = await bytesCache.get(key);
     if (hit) return new Response(hit.body, { status: 200, headers: { ...hit.headers, 'cache-control': 'public, max-age=86400' } });
     const result = await buildContours({ state, srid, zone, lotBox, buffer, minor, major, origin, cellParam: Number(url.searchParams.get('cell')) || 0 });
@@ -947,10 +947,9 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     } catch (e) {
       throw new HttpError('SITE_UPSTREAM', 'The elevation service did not return a readable raster.', { detail: String(e?.message).slice(0, 120), head: String(new TextDecoder().decode(raster.bytes.subarray(0, 100))).replace(/[^\x20-\x7e]/g, '') });
     }
-    // NSW: the service repeats source rows and columns every few pixels (web mercator pixel narrower than the 5 m ground cell); collapse them.
+    // NSW: the service repeats source rows and columns every few pixels (web mercator pixel narrower than the 5 m ground cell); repair them per pixel (runs of equal neighbours become one sample at the run centre).
     const dd = nsw ? dedupeRaster(tif, tif.nodata) : null;
-    const src = dd && dd.changed ? dd : null;
-    const sampleTif = src || tif;
+    const sampleTif = dd && dd.changed ? dd : tif;
     // Resample onto the MGA grid. Column 0 is the west edge, row 0 the north edge.
     const values = new Array(cols * rows);
     let valid = 0;
@@ -959,12 +958,8 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         const e = box.minE + i * cell;
         const n = box.maxN - j * cell;
         const wxy = mgaToWeb(e, n, zone);
-        let fx = (wxy.x - bboxWeb[0]) / px - 0.5;
-        let fy = (bboxWeb[3] - wxy.y) / px - 0.5;
-        if (src) {
-          fx = reducedIndex(src.xs, fx);
-          fy = reducedIndex(src.ys, fy);
-        }
+        const fx = (wxy.x - bboxWeb[0]) / px - 0.5;
+        const fy = (bboxWeb[3] - wxy.y) / px - 0.5;
         const z = sampleRaster(sampleTif, fx, fy, tif.nodata);
         values[j * cols + i] = z;
         if (z != null) valid++;
