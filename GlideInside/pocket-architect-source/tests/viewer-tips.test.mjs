@@ -24,7 +24,7 @@ test('shown on first load; Do not show again is remembered; the ? button resets 
   assert.equal(writeTipsPref('off', bad), false);
 });
 
-test('the viewer mounts the tips and the style collapses to one line when compact', () => {
-  assert.match(readFileSync(new URL('../src/lotcard/lot-card.js', import.meta.url), 'utf8'), /createTips\(\)/);
+test('the viewer does not mount the How to panel (owner 18/11/2026), the helper style still collapses when compact', () => {
+  assert.doesNotMatch(readFileSync(new URL('../src/lotcard/lot-card.js', import.meta.url), 'utf8'), /createTips\(\)/);
   assert.match(TIPS_CSS, /\.lc-embed\.is-compact \.lc-tips/);
 });

@@ -10,7 +10,7 @@ import { houseStats, areaBreakdown, sizeLabel } from '../../portal/house-stats.j
 import { schemeById, effectiveSchemeId, schemeLine } from '../../model/colour-schemes.js';
 import { BRAND, LOGO_PNG } from '../brand/logo.js';
 import { imageInfo, northArrow, placeImage, polygon, polyline, ink } from './pdf.js';
-import { PEN, clean, wrap, hatchSegments, clipPolygon } from './eng/kit.js';
+import { PEN, clean, wrap, hatchSegments, clipPolygon, withSuperscripts } from './eng/kit.js';
 import { OVERLAY_STYLE } from '../../site/overlays.js';
 import { ddmmyyyy, projectTitle, attribution } from './eng/brand.js';
 import { siteAreaOf, fmtArea } from './eng/area.js';
@@ -296,7 +296,7 @@ function setbackRows(project) {
 export async function toSitingReport(project, options = {}) {
   const JsPDF = options.jsPDF;
   if (!JsPDF) throw new Error('jsPDF is required to build the siting report.');
-  const doc = new JsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+  const doc = withSuperscripts(new JsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true })); // m² prints with a raised 2 (some viewers lack the glyph)
   const brand = reportBrand(options);
   const dateText = options.date instanceof Date ? ddmmyyyy(options.date) : options.date || ddmmyyyy(new Date());
   const lot = project.site?.lot || null;
