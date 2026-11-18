@@ -75,7 +75,7 @@ export function renderHouses(host, { api, me, appLinkFor = appLink, designHref =
       saved = null;
     }
     if (!saved?.levels) {
-      openDialog({ title: 'Save the open design', size: 'sm', body: h('p', null, 'No design is open in Glide Inside Residential in this browser yet. Open Glide Inside Residential, draw or change a design, then come back. You can also import a design file or start from the Glide Inside library.'),
+      openDialog({ title: 'Save the open design', size: 'sm', body: h('p', null, 'No design is open in Glide Inside Residential in this browser yet. Open Glide Inside Residential, draw or change a design, then come back. You can also import a design file.'),
         footer: (d) => [h('a', { class: 'pp-btn pp-btn--primary', href: appLinkFor(), target: '_blank', rel: 'noopener' }, 'Open Glide Inside Residential'), h('button', { class: 'pp-btn', type: 'button', onclick: () => d.close() }, 'Close')] });
       return;
     }
@@ -110,13 +110,13 @@ export function renderHouses(host, { api, me, appLinkFor = appLink, designHref =
   }
 
   host.append(
-    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'House designs'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Your default layouts. Clients you give access to can place these on their lot. The Glide Inside library is hidden from clients unless you tick Show Glide Inside sample designs to clients.')),
+    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'House designs'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Your default layouts. Clients you give access to can place these on their lot. Clients only ever see your own designs.')),
       h('a', { class: 'pp-btn pp-btn--primary pp-btn--lg', id: 'design-on-lot-houses', href: designHref(), target: '_blank', rel: 'noopener' }, icon('open', 18), 'Design on a lot')),
     canWrite ? h('div', { class: 'pp-add' },
       h('span', { class: 'pp-add-label' }, 'Add a house design'),
       h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: saveCurrent }, icon('plus', 16), 'Save the open design'),
       h('button', { class: 'pp-btn', type: 'button', onclick: importFile }, icon('upload', 16), 'Import a design file'),
-      h('button', { class: 'pp-btn', type: 'button', onclick: () => fromGlide().catch((e) => toast(errorMessage(e), { kind: 'error' })) }, 'Start from the Glide Inside library')) : null,
+      me?.org?.internal === true ? h('button', { class: 'pp-btn', type: 'button', onclick: () => fromGlide().catch((e) => toast(errorMessage(e), { kind: 'error' })) }, 'Start from the Glide Inside library') : null) : null,
     h('div', { class: 'pp-filters' },
       h('label', { class: 'pp-inline' }, h('span', null, 'Search'), h('input', { type: 'search', placeholder: 'Design name', oninput: (e) => { state.q = e.target.value; paint(); } })),
       h('label', { class: 'pp-inline' }, h('span', null, 'Bedrooms'), h('select', { onchange: (e) => { state.beds = e.target.value; paint(); } }, h('option', { value: '' }, 'Any'), ...['2', '3', '4', '5'].map((n) => h('option', { value: n }, n === '5' ? '5 or more' : n)))),

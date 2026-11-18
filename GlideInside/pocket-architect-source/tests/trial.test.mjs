@@ -11,6 +11,7 @@ import { hmacSha256 } from '../server/lib/entitlement.js';
 import { abnValid } from '../server/lib/portal.js';
 import { orgState, trialEndFor, extendedEnd, notificationText } from '../server/lib/trial.js';
 import { sydneyDayStartPlus, ddmmyyyyTime } from '../src/portal/billing.js';
+import { createFromTemplate } from '../src/catalogue/templates.js';
 
 let DatabaseSync = null;
 try {
@@ -378,10 +379,9 @@ for (const [label, d1] of stores) {
     assert.equal(me.account.status, 'trial');
     assert.equal(me.account.canIssueClients, false);
     assert.equal(me.ai.monthlyCap, 300, 'the monthly AI allowance applies');
-    // Everything else works: house library, Glide library, branding, projects.
-    assert.equal((await org.admin.get('/portal/glide-library')).status, 200);
-    const glide = (await org.admin.get('/portal/glide-library')).data[0];
-    assert.equal((await org.admin.post('/portal/houses', { fromGlideId: glide.id })).status, 200);
+    // Everything else works: house library, branding, projects. Builders get no Glide library (own designs only).
+    assert.deepEqual((await org.admin.get('/portal/glide-library')).data, []);
+    assert.equal((await org.admin.post('/portal/houses', { name: 'Trial house', project: createFromTemplate('granny_flat') })).status, 200);
     assert.equal((await org.admin.get('/portal/houses')).data.length, 1);
     assert.equal((await org.admin.put('/portal/org/branding', { displayName: 'Coastal Homes' })).status, 200);
     assert.equal((await org.admin.post('/portal/ai/token')).status, 200);
@@ -417,14 +417,13 @@ for (const [label, d1] of stores) {
   t('after the trial: read only (reads work, writes 403 READ_ONLY), sign in and billing details still work, exports and AI stop', async () => {
     const w = makeWorld({ d1 });
     const org = await w.trialOrg();
-    const glide = (await org.admin.get('/portal/glide-library')).data[0];
-    const house = (await org.admin.post('/portal/houses', { fromGlideId: glide.id })).data;
+    const house = (await org.admin.post('/portal/houses', { name: 'Trial house', project: createFromTemplate('granny_flat') })).data;
     const token = (await org.admin.post('/portal/ai/token')).data.token;
     const end = Date.parse(org.approval.org.account.trialEndsAt);
     // One minute before the end it is still the trial.
     w.clock.t = end - 60000;
     assert.equal((await org.admin.get('/portal/me')).data.account.status, 'trial');
-    assert.equal((await org.admin.post('/portal/houses', { fromGlideId: glide.id, name: 'Second' })).status, 200);
+    assert.equal((await org.admin.post('/portal/houses', { name: 'Second', project: createFromTemplate('granny_flat') })).status, 200);
     // At the end (00:00 on 25/11/2026 Sydney) it is read only. The session is still valid, so nobody is signed out.
     w.clock.t = end;
     const me = (await org.admin.get('/portal/me')).data;
@@ -442,7 +441,7 @@ for (const [label, d1] of stores) {
     assert.equal((await org.admin.get('/portal/ai')).status, 200);
     // Every state changing route is refused.
     const blocked = [
-      ['post', '/portal/houses', { fromGlideId: glide.id, name: 'Third' }], ['post', `/portal/houses/${house.id}/duplicate`], ['post', `/portal/houses/${house.id}/archive`, { archived: true }],
+      ['post', '/portal/houses', { name: 'Third', project: createFromTemplate('granny_flat') }], ['post', `/portal/houses/${house.id}/duplicate`], ['post', `/portal/houses/${house.id}/archive`, { archived: true }],
       ['post', '/portal/projects', { name: 'x', project: {} }], ['post', '/portal/clients', { firstName: 'Sarah' }], ['post', '/portal/team', { firstName: 'Tom', role: 'designer' }],
       ['put', '/portal/org/branding', { displayName: 'X' }], ['post', '/portal/ai/top-up'], ['post', '/portal/ai/token'],
     ];
@@ -453,7 +452,7 @@ for (const [label, d1] of stores) {
     }
     const patch = await org.admin.call('PATCH', '/portal/org/settings', { allowClientTopUps: false });
     assert.equal(patch.data.error.code, 'READ_ONLY');
-    assert.match((await org.admin.post('/portal/houses', { fromGlideId: glide.id })).data.error.message, /free trial has ended.*read only/);
+    assert.match((await org.admin.post('/portal/houses', { name: 'Fourth', project: createFromTemplate('granny_flat') })).data.error.message, /free trial has ended.*read only/);
     // The AI helper endpoints refuse the org token that was issued earlier.
     const ai = await w.app.fetch(new Request(`${SITE}/api/ai/edit`, { method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify({ message: 'hi', context: '{}' }) }));
     assert.ok([403, 503].includes(ai.status));
@@ -484,13 +483,13 @@ for (const [label, d1] of stores) {
     const org = await w.trialOrg();
     const end = Date.parse(org.approval.org.account.trialEndsAt);
     w.clock.t = end + 3 * DAY + 5 * 3600000; // 28/11/2026 Sydney, trial over
-    assert.equal((await org.admin.post('/portal/houses', { fromGlideId: (await org.admin.get('/portal/glide-library')).data[0].id })).data.error.code, 'READ_ONLY');
+    assert.equal((await org.admin.post('/portal/houses', { name: 'House 1', project: createFromTemplate('granny_flat') })).data.error.code, 'READ_ONLY');
     const ex = await w.admin('POST', `/portal/admin/orgs/${org.orgId}/extend-trial`, {});
     assert.equal(ex.status, 200);
     assert.equal(ex.data.account.status, 'trial');
     assert.equal(ddmmyyyyTime(Date.parse(ex.data.account.trialEndsAt)), '05/12/2026 00:00');
     assert.equal(ex.data.trialExtendedDays, 7);
-    assert.equal((await org.admin.post('/portal/houses', { fromGlideId: (await org.admin.get('/portal/glide-library')).data[0].id })).status, 200, 'writable again');
+    assert.equal((await org.admin.post('/portal/houses', { name: 'House 2', project: createFromTemplate('granny_flat') })).status, 200, 'writable again');
     const ex2 = await w.admin('POST', `/portal/admin/orgs/${org.orgId}/extend-trial`, {});
     assert.equal(ddmmyyyyTime(Date.parse(ex2.data.account.trialEndsAt)), '12/12/2026 00:00', 'a running trial moves on from its end date');
     // Convert to paid manually: client logins unlock, no card needed.
@@ -577,7 +576,7 @@ for (const [label, d1] of stores) {
     const ok = await org.admin.post('/portal/billing/setup/confirm', { sessionId: 'cs_test_setup1' });
     assert.equal(ok.status, 200, JSON.stringify(ok.data));
     assert.equal(ok.data.account.status, 'active');
-    assert.equal((await org.admin.post('/portal/houses', { fromGlideId: (await org.admin.get('/portal/glide-library')).data[0].id })).status, 200, 'writes work again');
+    assert.equal((await org.admin.post('/portal/houses', { name: 'House 3', project: createFromTemplate('granny_flat') })).status, 200, 'writes work again');
     // Another org cannot confirm this session.
     const other = await w.trialOrg({ abn: ABNS[8], email: 'bo@other.example', companyLegalName: 'Bo Pty Ltd' });
     assert.equal((await other.admin.post('/portal/billing/setup/confirm', { sessionId: 'cs_test_setup1' })).status, 404);

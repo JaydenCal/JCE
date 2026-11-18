@@ -383,7 +383,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       let stats = null;
       let thumbnail = null;
       if (fromGlideId) {
-        const g = GLIDE_LIBRARY.find((x) => x.id === fromGlideId);
+        const g = ctx().org.internal === true ? GLIDE_LIBRARY.find((x) => x.id === fromGlideId) : null;
         if (!g) throw err('NOT_FOUND', 'Unknown Glide Inside model.', 404);
         const { id: _i, name: _n, thumbnail: th, templateId, description: _d, type, category, ...s } = g;
         stats = s;
@@ -444,13 +444,13 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     async listGlideLibrary() {
       await wait();
       const { user, org } = ctx();
-      if (!isStaff(user) && org.showGlideToClients !== true) return [];
+      if (org.internal !== true) return []; // builders and clients: own designs only
       return GLIDE_LIBRARY.map(({ ...g }) => g);
     },
     async getGlideModel(id) {
       await wait();
       const { user, org } = ctx();
-      if (!isStaff(user) && org.showGlideToClients !== true) throw err('NOT_FOUND', 'Unknown Glide Inside model.', 404);
+      if (org.internal !== true) throw err('NOT_FOUND', 'Unknown Glide Inside model.', 404);
       const g = GLIDE_LIBRARY.find((x) => x.id === id);
       if (!g) throw err('NOT_FOUND', 'Unknown Glide Inside model.', 404);
       return { ...g, project: await resolveGlideProject(id, g.name) };

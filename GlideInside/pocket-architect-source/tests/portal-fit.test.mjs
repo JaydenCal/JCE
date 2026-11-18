@@ -107,21 +107,21 @@ test('exports: staff always get PDF, DXF and 3D; clients get PDF only unless the
   assert.ok(staff);
 });
 
-test('Glide library can be hidden from clients but staff still see it', async () => {
+test('builders and their clients never get the Glide library (only the internal account does), whatever the old client setting says', async () => {
   const api = fresh();
   await admin(api);
   await api.setOrgSettings({ showGlideToClients: false });
-  assert.ok((await api.listGlideLibrary()).length > 0);
+  assert.equal((await api.listGlideLibrary()).length, 0);
   await api.signOut();
   await api.signIn(DEMO_LOGINS.client);
-  const hidden = await api.listGlideLibrary().catch(() => []);
-  assert.equal(hidden.length, 0);
+  assert.equal((await api.listGlideLibrary().catch(() => [])).length, 0);
   await api.signOut();
   await admin(api);
   await api.setOrgSettings({ showGlideToClients: true });
   await api.signOut();
   await api.signIn(DEMO_LOGINS.client);
-  assert.ok((await api.listGlideLibrary()).length > 0);
+  assert.equal((await api.listGlideLibrary()).length, 0, 'switching the old setting on does not expose the library');
+  await assert.rejects(api.getGlideModel('glide:house_single'));
 });
 
 test('JCE enquiry (mock): needs consent, returns a GI reference, respects the client switch', async () => {

@@ -270,7 +270,7 @@ test('client sees only the houses they were given; staff see the whole library; 
 test('designers manage houses but cannot issue logins, see billing or change the team', async () => {
   const { api } = fresh();
   await api.signIn(DEMO_LOGINS.designer);
-  const h = await api.saveHouse({ name: 'Designer made', fromGlideId: 'glide:granny_flat' });
+  const h = await api.saveHouse({ name: 'Designer made', project: createFromTemplate('granny_flat') });
   assert.equal(h.bedrooms, 2);
   await rejects(api.issueClientLogin({ firstName: 'Nope' }), 'FORBIDDEN');
   await rejects(api.monthUsage(), 'FORBIDDEN');
@@ -574,12 +574,12 @@ test('design mode: builder and staff logins get the client experience only with 
   assert.equal(clientLike('client', p('')), true);
   assert.equal(clientLike('admin', p('design=new')), true);
   assert.equal(clientLike('admin', p('')), false);
-  const me = (role, show) => ({ user: { role }, org: { showGlideToClients: show } });
-  assert.equal(wantsGlide(me('admin', false), p('design=new')), false, 'a builder only ever sees their own designs in Design on a lot');
-  assert.equal(wantsGlide(me('admin', true), p('design=1')), false);
-  assert.equal(wantsGlide(me('admin', false), p('')), true, 'the full editor still lists the library');
-  assert.equal(wantsGlide(me('client', false), p('')), false);
-  assert.equal(wantsGlide(me('client', true), p('')), true);
+  const me = (role, show, internal) => ({ user: { role }, org: { showGlideToClients: show, ...(internal ? { internal: true } : {}) } });
+  for (const q of ['design=new', 'design=1', '']) for (const role of ['admin', 'client']) for (const show of [false, true]) assert.equal(wantsGlide(me(role, show), p(q)), false, 'builders and their clients never see the library');
+  assert.equal(wantsGlide(me('admin', false, true), p('design=new')), false, 'not in Design on a lot');
+  assert.equal(wantsGlide(me('admin', false, true), p('')), true, 'the internal account keeps the library in the full editor');
+  assert.equal(wantsGlide(me('client', false, true), p('')), false);
+  assert.equal(wantsGlide(me('client', true, true), p('')), true);
 });
 
 test('design mode links: Design on a lot, Open as client view, and the switch to the full editor', () => {

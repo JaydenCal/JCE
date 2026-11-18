@@ -9,6 +9,7 @@ export const clientLike = (role, params) => role === 'client' || designMode(role
 
 /** Whether the Glide Inside sample library is listed: clients only when the builder allows it, staff in the full editor, never in Design on a lot. */
 export function wantsGlide(me, params) {
+  if (me.org?.internal !== true) return false; // builders and their clients see only their own designs (owner 18/11/2026)
   if (me.user.role === 'client') return me.org.showGlideToClients === true;
   return !designMode(me.user.role, params);
 }

@@ -360,7 +360,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (id && !h) throw new HttpError('NOT_FOUND', 'That house design was not found.');
     const patch = {};
     if (fromGlideId) {
-      const g = GLIDE_LIBRARY.find((x) => x.id === fromGlideId);
+      const g = org.internal === true ? GLIDE_LIBRARY.find((x) => x.id === fromGlideId) : null; // builders: own designs only
       if (!g) throw new HttpError('NOT_FOUND', 'Unknown Glide Inside model.');
       const gs = glideStats(g);
       Object.assign(patch, { stats: gs.stats, thumbnail: gs.thumbnail, sourceType: 'glide', sourceRef: fromGlideId, project: null });
@@ -418,13 +418,14 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   }
   async function listGlide(r) {
     const { user, org } = await auth(r);
-    if (!isStaff(user) && org.showGlideToClients !== true) return json([]);
+    // Builders and their clients see only their own designs (owner 18/11/2026). The Glide Inside library is for the internal account only.
+    if (org.internal !== true) return json([]);
     return json(GLIDE_LIBRARY.map((g) => ({ ...g })));
   }
   async function getGlide(r, id) {
     const { user, org } = await auth(r);
     const g = GLIDE_LIBRARY.find((x) => x.id === id);
-    if (!g || (!isStaff(user) && org.showGlideToClients !== true)) throw new HttpError('NOT_FOUND', 'Unknown Glide Inside model.');
+    if (!g || org.internal !== true) throw new HttpError('NOT_FOUND', 'Unknown Glide Inside model.');
     return json({ ...g, project: await resolveGlideProject(id, g.name) });
   }
 

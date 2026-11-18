@@ -49,7 +49,7 @@ import { resolveTool, toolMode, toolName, toolOfProject, TOOL_INFO, PREV_AUTOSAV
 import { offerSwitch, openInTool } from './ui/tool-switch.js';
 import { effectiveClass } from './commercial/zones.js';
 import { initGuidedFlow, shouldStart, openFlow, tutorialOf } from './flow/index.js';
-import { flowInProgress } from './flow/state.js';
+import { flowInProgress, portalDeepLink } from './flow/state.js';
 import { viewerEmbedRequested, addressFromSearch, openFullEditor, sameAddress, initEmbedViewer, loadAddress, mountViewerChrome, takeHandoff } from './ui/embed-viewer.js';
 
 const demoMode = () => CONFIG.embedMode === 'demo';
@@ -531,7 +531,7 @@ async function main() {
   { const fab = createAerialToggle({ store, className: 'ps-aerial-fab', dataPs: 'aerial-toggle-stage' }); refs.stage.append(fab.el); const own = createAerialSourceButton({ store, className: 'ps-aerial-src-fab', dataPs: 'aerial-source-stage' }); refs.stage.append(own.el); } // Aerial on/off over the 2D plan and the 3D view (hidden while the lot card shows its own)
   // The guided start flow (src/flow/) replaces the welcome card for a fresh open and for a flow that was part way through.
   const startsFlow = shouldStart({ project: store.project, search: location.search, viewer: VIEWER, demo: demoMode(), shareId, fromAutosave: state.fromAutosave }) && !params.get('template');
-  if (!state.fromAutosave && !demoMode() && !narrow && !shareId && !VIEWER && !addressParam && !wantCommercial && !startsFlow) createWelcome(refs.stage, store, { onChoose: openNew });
+  if (!state.fromAutosave && !demoMode() && !narrow && !shareId && !VIEWER && !addressParam && !wantCommercial && !startsFlow && !portalDeepLink(location.search)) createWelcome(refs.stage, store, { onChoose: openNew });
 
   // The commercial handoff. A layout already in commercial mode is left as it is (the link must not reset its rows). A design kept
   // from an earlier visit is switched as one undo step and the person is told how to get it back; a starter design is renamed.

@@ -18,7 +18,7 @@ import { readPick } from '../builders.js';
 
 const TABS = [
   { id: 'houses', label: 'House designs', render: renderHouses },
-  { id: 'glide', label: 'Glide Inside library', render: renderGlide },
+  { id: 'glide', label: 'Glide Inside library', render: renderGlide, internalOnly: true }, // builders see only their own designs (owner 18/11/2026)
   { id: 'clients', label: 'Clients', render: renderClients, perm: 'clients.read' },
   { id: 'billing', label: 'Billing', render: renderBilling, perm: 'billing.read' },
   { id: 'team', label: 'Team', render: renderTeam, perm: 'clients.read' },
@@ -96,7 +96,7 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
   }
 
   function dashboard() {
-    const tabs = TABS.filter((t) => !t.perm || me.permissions.includes(t.perm));
+    const tabs = TABS.filter((t) => (!t.perm || me.permissions.includes(t.perm)) && (!t.internalOnly || me.org?.internal === true));
     const panel = h('div', { class: 'pp-panel', id: 'pp-panel', role: 'tabpanel', tabindex: '-1' });
     const tablist = h('div', { class: 'pp-tabs', role: 'tablist', 'aria-label': 'Dashboard sections' });
     let current = null;
