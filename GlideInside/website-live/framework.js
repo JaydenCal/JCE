@@ -107,20 +107,19 @@
       a.setAttribute("href", u.pathname + u.search);
     });
   }
-  // "For the full tool set" tag beside Open full editor: pulses until it is hovered or the editor has been opened once.
+  // "Open full editor" (every embed, with or without the "For the full tool set" tag beside it): with a viewer loaded, the viewer hands its whole
+  // project over and opens the editor itself, so the editor continues that exact design. The tag pulses until hovered or the editor was opened once.
   (function () {
     var KEY = "gi.editorOpened";
     var seen = false;
     try { seen = localStorage.getItem(KEY) === "1"; } catch (e) {}
-    document.querySelectorAll("[data-edit-tag]").forEach(function (tag) {
-      var still = function () { tag.classList.add("is-still"); };
+    document.querySelectorAll(".lh-edit").forEach(function (link) {
+      var tag = link.parentNode && link.parentNode.querySelector("[data-edit-tag]");
+      var still = function () { if (tag) tag.classList.add("is-still"); };
       if (seen) still();
-      var link = tag.parentNode && tag.parentNode.querySelector(".lh-edit");
-      if (!link) return;
-      link.addEventListener("mouseenter", still); link.addEventListener("focus", still); tag.addEventListener("mouseenter", still);
+      link.addEventListener("mouseenter", still); link.addEventListener("focus", still); if (tag) tag.addEventListener("mouseenter", still);
       link.addEventListener("click", function (e) {
         still(); try { localStorage.setItem(KEY, "1"); } catch (er) {}
-        // With a lot loaded in the viewer, the viewer hands its whole state over and opens the editor itself (no empty start).
         if (live.frame && live.ready && !e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
           e.preventDefault();
           try { live.frame.contentWindow.postMessage({ type: "gi:open-editor" }, location.origin); } catch (er2) { location.assign(link.getAttribute("href")); return; }
