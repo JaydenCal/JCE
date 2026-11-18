@@ -93,7 +93,7 @@ window.addEventListener('message',function(e){
   var dta=e.data;if(!dta||typeof dta!=='object')return;
   ['residential','industrial'].forEach(function(m){
     var f=frameOf(m);if(!f||e.source!==f.contentWindow)return;
-    if(dta.type==='ready'&&dta.views)views[m]=dta.views;
+    if(dta.type==='ready'&&dta.views){views[m]=dta.views;if(ready[m]&&m===cur){buildViews();ui()}}
     if(dta.type==='interact'){touched=true;stopAuto();if(m===cur)send(m,mapT(prog))}
     if(dta.type==='wheel'&&m===cur)window.scrollBy({top:dta.dy,left:0,behavior:'instant'});
     if(dta.type==='morph-ready'||dta.ptmModelReady||dta.type==='ready')markReady(m);

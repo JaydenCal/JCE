@@ -91,13 +91,18 @@
   window.addEventListener('load',function(){
     mkHint();
     var t=CTL();
-    if(t&&t.addEventListener){t.addEventListener('change',function(){wake(600)});clampCtl(t)}
+    if(t&&t.addEventListener){
+      /* no idle auto-spin: it would keep the viewer rendering forever */
+      try{Object.defineProperty(t,'autoRotate',{configurable:true,get:function(){return false},set:function(){}})}catch(e){}
+      t.addEventListener('change',function(){wake(600)});clampCtl(t)}
     wake(1500);
     post({type:'ready',views:views()});
   });
   window.addEventListener('message',function(e){
     if(e.source!==parent)return;var d=e.data||{};
     wake(700);
+    /* the model disables its controls while a morph is held; keep them live so the visitor can orbit at any point */
+    if(d.type==='morph'){var ct=CTL();if(ct){ct.enabled=true;ct.enableZoom=true}}
     if(d.type==='view')fly(d.id);
     if(d.type==='visible'&&window.__pause)window.__pause(!d.on);
     if(d.type==='dispose'){if(window.__pause)window.__pause(true);if(window.__disposeGL)window.__disposeGL()}
