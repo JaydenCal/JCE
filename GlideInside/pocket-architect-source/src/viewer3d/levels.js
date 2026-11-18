@@ -28,7 +28,7 @@ export const TRANSITION_M = 2.0;
 export const TRANSITION_WING_M = 1.0;
 
 // The terrain mesh sits this far under paved, road and pad surfaces, so a coarse mesh triangle can never poke through the surface on top
-// of it (the surface itself is exact, from the FDS). Gone in Phase 2, where the mesh is cut along every element edge.
+// of it (the surface itself is exact, from the FDS). Edge skirts (skirts.js) close any gap this leaves at an element edge; cutting the mesh along element edges is still open.
 export const SUBGRADE = 0.03;
 // Under the road corridor the mesh is buried much deeper (its kerb, gutter and verge are exact strips, see site-extras.js), fading back to the
 // SUBGRADE depth over one terrain cell at the corridor's edges so the ground beside it stays flat.

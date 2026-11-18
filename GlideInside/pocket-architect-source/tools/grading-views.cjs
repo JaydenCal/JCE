@@ -87,6 +87,17 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
       carpark: { position: at(null, -8, 16, 2.6), target: at(null, -26, -6, 0.2), fov: 64 },
       oblique: { position: at(null, 14, 20, 1.1), target: at(null, -8, -4, 0.3), fov: 66 },
     };
+    // Low oblique views (eye height 1.2 m) from outside and inside the lot, looking along the sloping boundaries: where a batter, a pad edge or a step could show a gap.
+    const ap = (o, u, h) => { const x = P.fx + P.ox * o + P.ux * u; const z = P.fz + P.oz * o + P.uz * u; return { x, y: gy(x, z) + h, z }; };
+    const D = commercial ? 100 : 40; const Wd = commercial ? 30 : 12;
+    poses.lowA = { position: ap(-D * 0.15, Wd + 9, 1.2), target: ap(-D * 0.7, Wd - 5, 0.8), fov: 70 }; // from the side, looking down the lot
+    poses.lowB = { position: ap(-D * 0.95, -Wd - 9, 1.2), target: ap(-D * 0.35, Wd - 5, 0.8), fov: 70 }; // from the far end, looking up the slope
+    poses.lowC = { position: ap(-D * 0.5, -Wd - 12, 1.2), target: ap(-D * 0.5, Wd, 1.5), fov: 70 }; // across the lot at mid depth
+    poses.lowD = { position: ap(D * 0.12, -Wd * 0.6, 1.2), target: ap(-D * 0.4, Wd * 0.2, 1.0), fov: 70 }; // from the verge, into the lot
+    poses.lowE = { position: ap(24, -Wd - 28, 1.2), target: ap(10, Wd + 20, 0.3), fov: 75 }; // beyond the far kerb, looking back across the road
+    poses.lowF = { position: ap(3, -Wd - 22, 1.1), target: ap(0, Wd + 30, 0.3), fov: 75 }; // along the frontage, verge level
+    poses.lowG = { position: ap(-D * 0.5, Wd + 14, 0.9), target: ap(-D * 0.2, Wd - 6, 0.6), fov: 75 }; // outside the side boundary, looking along it
+    poses.lowH = { position: ap(-D * 0.84, -Wd - 3, 1.0), target: ap(-D * 0.74, -Wd + 6, 0.2), fov: 60 }; // close on the car park end and its kerb
     if (!commercial) { // a house lot is narrow: higher, closer poses on the driveway and the crossover
       poses.street = { position: at(null, 11, -7, 3.4), target: at(null, -14, 2, 0), fov: 62 };
       poses.crossover = { position: at(null, 8, -5, 2.4), target: at(null, -1, 0, 0), fov: 66 };

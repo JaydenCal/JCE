@@ -6,7 +6,7 @@
 //   * near a higher priority element the level is BLENDED to it, not stepped: Shepard weights (T - d)^2 / (T d)^2 over a transition width T
 //     (2 m by default), which is exactly the neighbour's level at the shared edge, exactly the element's own level at T, and smooth between;
 //   * beyond an element's edge the plane is carried outward for a short flat band, then a 1 in 3 batter runs to the natural ground
-//     (Phase 2 limits batters to the lot boundary and cuts the terrain mesh along every element edge).
+//     (batters stop at the lot boundary; skirts.js closes any gap under an exact surface edge).
 // Pure functions, no DOM, no three.js. Elements: { id, kind, polys: [ring plan mm], level(x, y) -> metres, T?, band? }.
 import * as G from '../model/geometry.js';
 import * as S from './site-geom.js';

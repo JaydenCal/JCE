@@ -28,6 +28,7 @@ import { addCommercialPavements } from '../commercial/catalogue/pavements/view3d
 import { addCommercialEntourage, addForecourtSlabs } from '../commercial/catalogue/entourage3d.js';
 import { SUBGRADE, ROAD_BURY } from './levels.js';
 import { polyDistM } from './fds.js';
+import { skirtGeometry } from './skirts.js';
 
 export { PAD_MARGIN_M } from './site-geom.js';
 
@@ -248,8 +249,8 @@ export function terrainModel(project, opts = {}) {
  * The terrain mesh node at a plan point: { design, mesh }. The mesh sits just under every design element (the exact surfaces are drawn on top,
  * see levels.js) and well under the road corridor; elsewhere it is the design surface (natural ground, shoulders and batters).
  */
-export function nodeHeights(tm, x, y, cellM) {
-  const r = tm.fds ? tm.fds.levelAt(x, y) : null;
+export function nodeHeights(tm, x, y, cellM, raw) {
+  const r = tm.fds ? tm.fds.levelAt(x, y, raw) : null;
   const design = r ? r.y : tm.heightAt(x, y);
   let mesh = design;
   if (r && r.id) {
@@ -581,8 +582,59 @@ ${aerial ? `  vec3 aerC = texture2D(uAerialTex, vAerUv).rgb;
 // One cached terrain build: the design surface (fds), the pads and the mesh node heights, keyed by everything they depend on (the lot, its
 // elevation grid, the buildings, pavements, drawn ways and levels). A change that touches none of them (colours, interior edits) reuses it.
 let terrainCache = null;
+// Timing of the last addSiteTerrain call, in ms per phase (tests and the timing tool read it).
+export const terrainStats = { ms: 0, phases: {}, nodesComputed: 0, nodesTotal: 0, mode: '' };
+/** Forget the cached terrain build (tests, and a full rebuild on demand). */
+export const resetTerrainCache = () => { terrainCache = null; };
+const nowMs = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
 const gridIds = new WeakMap(); let gridSeq = 0;
 const gridId = (t) => { if (!t) return 0; let k = gridIds.get(t); if (!k) { k = ++gridSeq; gridIds.set(t, k); } return k; };
+// ---- Incremental terrain rebuild ------------------------------------------------------------------------------------------------------
+// After an edit (a building moved, a pad level changed) only the nodes near a design element that changed need new heights. Heights are
+// kept as RL (metres above datum) so a change of floor RL, which shifts every model Y by one constant, does not dirty the whole grid.
+const idxCache = new Map();
+function cachedIndices(cols, rows) {
+  const k = `${cols}x${rows}`;
+  let a = idxCache.get(k);
+  if (!a) { a = Uint32Array.from(S.gridIndices(cols, rows)); idxCache.clear(); idxCache.set(k, a); }
+  return a;
+}
+const rlGrids = new WeakMap(); // natural ground RL at every node, per elevation grid and node layout
+function naturalRL(lot, dims) {
+  const t = lot.terrain; if (!t) return null;
+  let m = rlGrids.get(t); if (!m) { m = new Map(); rlGrids.set(t, m); }
+  const k = `${dims.cols}x${dims.rows}:${dims.x0}:${dims.y0}:${dims.dx}:${dims.dy}`;
+  let g = m.get(k);
+  if (!g) {
+    g = new Float64Array(dims.cols * dims.rows);
+    for (let j = 0; j < dims.rows; j++) for (let i = 0; i < dims.cols; i++) g[j * dims.cols + i] = S.terrainAtClamped(t, dims.x0 + i * dims.dx, dims.y0 + j * dims.dy);
+    m.clear(); m.set(k, g);
+  }
+  return g;
+}
+const r1 = (v) => Math.round(v);
+// A design element as a string: its outline and its level at a few points, in RL terms, so equal strings mean the same surface.
+function elementReachMm(el, rawAt, batterRun) {
+  // how far the element can change the ground: its band and transition, plus the batter run for the biggest cut or fill at its edge
+  let d = 0; let n = 0;
+  for (const poly of el.polys) { const st = Math.max(1, Math.ceil(poly.length / 8)); for (let i = 0; i < poly.length; i += st) { d = Math.max(d, Math.abs(el.level(poly[i].x, poly[i].y) - rawAt(poly[i].x, poly[i].y))); n++; } }
+  return Math.min(DIRTY_MAX_MM, (4 + batterRun * d * 1.25 + 3) * 1000);
+}
+function elementSig(el, off) {
+  const pts = [];
+  let cx = 0; let cy = 0; let n = 0;
+  for (const poly of el.polys) for (const q of poly) { cx += q.x; cy += q.y; n++; }
+  if (n) pts.push({ x: cx / n, y: cy / n });
+  for (const poly of el.polys) { const st = Math.max(1, Math.ceil(poly.length / 6)); for (let i = 0; i < poly.length; i += st) pts.push(poly[i], { x: (poly[i].x + cx / n) / 2, y: (poly[i].y + cy / n) / 2 }); }
+  const lv = pts.slice(0, 24).map((q) => Math.round((el.level(q.x, q.y) + off) * 2000)).join(',');
+  return `${el.id}|${el.kind}|${el.polys.map((poly) => poly.map((q) => `${r1(q.x)},${r1(q.y)}`).join(';')).join('/')}|${lv}`;
+}
+const DIRTY_MAX_MM = 44000; // fds.js REACH_M (36 m) plus a pad band and the transition width: an element changes the ground no further than this
+function staticKeyOf(project, dims, dq) {
+  const lot = project.site?.lot || {};
+  return JSON.stringify([lot.boundary, lot.layers, lot.frontEdges, lot.roads, gridId(lot.terrain), project.mode, project.site?.grading?.batter, dims, dq, !!project.site?.grading?.heat]);
+}
+
 export function terrainKey(project, dims, detail = 1) {
   const lot = project.site?.lot || {};
   const c = project.commercial ? { ...project.commercial, finishes: undefined, name: undefined } : null;
@@ -591,6 +643,8 @@ export function terrainKey(project, dims, detail = 1) {
 
 export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour = null, wideTexture = null, wideEdgeColour = null, showContours = false, detail = 1 } = {}) {
   const lot = project.site?.lot;
+  const T0 = nowMs(); let tl = T0; const ph = {};
+  const lap = (k) => { const t = nowMs(); ph[k] = (ph[k] || 0) + (t - tl); tl = t; };
   const ext0 = S.terrainExtent(lot, 30);
   const dq = Math.min(1, Math.max(0.25, Number.isFinite(detail) ? detail : 1)); // detail below 1: a coarser grid and no contours
   if (dq < 1) showContours = false;
@@ -598,6 +652,7 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   const ckey = dims ? terrainKey(project, dims, dq) : null;
   const hit = ckey && terrainCache && terrainCache.key === ckey ? terrainCache : null;
   const tm = hit ? hit.tm : terrainModel(project, { cellM: dims ? Math.max(dims.dx, dims.dy) / 1000 : 0.75 });
+  lap('model');
   if (!tm || !S.siteReady(project)) return null;
   const ext = ext0;
   if (!ext) return null;
@@ -612,31 +667,62 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   const grey = !hasAerial && lot.aerialSource === 'none';
   const aw = ext.x1 - ext.x0;
   const ah = ext.y1 - ext.y0;
-  if (hit) { heights.set(hit.heights); design.set(hit.design); pos.set(hit.pos); uv.set(hit.uv); } else {
-  for (let j = 0; j < rows; j++) {
-    for (let i = 0; i < cols; i++) {
-      const x = dims.x0 + i * dims.dx;
-      const y = dims.y0 + j * dims.dy;
-      const nm = nodeHeights(tm, x, y, cellM);
-      const Y = nm.design;
-      const k = j * cols + i;
-      design[k] = Y;
-      const Ym = nm.mesh;
-      heights[k] = Ym;
-      pos[k * 3] = x / 1000;
-      pos[k * 3 + 1] = Ym;
-      pos[k * 3 + 2] = y / 1000;
-      uv[k * 2] = i / (cols - 1);
-      uv[k * 2 + 1] = 1 - j / (rows - 1);
+  const nN = cols * rows;
+  if (hit) { heights.set(hit.heights); design.set(hit.design); pos.set(hit.pos); uv.set(hit.uv); terrainStats.nodesComputed = 0; terrainStats.mode = 'cached'; } else {
+    const off = tm.floorRL - tm.base; // model Y = RL - off
+    const rlN = naturalRL(lot, dims);
+    const prev = terrainCache && tm.fds && terrainCache.inc && terrainCache.inc.staticKey === staticKeyOf(project, dims, dq) && terrainCache.inc.nodes === nN ? terrainCache.inc : null;
+    const sigs = new Map();
+    const bRun = project.site?.grading?.batter === 4 ? 4 : 3;
+    if (tm.fds) for (const el of tm.fds.elements) sigs.set(el.id, { sig: elementSig(el, off), boxes: el.polys.map((q) => G.bbox(q)), reach: el.road || el.kind === 'crossover' ? DIRTY_MAX_MM : elementReachMm(el, tm.rawAt, bRun) });
+    let mask = null; // 1 where the node needs new heights
+    if (prev) {
+      mask = new Uint8Array(nN);
+      const dirty = []; // { b: bbox, r: reach mm }
+      let maxReach = 0;
+      for (const v of sigs.values()) if (!(v.reach >= DIRTY_MAX_MM)) maxReach = Math.max(maxReach, v.reach);
+      for (const v of prev.sigs.values()) if (!(v.reach >= DIRTY_MAX_MM)) maxReach = Math.max(maxReach, v.reach);
+      const push = (v) => { for (const b of v.boxes) dirty.push({ b, r: Math.min(DIRTY_MAX_MM, v.reach + maxReach) }); };
+      for (const [id, v] of sigs) { const o = prev.sigs.get(id); if (!o || o.sig !== v.sig) { push(v); if (o) push(o); } }
+      for (const [id, o] of prev.sigs) if (!sigs.has(id)) push(o);
+      for (const { b, r } of dirty) {
+        const i0 = Math.max(0, Math.floor((b.minX - r - dims.x0) / dims.dx)); const i1 = Math.min(cols - 1, Math.ceil((b.maxX + r - dims.x0) / dims.dx));
+        const j0 = Math.max(0, Math.floor((b.minY - r - dims.y0) / dims.dy)); const j1 = Math.min(rows - 1, Math.ceil((b.maxY + r - dims.y0) / dims.dy));
+        for (let j = j0; j <= j1; j++) mask.fill(1, j * cols + i0, j * cols + i1 + 1);
+      }
     }
+    const designRL = prev ? prev.designRL.slice() : new Float64Array(nN);
+    const meshRL = prev ? prev.meshRL.slice() : new Float64Array(nN);
+    let computed = 0;
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const k = j * cols + i;
+        const x = dims.x0 + i * dims.dx;
+        const y = dims.y0 + j * dims.dy;
+        if (!mask || mask[k]) {
+          const nm = nodeHeights(tm, x, y, cellM, rlN ? rlN[k] - off : undefined);
+          designRL[k] = nm.design + off; meshRL[k] = nm.mesh + off; computed++;
+        }
+        design[k] = designRL[k] - off;
+        heights[k] = meshRL[k] - off;
+        pos[k * 3] = x / 1000;
+        pos[k * 3 + 1] = heights[k];
+        pos[k * 3 + 2] = y / 1000;
+        uv[k * 2] = i / (cols - 1);
+        uv[k * 2 + 1] = 1 - j / (rows - 1);
+      }
+    }
+    terrainStats.nodesComputed = computed; terrainStats.mode = prev ? 'incremental' : 'full';
+    terrainCache = { key: ckey, tm, heights: heights.slice(), design: design.slice(), pos: pos.slice(), uv: uv.slice(), inc: tm.fds ? { staticKey: staticKeyOf(project, dims, dq), nodes: nN, off, sigs, designRL, meshRL } : null };
   }
-    terrainCache = { key: ckey, tm, heights: heights.slice(), design: design.slice(), pos: pos.slice(), uv: uv.slice() };
-  }
+  terrainStats.nodesTotal = nN;
+  lap('nodes');
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-  geo.setIndex(S.gridIndices(cols, rows));
+  geo.setIndex(new THREE.BufferAttribute(cachedIndices(cols, rows), 1));
   geo.computeVertexNormals();
+  lap('geometry');
   let mat = null;
   const blended = hasAerial ? lawnGroundMaterial(ctx, lot, ext, texture, !!wideTexture) : null; // the clean lawn with the aerial let through subtly
   if (blended) mat = blended;
@@ -675,6 +761,7 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
 
   // Wide outer tile: a lower resolution aerial on a frame of ground around the sharp inner tile, so the visible ground is real imagery
   // well past the lot. Only the far edge of this tile fades (the ring below), into the neutral ground colour.
+  lap('material');
   const wide = hasAerial && wideTexture ? addWideGround(root, lot, tm, ext, wideTexture) : null;
   const nodes = wide ? wide.nodes : S.perimeterNodes(cols, rows).map((n) => ({ x: pos[(n.j * cols + n.i) * 3], y: heights[n.j * cols + n.i], z: pos[(n.j * cols + n.i) * 3 + 2], dir: n.dir }));
   let edgeSum = 0;
@@ -702,14 +789,17 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   rmesh.frustumCulled = false;
   root.add(rmesh);
 
+  lap('wide');
   addSiteOverlays(root, lot, surf, { showContours });
   try { addConstraintTint(root, lot, surf); } catch (e) { console.warn('[viewer3d] constraint tint skipped', e); } // optional overlays, never break the model
+  lap('overlays');
   let extras = null;
   try {
     extras = addSiteExtras(ctx, root, project, surf, { extent: ext, tm, fds: fdsAt, realAerial: !!texture || !!(lot.aerial?.extent && S.layerOn(lot, 'aerial')) }); // a stored aerial hides the stand-in neighbours even while its picture is still loading
   } catch (e) {
     console.warn('[viewer3d] site extras skipped', e);
   }
+  lap('extras');
   try {
     if (project.mode === 'commercial') addCommercialPavements(root, project, fdsAt, { model: tm.pavements, kerbScale }); // pavements, kerbs and markings of a commercial layout
   } catch (e) {
@@ -720,6 +810,25 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   } catch (e) {
     console.warn('[viewer3d] commercial entourage skipped', e);
   }
+  lap('pavements');
+  // Skirts under the edges of the exact surfaces, so no strip of road, paving or driveway stands over a gap above the mesh.
+  try {
+    if (tm.fds) {
+      const sk = skirtGeometry({ elements: tm.fds.elements, levelAt: (x, y) => tm.fds.levelAt(x, y).y, meshAt, inExtent: (x, y) => x >= ext.x0 && x <= ext.x1 && y >= ext.y0 && y <= ext.y1 });
+      if (sk.quads) {
+        const g3 = new THREE.BufferGeometry();
+        g3.setAttribute('position', new THREE.Float32BufferAttribute(sk.positions, 3));
+        g3.setIndex(sk.indices);
+        g3.computeVertexNormals();
+        const m3 = new THREE.Mesh(g3, new THREE.MeshStandardMaterial({ color: '#8a8c88', roughness: 0.95, side: THREE.DoubleSide }));
+        m3.material.userData.shared = false;
+        m3.name = 'edge-skirts';
+        m3.userData = { ground: true, skirts: true };
+        root.add(m3);
+      }
+    }
+  } catch (e) { console.warn('[viewer3d] edge skirts skipped', e); }
+  lap('skirts');
   // Cut and fill heat map (project.site.grading.heat): the same grid as the ground in vertex colours, red where the design is cut below the natural
   // ground, blue where it is filled, strongest at 1 m; the held road is left clear. A transparent overlay just above the ground.
   try {
@@ -772,6 +881,7 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
       root.add(m2);
     }
   } catch (e) { console.warn('[viewer3d] retaining edge skipped', e); }
+  lap('retaining');
   const ow = wide ? wide.extent.x1 - wide.extent.x0 : aw;
   const oh = wide ? wide.extent.y1 - wide.extent.y0 : ah;
   let works = null;
@@ -782,6 +892,8 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
       works = earthworks({ ...grid, heights: design }, tm.rawAt, (dims.dx / 1000) * (dims.dy / 1000), inRoad);
     } catch { works = null; }
   }
+  lap('earthworks');
+  terrainStats.ms = nowMs() - T0; terrainStats.phases = ph;
   return { extras, earthworks: works, retaining: retaining ? { maxM: retaining.maxM, lengthM: retaining.lengthM } : null, fds: tm.fds, pads: tm.pads, edgeY, extent: ext, wideExtent: wide ? wide.extent : null, grid, outerR: S.RING_OFFSETS_M[S.RING_OFFSETS_M.length - 1] + Math.max(ow, oh) / 2000 };
 }
 
