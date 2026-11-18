@@ -34,11 +34,9 @@ PLAN_PACK_CREDITS = "500"
 PLAN_PACK_PRICE_CENTS = "3000"
 PDF_SET_LIMIT = "0"
 EXPORT_RATE_PER_HOUR = "60"
-SELLER_NAME = "JCE Infrastructure Pty Ltd trading as Glide Inside (STAGING)"
-SELLER_ABN = "29 699 165 663"
+SELLER_NAME = "Glide Inside (STAGING)"
+SELLER_ABN = "11 549 431 925"
 ORG_MONTHLY_CREDITS = "300"
-TOPUP_CREDITS = "300"
-TOPUP_AMOUNT_CENTS = "1000"
 # No STRIPE_*, RESEND_API_KEY or ANTHROPIC_API_KEY on staging. Secrets set by deploy-staging.ps1: ADMIN_TOKEN, ENTITLEMENT_SECRET, IP_HASH_SALT.
 
 # Staging database. The script creates it if it is missing and writes its id below.
