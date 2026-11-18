@@ -126,7 +126,7 @@ const CHAPTERS_COMMERCIAL = [
   ] },
   { id: 'planset', title: 'Plan set', blurb: 'Save the layout, get the plan set or send it to an engineer.', steps: [
     E('save', '[data-action="profile-save"]', 'Save design keeps the layout in a free profile.'),
-    E('pdf', '[data-ps="cc-planset"]', 'The plan set button builds the PDF for this layout.'),
+    E('pdf', '[data-ps="cc-planset"]', 'The plan set button builds the PDF for this layout.', { openCard: true }),
     E('engineer', '[data-ps="lc-send-engineer"]', 'Send to engineer passes the layout to a registered engineer.'),
   ] },
 ];

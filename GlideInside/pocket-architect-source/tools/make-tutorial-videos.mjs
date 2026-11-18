@@ -412,13 +412,13 @@ SCENARIOS['commercial-numbers'] = { kind: 'commercial', setup: (p) => toStep(p, 
   const page = r.page;
   r.begin();
   await r.cap('The Check step lists floor area, coverage and parking'); await r.point('[data-ps="flow-summary"]', 0.5, 0.2, 900); await r.hold(3000);
-  await r.cap('The finance cards show the indicative profit and yield'); await r.point('[data-ps="fin-cards"]', 0.5, 0.5); await r.hold(2800);
+  if (await q(page, '[data-ps="fin-cards"]').isVisible().catch(() => false)) { await r.cap('The finance cards show the indicative profit and yield'); await r.point('[data-ps="fin-cards"]', 0.5, 0.5); await r.hold(2800); }
   await r.cap('Rough estimates help you compare options'); await r.point('[data-ps="flow-estimates"]', 0.5, 0.5); await r.hold(2800);
   await r.cap('Figures are indicative, check with council'); await r.hold(2200);
   await r.cap('Open the editor for the full feasibility numbers'); await r.click('[data-ps="flow-next"]', { after: 300 }); await r.editor();
   await page.click('[data-ps="prompt-notnow"]', { timeout: 3000 }).catch(() => {});
   if (await q(page, '[data-ps="cc-feas-open"]').isVisible().catch(() => false)) { await r.cap('See details opens the feasibility panel'); await r.click('[data-ps="cc-feas-open"]', { after: 3000 }); }
-  else { await r.cap('The commercial panel holds the numbers'); await r.point('[data-ps="fz-headlines"]'); await r.hold(3000); }
+  else { await r.cap('The editor panel holds the numbers'); await r.hold(3000); }
 } };
 
 SCENARIOS['commercial-editor'] = { kind: 'commercial', setup: (p) => toEditor(p, 'commercial'), run: async (r) => {
@@ -428,8 +428,8 @@ SCENARIOS['commercial-editor'] = { kind: 'commercial', setup: (p) => toEditor(p,
   await r.cap('3D shows the building on the lot'); await r.click('[data-view="3d"]', { after: 3000 });
   await r.click('[data-view="split"]', { after: 1800 });
   await r.cap('The commercial panel sets buildings, rows and units'); await r.point('[data-ps="commercial-dock"]', 0.5, 0.3, 900); await r.hold(2500);
-  await r.cap('Add building puts another building on the lot'); await r.point('[data-ps="add-building"]'); await r.hold(2200);
-  await r.cap('Re-run car park layout redraws the parking'); await r.click('[data-ps="rerun-site-layout"]', { after: 3500 });
+  if (await q(r.page, '[data-ps="add-building"]').isVisible().catch(() => false)) { await r.cap('Add building puts another building on the lot'); await r.point('[data-ps="add-building"]'); await r.hold(2200); }
+  if (await q(r.page, '[data-ps="rerun-site-layout"]').isVisible().catch(() => false)) { await r.cap('Re-run car park layout redraws the parking'); await r.click('[data-ps="rerun-site-layout"]', { after: 3500 }); }
 } };
 
 SCENARIOS['commercial-planset'] = { kind: 'commercial', setup: (p) => toEditor(p, 'commercial'), run: async (r) => {
@@ -437,7 +437,8 @@ SCENARIOS['commercial-planset'] = { kind: 'commercial', setup: (p) => toEditor(p
   r.begin();
   await r.cap('Save design keeps the layout in a free profile'); await r.click('[data-action="profile-save"]', { after: 3000 });
   await page.click('[data-ps="prompt-notnow"]', { timeout: 1500 }).catch(() => {}); await page.keyboard.press('Escape'); await sleep(500);
-  await r.cap('The plan set button builds the PDF'); await r.point('[data-ps="cc-planset"]'); await r.hold(2200);
+  await r.softClick('[data-ps="lot-card"] .lc-more, .lc-card .lc-more', { after: 900 });
+  if (await q(r.page, '[data-ps="cc-planset"]').isVisible().catch(() => false)) { await r.cap('The plan set button builds the PDF'); await r.point('[data-ps="cc-planset"]'); await r.hold(2200); } else { await r.cap('Open the card Details for the plan set button'); await r.hold(2000); }
   await r.cap('Send to engineer passes the layout on');
   if (await q(page, '[data-ps="lc-send-engineer"]').isVisible().catch(() => false)) { await r.point('[data-ps="lc-send-engineer"]'); await r.hold(2500); } else await r.hold(2500);
 } };
@@ -463,7 +464,8 @@ SCENARIOS['commercial-overview'] = { kind: 'commercial', run: async (r) => {
   await r.cap('Plan, Split and 3D change the view'); await r.click('[data-view="3d"]', { after: 3000 }); await r.click('[data-view="split"]', { after: 1500 });
   await r.cap('Save design keeps the layout in a free profile'); await r.click('[data-action="profile-save"]', { after: 2500 });
   await page.click('[data-ps="prompt-notnow"]', { timeout: 1500 }).catch(() => {}); await page.keyboard.press('Escape');
-  await r.cap('The plan set button builds the PDF'); await r.point('[data-ps="cc-planset"]'); await r.hold(2500);
+  await r.softClick('[data-ps="lot-card"] .lc-more, .lc-card .lc-more', { after: 900 });
+  if (await q(r.page, '[data-ps="cc-planset"]').isVisible().catch(() => false)) { await r.cap('The plan set button builds the PDF'); await r.point('[data-ps="cc-planset"]'); await r.hold(2200); } else { await r.cap('Open the card Details for the plan set button'); await r.hold(2000); }
   await r.cap('Press Show me how any time for more help'); await r.point('[data-ps="tutorial-help"]'); await r.hold(2500);
 } };
 
