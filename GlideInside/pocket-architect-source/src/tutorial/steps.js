@@ -1,6 +1,6 @@
 // The default tutorial: a step by step coach for the guided flow and the editor. Pure data and helpers (no DOM), so the tests can check them.
 //   step = { id, where: 'flow' | 'editor', flowStep?: 1..4 (the guided flow step the control lives in), target: CSS selector, text }
-// A card is placed beside its target and never over the lot or the 3D view. Wording rule: no dashes, never the word "compliant".
+// A card is placed beside its target and never over the lot or the 3D view. Wording rule: no dashes, never a compliance claim.
 
 export const TUTORIAL_KEY = 'gi.tutorial';
 

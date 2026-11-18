@@ -16,12 +16,12 @@ test('kerbDropScale takes several crossover spans, the lowest scale wins', () =>
   assert.ok(kerbDropScale(6.3, [[4, 6], [20, 24]], 0.6) < 1);
 });
 
-test('commercial: the street kerb is built and the pavement model has crossover (layback) kerbs to drop it across', () => {
+test('commercial: no automatic road is built (owner 18/11/2026) but the pavement model keeps crossover (layback) kerbs', () => {
   const p = commercialProject({ plain: false });
   const m = pavementModel(p.commercial, p.site.lot);
   assert.ok(m.kerbs.some((k) => k.crossover), 'a crossover kerb exists');
   const root = buildModel(p, { THREE, catalogue, showRoof: true, statusView: 'proposed', levelFilter: 'all' });
-  assert.ok(root.getObjectByName('road'), 'the road with its kerbs is built');
+  assert.ok(!root.getObjectByName('road'), 'no automatic road with kerbs is built');
 });
 
 test('model export bakes the lawn inside the lots and the paddock outside into vertex colours', () => {

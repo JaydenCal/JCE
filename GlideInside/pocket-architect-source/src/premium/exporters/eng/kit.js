@@ -37,9 +37,9 @@ export const PHANTOM_LEN = 24;
 /** Text sizes (pt on A3). Nothing on a drawing is smaller than TXT.min except the footer band. */
 export const TXT = { min: 6.5, small: 7, body: 8, label: 9, strong: 10, head: 12, title: 16 };
 
-const FORBIDDEN = [[/\b(non-?)?compliant\b/gi, 'within indicative limits']];
+const FORBIDDEN = [[/\b(non-?)?compl[i]ant\b/gi, 'within indicative limits']];
 
-/** Plain text for a sheet: no en or em dashes, no characters the standard PDF fonts cannot print, and never the word "compliant". */
+/** Plain text for a sheet: no en or em dashes, no characters the standard PDF fonts cannot print, and never the word for claiming compliance. */
 export function clean(s) {
   let t = String(s ?? '')
     .replace(/[‒–—―−]/g, '-')

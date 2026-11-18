@@ -13,6 +13,7 @@ import { drawGroundLayer, streamMark, intervalText } from './contours.js';
 import { rlText } from './levels.js';
 import { scaleBar } from '../pdf.js';
 import { northPoint, northDegOf } from './site.js';
+import { legendBlock } from './commercial.js';
 
 const SCALES = [50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 750, 1000];
 const TXT = 5.6;
@@ -111,5 +112,6 @@ export function drawUpperPlans(doc, model, t, levels) {
     ...(ground?.interval ? [['Contours', intervalText(ground.interval)]] : []),
   ];
   const notes = ['Concept only. Floor plans are indicative and not for construction.', 'Room names and areas are indicative, to internal wall faces.', ...(ground?.note ? [ground.note] : levels?.has ? [TAG] : ['Levels are on an assumed datum (floor level RL 100.00).'])];
-  return { kv, notes, blocks: [], bounds };
+  // The legend names the contours when (and only when) they were stroked on this sheet.
+  return { kv, notes, blocks: ground?.legend?.length ? [legendBlock(ground.legend)] : [], bounds };
 }

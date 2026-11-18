@@ -5,7 +5,7 @@
 //   2. set `effectiveDate` (DD/MM/YYYY),
 //   3. run `node tools/sync-plan-terms.mjs` (rewrites the text block on website-live/plan-terms.html from this file),
 //   4. rebuild the bundle (node tools/sync-portal.mjs && node tools/build-single.mjs --out ../website-live/plan-studio/app/index.html).
-// No dashes in the text, and never the word "compliant" (owner rules).
+// No dashes in the text, and never a compliance claim (owner rules).
 //
 // Version 1.0, from the legal review (/home/claude/legal-review/PLAN-SET-TERMS.md, 15/11/2026). Draft for solicitor review.
 

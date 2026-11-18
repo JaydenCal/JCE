@@ -1,4 +1,4 @@
-// Engineering services that JCE Infrastructure Pty Ltd fulfils, offered from the "Order engineering" panel and listed on the siting report.
+// Engineering services that JCE Infrastructure fulfils, offered from the "Order engineering" panel and listed on the siting report.
 // THE OWNER EDITS THIS FILE. Each service has an indicative "from" price in AUD, GST excluded.
 // EVERY PRICE BELOW IS A PLACEHOLDER: price to confirm. Until the owner sets a price the UI shows "Request a quote" and no figure.
 //

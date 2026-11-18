@@ -133,7 +133,7 @@ import { retainingEdges } from '../src/viewer3d/terrain.js';
 import { retainingWallGeometry } from '../src/viewer3d/skirts.js';
 import { LIMITS } from '../src/viewer3d/grade-limits.js';
 
-const SEALED = (a) => !['landscape'].includes(a.role);
+const SEALED = (a) => !['landscape'].includes(a.role) && !String(a.id).startsWith('sw:foot'); // footpaths (office door, carpark tool) are separate slabs beside the bays, a planted strip may sit between
 function ringDistMm(A, B) {
   let best = Infinity;
   for (const poly of [A, B]) {

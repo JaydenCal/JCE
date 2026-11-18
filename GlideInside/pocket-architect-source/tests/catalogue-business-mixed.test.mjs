@@ -13,7 +13,7 @@ test('business park: every unit has its own entry, roller door and rear access, 
     assert.equal(m.openings.filter((o) => o.kind === 'roller_door').length, d.units);
     const byWall = new Map();
     for (const o of m.openings) byWall.set(o.wallId, [...(byWall.get(o.wallId) || []), o]);
-    for (const list of byWall.values()) { const s = [...list].sort((a, b) => a.offset - b.offset); for (let i = 1; i < s.length; i++) assert.ok(s[i].offset >= s[i - 1].offset + s[i - 1].width, `${doorSide} overlap`); }
+    for (const list of byWall.values()) { const s = [...list].sort((a, b) => a.offset - b.offset); for (let i = 1; i < s.length; i++) assert.ok(s[i].offset - s[i].width / 2 >= s[i - 1].offset + s[i - 1].width / 2, `${doorSide} overlap`) /* offset is the opening centre */; }
   }
   const q = businessPark.quantities(businessPark.defaults());
   assert.ok(q.perUse.office > 0 && q.perUse.warehouse > q.perUse.office);

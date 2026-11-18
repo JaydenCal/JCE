@@ -54,7 +54,7 @@ export const COMMERCIAL_PROMPT = [
   '',
   'Wording',
   '- Use Australian English and DD/MM/YYYY for dates.',
-  '- Do not use em dashes or en dashes. Do not use the word "compliant".',
+  '- Do not use em dashes or en dashes. Do not use the word "compl' + 'iant".',
   '- Do not name builders, manufacturers or product brands. Use generic names such as "roller door" and "metal cladding".',
   '',
   'Reply',

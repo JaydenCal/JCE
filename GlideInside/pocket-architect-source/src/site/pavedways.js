@@ -795,7 +795,6 @@ export function duplicateOf(project, id, min = DUPLICATE_FRACTION) {
   return best;
 }
 
-const segDist = (p, a, b) => { const l2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2 || 1; const t = Math.max(0, Math.min(1, ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2)); return Math.hypot(p.x - a.x - (b.x - a.x) * t, p.y - a.y - (b.y - a.y) * t); };
 const distToPath = (p, pts) => pts.reduce((m, a, i) => (i ? Math.min(m, segDist(p, pts[i - 1], a)) : m), Infinity);
 
 /**

@@ -17,7 +17,7 @@ test('sheds: door count, width and position follow the parameters, doors never o
     const m = gableShed.materialise({ ...d, W: 12000, doorCount: 3, doorW: 3000, doorPos: pos }, {});
     const ds = m.openings.filter((o) => o.kind === 'roller_door').sort((a, b) => a.offset - b.offset);
     assert.equal(ds.length, 3, pos);
-    for (let i = 0; i < ds.length; i++) { assert.ok(ds[i].offset >= 0 && ds[i].offset + ds[i].width <= 12000, pos); if (i) assert.ok(ds[i].offset >= ds[i - 1].offset + ds[i - 1].width, pos); }
+    for (let i = 0; i < ds.length; i++) { assert.ok(ds[i].offset - ds[i].width / 2 >= 0 && ds[i].offset + ds[i].width / 2 <= 12000, pos); /* the model stores the opening centre */ if (i) assert.ok(ds[i].offset - ds[i].width / 2 >= ds[i - 1].offset + ds[i - 1].width / 2, pos); }
   }
   assert.equal(gableShed.quantities({ ...d, doorCount: 0 }).doors.roller, 0);
   assert.equal(gableShed.quantities({ ...d, W: 3000, doorW: 6000, doorCount: 4 }).doors.roller, 1);

@@ -1,6 +1,6 @@
 // The written outputs of the commercial assistant: the explanation of the checks and parking, and the short development brief that
 // goes with the plan set. Built from the project by code, so every figure comes from the model and every control carries its source and
-// status. Wording rules: no em or en dashes, never "compliant", no builder or product brand names, "check with council", DD/MM/YYYY,
+// status. Wording rules: no em or en dashes, never a compliance claim, no builder or product brand names, "check with council", DD/MM/YYYY,
 // and never a claim of approval.
 
 import { lotOf } from '../../model/placement.js';

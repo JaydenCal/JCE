@@ -70,6 +70,7 @@ for (const [name, make] of CASES) {
         for (let x = bb.minX + 150; x < bb.maxX; x += 700) for (let y = bb.minY + 150; y < bb.maxY; y += 700) {
           if (!G.pointInPolygon({ x, y }, poly)) continue;
           if (!G.pointInPolygon({ x, y }, p.site.lot.boundary)) continue;
+          if (p.site.lot.boundary.some((q, qi) => G.projectToSegment({ x, y }, q, p.site.lot.boundary[(qi + 1) % p.site.lot.boundary.length]).d < 800)) continue; // within a mesh cell of the boundary the design stops (retaining edge), the cell straddles it
           if (x < m.grid.x0 || x > m.grid.x0 + (m.grid.cols - 1) * m.grid.dx || y < m.grid.y0 || y > m.grid.y0 + (m.grid.rows - 1) * m.grid.dy) continue;
           // inside a steep blend zone (within 2.5 m of a higher priority element) a coarse mesh can differ by a few mm: scored by the visual checks
           if (fds.elements.some((o) => o.rank < el.rank && o.polys.some((q, qi) => polyDistM({ x, y }, q, o.boxes[qi]).d < 2.5))) continue;
@@ -120,23 +121,10 @@ test('levels: one table of lifts, no numeric lift anywhere else in the ground su
   }
 });
 
-test('fds: a crossover is flush with the gutter and the verge (no slab above the kerb)', () => {
-  const p = H.commercial('warehouse');
-  const m = H.meshGrid(p);
+test('fds: no automatic road or crossover element is built (owner 18/11/2026, the aerial imagery is the only road)', () => {
+  const m = H.meshGrid(H.commercial('warehouse'));
   const fds = m.tm.fds;
-  const x = fds.elements.find((e) => e.kind === 'crossover');
-  assert.ok(x, 'a crossover element');
-  const c = x.polys[0]; const bb = G.bbox(c);
-  const cx = (bb.minX + bb.maxX) / 2;
-  const road = fds.elements.find((e) => e.road);
-  // at the kerb line the ramp is the gutter invert; at the property line it equals the verge level beside it
-  const f = road.frame;
-  const at = (t) => { const o = f.o; return { x: o.x + f.outward.x * t * 1000 + (cx - o.x) * (1 - Math.abs(f.outward.x)), y: o.y + f.outward.y * t * 1000 + (cx - o.x) * 0 }; };
-  void at;
-  const dMax = c.reduce((mx, q) => Math.max(mx, f.tOf(q)), 0);
-  assert.ok(Math.abs(dMax - f.tk) < 0.05, 'the crossover runs to the kerb line');
-  const lo = f.sOf({ x: bb.minX, y: bb.minY });
-  void lo;
+  assert.ok(!fds.elements.some((e) => e.road || e.kind === 'crossover'), 'no road or crossover element');
 });
 
 test('fds: batters stop at the lot boundary; the step there is a retaining edge, and only the road changes level outside the lot', async () => {

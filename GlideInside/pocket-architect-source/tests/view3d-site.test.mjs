@@ -185,11 +185,11 @@ test('building pad: level at slab height under the house, 1:3 batter, then natur
   const padY = -0.15;
   assert.equal(S.padHeight(2, padY, 0), padY);
   assert.equal(S.padHeight(2, padY, S.PAD_MARGIN_M), padY);
-  // fill up to 1 m above the pad: batter run is 3 m, slope 1:3
-  near(S.padHeight(0.85, padY, S.PAD_MARGIN_M + 1.5), padY + 0.5, 1e-9);
-  assert.equal(S.padHeight(0.85, padY, S.PAD_MARGIN_M + 3), 0.85);
+  // ground 1 m above the pad (the pad is in cut): batter run is 2 m, slope 1V:2H (grading phase 3)
+  near(S.padHeight(0.85, padY, S.PAD_MARGIN_M + 1), padY + 0.5, 1e-9);
+  assert.equal(S.padHeight(0.85, padY, S.PAD_MARGIN_M + 2), 0.85);
   assert.equal(S.padHeight(0.85, padY, S.PAD_MARGIN_M + 50), 0.85);
-  // cut: ground below the pad
+  // fill: ground below the pad, 1V:3H
   near(S.padHeight(-1.15, padY, S.PAD_MARGIN_M + 1.5), padY - 0.5, 1e-9);
   // flat ground: no batter at all
   assert.equal(S.padHeight(padY, padY, S.PAD_MARGIN_M + 0.01), padY);

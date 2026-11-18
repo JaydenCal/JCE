@@ -20,7 +20,7 @@ export function openOrderEngineering({ layer, openEnquiry, services = ENGINEERIN
   const list = el('div', { class: 'psp-order-list', role: 'list' }, ...services.map((s) => el('button', { class: 'psp-order-item', type: 'button', role: 'listitem', dataset: { service: s.id }, onclick: () => choose(s) },
     el('strong', null, s.label), el('span', { class: 'psp-order-price' }, priceLabel(s)), el('small', null, s.blurb))));
   const body = el('div', null,
-    el('p', { style: { marginTop: 0 } }, 'Engineering for this lot, fulfilled by JCE Infrastructure Pty Ltd, civil engineers. Pick a service and the enquiry form opens with it filled in. Nothing is sent until you tick the consent box and press Send.'),
+    el('p', { style: { marginTop: 0 } }, 'Engineering for this lot, fulfilled by JCE Infrastructure, civil engineers. Pick a service and the enquiry form opens with it filled in. Nothing is sent until you tick the consent box and press Send.'),
     list,
     el('p', { class: 'psp-sc-note' }, 'Prices are indicative starting prices, GST excluded. Where a price is not yet confirmed, ask for a quote.'));
   modal = layer.openModal({ title: ORDER_TITLE, body: () => body, footer: (close) => el('button', { class: 'psp-btn', type: 'button', onclick: () => close('done') }, 'Close') });

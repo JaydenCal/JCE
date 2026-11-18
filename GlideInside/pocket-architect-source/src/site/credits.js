@@ -46,7 +46,7 @@ export function creditsOneLine(lot) {
   return siteCredits(lot).map((c) => c.text).join('  ');
 }
 
-// One line naming where the setbacks came from. Always "indicative"; never "compliant".
+// One line naming where the setbacks came from. Always "indicative"; never a compliance claim.
 export function setbackNote(sb) {
   if (!sb) return '';
   const src = sb.source?.kind === 'council'

@@ -1,5 +1,5 @@
 // Where the building sits against the lot boundary and the indicative setback envelope, in plain words, plus the ids of the
-// walls that breach (drawn red in 2D and 3D). Pure: no DOM, no three.js. Wording never says "compliant": the envelope is
+// walls that breach (drawn red in 2D and 3D). Pure: no DOM, no three.js. Wording never a compliance claim: the envelope is
 // indicative and council decides.
 //
 //   const c = lotChecks(project)

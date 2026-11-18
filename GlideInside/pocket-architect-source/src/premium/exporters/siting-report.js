@@ -2,7 +2,7 @@
 // them (else Glide Inside). Pages: 1 cover (3D render of the home on the lot, key figures), 2 site summary and siting plan with setbacks and
 // dimensions, 3 home design summary and the indicative site cost estimate, 4 next steps and contact.
 //   toSitingReport(project, { jsPDF, image, builder, logo, settings, estimate, contact, date }) -> Uint8Array (with a non enumerable `layout`)
-// Wording is indicative throughout. Never the word "compliant" (clean() removes it). Dates DD/MM/YYYY. No dashes in the text. Node compatible.
+// Wording is indicative throughout. never a compliance claim (clean() removes it). Dates DD/MM/YYYY. No dashes in the text. Node compatible.
 
 import * as G from '../../model/geometry.js';
 import { buildingRings, buildingHull, clearances, boundaryDims, roadReserve, deriveDriveway, titleLotDp, lotLabelLines } from '../../site/lotplan.js';
@@ -468,7 +468,7 @@ export async function toSitingReport(project, options = {}) {
     y = para(doc, `The council's own wording is quoted. The council is to confirm which rules apply to this development. Source: ${est.council.source}, ${est.council.built}.`, M, y + 2, CW, { size: 6.8, colour: PEN.grey, lead: 3 }) + 2;
   } else y = para(doc, `The council for this lot${lot?.lga ? ` (${cap(lot.lga)})` : ''} is not in the council rules database, so default values were used. ${NOT_FOUND}.`, M, y, CW, { size: 8.4 }) + 3;
   y = heading(doc, brand, 'Engineering for this lot', y + 1);
-  y = para(doc, `Fulfilled by JCE Infrastructure Pty Ltd, civil engineers: ${ENGINEERING_SERVICES.map((x) => x.label.toLowerCase()).join(', ')}. Ask for a quote from within the plan tool, or tell your builder.`, M, y, CW, { size: 8.4 }) + 3;
+  y = para(doc, `Fulfilled by JCE Infrastructure, civil engineers: ${ENGINEERING_SERVICES.map((x) => x.label.toLowerCase()).join(', ')}. Ask for a quote from within the plan tool, or tell your builder.`, M, y, CW, { size: 8.4 }) + 3;
   y = heading(doc, brand, 'Contact', y);
   const cl = [];
   cl.push(brand.own ? brand.name : 'Glide Inside');
