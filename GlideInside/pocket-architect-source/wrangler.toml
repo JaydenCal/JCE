@@ -64,6 +64,14 @@ TRIAL_NOTIFY_TO = "hello@glideinside.com.au"               # owner address. Empt
 # STRIPE_GST_TAX_RATE_ID = ""                              # optional: an existing inclusive 10% GST tax rate; otherwise one is created
 # STRIPE_LIVE_BILLING_APPROVED stays unset: live Stripe keys are refused without the owner's written go-ahead.
 
+# PLANNED monthly plans (18/11/2026), documentation only. Not read by the Worker and NOT enabled: no Stripe prices exist for them yet. The owner approves the
+# Stripe products separately. All amounts A$ incl. GST. The website shows these as "Coming soon, contact us".
+#   Builder Starter  A$149/month  10 client logins included, extra A$25   (cheaper than pay per login from 5 logins)
+#   Builder Pro      A$249/month  20 client logins included, extra A$22   (cheaper than pay per login from 9 logins)
+#   Builder Teams    A$449/month  40 client logins included, extra A$20   (cheaper than Pro from 30 logins)
+#   Commercial Solo  A$50/month (live)  |  Commercial Pro A$149/month, 3 users, 600 AI messages  |  Commercial Team A$349/month, 10 users, 2000 AI messages
+# Pay per client login (live): A$30 for the first 15 a month, A$25 from the 16th to the 50th, custom above 50.
+
 # Month end invoices: 06:00 on the 1st, Sydney time (19:00 UTC in AEDT, 20:00 UTC in AEST). The handler checks the Sydney clock.
 # OFF while PORTAL_ENABLED is "0": a cron with nothing to bill only adds noise. When the portal launches, set PORTAL_ENABLED to "1"
 # and remove the leading # from the next three lines.
