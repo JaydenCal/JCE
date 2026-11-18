@@ -61,3 +61,43 @@ test('legends list only what is drawn, notes name no road reserve, elevations ha
   const site = textOf(e.pages[1]);
   assert.ok(!/^Neighbouring lot boundary$/m.test(site), 'no neighbouring lot legend entry when none is drawn');
 });
+
+// ---- NB1: heights must not depend on the floor level ---------------------------------------------------------------------------
+const topOf = async (p) => {
+  const { collectTriangles } = await import('../src/premium/exporters/eng/views.js');
+  const t = await collectTriangles(p, catalogue);
+  return Math.round(Math.max(...t.flatMap((q) => q.p.map((v) => v.z))));
+};
+
+test('model top above the ground floor is identical with and without a floor level (two storey and a second house type)', async () => {
+  for (const make of [() => residentialCase('mid'), () => residentialCase('steep'), () => residentialCase('flat')]) {
+    const heights = [];
+    for (const fl of [null, 102.59, 110]) { const p = make(); p.site.lot.floorRL = fl; heights.push(await topOf(p)); }
+    assert.equal(new Set(heights).size, 1, `top ${heights}`);
+  }
+});
+
+test('3D build: a floor level the person set puts the house at that level (not moved to the natural ground)', async () => {
+  const { buildModel } = await import('../src/viewer3d/build.js');
+  const minWallY = (p) => { const g = buildModel(p, { catalogue, showRoof: true, statusView: 'proposed', levelFilter: 'all' }); g.updateMatrixWorld(true); let mn = 1e9; g.traverse((o) => { if (!o.isMesh || !/^wall:/.test(o.name || '')) return; const pos = o.geometry.attributes.position; for (let i = 0; i < pos.count; i++) mn = Math.min(mn, pos.getY(i) * o.matrixWorld.elements[5] + o.matrixWorld.elements[13]); }); return mn; };
+  const p = residentialCase('mid'); p.site.lot.floorRL = 102.59; p.site.lot.floorRLAuto = false;
+  assert.ok(Math.abs(minWallY(p)) < 1e-6, 'walls start at the ground floor level (Y 0)');
+});
+
+test('engineering ridge RL and height above FFL match the residential sheets A200 and A300', async () => {
+  const eng = await engSet();
+  const { Rec, pages } = recordingPDF();
+  const r = await exportPlanSet({ project: residentialCase('mid'), kind: 'site', download: false, jsPDF: Rec, fetchSite: null, catalogue, date });
+  const ridge = (t) => [...new Set([...t.replace(/\n/g, " ").matchAll(/RIDGE (?:RL )?(\d+\.\d\d)/g)].map((m) => m[1]))];
+  const above = (t) => [...t.replace(/\n/g, " ").matchAll(/(\d+\.\d\d) m ABOVE FFL/g)].map((m) => m[1]);
+  const resText = (c) => textOf(pages[r.sheets.findIndex((s) => codeOf(s) === c)]);
+  const engText = (n) => textOf(eng.pages[eng.sheets.findIndex((s) => s.number.endsWith(n))]);
+  const want = ridge(resText('A200'));
+  assert.equal(want.length, 1);
+  for (const t of [engText('A-006'), engText('A-007'), resText('A300')]) assert.deepEqual(ridge(t), want);
+  const hp = /(\d+\.\d\d) m above FFL, RL (\d+\.\d\d)/.exec(engText('A-005').replace(/\n/g, ' '));
+  assert.ok(hp, 'roof plan highest point');
+  assert.equal(hp[2], want[0]);
+  assert.equal(hp[1], above(resText('A300'))[0]);
+  assert.deepEqual(above(engText('A-007')), above(resText('A300')), 'height above FFL on the section');
+});
