@@ -1,8 +1,8 @@
 // Client for the owner's admin routes (/api/portal/admin/..., bearer ADMIN_TOKEN). Used only by the private page /portal/admin/.
 // The token is held by the page for the session; nothing here stores it.
 
-import { CONFIG } from '../config.js';
-import { ApiError } from '../premium/api.js';
+import { CONFIG } from '../config.js?v=20261119a';
+import { ApiError } from '../premium/api.js?v=20261119a';
 
 const contactQuery = (f) => {
   const q = new URLSearchParams();

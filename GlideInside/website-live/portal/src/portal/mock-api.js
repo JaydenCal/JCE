@@ -4,16 +4,16 @@
 //
 //   const api = createMockApi({ now, storage, latency });   // tests pass a controllable clock and an in-memory storage
 
-import { ApiError } from '../premium/api.js';
-import { migrate, validate } from '../model/schema.js';
-import { GLIDE_LIBRARY } from './glide-library.generated.js';
-import { houseStats } from './house-stats.js';
-import { validateColours } from './theme.js';
-import { validateDetails } from './brand-details.js';
-import { projectToSvg } from './thumbnail.js';
-import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js';
-import { gstOfTotal, monthLabel } from './billing.js';
-import { NEW_LOGIN_FEE_CENTS, JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, jobPriceFor, summariseJobs, formatAud, TOPUP_FEE_CENTS, TOPUP_CREDITS, TOPUP_MESSAGES, topUpInvoiceLines, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js';
+import { ApiError } from '../premium/api.js?v=20261119a';
+import { migrate, validate } from '../model/schema.js?v=20261119a';
+import { GLIDE_LIBRARY } from './glide-library.generated.js?v=20261119a';
+import { houseStats } from './house-stats.js?v=20261119a';
+import { validateColours } from './theme.js?v=20261119a';
+import { validateDetails } from './brand-details.js?v=20261119a';
+import { projectToSvg } from './thumbnail.js?v=20261119a';
+import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js?v=20261119a';
+import { gstOfTotal, monthLabel } from './billing.js?v=20261119a';
+import { NEW_LOGIN_FEE_CENTS, JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, jobPriceFor, summariseJobs, formatAud, TOPUP_FEE_CENTS, TOPUP_CREDITS, TOPUP_MESSAGES, topUpInvoiceLines, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js?v=20261119a';
 
 const DB_KEY = 'gi.portal.mock.v1';
 const SESSION_KEY = 'gi.portal.session.v1';
@@ -139,7 +139,7 @@ function seedDb(now) {
   };
 }
 
-export function createMockApi({ now = () => Date.now(), storage = browserStorage(), seed = true, latency = 0, loadCatalogue = () => import('../catalogue/templates.js') } = {}) {
+export function createMockApi({ now = () => Date.now(), storage = browserStorage(), seed = true, latency = 0, loadCatalogue = () => import('../catalogue/templates.js?v=20261119a') } = {}) {
   const wait = () => (latency ? new Promise((r) => setTimeout(r, latency)) : null);
 
   function load() {

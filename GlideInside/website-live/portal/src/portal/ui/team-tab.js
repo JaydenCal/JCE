@@ -1,10 +1,10 @@
 // Team: builder staff (admin or designer). Staff logins are generated the same way as client logins and are never charged.
 
-import { h, openDialog, confirmDialog, field, busy, toast, chip, icon, errorMessage } from './kit.js';
-import { credentialsCard } from './credentials-card.js';
-import { ddmmyyyy } from '../billing.js';
-import { portalUrl } from '../links.js';
-import { TEMP_PASSWORD_DAYS } from '../mock-api.js';
+import { h, openDialog, confirmDialog, field, busy, toast, chip, icon, errorMessage } from './kit.js?v=20261119a';
+import { credentialsCard } from './credentials-card.js?v=20261119a';
+import { ddmmyyyy } from '../billing.js?v=20261119a';
+import { portalUrl } from '../links.js?v=20261119a';
+import { TEMP_PASSWORD_DAYS } from '../mock-api.js?v=20261119a';
 
 export const ROLE_TEXT = { admin: 'Admin: everything, including clients, billing, team and branding', designer: 'Designer: house designs, view clients and projects' };
 

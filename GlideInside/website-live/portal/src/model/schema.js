@@ -1,4 +1,4 @@
-import { normaliseCommercial } from '../commercial/schema.js';
+import { normaliseCommercial } from '../commercial/schema.js?v=20261119a';
 
 // Glide Inside project schema, version 1. All lengths in millimetres, angles in degrees.
 // Plan coordinates: x to the right, y down the screen. See docs/SCOPE.md section 9.
