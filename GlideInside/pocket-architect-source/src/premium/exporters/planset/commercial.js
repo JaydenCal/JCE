@@ -31,13 +31,14 @@ import { COMMERCIAL_SHEET_LIST } from '../../../commercial/sheet-list.js';
 import { compute as financeCompute, compareScenarios as financeCompare, COMPARE_ROWS as FIN_COMPARE_ROWS, DISCLAIMER as FIN_DISCLAIMER } from '../../../finance/model.js';
 import { FINANCE_DATA as FIN_DATA } from '../../../finance/engine.js';
 import { AREA, fit } from './frame.js';
-import { drawSite, roadModel, siteView, fitView, northPoint, northDegOf, SITE_SCALES, SCALES_BEYOND, VP } from './site.js';
+import { drawSite, drawnContext, roadModel, siteView, fitView, northPoint, northDegOf, SITE_SCALES, SCALES_BEYOND, VP } from './site.js';
 import { hasGround, groundLevelFn, drawGroundLayer, streamMark, outwardSpots, cornersOf, intervalText } from './contours.js';
 import { levelsModel, fflText } from './levels.js';
 import { envelopePoly } from './lot.js';
 import { elevationScaleOf } from './commercial-elevations.js';
 import { sectionScaleOf } from './commercial-sections.js';
 import { viewTargets } from './commercial-targets.js';
+import { pavementModel } from '../../../commercial/catalogue/pavements/logic.js';
 import { hasUpperPlans, upperScaleOf } from './commercial-upper.js';
 
 export const COMMERCIAL_SHEETS = COMMERCIAL_SHEET_LIST;
@@ -147,21 +148,25 @@ function placeOsd(lot, covered) {
   const bb = G.bbox(lot.boundary);
   const step = Math.max(1500, Math.min(4000, Math.round(Math.max(bb.w, bb.h) / 60 / 500) * 500));
   const pad = 1200;
-  const best = { score: Infinity, poly: null, c: null };
-  for (let y = bb.minY; y <= bb.maxY; y += step) {
-    for (let x = bb.minX; x <= bb.maxX; x += step) {
-      const c = { x, y };
-      if (!G.pointInPolygon(c, lot.boundary)) continue;
-      const test = rectAt(c, dir, inward, w + 2 * pad, h + 2 * pad);
-      const probes = [...test, c, ...test.map((p, i) => G.lerp(p, test[(i + 1) % 4], 0.5))];
-      if (!probes.every((p) => G.pointInPolygon(p, lot.boundary) && !covered(p))) continue;
-      const z = zAt ? zAt(c) : null;
-      const front = Math.abs(G.dot(G.sub(c, fm), inward));
-      const score = z != null ? z * 1e6 + front : front;
-      if (score < best.score) { best.score = score; best.poly = rectAt(c, dir, inward, w, h); best.c = c; }
+  // The long side runs along the frontage; where the open ground is too narrow for that, the basin is turned a quarter.
+  for (const [ax, ay] of [[dir, inward], [inward, dir]]) {
+    const best = { score: Infinity, poly: null, c: null };
+    for (let y = bb.minY; y <= bb.maxY; y += step) {
+      for (let x = bb.minX; x <= bb.maxX; x += step) {
+        const c = { x, y };
+        if (!G.pointInPolygon(c, lot.boundary)) continue;
+        const test = rectAt(c, ax, ay, w + 2 * pad, h + 2 * pad);
+        const probes = [...test, c, ...test.map((p, i) => G.lerp(p, test[(i + 1) % 4], 0.5))];
+        if (!probes.every((p) => G.pointInPolygon(p, lot.boundary) && !covered(p))) continue;
+        const z = zAt ? zAt(c) : null;
+        const front = Math.abs(G.dot(G.sub(c, fm), inward));
+        const score = z != null ? z * 1e6 + front : front;
+        if (score < best.score) { best.score = score; best.poly = rectAt(c, ax, ay, w, h); best.c = c; }
+      }
     }
+    if (best.poly) return { poly: best.poly, centre: best.c, basis: useZ ? 'levels' : 'assumed' };
   }
-  return best.poly ? { poly: best.poly, centre: best.c, basis: useZ ? 'levels' : 'assumed' } : null;
+  return null;
 }
 
 /** Fraction of the lot that is neither built, paved, waste nor OSD, on a metre grid. */
@@ -187,6 +192,10 @@ export function commercialModel(project, lot, { levels = null } = {}) {
   const a = analyse(project);
   const wp = { ...project, site: { ...(project.site || {}), lot } };
   const polys = [...a.units.map((u) => u.poly), ...pavedPolys(c, a), ...buildingPolys(c)];
+  // The paving the 3D model and the levels sheet (C102) use: car park, apron and the links to the access. One source for C101 and C102.
+  let pavingAreas = [];
+  try { pavingAreas = (pavementModel(c, lot)?.areas || []).map((x) => x.polygon).filter((q) => q?.length >= 3); } catch { pavingAreas = []; }
+  polys.push(...pavingAreas);
   const hs = hardstandModel(wp);
   const hardstand = (hs?.areas || []).filter((x) => x.role === 'hardstand');
   const hardstandKerbs = (hs?.kerbs || []).filter((k) => String(k.areaId || '').startsWith('hs_'));
@@ -202,7 +211,7 @@ export function commercialModel(project, lot, { levels = null } = {}) {
   const cls = effectiveClass(wp) || 'industrial';
   const rules = { ...defaultRulesFor(cls), ...effectiveRules(wp, cls) };
   const carparks = hs?.carparks || [];
-  return { project: wp, c, a, lot, units: a.units, stats: a.stats, osd, covered, land, cls, rules, off: bayOffsetMm(c.parking), hardstand, hardstandKerbs, carparks, levels: levels || (lot ? levelsModel(wp, lot) : null) };
+  return { project: wp, c, a, lot, units: a.units, stats: a.stats, pavingAreas, osd, covered, land, cls, rules, off: bayOffsetMm(c.parking), hardstand, hardstandKerbs, carparks, levels: levels || (lot ? levelsModel(wp, lot) : null) };
 }
 
 // Sheet list ----------------------------------------------------------------------------------------------------------------
@@ -554,13 +563,14 @@ function stairRect(u, m) {
 }
 
 // C100 existing site -------------------------------------------------------------------------------------------------------
-function existingLegend(aerial, contours = []) {
+function existingLegend(aerial, contours = [], lot = null) {
+  const dc = drawnContext(lot);
   return legendBlock([
     ['Lot boundary (DCDB)', lineSw(aerial ? PEN.cadRed : PEN.ink, 0.7)],
-    ['Adjoining lot boundary', lineSw(aerial ? [70, 74, 84] : GREYLINE, 0.18)],
-    ['Road centreline', lineSw(PEN.phantom, 0.3, [3, 0.8, 0.6, 0.8])],
+    ...(dc.neighbours ? [['Adjoining lot boundary', lineSw(aerial ? [70, 74, 84] : GREYLINE, 0.18)]] : []),
+    ...(dc.roads ? [['Road centreline', lineSw(PEN.phantom, 0.3, [3, 0.8, 0.6, 0.8])]] : []),
     ['Building setback line', lineSw(aerial ? PEN.envelopeAerial : GREYLINE, aerial ? 0.3 : 0.2, [1.6, 1])],
-    ['Kerb and gutter', (doc, a, b) => { doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.25); doc.line(a, b - 0.5, a + 12, b - 0.5); doc.line(a, b + 0.5, a + 12, b + 0.5); }],
+    ...(dc.roads ? [['Kerb and gutter', (doc, a, b) => { doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.25); doc.line(a, b - 0.5, a + 12, b - 0.5); doc.line(a, b + 0.5, a + 12, b + 0.5); }]] : []),
     ...contours,
   ]);
 }
@@ -587,7 +597,7 @@ export function drawExisting(doc, project, lot, { aerial = null, levels = null }
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines are indicative, check with council.'];
   if (r.groundNote) notes.push(r.groundNote);
   if (!over) notes.push('No aerial is shown for this lot.');
-  return { scale: r.scale, scaleLabel: r.scaleLabel, kv, notes, blocks: [existingLegend(over, r.legendContours || [])] };
+  return { scale: r.scale, scaleLabel: r.scaleLabel, kv, notes, blocks: [existingLegend(over, r.legendContours || [], lot)] };
 }
 
 // Catalogue buildings on C101: extras (apron, canopy, dock recess), walls, roller doors, the plan label with the GFA, dock and canopy lines,
@@ -678,12 +688,13 @@ function drawBuildingShells(doc, model, view, field) {
 }
 
 // C101 proposed layout -----------------------------------------------------------------------------------------------------
-function layoutLegend(model = null, contours = []) {
+function layoutLegend(model = null, contours = [], lot = null) {
+  const dc = drawnContext(lot);
   const hsTypes = [...new Set((model?.hardstand || []).map((x) => x.type))];
   return legendBlock([
     ['Lot boundary (existing)', lineSw(PEN.ink, 0.7)],
-    ['Adjoining lot (DCDB)', lineSw(GREYLINE, 0.18)],
-    ['Road centreline', lineSw(PEN.phantom, 0.3, [3, 0.8, 0.6, 0.8])],
+    ...(dc.neighbours ? [['Adjoining lot (DCDB)', lineSw(GREYLINE, 0.18)]] : []),
+    ...(dc.roads ? [['Road centreline', lineSw(PEN.phantom, 0.3, [3, 0.8, 0.6, 0.8])]] : []),
     ['Building setback line', lineSw(GREYLINE, 0.2, [1.6, 1])],
     [model?.stats?.units > 0 ? 'PROPOSED UNIT' : 'PROPOSED BUILDING', swatch(UNIT_FILL, PEN.ink)],
     ['Mezzanine outline', lineSw(PEN.ink, 0.25, [1.6, 0.9])],
@@ -843,6 +854,8 @@ export function drawLayout(doc, model) {
     // The label is placed later, with the other call outs, so it avoids the lot boundary and the dimensions.
     accessAnchor = T({ x: (access.crossover[2].x + access.crossover[3].x) / 2, y: (access.crossover[2].y + access.crossover[3].y) / 2 });
   }
+  // The model's own paving (links between the car park, the apron and the access) so C101 and C102 show the same pavement.
+  for (const pa of model.pavingAreas || []) { doc.setFillColor(...PAVE_FILL); polygon(doc, pa.map(T), 'F'); }
   for (const pr of a.parking.rows) {
     if (!pr.slots.length) continue;
     const fr = pr.frame;
@@ -1196,7 +1209,7 @@ export function drawLayout(doc, model) {
     'Site access and crossover are indicative and to be confirmed with council.',
   ];
   notes.push(levels.has ? ground.note : 'No ground levels for this lot. Floor levels are on an assumed datum.');
-  return { scale, kv, notes, blocks: [layoutLegend(model, ground.legend)], ground };
+  return { scale, kv, notes, blocks: [layoutLegend(model, ground.legend, lot)], ground };
 }
 
 // C102 mezzanine level plan --------------------------------------------------------------------------------------------------
@@ -1521,7 +1534,7 @@ export function drawYield(doc, model) {
     ['Bays provided', `${par.provided} (${par.accessible.provided} accessible), ${par.provided >= par.required ? 'at or above' : 'below'} the ${par.required} indicated`],
     ['Accessible bays', `${par.accessible.required} indicated for ${accCls} (NCC D4D6), ${par.accessible.provided} provided, each with a ${m1(ACCESSIBLE_BAY.sharedZoneMm)} m shared zone and a central bollard`],
     ['Truck apron and car aisle', stats.buildingCount && !stats.units ? bsch.rows.map((r) => `B${r.n} ${m1(buildingsOf(c)[r.n - 1].site?.vehicles?.apronDepthMm || 0)} m`).join(', ') + ` apron from the front edge, car aisle ${m1(c.parking.aisleMm)} m` : `${m1(model.off)} m clear from the roller doors to the bays, car aisle ${m1(c.parking.aisleMm)} m`],
-    ['Bollards (indicative)', `${a.schedule.total}`],
+    ...(a.schedule.total > 0 ? [['Bollards (indicative)', `${a.schedule.total}`]] : []),
   ];
   yR = kvTable(doc, XR, yR, WR, summary, { size: big ? 7 : 6.4, split: 0.36 });
   yR += 2;
@@ -1541,11 +1554,13 @@ export function drawYield(doc, model) {
   dr.push(['Total', String(dr.reduce((s, r) => s + Number(r[1]), 0)), [rows.length ? `${rows.length} ${rows.length === 1 ? 'unit' : 'units'}` : null, c.buildings?.length ? `${c.buildings.length} ${c.buildings.length === 1 ? 'building' : 'buildings'}` : null].filter(Boolean).join(', ')]);
   yR = table(doc, XR, yR, [{ w: 36 }, { w: 14, align: 'right' }, { w: WR - 50 }], ['DOOR (W x H)', 'COUNT', 'SERVES'], dr, { rh: 4, size: 6.4, boldLast: true });
   yR += 2;
-  yR = sectionTitle(doc, 'BOLLARD SCHEDULE (INDICATIVE)', XR, yR, WR);
-  const bs = a.schedule.byKind.map((r) => [r.label, String(r.count)]);
-  bs.push(['Total', String(a.schedule.total)]);
-  yR = table(doc, XR, yR, [{ w: WR - 20 }, { w: 20, align: 'right' }], ['KIND', 'COUNT'], bs, { rh: 4, size: 6.4, boldLast: true });
-  yR += 2;
+  if (a.schedule.total > 0) {
+    yR = sectionTitle(doc, 'BOLLARD SCHEDULE (INDICATIVE)', XR, yR, WR);
+    const bs = a.schedule.byKind.map((r) => [r.label, String(r.count)]);
+    bs.push(['Total', String(a.schedule.total)]);
+    yR = table(doc, XR, yR, [{ w: WR - 20 }, { w: 20, align: 'right' }], ['KIND', 'COUNT'], bs, { rh: 4, size: 6.4, boldLast: true });
+    yR += 2;
+  }
 
   // Notes: one customer facing line. The value status detail (unverified and secondary source values) is shown in the details panel on screen,
   // never on the plan set.
@@ -1553,7 +1568,7 @@ export function drawYield(doc, model) {
     ...(zoneMismatch(lot) ? [RESIDENTIAL_NOTE] : []),
     'Indicative only. Rates and controls to be confirmed with council and a suitably qualified engineer.',
     'Every figure here is a concept value and not an approval or a design.',
-    'Bollard locations are indicative and to be confirmed in design.',
+    ...(a.schedule.total > 0 ? ['Bollard locations are indicative and to be confirmed in design.'] : []),
     'Landscaping is the lot area that is neither built nor paved. The OSD basin is a placeholder at the assumed low point and carries no size.',
     'The site access and crossover are indicative. Swept paths, stormwater design and services are not part of this set.',
   ];

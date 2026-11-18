@@ -216,7 +216,7 @@ export function contourPen({ design = false, major = false, light = false } = {}
  * footprint, the driveway) is left out. Lines are first clipped to the viewport `rect`. Consecutive visible pieces are stroked as one
  * path so a dashed line keeps its rhythm. Returns the number of polylines stroked.
  */
-export function strokeContours(doc, lines, rect, masks, { light = false } = {}) {
+export function strokeContours(doc, lines, rect, masks, { light = false, casing = false } = {}) {
   const bbs = masks.map((m) => G.bbox(m));
   let count = 0;
   for (const design of [false, true]) {
@@ -230,7 +230,13 @@ export function strokeContours(doc, lines, rect, masks, { light = false } = {}) 
         let run = null;
         const flush = () => {
           if (run && run.length >= 2) {
-            doc.lines(run.slice(1).map((q, i) => [q.x - run[i].x, q.y - run[i].y]), run[0].x, run[0].y, [1, 1], 'S', false);
+            const rel = run.slice(1).map((q, i) => [q.x - run[i].x, q.y - run[i].y]);
+            if (casing) { // a pale casing under the line keeps it readable over a photograph
+              doc.setDrawColor(255, 255, 255); doc.setLineWidth(pen.width + 0.7); doc.setLineDashPattern([], 0);
+              doc.lines(rel, run[0].x, run[0].y, [1, 1], 'S', false);
+              doc.setDrawColor(...pen.colour); doc.setLineWidth(pen.width + 0.1); doc.setLineDashPattern(pen.dash, 0);
+            }
+            doc.lines(rel, run[0].x, run[0].y, [1, 1], 'S', false);
             count++;
           }
           run = null;
@@ -517,7 +523,7 @@ export function contourLegendEntries(interval, { design = false, light = false }
  *   mark          streamMark(doc) taken before the linework
  * Returns { drawn, lines, interval, note, legend, stroked, labels, spots, ffl }.
  */
-export function drawGroundLayer(doc, { lot, levels, S, Si = null, rect, field, masks = [], design = false, light = false, spots = [], ffl = [], mark = null, bbox = null, interval = null, labelSize = 5.6, spotSize = 5.6, labels = true, only = null, reserve = [] } = {}) {
+export function drawGroundLayer(doc, { lot, levels, S, Si = null, rect, field, masks = [], design = false, light = false, spots = [], ffl = [], mark = null, casing = false, bbox = null, interval = null, labelSize = 5.6, spotSize = 5.6, labels = true, only = null, reserve = [] } = {}) {
   const none = { drawn: false, lines: [], interval: null, note: null, legend: [], stroked: 0, labels: [], spots: 0, ffl: 0 };
   // The FFL tags state the floor level, with or without ground data (an assumed datum is said so).
   let fflDrawn = 0;
@@ -539,7 +545,7 @@ export function drawGroundLayer(doc, { lot, levels, S, Si = null, rect, field, m
   const m = field.boxes.filter((b) => !b.nomask).map((b) => boxMask(b));
   const stroked = (() => {
     const before = mark ? mark.stream.length : 0;
-    const n = strokeContours(doc, sp, rect, [...m, ...masks], { light });
+    const n = strokeContours(doc, sp, rect, [...m, ...masks], { light, casing });
     if (mark) {
       const added = mark.stream.splice(before);
       mark.stream.splice(mark.at, 0, 'q', ...added, 'Q');

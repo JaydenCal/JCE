@@ -208,19 +208,24 @@ export function northPoint(doc, cx, cy, deg) {
   doc.text('N', cx + d.x * (r + 3.6), cy + d.y * (r + 3.6) + 1.2, { align: 'center' });
 }
 
-/** Legend block for the title strip. */
-export function legendBlock({ contours = [], paved = null, extra = [] } = {}, avail = null) {
+/** What the lot sheets draw as context, so a legend lists only what is on the sheet: the road reserve (only roads the user drew) and the adjoining lots. */
+export function drawnContext(lot) {
+  return { roads: roadModel(lot).length > 0, neighbours: (lot?.neighbours || []).some((n) => n.ring && n.ring.length >= 3 && !n.isRoad) };
+}
+
+/** Legend block for the title strip. Rows for the road reserve and the adjoining lots appear only when drawn (roads, neighbours). */
+export function legendBlock({ contours = [], paved = null, extra = [], roads = false, neighbours = true, encroach = true } = {}, avail = null) {
   const items = [
     ['Lot boundary (DCDB)', (doc, a, b) => { doc.setLineWidth(0.7); doc.setDrawColor(...PEN.ink); doc.line(a, b, a + 12, b); }],
-    ['Adjoining lot boundary', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.line(a, b, a + 12, b); }],
-    ['Road centreline', (doc, a, b) => { doc.setLineWidth(0.3); doc.setDrawColor(...PEN.phantom); doc.setLineDashPattern([3, 0.8, 0.6, 0.8], 0); doc.line(a, b, a + 12, b); doc.setLineDashPattern([], 0); }],
+    ...(neighbours ? [['Adjoining lot boundary', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.line(a, b, a + 12, b); }]] : []),
+    ...(roads ? [['Road centreline', (doc, a, b) => { doc.setLineWidth(0.3); doc.setDrawColor(...PEN.phantom); doc.setLineDashPattern([3, 0.8, 0.6, 0.8], 0); doc.line(a, b, a + 12, b); doc.setLineDashPattern([], 0); }]] : []),
     ['Building setback line', (doc, a, b) => { doc.setLineWidth(0.2); doc.setDrawColor(...GREYLINE); doc.setLineDashPattern([1.6, 1], 0); doc.line(a, b, a + 12, b); doc.setLineDashPattern([], 0); }],
     ['Walls', (doc, a, b) => { doc.setLineWidth(0.8); doc.setDrawColor(...PEN.ink); doc.line(a, b, a + 12, b); }],
     ['Roof line (eaves)', (doc, a, b) => { doc.setLineWidth(0.25); doc.setDrawColor(...PEN.ink); doc.setLineDashPattern([3, 1.2], 0); doc.line(a, b, a + 12, b); doc.setLineDashPattern([], 0); }],
-    ['Kerb and gutter', (doc, a, b) => { doc.setLineWidth(0.25); doc.setDrawColor(...PEN.ink); doc.line(a, b - 0.5, a + 12, b - 0.5); doc.line(a, b + 0.5, a + 12, b + 0.5); }],
+    ...(roads ? [['Kerb and gutter', (doc, a, b) => { doc.setLineWidth(0.25); doc.setDrawColor(...PEN.ink); doc.line(a, b - 0.5, a + 12, b - 0.5); doc.line(a, b + 0.5, a + 12, b + 0.5); }]] : []),
     ...((paved && paved.length ? paved : [{ material: 'concrete' }]).map((e) => [paved && paved.length ? `${PAVE_MATERIALS[e.material].label} paving, ${Math.round(e.areaM2)} m2` : 'Concrete driveway', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.rect(a, b - 1.4, 12, 2.8, 'S'); hatch(doc, [{ x: a, y: b - 1.4 }, { x: a + 12, y: b - 1.4 }, { x: a + 12, y: b + 1.4 }, { x: a, y: b + 1.4 }], HATCH_KIND[e.material]); }])),
     ...(contours || []),
-    ['Setback encroachment', (doc, a, b) => { doc.setLineWidth(0.3); doc.setDrawColor(...RED); doc.line(a, b, a + 12, b); }],
+    ...(encroach ? [['Setback encroachment', (doc, a, b) => { doc.setLineWidth(0.3); doc.setDrawColor(...RED); doc.line(a, b, a + 12, b); }]] : []),
     ...extra, // optional site constraint overlays (planset/overlays.js)
   ];
   const rowH = avail ? Math.min(4, (avail - 6.5) / items.length) : 4;
@@ -228,7 +233,7 @@ export function legendBlock({ contours = [], paved = null, extra = [] } = {}, av
     title: 'LEGEND',
     h: 4 + items.length * rowH + 2.5,
     // The title strip asks a legend that does not fit to close up its rows (down to 2.6 mm) instead of being dropped.
-    fitTo: (h) => ((h - 6.5) / items.length >= 2.6 ? legendBlock({ contours, paved, extra }, h) : null),
+    fitTo: (h) => ((h - 6.5) / items.length >= 2.4 ? legendBlock({ contours, paved, extra, roads, neighbours, encroach }, h) : null),
     draw(doc, x, y) {
       items.forEach(([t, draw], i) => {
         const ly = y + 2.4 + i * rowH;
@@ -714,7 +719,7 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
     ['Setback check', cl.status === 'ok' ? 'Inside setbacks (indicative)' : cl.status === 'breach' ? 'Outside setbacks (indicative)' : 'Setbacks not loaded'],
   ].filter(Boolean);
   const pavedSum = pavedSummary(project);
-  const blocks = [legendBlock({ contours: gl.legend, paved: pavedSum.byMaterial, extra: overlayLegendItems(lot) })];
+  const blocks = [legendBlock({ contours: gl.legend, paved: pavedSum.byMaterial, extra: overlayLegendItems(lot), ...drawnContext(lot), encroach: cl.status === 'breach' })];
   if (schedule.length) blocks.push(scheduleBlock(schedule));
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines and dimensions are indicative.', 'Driveway and road reserve are typical values.'];
   notes.push(ground0 ? gl.note : `No ground levels for this lot.${hullPoly.length ? ' Floor level is on an assumed datum.' : ''}`);
