@@ -128,6 +128,7 @@ export function sampleLineWithBreaks(line, step = 1.5, breaks = []) {
 /** Height scale (0 = fully dropped, 1 = full kerb) at distance d metres along the kerb for a driveway crossover spanning [s0, s1] metres, with a ramp each side. */
 export function kerbDropScale(d, span, ramp = 0.6) {
   if (!span) return 1;
+  if (Array.isArray(span[0])) return span.reduce((m, sp) => Math.min(m, kerbDropScale(d, sp, ramp)), 1); // several crossovers: the lowest wins
   if (d >= span[0] && d <= span[1]) return 0;
   const k = d < span[0] ? span[0] - d : d - span[1];
   return Math.min(1, k / ramp);
@@ -198,9 +199,27 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
         const ds = dw.crossover.polygon.map((p) => ((p.x - k0.x) * r.u.x + (p.y - k0.y) * r.u.y) / 1000);
         drop = [Math.min(...ds), Math.max(...ds)];
       }
+      // A commercial site: the near kerb drops across each of its entry and exit crossovers too (the layback kerbs of the pavement model),
+      // as a house crossover does, so the street kerb never runs across an access drive.
+      if (project.mode === 'commercial' && project.commercial) {
+        try {
+          const k0 = lines.kerb[0];
+          const prop = r.lines.property;
+          const spans = [];
+          for (const k of pavementModel(project.commercial, lot).kerbs) {
+            if (!k.crossover || k.polyline?.length < 2) continue;
+            const mid = G.lerp(k.polyline[0], k.polyline[k.polyline.length - 1], 0.5);
+            if (prop && G.projectToSegment(mid, prop[0], prop[1]).d > 25000) continue; // a crossover on another street
+            const ds = k.polyline.map((p) => ((p.x - k0.x) * r.u.x + (p.y - k0.y) * r.u.y) / 1000);
+            spans.push([Math.min(...ds), Math.max(...ds)]);
+          }
+          if (spans.length) drop = spans;
+        } catch { /* the kerb stays whole */ }
+      }
       // sg: +1 near kerb (profile runs back towards the property), -1 far kerb (profile runs out to the far verge)
       const kerbLine = (name, sg, span) => {
-        const pts = sampleLineWithBreaks(lines[name], 1.5, span ? [span[0] - 0.6, span[0], span[1], span[1] + 0.6] : []);
+        const spans = !span ? [] : Array.isArray(span[0]) ? span : [span];
+        const pts = sampleLineWithBreaks(lines[name], 1.5, spans.flatMap((sp) => [sp[0] - 0.6, sp[0], sp[1], sp[1] + 0.6]));
         const k0 = lines[name][0];
         const along = pts.map((p) => ((p.x - k0.x) * r.u.x + (p.y - k0.y) * r.u.y) / 1000);
         const u = r.outward;
