@@ -76,7 +76,7 @@ export function facadeGeometry(f, project) {
 function sideLevels(t, side) {
   const n = side.out(t);
   const out = [];
-  if (t.kind === 'building') {
+  if (t.kind === 'building' && !t.open) {
     for (const lv of t.levels) {
       const cands = (lv.level.walls || []).filter((w) => w.building === t.building.id && w.kind === 'exterior' && w.outside && (() => {
         const L = wlen(w) || 1;
@@ -344,9 +344,9 @@ function drawSide(doc, t, d, box, scale, levels, wallRgb) {
   for (const p of t.props) {
     const cx = (p.x0 + p.x1) / 2; const cy = (p.y0 + p.y1) / 2;
     const inside = cx > 0 && cx < t.L && cy > 0 && cy < t.D;
-    if (inside && p.z1 <= t.wallTop) continue;
+    if (inside && p.z1 <= t.wallTop && !t.open) continue;
     const dep = d.dOf({ x: cx, y: cy });
-    if (dep < d.dW - 1) continue; // on the far side of the building: hidden by it
+    if (dep < d.dW - 1 && !t.open) continue; // on the far side of the building: hidden by it
     const sv = [d.sOf({ x: p.x0, y: p.y0 }), d.sOf({ x: p.x1, y: p.y0 }), d.sOf({ x: p.x0, y: p.y1 }), d.sOf({ x: p.x1, y: p.y1 })];
     const s0 = Math.min(...sv) - d.sMin; const s1 = Math.max(...sv) - d.sMin;
     if (s1 < 0 || s0 > d.width) continue; // beside the building, not in front of it

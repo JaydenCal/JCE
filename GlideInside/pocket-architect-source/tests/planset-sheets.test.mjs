@@ -60,6 +60,14 @@ test('sheet codes: C1xx plans, C2xx elevations, C3xx sections, C900 and C910 las
   }
 });
 
+test('sheet codes: the C102 levels and grading plan is issued only when the lot has ground data', () => {
+  const w = commercialCase('warehouse', 'mid');
+  const wl = levelsModel(w, lotOf(w), {});
+  assert.ok(planSetSheets({ project: w, lot: lotOf(w), kind: 'commercial', levels: wl }).some((s) => s.code === 'C102' && s.id === 'levels'));
+  const n = commercialCase('warehouse', 'none');
+  assert.ok(!planSetSheets({ project: n, lot: lotOf(n), kind: 'commercial', levels: levelsModel(n, lotOf(n), {}) }).some((s) => s.id === 'levels'));
+});
+
 test('sheet codes: a sheet with nothing to draw is not issued (no upper level plan without an upper level or mezzanine)', () => {
   const g = commercialCase('garage-single', 'none');
   assert.ok(!planSetSheets({ project: g, lot: lotOf(g), kind: 'commercial' }).some((s) => s.id === 'upper'));

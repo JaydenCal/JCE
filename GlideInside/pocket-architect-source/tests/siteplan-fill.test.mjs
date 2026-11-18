@@ -146,7 +146,7 @@ test('commercial set: C100 and C101 print the true scale when paid and NOT TO SC
   const prev = await exportPlanSet({ project: s.project, kind: 'commercial', download: false, preview: true, jsPDF: rec2.Rec, fetchSite: null, date: new Date(2026, 10, 15) });
   assert.ok(prev.sheets.every((x) => x.scale === 'NOT TO SCALE'));
   assert.ok(!/\b1:\d+ @ A3/.test(rec2.texts.join('\n')));
-  assert.equal(await pagesOf(prev.blob), 7); // cover, C100 to C103, the C104 elevations sheet of the tilt-up work and the C105 feasibility page
+  assert.equal(await pagesOf(prev.blob), prev.sheets.length); // cover, plans, elevations, sections, the C900 schedules and the C910 feasibility page
 });
 
 test('commercial C100 under an aerial keeps north up (the image cannot be turned), and the sheet scale says so', () => {

@@ -30,6 +30,7 @@ import { zoneMismatch, RESIDENTIAL_NOTE } from '../../../commercial/zones.js';
 import { drawElevations } from './commercial-elevations.js';
 import { drawSections, sectionLetters } from './commercial-sections.js';
 import { drawUpperPlans } from './commercial-upper.js';
+import { drawLevelsPlan } from './commercial-levels.js';
 import { viewTargets } from './commercial-targets.js';
 import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, existingScale, drawLayout, drawMezzanine, drawYield, drawFinancePage, coverThumbnail, commercialNotes, layoutKind, cap1 } from './commercial.js';
 import { lotOf } from '../../../model/placement.js';
@@ -164,12 +165,13 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
       } else {
         if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null, levels });
         else if (s.id === 'layout') r = drawLayout(doc, cmodel);
+        else if (s.id === 'levels') r = drawLevelsPlan(doc, cmodel, levels);
         else if (s.id === 'upper') r = s.upper === 'mezz' ? drawMezzanine(doc, cmodel) : drawUpperPlans(doc, cmodel, targetsByKey.get(s.target), levels);
         else if (s.id === 'elev') r = drawElevations(doc, cmodel, targetsByKey.get(s.target), levels);
         else if (s.id === 'sect') r = drawSections(doc, cmodel, targetsByKey.get(s.target), letters.get(s.target), levels);
         else if (s.id === 'finance') r = drawFinancePage(doc, wp);
         else r = drawYield(doc, cmodel);
-        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' ? 'SITE DATA' : s.id === 'yield' || s.id === 'finance' ? 'KEY FIGURES' : s.id === 'upper' ? 'UPPER LEVEL DATA' : s.id === 'elev' ? 'ELEVATION DATA' : s.id === 'sect' ? 'SECTION DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
+        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' ? 'SITE DATA' : s.id === 'yield' || s.id === 'finance' ? 'KEY FIGURES' : s.id === 'upper' ? 'UPPER LEVEL DATA' : s.id === 'levels' ? 'LEVELS DATA' : s.id === 'elev' ? 'ELEVATION DATA' : s.id === 'sect' ? 'SECTION DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
       }
     } else if (s.id === 'cover') {
       drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });

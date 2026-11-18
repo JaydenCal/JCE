@@ -68,9 +68,16 @@ export function viewTargets(project) {
     try { raw = roofsOf(b, project)[0] || null; } catch { raw = null; }
     const spec = constructionSpec(b.params);
     const wallTop = Math.max(...levels.map((x) => x.z + x.h));
+    // An open canopy is a roof on posts: the model carries four plain walls for it, the drawings show posts and the roof instead.
+    const open = b.type === 'canopy';
+    const props = buildingProps(b);
+    if (open) {
+      const nx = Math.max(1, Math.ceil(L / 6000));
+      for (let i = 0; i <= nx; i++) for (const y of [100, D - 100]) { const x = Math.min(L - 100, Math.max(100, (L * i) / nx)); props.push({ x0: x - 100, x1: x + 100, y0: y - 100, y1: y + 100, z0: 0, z1: wallTop, slot: 'steel' }); }
+    }
     out.push({
       key: b.id, kind: 'building', n: bn, tag: `B${b.n}`, short: b.planLabel, label: `B${b.n} ${b.planLabel}`, building: b, frame, L, D, outline: o, levels, floors, wallTop,
-      parapetMm: Number(spec.parapetMm) || 0, roof: roofTerms(raw, L, D), props: buildingProps(b), params: b.params, spec, constructionLine: constructionLine(b.params), fflKey: b.id, project, t0,
+      parapetMm: Number(spec.parapetMm) || 0, roof: roofTerms(raw, L, D), props, open, params: b.params, spec, constructionLine: constructionLine(b.params), fflKey: b.id, project, t0,
     });
   }
   const rows = c.rows || [];

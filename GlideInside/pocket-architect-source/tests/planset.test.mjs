@@ -355,13 +355,16 @@ const crun = async (extra = {}) => {
   return { r, text: texts.join('\n'), texts };
 };
 
-test('commercial kind: C000 to C105 sheets, one page each', async () => {
+test('commercial kind: C000, C100, C101, C110 mezzanine, C200 elevations, C300 sections, C900 and C910, one page each', async () => {
   const { r } = await crun();
-  assert.equal(r.pages, 7);
-  assert.equal(await pagesOf(r.blob), 7);
-  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'C101', 'C102', 'C103', 'C104', 'C105']);
+  const codes = r.sheets.map((s) => s.no.split('-').pop());
+  assert.equal(r.pages, r.sheets.length);
+  assert.equal(await pagesOf(r.blob), r.pages);
+  assert.deepEqual(codes.slice(0, 4), ['C000', 'C100', 'C101', 'C110']);
+  assert.deepEqual(codes.slice(-2), ['C900', 'C910']);
+  assert.ok(codes.some((c) => /^C2\d\d$/.test(c)) && codes.some((c) => /^C3\d\d$/.test(c)));
   assert.match(r.filename, /commercial-plan-set\.pdf$/);
-  assert.equal(planSetSheets({ project: cproject, lot: null, kind: 'commercial' }).length, 7);
+  assert.ok(planSetSheets({ project: cproject, lot: null, kind: 'commercial' }).length >= 7);
 });
 
 test('commercial kind: PROPOSED UNIT n labels, areas, schedule and title block', async () => {
@@ -385,7 +388,7 @@ test('commercial kind: no forbidden words, dashes or builder brands; watermark o
   assert.equal(b.texts.filter((x) => /^Prepared for/.test(x)).length, 0);
 });
 
-test('commercial kind: C103 carries the indicative yield and value section with the caveat, data date and sources', async () => {
+test('commercial kind: C900 carries the indicative yield and value section with the caveat, data date and sources', async () => {
   const { text: raw } = await crun({ builderName: '' });
   const text = raw.replace(/\s+/g, ' '); // the caveat is wrapped to the column, so it spans several lines
   for (const want of ['INDICATIVE YIELD AND VALUE', 'Estimates only, not a valuation. Enter your own values in any field. Defaults come from portal listings and published reports; check with a registered valuer and quantity surveyor before relying on them.', 'Portal data as at 13/11/2026, market data as at 15/11/2026', 'All figures are ex GST', 'Council charges', 'Gross realisation (GFA x sale rate)', 'End value by capitalisation (net rent / net yield)', 'Net rent per year', 'Total development cost', 'Indicative margin, sell the units', '$3,714,379', 'commercialrealestate.com.au', 'building footprint plus hardstand', 'clearing and landscaping']) assert.ok(text.includes(want), `missing ${want}`);
@@ -405,12 +408,12 @@ test('commercial exports go through buildExport: pdf is the plan set, dxf still 
   const { buildExport } = await import('../src/premium/exporters/index.js');
   const pdf = await buildExport('pdf', cproject, { jsPDF });
   assert.match(pdf.filename, /commercial-plan-set\.pdf$/);
-  assert.equal(await pagesOf(new Blob([pdf.bytes])), 7);
+  assert.ok(await pagesOf(new Blob([pdf.bytes])) >= 7);
   const dxf = await buildExport('dxf', cproject, {});
   assert.ok(dxf.bytes.length > 1000);
 });
 
-test('commercial kind: catalogue buildings appear on C101 (plan label, docks, canopy) and C103 (schedule row per building, GFA by use)', async () => {
+test('commercial kind: catalogue buildings appear on C101 (plan label, docks, canopy) and C900 (schedule row per building, GFA by use)', async () => {
   const { createStore } = await import('../src/model/store.js');
   const { chooseBuilding } = await import('../src/commercial/catalogue/fit.js');
   const { applyBuildingChoice, addBuilding } = await import('../src/commercial/catalogue/ops.js');
@@ -420,7 +423,7 @@ test('commercial kind: catalogue buildings appear on C101 (plan label, docks, ca
   const { Rec, texts } = recorder();
   const r = await exportPlanSet({ project: s.project, kind: 'commercial', download: false, jsPDF: Rec, fetchSite: null, date: new Date(2026, 10, 13) });
   const text = texts.join('\n');
-  assert.equal(r.pages, 7);
+  assert.equal(r.pages, r.sheets.length);
   assert.match(text, /WAREHOUSE/);
   assert.match(text, /SHOWROOM/);
   assert.match(text, /\d DOCKS?/);

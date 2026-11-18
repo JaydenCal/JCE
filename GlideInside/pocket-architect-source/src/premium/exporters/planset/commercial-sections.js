@@ -84,6 +84,7 @@ export function sectionLetters(targets) {
 /** The walls of a target in local mm: [{ a, b, thickness, kind, z0, z1, openings: [{ offset (centre along a to b), width, height, sill, kind }], level }]. */
 export function localWalls(t) {
   const out = [];
+  if (t.open) return out;
   if (t.kind === 'building') {
     for (const f of t.floors) {
       for (const w of (f.level.walls || []).filter((x) => x.building === t.building.id)) {

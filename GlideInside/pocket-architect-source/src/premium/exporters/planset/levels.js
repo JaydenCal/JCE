@@ -83,5 +83,5 @@ export function levelsModel(project, lot, { tm = null } = {}) {
     return fin(z) && has ? r2(z + SLAB_M) : floorRL;
   };
   const datumNote = has ? `Indicative, from the ${lot?.state === 'QLD' ? 'Queensland' : 'NSW'} 5 m DEM` : `Assumed RL ${rlText(ASSUMED_RL)}`;
-  return { has, source: has ? 'dem' : 'assumed', datumNote, floorSet, natural, design, floorRL, fflOf, reliefM: has && minRL != null ? maxRL - minRL : 0, minRL, maxRL, hasDesign: !!(has && tm?.heightAt) };
+  return { has, source: has ? 'dem' : 'assumed', datumNote, floorSet, natural, design, floorRL, fflOf, reliefM: has && minRL != null ? maxRL - minRL : 0, minRL, maxRL, hasDesign: !!(has && tm?.heightAt), grading: tm?.grading || null, tm };
 }

@@ -1,5 +1,5 @@
-// Commercial plan set (kind 'commercial'): C000 cover and locality, C100 existing site, C101 proposed layout, C102 mezzanine level plan,
-// C103 yield summary, C104 elevations. The geometry comes from project.commercial through the same analysis the editor uses (src/commercial/analyse.js), so
+// Commercial plan set (kind 'commercial'): C000 cover and locality, C100 existing site, C101 proposed layout, C102 levels plan, C110 upper level
+// plans, C200 elevations, C300 sections, C900 yield summary, C910 feasibility. The geometry comes from project.commercial through the same analysis the editor uses (src/commercial/analyse.js), so
 // the sheets and the live stats strip always agree. Sheet units are millimetres on A3; plan units are millimetres on the ground (y down).
 //
 // Everything here is indicative: the sheets say so, every rate carries its source and status, and values that are UNVERIFIED in the
@@ -49,10 +49,10 @@ export const cap1 = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 export const COMMERCIAL_NOTES = Object.freeze([
   'Concept only. This set shows a commercial unit layout sited on a lot for discussion. It is not a development application or construction drawing set.',
   'Boundaries are from the cadastre (DCDB) and are not a survey. Dimensions and areas must be confirmed by a registered surveyor.',
-  'Setbacks, parking rates and planning controls shown are indicative, check with council. Each rate carries its source and status on C103.',
+  'Setbacks, parking rates and planning controls shown are indicative, check with council. Each rate carries its source and status on C900.',
   'Unit areas are measured to the outside of the walls. GFA includes the mezzanine floors.',
   'Parking, truck apron, car aisle, bollards, landscaping and the OSD placeholder are indicative. Swept paths and stormwater design are not part of this set.',
-  'Values that could not be verified against the source standard are listed on C103 and must be confirmed before they are relied on.',
+  'Values that could not be verified against the source standard are listed on C900 and must be confirmed before they are relied on.',
 ]);
 
 /** The general notes, with the first one worded for the project (units, or a building and its site) and the unit note only when there are units. */
@@ -275,6 +275,7 @@ export function commercialSheetPlan(project, lot, { levels = null } = {}) {
       model = null;
     }
   }
+  if (model && levels?.has) out.push({ id: 'levels', code: 'C102', title: 'LEVELS AND GRADING PLAN (INDICATIVE)', scale: `1:${layoutView(model).scale} @ A3` });
   const targets = project?.commercial ? viewTargets(project) : [];
   const many = targets.length > 1;
   let up = 0;
@@ -335,7 +336,7 @@ function drawRoads(doc, view, lot, field, roadName) {
   }
 }
 
-function legendBlock(items, rowMax = 3.7, avail = null) {
+export function legendBlock(items, rowMax = 3.7, avail = null) {
   const rowH = Math.min(rowMax, avail ? (avail - 6) / Math.max(1, items.length) : 52 / Math.max(1, items.length)); // 14 rows fit at 3.7 mm; with hardstand rows added the rows close up to keep the block on the sheet
   return {
     title: 'LEGEND',
@@ -390,7 +391,7 @@ function aerialUnder(doc, aerial, T) {
   return true;
 }
 
-function northAndScale(doc, field, project, scale, view) {
+export function northAndScale(doc, field, project, scale, view) {
   const r = 15;
   const corners = [{ x: VP.x1 - r - 2, y: VP.y0 + r + 2 }, { x: VP.x0 + r + 2, y: VP.y0 + r + 2 }, { x: VP.x1 - r - 2, y: VP.y1 - r - 2 }, { x: VP.x0 + r + 2, y: VP.y1 - r - 2 }];
   const free = (cc, soft) => field.free({ x0: cc.x - r, y0: cc.y - r, x1: cc.x + r, y1: cc.y + r }, soft);
@@ -1320,7 +1321,7 @@ export function drawMezzanine(doc, model) {
   const notes = [
     `Barrier ${facts('barrier').value?.min_mm ?? 1000} mm high at the mezzanine edge and ${facts('barrierStair').value?.min_mm ?? 865} mm at the stair, check the NCC.`,
     'The mezzanine may count as a storey above its area limit, check with council and the NCC.',
-    'Clear height under the mezzanine is unverified, see C103.',
+    'Clear height under the mezzanine is unverified, see C900.',
   ];
   if (lv.has) { kv.push(['Contours', ground.interval ? intervalText(ground.interval) : 'None at this view']); notes.push(ground.note); }
   return { scale, kv, notes, blocks: [mezzLegend(ground.legend)] };
@@ -1562,7 +1563,8 @@ export function coverThumbnail(model) {
     title: 'PROPOSED LAYOUT (OUTLINE)',
     draw(doc, rect) {
       const { units, a, c } = model;
-      const pts = [...units.flatMap((u) => u.poly), ...a.parking.rows.flatMap((pr) => pr.slots.flatMap((s) => s.poly))];
+      const bldgs = buildingsOf(c);
+      const pts = [...units.flatMap((u) => u.poly), ...bldgs.flatMap((b) => [b.outline, ...b.extras.map((e) => e.polygon)].flat()), ...a.parking.rows.flatMap((pr) => pr.slots.flatMap((s) => s.poly))];
       if (!pts.length) return;
       const bb = G.bbox(pts);
       const bw = rect.x1 - rect.x0 - 10;
@@ -1583,7 +1585,10 @@ export function coverThumbnail(model) {
         doc.setLineWidth(0.18);
         polygon(doc, u.poly.map(T), 'FD');
       }
-      void c;
+      for (const b of bldgs) {
+        for (const e of b.extras) { doc.setFillColor(236, 238, 242); doc.setDrawColor(...GREYLINE); doc.setLineWidth(0.1); polygon(doc, e.polygon.map(T), 'FD'); }
+        doc.setFillColor(...UNIT_FILL); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.18); polygon(doc, b.outline.map(T), 'FD');
+      }
       const s = model.stats;
       setText(doc, 7, false);
       [...(s.units ? [`${s.units} ${s.units === 1 ? 'unit' : 'units'}`] : []), `GFA ${m2f(s.gfaM2)} m²`, `Coverage ${s.coveragePct ?? 'n/a'} %`, `${s.parking.provided} ${s.parking.provided === 1 ? 'bay' : 'bays'}`].forEach((t, i) => doc.text(clean(t), rect.x0 + 4 + i * 28, rect.y1 - 4));
