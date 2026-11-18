@@ -9,7 +9,7 @@ import { createStore } from '../../src/model/store.js';
 import { applyBuildingChoice } from '../../src/commercial/catalogue/ops.js';
 import { chooseBuilding } from '../../src/commercial/catalogue/fit.js';
 import * as S from '../../src/viewer3d/site-geom.js';
-import { terrainModel } from '../../src/viewer3d/terrain.js';
+import { terrainModel, nodeHeights } from '../../src/viewer3d/terrain.js';
 import * as G from '../../src/model/geometry.js';
 
 /** Natural ground: a fall (m) down the lot depth, a cross slope, and bumps. Written as the lot elevation grid (metres RL). */
@@ -47,9 +47,10 @@ export function meshGrid(p) {
   const ext = S.terrainExtent(p.site.lot, 30);
   const dims = S.gridDims(ext);
   const tm = terrainModel(p, { cellM: Math.max(dims.dx, dims.dy) / 1000 });
-  const heights = new Float32Array(dims.cols * dims.rows);
-  for (let j = 0; j < dims.rows; j++) for (let i = 0; i < dims.cols; i++) heights[j * dims.cols + i] = tm.heightAt(dims.x0 + i * dims.dx, dims.y0 + j * dims.dy);
-  return { tm, dims, grid: { ...dims, heights } };
+  const heights = new Float32Array(dims.cols * dims.rows); const design = new Float32Array(dims.cols * dims.rows);
+  const cellM = Math.max(dims.dx, dims.dy) / 1000;
+  for (let j = 0; j < dims.rows; j++) for (let i = 0; i < dims.cols; i++) { const nh = nodeHeights(tm, dims.x0 + i * dims.dx, dims.y0 + j * dims.dy, cellM); heights[j * dims.cols + i] = nh.mesh; design[j * dims.cols + i] = nh.design; }
+  return { tm, dims, grid: { ...dims, heights }, design: { ...dims, heights: design } };
 }
 
 /**
@@ -70,8 +71,7 @@ export function probeZones({ tm, grid, dims }, step = 400) {
         let skip = false;
         zs.forEach((o, oi) => {
           if (oi === zi || skip) return;
-          if (oi < zi && o.polys.some((q, qi) => G.pointInPolygon({ x, y }, q) || nearPoly({ x, y }, q, o.boxes[qi], clear))) skip = true;
-          else if (oi > zi && o.polys.some((q, qi) => nearPoly({ x, y }, q, o.boxes[qi], clear))) skip = true;
+          if (o.polys.some((q, qi) => G.pointInPolygon({ x, y }, q) || nearPoly({ x, y }, q, o.boxes[qi], clear + 2200))) skip = true; // beyond the 2 m transition to a neighbour
         });
         if (skip) continue;
         const dz = S.surfaceAt(grid, x, y) - z.level(x, y);

@@ -3,6 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { jsPDF } from 'jspdf';
+import { LIFT } from '../src/viewer3d/levels.js';
 import { createProject } from '../src/model/schema.js';
 import { createStore } from '../src/model/store.js';
 import { catalogue } from '../src/catalogue/index.js';
@@ -229,9 +230,9 @@ test('3D: each material becomes its own surface, draped on small triangles, with
   const mats = [].concat(r.mesh.material);
   const colours = new Set(mats.map((m) => m.color.getHexString()));
   assert.ok(colours.size >= 4, 'gravel, pavers, asphalt and the edge line each have their own material');
-  // every vertex is on the lifted ground (sharp, no sinking into the aerial)
+  // every vertex is on the finished design surface (levels.js): the surface itself, or the fine edge line a few mm above it
   const pos = r.mesh.geometry.attributes.position;
-  for (let i = 0; i < pos.count; i += 17) assert.ok(Math.abs(pos.getY(i) - 0.03) < 1e-6);
+  for (let i = 0; i < pos.count; i += 17) assert.ok(pos.getY(i) >= LIFT.concrete - 1e-6 && pos.getY(i) <= LIFT.edgeLine + 1e-6);
   assert.equal(r.centres.length, 3);
 });
 

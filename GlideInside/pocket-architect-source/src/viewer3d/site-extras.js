@@ -13,6 +13,7 @@ import * as G from '../model/geometry.js';
 import { GeoBuilder, addOrientedBox } from './mesh-builder.js';
 import { makeMesh } from './model-util.js';
 import { layerOn } from './site-geom.js';
+import { LIFT, KERB_PROFILE, KERB_LAYBACK_LIP, KERB_WIDTH } from './levels.js';
 import { roadReserve, deriveDriveway, buildingHull, orientedBox } from '../site/lotplan.js';
 import { addDrawnWays } from './pave3d.js';
 import { pavementModel } from '../commercial/catalogue/pavements/logic.js';
@@ -133,13 +134,14 @@ export function kerbDropScale(d, span, ramp = 0.6) {
   return Math.min(1, k / ramp);
 }
 
-export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = null, realAerial = false } = {}) {
+export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = null, realAerial = false, fds = null } = {}) {
   const lot = project.site?.lot;
   if (!lot?.boundary?.length) return null;
   const group = new THREE.Group();
   group.name = 'site-extras';
   root.add(group);
-  const H = (xm, zm) => surf(xm * 1000, zm * 1000);
+  const H = (xm, zm) => surf(xm * 1000, zm * 1000); // the ground as seen (design surface inside an element, the mesh elsewhere)
+  const F = (xm, zm) => (fds || surf)(xm * 1000, zm * 1000); // the finished design surface: every road, path and drive surface is built on it
   const add = (mesh) => {
     if (!mesh) return;
     mesh.userData = { ...mesh.userData, ground: true, extras: true };
@@ -151,7 +153,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   const concDrive = concreteTex('#bdbab1', 'concrete-drive');
 
   // Strip between two lines of plan points sampled at the same parameter: quads draped on the surface.
-  const strip = (b, slot, A, B, lift, uvAlong = 3, uvAcross = 1, liftB = lift) => {
+  const strip = (b, slot, A, B, lift, uvAlong = 3, uvAcross = 1, liftB = lift, level = F) => {
     let run = 0;
     const n = Math.min(A?.length || 0, B?.length || 0); // edge lines can be clipped to different counts; never read past the shorter one
     for (let i = 0; i + 1 < n; i++) {
@@ -160,17 +162,17 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       const a1 = [A[i + 1].x / 1000, 0, A[i + 1].y / 1000];
       const b0 = [B[i].x / 1000, 0, B[i].y / 1000];
       const b1 = [B[i + 1].x / 1000, 0, B[i + 1].y / 1000];
-      a0[1] = H(a0[0], a0[2]) + lift;
-      a1[1] = H(a1[0], a1[2]) + lift;
-      b0[1] = H(b0[0], b0[2]) + liftB;
-      b1[1] = H(b1[0], b1[2]) + liftB;
+      a0[1] = level(a0[0], a0[2]) + lift;
+      a1[1] = level(a1[0], a1[2]) + lift;
+      b0[1] = level(b0[0], b0[2]) + liftB;
+      b1[1] = level(b1[0], b1[2]) + liftB;
       const l0 = run / uvAlong;
       run += Math.hypot(a1[0] - a0[0], a1[2] - a0[2]);
       const l1 = run / uvAlong;
       b.quad(slot, a0, a1, b1, b0, [[l0, 0], [l1, 0], [l1, uvAcross], [l0, uvAcross]], [0, 1, 0]);
     }
   };
-  
+
   // 1. Road, kerb, footpath ------------------------------------------------------------------------------------------------
   const reserves = layerOn(lot, 'road') ? roadReserve(lot, { extendM: 60 }) /* 16/11/2026: 400 m tails crossed large lots as phantom roads */ : [];
   // A commercial site's drive is its own paved site works (asphalt), never the house driveway in concrete (owner 16/11/2026).
@@ -185,22 +187,34 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       if (Object.values(lines).some((v) => !v)) continue;
       streetDirs.push(r);
       const S = (k, step = 1.5) => sampleLine(lines[k], step);
-      // carriageway and the gutter strip
-      strip(b, 'asphalt', S('gutter'), S('farGutter'), 0.025, 6, 1);
-      strip(b, 'gutter', S('kerb', 2), S('gutter', 2), 0.015, 3, 0.15, 0.025); // lip meets the asphalt edge flush
-      strip(b, 'gutter', S('farGutter', 2), S('farKerb', 2), 0.025, 3, 0.15, 0.015);
-      // roll top kerb: profile across the line (t metres out from the kerb face towards the property, height m)
-      const prof = [[0, 0.015], [0.015, 0.1], [0.06, 0.145], [0.13, 0.155], [0.2, 0.14], [0.25, 0.09], [0.3, 0.045], [0.34, 0.03]];
+      // Every level here is the finished design surface (fds.js): the carriageway, the flat gutter at its invert, the kerb top 150 mm above it,
+      // and the verge and footpath rising to the property line. Sampled 2 mm inside each zone so a zone edge never reads its neighbour's level.
+      const nud = (pts, d) => pts.map((q) => ({ x: q.x + r.outward.x * d, y: q.y + r.outward.y * d }));
+      strip(b, 'asphalt', nud(S('gutter'), 2), nud(S('farGutter'), -2), LIFT.asphalt, 6, 1);
+      strip(b, 'gutter', nud(S('kerb', 2), 2), nud(S('gutter', 2), -2), LIFT.gutter, 3, 0.15);
+      strip(b, 'gutter', nud(S('farGutter', 2), 2), nud(S('farKerb', 2), -2), LIFT.gutter, 3, 0.15);
+      // verge: grass either side of the footpath, up to the back of the kerb (the mesh is buried under the corridor, see terrain.js)
+      strip(b, 'verge', S('property', 2), S('footpathNear', 2), LIFT.concrete, 3, 1);
+      strip(b, 'verge', S('footpathFar', 2), nud(S('kerb', 2), -(KERB_WIDTH * 1000 + 2)), LIFT.concrete, 3, 1);
+      // roll top kerb: profile across the line (t metres out from the kerb face towards the property, height m above the gutter invert)
+      const prof = KERB_PROFILE;
       // The driveway crossover drops the near kerb (layback): span of the crossover along the street, metres from the kerb line's start.
-      let drop = null;
-      if (dw?.ok && dw.crossover?.polygon?.length && dw.edge === r.edge) {
+      const drop = [];
+      {
         const k0 = lines.kerb[0];
-        const ds = dw.crossover.polygon.map((p) => ((p.x - k0.x) * r.u.x + (p.y - k0.y) * r.u.y) / 1000);
-        drop = [Math.min(...ds), Math.max(...ds)];
+        const sOf = (p) => ((p.x - k0.x) * r.u.x + (p.y - k0.y) * r.u.y) / 1000;
+        const rings = [];
+        if (dw?.ok && dw.crossover?.polygon?.length && dw.edge === r.edge) rings.push(dw.crossover.polygon);
+        for (const ring of tm?.crossovers || []) { // every crossover over this verge (property line to kerb)
+          const c = ring.reduce((a, q) => ({ x: a.x + q.x / ring.length, y: a.y + q.y / ring.length }), { x: 0, y: 0 });
+          const t = ((c.x - r.lines.property[0].x) * r.outward.x + (c.y - r.lines.property[0].y) * r.outward.y) / 1000;
+          if (t > 0 && t < r.vergeM) rings.push(ring);
+        }
+        for (const ring of rings) { const ds = ring.map(sOf); drop.push([Math.min(...ds), Math.max(...ds)]); }
       }
       // sg: +1 near kerb (profile runs back towards the property), -1 far kerb (profile runs out to the far verge)
-      const kerbLine = (name, sg, span) => {
-        const pts = sampleLineWithBreaks(lines[name], 1.5, span ? [span[0] - 0.6, span[0], span[1], span[1] + 0.6] : []);
+      const kerbLine = (name, sg, spans) => {
+        const pts = sampleLineWithBreaks(lines[name], 1.5, spans ? spans.flatMap((span) => [span[0] - 0.6, span[0], span[1], span[1] + 0.6]) : []);
         const k0 = lines[name][0];
         const along = pts.map((p) => ((p.x - k0.x) * r.u.x + (p.y - k0.y) * r.u.y) / 1000);
         const u = r.outward;
@@ -208,12 +222,13 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
           for (let i = 0; i + 1 < pts.length; i++) {
             const P = (p, t, h, sc) => {
               const o = [(p.x - u.x * sg * t * 1000) / 1000, 0, (p.y - u.y * sg * t * 1000) / 1000];
-              // dropped kerb: height falls to the gutter lip and the roll flattens
-              o[1] = H(o[0], o[2]) + 0.015 + (h - 0.015) * sc;
+              // the kerb stands on the gutter invert at the kerb line (a rigid section, 2 mm inside the gutter); a dropped kerb (layback) tapers to the lip
+              const gi = F((p.x + u.x * sg * 2) / 1000, (p.y + u.y * sg * 2) / 1000);
+              o[1] = gi + KERB_LAYBACK_LIP + (h - KERB_LAYBACK_LIP) * sc;
               return o;
             };
-            const sa = kerbDropScale(along[i], span);
-            const sb = kerbDropScale(along[i + 1], span);
+            const sa = spans ? Math.min(1, ...spans.map((span) => kerbDropScale(along[i], span))) : 1;
+            const sb = spans ? Math.min(1, ...spans.map((span) => kerbDropScale(along[i + 1], span))) : 1;
             if (sa === 0 && sb === 0) continue;
             const p0 = P(pts[i], prof[k][0], prof[k][1], sa);
             const p1 = P(pts[i + 1], prof[k][0], prof[k][1], sb);
@@ -223,15 +238,15 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
           }
         }
       };
-      kerbLine('kerb', 1, drop);
+      kerbLine('kerb', 1, drop.length ? drop : null);
       kerbLine('farKerb', -1, null);
       // footpath: between the near and far footpath lines
-      strip(b, 'path', S('footpathNear', 2), S('footpathFar', 2), 0.04, 1.5, 1);
+      strip(b, 'path', S('footpathNear', 2), S('footpathFar', 2), LIFT.concrete, 1.5, 1);
       // crisp white edge lines, 0.35 m in from each gutter
       for (const [name, sg] of [['gutter', 1], ['farGutter', -1]]) {
         const pts = S(name, 2);
         const off = (d) => pts.map((q) => ({ x: q.x + r.outward.x * sg * d, y: q.y + r.outward.y * sg * d }));
-        strip(b, 'line', off(300), off(420), 0.033, 1, 1);
+        strip(b, 'line', off(300), off(420), LIFT.paint, 1, 1);
       }
       // white lane line, dashed
       const c = S('centreline', 0.5);
@@ -242,7 +257,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
         const l = Math.hypot(dx, dy) || 1;
         const nx = (-dy / l) * 55;
         const ny = (dx / l) * 55;
-        strip(b, 'line', [{ x: c[i].x + nx, y: c[i].y + ny }, { x: c[i + 1].x + nx, y: c[i + 1].y + ny }], [{ x: c[i].x - nx, y: c[i].y - ny }, { x: c[i + 1].x - nx, y: c[i + 1].y - ny }], 0.033, 1, 1);
+        strip(b, 'line', [{ x: c[i].x + nx, y: c[i].y + ny }, { x: c[i + 1].x + nx, y: c[i + 1].y + ny }], [{ x: c[i].x - nx, y: c[i].y - ny }, { x: c[i + 1].x - nx, y: c[i + 1].y - ny }], LIFT.paint, 1, 1);
       }
     }
     if (!b.empty) {
@@ -251,6 +266,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
         asphalt: asphalt ? mat('#eeeeee', { map: asphalt, roughness: 0.95 }) : mat('#45484b', { roughness: 0.95 }),
         gutter: mat('#a3a19a', { roughness: 0.9 }),
         kerb: mat('#b4b2aa', { roughness: 0.85 }),
+        verge: mat('#7d9a5e', { roughness: 1, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
         path: conc ? pathMat : mat('#c3c0b7'),
         line: mat('#f4f3ec', { roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }),
       }, { ground: true }, { cast: false, receive: true, name: 'road' }));
@@ -278,7 +294,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
         left.push({ x: p.x - t.y * half, y: p.y + t.x * half });
         right.push({ x: p.x + t.y * half, y: p.y - t.x * half });
       }
-      strip(b, 'drive', left, right, 0.04, 3, 1);
+      strip(b, 'drive', left, right, LIFT.concrete, 3, 1);
       // splayed crossover over the verge: its outline is the driveway polygon's end
       const co = dw.crossover.polygon;
       if (co?.length > 3) {
@@ -290,7 +306,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
           tris = [];
         }
         for (const t of tris) {
-          const P = t.map((i) => [contour[i].x, H(contour[i].x, contour[i].y) + 0.072, contour[i].y]);
+          const P = t.map((i) => [contour[i].x, F(contour[i].x, contour[i].y) + LIFT.concrete, contour[i].y]);
           b.tri('drive', P[0], P[1], P[2], [P[0][0] / 3, P[0][2] / 3], [P[1][0] / 3, P[1][2] / 3], [P[2][0] / 3, P[2][2] / 3], [0, 1, 0]);
         }
       }
@@ -315,7 +331,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
           const hw = 500;
           const L = pts.map((p) => ({ x: p.x - out.y * hw, y: p.y + out.x * hw }));
           const R = pts.map((p) => ({ x: p.x + out.y * hw, y: p.y - out.x * hw }));
-          strip(b, 'path', L, R, 0.045, 1.5, 1);
+          strip(b, 'path', L, R, LIFT.concrete, 1.5, 1);
           driveCentres.push(pts);
         }
       }
@@ -358,7 +374,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       const flush = () => {
         if (run.length > 2) {
           const mk = (off) => run.map((p) => ({ x: p.x + nIn.x * off, y: p.y + nIn.y * off }));
-          strip(bBeds, 'mulch', mk(700), mk(1900), 0.03, 2, 1);
+          strip(bBeds, 'mulch', mk(700), mk(1900), LIFT.mulchRaised, 2, 1, LIFT.mulchRaised, H);
         }
         run = [];
       };
@@ -455,7 +471,16 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
     const u = G.norm({ x: c.x - a.x, y: c.y - a.y });
     const driveSide = dw?.ok ? G.dot(G.sub(dw.kerbPoint, a), u) : len / 2;
     const s = driveSide > len / 2 ? Math.max(1500, driveSide - dw.widthMm / 2 - 1500) : Math.min(len - 1500, driveSide + (dw?.widthMm || 3000) / 2 + 1500);
-    const p = { x: a.x + u.x * s, y: a.y + u.y * s };
+    // Placement check: the letterbox never stands on or beside paving (a driveway mouth, a crossover, an aisle). Slide it along the frontage to clear ground.
+    const pavedRings = [...(tm?.pavements?.areas || []).map((q) => q.polygon), dw?.polygon, dw?.crossover?.polygon, ...(dw?.extraPolygons || [])].filter((q) => q?.length > 2);
+    const nearPaving = (q) => pavedRings.some((poly) => G.pointInPolygon(q, poly) || poly.some((v, i) => G.projectToSegment(q, v, poly[(i + 1) % poly.length]).d < 1500));
+    let sPos = s;
+    if (nearPaving({ x: a.x + u.x * sPos, y: a.y + u.y * sPos })) {
+      sPos = null;
+      for (let d = 1500; d < len && sPos == null; d += 1500) for (const cand of [s + d, s - d]) { if (cand > 1500 && cand < len - 1500 && !nearPaving({ x: a.x + u.x * cand, y: a.y + u.y * cand })) { sPos = cand; break; } }
+    }
+    if (sPos != null) {
+    const p = { x: a.x + u.x * sPos, y: a.y + u.y * sPos };
     const ya = H(p.x / 1000, p.y / 1000);
     const b = new GeoBuilder();
     const ang = Math.atan2(u.y, u.x);
@@ -463,6 +488,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
     addOrientedBox(b, p.x / 1000, p.y / 1000, 0.22, 0.15, ang, ya + 0.98, ya + 1.24, 'box');
     addOrientedBox(b, p.x / 1000, p.y / 1000, 0.23, 0.16, ang, ya + 1.24, ya + 1.27, 'lid');
     add(makeMesh(b.build(), { post: mat('#33363a', { roughness: 0.5, metalness: 0.4 }), box: mat('#2f3236', { roughness: 0.45, metalness: 0.45 }), lid: mat('#7e8388', { roughness: 0.4, metalness: 0.6 }) }, { ground: true }, { cast: true, receive: false, name: 'letterbox' }));
+    }
   }
 
   // 6. Neighbouring houses and trees --------------------------------------------------------------------------------------------

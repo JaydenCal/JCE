@@ -10,8 +10,9 @@ import { makeMesh } from './model-util.js';
 import { getWays, wayGeometry, MATERIALS } from '../site/pavedways.js';
 import { pavementById } from '../commercial/catalogue/pavements/pavements.js';
 import { textureFor } from '../commercial/catalogue/pavements/view3d.js';
+import { LIFT } from './levels.js';
 
-export const LIFT_M = 0.03; // surface above the ground, m: flush to the eye, kept off the ground by polygon offset rather than by height
+export const LIFT_M = LIFT.concrete; // drawn ways are the finished design surface itself, kept off the mesh by polygon offset (viewer3d/levels.js)
 const MAX_EDGE_M = 2.4; // drape grid
 
 function mat(color, opts = {}) {
@@ -71,6 +72,7 @@ export function addDrawnWays(project, surf) {
     const ca = Math.cos(d0); const sa = Math.sin(d0);
     const uv = (xm, zm) => [(xm * ca + zm * sa) / tile, (-xm * sa + zm * ca) / tile];
     const V = (xm, zm) => [xm, H(xm, zm) + LIFT_M, zm];
+    const VE = (xm, zm) => [xm, H(xm, zm) + LIFT.edgeLine, zm];
     for (const pc of g.pieces) {
       stats.pieces += 1;
       stats.byMaterial[way.material] = (stats.byMaterial[way.material] || 0) + 1;
@@ -90,7 +92,7 @@ export function addDrawnWays(project, surf) {
         for (let k = 0; k < n; k++) {
           const p0 = { x: a.x + ((c.x - a.x) * k) / n, y: a.y + ((c.y - a.y) * k) / n };
           const p1 = { x: a.x + ((c.x - a.x) * (k + 1)) / n, y: a.y + ((c.y - a.y) * (k + 1)) / n };
-          const E = (p, s) => V(p.x / 1000 + nx * 0.035 * s, p.y / 1000 + ny * 0.035 * s);
+          const E = (p, s) => VE(p.x / 1000 + nx * 0.035 * s, p.y / 1000 + ny * 0.035 * s);
           b.quad('edge', E(p0, -1), E(p1, -1), E(p1, 1), E(p0, 1), [[0, 0], [1, 0], [1, 1], [0, 1]], [0, 1, 0]);
         }
       }
