@@ -2,7 +2,7 @@
 
 import { h, openDialog, field, busy, toast, chip, icon, errorMessage } from './kit.js';
 import { formatAud, ddmmyyyyTime, ddmmyyyy, monthLabel } from '../billing.js';
-import { CHARGE_NOTICE } from './clients-tab.js';
+import { CHARGE_NOTICE } from './clients-tab.js?v=20261118a';
 import { accountOf, isReadOnly, addBillingButton, TRIAL_PRICING_TEXT } from './trial-ui.js';
 
 export async function renderBilling(host, { api, me, refreshMe, goBilling }) {
