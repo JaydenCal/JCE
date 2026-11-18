@@ -2,31 +2,16 @@
 // step of both flows. Pure string building apart from the optional aerial.
 
 import { lotOf, classifyEdges, requiredFor } from '../model/placement.js';
-import { roadReserve } from '../site/lotplan.js';
 import * as G from '../model/geometry.js';
 
 const pts = (a) => a.map((p) => `${Math.round(p.x)},${Math.round(p.y)}`).join(' ');
 
-/** The viewBox (mm) that shows the lot, its envelope and a strip of road with a margin. */
-export function mapBox(lot, { margin = 0.18, roadM = 14 } = {}) {
+/** The viewBox (mm) that shows the lot and its envelope with a margin. */
+export function mapBox(lot, { margin = 0.18 } = {}) {
   const all = [...lot.boundary];
-  for (const r of roadReserve(lot)) all.push(r.lines.property[0], r.lines.property[1], { x: r.lines.property[0].x + r.outward.x * roadM * 1000, y: r.lines.property[0].y + r.outward.y * roadM * 1000 }, { x: r.lines.property[1].x + r.outward.x * roadM * 1000, y: r.lines.property[1].y + r.outward.y * roadM * 1000 });
   const bb = G.bbox(all);
   const m = Math.max(bb.w, bb.h) * margin;
   return { x: bb.minX - m, y: bb.minY - m, w: bb.w + 2 * m, h: bb.h + 2 * m };
-}
-
-/** Road, verge and kerb bands in front of each street edge, as SVG. */
-export function roadSvg(lot, px = 1) {
-  let s = '';
-  for (const r of roadReserve(lot)) {
-    const L = r.lines;
-    const quad = (a, b) => `${pts([a[0], a[1], b[1], b[0]])}`;
-    s += `<polygon points="${quad(L.property, L.kerb)}" fill="#c9d3bd"/>`;
-    s += `<polygon points="${quad(L.kerb, L.farKerb)}" fill="#6b6f76"/>`;
-    s += `<line x1="${Math.round(L.centreline[0].x)}" y1="${Math.round(L.centreline[0].y)}" x2="${Math.round(L.centreline[1].x)}" y2="${Math.round(L.centreline[1].y)}" stroke="#f3e08a" stroke-width="${2 * px}" stroke-dasharray="${22 * px} ${18 * px}"/>`;
-  }
-  return s;
 }
 
 /** Frontage length in metres (the street edges together), or null. */
@@ -49,18 +34,10 @@ export function lotMapSvg(project, { aerial = null, width = 560 } = {}) {
     const e = aerial.extent;
     s += `<image href="${aerial.href}" x="${e.x0}" y="${e.y0}" width="${e.x1 - e.x0}" height="${e.y1 - e.y0}" preserveAspectRatio="none" opacity="0.9"/>`;
   }
-  s += roadSvg(lot, px);
   s += `<polygon points="${pts(lot.boundary)}" fill="rgba(255,255,255,.28)" stroke="#d11f1f" stroke-width="${3 * px}"/>`;
   const env = Array.isArray(lot.envelope) && lot.envelope.length >= 3 ? lot.envelope : null;
   if (env) s += `<polygon points="${pts(env)}" fill="rgba(23,114,74,.12)" stroke="#17724a" stroke-width="${2 * px}" stroke-dasharray="${8 * px} ${5 * px}"/>`;
   for (const e of front) s += `<line x1="${e.a.x}" y1="${e.a.y}" x2="${e.b.x}" y2="${e.b.y}" stroke="#1b4fd1" stroke-width="${6 * px}" stroke-linecap="round"/>`;
-  const f0 = front[0];
-  if (f0) {
-    const mid = G.lerp(f0.a, f0.b, 0.5);
-    const out = G.norm(G.sub(mid, G.polygonCentroid(lot.boundary)));
-    const at = G.add(mid, G.mul(out, 9000));
-    s += `<text x="${Math.round(at.x)}" y="${Math.round(at.y)}" font-size="${13 * px}" font-family="system-ui,sans-serif" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle" stroke="#3b3f46" stroke-width="${3 * px}" paint-order="stroke">STREET</text>`;
-  }
   return `${s}</svg>`;
 }
 

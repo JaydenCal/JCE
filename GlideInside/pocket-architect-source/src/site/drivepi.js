@@ -1,5 +1,5 @@
 // Driveway PI editing for the residential plan: add, move and delete the bend points (PIs) of the driveway, slide its kerb end along the
-// frontage, and reset to the automatic route. Mirrors the road tool's PI editing (pavedways.js) but works on the project's own stored
+// frontage, and reset to the automatic route. Works on the project's own stored
 // driveway (project.site.driveway, see lotplan.js), so the automatic driveway, the plan, the 3D model and the exports all follow it.
 //
 // The first point is always the garage door and the last is always on the kerb: only the interior PIs are free, and the kerb end can
@@ -25,7 +25,6 @@ export function driveEditState(project) {
 /** The reason a driveway cannot be edited, in plain words, or '' when it can. */
 export function driveEditBlock(state) {
   if (state.ok) return '';
-  if (state.reason === 'manual') return 'This driveway was drawn with the Road or pavement tool. Edit its points with that tool, or delete it to go back to the automatic driveway.';
   if (state.reason === 'door_faces_away') return 'The garage door faces away from the street and there is no room to route the driveway round the house.';
   return 'There is no driveway to edit yet. Place a house with a garage door on a lot with a street frontage.';
 }

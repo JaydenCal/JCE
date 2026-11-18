@@ -20,7 +20,7 @@ test('residential Add building: every outbuilding merges into the plan, valid, o
   }
 });
 
-test('the Road or pavement tool is not commercial only', () => {
-  const t = TOOL_DEFS.find((d) => d.id === 'pave');
-  assert.ok(t && !t.commercialOnly);
+test('the Road or pavement tool is gone from the tool rail', () => {
+  assert.equal(TOOL_DEFS.find((d) => d.id === 'pave'), undefined);
+  assert.ok(!TOOL_DEFS.some((d) => d.key === 'L'));
 });

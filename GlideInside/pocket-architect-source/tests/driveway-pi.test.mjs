@@ -12,7 +12,6 @@ import * as L from '../src/site/lotplan.js';
 import * as D from '../src/site/drivepi.js';
 import { createDrivePIController } from '../src/editor2d/drivepi-controller.js';
 import { TOOL_DEFS, ALL_TOOLS, KEY_TO_TOOL } from '../src/editor2d/tools-meta.js';
-import * as P from '../src/site/pavedways.js';
 import { parseDesign } from '../src/ui/design-file.js';
 
 function setup() {
@@ -228,18 +227,15 @@ test('controller: end points cannot be dragged off the door or the kerb', () => 
   assert.ok(dist(b.kerbPoint, k) > 1000);
 });
 
-test('a driveway drawn with the Road or pavement tool is left to that tool, with a clear message', () => {
+test('a driveway saved by the retired Road or pavement tool is ignored and the automatic driveway stays editable', () => {
   const store = createStore(setup());
   const a = L.deriveDriveway(store.project);
-  P.addWay(store.project, { kind: 'driveway', material: 'concrete', widthMm: 3500, radiusMm: 0, kerbEdge: a.edge, pts: [{ x: a.kerbPoint.x, y: a.kerbPoint.y }, { x: a.doorMid.x, y: a.doorMid.y }] });
+  store.project.site.paved = [{ id: 'way1', kind: 'driveway', material: 'concrete', widthMm: 3500, radiusMm: 0, kerbEdge: a.edge, pts: [{ x: a.kerbPoint.x, y: a.kerbPoint.y }, { x: a.doorMid.x, y: a.doorMid.y }] }];
   const st = D.driveEditState(store.project);
-  assert.equal(st.ok, false);
-  assert.equal(st.manual, true);
-  assert.match(D.driveEditBlock(st), /Road or pavement tool/);
-  const ctl = createDrivePIController({ store, scale: () => 0.05, toast: () => {}, redraw: () => {} });
-  const m = a.centre[Math.floor(a.centre.length / 2)];
-  assert.equal(ctl.pointerDown(m, {}), false);
-  assert.equal(store.project.site.driveway, undefined);
+  assert.equal(st.ok, true);
+  assert.equal(D.driveEditBlock(st), '');
+  assert.equal(L.deriveDriveway(store.project).manual, undefined);
+  assert.equal(store.project.site.paved.length, 1, 'saved data is kept');
 });
 
 test('copy has no dashes and never says compliant', async () => {

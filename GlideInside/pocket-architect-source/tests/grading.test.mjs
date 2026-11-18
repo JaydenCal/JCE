@@ -97,26 +97,14 @@ for (const [name, make] of CASES) {
   test(`grading: no terrain above any pad, paving, driveway or road surface (${name}), on a 4 m fall with cross slope and bumps`, () => {
     const m = H.meshGrid(make());
     const zones = H.probeZones(m);
-    assert.ok(zones.some((z) => z.road) && zones.some((z) => !z.road && z.n > 50), 'road and footprint zones sampled');
+    assert.ok(!zones.some((z) => z.road), 'no road corridor is graded: the aerial imagery is the only road');
+    assert.ok(zones.some((z) => !z.road && z.n > 50), 'footprint zones sampled');
     for (const z of zones) {
       assert.ok(z.poke <= 0.005, `terrain pokes ${z.poke} m above a ${z.road ? 'road' : 'footprint'} surface`);
       assert.ok(z.sunk <= 0.05, `terrain sits ${z.sunk} m below a ${z.road ? 'road' : 'footprint'} surface`);
     }
   });
 }
-
-test('grading: roads roll on a smooth longitudinal profile (at most 6 percent) with 1 to 3 percent crossfall, flat across', () => {
-  const m = H.meshGrid(H.commercial('warehouse'));
-  const road = m.tm.grading.zones.find((z) => z.road);
-  assert.ok(road.fall <= 0.06 + 1e-6, `grade ${road.fall}`);
-  assert.ok(Math.abs(road.crossfall) >= 0.01 - 1e-9 && Math.abs(road.crossfall) <= 0.03 + 1e-9, `crossfall ${road.crossfall}`);
-  const b = road.boxes[0];
-  const y = (b.minY + b.maxY) / 2;
-  for (let x = 0; x < 80000; x += 2000) {
-    const a = road.level(x, y); const c = road.level(x + 500, y);
-    assert.ok(Math.abs(c - a) / 0.5 <= 0.06 + 1e-6, 'no kink along the road');
-  }
-});
 
 test('grading: batters are a clean 1 in 3 band on the real lots (the 99.5th percentile mesh slope, no spikes or terraces)', () => {
   for (const [name, make] of CASES) {

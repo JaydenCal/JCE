@@ -80,8 +80,10 @@ function clean(w) {
 
 /** The drawn ways on the project, cleaned. */
 export function getWays(project) {
-  const list = project?.site?.paved;
-  return Array.isArray(list) ? list.map(clean).filter(Boolean) : [];
+  // The Road or pavement tool was removed (18/11/2026): saved ways stay in older projects but are ignored, so nothing draws, counts or
+  // overrides the automatic driveway. The data is never deleted.
+  void project;
+  return [];
 }
 export const getWay = (project, id) => getWays(project).find((w) => w.id === id) || null;
 

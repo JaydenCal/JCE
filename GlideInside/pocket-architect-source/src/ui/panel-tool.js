@@ -8,7 +8,6 @@ import { icon } from './icons.js';
 import { button, segmented, numberField, checkField, section, formBuilder } from './panel-forms.js';
 import { drawItemPreview } from './preview.js';
 import { hardstandPanel } from '../commercial/ui/panel-hardstand.js';
-import { pavePanel } from './panel-pave.js';
 import { drivePIPanel } from './panel-drivepi.js';
 
 function helpCard(title, lines) {
@@ -19,7 +18,6 @@ const radio = (selected, onclick, ...kids) => h('button', { class: 'ps-radio', t
 
 export function buildToolPanel(ctx, tool) {
   const { store, editor } = ctx;
-  if (tool === 'pave') return pavePanel(ctx); // driveway and road: kind, material, width, bends, turning heads, edit
   if (tool === 'drivepi') return drivePIPanel(ctx); // residential driveway: add, move, delete PIs, reset to auto
   if (tool === 'hardstand') return hardstandPanel(ctx); // commercial Hardstand picker, quantities and selected area
   const fb = formBuilder();

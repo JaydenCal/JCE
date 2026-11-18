@@ -450,7 +450,6 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
       if (hsState.mode === 'road' && roadPts.length) { finishRoad(); return true; }
       return false;
     }
-    if (k === 'l' && !e.altKey) return false; // L opens the Road or pavement tool (its own button), handled by the editor
     const mode = HS_MODES.find((m) => m.key.toLowerCase() === k);
     if (mode && !e.altKey) { cancel(); setHsState({ mode: mode.id }); redraw(); return true; }
     if (k === 'Backspace' && hsState.mode === 'poly' && pts.length) { pts.pop(); rubber = pts.length ? rubber : null; redraw(); return true; }

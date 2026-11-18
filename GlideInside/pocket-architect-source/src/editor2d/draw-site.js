@@ -8,7 +8,6 @@ import { ringCentroid, signedArea } from '../site/geo.js';
 import { siteCredits } from '../site/credits.js';
 import { boundaryDims, lotLabelLines, buildingHull } from '../site/lotplan.js';
 import { drawLotPlan } from './draw-lotplan.js';
-import { drawPavedWays } from './draw-pave.js';
 import { drawOverlays } from './draw-overlays.js';
 
 const BOUNDARY = '#d62828'; // red, so the lot reads clearly over an aerial and is never mistaken for proposed work
@@ -315,5 +314,4 @@ export function drawSite(ctx, st) {
   drawLot(ctx, st);
   // Road, setback envelope (status coloured, edge labelled) and driveway come from the lot planner layers.
   drawLotPlan(ctx, st);
-  drawPavedWays(ctx, st); // driveways and roads drawn with the Driveway and road tool
 }

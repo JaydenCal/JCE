@@ -19,7 +19,6 @@ import { createMoveHouseTool } from './tool-movehouse.js';
 import { createCommercialTool } from '../commercial/ui/tool-commercial.js';
 import { drawCommercial, commercialExtents } from '../commercial/draw2d.js';
 import { createHardstandTool } from '../commercial/ui/tool-hardstand.js';
-import { createPaveTool } from './tool-pave.js';
 import { createDrivePITool } from './tool-drivepi.js';
 import { buildingHull, deriveDriveway } from '../site/lotplan.js';
 import { createLabelLayer } from './label-layer.js';
@@ -847,7 +846,6 @@ export function createEditor2D(element, store, { catalogue } = {}) {
   };
   ed.api = api;
   api.hardstand = null; // set below once the tools exist (the panel reads it)
-  api.pave = null;
   api.drivepi = null;
   const unregisterUnderlay = registerUnderlayEditor(store, {
     centre: () => M.screenToWorld(state.view, { x: state.size.w / 2, y: state.size.h / 2 }),
@@ -865,7 +863,6 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     ...createMoveHouseTool(ed),
     ...createCommercialTool(ed),
     ...createHardstandTool(ed),
-    ...createPaveTool(ed),
     ...createDrivePITool(ed),
     ...createDrawTools(ed),
     ...createPlaceTools(ed),
@@ -873,7 +870,6 @@ export function createEditor2D(element, store, { catalogue } = {}) {
   };
 
   api.hardstand = tools.hardstand?.controller || null;
-  api.pave = tools.pave?.controller || null;
   api.drivepi = tools.drivepi?.controller || null;
 
   // Listeners ---------------------------------------------------------------------------------------------------------------------------
