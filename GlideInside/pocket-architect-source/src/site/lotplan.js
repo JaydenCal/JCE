@@ -388,11 +388,11 @@ export function deriveDriveway(project, opts = {}) {
     const direct = [];
     if (facing) for (let i = 0; i <= N; i++) direct.push(bez(P, i / N));
     if (!facing || !clear(direct)) {
-      let path = opts.route === false ? null : routeDriveway({ lot, rings, door, r, wd, onKerb, edgeLen, along, lo, hi, clear });
+      let path = opts.route === false ? null : routeCached('wide', { lot, rings, door, r, wd, onKerb, edgeLen, along, lo, hi, clear });
       // No room at the full width: a single width driveway (3 m) down the side of the house.
       if (!path && opts.route !== false && wd > 3000) {
         const narrow = (pts) => drivewayClear(pts, { lot, rings, door, r, wd: 3000 });
-        path = routeDriveway({ lot, rings, door, r, wd: 3000, onKerb, edgeLen, along, lo, hi, clear: narrow });
+        path = routeCached('narrow', { lot, rings, door, r, wd: 3000, onKerb, edgeLen, along, lo, hi, clear: narrow });
         if (path) { wd = 3000; clear = narrow; }
       }
       if (path) {
@@ -478,6 +478,21 @@ function drivewayClear(pts, { lot, rings, door, r, wd }) {
     }
   }
   return true;
+}
+
+// The route is a pure function of the lot, the building outlines, the door and the street edge, and the plan redraws it on every frame
+// of a drag: a small cache keeps a redraw with nothing changed to a lookup (it cost 30 ms a frame on a 500 m lot).
+const routeMemo = new Map();
+function routeCached(tag, a) {
+  const rd = (n) => Math.round(n);
+  const pt = (q) => `${rd(q.x)},${rd(q.y)}`;
+  const key = [tag, a.lot.boundary.map(pt).join(' '), a.rings.map((g) => g.map(pt).join(' ')).join('|'), pt(a.door.mid), a.door.normal.x.toFixed(3), a.door.normal.y.toFixed(3),
+    a.r.edge, pt(a.r.lines.property[0]), pt(a.r.lines.property[1]), a.r.vergeM, a.wd, rd(a.along), rd(a.lo), rd(a.hi), rd(a.edgeLen)].join(';');
+  if (routeMemo.has(key)) return routeMemo.get(key);
+  const out = routeDriveway(a);
+  routeMemo.set(key, out);
+  if (routeMemo.size > 12) routeMemo.delete(routeMemo.keys().next().value);
+  return out;
 }
 
 /**

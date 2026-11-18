@@ -150,7 +150,7 @@ function liftDark(hexStr, minL) {
 }
 
 export function buildModel(project, opts = {}) {
-  const { levelFilter = 'all', showRoof = true, statusView = 'proposed', catalogue = null, walk = false } = opts;
+  const { levelFilter = 'all', showRoof = true, statusView = 'proposed', catalogue = null, walk = false, detail = 'full' } = opts;
   const lib = opts.materials || createMaterialLibrary({ textures: false, catalogue });
   const root = new THREE.Group();
   root.name = 'plan-model';
@@ -466,13 +466,13 @@ export function buildModel(project, opts = {}) {
   }
 
   // catalogue buildings: roofs and the extras each type draws (dock levellers, canopies, skylights)
-  if (showRoof || project.commercial?.buildings?.length) { try { addCatalogue3D(ctx, root, project, { showRoof }); } catch (e) { console.warn('[catalogue 3D]', e?.message); } }
+  if (showRoof || project.commercial?.buildings?.length) { try { addCatalogue3D(ctx, root, project, { showRoof, detail }); } catch (e) { console.warn('[catalogue 3D]', e?.message); } }
 
   // ground last so it can size itself to the model
   const bounds = modelBounds(root);
   // Whenever a lot is loaded the site is built: terrain with the aerial (when present), boundary, neighbours, labels and envelope.
   // The elevation grid is optional (flat ground at slab level without it). Without a lot the old flat disc stays.
-  const terrain = siteReady(project) ? addSiteTerrain(ctx, root, project, { texture: opts.siteTexture || null, edgeColour: opts.siteEdgeColour || null, wideTexture: opts.siteWideTexture || null, wideEdgeColour: opts.siteWideEdgeColour || null, showContours: !!opts.showContours }) : null;
+  const terrain = siteReady(project) ? addSiteTerrain(ctx, root, project, { texture: opts.siteTexture || null, edgeColour: opts.siteEdgeColour || null, wideTexture: opts.siteWideTexture || null, wideEdgeColour: opts.siteWideEdgeColour || null, showContours: !!opts.showContours, detail }) : null;
   const groundR = terrain ? terrain.outerR : addGround(ctx, root, bounds, null);
   root.userData = { groundY, groundR, levelIds: levels.map((l) => l.id), cutIdx };
   return root;
