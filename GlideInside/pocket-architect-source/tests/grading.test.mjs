@@ -35,7 +35,7 @@ test('grading: plane fit and fall clamp', () => {
   assert.ok(Math.abs(Math.hypot(g.gx, g.gz) - 0.01) < 1e-9);
 });
 
-test('grading: a batter of about 1 in 3 runs back to natural ground and far ground is untouched', () => {
+test('grading: a batter of 1 in 3 in fill and 1 in 2 in cut runs back to natural ground and far ground is untouched', () => {
   const zone = [{ x: 0, y: 0 }, { x: 10000, y: 0 }, { x: 10000, y: 10000 }, { x: 0, y: 10000 }];
   const rawAt = (x) => 4 + x / 1000 * 0.2; // a steep 20 percent natural slope, so the design plane is well away from the ground
   const g = planGrading({ rawAt, padY: 0, fp: null, paving: [zone] });
@@ -44,7 +44,7 @@ test('grading: a batter of about 1 in 3 runs back to natural ground and far grou
   assert.equal(g.heightAt(500000, 500000, 7), 7);
   let steepest = 0;
   for (let x = 11000; x < 40000; x += 500) steepest = Math.max(steepest, Math.abs(at(x + 500) - at(x)) / 0.5);
-  assert.ok(steepest > 0.2 && steepest <= 1 / 3 + 1e-6, `batter slope ${steepest}`);
+  assert.ok(steepest > 0.2 && steepest <= 1 / 2 + 1e-6, `cut batter (1V:2H) slope ${steepest}`);
   assert.ok(Math.abs(at(60000) - rawAt(60000)) < 1e-9, 'natural ground beyond the batter');
 });
 
@@ -64,7 +64,9 @@ test('grading: no terrain vertex under a car park sits above the paving surface 
   const mod = await import('../src/commercial/catalogue/pavements/view3d.js');
   assert.ok(mod.addArea);
   const src = (await import('node:fs')).readFileSync(new URL('../src/commercial/catalogue/pavements/view3d.js', import.meta.url), 'utf8');
-  const g = /const GROUND = ([0-9.]+);/.exec(src);
+  const lv = await import('../src/viewer3d/levels.js');
+  assert.ok(/const GROUND = LIFT\.asphalt;/.test(src), 'pavements read the levels table');
+  const g = [null, String(lv.LIFT.asphalt)];
   assert.ok(Number(g[1]) <= 0.05, 'pavement edge height');
   let n = 0;
   for (const a of areas) {
@@ -95,13 +97,14 @@ const CASES = [['warehouse', () => H.commercial('warehouse')], ['strata U shape'
 
 for (const [name, make] of CASES) {
   test(`grading: no terrain above any pad, paving, driveway or road surface (${name}), on a 4 m fall with cross slope and bumps`, () => {
-    const m = H.meshGrid(make());
-    const zones = H.probeZones(m);
+    const pr = make();
+    const m = H.meshGrid(pr);
+    const zones = H.probeZones(m, 400, pr.site.lot.boundary);
     assert.ok(!zones.some((z) => z.road), 'no road corridor is graded: the aerial imagery is the only road');
     assert.ok(zones.some((z) => !z.road && z.n > 50), 'footprint zones sampled');
     for (const z of zones) {
       assert.ok(z.poke <= 0.005, `terrain pokes ${z.poke} m above a ${z.road ? 'road' : 'footprint'} surface`);
-      assert.ok(z.sunk <= 0.05, `terrain sits ${z.sunk} m below a ${z.road ? 'road' : 'footprint'} surface`);
+      assert.ok(z.sunk <= (z.road ? 0.45 : 0.05), `terrain sits ${z.sunk} m below a ${z.road ? 'road' : 'footprint'} surface`); // the mesh is buried under the road corridor by design (levels.js)
     }
   });
 }
@@ -133,11 +136,12 @@ test('grading: a large lot (500 x 500 m, 2 m grid, 400 footprints) grades inside
     paving.push([{ x, y }, { x: x + 14000, y }, { x: x + 14000, y: y + 9000 }, { x, y: y + 9000 }]);
     if ((i + j) % 3 === 0) pads.push([{ x: x + 2000, y: y - 8000 }, { x: x + 10000, y: y - 8000 }, { x: x + 10000, y: y - 2000 }, { x: x + 2000, y: y - 2000 }]);
   }
-  const t0 = performance.now();
+  const cpu = () => { const u = process.cpuUsage(); return (u.user + u.system) / 1000; }; // CPU time, so a loaded runner does not fail the budget
+  const t0 = cpu();
   const g = planGrading({ rawAt, padY: 100, fp: null, pads, paving, cellM: 2.15 });
   let sum = 0;
   for (let j = 0; j < 261; j++) for (let i = 0; i < 261; i++) { const x = -30000 + i * 2154; const y = -30000 + j * 2154; sum += g.heightAt(x, y, rawAt(x, y)); }
-  const ms = performance.now() - t0;
+  const ms = cpu() - t0;
   assert.ok(Number.isFinite(sum));
   assert.ok(ms < 400, `grading took ${Math.round(ms)} ms`); // about 150 ms on a quiet machine; the budget leaves room for a loaded runner
 });

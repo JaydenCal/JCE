@@ -220,7 +220,8 @@ test('3D: the pavement follows the surface function with nothing floating', asyn
   assert.ok(LIFT_M <= 0.05);
   for (let i = 0; i < pos.count; i += 7) {
     const x = pos.getX(i); const z = pos.getZ(i);
-    assert.ok(Math.abs(pos.getY(i) - (surf(x * 1000, z * 1000) + LIFT_M)) < 1e-6, 'every vertex is the ground plus the lift');
+    const dy = pos.getY(i) - (surf(x * 1000, z * 1000) + LIFT_M);
+    assert.ok(dy > -1e-6 && dy <= 0.0031, 'every vertex is the design surface plus the table lift (the edge line a few mm above)');
   }
 });
 

@@ -6,6 +6,7 @@
 // never drawn over linework or other text. The legend lives in the title strip, the scale bar in a band below the viewport, and the north
 // point in the emptiest corner of the viewport.
 
+import { gradingLinesOf } from '../../../flow/grading-lines.js';
 import { drawOverlayOutlines, overlayLegendItems } from './overlays.js';
 import * as G from '../../../model/geometry.js';
 import { classifyEdges, requiredFor } from '../../../model/placement.js';
@@ -729,6 +730,7 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true } 
   notes.push(ground0 ? `Levels are indicative only, from the ${lot.state === 'QLD' ? 'Queensland' : 'NSW'} 5 m DEM, not survey. Contours at 1.0 m intervals. A registered survey is required.` : 'No ground levels for this lot.');
   if (overlayLegendItems(lot).length) notes.push('Site constraint overlays are indicative, from open government mapping. Check with council.');
   if (schedule.length) notes.push('Edges too short to label are tagged E and listed in the boundary schedule.');
+  { const gl = gradingLinesOf(project); if (gl.length) notes.push(gl[0], ...gl.slice(1).filter((t) => /steeper|retaining|towards/.test(t)).slice(0, 2)); } // indicative cut and fill, and any grade line over typical guidance
   void clean;
   return { scale, scaleLabel: `1:${scale} @ A3`, kv, blocks, notes, clearance: cl, tooBig };
 }

@@ -6,33 +6,15 @@
 //     natural ground, so no terrain or aerial shows through paving and the paving never drapes over bumps.
 import * as G from '../model/geometry.js';
 import * as S from './site-geom.js';
+import { DESIGN } from './grade-limits.js';
+import { createFDS, polyDistM, REACH_M } from './fds.js';
+import { KERB_UP, KERB_WIDTH, VERGE_RISE, TRANSITION_WING_M } from './levels.js';
 
-export const FALL_MIN = 0.01; // flattest design fall for paving (1 percent)
-export const FALL_MAX = 0.05; // steepest design fall for paving (5 percent)
-export const DRIVE_FALL_MAX = 0.1; // steepest design fall for a house driveway
-const MARGIN_M = 1.2; // flat band beyond the footprint: wider than a terrain cell so the mesh is on the plane under every pavement vertex
-const REACH_M = 36; // a zone only affects ground within this distance (a batter of up to 12 m of cut or fill)
-
+export const FALL_MIN = DESIGN.pavingFallMin; // flattest design fall for paving (1 percent)
+export const FALL_MAX = DESIGN.pavingFallMax; // steepest design fall for paving (5 percent)
+export const DRIVE_FALL_MAX = DESIGN.drivewayFallMax; // steepest design fall for a house driveway
+const PROFILE_STEP_M = 12;
 const bboxOf = (poly) => G.bbox(poly);
-
-function polyDistM(p, poly, bb) {
-  const dx = Math.max(bb.minX - p.x, 0, p.x - bb.maxX);
-  const dy = Math.max(bb.minY - p.y, 0, p.y - bb.maxY);
-  const dBox = Math.hypot(dx, dy) / 1000;
-  if (dBox > REACH_M) return { d: dBox, q: p };
-  if (G.pointInPolygon(p, poly)) return { d: 0, q: p };
-  let best = Infinity;
-  let bq = p;
-  for (let i = 0; i < poly.length; i++) {
-    const a = poly[i]; const b = poly[(i + 1) % poly.length];
-    const ex = b.x - a.x; const ey = b.y - a.y;
-    const l2 = ex * ex + ey * ey;
-    const t = l2 ? Math.max(0, Math.min(1, ((p.x - a.x) * ex + (p.y - a.y) * ey) / l2)) : 0;
-    const h = Math.hypot(p.x - a.x - t * ex, p.y - a.y - t * ey);
-    if (h < best) { best = h; bq = { x: a.x + t * ex, y: a.y + t * ey }; }
-  }
-  return { d: best / 1000, q: bq };
-}
 
 /** Least squares plane Y = c + gx (x - cx) + gz (z - cz) through samples { x, z, y } in metres. */
 export function fitPlane(samples) {
@@ -77,7 +59,7 @@ function samplesIn(polys, rawAt, stepMm = 2000) {
  * planGrading({ rawAt, padY, fp, paving: [poly], driveways: [{ polys, from }] }) -> { zones, heightAt(x, y, raw) } | null
  * rawAt(x, y) is the natural ground in metres (the same Y scale as padY); fp is the building pad bbox (plan mm) or null.
  */
-export const ROAD_GRADE_MAX = 0.06; // steepest longitudinal grade of the graded road corridor
+export const ROAD_GRADE_MAX = DESIGN.roadGradeMax; // steepest longitudinal grade of the graded road corridor
 export const CROSSFALL_MIN = 0.01; // the corridor falls across the road by 1 to 3 percent, never rising towards the far side
 export const CROSSFALL_MAX = 0.03;
 
@@ -118,7 +100,6 @@ export function clusterPolys(polys, gapMm = 1500) {
  * and limited to ROAD_GRADE_MAX between nodes, so a long street rolls gently instead of being one tilted plane. Across the road the surface is
  * flat with a 1 to 3 percent crossfall. Returns { level(xMm, yMm), grade } or null.
  */
-const PROFILE_STEP_M = 12;
 export function corridorProfile(corridor, rawAt) {
   const { u, outward, poly } = corridor;
   const o = poly[0];
@@ -148,152 +129,248 @@ export function corridorProfile(corridor, rawAt) {
   return { level, crossfall: cross, grade: Math.max(...h.slice(1).map((v, k) => Math.abs(v - h[k]) / ds)) };
 }
 
-/** A uniform bucket index over expanded boxes: query(x, y) -> the items whose box covers the point. */
-function buildIndex(items, cellMm = 12000) {
-  const map = new Map();
-  const key = (i, j) => i * 73856093 + j * 19349663;
-  for (const it of items) {
-    const i0 = Math.floor(it.box.minX / cellMm); const i1 = Math.floor(it.box.maxX / cellMm);
-    const j0 = Math.floor(it.box.minY / cellMm); const j1 = Math.floor(it.box.maxY / cellMm);
-    for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) { const k = key(i, j); const a = map.get(k); if (a) a.push(it); else map.set(k, [it]); }
+/**
+ * The existing road as a FIXED design element: a smooth longitudinal profile along the road (the natural ground sampled along the carriageway,
+ * smoothed and limited to ROAD_GRADE_MAX), a 1 to 3 percent crossfall, and the verge cross section by offset t from the property line:
+ *   carriageway (gutter to gutter) at the crossfall, flat gutter at the gutter invert, the kerb top KERB_UP above the invert, then the verge and
+ *   footpath rising VERGE_RISE (2.5 percent) from the back of the kerb to the property line. Held at these levels: never counted as earthworks.
+ * corridor = { poly (property line to far kerb, plan mm), u, outward, meta: { vergeM, gutterM, carriagewayM } }.
+ */
+export function roadElement(cr, rawAt, id = 'road') {
+  const m = cr.meta;
+  const { u, outward, poly } = cr;
+  if (!m) {
+    const pr = corridorProfile(cr, rawAt);
+    return pr ? { id, kind: 'road', polys: [poly], level: pr.level, fall: pr.grade, road: true, crossfall: pr.crossfall } : null;
   }
-  return (x, y) => map.get(key(Math.floor(x / cellMm), Math.floor(y / cellMm))) || EMPTY;
+  const o = poly[0];
+  const sOf = (q) => ((q.x - o.x) * u.x + (q.y - o.y) * u.y) / 1000;
+  const tOf = (q) => ((q.x - o.x) * outward.x + (q.y - o.y) * outward.y) / 1000;
+  const s0 = Math.min(...poly.map(sOf)); const s1 = Math.max(...poly.map(sOf));
+  if (!(s1 > s0)) return null;
+  const tk = m.vergeM; const tg0 = tk + m.gutterM; const tg1 = tg0 + m.carriagewayM; const tfar = tg1 + m.gutterM; const tc = (tg0 + tg1) / 2; const tb = tk - KERB_WIDTH;
+  const n = Math.max(2, Math.ceil((s1 - s0) / PROFILE_STEP_M) + 1);
+  const ds = (s1 - s0) / (n - 1);
+  const at = (sv, tv) => rawAt(o.x + (u.x * sv + outward.x * tv) * 1000, o.y + (u.y * sv + outward.y * tv) * 1000);
+  const cw = m.carriagewayM;
+  let h = Array.from({ length: n }, (_, k) => (at(s0 + k * ds, tg0 + 0.2 * cw) + at(s0 + k * ds, tc) + at(s0 + k * ds, tg1 - 0.2 * cw)) / 3);
+  for (let pass = 0; pass < 3; pass++) h = h.map((v, k) => (k === 0 || k === n - 1 ? v : (h[k - 1] + 2 * v + h[k + 1]) / 4));
+  const lim = ROAD_GRADE_MAX * ds;
+  for (let k = 1; k < n; k++) h[k] = Math.max(h[k - 1] - lim, Math.min(h[k - 1] + lim, h[k]));
+  for (let k = n - 2; k >= 0; k--) h[k] = Math.max(h[k + 1] - lim, Math.min(h[k + 1] + lim, h[k]));
+  const sm = s0 + (s1 - s0) / 2;
+  const gc = (at(sm, tg1) - at(sm, tg0)) / cw; // natural fall across the road, outward positive
+  const cross = -Math.max(CROSSFALL_MIN, Math.min(CROSSFALL_MAX, gc < 0 ? -gc : CROSSFALL_MIN)); // the road falls from the property side to the far kerb
+  const hAt = (sv) => { const sc = Math.min(s1, Math.max(s0, sv)); const f = (sc - s0) / ds; const k = Math.min(n - 2, Math.floor(f)); const w = f - k; return h[k] * (1 - w) + h[k + 1] * w; };
+  const gutter0 = (sv) => hAt(sv) + cross * (tg0 - tc); // near gutter invert
+  const verge0 = (sv) => gutter0(sv) + KERB_UP; // top of kerb, and the verge level at the back of the kerb
+  const level = (x, y) => {
+    const q = { x, y }; const sv = sOf(q); const t = tOf(q);
+    if (t >= tg0) {
+      if (t <= tg1) return hAt(sv) + cross * (t - tc); // carriageway
+      const g1 = hAt(sv) + cross * (tg1 - tc);
+      return g1; // far gutter, flat at its invert and carried on beyond the far kerb face (the kerb itself is a section standing on it)
+    }
+    const g0 = gutter0(sv);
+    if (t >= tk) return g0; // near gutter strip
+    if (t >= tb) return g0 + KERB_UP; // top of kerb
+    return g0 + KERB_UP + VERGE_RISE * (tb - Math.max(0, t)); // verge and footpath: rises to the property line, flat beyond it
+  };
+  const frame = { o, u, outward, sOf, tOf, tk, tg0, tg1, tfar, tc, tb, cross, hAt, gutter0, verge0 };
+  return { id, kind: 'road', polys: [poly], level, fall: Math.max(...h.slice(1).map((v, k) => Math.abs(v - h[k]) / ds)), road: true, crossfall: cross, frame };
 }
-const EMPTY = [];
+
+/** A driveway crossover over the verge: a ramp from the gutter invert at the kerb line (the layback) to the verge level at the property line. */
+function crossoverElement(road, poly, id) {
+  const f = road.frame;
+  const level = (x, y) => {
+    const q = { x, y }; const sv = f.sOf(q); const t = f.tOf(q);
+    const g0 = f.gutter0(sv); const lb = f.verge0(sv) + VERGE_RISE * f.tb;
+    if (t >= f.tk) return g0;
+    if (t <= 0) return lb;
+    return g0 + (lb - g0) * ((f.tk - t) / f.tk);
+  };
+  return { id, kind: 'crossover', polys: [poly], level, fall: 0, T: TRANSITION_WING_M };
+}
+
+/** The unit outward normal (x, z) of the polygon edge nearest to q, pointing away from the polygon's inside. */
+function outwardNormal(q, poly) {
+  let best = Infinity; let n = { x: 0, z: 1 };
+  for (let i = 0; i < poly.length; i++) {
+    const a = poly[i]; const b = poly[(i + 1) % poly.length];
+    const d = G.projectToSegment(q, a, b).d;
+    if (d < best) {
+      best = d;
+      const L = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+      n = { x: (b.y - a.y) / L, z: -(b.x - a.x) / L };
+      const mid = { x: (a.x + b.x) / 2 + n.x * 50, y: (a.y + b.y) / 2 + n.z * 50 };
+      if (G.pointInPolygon(mid, poly)) n = { x: -n.x, z: -n.z };
+    }
+  }
+  return n;
+}
+const unit = (v) => { const l = Math.hypot(v.x, v.z) || 1; return { x: v.x / l, z: v.z / l }; };
+const det3 = (m) => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
 
 /**
- * planGrading({ rawAt, padY, fp, paving, driveways, corridors, cellM }) -> { zones, heightAt(x, y, raw), band } | null
- * rawAt(x, y) is the natural ground in metres (the same Y scale as padY); fp is the building pad bbox (plan mm) or null; cellM is the mesh
- * cell size in metres: the flat band around every footprint is at least 1.5 cells wide, so every mesh triangle that touches a footprint lies
- * wholly on its design plane (crisp edges, nothing above the surface). Beyond the band a 1 in 3 batter runs back to the natural ground.
- * Zones in priority order (paving, driveways, corridors): a point inside a footprint takes the first zone that contains it.
+ * A paving cluster as one design plane. Natural ground fixes the direction of fall; ties (the building pads it meets and the road it leaves by)
+ * fix the level where they meet; the fall is limited to 1 to 5 percent and never rises away from a building face. Where the limits leave a
+ * residual at a tie, the plane blends to the neighbour over the transition width (fds.js), so the residual is a ramp and never a step.
  */
-export function planGrading({ rawAt, padY, fp = null, pads = null, paving = [], driveways = [], corridors = [], cellM = 0.75 }) {
-  const zones = [];
-  // Building pads: each building outline is its own flat pad (a U shaped group does not pad its court). A residential fp box is one pad.
-  const padPolys = (pads && pads.length ? pads : fp ? [[{ x: fp.minX, y: fp.minY }, { x: fp.maxX, y: fp.minY }, { x: fp.maxX, y: fp.maxY }, { x: fp.minX, y: fp.maxY }]] : []).filter((q) => Array.isArray(q) && q.length >= 3);
-  const padDist = (q) => { let d = Infinity; for (const poly of padPolys) d = Math.min(d, polyDistM(q, poly, bboxOf(poly)).d); return d; };
-  const band = Math.max(MARGIN_M, 1.5 * cellM);
-  const padBand = Math.max(S.PAD_MARGIN_M, 1.5 * cellM);
-  const nearPad = (polys) => {
-    let best = null;
-    for (const poly of polys) for (const q of poly) {
-      const d = padPolys.length ? padDist(q) : 0;
-      if (!best || d < best.d) best = { d, q };
-    }
-    return best;
-  };
-  const corridorLevels = [];
-  const roadLevelAt = (x, y) => { for (const c of corridorLevels) if (G.pointInPolygon({ x, y }, c.poly)) return c.level(x, y); return null; };
-  const addZone = (polys, { max, dir = null }) => {
-    const ps = polys.filter((p) => Array.isArray(p) && p.length >= 3);
-    if (!ps.length) return;
-    let area = 0;
-    for (const p of ps) { const b = bboxOf(p); area += (b.maxX - b.minX) * (b.maxY - b.minY) / 1e6; }
-    const smp = samplesIn(ps, rawAt, Math.max(2000, Math.sqrt(area / 1500) * 1000));
-    const fit = fitPlane(smp);
-    if (!fit) return;
-    const np = padPolys.length ? nearPad(ps) : null;
-    const anchored = !!np && np.d <= 12; // only paving beside the building is pinned to its pad level; a far car park keeps its own level
-    let g;
-    if (dir) {
-      const along = (q) => (q.x - dir.o.x) / 1000 * dir.u.x + (q.y - dir.o.y) / 1000 * dir.u.y;
-      const far = ps.flat().reduce((a, q) => (along(q) > along(a) ? q : a), ps[0][0]);
-      const run = Math.max(1, along(far));
-      const target = roadLevelAt(far.x, far.y) ?? rawAt(far.x, far.y);
-      const sl = Math.max(-max, Math.min(max, (target - padY) / run));
-      g = { gx: dir.u.x * sl, gz: dir.u.y * sl };
-    } else {
-      g = clampFall(fit.gx, fit.gz, max);
-      // Paving that meets the road is pinned to the road level there (so there is no step at the crossover) while it keeps the pad level at the
-      // building: the fall between the two is solved along the natural fall direction, then clamped to the design range.
-      let rq = null;
-      for (const cr of corridorLevels) for (const poly of ps) for (const q of poly) {
-        const r = polyDistM(q, cr.poly, cr.bb);
-        if (r.d <= 6 && (!rq || r.d < rq.d)) rq = { d: r.d, x: q.x, y: q.y, lvl: cr.level(q.x, q.y) };
-      }
-      if (rq && np && anchored) {
-        const m0 = Math.hypot(g.gx, g.gz);
-        const ux = m0 ? g.gx / m0 : 0; const uz = m0 ? g.gz / m0 : 1;
-        const den = ((rq.x - np.q.x) / 1000) * ux + ((rq.y - np.q.y) / 1000) * uz;
-        if (Math.abs(den) > 5) { const mm = Math.max(-max, Math.min(max, (rq.lvl - padY) / den)); g = { gx: ux * mm, gz: uz * mm }; }
-      }
-    }
-    const anchor = dir ? dir.o : anchored ? np.q : null;
-    const ax = anchor ? anchor.x / 1000 : fit.cx;
-    const az = anchor ? anchor.y / 1000 : fit.cz;
-    const ay = anchor ? padY : fit.cy;
-    zones.push({ polys: ps, boxes: ps.map(bboxOf), level: (x, y) => ay + g.gx * (x / 1000 - ax) + g.gz * (y / 1000 - az), fall: Math.hypot(g.gx, g.gz) });
-  };
-  // Corridors are planned first (so a driveway can aim at the road level) but ranked last.
-  const corridorZones = [];
-  for (const cr of corridors) {
-    const pr = corridorProfile(cr, rawAt);
-    if (!pr) continue;
-    corridorLevels.push({ poly: cr.poly, bb: bboxOf(cr.poly), level: pr.level });
-    corridorZones.push({ polys: [cr.poly], boxes: [bboxOf(cr.poly)], level: pr.level, fall: pr.grade, road: true, crossfall: pr.crossfall });
-  }
-  // Paving that reaches into a road corridor (a crossover pad) is cut back to the property side of the corridor: the rest is road surface.
-  const clipHalf = (poly, o, n) => {
-    const side = (q) => (q.x - o.x) * n.x + (q.y - o.y) * n.y; // > 0 is on the road side
-    const out = [];
-    for (let i = 0; i < poly.length; i++) {
+function planeFor(ps, { rawAt, pads, roads, max }) {
+  let area = 0;
+  for (const p of ps) { const b = bboxOf(p); area += (b.maxX - b.minX) * (b.maxY - b.minY) / 1e6; }
+  const smp = samplesIn(ps, rawAt, Math.max(2000, Math.sqrt(area / 1500) * 1000));
+  const fit = fitPlane(smp);
+  if (!fit) return null;
+  // Tie points: where the cluster meets a pad or the road (samples along its edges within 1.5 m of it), else its nearest vertex within reach.
+  const cb = ps.map(bboxOf).reduce((a, q) => ({ minX: Math.min(a.minX, q.minX), minY: Math.min(a.minY, q.minY), maxX: Math.max(a.maxX, q.maxX), maxY: Math.max(a.maxY, q.maxY) }), { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
+  const tiesWith = (target, maxFar) => {
+    const gx = Math.max(target.bb.minX - cb.maxX, cb.minX - target.bb.maxX, 0); const gy = Math.max(target.bb.minY - cb.maxY, cb.minY - target.bb.maxY, 0);
+    if (Math.hypot(gx, gy) / 1000 > maxFar) return [];
+    const near = []; let best = null;
+    for (const poly of ps) for (let i = 0; i < poly.length; i++) {
       const a = poly[i]; const b = poly[(i + 1) % poly.length];
-      const sa = side(a); const sb = side(b);
-      if (sa <= 0) out.push(a);
-      if ((sa < 0 && sb > 0) || (sa > 0 && sb < 0)) { const t = sa / (sa - sb); out.push({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }); }
+      const L = Math.hypot(b.x - a.x, b.y - a.y); const n = Math.max(1, Math.ceil(L / 3000));
+      for (let k = 0; k <= n; k++) {
+        const q = { x: a.x + ((b.x - a.x) * k) / n, y: a.y + ((b.y - a.y) * k) / n };
+        const r = polyDistM(q, target.poly, target.bb);
+        if (r.d <= 1.5) near.push({ q, e: r.q, n: target.pad ? outwardNormal(q, target.poly) : null });
+        if (!best || r.d < best.d) best = { d: r.d, q, e: r.q, n: target.pad ? outwardNormal(q, target.poly) : null };
+      }
     }
-    return out;
+    if (near.length) { const step = Math.max(1, Math.ceil(near.length / 10)); return near.filter((_, k) => k % step === 0); }
+    return best && best.d <= maxFar ? [best] : [];
   };
-  const offRoad = paving.filter((p) => Array.isArray(p) && p.length >= 3).map((poly) => {
-    let q = poly;
-    for (const cr of corridors) { if (q.length >= 3) q = clipHalf(q, cr.poly[0], cr.outward); }
-    return q;
-  }).filter((q) => q.length >= 3 && G.polygonArea(q) > 1e5);
-  if (offRoad.length) for (const grp of clusterPolys(offRoad)) addZone(grp, { max: FALL_MAX });
-  for (const d of driveways) {
-    const cut = d.polys.filter((p) => Array.isArray(p) && p.length >= 3).map((poly) => { let q = poly; for (const cr of corridors) if (q.length >= 3) q = clipHalf(q, cr.poly[0], cr.outward); return q; }).filter((q) => q.length >= 3 && G.polygonArea(q) > 1e5);
-    addZone(cut, { max: DRIVE_FALL_MAX, dir: d.dir });
+  const ties = [];
+  for (const pd of pads) for (const t of tiesWith({ ...pd, pad: true }, 12)) ties.push({ x: t.q.x / 1000, z: t.q.y / 1000, y: pd.y, w: 40, n: t.n, pad: true });
+  for (const rd of roads) for (const t of tiesWith(rd, 6)) ties.push({ x: t.q.x / 1000, z: t.q.y / 1000, y: rd.level(t.q.x, t.q.y), w: 40, road: true });
+  const wn = 1 / Math.max(1, smp.length);
+  // weighted least squares of c + gx (x - cx) + gz (z - cz) through the natural samples (total weight 1) and the ties
+  let g = { gx: fit.gx, gz: fit.gz };
+  if (ties.length) {
+    const A = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]; const bv = [0, 0, 0];
+    const add = (x, z, y, w) => {
+      const f = [1, x - fit.cx, z - fit.cz];
+      for (let i = 0; i < 3; i++) { for (let j = 0; j < 3; j++) A[i][j] += w * f[i] * f[j]; bv[i] += w * f[i] * y; }
+    };
+    for (const q of smp) add(q.x, q.z, q.y, wn);
+    for (const t of ties) add(t.x, t.z, t.y, t.w);
+    const det = det3(A);
+    if (Math.abs(det) > 1e-9) {
+      const repl = (col) => A.map((row, i) => row.map((x, j) => (j === col ? bv[i] : x)));
+      g = { gx: det3(repl(1)) / det, gz: det3(repl(2)) / det };
+    }
   }
-  zones.push(...corridorZones);
-  if (!zones.length) return null;
-  const padZones = padPolys.map((poly) => ({ polys: [poly], boxes: [bboxOf(poly)], level: () => padY, fall: 0, pad: true }));
-  zones.unshift(...padZones);
-  zones.forEach((z, k) => { z.rank = k; z.band = z.pad ? padBand : band; });
-  const items = [];
-  zones.forEach((z) => z.polys.forEach((poly, pi) => {
-    const b = z.boxes[pi]; const r = (REACH_M + z.band) * 1000;
-    items.push({ z, poly, bb: b, box: { minX: b.minX - r, maxX: b.maxX + r, minY: b.minY - r, maxY: b.maxY + r } });
-  }));
-  const query = buildIndex(items);
-  const heightAt = (x, y, raw) => {
-    const p = { x, y };
-    let bz = null; let bd = Infinity; let bq = p; let bk = Infinity; // winning zone: a containing zone by rank, else the nearest
-    for (const it of query(x, y)) {
-      const lx = Math.max(it.bb.minX - x, 0, x - it.bb.maxX); const ly = Math.max(it.bb.minY - y, 0, y - it.bb.maxY);
-      const lb = Math.hypot(lx, ly) / 1000; // the distance to the box bounds the distance to the polygon from below
-      if (lb > REACH_M + it.z.band || (bk < 0 ? lb > 0 : lb >= bk)) continue;
-      const r = polyDistM(p, it.poly, it.bb);
-      if (r.d > REACH_M + it.z.band) continue;
-      const key = r.d === 0 ? -1 + it.z.rank * 1e-6 : r.d + it.z.rank * 1e-9;
-      if (key < bk) { bk = key; bz = it.z; bd = r.d; bq = r.q; }
-    }
-    if (!bz) return raw;
-    const bnd = bz.band;
-    if (bd <= bnd) return bz.level(x, y); // flat band: the design plane carried outward
-    if (bd > REACH_M + bnd) return raw;
-    const k = bnd / bd; // the batter starts from the plane at the band edge, so it is a clean 1 in 3 band
-    const lvl = bz.level(bq.x + (x - bq.x) * k, bq.y + (y - bq.y) * k);
-    return S.padHeight(raw, lvl, bd - bnd + S.PAD_MARGIN_M);
+  g = clampFall(g.gx, g.gz, max);
+  // Residual at the ties (best level for a given fall): used to decide whether the fall can be kept off the building.
+  const resid = (gg) => {
+    let sw = 0; let sy = 0;
+    for (const t of ties) { sw += t.w; sy += t.w * (t.y - (gg.gx * (t.x - fit.cx) + gg.gz * (t.z - fit.cz))); }
+    const c0 = sw ? sy / sw : fit.cy; let e = 0;
+    for (const t of ties) e += t.w * (t.y - (c0 + gg.gx * (t.x - fit.cx) + gg.gz * (t.z - fit.cz))) ** 2;
+    return sw ? Math.sqrt(e / sw) : 0;
   };
-  return { zones, heightAt, band };
+  // Never fall towards a building face: remove any component that rises away from a pad (a flat plane satisfies every face). When that cannot
+  // meet the road (the street is above the pad) the fall is kept and the plane is flagged: it drains towards the building, check with an engineer.
+  const rises = (gg) => ties.some((t) => t.pad && gg.gx * t.n.x + gg.gz * t.n.z > 1e-9);
+  let towardsBuilding = false;
+  if (rises(g)) {
+    let h = { ...g };
+    for (let it = 0; it < 4 && rises(h); it++) for (const t of ties) { if (!t.pad) continue; const r = h.gx * t.n.x + h.gz * t.n.z; if (r > 0) h = { gx: h.gx - r * t.n.x, gz: h.gz - r * t.n.z }; }
+    if (rises(h)) h = { gx: 0, gz: 0 };
+    if (resid(h) <= resid(g) + 0.15) g = h; else towardsBuilding = true;
+  }
+  const m = Math.hypot(g.gx, g.gz);
+  if (m > max) g = { gx: g.gx * max / m, gz: g.gz * max / m };
+  // the level: through the ties in the least squares sense (the natural centre when there are none)
+  let sw = 0; let sy = 0;
+  for (const t of ties) { sw += t.w; sy += t.w * (t.y - (g.gx * (t.x - fit.cx) + g.gz * (t.z - fit.cz))); }
+  const c = sw ? sy / sw : fit.cy;
+  return { c, gx: g.gx, gz: g.gz, cx: fit.cx, cz: fit.cz, ties, towardsBuilding };
 }
 
-/** Indicative cut and fill (m3) between the natural ground and the graded surface over a height grid. */
-export function earthworks(grid, rawAt, cellAreaM2) {
+export const clipHalf = (poly, o, n) => {
+  const side = (q) => (q.x - o.x) * n.x + (q.y - o.y) * n.y; // > 0 is on the road side
+  const out = [];
+  for (let i = 0; i < poly.length; i++) {
+    const a = poly[i]; const b = poly[(i + 1) % poly.length];
+    const sa = side(a); const sb = side(b);
+    if (sa <= 0) out.push(a);
+    if ((sa < 0 && sb > 0) || (sa > 0 && sb < 0)) { const t = sa / (sa - sb); out.push({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }); }
+  }
+  return out;
+};
+
+/**
+ * planGrading({ rawAt, padY, fp, pads, paving, driveways, corridors, crossovers, cellM }) -> { elements, zones, fds, heightAt(x, y, raw), band, pads } | null
+ * rawAt(x, y) is the natural ground in metres (the same Y scale as padY). pads: building outlines, each a ring (level padY) or { id, poly, y }
+ * with its own level; fp is the residential pad box (plan mm) when there are no pads. paving: rings. driveways: [{ polys, dir }]. corridors: the
+ * existing road, see roadElement. crossovers: rings over the verge (a ramp from the layback to the verge level). cellM: terrain cell in metres.
+ * Elements in priority order (the road and its crossovers are fixed): crossovers, roads, pads, then paving and driveways, solved to meet them.
+ */
+export function planGrading({ rawAt, padY, fp = null, pads = null, paving = [], driveways = [], corridors = [], crossovers = [], cellM = 0.75, lot = null, batterRun = 3 }) {
+  const padSrc = pads && pads.length ? pads : fp ? [[{ x: fp.minX, y: fp.minY }, { x: fp.maxX, y: fp.minY }, { x: fp.maxX, y: fp.maxY }, { x: fp.minX, y: fp.maxY }]] : [];
+  const padList = padSrc.map((q, i) => (Array.isArray(q) ? { id: `pad:${i}`, poly: q, y: padY } : { id: q.id || `pad:${i}`, poly: q.poly, y: Number.isFinite(q.y) ? q.y : padY }))
+    .filter((q) => Array.isArray(q.poly) && q.poly.length >= 3).map((q) => ({ ...q, bb: bboxOf(q.poly) }));
+  const roads = [];
+  corridors.forEach((cr, i) => { const r = roadElement(cr, rawAt, `road:${i}`); if (r) { r.bb = bboxOf(cr.poly); r.poly = cr.poly; r.cr = cr; roads.push(r); } });
+  const roadNear = (x, y, within = 6) => {
+    let best = null;
+    for (const r of roads) { const d = polyDistM({ x, y }, r.poly, r.bb).d; if (d <= within && (!best || d < best.d)) best = { d, lvl: r.level(x, y), road: r }; }
+    return best;
+  };
+  const cross = [];
+  crossovers.forEach((poly, i) => {
+    if (!Array.isArray(poly) || poly.length < 3) return;
+    const c = poly.reduce((a, q) => ({ x: a.x + q.x / poly.length, y: a.y + q.y / poly.length }), { x: 0, y: 0 });
+    const road = roads.find((r) => r.frame && polyDistM(c, r.poly, r.bb).d === 0);
+    if (road) cross.push(crossoverElement(road, poly, `crossover:${i}`));
+  });
+  const padEls = padList.map((q) => ({ id: q.id, kind: 'pad', pad: true, polys: [q.poly], level: () => q.y, y: q.y, fall: 0 }));
+  const toLot = (poly) => { let q = poly; for (const r of roads) { if (q.length >= 3) q = clipHalf(q, r.cr.poly[0], r.cr.outward); } return q; };
+  const roadTies = roads.map((r) => ({ poly: r.poly, bb: r.bb, level: r.level }));
+  const padTies = padList.map((q) => ({ poly: q.poly, bb: q.bb, y: q.y }));
+  const planes = [];
+  const offRoad = paving.filter((p) => Array.isArray(p) && p.length >= 3).map(toLot).filter((q) => q.length >= 3 && G.polygonArea(q) > 1e5);
+  let nPave = 0;
+  if (offRoad.length) {
+    for (const grp of clusterPolys(offRoad)) {
+      const pl = planeFor(grp, { rawAt, pads: padTies, roads: roadTies, max: FALL_MAX });
+      if (!pl) continue;
+      planes.push({ id: `paving:${nPave++}`, kind: 'paving', polys: grp, level: (x, y) => pl.c + pl.gx * (x / 1000 - pl.cx) + pl.gz * (y / 1000 - pl.cz), fall: Math.hypot(pl.gx, pl.gz), ties: pl.ties.length, towardsBuilding: pl.towardsBuilding });
+    }
+  }
+  let nDrive = 0;
+  for (const d of driveways) {
+    const cut = d.polys.filter((p) => Array.isArray(p) && p.length >= 3).map(toLot).filter((q) => q.length >= 3 && G.polygonArea(q) > 1e5);
+    if (!cut.length) continue;
+    const dir = d.dir;
+    const along = (q) => (q.x - dir.o.x) / 1000 * dir.u.x + (q.y - dir.o.y) / 1000 * dir.u.y;
+    const far = cut.flat().reduce((a, q) => (along(q) > along(a) ? q : a), cut[0][0]);
+    const run = Math.max(1, along(far));
+    let nearPad = null; let nd = Infinity;
+    for (const q of padList) { const r = polyDistM(dir.o, q.poly, q.bb).d; if (r < nd) { nd = r; nearPad = q; } }
+    const ay = nearPad && nd <= 12 ? nearPad.y : padY;
+    const rn = roadNear(far.x, far.y, 8);
+    const target = rn ? rn.lvl : rawAt(far.x, far.y);
+    const sl = Math.max(-DRIVE_FALL_MAX, Math.min(DRIVE_FALL_MAX, (target - ay) / run));
+    const g = { gx: dir.u.x * sl, gz: dir.u.y * sl };
+    const ax = dir.o.x / 1000; const az = dir.o.y / 1000;
+    planes.push({ id: `drive:${nDrive++}`, kind: 'drive', polys: cut, level: (x, y) => ay + g.gx * (x / 1000 - ax) + g.gz * (y / 1000 - az), fall: Math.abs(sl), dir });
+  }
+  const elements = [...cross, ...roads.map((r) => ({ id: r.id, kind: 'road', polys: [r.poly], level: r.level, fall: r.fall, road: true, crossfall: r.crossfall, frame: r.frame })), ...padEls, ...planes];
+  if (!planes.length && !roads.length && !cross.length) return null;
+  const fds = createFDS({ rawAt, elements, cellM, padBand: Math.max(S.PAD_MARGIN_M, 1.5 * cellM), lot, batterRun });
+  return { elements: fds.elements, zones: fds.elements, fds, heightAt: fds.heightAt, band: fds.band, pads: padList };
+}
+
+/** Indicative cut and fill (m3) between the natural ground and the graded surface over a height grid. exclude(x, y) skips cells (the existing road is held, not graded). */
+export function earthworks(grid, rawAt, cellAreaM2, exclude = null) {
   let cut = 0; let fill = 0;
   for (let j = 0; j < grid.rows; j++) for (let i = 0; i < grid.cols; i++) {
     const x = grid.x0 + i * grid.dx; const y = grid.y0 + j * grid.dy;
+    if (exclude && exclude(x, y)) continue;
     const d = grid.heights[j * grid.cols + i] - rawAt(x, y);
     if (d > 0.005) fill += d * cellAreaM2; else if (d < -0.005) cut += -d * cellAreaM2;
   }

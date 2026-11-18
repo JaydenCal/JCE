@@ -10,8 +10,10 @@ import { makeMesh } from '../../../viewer3d/model-util.js';
 import { pavementModel } from './logic.js';
 import { pavementById } from './pavements.js';
 import { kerbById, profileArea } from './kerbs.js';
+import { LIFT } from '../../../viewer3d/levels.js';
 import { markingGeometry, markingById, drawAccessibleIcon, PAINT } from './markings.js';
 
+const pointIn = (p, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { if ((poly[i].y > p.y) !== (poly[j].y > p.y) && p.x < ((poly[j].x - poly[i].x) * (p.y - poly[i].y)) / (poly[j].y - poly[i].y) + poly[i].x) c = !c; } return c; };
 const hasDom = typeof document !== 'undefined';
 const texCache = new Map();
 
@@ -151,8 +153,8 @@ function mat(color, opts = {}) {
 
 // Geometry ---------------------------------------------------------------------------------------------------------------------------
 
-const GROUND = 0.025; // pavement surface above the graded ground, m: one level for every asphalt and concrete piece, flush with the road asphalt (site-extras 0.025)
-const PAINT_LIFT = 0.012; // paint above the pavement
+const GROUND = LIFT.asphalt; // asphalt and concrete are the finished design surface itself (viewer3d/levels.js): one level, flush with the road
+const PAINT_LIFT = LIFT.paint; // paint above the pavement
 const SEG_M = 3; // drape grid
 
 /** Add one pavement polygon to the builder, draped on the ground, with UVs aligned to the polygon's first edge. */
@@ -190,8 +192,12 @@ export function addArea(b, slot, poly, H, tileM) {
   for (const [i, j, k] of tris) b.tri(slot, V(m[i].x, m[i].y), V(m[j].x, m[j].y), V(m[k].x, m[k].y), uv(m[i].x, m[i].y), uv(m[j].x, m[j].y), uv(m[k].x, m[k].y), [0, 1, 0]);
 }
 
-/** Extrude a kerb profile along a polyline. Profile x runs along n = (-dy, dx), the landscaping side. */
-function addKerb(b, slot, kerb, polyline, H) {
+/**
+ * Extrude a kerb profile along a polyline. Profile x runs along n = (-dy, dx), the landscaping side. The kerb stands on the finished design
+ * surface at the line (a rigid section), is left out where the other side is paved too (bays and aisle are one surface), and tapers to zero
+ * height through scale(x, y) (a layback: the kerb returns fall to the gutter level).
+ */
+function addKerb(b, slot, kerb, polyline, H, scale = null, bothPaved = null) {
   const prof = kerb.profile;
   const ccw = profileArea(prof) > 0;
   for (let i = 0; i + 1 < polyline.length; i++) {
@@ -201,8 +207,11 @@ function addKerb(b, slot, kerb, polyline, H) {
     if (L < 1) continue;
     const tx = dx / L; const tz = dy / L;
     const nx = -tz; const nz = tx;
-    const base = (p, off) => [(p.x + nx * off) / 1000, 0, (p.y + nz * off) / 1000];
-    const at = (p, pr) => { const q = base(p, pr.x); q[1] = H(q[0], q[2]) + GROUND + pr.y / 1000; return q; };
+    if (bothPaved && bothPaved({ x: (a.x + c.x) / 2 + nx * 250, y: (a.y + c.y) / 2 + nz * 250 }) && bothPaved({ x: (a.x + c.x) / 2 - nx * 250, y: (a.y + c.y) / 2 - nz * 250 })) continue;
+    const sa = scale ? scale(a) : 1; const sc = scale ? scale(c) : 1;
+    if (sa <= 0 && sc <= 0) continue;
+    const base = (p, off, k) => [(p.x + nx * off) / 1000, 0, (p.y + nz * off) / 1000];
+    const at = (p, pr, k) => { const q = base(p, pr.x); q[1] = H(p.x / 1000, p.y / 1000) + GROUND + (pr.y / 1000) * k; return q; };
     for (let k = 0; k < prof.length; k++) {
       const p0 = prof[k]; const p1 = prof[(k + 1) % prof.length];
       const ex = p1.x - p0.x; const ey = p1.y - p0.y;
@@ -211,15 +220,16 @@ function addKerb(b, slot, kerb, polyline, H) {
       // outward normal of this profile edge in (x across, y up), turned into world
       const o = ccw ? { x: ey / el, y: -ex / el } : { x: -ey / el, y: ex / el };
       const hint = [nx * o.x, o.y, nz * o.x];
-      b.quad(slot, at(a, p0), at(c, p0), at(c, p1), at(a, p1), [[0, p0.y / 1000], [L / 1000, p0.y / 1000], [L / 1000, p1.y / 1000], [0, p1.y / 1000]], hint);
+      b.quad(slot, at(a, p0, sa), at(c, p0, sc), at(c, p1, sc), at(a, p1, sa), [[0, p0.y / 1000], [L / 1000, p0.y / 1000], [L / 1000, p1.y / 1000], [0, p1.y / 1000]], hint);
     }
     // end caps
-    const cap = (p, sgn) => {
-      const pts = prof.map((pr) => at(p, pr));
+    const cap = (p, sgn, kk) => {
+      const pts = prof.map((pr) => at(p, pr, kk));
       const hint = [tx * sgn, 0, tz * sgn];
       for (let k = 1; k < pts.length - 1; k++) b.tri(slot, pts[0], pts[k], pts[k + 1], [0, 0], [0, 0], [0, 0], hint);
     };
-    cap(a, -1); cap(c, 1);
+    if (sa > 0) cap(a, -1, sa);
+    if (sc > 0) cap(c, 1, sc);
   }
 }
 
@@ -251,7 +261,7 @@ function addHump(b, slot, s, H) {
  * Only for a commercial project with pavement areas. surf(xMm, yMm) gives the ground height in metres. Safe without a DOM
  * (textures are skipped and flat colours used), which is how the tests build it.
  */
-export function addCommercialPavements(root, project, surf, { model = null } = {}) {
+export function addCommercialPavements(root, project, surf, { model = null, kerbScale = null } = {}) {
   if (project?.mode !== 'commercial' || !project.commercial) return null;
   const m = model || pavementModel(project.commercial, project.site?.lot || null);
   if (!m.areas.length && !m.kerbs.length) return null;
@@ -283,10 +293,12 @@ export function addCommercialPavements(root, project, surf, { model = null } = {
     const b = new GeoBuilder();
     const mats = {};
     const kt = kerbTex();
+    const polys = m.areas.map((a) => a.polygon);
+    const bothPaved = (q) => polys.some((poly) => pointIn(q, poly));
     for (const k of m.kerbs) {
       const kd = kerbById(k.type);
       if (!kd) continue;
-      addKerb(b, k.type, kd, k.polyline, H);
+      addKerb(b, k.type, kd, k.polyline, H, kerbScale, bothPaved);
       stats.kerbs += 1;
       if (!mats[k.type]) mats[k.type] = kt ? mat('#ffffff', { map: kt, color: kd.colour, roughness: 0.88 }) : mat(kd.colour, { roughness: 0.88 });
     }

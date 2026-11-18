@@ -2,6 +2,7 @@
 // createViewer3D(element, store, { catalogue }) -> { setActive, setMode, setEdit, resetCamera, getModel, snapshot, dispose }
 // Edit in 3D (key B or the Edit toggle) is in edit.js; door animation for the walk-through is in doors.js.
 
+import { createWatchdog } from './watchdog.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { buildModel, disposeModel, modelBounds } from './build.js';
@@ -194,6 +195,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   const stats = { buildMs: 0, builds: 0, frames: 0 };
   // Watchdog: a rebuild over WATCHDOG_MS drops the detail level (no fine fittings, no contours) instead of freezing the page again.
   const WATCHDOG_MS = globalThis.__PS_WATCHDOG_MS || 2000;
+  const watchdog = createWatchdog(WATCHDOG_MS);
   let detail = 'full';
   let detailNote = null;
   const raycaster = new THREE.Raycaster();
@@ -555,7 +557,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     if (!framed || lastProjectId !== store.project.id) {
       frameCamera(false);
       framed = true;
-      if (lastProjectId && lastProjectId !== store.project.id) { detail = 'full'; stats.simplified = false; }
+      if (lastProjectId && lastProjectId !== store.project.id) { detail = 'full'; stats.simplified = false; watchdog.reset(); }
       lastProjectId = store.project.id;
     }
     dirtyModel = false;
@@ -563,12 +565,19 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     roomEdit?.onRebuild();
     stats.buildMs = performance.now() - t0;
     stats.builds++;
-    if (stats.buildMs > WATCHDOG_MS && detail === 'full') {
+    const verdict = watchdog.record(stats.buildMs, detail);
+    if (verdict === 'degrade') {
       detail = 'low';
       stats.simplified = true;
       showDetailNote();
       dirtyModel = true;
       rebuildTimer = setTimeout(rebuild, 30); // the same view again, lighter
+    } else if (verdict === 'recover') {
+      detail = 'full'; // rebuilds are fast again: back to full detail (a slow one drops it again, see watchdog.js)
+      stats.simplified = false;
+      hideDetailNote();
+      dirtyModel = true;
+      rebuildTimer = setTimeout(rebuild, 30);
     }
     invalidate();
   }
@@ -586,6 +595,10 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       detailNote.style.opacity = '1';
       setTimeout(() => { if (detailNote) detailNote.style.opacity = '0'; }, 4000);
     } catch { /* the note is a courtesy */ }
+  }
+
+  function hideDetailNote() {
+    try { if (detailNote) detailNote.style.opacity = '0'; } catch { /* a courtesy */ }
   }
 
   function scheduleRebuild(delay = 120) {

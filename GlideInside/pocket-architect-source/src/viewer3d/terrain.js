@@ -18,12 +18,17 @@ import * as G from '../model/geometry.js';
 import { addSiteExtras } from './site-extras.js';
 import { addConstraintTint } from './site-constraints.js';
 import { LAWN_COLOUR } from './site.js';
-import { planGrading, earthworks } from './grading.js';
+import { planGrading, earthworks, clusterPolys, clipHalf } from './grading.js';
 import { deriveDriveway } from '../site/lotplan.js';
+import { getWays, wayGeometry } from '../site/pavedways.js';
+import { rowPoly } from '../commercial/layout.js';
 import { buildingsOf } from '../commercial/catalogue/buildings.js';
 import { pavementModel } from '../commercial/catalogue/pavements/logic.js';
 import { addCommercialPavements } from '../commercial/catalogue/pavements/view3d.js';
 import { addCommercialEntourage, addForecourtSlabs } from '../commercial/catalogue/entourage3d.js';
+import { SUBGRADE, ROAD_BURY } from './levels.js';
+import { polyDistM } from './fds.js';
+import { skirtGeometry, retainingWallGeometry } from './skirts.js';
 
 export { PAD_MARGIN_M } from './site-geom.js';
 
@@ -47,30 +52,91 @@ export function footprintBox(project) {
   };
 }
 
-// Mean natural ground RL under the building pad: the residential footprint box, or the commercial building outlines. null when none.
-export function meanPadRL(project, lot, fp) {
+// The building footprints that need a pad: the residential footprint box, or the commercial building outlines and strata rows (plan mm rings).
+export function padPolygons(project, fp) {
   let polys = [];
-  if (project.mode === 'commercial' && project.commercial) polys = buildingsOf(project.commercial).map((b) => b.outline);
-  else if (fp) polys = [[{ x: fp.minX, y: fp.minY }, { x: fp.maxX, y: fp.minY }, { x: fp.maxX, y: fp.maxY }, { x: fp.minX, y: fp.maxY }]];
+  if (project.mode === 'commercial' && project.commercial) {
+    polys = buildingsOf(project.commercial).map((b) => b.outline);
+    const rowsList = project.commercial.rows || [];
+    for (const r of rowsList) { try { polys.push(rowPoly(r, rowsList)); } catch { /* a row with no geometry has no pad */ } }
+  } else if (fp) polys = [[{ x: fp.minX, y: fp.minY }, { x: fp.maxX, y: fp.minY }, { x: fp.maxX, y: fp.maxY }, { x: fp.minX, y: fp.maxY }]];
+  return polys.filter((q) => Array.isArray(q) && q.length >= 3);
+}
+
+// Mean of a ground function (x, y) -> value over the interior of the polygons. null when none.
+function meanOver(polys, at) {
   let sum = 0; let n = 0;
   for (const poly of polys) {
-    if (!poly || poly.length < 3) continue;
     const xs = poly.map((q) => q.x); const ys = poly.map((q) => q.y);
     const x0 = Math.min(...xs); const x1 = Math.max(...xs); const y0 = Math.min(...ys); const y1 = Math.max(...ys);
     const step = Math.max(500, Math.max(x1 - x0, y1 - y0) / 24);
     for (let x = x0 + step / 2; x < x1; x += step) for (let y = y0 + step / 2; y < y1; y += step) {
       if (!G.pointInPolygon({ x, y }, poly)) continue;
-      const rl = S.terrainAtClamped(lot.terrain, x, y);
-      if (rl != null) { sum += rl; n++; }
+      const v = at(x, y);
+      if (v != null) { sum += v; n++; }
     }
   }
   return n ? sum / n : null;
 }
 
+// Mean natural ground RL under the building pads. null when none.
+export function meanPadRL(project, lot, fp) {
+  return meanOver(padPolygons(project, fp), (x, y) => S.terrainAtClamped(lot.terrain, x, y));
+}
+
+const PAD_STEP_M = 0.05; // a pad level is a whole 50 mm
+const PAD_GAP_MM = 1000; // footprints closer than this share one pad (a U shaped row, a building and its attached canopy)
+
 /**
- * terrainModel(project) -> { heightAt(xMm, yMm) -> Y metres, floorRL, base, padY } | null (no lot)
+ * The building pads: footprints that touch share one flat pad, each group at the mean natural ground under it rounded to 50 mm, so separate
+ * buildings (and separate rows) sit at their own level on a slope. [{ id, polys, y, dy }] where y is the model height of the pad and dy its
+ * difference from the project pad level (the buildings are moved by dy, see applyPadShifts).
+ */
+export function padGroups(polys, rawY, padY, overrides = null, userSteps = null) {
+  if (!polys.length) return [];
+  const groups = polys.length > 1 ? clusterPolys(polys, PAD_GAP_MM) : [polys];
+  return groups.map((g, i) => {
+    const mean = meanOver(g, rawY);
+    const dyAuto = mean == null ? 0 : Math.round((mean - padY) / PAD_STEP_M) * PAD_STEP_M;
+    const ov = overrides ? overrides(g, i) : null;
+    const base = Number.isFinite(ov) ? ov : dyAuto;
+    const us = userSteps ? userSteps(g, i) : null; // metres added to the automatic level by the person
+    const dy = base + (Number.isFinite(us) ? Math.round(us / PAD_STEP_M) * PAD_STEP_M : 0);
+    return { id: `pad:${i}`, polys: g, y: padY + dy, dy, dyAuto: base };
+  });
+}
+
+/**
+ * Where a driveway crosses the verge: the part of a paved ring beyond the property line as a rectangle running to the kerb face, so the
+ * crossover is a ramp from the layback at the kerb to the verge level at the property line (fds.js). null when the ring stays off the verge.
+ */
+export function crossoverRing(poly, rv) {
+  const a = rv.lines.property[0]; const out = rv.outward; const u = rv.u; const tk = rv.vergeM;
+  const T = (q) => ((q.x - a.x) * out.x + (q.y - a.y) * out.y) / 1000;
+  const ts = poly.map(T);
+  if (!(Math.max(...ts) > 0.3 && Math.min(...ts) < tk - 0.3)) return null;
+  const part = clipHalf(poly, a, { x: -out.x, y: -out.y }); // t >= 0
+  if (part.length < 3) return null;
+  const ss = part.map((q) => ((q.x - a.x) * u.x + (q.y - a.y) * u.y) / 1000);
+  const s0 = Math.min(...ss); const s1 = Math.max(...ss);
+  if (!(s1 - s0 > 0.3)) return null;
+  const pt = (s, t) => ({ x: a.x + (u.x * s + out.x * t) * 1000, y: a.y + (u.y * s + out.y * t) * 1000 });
+  return [pt(s0, 0), pt(s1, 0), pt(s1, tk), pt(s0, tk)];
+}
+
+/** A paved ring that stops short of the kerb across the verge is run on to the kerb face (3D only). The ring itself when it does not reach the verge. */
+export function extendToKerb(poly, rv) {
+  const a = rv.lines.property[0]; const out = rv.outward; const tk = rv.vergeM;
+  const T = (q) => ((q.x - a.x) * out.x + (q.y - a.y) * out.y) / 1000;
+  const ts = poly.map(T); const tmax = Math.max(...ts);
+  if (!(tmax > 0.3 && Math.min(...ts) < tk - 0.3) || tmax >= tk - 0.02 || tmax < tk - 3) return poly;
+  return poly.map((q, i) => (ts[i] >= tmax - 0.01 ? { x: q.x + out.x * (tk - ts[i]) * 1000, y: q.y + out.y * (tk - ts[i]) * 1000 } : q));
+}
+
+/**
+ * terrainModel(project) -> { heightAt(xMm, yMm) -> Y metres, floorRL, base, padY, fds, pads, pavements } | null (no lot)
  * Defined everywhere (clamped to the elevation grid, flat at slab level when there is no grid), so the mesh never has a hole.
- * Pure: also used by tests.
+ * Pure: also used by tests. heightAt is the finished design surface (fds.js) when there is a terrain grid.
  */
 export function terrainModel(project, opts = {}) {
   const lot = project.site?.lot;
@@ -90,26 +156,76 @@ export function terrainModel(project, opts = {}) {
     const rl = S.terrainAtClamped(lot.terrain, x, y);
     return rl == null ? padY : rl - floorRL + base;
   };
-  // Auto grading: paving and driveways sit on gently graded design planes and the mesh is flattened under them (only with a terrain grid).
+  const commercial = project.mode === 'commercial' && !!project.commercial;
+  // The pavement model once per build (the 3D pavements, the extras and the grading all read it).
+  let pavements = opts.pavements || null;
+  if (commercial && !pavements) { try { pavements = pavementModel(project.commercial, lot); } catch { pavements = null; } }
+  let pads = [];
+  let crossoverRings = [];
   let grading = null;
+  let reserves = [];
+  // No automatic road: reserves stay empty (owner 18/11/2026).
+  let pavements3d = pavements;
+  // Auto grading: paving and driveways sit on gently graded design planes and the mesh is flattened under them (only with a terrain grid).
   if (lot.terrain) {
     try {
-      const paving = project.mode === 'commercial' && project.commercial ? pavementModel(project.commercial, lot).areas.map((a) => a.polygon) : [];
-      const driveways = [];
-      if (project.mode !== 'commercial' && fp) {
-        const dw = deriveDriveway(project);
-        if (dw?.ok && dw.polygon?.length >= 3 && dw.centre?.length >= 2) {
-          const o = dw.centre[0]; const e = dw.centre[dw.centre.length - 1];
-          const l = Math.hypot(e.x - o.x, e.y - o.y) || 1;
-          // the house end is the centre end nearer the footprint
+      // A house pad is raised towards the street where the drive would otherwise be steep: the drive aims at about 12 percent, the raise is at
+      // most 0.6 m and a whole 50 mm. The natural ground at the street end plus the verge rise stands for the verge level at the property line.
+      let driveRaise = null;
+      if (!commercial && fp) {
+        const dw0 = deriveDriveway(project);
+        if (dw0?.ok && dw0.centre?.length >= 2) {
+          const o = dw0.centre[0]; const e = dw0.centre[dw0.centre.length - 1];
           const dA = S.distToBox(fp, o.x, o.y); const dB = S.distToBox(fp, e.x, e.y);
           const [h, st] = dA <= dB ? [o, e] : [e, o];
-          driveways.push({ polys: [dw.polygon, ...(dw.crossover?.polygon?.length > 3 ? [dw.crossover.polygon] : [])], dir: { o: h, u: { x: (st.x - h.x) / l, y: (st.y - h.y) / l } } });
+          const run = Math.max(1, Math.hypot(st.x - h.x, st.y - h.y) / 1000);
+          const need = rawY(st.x, st.y) + 0.25 - 0.12 * run - padY;
+          if (need > 0.05) driveRaise = Math.min(0.6, Math.round(need / PAD_STEP_M) * PAD_STEP_M);
+        }
+      }
+      // The person's grading controls (project.site.grading): a pad raised or lowered in whole 50 mm steps from the automatic level, and the batter.
+      const gr = project.site?.grading || {};
+      const userPad = (g, i) => { const n = Number(gr.pads?.[`pad:${i}`]); return Number.isFinite(n) && n !== 0 ? n : null; };
+      const autoPad = opts.padOverride || (driveRaise ? (g, i) => (i === 0 ? driveRaise : null) : null);
+      pads = padGroups(padPolygons(project, fp), rawY, padY, autoPad, userPad);
+      const paving = []; const crossovers = [];
+      const driveways = [];
+      if (commercial && pavements) {
+        const areas = pavements.areas.map((a) => {
+          let poly = a.polygon;
+          for (const rv of reserves) { const ring = crossoverRing(poly, rv); if (ring) { poly = extendToKerb(poly, rv); crossovers.push(crossoverRing(poly, rv) || ring); } }
+          return poly === a.polygon ? a : { ...a, polygon: poly };
+        });
+        for (const a of areas) paving.push(a.polygon);
+        pavements3d = { ...pavements, areas };
+      } else if (!commercial) {
+        const ways = [];
+        if (fp) {
+          const dw = deriveDriveway(project);
+          if (dw?.ok && dw.polygon?.length >= 3 && dw.centre?.length >= 2) {
+            const o = dw.centre[0]; const e = dw.centre[dw.centre.length - 1];
+            const l = Math.hypot(e.x - o.x, e.y - o.y) || 1;
+            // the house end is the centre end nearer the footprint
+            const dA = S.distToBox(fp, o.x, o.y); const dB = S.distToBox(fp, e.x, e.y);
+            const [h, st] = dA <= dB ? [o, e] : [e, o];
+            driveways.push({ polys: [dw.polygon, ...(dw.extraPolygons || [])], dir: { o: h, u: { x: (st.x - h.x) / l, y: (st.y - h.y) / l } } });
+            if (dw.crossover?.polygon?.length > 3) for (const rv of reserves) { const ring = crossoverRing(dw.crossover.polygon, rv); if (ring) crossovers.push(ring); }
+            ways.push(dw.wayId);
+          }
+        }
+        // Roads and driveways drawn with the Driveway and road tool, beyond the derived driveway: paved planes of their own.
+        for (const way of getWays(project)) {
+          if (ways.includes(way.id)) continue;
+          const g = wayGeometry(project, way);
+          for (const pc of g.pieces) {
+            if (pc.role === 'crossover') { for (const rv of reserves) { const ring = crossoverRing(pc.ring, rv); if (ring) crossovers.push(ring); } } else paving.push(pc.ring);
+          }
         }
       }
       // No road corridor is flattened: the aerial imagery is the only road (owner 18/11/2026).
       const corridors = [];
-      grading = planGrading({ rawAt: rawY, padY, fp, pads: project.mode === 'commercial' && project.commercial ? buildingsOf(project.commercial).map((b) => b.outline).filter((q) => q?.length >= 3) : null, paving, driveways, corridors, cellM: opts.cellM || 0.75 });
+      crossoverRings = crossovers;
+      grading = planGrading({ rawAt: rawY, padY, fp, pads: pads.flatMap((g) => g.polys.map((q, k) => ({ id: `${g.id}:${k}`, poly: q, y: g.y }))), paving, driveways, corridors, crossovers, cellM: opts.cellM || 0.75, lot: lot.boundary?.length > 2 ? lot.boundary : null, batterRun: project.site?.grading?.batter === 4 ? 4 : 3 });
     } catch (e) {
       console.warn('[viewer3d] auto grading skipped', e);
     }
@@ -120,7 +236,94 @@ export function terrainModel(project, opts = {}) {
     if (!fp) return raw;
     return S.padHeight(raw, padY, S.distToBox(fp, x, y));
   };
-  return { heightAt, rawAt: rawY, grading, floorRL, base, padY };
+  return { heightAt, rawAt: rawY, grading, fds: grading?.fds || null, floorRL, base, padY, pads, pavements: pavements3d, reserves, crossovers: crossoverRings };
+}
+
+/**
+ * The terrain mesh node at a plan point: { design, mesh }. The mesh sits just under every design element (the exact surfaces are drawn on top,
+ * see levels.js) and well under the road corridor; elsewhere it is the design surface (natural ground, shoulders and batters).
+ */
+export function nodeHeights(tm, x, y, cellM, raw) {
+  const r = tm.fds ? tm.fds.levelAt(x, y, raw) : null;
+  const design = r ? r.y : tm.heightAt(x, y);
+  let mesh = design;
+  if (r && r.id) {
+    mesh = design - SUBGRADE;
+    if (r.kind === 'road') { const f = Math.min(1, Math.max(0, (tm.fds.depthAt(x, y) - cellM) / cellM)); mesh -= ROAD_BURY * f * f * (3 - 2 * f); }
+  }
+  return { design, mesh };
+}
+
+/**
+ * Retaining edges: where the design inside the lot boundary does not meet the natural ground at the boundary (a batter does not fit), the step
+ * is a retaining edge. Sampled every metre along the boundary: [{ x, y, hi, lo, h }] (plan mm; hi and lo are the two levels in metres) where
+ * the step is over 50 mm, plus { maxM, lengthM }. The road frontage is not a retaining edge (the road is held).
+ */
+export function retainingEdges(tm, lot, minM = 0.05) {
+  const out = { samples: [], maxM: 0, lengthM: 0 };
+  if (!tm?.fds || !lot?.boundary || lot.boundary.length < 3) return out;
+  const ring = lot.boundary;
+  const road = tm.fds.elements.filter((e) => e.road || e.kind === 'crossover');
+  const onRoad = (q) => road.some((e) => G.pointInPolygon(q, e.polys[0]) || polyDistM(q, e.polys[0], G.bbox(e.polys[0])).d < 0.6);
+  for (let i = 0; i < ring.length; i++) {
+    const a = ring[i]; const b = ring[(i + 1) % ring.length];
+    const L = Math.hypot(b.x - a.x, b.y - a.y); if (L < 1) continue;
+    let nx = (b.y - a.y) / L; let ny = -(b.x - a.x) / L;
+    if (!G.pointInPolygon({ x: (a.x + b.x) / 2 - nx * 100, y: (a.y + b.y) / 2 - ny * 100 }, ring)) { nx = -nx; ny = -ny; } // n points out of the lot
+    for (let s = 500; s < L; s += 1000) {
+      const q = { x: a.x + ((b.x - a.x) * Math.min(s, L)) / L, y: a.y + ((b.y - a.y) * Math.min(s, L)) / L };
+      if (onRoad(q)) continue;
+      const hi = tm.heightAt(q.x - nx * 60, q.y - ny * 60); const lo = tm.heightAt(q.x + nx * 60, q.y + ny * 60);
+      const h = Math.abs(hi - lo);
+      if (h > minM) { out.samples.push({ x: q.x, y: q.y, nx, ny, a: hi, b: lo, h }); out.lengthM += 1; if (h > out.maxM) out.maxM = h; }
+    }
+  }
+  return out;
+}
+
+/**
+ * Move each building to its pad: every vertex of the building meshes within reach of a pad group is raised by that pad's dy (so a building
+ * on a slope sits on its own level, not the project's). Only meshes that are not ground; call before the ground is added. Returns the count.
+ */
+export function applyPadShifts(root, pads, margin = 1.6) {
+  const moved = pads.filter((g) => Math.abs(g.dy) > 1e-6);
+  if (!moved.length) return 0;
+  const boxes = moved.map((g) => g.polys.map((p) => { const b = G.bbox(p); return { b, p }; }));
+  const v = new THREE.Vector3();
+  let n = 0;
+  const m = margin * 1000;
+  const dist = (pt, p, b) => {
+    const dx = Math.max(b.minX - pt.x, 0, pt.x - b.maxX); const dy = Math.max(b.minY - pt.y, 0, pt.y - b.maxY);
+    if (Math.hypot(dx, dy) > m) return Infinity;
+    if (G.pointInPolygon(pt, p)) return 0;
+    let best = Infinity;
+    for (let i = 0; i < p.length; i++) { const a = p[i]; const c = p[(i + 1) % p.length]; const e = G.projectToSegment(pt, a, c).d; if (e < best) best = e; }
+    return best;
+  };
+  root.updateWorldMatrix(true, true);
+  root.traverse((o) => {
+    if (!o.isMesh || o.userData?.ground || o.userData?.siteTerrain) return;
+    const geo = o.geometry; const posA = geo?.attributes?.position;
+    if (!posA) return;
+    o.updateWorldMatrix(true, false);
+    const mw = o.matrixWorld;
+    let changed = false;
+    const cache = new Map();
+    for (let i = 0; i < posA.count; i++) {
+      v.fromBufferAttribute(posA, i).applyMatrix4(mw);
+      const pt = { x: v.x * 1000, y: v.z * 1000 };
+      const key = `${Math.round(pt.x / 20)}:${Math.round(pt.y / 20)}`;
+      let dy = cache.get(key);
+      if (dy === undefined) {
+        let best = Infinity; dy = 0;
+        moved.forEach((g, gi) => { for (const { b, p } of boxes[gi]) { const d = dist(pt, p, b); if (d < best) { best = d; dy = g.dy; } } });
+        cache.set(key, dy);
+      }
+      if (dy) { posA.setY(i, posA.getY(i) + dy); changed = true; }
+    }
+    if (changed) { posA.needsUpdate = true; geo.computeBoundingBox(); geo.computeBoundingSphere(); n++; }
+  });
+  return n;
 }
 
 // Average colour of the border of an image-like source, as a hex string, or null. Browser only.
@@ -370,41 +573,150 @@ ${aerial ? `  vec3 aerC = texture2D(uAerialTex, vAerUv).rgb;
  * addSiteTerrain(ctx, root, project, { texture, edgeColour, showContours }) -> { edgeY, extent, grid } | null
  * `texture` is a THREE.Texture of the aerial (north up, covering lot.aerial.extent), or null for a plain grass surface.
  */
-export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour = null, wideTexture = null, wideEdgeColour = null, showContours = false } = {}) {
+// One cached terrain build: the design surface (fds), the pads and the mesh node heights, keyed by everything they depend on (the lot, its
+// elevation grid, the buildings, pavements, drawn ways and levels). A change that touches none of them (colours, interior edits) reuses it.
+let terrainCache = null;
+// Timing of the last addSiteTerrain call, in ms per phase (tests and the timing tool read it).
+export const terrainStats = { ms: 0, phases: {}, nodesComputed: 0, nodesTotal: 0, mode: '' };
+/** Forget the cached terrain build (tests, and a full rebuild on demand). */
+export const resetTerrainCache = () => { terrainCache = null; };
+const nowMs = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+const gridIds = new WeakMap(); let gridSeq = 0;
+const gridId = (t) => { if (!t) return 0; let k = gridIds.get(t); if (!k) { k = ++gridSeq; gridIds.set(t, k); } return k; };
+// ---- Incremental terrain rebuild ------------------------------------------------------------------------------------------------------
+// After an edit (a building moved, a pad level changed) only the nodes near a design element that changed need new heights. Heights are
+// kept as RL (metres above datum) so a change of floor RL, which shifts every model Y by one constant, does not dirty the whole grid.
+const idxCache = new Map();
+function cachedIndices(cols, rows) {
+  const k = `${cols}x${rows}`;
+  let a = idxCache.get(k);
+  if (!a) { a = Uint32Array.from(S.gridIndices(cols, rows)); idxCache.clear(); idxCache.set(k, a); }
+  return a;
+}
+const rlGrids = new WeakMap(); // natural ground RL at every node, per elevation grid and node layout
+function naturalRL(lot, dims) {
+  const t = lot.terrain; if (!t) return null;
+  let m = rlGrids.get(t); if (!m) { m = new Map(); rlGrids.set(t, m); }
+  const k = `${dims.cols}x${dims.rows}:${dims.x0}:${dims.y0}:${dims.dx}:${dims.dy}`;
+  let g = m.get(k);
+  if (!g) {
+    g = new Float64Array(dims.cols * dims.rows);
+    for (let j = 0; j < dims.rows; j++) for (let i = 0; i < dims.cols; i++) g[j * dims.cols + i] = S.terrainAtClamped(t, dims.x0 + i * dims.dx, dims.y0 + j * dims.dy);
+    m.clear(); m.set(k, g);
+  }
+  return g;
+}
+const r1 = (v) => Math.round(v);
+// A design element as a string: its outline and its level at a few points, in RL terms, so equal strings mean the same surface.
+function elementReachMm(el, rawAt, batterRun) {
+  // how far the element can change the ground: its band and transition, plus the batter run for the biggest cut or fill at its edge
+  let d = 0; let n = 0;
+  for (const poly of el.polys) { const st = Math.max(1, Math.ceil(poly.length / 8)); for (let i = 0; i < poly.length; i += st) { d = Math.max(d, Math.abs(el.level(poly[i].x, poly[i].y) - rawAt(poly[i].x, poly[i].y))); n++; } }
+  return Math.min(DIRTY_MAX_MM, (4 + batterRun * d * 1.25 + 3) * 1000);
+}
+function elementSig(el, off) {
+  const pts = [];
+  let cx = 0; let cy = 0; let n = 0;
+  for (const poly of el.polys) for (const q of poly) { cx += q.x; cy += q.y; n++; }
+  if (n) pts.push({ x: cx / n, y: cy / n });
+  for (const poly of el.polys) { const st = Math.max(1, Math.ceil(poly.length / 6)); for (let i = 0; i < poly.length; i += st) pts.push(poly[i], { x: (poly[i].x + cx / n) / 2, y: (poly[i].y + cy / n) / 2 }); }
+  const lv = pts.slice(0, 24).map((q) => Math.round((el.level(q.x, q.y) + off) * 2000)).join(',');
+  return `${el.id}|${el.kind}|${el.polys.map((poly) => poly.map((q) => `${r1(q.x)},${r1(q.y)}`).join(';')).join('/')}|${lv}`;
+}
+const DIRTY_MAX_MM = 44000; // fds.js REACH_M (36 m) plus a pad band and the transition width: an element changes the ground no further than this
+function staticKeyOf(project, dims, dq) {
+  const lot = project.site?.lot || {};
+  return JSON.stringify([lot.boundary, lot.layers, lot.frontEdges, lot.roads, gridId(lot.terrain), project.mode, project.site?.grading?.batter, dims, dq, !!project.site?.grading?.heat]);
+}
+
+export function terrainKey(project, dims, detail = 1) {
+  const lot = project.site?.lot || {};
+  const c = project.commercial ? { ...project.commercial, finishes: undefined, name: undefined } : null;
+  return JSON.stringify([lot.boundary, lot.layers, lot.floorRL, lot.frontEdges, lot.roads, gridId(lot.terrain), project.mode, c, (project.levels || []).map((l) => [l.id, l.elevation, l.walls?.length, l.rooms?.length]), project.site?.grading, footprintBox(project), getWays(project), project.site?.driveway, dims, detail]);
+}
+
+export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour = null, wideTexture = null, wideEdgeColour = null, showContours = false, detail = 1 } = {}) {
   const lot = project.site?.lot;
+  const T0 = nowMs(); let tl = T0; const ph = {};
+  const lap = (k) => { const t = nowMs(); ph[k] = (ph[k] || 0) + (t - tl); tl = t; };
   const ext0 = S.terrainExtent(lot, 30);
-  const dims = ext0 ? S.gridDims(ext0) : null;
-  const tm = terrainModel(project, { cellM: dims ? Math.max(dims.dx, dims.dy) / 1000 : 0.75 });
+  const dq = Math.min(1, Math.max(0.25, Number.isFinite(detail) ? detail : 1)); // detail below 1: a coarser grid and no contours
+  if (dq < 1) showContours = false;
+  const dims = ext0 ? S.gridDims(ext0, S.MIN_CELL_MM / dq, Math.round(S.MAX_GRID_CELLS * dq)) : null;
+  const ckey = dims ? terrainKey(project, dims, dq) : null;
+  const hit = ckey && terrainCache && terrainCache.key === ckey ? terrainCache : null;
+  const tm = hit ? hit.tm : terrainModel(project, { cellM: dims ? Math.max(dims.dx, dims.dy) / 1000 : 0.75 });
+  lap('model');
   if (!tm || !S.siteReady(project)) return null;
   const ext = ext0;
   if (!ext) return null;
   const { cols, rows } = dims;
+  if (tm.pads?.length) { try { applyPadShifts(root, tm.pads); } catch (e) { console.warn('[viewer3d] pad shift skipped', e); } }
   const heights = new Float32Array(cols * rows);
+  const design = new Float32Array(cols * rows); // the finished design surface at each node (the mesh is a little under it where the design is exact)
+  const cellM = Math.max(dims.dx, dims.dy) / 1000;
   const pos = new Float32Array(cols * rows * 3);
   const uv = new Float32Array(cols * rows * 2);
   const hasAerial = !!(texture && lot.aerial?.extent && S.layerOn(lot, 'aerial'));
   const grey = !hasAerial && lot.aerialSource === 'none';
   const aw = ext.x1 - ext.x0;
   const ah = ext.y1 - ext.y0;
-  for (let j = 0; j < rows; j++) {
-    for (let i = 0; i < cols; i++) {
-      const x = dims.x0 + i * dims.dx;
-      const y = dims.y0 + j * dims.dy;
-      const Y = tm.heightAt(x, y);
-      const k = j * cols + i;
-      heights[k] = Y;
-      pos[k * 3] = x / 1000;
-      pos[k * 3 + 1] = Y;
-      pos[k * 3 + 2] = y / 1000;
-      uv[k * 2] = i / (cols - 1);
-      uv[k * 2 + 1] = 1 - j / (rows - 1);
+  const nN = cols * rows;
+  if (hit) { heights.set(hit.heights); design.set(hit.design); pos.set(hit.pos); uv.set(hit.uv); terrainStats.nodesComputed = 0; terrainStats.mode = 'cached'; } else {
+    const off = tm.floorRL - tm.base; // model Y = RL - off
+    const rlN = naturalRL(lot, dims);
+    const prev = terrainCache && tm.fds && terrainCache.inc && terrainCache.inc.staticKey === staticKeyOf(project, dims, dq) && terrainCache.inc.nodes === nN ? terrainCache.inc : null;
+    const sigs = new Map();
+    const bRun = project.site?.grading?.batter === 4 ? 4 : 3;
+    if (tm.fds) for (const el of tm.fds.elements) sigs.set(el.id, { sig: elementSig(el, off), boxes: el.polys.map((q) => G.bbox(q)), reach: el.road || el.kind === 'crossover' ? DIRTY_MAX_MM : elementReachMm(el, tm.rawAt, bRun) });
+    let mask = null; // 1 where the node needs new heights
+    if (prev) {
+      mask = new Uint8Array(nN);
+      const dirty = []; // { b: bbox, r: reach mm }
+      let maxReach = 0;
+      for (const v of sigs.values()) if (!(v.reach >= DIRTY_MAX_MM)) maxReach = Math.max(maxReach, v.reach);
+      for (const v of prev.sigs.values()) if (!(v.reach >= DIRTY_MAX_MM)) maxReach = Math.max(maxReach, v.reach);
+      const push = (v) => { for (const b of v.boxes) dirty.push({ b, r: Math.min(DIRTY_MAX_MM, v.reach + maxReach) }); };
+      for (const [id, v] of sigs) { const o = prev.sigs.get(id); if (!o || o.sig !== v.sig) { push(v); if (o) push(o); } }
+      for (const [id, o] of prev.sigs) if (!sigs.has(id)) push(o);
+      for (const { b, r } of dirty) {
+        const i0 = Math.max(0, Math.floor((b.minX - r - dims.x0) / dims.dx)); const i1 = Math.min(cols - 1, Math.ceil((b.maxX + r - dims.x0) / dims.dx));
+        const j0 = Math.max(0, Math.floor((b.minY - r - dims.y0) / dims.dy)); const j1 = Math.min(rows - 1, Math.ceil((b.maxY + r - dims.y0) / dims.dy));
+        for (let j = j0; j <= j1; j++) mask.fill(1, j * cols + i0, j * cols + i1 + 1);
+      }
     }
+    const designRL = prev ? prev.designRL.slice() : new Float64Array(nN);
+    const meshRL = prev ? prev.meshRL.slice() : new Float64Array(nN);
+    let computed = 0;
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const k = j * cols + i;
+        const x = dims.x0 + i * dims.dx;
+        const y = dims.y0 + j * dims.dy;
+        if (!mask || mask[k]) {
+          const nm = nodeHeights(tm, x, y, cellM, rlN ? rlN[k] - off : undefined);
+          designRL[k] = nm.design + off; meshRL[k] = nm.mesh + off; computed++;
+        }
+        design[k] = designRL[k] - off;
+        heights[k] = meshRL[k] - off;
+        pos[k * 3] = x / 1000;
+        pos[k * 3 + 1] = heights[k];
+        pos[k * 3 + 2] = y / 1000;
+        uv[k * 2] = i / (cols - 1);
+        uv[k * 2 + 1] = 1 - j / (rows - 1);
+      }
+    }
+    terrainStats.nodesComputed = computed; terrainStats.mode = prev ? 'incremental' : 'full';
+    terrainCache = { key: ckey, tm, heights: heights.slice(), design: design.slice(), pos: pos.slice(), uv: uv.slice(), inc: tm.fds ? { staticKey: staticKeyOf(project, dims, dq), nodes: nN, off, sigs, designRL, meshRL } : null };
   }
+  terrainStats.nodesTotal = nN;
+  lap('nodes');
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-  geo.setIndex(S.gridIndices(cols, rows));
+  geo.setIndex(new THREE.BufferAttribute(cachedIndices(cols, rows), 1));
   geo.computeVertexNormals();
+  lap('geometry');
   let mat = null;
   const blended = hasAerial ? lawnGroundMaterial(ctx, lot, ext, texture, !!wideTexture) : null; // the clean lawn with the aerial let through subtly
   if (blended) mat = blended;
@@ -432,10 +744,18 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   root.add(mesh);
 
   const grid = { cols, rows, x0: dims.x0, y0: dims.y0, dx: dims.dx, dy: dims.dy, heights };
-  const surf = (x, y) => S.surfaceAt(grid, x, y);
+  const meshAt = (x, y) => S.surfaceAt(grid, x, y);
+  // The ground as seen: the exact design surface inside a design element, the mesh elsewhere. Everything that stands on or is laid on the
+  // ground reads this one function (the lines, labels, fences, trees, pavements, kerbs), and the surfaces made from the design read fdsAt.
+  const fdsAt = tm.fds ? (x, y) => tm.fds.levelAt(x, y).y : meshAt;
+  // Kerb height scale: 0 over a crossover (a layback flush with the gutter), rising to full over 600 mm (the kerb returns taper, never stand up).
+  const xr = (tm.crossovers || []).map((ring) => ({ ring, bb: G.bbox(ring) }));
+  const kerbScale = xr.length ? (q) => { let d = Infinity; for (const c of xr) d = Math.min(d, polyDistM(q, c.ring, c.bb).d); return Math.min(1, d / 0.6); } : null;
+  const surf = tm.fds ? (x, y) => { const r = tm.fds.levelAt(x, y); return r.id ? r.y : meshAt(x, y); } : meshAt;
 
   // Wide outer tile: a lower resolution aerial on a frame of ground around the sharp inner tile, so the visible ground is real imagery
   // well past the lot. Only the far edge of this tile fades (the ring below), into the neutral ground colour.
+  lap('material');
   const wide = hasAerial && wideTexture ? addWideGround(root, lot, tm, ext, wideTexture) : null;
   const nodes = wide ? wide.nodes : S.perimeterNodes(cols, rows).map((n) => ({ x: pos[(n.j * cols + n.i) * 3], y: heights[n.j * cols + n.i], z: pos[(n.j * cols + n.i) * 3 + 2], dir: n.dir }));
   let edgeSum = 0;
@@ -463,29 +783,129 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   rmesh.frustumCulled = false;
   root.add(rmesh);
 
+  lap('wide');
   addSiteOverlays(root, lot, surf, { showContours });
   try { addConstraintTint(root, lot, surf); } catch (e) { console.warn('[viewer3d] constraint tint skipped', e); } // optional overlays, never break the model
+  lap('overlays');
   let extras = null;
   try {
-    extras = addSiteExtras(ctx, root, project, surf, { extent: ext, tm, realAerial: !!texture || !!(lot.aerial?.extent && S.layerOn(lot, 'aerial')) }); // a stored aerial hides the stand-in neighbours even while its picture is still loading
+    extras = addSiteExtras(ctx, root, project, surf, { extent: ext, tm, fds: fdsAt, realAerial: !!texture || !!(lot.aerial?.extent && S.layerOn(lot, 'aerial')) }); // a stored aerial hides the stand-in neighbours even while its picture is still loading
   } catch (e) {
     console.warn('[viewer3d] site extras skipped', e);
   }
+  lap('extras');
   try {
-    if (project.mode === 'commercial') addCommercialPavements(root, project, surf); // pavements, kerbs and markings of a commercial layout
+    if (project.mode === 'commercial') addCommercialPavements(root, project, fdsAt, { model: tm.pavements, kerbScale }); // pavements, kerbs and markings of a commercial layout
   } catch (e) {
     console.warn('[viewer3d] commercial pavements skipped', e);
   }
   try {
-    if (project.mode === 'commercial') { addForecourtSlabs(root, project, surf); addCommercialEntourage(root, project, surf); } // a few parked cars and a truck at the dock, for scale
+    if (project.mode === 'commercial') { addForecourtSlabs(root, project, fdsAt); addCommercialEntourage(root, project, fdsAt); } // a few parked cars and a truck at the dock, for scale
   } catch (e) {
     console.warn('[viewer3d] commercial entourage skipped', e);
   }
+  lap('pavements');
+  // Skirts under the edges of the exact surfaces, so no strip of road, paving or driveway stands over a gap above the mesh.
+  try {
+    if (tm.fds) {
+      const sk = skirtGeometry({ elements: tm.fds.elements, levelAt: (x, y) => tm.fds.levelAt(x, y).y, meshAt, inExtent: (x, y) => x >= ext.x0 && x <= ext.x1 && y >= ext.y0 && y <= ext.y1, coveredAt: (x, y, top) => { const r = tm.fds.levelAt(x, y); return !!r.id && r.kind !== 'pad' && Math.abs(r.y - top) < 0.03; } });
+      if (sk.quads) {
+        const g3 = new THREE.BufferGeometry();
+        g3.setAttribute('position', new THREE.Float32BufferAttribute(sk.positions, 3));
+        g3.setIndex(sk.indices);
+        g3.computeVertexNormals();
+        const m3 = new THREE.Mesh(g3, new THREE.MeshStandardMaterial({ color: GRASS, roughness: 0.95, side: THREE.DoubleSide })); // a safety net only, coloured like the ground beside it
+        m3.material.userData.shared = false;
+        m3.name = 'edge-skirts';
+        m3.userData = { ground: true, skirts: true };
+        root.add(m3);
+      }
+    }
+  } catch (e) { console.warn('[viewer3d] edge skirts skipped', e); }
+  // Retaining walls on the lot boundary where a batter cannot fit inside the lot: a block face with a capping (never a plain grey skirt).
+  try {
+    const lotB = project.site?.lot;
+    if (tm.fds && lotB?.boundary?.length > 2) {
+      const re = retainingEdges(tm, lotB, 0.15);
+      const wg = retainingWallGeometry(re.samples);
+      for (const [part, color, name] of [[wg.face, '#9c9a93', 'retaining-wall'], [wg.cap, '#cfcdc6', 'retaining-wall-cap']]) {
+        if (!part.indices.length) continue;
+        const g4 = new THREE.BufferGeometry();
+        g4.setAttribute('position', new THREE.Float32BufferAttribute(part.positions, 3));
+        g4.setIndex(part.indices); g4.computeVertexNormals();
+        const m4 = new THREE.Mesh(g4, new THREE.MeshStandardMaterial({ color, roughness: 0.9, side: THREE.DoubleSide }));
+        m4.material.userData.shared = false; m4.name = name; m4.userData = { ground: true, retainingWall: true };
+        root.add(m4);
+      }
+    }
+  } catch (e) { console.warn('[viewer3d] retaining walls skipped', e); }
+  lap('skirts');
+  // Cut and fill heat map (project.site.grading.heat): the same grid as the ground in vertex colours, red where the design is cut below the natural
+  // ground, blue where it is filled, strongest at 1 m; the held road is left clear. A transparent overlay just above the ground.
+  try {
+    if (project.site?.grading?.heat && tm.grading) {
+      const col = new Float32Array(cols * rows * 3); const hp = new Float32Array(pos);
+      const roadsH = tm.grading.elements.filter((e) => e.road);
+      for (let k = 0; k < cols * rows; k++) {
+        const x = pos[k * 3] * 1000; const y = pos[k * 3 + 2] * 1000;
+        const d = roadsH.some((e) => G.pointInPolygon({ x, y }, e.polys[0])) ? 0 : design[k] - tm.rawAt(x, y);
+        const t = Math.min(1, Math.abs(d) / 1.0); const on = Math.abs(d) > 0.02 ? 1 : 0;
+        const c = d < 0 ? [0.86, 0.18, 0.14] : [0.16, 0.38, 0.85];
+        col[k * 3] = 1 - (1 - c[0]) * t * on; col[k * 3 + 1] = 1 - (1 - c[1]) * t * on; col[k * 3 + 2] = 1 - (1 - c[2]) * t * on;
+        hp[k * 3 + 1] = pos[k * 3 + 1] + 0.05;
+      }
+      const hg = new THREE.BufferGeometry();
+      hg.setAttribute('position', new THREE.BufferAttribute(hp, 3));
+      hg.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      hg.setIndex(S.gridIndices(cols, rows));
+      const hm = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.55, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+      hm.userData.shared = false;
+      const hmesh = new THREE.Mesh(hg, hm);
+      hmesh.name = 'grading-heat';
+      hmesh.userData = { ground: true, gradingHeat: true };
+      hmesh.renderOrder = 5;
+      root.add(hmesh);
+    }
+  } catch (e) { console.warn('[viewer3d] heat map skipped', e); }
+  let retaining = null;
+  try {
+    retaining = retainingEdges(tm, lot);
+    if (retaining.samples.length) {
+      const pos2 = []; const idx2 = [];
+      for (const r of retaining.samples) {
+        const tx = -r.ny; const ty = r.nx; // along the boundary
+        for (const sg of [-1, 1]) {
+          const cx = r.x + tx * 500 * sg; const cy = r.y + ty * 500 * sg;
+          pos2.push(cx / 1000, r.a, cy / 1000, cx / 1000, r.b, cy / 1000);
+        }
+        const k = pos2.length / 3 - 4;
+        idx2.push(k, k + 1, k + 3, k, k + 3, k + 2, k, k + 3, k + 1, k, k + 2, k + 3);
+      }
+      const g2 = new THREE.BufferGeometry();
+      g2.setAttribute('position', new THREE.Float32BufferAttribute(pos2, 3));
+      g2.setIndex(idx2);
+      g2.computeVertexNormals();
+      const m2 = new THREE.Mesh(g2, new THREE.MeshStandardMaterial({ color: '#9b9a94', roughness: 0.9, side: THREE.DoubleSide }));
+      m2.material.userData.shared = false;
+      m2.name = 'retaining-edge';
+      m2.userData = { ground: true, retaining: true };
+      root.add(m2);
+    }
+  } catch (e) { console.warn('[viewer3d] retaining edge skipped', e); }
+  lap('retaining');
   const ow = wide ? wide.extent.x1 - wide.extent.x0 : aw;
   const oh = wide ? wide.extent.y1 - wide.extent.y0 : ah;
   let works = null;
-  if (tm.grading) { try { works = earthworks(grid, tm.rawAt, (dims.dx / 1000) * (dims.dy / 1000)); } catch { works = null; } }
-  return { extras, earthworks: works, edgeY, extent: ext, wideExtent: wide ? wide.extent : null, grid, outerR: S.RING_OFFSETS_M[S.RING_OFFSETS_M.length - 1] + Math.max(ow, oh) / 2000 };
+  if (tm.grading) {
+    try {
+      const roads = tm.grading.elements.filter((e) => e.road);
+      const inRoad = (x, y) => roads.some((e) => G.pointInPolygon({ x, y }, e.polys[0])); // the existing road is held, not graded
+      works = earthworks({ ...grid, heights: design }, tm.rawAt, (dims.dx / 1000) * (dims.dy / 1000), inRoad);
+    } catch { works = null; }
+  }
+  lap('earthworks');
+  terrainStats.ms = nowMs() - T0; terrainStats.phases = ph;
+  return { extras, earthworks: works, retaining: retaining ? { maxM: retaining.maxM, lengthM: retaining.lengthM } : null, fds: tm.fds, pads: tm.pads, edgeY, extent: ext, wideExtent: wide ? wide.extent : null, grid, outerR: S.RING_OFFSETS_M[S.RING_OFFSETS_M.length - 1] + Math.max(ow, oh) / 2000 };
 }
 
 // The wide tile as a frame of ground around the inner extent (cells wholly inside it are left out). Sits just below the inner mesh with a

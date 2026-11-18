@@ -9,7 +9,7 @@ import { createStore } from '../../src/model/store.js';
 import { applyBuildingChoice } from '../../src/commercial/catalogue/ops.js';
 import { chooseBuilding } from '../../src/commercial/catalogue/fit.js';
 import * as S from '../../src/viewer3d/site-geom.js';
-import { terrainModel } from '../../src/viewer3d/terrain.js';
+import { terrainModel, nodeHeights } from '../../src/viewer3d/terrain.js';
 import * as G from '../../src/model/geometry.js';
 
 /** Natural ground: a fall (m) down the lot depth, a cross slope, and bumps. Written as the lot elevation grid (metres RL). */
@@ -47,16 +47,17 @@ export function meshGrid(p) {
   const ext = S.terrainExtent(p.site.lot, 30);
   const dims = S.gridDims(ext);
   const tm = terrainModel(p, { cellM: Math.max(dims.dx, dims.dy) / 1000 });
-  const heights = new Float32Array(dims.cols * dims.rows);
-  for (let j = 0; j < dims.rows; j++) for (let i = 0; i < dims.cols; i++) heights[j * dims.cols + i] = tm.heightAt(dims.x0 + i * dims.dx, dims.y0 + j * dims.dy);
-  return { tm, dims, grid: { ...dims, heights } };
+  const heights = new Float32Array(dims.cols * dims.rows); const design = new Float32Array(dims.cols * dims.rows);
+  const cellM = Math.max(dims.dx, dims.dy) / 1000;
+  for (let j = 0; j < dims.rows; j++) for (let i = 0; i < dims.cols; i++) { const nh = nodeHeights(tm, dims.x0 + i * dims.dx, dims.y0 + j * dims.dy, cellM); heights[j * dims.cols + i] = nh.mesh; design[j * dims.cols + i] = nh.design; }
+  return { tm, dims, grid: { ...dims, heights }, design: { ...dims, heights: design } };
 }
 
 /**
  * Over every footprint zone, the worst mesh height above (poke) and below (sunk) its design surface. A sample counts only where this zone is the
  * first (highest ranked) to contain it and it is at least one cell clear of every other zone, so two different planes meeting is not scored.
  */
-export function probeZones({ tm, grid, dims }, step = 400) {
+export function probeZones({ tm, grid, dims }, step = 400, lotRing = null) {
   const zs = tm.grading.zones;
   const clear = Math.max(dims.dx, dims.dy) * 1.6;
   const out = [];
@@ -66,12 +67,12 @@ export function probeZones({ tm, grid, dims }, step = 400) {
       const bb = z.boxes[k];
       for (let x = bb.minX + 100; x < bb.maxX; x += step) for (let y = bb.minY + 100; y < bb.maxY; y += step) {
         if (!G.pointInPolygon({ x, y }, z.polys[k])) continue;
+        if (lotRing && !z.road && (!G.pointInPolygon({ x, y }, lotRing) || lotRing.some((q, qi) => G.projectToSegment({ x, y }, q, lotRing[(qi + 1) % lotRing.length]).d < clear))) continue; // beyond (and within a cell of) the boundary the design stops: a retaining edge
         if (x < grid.x0 || x > grid.x0 + (grid.cols - 1) * grid.dx || y < grid.y0 || y > grid.y0 + (grid.rows - 1) * grid.dy) continue;
         let skip = false;
         zs.forEach((o, oi) => {
           if (oi === zi || skip) return;
-          if (oi < zi && o.polys.some((q, qi) => G.pointInPolygon({ x, y }, q) || nearPoly({ x, y }, q, o.boxes[qi], clear))) skip = true;
-          else if (oi > zi && o.polys.some((q, qi) => nearPoly({ x, y }, q, o.boxes[qi], clear))) skip = true;
+          if (o.polys.some((q, qi) => G.pointInPolygon({ x, y }, q) || nearPoly({ x, y }, q, o.boxes[qi], clear + 2200))) skip = true; // beyond the 2 m transition to a neighbour
         });
         if (skip) continue;
         const dz = S.surfaceAt(grid, x, y) - z.level(x, y);
