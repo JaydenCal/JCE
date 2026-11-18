@@ -5,7 +5,7 @@ import { icon } from './icons.js';
 import { TOOL_DEFS } from '../editor2d/tools-meta.js';
 import { setTool } from './toolstate.js';
 
-const GROUPS = [['movehouse', 'select'], ['room', 'wall', 'door', 'window'], ['furniture', 'stairs', 'deck', 'tank'], ['pave'], ['hardstand', 'carpark'], ['measure', 'underlay', 'status']];
+const GROUPS = [['movehouse', 'select'], ['room', 'wall', 'door', 'window'], ['furniture', 'stairs', 'deck', 'tank'], ['pave', 'drivepi'], ['hardstand', 'carpark'], ['measure', 'underlay', 'status']];
 
 // Options: onWheel() opens the inventory wheel from the button at the foot of the toolbox (for touch, where Q is not available).
 export function createToolbox(el, store, { onWheel } = {}) {
@@ -34,10 +34,10 @@ export function createToolbox(el, store, { onWheel } = {}) {
     }
   });
 
-  // Commercial only: add another building from the type picker (amenities block, office, warehouse, workshop, canopy, car wash, shed, kiosk ...).
+  // Add another building from the type picker (amenities block, office, warehouse, workshop, canopy, car wash, shed, kiosk ...).
   const addBld = h('button', {
     class: 'ps-tool ps-tool--add', type: 'button', title: 'Add building', 'aria-label': 'Add building', hidden: true, dataset: { action: 'add-building-tool' },
-    onclick: () => { import('../commercial/ui/add-building.js').then((m) => m.openAddBuilding({ store })); },
+    onclick: () => { if (store.project?.mode === 'commercial') import('../commercial/ui/add-building.js').then((m) => m.openAddBuilding({ store })); else import('./add-outbuilding.js').then((m) => m.openAddOutbuilding({ store })); },
   }, icon('plus', { size: 22 }), h('span', { class: 'ps-tool-key', 'aria-hidden': 'true' }, '+'));
   el.append(addBld);
 
@@ -53,12 +53,13 @@ export function createToolbox(el, store, { onWheel } = {}) {
 
   function sync() {
     const tool = store.ui.tool;
-    addBld.hidden = store.project?.mode !== 'commercial';
+    addBld.hidden = false; // commercial: the building catalogue; residential: garages, sheds, carport, machinery shed and granny flat
     for (const def of TOOL_DEFS) {
       const comm = store.project?.mode === 'commercial';
       const on = def.id === tool || !!def.family?.includes(tool) || (comm && def.id === 'movehouse' && tool === 'commercial');
       const btn = buttons.get(def.id);
       btn?.setAttribute('aria-pressed', String(on));
+      if (def.residentialOnly && btn) btn.hidden = comm; // Driveway PIs edit the residential driveway only
       if (def.commercialOnly && btn) btn.hidden = !comm; // Hardstand is drawn in commercial layouts only
       if (def.id === 'movehouse' && btn) {
         const label = comm ? 'Move buildings' : def.label;

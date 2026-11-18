@@ -14,6 +14,7 @@ export function toolArgFor(tool) {
 export function setTool(store, tool, arg) {
   if (tool === 'movehouse' && store.project?.mode === 'commercial') tool = 'commercial'; // Move house is Move units in a commercial layout
   if ((tool === 'hardstand' || tool === 'carpark') && store.project?.mode !== 'commercial') return; // hardstand drawing is commercial only
+  if (tool === 'drivepi' && store.project?.mode === 'commercial') return; // Driveway PIs are residential only
   if (arg !== undefined) remembered[tool] = arg;
   const patch = { tool, toolArg: toolArgFor(tool) };
   if (!hasPlan(store.ui.view)) patch.view = '2d';

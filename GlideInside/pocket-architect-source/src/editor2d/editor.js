@@ -20,6 +20,7 @@ import { createCommercialTool } from '../commercial/ui/tool-commercial.js';
 import { drawCommercial, commercialExtents } from '../commercial/draw2d.js';
 import { createHardstandTool, createCarparkTool } from '../commercial/ui/tool-hardstand.js';
 import { createPaveTool } from './tool-pave.js';
+import { createDrivePITool } from './tool-drivepi.js';
 import { buildingHull, deriveDriveway } from '../site/lotplan.js';
 import { createLabelLayer } from './label-layer.js';
 import { createDrawTools } from './tool-draw.js';
@@ -546,7 +547,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
         state.pan = null;
         updateCursor();
         requestDraw();
-      } else quickMeasure(ev);
+      } else if (!current?.rightClick?.(ev)) quickMeasure(ev); // the Driveway PI tool uses a right click on a PI to delete it
       return;
     }
     if (state.pan) {
@@ -847,6 +848,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
   ed.api = api;
   api.hardstand = null; // set below once the tools exist (the panel reads it)
   api.pave = null;
+  api.drivepi = null;
   const unregisterUnderlay = registerUnderlayEditor(store, {
     centre: () => M.screenToWorld(state.view, { x: state.size.w / 2, y: state.size.h / 2 }),
     setBitmap(key, bitmap) {
@@ -865,6 +867,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     ...createHardstandTool(ed),
     ...createCarparkTool(ed),
     ...createPaveTool(ed),
+    ...createDrivePITool(ed),
     ...createDrawTools(ed),
     ...createPlaceTools(ed),
     ...createMiscTools(ed, { onCalibrated: () => { state.calibrating = false; store.emit('plan:calibrating', false); } }),
@@ -873,6 +876,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
   api.hardstand = tools.hardstand?.controller || null;
   api.carpark = tools.carpark?.controller || null;
   api.pave = tools.pave?.controller || null;
+  api.drivepi = tools.drivepi?.controller || null;
 
   // Listeners ---------------------------------------------------------------------------------------------------------------------------
   canvas.addEventListener('pointerdown', onPointerDown);

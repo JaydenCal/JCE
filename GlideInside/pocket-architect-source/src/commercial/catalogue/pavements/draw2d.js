@@ -33,9 +33,21 @@ function hatchLines(ctx, bounds, h, spacing) {
     case 'brick': lines(0); lines(90); break;
     case 'herringbone': lines(h.angleDeg); lines(h.angleDeg - 90); break;
     case 'diag': lines(h.angleDeg); break;
+    case 'gravel': {
+      // Loose stone: scattered chips of varied size on a jittered grid (fixed jitter, so it never shimmers), unlike the even stipple of asphalt.
+      const hash = (a, b) => { const v = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return v - Math.floor(v); };
+      for (let y = minY, j = 0; y <= maxY; y += spacing, j++) {
+        for (let x = minX, i = 0; x <= maxX; x += spacing, i++) {
+          const px = x + (hash(i, j) - 0.5) * spacing * 0.9; const py = y + (hash(j + 7, i + 3) - 0.5) * spacing * 0.9;
+          const r = Math.max(0.7, spacing * (0.07 + hash(i + 11, j + 5) * 0.1));
+          ctx.moveTo(px + r, py); ctx.arc(px, py, r, 0, Math.PI * 2);
+        }
+      }
+      ctx.fill();
+      return;
+    }
     case 'dots':
     case 'stipple':
-    case 'gravel':
     case 'aggregate': {
       const r = Math.max(0.6, spacing * (h.pattern === 'stipple' ? 0.07 : 0.1));
       for (let y = minY; y <= maxY; y += spacing) {
@@ -63,8 +75,8 @@ export function drawPavementArea(ctx, screenPoly, type, scale = 0.01) {
   const xs = screenPoly.map((p) => p.x); const ys = screenPoly.map((p) => p.y);
   ctx.strokeStyle = h.line;
   ctx.fillStyle = h.line;
-  ctx.globalAlpha = 0.55;
-  ctx.lineWidth = 0.8;
+  ctx.globalAlpha = 0.7;
+  ctx.lineWidth = 0.9;
   hatchLines(ctx, { minX: Math.min(...xs), minY: Math.min(...ys), maxX: Math.max(...xs), maxY: Math.max(...ys) }, h, Math.max(5, h.spacingMm * scale));
   ctx.restore();
 }

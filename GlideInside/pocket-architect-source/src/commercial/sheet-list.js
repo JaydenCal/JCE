@@ -6,6 +6,7 @@ export const COMMERCIAL_SHEET_LIST = Object.freeze([
   { id: 'mezz', code: 'C102', title: 'MEZZANINE LEVEL PLAN' },
   { id: 'yield', code: 'C103', title: 'YIELD SUMMARY' },
   { id: 'elev', code: 'C104', title: 'ELEVATIONS' },
+  { id: 'finance', code: 'C105', title: 'DEVELOPMENT FEASIBILITY' },
 ]);
 
 /** 'C000 and C100 to C103': consecutive codes are joined into a range, anything else is listed. */

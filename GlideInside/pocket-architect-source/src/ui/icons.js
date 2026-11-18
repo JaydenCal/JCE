@@ -28,6 +28,7 @@ const PATHS = {
   pave: '<path d="M7.5 21c0-7 7-8 7-18M13.5 21c0-5 6-7.5 6-18"/><path d="M10.6 20.5c0-3 3.2-4.4 3.2-7.5 0-2.4 1-4 1-6.5" stroke-dasharray="2 2.2"/>',
   road: '<path d="M4 20.5V13c0-4 3-6 7-6h9.5"/><path d="M9 20.5V14c0-1.6 1.1-2.6 2.8-2.6h8.7"/><path d="M6.5 19V13.4c0-2.8 2.2-4.4 5-4.4H20" stroke-dasharray="2 2.2"/><circle cx="6.5" cy="13.4" r="1.5" fill="currentColor" stroke="none"/>',
   carpark: '<rect x="3.5" y="5.5" width="17" height="13" rx="1.5"/><path d="M7.5 5.5v6M11 5.5v6M14.5 5.5v6M18 5.5v6M7.5 18.5v-4M11 18.5v-4M14.5 18.5v-4M18 18.5v-4M3.5 13h17"/>',
+  drivepi: '<path d="M5 20.5c0-6 5-5.5 7-9.5s1-5.5 7.5-6"/><rect x="3.5" y="18.5" width="3" height="3"/><rect x="10.5" y="9.5" width="3" height="3" fill="currentColor" stroke="none"/><circle cx="19.5" cy="5" r="1.7"/>',
   hardstand: '<path d="M3.5 17.5l3-9h11l3 9z"/><path d="M7.5 12.5h9M5.5 15h13M9 8.5l-1 4M15 8.5l1 4"/>',
   measure: '<rect x="2.5" y="8.5" width="19" height="7" rx="1"/><path d="M6.5 8.5v3M10.5 8.5v2M14.5 8.5v3M18.5 8.5v2"/>',
   underlay: '<rect x="3.5" y="4.5" width="17" height="15" rx="1"/><circle cx="9" cy="10" r="1.7"/><path d="M4 18l5-5 4 4 3-3 4.5 4.5"/>',
