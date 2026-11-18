@@ -34,10 +34,10 @@ export function createToolbox(el, store, { onWheel } = {}) {
     }
   });
 
-  // Commercial only: add another building from the type picker (amenities block, office, warehouse, workshop, canopy, car wash, shed, kiosk ...).
+  // Add another building from the type picker (amenities block, office, warehouse, workshop, canopy, car wash, shed, kiosk ...).
   const addBld = h('button', {
     class: 'ps-tool ps-tool--add', type: 'button', title: 'Add building', 'aria-label': 'Add building', hidden: true, dataset: { action: 'add-building-tool' },
-    onclick: () => { import('../commercial/ui/add-building.js').then((m) => m.openAddBuilding({ store })); },
+    onclick: () => { if (store.project?.mode === 'commercial') import('../commercial/ui/add-building.js').then((m) => m.openAddBuilding({ store })); else import('./add-outbuilding.js').then((m) => m.openAddOutbuilding({ store })); },
   }, icon('plus', { size: 22 }), h('span', { class: 'ps-tool-key', 'aria-hidden': 'true' }, '+'));
   el.append(addBld);
 
@@ -53,7 +53,7 @@ export function createToolbox(el, store, { onWheel } = {}) {
 
   function sync() {
     const tool = store.ui.tool;
-    addBld.hidden = store.project?.mode !== 'commercial';
+    addBld.hidden = false; // commercial: the building catalogue; residential: garages, sheds, carport, machinery shed and granny flat
     for (const def of TOOL_DEFS) {
       const comm = store.project?.mode === 'commercial';
       const on = def.id === tool || !!def.family?.includes(tool) || (comm && def.id === 'movehouse' && tool === 'commercial');
