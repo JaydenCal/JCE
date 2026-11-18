@@ -16,6 +16,7 @@ export const ASSUMED_RL = 100;
 export const SLAB_M = 0.15;
 
 const fin = (v) => typeof v === 'number' && Number.isFinite(v);
+export const roundRL = (v) => Math.round(v * 100) / 100;
 const r2 = (v) => Math.round(v * 100) / 100;
 
 /** The 3D terrain model for the project (or null), loaded on demand so the synchronous sheet code never imports the 3D builder. */
@@ -82,6 +83,9 @@ export function levelsModel(project, lot, { tm = null } = {}) {
     const z = design(c);
     return fin(z) && has ? r2(z + SLAB_M) : floorRL;
   };
+  // One floor level for the house on every residential sheet (site plan, floor plans, elevations, sections): the finished floor of the 3D model,
+  // i.e. the design surface under the house (pad, with any raise towards the street) plus the slab. Commercial buildings each use fflOf(key).
+  const houseFfl = !project?.commercial && has && polyOfKey('house') ? fflOf('house') : floorRL;
   const datumNote = has ? `Indicative, from the ${lot?.state === 'QLD' ? 'Queensland' : 'NSW'} 5 m DEM` : `Assumed RL ${rlText(ASSUMED_RL)}`;
-  return { has, source: has ? 'dem' : 'assumed', datumNote, floorSet, natural, design, floorRL, fflOf, reliefM: has && minRL != null ? maxRL - minRL : 0, minRL, maxRL, hasDesign: !!(has && tm?.heightAt), grading: tm?.grading || null, tm };
+  return { has, source: has ? 'dem' : 'assumed', datumNote, floorSet, natural, design, floorRL: houseFfl, fflOf, reliefM: has && minRL != null ? maxRL - minRL : 0, minRL, maxRL, hasDesign: !!(has && tm?.heightAt), grading: tm?.grading || null, tm };
 }

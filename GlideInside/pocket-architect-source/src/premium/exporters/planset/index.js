@@ -25,7 +25,7 @@ import { resolveLocality } from './locality.js';
 import { syncCurrency } from '../../../site/custom-rules.js';
 import { sheetNotes } from '../../../site/upload/sheet-text.js';
 import { drawSite, siteView } from './site.js';
-import { levelsModel, loadTerrainModel } from './levels.js';
+import { levelsModel, loadTerrainModel, roundRL } from './levels.js';
 import { groundLegendBlock, intervalText } from './contours.js';
 import { drawHouseSheet, houseSheets } from './house.js';
 import { zoneMismatch, RESIDENTIAL_NOTE } from '../../../commercial/zones.js';
@@ -160,7 +160,9 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
       else if (x.id === 'sect') x.scale = tris.length ? `1:${sectionScale(aligned.project, tris, viewArea, 1, x.axis)} @ A3` : 'NTS';
     }
   }
-  const viewCtx = { project: aligned.project, k: 1, colours: schemeColours(wp), unalign: aligned.unalign || null, paper: 'A3', ground: levels ? { lot: siteLot, levels, align: aligned.align || null, unalign: aligned.unalign || null } : null, levels };
+  // The house views read the finished floor level from the lot: give them the one level every sheet uses (the 3D model's), so the natural ground and RL tags draw.
+  const viewProject = levels?.has && !commercial ? { ...aligned.project, site: { ...aligned.project.site, lot: { ...aligned.project.site.lot, floorRL: roundRL(levels.floorRL) } } } : aligned.project;
+  const viewCtx = { project: viewProject, k: 1, colours: schemeColours(wp), unalign: aligned.unalign || null, paper: 'A3', ground: levels ? { lot: siteLot, levels, align: aligned.align || null, unalign: aligned.unalign || null } : null, levels };
   const address = clean(wp.titleBlock?.address || siteLot?.address || '');
   const lotDp = clean(siteLot ? titleLotDp(wp) || siteLot.lotLabel || '' : '');
   const base = { project: wp, builder: bld, client: bld ? bld.client.name || 'Not stated' : 'Glide Inside customer', projectTitle: title, address, lotDp, total: sheets.length, dateStr, jobId: id, terms };
