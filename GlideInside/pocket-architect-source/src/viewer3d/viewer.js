@@ -192,6 +192,10 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   let lastTime = performance.now();
   const perf = { ema: 0.016, slow: 0, frames: 0, shadows: true };
   const stats = { buildMs: 0, builds: 0, frames: 0 };
+  // Watchdog: a rebuild over WATCHDOG_MS drops the detail level (no fine fittings, no contours) instead of freezing the page again.
+  const WATCHDOG_MS = globalThis.__PS_WATCHDOG_MS || 2000;
+  let detail = 'full';
+  let detailNote = null;
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
 
@@ -440,7 +444,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       siteEdgeColour: site.edgeColour,
       siteWideTexture: site.wideTexture,
       siteWideEdgeColour: site.wideEdgeColour,
-      showContours: layers.contours,
+      showContours: layers.contours && detail === 'full',
+      detail,
     };
   }
 
@@ -550,6 +555,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     if (!framed || lastProjectId !== store.project.id) {
       frameCamera(false);
       framed = true;
+      if (lastProjectId && lastProjectId !== store.project.id) { detail = 'full'; stats.simplified = false; }
       lastProjectId = store.project.id;
     }
     dirtyModel = false;
@@ -557,7 +563,29 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     roomEdit?.onRebuild();
     stats.buildMs = performance.now() - t0;
     stats.builds++;
+    if (stats.buildMs > WATCHDOG_MS && detail === 'full') {
+      detail = 'low';
+      stats.simplified = true;
+      showDetailNote();
+      dirtyModel = true;
+      rebuildTimer = setTimeout(rebuild, 30); // the same view again, lighter
+    }
     invalidate();
+  }
+
+  function showDetailNote() {
+    try {
+      if (!detailNote) {
+        detailNote = document.createElement('div');
+        detailNote.setAttribute('role', 'status');
+        detailNote.dataset.ps = 'viewer-simplified';
+        detailNote.style.cssText = 'position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:8px 14px;border-radius:999px;background:rgba(20,24,28,.88);color:#fff;font:600 13px system-ui,sans-serif;z-index:5;pointer-events:none;transition:opacity .4s';
+        detailNote.textContent = 'Large site, simplifying view';
+        rootEl.appendChild(detailNote);
+      }
+      detailNote.style.opacity = '1';
+      setTimeout(() => { if (detailNote) detailNote.style.opacity = '0'; }, 4000);
+    } catch { /* the note is a courtesy */ }
   }
 
   function scheduleRebuild(delay = 120) {
