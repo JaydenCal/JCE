@@ -4,6 +4,7 @@ export const DOOR_FAMILY = ['door', 'sliding_door', 'garage_door', 'roller_door'
 
 export const TOOL_DEFS = [
   { id: 'movehouse', key: 'H', label: 'Move house', icon: 'movehouse' },
+  { id: 'rotate', key: 'O', label: 'Rotate', icon: 'rotate', tip: 'Select the building, then drag the gold handle to turn it about the pivot (Shift for 15 degree steps). Drag the cross to move the pivot, type an angle, or align to the street frontage or the nearest boundary.' },
   { id: 'select', key: 'V', label: 'Edit (select)', icon: 'select' },
   { id: 'room', key: 'R', label: 'Room', icon: 'room' },
   { id: 'wall', key: 'W', label: 'Wall', icon: 'wall' },

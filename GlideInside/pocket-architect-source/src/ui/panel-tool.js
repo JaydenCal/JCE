@@ -10,6 +10,7 @@ import { drawItemPreview } from './preview.js';
 import { hardstandPanel } from '../commercial/ui/panel-hardstand.js';
 import { pavePanel } from './panel-pave.js';
 import { drivePIPanel } from './panel-drivepi.js';
+import { rotatePanel } from './panel-rotate.js';
 
 function helpCard(title, lines) {
   return h('div', null, h('div', { class: 'ps-sel-title' }, h('strong', null, title)), h('ul', { class: 'ps-hint', style: { paddingLeft: '18px', margin: '0 0 10px' } }, lines.map((l) => h('li', { style: { marginBottom: '3px' } }, l))));
@@ -20,6 +21,7 @@ const radio = (selected, onclick, ...kids) => h('button', { class: 'ps-radio', t
 export function buildToolPanel(ctx, tool) {
   const { store, editor } = ctx;
   if (tool === 'pave') return pavePanel(ctx); // driveway and road: kind, material, width, bends, turning heads, edit
+  if (tool === 'rotate') return rotatePanel(ctx); // turn the house or a commercial building about a pivot: typed angle, align buttons
   if (tool === 'drivepi') return drivePIPanel(ctx); // residential driveway: add, move, delete PIs, reset to auto
   if (tool === 'hardstand') return hardstandPanel(ctx); // commercial Hardstand picker, quantities and selected area
   const fb = formBuilder();
