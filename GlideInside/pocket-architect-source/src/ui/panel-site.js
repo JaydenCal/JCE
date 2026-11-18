@@ -20,7 +20,7 @@ import { siteCredits, INDICATIVE } from '../site/credits.js';
 const LAYER_LABELS = [
   ['boundary', 'Lot boundary'], ['dimensions', 'Boundary lengths'], ['neighbours', 'Neighbouring lots'],
   ['labels', 'Lot and DP labels'], ['aerial', 'Aerial image'], ['contours', 'Contours'],
-  ['setbacks', 'Setback envelope'], ['road', 'Road and kerb'], ['driveway', 'Driveway'],
+  ['setbacks', 'Setback envelope'], ['driveway', 'Driveway'],
   ['fences', 'Fences (3D)'], ['houses', 'Neighbour houses (3D)'],
 ];
 

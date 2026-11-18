@@ -142,7 +142,7 @@ export function checkSummary(project) {
     garage = { has: true, facesStreet: !!(dw?.ok) && dw.facing !== false, distanceM: r ? Math.round(G.dot(G.sub(door.mid, r.lines.property[0]), { x: -r.outward.x, y: -r.outward.y })) / 1000 : null };
   }
   const driveway = !door ? { state: 'none' } : dw?.ok ? { state: 'ok', lengthM: Math.round(dw.lengthMm / 100) / 10, widthM: Math.round(dw.widthMm / 100) / 10 } : { state: 'blocked', reason: dw?.reason || 'no_street' };
-  const paved = pavedSummary(project); // saved drawn paving (retired tool, always empty), by material
+  const paved = pavedSummary(project); // driveways and roads drawn with the Driveway and road tool, by material
   const drivewayArea = (dw?.ok ? G.polygonArea(dw.polygon) / 1e6 : 0) + extraPavedInLotM2(project);
   const open = lotArea > 0 ? Math.max(0, lotArea - cover - drivewayArea) : null;
   const verdict = st.state === 'inside' ? 'met' : st.state === 'outside' ? 'not-met' : 'unknown';

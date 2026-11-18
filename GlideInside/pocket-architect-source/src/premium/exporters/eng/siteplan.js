@@ -66,6 +66,9 @@ function offsetPoly(poly, d) {
   });
 }
 
+// The automatic road at the frontage is not drawn (owner 18/11/2026): only roads the user drew with the Road or pavement tool appear.
+const AUTO_ROAD = false;
+
 /** Points the site plan must show: the lot, the house and the street out to just past its centreline. */
 export function fitPoints(facts) {
   const pts = [...facts.lot.boundary, ...facts.hull];
@@ -292,7 +295,7 @@ export function drawSitePlan(doc, ctx) {
   // 3. Road reserve: footpath, kerb, gutter, pavement hatched along the road, concrete footpath, red PHANTOM centreline
   const roadBoxes = [];
   const rural = isRuralLot(lot);
-  for (const r of facts.reserve) {
+  for (const r of AUTO_ROAD ? facts.reserve : []) {
     const L = r.lines;
     const quad = (A, B) => [A[0], A[1], B[1], B[0]];
     const along = dirOf(T(L.centreline[0]), T(L.centreline[1]));
@@ -583,7 +586,7 @@ export function drawSitePlan(doc, ctx) {
     items.push({ id: 'drive', lines: ['PROPOSED DRIVEWAY', `${(drive.widthMm / 1000).toFixed(1)} m wide, concrete`], at: T(drive.centre[Math.floor(drive.centre.length * 0.55)]), colour: PEN.proposed });
     items.push({ id: 'cross', lines: ['PROPOSED CROSSOVER', 'Council approval required'], at: T(G.lerp(drive.crossover.from, drive.crossover.to, 0.5)), colour: PEN.proposed });
   }
-  if (facts.reserve[0]) {
+  if (AUTO_ROAD && facts.reserve[0]) {
     // Road call outs point at the part of the road that is on the sheet (the reserve lines run on past the viewport edge).
     const L = facts.reserve[0].lines;
     const visible = (line, f) => { const c = clipSegment(T(line[0]), T(line[1]), { x0: rect.x0 + 12, y0: rect.y0 + 12, x1: rect.x1 - 12, y1: rect.y1 - 12 }); return c ? G.lerp(c[0], c[1], f) : null; };
@@ -851,7 +854,7 @@ export function drawLocality(doc, box, ctx, { key = false, window: win = null } 
   // Streets: the frontage road through the box, and any named roads the lookup returned
   const facts = siteFacts(project);
   const streets = [];
-  for (const r of facts?.reserve || []) {
+  for (const r of AUTO_ROAD ? facts?.reserve || [] : []) {
     const c0 = r.lines.centreline[0];
     const c1 = r.lines.centreline[1];
     const dir = G.norm(G.sub(c1, c0));

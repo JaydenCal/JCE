@@ -13,6 +13,7 @@ import { GeoBuilder, addOrientedBox } from './mesh-builder.js';
 import { makeMesh } from './model-util.js';
 import { layerOn } from './site-geom.js';
 import { roadReserve, deriveDriveway, buildingHull, orientedBox } from '../site/lotplan.js';
+import { addDrawnWays } from './pave3d.js';
 import { pavementModel } from '../commercial/catalogue/pavements/logic.js';
 import { buildingsOf } from '../commercial/catalogue/buildings.js';
 import { frontFrame, houseSpec, toWorld, rng, ROOFS, WALLS } from '../site/neighbours.js';
@@ -215,6 +216,9 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       driveCentres.push(c);
       drivePolys.push(dw.polygon);
     }
+    // Driveways and roads drawn with the Road or pavement tool: one surface per material, draped, with fine edge lines.
+    const drawn = addDrawnWays(project, surf);
+    if (drawn?.mesh) { add(drawn.mesh); stats.driveway = true; stats.drawn = drawn.stats; for (const c of drawn.centres) driveCentres.push(c); }
     // front door path
     const door = project.mode === 'commercial' ? null : frontDoor(project, streetDirs[0] || reserves[0] || null, lot);
     if (door) {

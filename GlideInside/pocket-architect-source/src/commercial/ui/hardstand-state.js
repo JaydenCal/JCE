@@ -5,6 +5,7 @@ import { hardstandTypes } from '../catalogue/pavements/hardstand.js';
 import { roadKind } from '../catalogue/pavements/roads.js';
 
 export const HS_MODES = Object.freeze([
+  { id: 'road', key: 'L', label: 'Road or path', hint: 'Use the Road or pavement tool (L). Click each point of the road, driveway or footpath. Double click or Enter finishes, Backspace removes the last point, Escape cancels. Ends snap to the street frontage, building doors and other roads. Shift locks to 15 degree steps, Alt turns snapping off.' },
   { id: 'rect', key: 'R', label: 'Rectangle', hint: 'Click and drag across the area. Shift makes a square. A drag that starts on a slanted edge follows that edge.' },
   { id: 'poly', key: 'P', label: 'Polygon', hint: 'Click each corner. Double click, Enter or a click on the first corner finishes. Backspace removes the last corner. Shift locks to 15 degree steps.' },
   { id: 'fill', key: 'F', label: 'Fill area', hint: 'Click open ground inside a space bounded by buildings, existing pavement and the lot boundary to fill it.' },

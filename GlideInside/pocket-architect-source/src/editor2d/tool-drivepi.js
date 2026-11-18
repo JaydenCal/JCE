@@ -1,5 +1,5 @@
 // Driveway PI tool for the residential 2D plan: connects drivepi-controller.js to the canvas (pointer events, keys) and draws the editing
-// overlay with the handle look: gold dashed centreline, white squares with a gold edge for PIs,
+// overlay with the same handle look as the Road or pavement tool: gold dashed centreline, white squares with a gold edge for PIs,
 // a gold fill for the selected PI, a green diamond for the kerb end, and the dark readout pill.
 
 import { worldToScreen } from './math.js';

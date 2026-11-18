@@ -58,59 +58,6 @@ const status = (st) => {
   return value;
 };
 
-/** The road: footpath, kerb and gutter lines, and the centreline as a red phantom line. */
-export function drawRoad(ctx, st) {
-  const lot = lotOf(st.project);
-  if (!lot || !layerOn(lot, 'road')) return;
-  const reserves = roadReserve(lot);
-  if (!reserves.length) return;
-  const { theme } = st;
-  ctx.save();
-  ctx.lineJoin = 'round';
-  for (const r of reserves) {
-    const L = r.lines;
-    // Footpath
-    ctx.beginPath();
-    ctx.strokeStyle = 'rgba(120,124,132,0.8)';
-    ctx.lineWidth = 1;
-    line(ctx, st, ...L.footpathNear);
-    line(ctx, st, ...L.footpathFar);
-    ctx.stroke();
-    // Kerb and gutter, far kerb and gutter
-    ctx.beginPath();
-    ctx.strokeStyle = KERB;
-    ctx.lineWidth = 2;
-    line(ctx, st, ...L.kerb);
-    line(ctx, st, ...L.farKerb);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.strokeStyle = 'rgba(29,32,36,0.55)';
-    ctx.lineWidth = 1;
-    line(ctx, st, ...L.gutter);
-    line(ctx, st, ...L.farGutter);
-    ctx.stroke();
-    // Centreline: red phantom (long, short, short)
-    ctx.beginPath();
-    ctx.strokeStyle = ROAD_CL;
-    ctx.lineWidth = 1.6;
-    ctx.setLineDash([22, 5, 4, 5, 4, 5]);
-    line(ctx, st, ...L.centreline);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.font = `600 10.5px ${theme.f.ui}`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = ROAD_CL;
-    const mid = (l, k) => ({ x: l[0].x * (1 - k) + l[1].x * k, y: l[0].y * (1 - k) + l[1].y * k });
-    alongText(ctx, st, 'ROAD CENTRELINE (INDICATIVE)', mid(L.centreline, 0.35), mid(L.centreline, 0.65), theme, -9);
-    ctx.fillStyle = theme.c.muted;
-    ctx.font = `500 10px ${theme.f.ui}`;
-    alongText(ctx, st, 'KERB AND GUTTER', mid(L.kerb, 0.2), mid(L.kerb, 0.5), theme, 10);
-    alongText(ctx, st, 'FOOTPATH', mid(L.footpathNear, 0.8), mid(L.footpathFar, 0.95), theme, 0);
-  }
-  ctx.restore();
-}
-
 /** The setback envelope, dashed: blue inside, red when the building is over it, grey when no rule is loaded. */
 export function drawEnvelope(ctx, st) {
   const lot = lotOf(st.project);
@@ -205,7 +152,7 @@ export function drawDriveway(ctx, st) {
   const lot = lotOf(st.project);
   if (!lot || !layerOn(lot, 'driveway')) return;
   const d = deriveDriveway(st.project);
-  if (!d?.ok || d.manual) return;
+  if (!d?.ok || d.manual) return; // a driveway drawn with the Driveway and road tool is painted by draw-pave.js
   ctx.save();
   polyPath(ctx, st, d.polygon);
   ctx.fillStyle = 'rgba(205,205,205,0.9)';
@@ -230,7 +177,6 @@ export function drawDriveway(ctx, st) {
 /** Layers that go under the plan: road, envelope, driveway. Called from drawSite. */
 export function drawLotPlan(ctx, st) {
   if (!lotOf(st.project)) return;
-  drawRoad(ctx, st);
   drawEnvelope(ctx, st);
   drawDriveway(ctx, st);
 }
