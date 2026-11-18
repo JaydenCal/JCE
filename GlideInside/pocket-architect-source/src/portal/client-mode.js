@@ -189,8 +189,9 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   }
 
   // Modal and popover helpers ------------------------------------------------------------------------------------------------
-  function modal(title, body, actions = []) {
-    const close = () => scrim.remove();
+  function modal(title, body, actions = [], { onClose } = {}) {
+    let closed = false;
+    const close = () => { scrim.remove(); if (!closed) { closed = true; onClose?.(); } };
     const scrim = h('div', { class: 'pas-modal-scrim', onclick: (e) => { if (e.target === scrim) close(); } },
       h('div', { class: 'pas-modal', role: 'dialog', 'aria-modal': 'true', 'aria-label': title }, h('h2', null, title), body,
         h('div', { class: 'pas-row' }, ...actions.map((a) => h('button', { class: `pas-btn${a.primary ? ' pas-btn--primary' : ''}`, type: 'button', onclick: () => { a.fn?.(close); if (!a.keep) close(); } }, a.label)), h('button', { class: 'pas-btn', type: 'button', onclick: close }, 'Close'))));
@@ -320,12 +321,41 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   }
 
   // Projects ----------------------------------------------------------------------------------------------------------------------
+  // Builder jobs (owner decision 18/11/2026): the first save of a NEW project by builder staff is a job. The server answers JOB_CONFIRM_REQUIRED with the
+  // price and what it covers; the screen asks, and only a confirmed request charges the saved card and creates the project. A client login is never asked.
+  let pendingJobId = null; // one id per new project, so a retry after a network error can never charge twice
+  const newJobId = () => `job_${[...crypto.getRandomValues(new Uint8Array(10))].map((b) => b.toString(16).padStart(2, '0')).join('')}`;
+  function confirmJobDialog(quote = {}) {
+    return new Promise((resolve) => {
+      let answered = false;
+      const charges = quote.cents > 0 && quote.charging && !quote.needsCard;
+      const label = charges ? `Confirm and pay ${quote.priceText || 'A$20 incl. GST'}` : 'Start this job';
+      const body = h('div', { id: 'pas-job-confirm' },
+        h('p', null, h('strong', null, `Price: ${quote.priceText || 'A$20 incl. GST'} per job`)),
+        h('p', null, quote.covers || 'One job is one new project.'),
+        quote.message ? h('p', null, quote.message) : null);
+      modal('Start a new job?', body, quote.needsCard
+        ? [{ label: 'Add a card in Billing', primary: true, keep: true, fn: async () => { try { const r = await api.startBillingSetup(); globalThis.open?.(r.url, '_blank', 'noopener'); toast('Add the card on the Stripe page, then come back here and save again.', { kind: 'info' }); } catch (e) { toast(e.message || 'Could not open the card page. Ask your account admin to add a card under Billing.', { kind: 'error' }); } } }]
+        : [{ label, primary: true, fn: () => { answered = true; resolve(true); } }], { onClose: () => { if (!answered) resolve(false); } });
+    });
+  }
   async function saveProject({ quiet = false } = {}) {
     try {
-      const saved = await api.saveProject({ id: currentProjectId || undefined, name: store.project.name, project: store.project, lotAddress: lotOf(store.project)?.address || lot?.address || '' });
+      const body = { id: currentProjectId || undefined, name: store.project.name, project: store.project, lotAddress: lotOf(store.project)?.address || lot?.address || '' };
+      let saved;
+      try {
+        saved = await api.saveProject(pendingJobId ? { ...body, jobRequestId: pendingJobId } : body);
+      } catch (e) {
+        if (e?.code !== 'JOB_CONFIRM_REQUIRED') throw e;
+        if (quiet) { statusLine.textContent = 'Use Save project in the menu to confirm this new job.'; return false; }
+        if (!(await confirmJobDialog(e.details?.quote))) return false;
+        pendingJobId ||= newJobId();
+        saved = await api.saveProject({ ...body, confirmJob: true, jobRequestId: pendingJobId });
+      }
+      pendingJobId = null;
       currentProjectId = saved.id;
       if (quiet) { const d = new Date(); autoNote = `Saved to your account at ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; statusLine.textContent = autoNote; return true; }
-      toast(reviewOwner ? `Saved to ${reviewOwner}'s project. It is recorded as edited by staff.` : 'Project saved to your account.', { kind: 'ok' });
+      toast(saved.job ? `Job started. ${saved.job.amountCents > 0 ? `A$${saved.job.amountCents / 100} incl. GST was charged to your card. ` : ''}Project saved to your account.` : reviewOwner ? `Saved to ${reviewOwner}'s project. It is recorded as edited by staff.` : 'Project saved to your account.', { kind: 'ok' });
       return true;
     } catch (e) {
       if (quiet) { statusLine.textContent = 'Could not save to your account yet. Trying again soon.'; return false; }
@@ -381,8 +411,8 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
 
   // AI credits ----------------------------------------------------------------------------------------------------------------------
   function aiDialog() {
-    const note = h('p', null, `${credits.monthlyRemaining} of ${credits.monthlyCap} monthly credits left, plus ${credits.topUpBalance} top-up credits. Monthly credits reset on the 1st; the AI design assistant stops at zero.`);
-    const actions = me.canTopUp ? [{ label: 'Top up 300 credits, A$10 incl. GST', primary: true, keep: true, fn: async (close) => { try { await api.aiTopUp(); await refreshCredits(); toast(`Added 300 credits. ${isClient ? 'Charged to your builder.' : 'Charged on your end of month invoice.'}`, { kind: 'ok' }); close(); } catch (e) { toast(e.message, { kind: 'error' }); } } }] : [];
+    const note = h('p', null, `${credits.monthlyRemaining} of ${credits.monthlyCap} monthly credits left, plus ${credits.topUpBalance} top-up credits. A message is about 2 credits. Monthly credits reset on the 1st; the AI design assistant stops at zero.`);
+    const actions = me.canTopUp ? [{ label: 'Top up 100 messages, A$15 incl. GST', primary: true, keep: true, fn: async (close) => { try { await api.aiTopUp(); await refreshCredits(); toast(`Added 100 messages. ${isClient ? 'Charged to your builder.' : 'Charged on your end of month invoice.'}`, { kind: 'ok' }); close(); } catch (e) { toast(e.message, { kind: 'error' }); } } }] : [];
     modal('AI credits', h('div', null, note, me.canTopUp ? h('p', null, 'Top-ups are added at once and billed on the builder end of month invoice.') : h('p', null, 'Your builder has turned off top-ups.')), actions);
   }
 

@@ -179,8 +179,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     try {
       // A card saved through Checkout in setup mode belongs to the builder portal, not to a Plan Pack.
       const setup = event.type === 'checkout.session.completed' && event.data?.object?.mode === 'setup';
-      const mine = setup ? null : await commercial.handleEvent(event); // Commercial Developer subscription and AI top-up events
-      const outcome = setup ? (portal ? await portal.completeCardSetup(event.data.object) : 'ignored: portal not configured') : mine ?? (await stripe.handleStripeEvent({ event, store, config, now }));
+      // A builder capped job plan (Checkout in subscription mode, metadata purpose gi_job_plan) also belongs to the builder portal, not to commercial.
+      const jobPlan = setup || !portal ? null : await portal.handleBillingEvent(event);
+      const mine = setup || jobPlan ? null : await commercial.handleEvent(event); // Commercial Developer subscription and AI top-up events
+      const outcome = setup ? (portal ? await portal.completeCardSetup(event.data.object) : 'ignored: portal not configured') : jobPlan ?? mine ?? (await stripe.handleStripeEvent({ event, store, config, now }));
       console.log(JSON.stringify({ event: 'stripe_webhook', id: event.id, type: event.type, outcome }));
       return json({ received: true });
     } catch (e) {
@@ -283,7 +285,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   // A request is paid for either by a Plan Pack (one entitlement row for the project) or by a builder or client login
   // (a monthly pool per login per Sydney calendar month, then a carry-over top-up pool). Both expose the same small
   // interface so the AI handlers do not care which one they have.
-  const TOPUP_OFFER = () => ({ credits: config.topUpCredits, amountCents: config.topUpCents, gstInclusive: true, currency: 'aud' });
+  const TOPUP_OFFER = () => ({ messages: config.topUpMessages, credits: config.topUpCredits, amountCents: config.topUpCents, gstInclusive: true, currency: 'aud' });
 
   async function topUpAllowed(payload, internal = false) {
     if (internal) return false; // an internal test account is never charged, so it has no top-ups

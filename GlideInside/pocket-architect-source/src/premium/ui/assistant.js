@@ -177,10 +177,11 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     const c = st.credits;
     if (toppingUp || busy || !canTopUp(c) || !st.token) return;
     const role = st.session?.kind;
+    const packText = c.topUp.messages > 0 ? `${c.topUp.messages} messages (${c.topUp.credits} credits)` : `${c.topUp.credits} credits`;
     const ok = await layer.confirmDialog({
-      title: 'Top up AI credits',
-      message: `Add ${c.topUp.credits} credits now for ${formatAud(c.topUp.amountCents / 100)} including GST? It goes on ${role === 'builder' ? 'your' : "your builder's"} monthly invoice, with no card payment. Top-up credits carry over until used and are spent after your monthly credits.`,
-      confirmLabel: `Add ${c.topUp.credits} credits`,
+      title: 'Top up AI messages',
+      message: `Add ${packText} now for ${formatAud(c.topUp.amountCents / 100)} including GST? It goes on ${role === 'builder' ? 'your' : "your builder's"} monthly invoice, with no card payment. A message is about 2 credits on the meter. The pack carries over until used and is spent after your monthly credits.`,
+      confirmLabel: `Add ${c.topUp.messages > 0 ? `${c.topUp.messages} messages` : `${c.topUp.credits} credits`}`,
       cancelLabel: 'Cancel',
     });
     if (!ok || disposed) return;
@@ -190,8 +191,8 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       const res = await api.topUp(st.token);
       const next = normaliseCredits(res.credits);
       if (next) actions.setCredits(next);
-      layer.notify(`${c.topUp.credits} credits added.`, 'ok');
-      track('ps_ai_topup', { credits: c.topUp.credits });
+      layer.notify(`${c.topUp.messages > 0 ? `${c.topUp.messages} messages` : `${c.topUp.credits} credits`} added.`, 'ok');
+      track('ps_ai_topup', { credits: c.topUp.credits, messages: c.topUp.messages });
       banners = banners.filter((b) => b.id !== 'exhausted');
     } catch (e) {
       layer.notify(friendlyError(e, { area: 'ai', dev: dev() }), 'error', 8000);

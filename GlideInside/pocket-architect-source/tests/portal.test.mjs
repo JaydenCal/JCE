@@ -57,7 +57,7 @@ test('A$30 per NEW client login in the calendar month, once per login, no recurr
   assert.equal(summariseMonth({ issues }, '2026-12').totals.totalCents, 0, 'a login issued earlier is not charged again');
 });
 
-test('month total is A$30 per new login plus A$10 per top-up, and GST is one eleventh', () => {
+test('month total is A$30 per new login plus A$15 per top-up, and GST is one eleventh', () => {
   const issues = [{ loginId: 'a', issuedAt: '2026-11-02T01:00:00Z' }, { loginId: 'b', issuedAt: '2026-11-03T01:00:00Z' }];
   const topUps = [{ createdAt: '2026-11-04T01:00:00Z' }, { createdAt: '2026-11-05T01:00:00Z' }, { createdAt: '2026-12-01T01:00:00Z' }];
   const t = summariseMonth({ issues, topUps }, '2026-11').totals;
@@ -165,33 +165,26 @@ test('five failed sign ins lock the login for 15 minutes', async () => {
   assert.equal((await api.signIn(DEMO_LOGINS.admin)).user.role, 'admin');
 });
 
-test('Generate account: only the first name is needed, credentials shown once, A$30 charged once', async () => {
+test('Generate account: only the first name is needed, credentials shown once, client logins are free', async () => {
   const { api } = fresh();
   await admin(api);
   const before = (await api.monthUsage()).totals;
   const r = await api.issueClientLogin({ firstName: 'Priscilla' });
   assert.match(r.credentials.username, /^priscilla-[2-9]{4}$/);
   assert.match(r.credentials.password, /^[2-9a-hjkmnp-z]{4}(-[2-9a-hjkmnp-z]{4}){3}$/);
-  assert.equal(r.charge.amountCents, 3000);
-  assert.equal(r.charge.trigger, 'first_sign_in');
+  assert.equal(r.charge.amountCents, 0);
+  assert.equal(r.charge.trigger, 'none');
   assert.equal(r.client.status, 'active');
   assert.equal(r.client.houseAccess, 'all');
   assert.equal(JSON.stringify(await api.listClients()).includes(r.credentials.password), false, 'password is not readable again');
-  // Generating costs nothing: the charge starts at the client's first sign in.
   assert.deepEqual((await api.monthUsage()).totals, before);
   await api.signOut();
   await api.signIn({ identifier: r.credentials.username, password: r.credentials.password });
   await api.signOut();
   await admin(api);
+  // A first sign in no longer creates a charge.
   const after = (await api.monthUsage()).totals;
-  assert.equal(after.loginsCount, before.loginsCount + 1);
-  assert.equal(after.totalCents, before.totalCents + 3000);
-  // A second sign in does not charge again.
-  await api.signOut();
-  await api.signIn({ identifier: r.credentials.username, password: r.credentials.password }).catch(() => {});
-  await api.signOut();
-  await admin(api);
-  assert.equal((await api.monthUsage()).totals.loginsCount, after.loginsCount);
+  assert.deepEqual(after, before);
   // Reset, disable, enable, edit: no charge.
   await api.resetClientPassword(r.client.id);
   await api.disableClient(r.client.id);
@@ -202,7 +195,7 @@ test('Generate account: only the first name is needed, credentials shown once, A
   await rejects(api.issueClientLogin({ firstName: 'X', email: 'not-an-email' }), 'BAD_REQUEST');
 });
 
-test('a login is billed in the Sydney month of its first sign in, not when it was generated', async () => {
+test('a first sign in on either side of Sydney midnight creates no login charge (client logins are free)', async () => {
   const { api, clock } = fresh({ now: iso('2026-10-31T12:30:00Z') }); // 23:30 on 31/10 Sydney
   await admin(api);
   const a = await api.issueClientLogin({ firstName: 'Late' });
@@ -214,9 +207,8 @@ test('a login is billed in the Sydney month of its first sign in, not when it wa
   await api.signIn({ identifier: b.credentials.username, password: b.credentials.password });
   await api.signOut();
   await admin(api);
-  assert.equal((await api.monthUsage({ month: '2026-10' })).logins.filter((l) => l.clientName === 'Late').length, 1);
-  assert.equal((await api.monthUsage({ month: '2026-10' })).logins.filter((l) => l.clientName === 'Early').length, 0);
-  assert.equal((await api.monthUsage({ month: '2026-11' })).logins.filter((l) => l.clientName === 'Early').length, 1);
+  assert.equal((await api.monthUsage({ month: '2026-10' })).logins.filter((l) => l.clientName === 'Late').length, 0);
+  assert.equal((await api.monthUsage({ month: '2026-11' })).logins.filter((l) => l.clientName === 'Early').length, 0);
 });
 
 test('an unused login can be deleted free and is never billed', async () => {
@@ -343,7 +335,7 @@ test('client data handling: export a client\'s projects, then delete the client 
   assert.ok((await api.monthUsage({ month: '2026-10' })).logins.some((l) => l.loginId === 'u_daniel'));
 });
 
-test('AI credits: monthly cap per login with a hard stop, top-ups of 300 for A$10, allowClientTopUps switch', async () => {
+test('AI credits: monthly cap per login with a hard stop, top-ups of 100 messages for A$15, allowClientTopUps switch', async () => {
   const { api, clock } = fresh();
   await api.signIn(DEMO_LOGINS.client); // Sarah: 124 of 300 used
   let ai = await api.aiBalance();
@@ -355,14 +347,14 @@ test('AI credits: monthly cap per login with a hard stop, top-ups of 300 for A$1
   assert.equal(top.topUp.loginId, 'u_sarah');
   assert.equal(top.topUp.orgId, 'org_sample');
   ai = top.ai;
-  assert.equal(ai.remaining, 6 + 300);
+  assert.equal(ai.remaining, 6 + TOPUP_CREDITS);
   await api.spendAiCredits({ credits: 20 }); // monthly allowance first (6 left), then top-up balance
   ai = await api.aiBalance();
-  assert.deepEqual([ai.monthlyRemaining, ai.topUpBalance], [0, 286]);
+  assert.deepEqual([ai.monthlyRemaining, ai.topUpBalance], [0, 186]);
   // Allowance resets next month; the top-up balance carries over.
   clock.set(iso('2026-12-02T02:00:00Z'));
   ai = await api.aiBalance();
-  assert.deepEqual([ai.used, ai.monthlyRemaining, ai.topUpBalance], [0, 300, 286]);
+  assert.deepEqual([ai.used, ai.monthlyRemaining, ai.topUpBalance], [0, 300, 186]);
   clock.set(NOW);
   // The builder can switch client top-ups off.
   await api.signOut();
@@ -374,13 +366,13 @@ test('AI credits: monthly cap per login with a hard stop, top-ups of 300 for A$1
   await rejects(api.aiTopUp(), 'TOPUPS_DISABLED');
 });
 
-test('the month total on the Billing tab and invoice is A$30 per new login plus A$10 per top-up', async () => {
+test('the month total on the Billing tab and invoice is the earlier login charges plus A$15 per top-up (new logins add nothing)', async () => {
   const { api } = fresh();
   await admin(api);
   const before = (await api.monthUsage()).totals;
-  assert.equal(before.totalCents, before.loginsCount * 3000 + before.topUpsCount * 1000);
+  assert.equal(before.totalCents, before.loginsCount * 3000 + before.topUpsCount * 1500);
   const ivy = await api.issueClientLogin({ firstName: 'Ivy' });
-  assert.deepEqual((await api.monthUsage()).totals, before, 'no charge until first sign in');
+  assert.deepEqual((await api.monthUsage()).totals, before, 'no charge for generating a login');
   await api.signOut();
   await api.signIn({ identifier: ivy.credentials.username, password: ivy.credentials.password });
   await api.aiTopUp().catch(() => {});
@@ -388,8 +380,8 @@ test('the month total on the Billing tab and invoice is A$30 per new login plus 
   await admin(api);
   await api.aiTopUp();
   const after = (await api.monthUsage()).totals;
-  assert.equal(after.totalCents, before.totalCents + 3000 + 1000);
-  assert.equal((await api.monthUsage()).topUps.at(-1).amountCents, 1000);
+  assert.equal(after.totalCents, before.totalCents + 1500, 'only the top-up is added; the first sign in is free');
+  assert.equal((await api.monthUsage()).topUps.at(-1).amountCents, 1500);
   // Past invoices are tax invoices with the seller ABN, GST and total incl. GST.
   const [first] = await api.listInvoices();
   const inv = await api.getInvoice(first.id);
@@ -615,7 +607,8 @@ test('mock api: staff open a client project, save it back as staff, the client k
   assert.equal((await api.listProjects({ clientId: 'u_sarah' })).length, 1);
   assert.equal((await api.listProjects({ clientId: 'u_sarah' }))[0].editedByStaff, true);
   assert.deepEqual(await api.monthUsage({ month: monthKey(Date.now()) }), usage);
-  const mineNew = await api.saveProject({ name: 'Show home', project: opened.project });
+  await rejects(api.saveProject({ name: 'Show home', project: opened.project }), 'JOB_CONFIRM_REQUIRED'); // a new project by staff is a job and needs the confirm
+  const mineNew = await api.saveProject({ name: 'Show home', project: opened.project, confirmJob: true });
   assert.equal(mineNew.editedByStaff, false);
   assert.notEqual(mineNew.ownerId, 'u_sarah');
   await api.signOut();

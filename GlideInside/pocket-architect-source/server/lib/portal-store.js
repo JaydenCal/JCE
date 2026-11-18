@@ -56,6 +56,7 @@ const SPECS = {
       orgId: 'org_id', status: 'status', trialStartedAt: 'trial_started_at', trialEndsAt: 'trial_ends_at', trialExtendedDays: 'trial_extended_days',
       requestId: 'request_id', convertedAt: 'converted_at', convertedHow: 'converted_how', paymentMethodId: 'payment_method_id', cardBrand: 'card_brand',
       cardLast4: 'card_last4', cardAddedAt: 'card_added_at', ownerNote: 'owner_note', internal: 'internal:b',
+      jobPlan: 'job_plan', jobPlanSubscriptionId: 'job_plan_subscription_id', jobPlanSince: 'job_plan_since', // capped monthly job plan (migration 0023)
     },
   },
   trialRequests: {
@@ -72,6 +73,14 @@ const SPECS = {
     cols: {
       id: 'id', orgId: 'org_id', createdAt: 'created_at', status: 'status', name: 'name', email: 'email', phone: 'phone', lotAddress: 'lot_address',
       designId: 'design_id', designName: 'design_name', consentAt: 'consent_at', ipHash: 'ip_hash', decidedAt: 'decided_at', decisionNote: 'decision_note', clientId: 'client_id',
+    },
+  },
+  // One row per new project a builder staff login starts (migration 0023). request_id is unique: a retried confirm never charges twice.
+  jobCharges: {
+    table: 'job_charges',
+    cols: {
+      id: 'id', requestId: 'request_id', orgId: 'org_id', userId: 'user_id', userName: 'user_name', projectId: 'project_id', projectName: 'project_name',
+      month: 'month', createdAt: 'created_at', kind: 'kind', amountCents: 'amount_cents', plan: 'plan', stripeInvoiceId: 'stripe_invoice_id', note: 'note',
     },
   },
   loginIssues: {
@@ -310,6 +319,15 @@ export function createD1PortalStore(db) {
     getLoginIssue: (loginId) => one(SPECS.loginIssues, 'login_id = ?1', loginId),
     updateLoginIssue: (loginId, patch) => update(SPECS.loginIssues, 'login_id = ?1', [loginId], patch),
     listLoginIssues: (orgId) => many(SPECS.loginIssues, 'org_id = ?1', [orgId], 'ORDER BY issued_at, id'),
+    // Job charges (migration 0023)
+    addJobCharge: (row) => insert(SPECS.jobCharges, row, { ignore: true }),
+    getJobByRequest: (orgId, requestId) => one(SPECS.jobCharges, 'org_id = ?1 AND request_id = ?2', orgId, requestId),
+    updateJobCharge: (id, patch) => update(SPECS.jobCharges, 'id = ?1', [id], patch),
+    listJobCharges: (orgId, month = null) => (month ? many(SPECS.jobCharges, 'org_id = ?1 AND month = ?2', [orgId, month], 'ORDER BY created_at, id') : many(SPECS.jobCharges, 'org_id = ?1', [orgId], 'ORDER BY created_at, id')),
+    async getOrgByJobPlanSubscription(subId) {
+      const a = await one(SPECS.orgAccounts, 'job_plan_subscription_id = ?1', subId);
+      return a ? this.getOrg(a.orgId) : null;
+    },
     insertInvoice: (inv) => insert(SPECS.invoices, inv).catch((e) => (isUnique(e) ? false : Promise.reject(e))),
     getInvoice: (orgId, id) => one(SPECS.invoices, 'id = ?1 AND org_id = ?2', id, orgId),
     getInvoiceByMonth: (orgId, month) => one(SPECS.invoices, 'org_id = ?1 AND month = ?2', orgId, month),
@@ -326,7 +344,7 @@ export function createD1PortalStore(db) {
 
 // In memory (tests, development) -------------------------------------------------------------------------------------------
 export function createMemoryPortalStore() {
-  const T = { trialRequests: new Map(), orgs: new Map(), users: new Map(), sessions: new Map(), houses: new Map(), projects: new Map(), invoices: new Map(), loginIssues: new Map(), clientRequests: new Map(), failures: new Map(), settings: new Map() };
+  const T = { trialRequests: new Map(), orgs: new Map(), users: new Map(), sessions: new Map(), houses: new Map(), projects: new Map(), invoices: new Map(), loginIssues: new Map(), jobCharges: new Map(), clientRequests: new Map(), failures: new Map(), settings: new Map() };
   const cp = (o) => (o == null ? null : structuredClone(o));
   const omit = (o, keys) => {
     const c = cp(o);
@@ -527,6 +545,23 @@ export function createMemoryPortalStore() {
       return true;
     },
     listLoginIssues: async (orgId) => [...T.loginIssues.values()].filter((r) => r.orgId === orgId).sort((a, b) => a.issuedAt.localeCompare(b.issuedAt)).map(cp),
+    async addJobCharge(row) {
+      if ([...T.jobCharges.values()].some((r) => r.orgId === row.orgId && r.requestId === row.requestId) || T.jobCharges.has(row.id)) return false;
+      T.jobCharges.set(row.id, cp(row));
+      return true;
+    },
+    getJobByRequest: async (orgId, requestId) => cp([...T.jobCharges.values()].find((r) => r.orgId === orgId && r.requestId === requestId)),
+    async updateJobCharge(id, patch) {
+      const r = T.jobCharges.get(id);
+      if (!r) return false;
+      patchOf(r, patch);
+      return true;
+    },
+    listJobCharges: async (orgId, month = null) => [...T.jobCharges.values()].filter((r) => r.orgId === orgId && (!month || r.month === month)).sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id)).map(cp),
+    async getOrgByJobPlanSubscription(subId) {
+      const o = [...T.orgs.values()].find((x) => x.jobPlanSubscriptionId === subId);
+      return o ? this.getOrg(o.id) : null;
+    },
     async insertInvoice(inv) {
       if (T.invoices.has(inv.id) || [...T.invoices.values()].some((x) => (x.orgId === inv.orgId && x.month === inv.month) || x.number === inv.number)) return false;
       T.invoices.set(inv.id, cp(inv));

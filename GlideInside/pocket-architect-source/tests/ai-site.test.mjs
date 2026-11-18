@@ -270,12 +270,12 @@ test('mock api: monthly credits, warnings, hard stop, then a top-up that carries
   const r3 = await api.edit('t', { message: 'fall' });
   assert.equal(r3.credits.remaining, 0);
   assert.equal(r3.warning.level, 0.95);
-  await assert.rejects(api.edit('t', { message: 'fall' }), (e) => e.code === 'CREDITS_EXHAUSTED' && e.details.topUp.credits === 300 && e.details.monthResetsOn === '2026-12-01');
+  await assert.rejects(api.edit('t', { message: 'fall' }), (e) => e.code === 'CREDITS_EXHAUSTED' && e.details.topUp.credits === 200 && e.details.topUp.messages === 100 && e.details.monthResetsOn === '2026-12-01');
   const top = await api.topUp('t');
-  assert.equal(top.credits.topUpRemaining, 300);
-  assert.deepEqual(api.events.map((e) => [e.credits, e.amountCents]), [[300, 1000]]);
+  assert.equal(top.credits.topUpRemaining, 200, '100 messages at 2 credits each');
+  assert.deepEqual(api.events.map((e) => [e.credits, e.amountCents]), [[200, 1500]]);
   const r4 = await api.edit('t', { message: 'fall' });
-  assert.equal(r4.credits.topUpRemaining, 298);
+  assert.equal(r4.credits.topUpRemaining, 198);
   assert.equal(r4.credits.remaining, 0, 'monthly credits are spent first, then top-up');
   // Builder can switch client top-ups off; a client then cannot top up, and a public session cannot at all.
   const client = createMockApi({ getProject: () => project, session: { kind: 'client' }, delayMs: 0 });
@@ -289,14 +289,14 @@ test('mock api: monthly credits, warnings, hard stop, then a top-up that carries
 
 // Client credit helpers ---------------------------------------------------------------------------------------
 test('client credits: monthly meter, reset date, top-up offer and wording', () => {
-  const c = normaliseCredits({ total: 300, used: 240, remaining: 60, warnLevel: 0.8, kind: 'org', monthResetsOn: '2026-12-01', topUpRemaining: 120, topUp: { allowed: true, credits: 300, amountCents: 1000 } });
+  const c = normaliseCredits({ total: 300, used: 240, remaining: 60, warnLevel: 0.8, kind: 'org', monthResetsOn: '2026-12-01', topUpRemaining: 120, topUp: { allowed: true, messages: 100, credits: 200, amountCents: 1500 } });
   assert.equal(meterText(c), '60 of 300 monthly credits left plus 120 top-up');
   assert.equal(resetText(c), 'Monthly credits reset on 01/12/2026.');
   assert.equal(resetDate('2026-12-01'), '01/12/2026');
   assert.equal(availableCredits(c), 180);
   assert.equal(canTopUp(c), true);
-  assert.equal(topUpLabel(c, 'client'), "Top up 300 credits, A$10 on your builder's monthly invoice");
-  assert.equal(topUpLabel(c, 'builder'), 'Top up 300 credits, A$10 on your monthly invoice');
+  assert.equal(topUpLabel(c, 'client'), "Top up 100 messages, A$15 incl. GST on your builder's monthly invoice");
+  assert.equal(topUpLabel(c, 'builder'), 'Top up 100 messages, A$15 incl. GST on your monthly invoice');
   assert.equal(isExhausted({ ...c, remaining: 0, topUpRemaining: 0 }), true);
   assert.equal(isExhausted({ ...c, remaining: 0 }), false, 'top-up credits keep the assistant working');
   assert.equal(canTopUp({ ...c, topUp: { ...c.topUp, allowed: false } }), false);
@@ -333,7 +333,7 @@ test('monthly cap arithmetic: Sydney calendar months, spend order, charge split'
   const b = C.orgBalance({ creditsTotal: 300, creditsUsed: 290, creditsReserved: 4 }, { creditsTotal: 300, creditsUsed: 10, creditsReserved: 0 });
   assert.deepEqual(b, { total: 300, used: 290, reserved: 4, remaining: 6, topUpRemaining: 290, available: 296 });
   const cfg = readConfig({});
-  assert.deepEqual([cfg.topUpCredits, cfg.topUpCents, cfg.orgMonthlyCredits, cfg.orgDailyCapUsd, cfg.orgMonthlyCapUsd, cfg.publicReserveShare], [300, 1000, 300, 1, 10, 0.3]);
+  assert.deepEqual([cfg.topUpCredits, cfg.topUpCents, cfg.orgMonthlyCredits, cfg.orgDailyCapUsd, cfg.orgMonthlyCapUsd, cfg.publicReserveShare], [200, 1500, 300, 1, 10, 0.3]);
   assert.deepEqual(C.orgPoolCaps(cfg), { dailyUsd: 5 * 0.7, monthlyUsd: 50 * 0.7 });
   assert.equal(C.clientTopUpsEnabled([], 'o1'), true);
   assert.equal(C.clientTopUpsEnabled([{ createdAt: '2026-11-01T00:00:00Z', detail: { orgId: 'o1', enabled: false } }, { createdAt: '2026-11-02T00:00:00Z', detail: { orgId: 'o2', enabled: true } }], 'o1'), false);
@@ -403,26 +403,26 @@ test('org login: monthly pool, hard stop with the top-up offer, top-up carries o
   assert.ok(warned.includes(0.5));
   assert.equal(last.status, 402);
   assert.equal(last.json.error.code, 'CREDITS_EXHAUSTED');
-  assert.deepEqual([last.json.error.topUp.allowed, last.json.error.topUp.credits, last.json.error.topUp.amountCents, last.json.error.monthResetsOn], [true, 300, 1000, '2026-12-01']);
+  assert.deepEqual([last.json.error.topUp.allowed, last.json.error.topUp.credits, last.json.error.topUp.amountCents, last.json.error.monthResetsOn], [true, 200, 1500, '2026-12-01']);
   const leftover = (await w.call('GET', '/api/credits', { token: tok })).json;
   assert.equal(leftover.available, leftover.remaining);
 
   const upAt = w.clock.t;
   const up = await w.call('POST', '/api/ai/topup', { token: tok, body: {} });
   assert.equal(up.status, 200);
-  assert.equal(up.json.credits.topUpRemaining, 300);
+  assert.equal(up.json.credits.topUpRemaining, 200);
   const events = await w.store.listEvents('ai_topup');
   assert.equal(events.length, 1);
-  assert.deepEqual(events[0].detail, { orgId: 'org1', loginId: 'client1', credits: 300, amountCents: 1000, currency: 'aud', gstInclusive: true, createdAt: new Date(upAt).toISOString(), role: 'client' });
+  assert.deepEqual(events[0].detail, { orgId: 'org1', loginId: 'client1', credits: 200, amountCents: 1500, currency: 'aud', gstInclusive: true, createdAt: new Date(upAt).toISOString(), role: 'client' });
   const after = await w.edit(tok);
   assert.equal(after.status, 200);
-  assert.equal(after.json.credits.topUpRemaining, 300, 'what is left of the monthly credits is spent first');
+  assert.equal(after.json.credits.topUpRemaining, 200, 'what is left of the monthly credits is spent first');
   assert.equal(after.json.credits.remaining, leftover.remaining - 1);
 
   // Next calendar month in Sydney: the monthly pool is fresh, the top-up balance carries over.
   w.clock.t = Date.UTC(2026, 10, 30, 13, 0, 1);
   const credits = (await w.call('GET', '/api/credits', { token: await w.token('org1', 'client1', 'client') })).json;
-  assert.deepEqual([credits.remaining, credits.used, credits.topUpRemaining, credits.monthResetsOn], [6, 0, 300, '2027-01-01']);
+  assert.deepEqual([credits.remaining, credits.used, credits.topUpRemaining, credits.monthResetsOn], [6, 0, 200, '2027-01-01']);
   // Another login in the same org has its own pool.
   const other = await w.token('org1', 'client2', 'client');
   assert.equal((await w.call('GET', '/api/credits', { token: other })).json.topUpRemaining, 0);
@@ -433,9 +433,9 @@ test('org login: monthly credits are spent before top-up credits, and a request 
   const tok = await w.token('o', 'l', 'builder');
   await w.call('POST', '/api/ai/topup', { token: tok, body: {} });
   const a = await w.edit(tok);
-  assert.deepEqual([a.json.credits.remaining, a.json.credits.topUpRemaining], [0, 300]);
+  assert.deepEqual([a.json.credits.remaining, a.json.credits.topUpRemaining], [0, 200]);
   const b = await w.edit(tok);
-  assert.deepEqual([b.json.credits.remaining, b.json.credits.topUpRemaining], [0, 299]);
+  assert.deepEqual([b.json.credits.remaining, b.json.credits.topUpRemaining], [0, 199]);
   assert.equal((await w.store.listEvents('ai_topup')).length, 1);
 });
 

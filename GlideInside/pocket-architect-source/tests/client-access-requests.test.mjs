@@ -185,7 +185,7 @@ for (const [label, d1] of stores) {
     assert.deepEqual(w.outbound, [], 'no email or any outbound call');
   });
 
-  test(`server (${label}): approve issues the client login through the normal flow, decline closes it, billing gates apply`, async () => {
+  test(`server (${label}): approve issues the client login through the normal flow, decline closes it, approval is free of charge`, async () => {
     const w = world({ d1 });
     const a = await w.makeOrg('Hunter Homes Pty Ltd', 'Priya');
     const nb = await w.makeOrg('Nobill Builders Pty Ltd', 'Noel', { billing: false });
@@ -196,12 +196,12 @@ for (const [label, d1] of stores) {
       assert.equal((await v.post('/portal/client-access-request', goodBody(ref, { name: who, email: mail }))).status, 201);
     }
     const [req1, req2] = (await a.admin.get('/portal/client-requests?status=pending')).data.slice().sort((x, y) => x.name.localeCompare(y.name));
-    // the gate: an active builder with no billing details cannot issue logins, so cannot approve
+    // client logins are free (18/11/2026), so a builder with no billing details can approve too, and nothing is charged
     const nbReq = (await nb.admin.get('/portal/client-requests')).data[0];
-    const gate = await nb.admin.post(`/portal/client-requests/${nbReq.id}/approve`);
-    assert.equal(gate.status, 409);
-    assert.equal(gate.data.error.code, 'BILLING_DETAILS_REQUIRED');
-    assert.equal((await nb.admin.get('/portal/client-requests?status=pending')).data.length, 1, 'still pending after the refusal');
+    const free = await nb.admin.post(`/portal/client-requests/${nbReq.id}/approve`);
+    assert.equal(free.status, 201, JSON.stringify(free.data));
+    assert.deepEqual(free.data.charge, { amountCents: 0, trigger: 'none', note: 'No charge for client logins.' });
+    assert.equal((await nb.admin.get('/portal/client-requests?status=pending')).data.length, 0);
     // approve
     const ap = await a.admin.post(`/portal/client-requests/${req1.id}/approve`);
     assert.equal(ap.status, 201, JSON.stringify(ap.data));

@@ -8,7 +8,7 @@ import { lotOf, fallAcross, checkSetbacks, NOT_LOADED } from '../../model/placem
 import { fitHouse } from '../../site/fit-house.js';
 import { commercialTypes } from './commercial-catalogue.js';
 
-export const MOCK_TOPUP = { credits: 300, amountCents: 1000 };
+export const MOCK_TOPUP = { messages: 100, credits: 200, amountCents: 1500 }; // 100 messages for A$15 incl. GST; a message is 2 credits on the builder meter
 const THRESHOLDS = [0.5, 0.8, 0.95];
 const metres = (v) => (Math.round(v * 100) / 100).toString();
 

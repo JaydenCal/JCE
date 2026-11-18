@@ -4,7 +4,7 @@
 import { h, toast, icon, busy, errorMessage } from './kit.js';
 import { ddmmyyyy } from '../billing.js';
 
-export const TRIAL_PRICING_TEXT = 'After the trial: A$30 incl. GST per new client login (A$25 each after 15 in a month), charged when your client first signs in, and A$10 incl. GST per 300 AI credits top-up, billed monthly. No monthly fee.';
+export const TRIAL_PRICING_TEXT = 'After the trial: A$20 incl. GST per new job (one new project), confirmed and charged to your card when you start it, and A$15 incl. GST per top-up of 100 AI messages, billed monthly. Client logins are free. No monthly fee.';
 
 /** me().account, with safe defaults for a server that does not send it yet. */
 export const accountOf = (me) => me?.account || { status: 'active', readOnly: false, canIssueClients: true, daysLeft: 0 };

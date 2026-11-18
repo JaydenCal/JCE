@@ -219,7 +219,7 @@ for (const [label, d1] of stores) {
     assert.equal(q.abn, '51 824 753 556');
     assert.equal(q.email, 'jo@coastalhomes.example');
     assert.equal(q.homesPerYear, null);
-    assert.equal(q.termsVersion, '11/11/2026');
+    assert.equal(q.termsVersion, '18/11/2026');
     assert.ok(q.consentAt);
     assert.ok(!('ipHash' in q), 'the IP hash is not sent to the admin page');
     assert.equal(w.resend.calls.length, 0, 'no email without RESEND_API_KEY');
@@ -601,6 +601,7 @@ for (const [label, d1] of stores) {
     const issued = await org.admin.post('/portal/clients', { firstName: 'Sarah' });
     assert.equal(issued.status, 201);
     assert.equal((await w.browser().post('/portal/session', { identifier: issued.data.credentials.username, password: issued.data.credentials.password })).status, 200);
+    await w.pstore.addLoginIssue({ loginId: issued.data.client.id, id: 'li_legacy1', orgId: org.orgId, clientName: 'Sarah', issuedAt: new Date(w.clock.t).toISOString(), month: '2026-11', amountCents: 3000 }); // a login charged before client logins became free
     await org.admin.post('/portal/ai/top-up');
     // 01/12/2026 06:00 Sydney: the cron handler runs the month end job.
     w.clock.t = Date.UTC(2026, 10, 30, 19, 0);
@@ -623,14 +624,14 @@ for (const [label, d1] of stores) {
     assert.equal(items.length, 2);
     const [inv] = (await org.admin.get('/portal/billing/invoices')).data;
     assert.equal(inv.status, 'paid');
-    assert.equal(inv.totalCents, 4000);
+    assert.equal(inv.totalCents, 4500);
     const full = (await org.admin.get(`/portal/billing/invoices/${inv.id}`)).data;
     assert.equal(full.seller.name, 'JCE Infrastructure Pty Ltd trading as Glide Inside');
     assert.equal(full.seller.abn, '29 699 165 663');
     assert.equal(full.buyer.legalName, 'Coastal Homes Pty Ltd');
     assert.equal(full.buyer.abn, '51 824 753 556');
     assert.deepEqual(full.payment, { method: 'card', brand: 'visa', last4: '4242' });
-    assert.equal(full.gstCents, 364);
+    assert.equal(full.gstCents, 409);
     // Running the month again changes nothing.
     w.stripe.calls.length = 0;
     assert.equal((await w.app.scheduled()).results[0].status, 'exists');
@@ -649,6 +650,7 @@ for (const [label, d1] of stores) {
     await w.webhook({ id: 'evt_c2', type: 'checkout.session.completed', data: { object: await setupSession(w, org.orgId) } });
     const issued = await org.admin.post('/portal/clients', { firstName: 'Sarah' });
     await w.browser().post('/portal/session', { identifier: issued.data.credentials.username, password: issued.data.credentials.password });
+    await w.pstore.addLoginIssue({ loginId: issued.data.client.id, id: 'li_legacy2', orgId: org.orgId, clientName: 'Sarah', issuedAt: new Date(w.clock.t).toISOString(), month: '2026-11', amountCents: 3000 });
     w.clock.t = Date.UTC(2026, 10, 30, 19, 0);
     w.stripe.payResult = 'declined';
     const run = await w.app.scheduled();
@@ -664,6 +666,7 @@ for (const [label, d1] of stores) {
     await w2.admin('POST', `/portal/admin/orgs/${o2.orgId}/convert`, {});
     const c2 = await o2.admin.post('/portal/clients', { firstName: 'Tim' });
     await w2.browser().post('/portal/session', { identifier: c2.data.credentials.username, password: c2.data.credentials.password });
+    await w2.pstore.addLoginIssue({ loginId: c2.data.client.id, id: 'li_legacy3', orgId: o2.orgId, clientName: 'Tim', issuedAt: new Date(w2.clock.t).toISOString(), month: '2026-11', amountCents: 3000 });
     w2.clock.t = Date.UTC(2026, 10, 30, 19, 0);
     assert.equal((await w2.app.scheduled()).results[0].status, 'issued');
     const create = w2.stripe.calls.find((c) => c.method === 'POST' && c.path === '/invoices');
@@ -683,9 +686,9 @@ for (const [label, d1] of stores) {
     const me = (await b.get('/portal/me')).data;
     assert.equal(me.account.status, 'active');
     assert.equal(me.account.trialEndsAt, null);
-    assert.equal((await b.post('/portal/clients', { firstName: 'Sarah' })).status, 409, 'billing details first');
+    assert.equal((await b.post('/portal/clients', { firstName: 'Sarah' })).status, 201, 'client logins are free, so no billing details are needed first');
     assert.equal((await b.put('/portal/billing/contact', { name: 'Olga', email: 'a@old.example', phone: '', legalName: 'Old Builders Pty Ltd', abn: '51824753556' })).status, 200);
-    assert.equal((await b.post('/portal/clients', { firstName: 'Sarah' })).status, 201);
+    assert.equal((await b.post('/portal/clients', { firstName: 'Tom' })).status, 201);
     // Years later it is still active: there is no trial to expire.
     w.clock.t += 20 * DAY;
     assert.equal((await w.browser().get('/portal/me')).status, 401, 'a new browser has no session, but the org has no read only state');

@@ -9,13 +9,13 @@ import { validateColours } from '../../src/portal/theme.js';
 import { slugify, cleanSlug } from '../../src/portal/builders.js';
 import { projectToSvg } from '../../src/portal/thumbnail.js';
 import { generateUsername, generatePassword, passwordProblem } from '../../src/portal/credentials.js';
-import { monthKey, NEW_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, formatAud, LOGIN_TIER_2_MAX } from '../../src/portal/billing.js';
+import { monthKey, priceForNthLoginThisMonth, formatAud, JOB_FEE_CENTS, jobPlanOf, jobPriceFor, summariseJobs } from '../../src/portal/billing.js';
 import { HttpError, json, readJson, clientIp, bearerToken } from './http.js';
 import { hashPassword, verifyPassword, dummyVerify, newSessionToken, sha256Hex, secretEqual } from './password.js';
 import { countLoginAttempt, clearLoginCounters, LOCKOUT_MS as GUARD_LOCKOUT_MS } from './login-guard.js';
 import { enforceClientTopUpCap } from './credits.js';
 import { aiSnapshot, addTopUp, aiToken, reconcileTopUps, orgPoolIds } from './portal-ai.js';
-import { usageForMonth, runMonth, isMonthlyRunTime, contactComplete, topUpRows, stripeCall, ensureCustomer, MONTH_RE } from './portal-billing.js';
+import { usageForMonth, runMonth, isMonthlyRunTime, contactComplete, topUpRows, stripeCall, ensureCustomer, gstTaxRate, jobBillingReadiness, jobPlansView, planPriceId, chargeJob, MONTH_RE } from './portal-billing.js';
 import { readTrialConfig, orgState, accountView, trialEndFor, extendedEnd, parseTrialRequest, notifyOwner, trialNoClients, trialNoTopUps, readOnlyError, TRIAL_EXTENSION_DAYS, TERMS_VERSION } from './trial.js';
 
 export const COOKIE = 'gi_session';
@@ -136,6 +136,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     hasProject: !!h.project || h.hasProject === true,
   });
   const INTERNAL_NOTE = 'Internal test, no charge.';
+  const NO_LOGIN_CHARGE_NOTE = 'No charge for client logins.';
   const visibleHouse = (user, h) => !h.archived && (user.houseAccess === 'all' || (Array.isArray(user.houseAccess) && user.houseAccess.includes(h.id)));
   const projectView = (p, ownerName) => ({ id: p.id, orgId: p.orgId, ownerId: p.ownerId, name: p.name, lotAddress: p.lotAddress || '', houseNames: p.houseNames || [], createdAt: p.createdAt, updatedAt: p.updatedAt, ownerName: ownerName || '',
     editedByStaff: !!p.editedById, editedByName: p.editedById ? p.editedByName || '' : '', editedByStaffAt: p.editedById ? p.editedByStaffAt || null : null });
@@ -225,15 +226,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (!user.firstSignInAt) patch.firstSignInAt = iso(nowMs);
     if (check.needsRehash) patch.passwordHash = await hashPassword(password);
     await pstore.updateUser(user.id, patch);
-    // The charge for a client login is created here, once: login_issues.login_id is its primary key. Its price depends on how many logins
-    // of this org have already first signed in this Sydney month (1 to 15 A$30, 16 to 50 A$25, or the org's custom rate).
-    if (user.role === 'client' && !user.firstSignInAt) {
-      const orgRow = await pstore.getOrg(user.orgId);
-      const month = monthKey(nowMs);
-      const nth = (await pstore.listLoginIssues(user.orgId)).filter((i) => i.month === month).length + 1;
-      // An internal test account is never charged: the login issue is recorded at 0 cents (labelled in the usage list).
-      await pstore.addLoginIssue({ loginId: user.id, id: rid('li'), orgId: user.orgId, clientName: user.name, issuedAt: iso(nowMs), month, amountCents: orgRow?.internal === true ? 0 : priceForNthLoginThisMonth(nth, orgRow) });
-    }
+    // Client logins are no longer charged (owner decision 18/11/2026): no login_issues row is created at first sign in. Rows made before then stay as history.
     await pstore.purgeSessions(iso(nowMs));
     await startSession(r, user);
     const org = await pstore.getOrg(user.orgId);
@@ -449,17 +442,11 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   async function issueClient(r) {
     const { org, state } = await auth(r, { need: 'clients.write' });
     if (!state.canIssueClients) throw trialNoClients();
-    // A paying builder can only be invoiced with a legal name, ABN and billing email (or a card on file): ask before the first login, not at month end.
-    if (org.internal !== true && state.status === 'active' && !contactComplete(org) && !state.cardOnFile) {
-      throw new HttpError('BILLING_DETAILS_REQUIRED', 'Add your legal business name, ABN and billing email under Billing (or add a card) before you generate client logins. They are needed to invoice you.');
-    }
+    // Client logins are free (18/11/2026), so no billing details are needed before one is generated.
     const b = await readJson(r.request, 8192);
     const access = await cleanAccess(org.id, b.houseAccess);
     const { user, credentials } = await createAccount(org, { firstName: b.firstName, email: b.email, role: 'client', lotAddress: b.lotAddress, houseAccess: access });
-    const monthNow = monthKey(now());
-    const rate = org.internal === true ? 0 : priceForNthLoginThisMonth((await pstore.listLoginIssues(org.id)).filter((i) => i.month === monthNow).length + 1, org);
-    if (org.internal === true) return json({ client: await clientView(org, user, { billedIds: new Set() }), credentials, charge: { amountCents: 0, trigger: 'first_sign_in', note: INTERNAL_NOTE } }, 201);
-    return json({ client: await clientView(org, user, { billedIds: new Set() }), credentials, charge: { amountCents: rate, trigger: 'first_sign_in', note: `${formatAud(rate)} incl. GST is charged on your monthly invoice once your client first signs in.` } }, 201);
+    return json({ client: await clientView(org, user, { billedIds: new Set() }), credentials, charge: { amountCents: 0, trigger: 'none', note: org.internal === true ? INTERNAL_NOTE : NO_LOGIN_CHARGE_NOTE } }, 201);
   }
   async function updateClient(r, id) {
     const { org } = await auth(r, { need: 'clients.write' });
@@ -512,6 +499,59 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     return json(kind === 'client' ? await clientView(org, next) : publicUser(next, await aiLight(org, next)));
   }
 
+  // Builder jobs (owner decision 18/11/2026) -----------------------------------------------------------------------------------
+  // Every NEW project a builder staff login starts is one job. The first save of a new project must carry confirmJob: true (the screen shows
+  // the price and what it covers first); the charge is taken off session from the saved card BEFORE the project is created, so a declined card
+  // creates nothing. Client logins are never charged. A trial is free, an internal test account is never charged, a capped plan counts down.
+  const JOB_COVERS = 'One job is one new project. It covers all the design work, edits, saves and exports on that project. Opening and saving the same project again is free.';
+  const AFTER_TRIAL = `After the trial each new job is ${formatAud(JOB_FEE_CENTS)} incl. GST, or included in a capped monthly plan.`;
+  const cardText = (o) => (o.cardLast4 ? `your card ending ${o.cardLast4}` : 'your saved card');
+
+  /** What starting a new job costs this org right now, and the words the confirm step shows. Never charges. */
+  async function jobQuote(org, state) {
+    const ready = jobBillingReadiness(config);
+    const month = monthKey(now());
+    const rows = await pstore.listJobCharges(org.id, month);
+    const plan = jobPlanOf(org.jobPlan);
+    const base = { priceCents: JOB_FEE_CENTS, priceText: `${formatAud(JOB_FEE_CENTS)} incl. GST`, covers: JOB_COVERS, month, charging: ready.ready, cardOnFile: !!org.paymentMethodId, cardLast4: org.cardLast4 || null, plan: plan ? { id: plan.id, name: plan.name, jobs: plan.jobs, used: rows.filter((j) => j.kind === 'plan_included').length } : null };
+    if (org.internal === true) return { ...base, kind: 'internal', cents: 0, needsCard: false, message: 'Internal test account. No charge.' };
+    if (state.isTrial) return { ...base, kind: 'trial_free', cents: 0, needsCard: false, message: `This job is free during your trial. ${AFTER_TRIAL}` };
+    const pr = jobPriceFor({ planId: org.jobPlan, planJobsUsed: rows.filter((j) => j.kind === 'plan_included').length });
+    if (pr.kind === 'plan_included') return { ...base, kind: pr.kind, cents: 0, needsCard: false, planJobsLeftAfter: pr.remaining, message: `Included in your ${plan.name} plan. ${pr.remaining} of ${plan.jobs} jobs left this month after this one.` };
+    const lead = pr.kind === 'plan_extra' ? `You have used all ${plan.jobs} jobs in your ${plan.name} plan this month. This extra job is ${formatAud(JOB_FEE_CENTS)} incl. GST` : `This job is ${formatAud(JOB_FEE_CENTS)} incl. GST`;
+    if (!ready.ready) return { ...base, kind: pr.kind, cents: JOB_FEE_CENTS, needsCard: false, message: `${lead}. Job billing is not switched on yet, so this job will not be charged.` };
+    return { ...base, kind: pr.kind, cents: JOB_FEE_CENTS, needsCard: !org.paymentMethodId, message: org.paymentMethodId ? `${lead}, charged to ${cardText(org)} when you confirm.` : `${lead}. Add a card under Billing first.` };
+  }
+
+  /**
+   * Confirm and charge the job for a new project. Throws before anything is created or charged unless the request confirms it. Idempotent on
+   * jobRequestId: a retry of a confirmed request returns the earlier outcome and never charges twice.
+   */
+  async function settleJob({ b, org, state, user, p }) {
+    const given = typeof b.jobRequestId === 'string' ? b.jobRequestId : '';
+    if (given && !/^[A-Za-z0-9_-]{8,64}$/.test(given)) throw new HttpError('BAD_REQUEST', 'jobRequestId is not valid.');
+    const prior = given ? await pstore.getJobByRequest(org.id, given) : null;
+    if (prior) return { row: prior, existing: prior.projectId ? await pstore.getProject(org.id, prior.projectId) : null, projectId: prior.projectId };
+    const q = await jobQuote(org, state);
+    if (b.confirmJob !== true) throw new HttpError('JOB_CONFIRM_REQUIRED', 'Confirm the new job before it is created.', { quote: q });
+    const requestId = given || rid('job');
+    const charge = q.cents > 0 && q.charging;
+    let stripeInvoiceId = null;
+    if (charge) {
+      if (!org.paymentMethodId) throw new HttpError('JOB_CARD_REQUIRED', 'Add a card under Billing before you start a new job. Your account admin can do this.', { quote: q });
+      ({ stripeInvoiceId } = await chargeJob({ config, pstore, fetchImpl, org, requestId }));
+    }
+    const unbilled = q.cents > 0 && !q.charging;
+    const row = {
+      id: rid('jc'), requestId, orgId: org.id, userId: user.id, userName: user.name, projectId: p.id, projectName: p.name, month: monthKey(now()), createdAt: iso(),
+      kind: unbilled ? 'unbilled' : q.kind, amountCents: charge ? q.cents : 0, plan: q.plan?.id || null, stripeInvoiceId,
+      note: unbilled ? 'Job billing was not configured, so nothing was charged.' : null,
+    };
+    await pstore.addJobCharge(row);
+    return { row, existing: null, projectId: p.id };
+  }
+  const jobView = (j) => ({ id: j.id, projectId: j.projectId || null, projectName: j.projectName || '', userName: j.userName || '', createdAt: j.createdAt, kind: j.kind, amountCents: j.amountCents, plan: j.plan || null, note: j.note || null });
+
   // Projects ----------------------------------------------------------------------------------------------------------------
   async function listProjects(r) {
     const { user, org } = await auth(r);
@@ -530,11 +570,12 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     return json({ ...projectView(p, owner?.name), project });
   }
   async function saveProject(r) {
-    const { user, org } = await auth(r);
+    const { user, org, state } = await auth(r);
     const b = await readJson(r.request, config.portalProjectMaxBytes + 200000);
     let p = b.id ? await pstore.getProject(org.id, String(b.id)) : null;
     if (b.id && (!p || (!isStaff(user) && p.ownerId !== user.id))) throw new HttpError('NOT_FOUND', 'That project was not found.');
     const proj = parseProject(b.project);
+    const isNew = !p;
     if (!p) {
       const counts = await pstore.countProjectsByOwner(org.id);
       if ((counts[user.id] || 0) >= MAX_PROJECTS_PER_USER) throw new HttpError('BAD_REQUEST', 'You have reached the limit of saved projects. Delete some first.');
@@ -545,12 +586,20 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       lotAddress: b.lotAddress !== undefined ? text(b.lotAddress, 'Lot address', { max: 200 }) : p.lotAddress || '',
       houseNames: Array.isArray(b.houseNames) ? b.houseNames.slice(0, 20).map((x) => String(x).slice(0, 80)) : p.houseNames || [],
     };
+    // A new project started by builder staff is a job: confirm and pay first (see settleJob). Client logins design for free.
+    let job = null;
+    if (isNew && isStaff(user)) {
+      const settled = await settleJob({ b, org, state, user, p });
+      if (settled.existing) return json({ ...projectView(settled.existing, user.name), job: jobView(settled.row) }); // a retried request that already created the project
+      if (settled.projectId) p.id = settled.projectId;
+      job = settled.row;
+    }
     // Staff adjusting a client's project (Open as client view): the project stays the client's, and the save is recorded as edited by staff.
-    // Nothing here touches the login charge or the AI pools, so a staff login designing never bills anyone.
+    // Nothing here touches the AI pools, so a staff login designing a client's existing project never bills anyone.
     const byStaff = isStaff(user) && p.ownerId !== user.id;
     Object.assign(p, byStaff ? { editedById: user.id, editedByName: user.name, editedByStaffAt: iso() } : { editedById: null, editedByName: null, editedByStaffAt: null });
     await pstore.saveProject(p);
-    return json(projectView(p, user.name));
+    return json({ ...projectView(p, user.name), ...(job ? { job: jobView(job) } : {}) });
   }
 
   // Billing -----------------------------------------------------------------------------------------------------------------
@@ -591,6 +640,100 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     return json(billingContact({ ...org, ...patch }));
   }
 
+  // Jobs and capped plans: this month's jobs, the cost of the next one, and the plans a builder can buy.
+  const planView = (org) => {
+    const plan = jobPlanOf(org.jobPlan);
+    return plan ? { id: plan.id, name: plan.name, jobs: plan.jobs, monthlyCents: plan.monthlyCents, since: org.jobPlanSince || null } : null;
+  };
+  async function jobsView(org, state) {
+    const month = monthKey(now());
+    const rows = await pstore.listJobCharges(org.id, month);
+    const plans = jobPlansView(config).map((x) => ({ id: x.id, name: x.name, monthlyCents: x.monthlyCents, jobs: x.jobs, available: x.available, current: org.jobPlan === x.id }));
+    return { month, feeCents: JOB_FEE_CENTS, quote: await jobQuote(org, state), summary: summariseJobs(rows), items: rows.map(jobView), plan: planView(org), plans };
+  }
+  async function jobsRoute(r) {
+    const { org, state } = await auth(r, { need: 'billing.read' });
+    return json(await jobsView(org, state));
+  }
+  /** Start Stripe Checkout (subscription mode) for a capped plan. Only possible once the owner has set that plan's price id. */
+  async function jobPlanStart(r) {
+    const { org } = await auth(r, { need: 'billing.write' });
+    if (org.internal === true) throw new HttpError('BAD_REQUEST', 'An internal test account has no billing.');
+    const b = await readJson(r.request, 1024).catch(() => ({}));
+    const plan = jobPlanOf(b.plan);
+    if (!plan) throw new HttpError('BAD_REQUEST', 'Choose Builder Starter, Builder Pro or Builder Teams.');
+    const priceId = planPriceId(config, plan.id);
+    if (!priceId || !config.stripeSecretKey) throw new HttpError('JOB_PLAN_UNAVAILABLE', `${plan.name} is coming soon. Until then each new job is ${formatAud(JOB_FEE_CENTS)} incl. GST with no monthly fee.`);
+    if (org.jobPlan) throw new HttpError('CONFLICT', 'You already have a plan. Cancel it first if you want a different one.');
+    if (!contactComplete(org)) throw new HttpError('BAD_REQUEST', 'Save your legal business name, ABN and billing email first. They are needed on your tax invoices.');
+    const customer = await ensureCustomer({ config, pstore, fetchImpl, org });
+    const taxRate = await gstTaxRate({ config, pstore, fetchImpl });
+    const origin = config.siteOrigin || r.url.origin;
+    const session = await stripeCall({
+      config, fetchImpl, path: '/checkout/sessions',
+      form: {
+        mode: 'subscription', customer, client_reference_id: org.id, locale: 'auto', 'line_items[0][price]': priceId, 'line_items[0][quantity]': '1',
+        'metadata[org_id]': org.id, 'metadata[purpose]': 'gi_job_plan', 'metadata[plan]': plan.id,
+        'subscription_data[metadata][org_id]': org.id, 'subscription_data[metadata][purpose]': 'gi_job_plan', 'subscription_data[metadata][plan]': plan.id, 'subscription_data[default_tax_rates][0]': taxRate,
+        success_url: `${origin}/portal/?billing=plan_success&session_id={CHECKOUT_SESSION_ID}#/billing`, cancel_url: `${origin}/portal/?billing=plan_cancel#/billing`,
+      },
+    });
+    if (!session?.url) throw new HttpError('BILLING_UNAVAILABLE', 'Stripe did not return a payment page. Try again shortly.');
+    return json({ url: session.url, id: session.id });
+  }
+  /** checkout.session.completed for a job plan: the plan starts. Called by the webhook and by /billing/job-plan/confirm. Idempotent. */
+  async function completeJobPlanSession(session) {
+    const orgId = session?.metadata?.org_id || session?.client_reference_id;
+    const org = orgId ? await pstore.getOrg(orgId) : null;
+    if (!org) return 'ignored: no organisation on the session';
+    const plan = jobPlanOf(session?.metadata?.plan);
+    if (!plan || session?.metadata?.purpose !== 'gi_job_plan') return 'ignored: not a job plan session';
+    const customer = typeof session.customer === 'string' ? session.customer : session.customer?.id;
+    if (!customer || org.stripeCustomerId !== customer) return 'ignored: customer does not match the organisation';
+    const sub = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id;
+    if (!sub) return 'ignored: no subscription';
+    if (session.payment_status && !['paid', 'no_payment_required'].includes(session.payment_status)) return `ignored: payment ${session.payment_status}`;
+    if (org.jobPlan === plan.id && org.jobPlanSubscriptionId === sub) return 'plan already active';
+    await pstore.updateOrg(org.id, { jobPlan: plan.id, jobPlanSubscriptionId: sub, jobPlanSince: iso() });
+    return `job plan ${plan.id} active`;
+  }
+  async function jobPlanConfirm(r) {
+    const { org } = await auth(r, { need: 'billing.write' });
+    const b = await readJson(r.request, 1024);
+    const id = typeof b.sessionId === 'string' ? b.sessionId : '';
+    if (!/^cs_[A-Za-z0-9_]{6,200}$/.test(id)) throw new HttpError('BAD_REQUEST', 'sessionId is not valid.');
+    const session = await stripeCall({ config, fetchImpl, method: 'GET', path: `/checkout/sessions/${id}` }).catch((e) => {
+      if (e?.extra?.status === 404) return null;
+      throw e;
+    });
+    if (session?.mode !== 'subscription' || session?.status !== 'complete' || (session.metadata?.org_id || session.client_reference_id) !== org.id) throw new HttpError('NOT_FOUND', 'That plan checkout was not found or is not finished.');
+    const outcome = await completeJobPlanSession(session);
+    return json({ ok: true, outcome, plan: planView(await pstore.getOrg(org.id)) });
+  }
+  /** Ends the plan at the end of the period already paid for. Stripe tells the webhook when it is over; until then the allowance still applies. */
+  async function jobPlanCancel(r) {
+    const { org } = await auth(r, { need: 'billing.write' });
+    if (!org.jobPlan || !org.jobPlanSubscriptionId) throw new HttpError('NOT_FOUND', 'You are not on a capped plan.');
+    await stripeCall({ config, fetchImpl, path: `/subscriptions/${encodeURIComponent(org.jobPlanSubscriptionId)}`, idempotencyKey: `gi-planend-${org.jobPlanSubscriptionId}`, form: { cancel_at_period_end: 'true' } });
+    return json({ ok: true, note: 'Your plan ends at the end of the period you have paid for. Until then your included jobs still apply.' });
+  }
+  /** For app.js: job plan events from Stripe. Returns an outcome string, or null when the event is not about a builder job plan. */
+  async function handleBillingEvent(event) {
+    const obj = event?.data?.object || {};
+    if (event?.type === 'checkout.session.completed' || event?.type === 'checkout.session.async_payment_succeeded') {
+      return obj.mode === 'subscription' && obj.metadata?.purpose === 'gi_job_plan' ? completeJobPlanSession(obj) : null;
+    }
+    if (event?.type === 'customer.subscription.deleted' || event?.type === 'customer.subscription.updated') {
+      const org = obj.id ? await pstore.getOrgByJobPlanSubscription(obj.id) : null;
+      if (!org) return null;
+      const over = event.type === 'customer.subscription.deleted' || ['canceled', 'unpaid', 'incomplete_expired'].includes(obj.status);
+      if (!over) return 'job plan still running';
+      await pstore.updateOrg(org.id, { jobPlan: null, jobPlanSubscriptionId: null, jobPlanSince: null });
+      return 'job plan ended';
+    }
+    return null;
+  }
+
   // AI credits --------------------------------------------------------------------------------------------------------------
   async function aiBalance(r) {
     const { user, org } = await auth(r);
@@ -600,7 +743,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const { user, org, state } = await auth(r);
     if (state.internal) throw new HttpError('NOT_ENTITLED', 'An internal test account has a generous monthly AI allowance and no top-ups.', {}, 403);
     if (state.isTrial) throw trialNoTopUps();
-    if (!isStaff(user) && !org.allowClientTopUps) throw new HttpError('TOPUPS_DISABLED', 'Your builder has turned off AI credit top-ups.');
+    if (!isStaff(user) && !org.allowClientTopUps) throw new HttpError('TOPUPS_DISABLED', 'Your builder has turned off AI top-ups.');
     if ((await store.hitRate(`topup:${org.id}:${user.id}`, 3600, now())) > 10) throw new HttpError('RATE_LIMITED', 'Too many top-ups in the last hour.', { retryAfter: 600 });
     // L2: a client login spends the builder's money, so it also has a monthly ceiling (CLIENT_TOPUP_MONTHLY_MAX); builder staff are not capped.
     if (!isStaff(user)) await enforceClientTopUpCap({ store, config, orgId: org.id, loginId: user.id, nowMs: now(), HttpError });
@@ -769,13 +912,10 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (status && !['pending', 'approved', 'declined'].includes(status)) throw new HttpError('BAD_REQUEST', 'status must be pending, approved or declined.');
     return json((await pstore.listClientRequests(org.id, status || null)).map(clientRequestView));
   }
-  /** Approve issues the client login through the same account flow and billing gates as Generate account. The builder passes the details on. */
+  /** Approve issues the client login through the same account flow as Generate account (client logins are free). The builder passes the details on. */
   async function approveClientRequest(r, id) {
     const { org, state } = await auth(r, { need: 'clients.write' });
     if (!state.canIssueClients) throw trialNoClients();
-    if (org.internal !== true && state.status === 'active' && !contactComplete(org) && !state.cardOnFile) {
-      throw new HttpError('BILLING_DETAILS_REQUIRED', 'Add your legal business name, ABN and billing email under Billing (or add a card) before you generate client logins. They are needed to invoice you.');
-    }
     const q = await pstore.getClientRequest(org.id, id);
     if (!q) throw new HttpError('NOT_FOUND', 'That request was not found.');
     if (q.status !== 'pending') throw new HttpError('CONFLICT', `That request is already ${q.status === 'approving' ? 'being approved' : q.status}.`);
@@ -785,8 +925,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       const { user, credentials } = await createAccount(org, { firstName: q.name.split(' ')[0].slice(0, 60), email: q.email, role: 'client', lotAddress: q.lotAddress || '', houseAccess: 'all' });
       const patch = { status: 'approved', decidedAt: iso(), clientId: user.id };
       await pstore.updateClientRequest(org.id, id, patch);
-      const rate = org.internal === true ? 0 : priceForNthLoginThisMonth((await pstore.listLoginIssues(org.id)).filter((i) => i.month === monthKey(now())).length + 1, org);
-      return json({ request: clientRequestView({ ...q, ...patch }), client: await clientView(org, user, { billedIds: new Set() }), credentials, charge: org.internal === true ? { amountCents: 0, trigger: 'first_sign_in', note: INTERNAL_NOTE } : { amountCents: rate, trigger: 'first_sign_in', note: `${formatAud(rate)} incl. GST is charged on your monthly invoice once your client first signs in.` } }, 201);
+      return json({ request: clientRequestView({ ...q, ...patch }), client: await clientView(org, user, { billedIds: new Set() }), credentials, charge: { amountCents: 0, trigger: 'none', note: org.internal === true ? INTERNAL_NOTE : NO_LOGIN_CHARGE_NOTE } }, 201);
     } catch (e) {
       await pstore.updateClientRequest(org.id, id, { status: 'pending' });
       throw e;
@@ -989,6 +1128,8 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const staff = await pstore.listUsers(org.id, true);
     const clients = await pstore.listUsers(org.id, false);
     const issues = await pstore.listLoginIssues(org.id);
+    const jobRows = await pstore.listJobCharges(org.id, month);
+    const ready = jobBillingReadiness(config);
     let used = 0;
     for (const u of [...staff, ...clients]) used += (await aiLight(org, u)).used;
     const topUps = (await topUpRows(store, org.id)).filter((t) => monthKey(t.createdAt) === month).length;
@@ -999,9 +1140,12 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       admin: admin ? { id: admin.id, name: admin.name, username: admin.username, email: admin.email || '', mustChangePassword: !!admin.mustChangePassword, lastSignInAt: admin.lastSignInAt || null } : null,
       directoryListed: org.directoryListed === true, pendingClientRequests: await pstore.countPendingClientRequests(org.id),
       billingContact: billingContact(org), billingReady: org.internal === true || contactComplete(org) || !!org.paymentMethodId,
-      billingSkipRisk: org.internal !== true && accountView(org, nowMs).status === 'active' && !contactComplete(org) && clients.length > 0, staffCount: staff.length,
+      billingSkipRisk: org.internal !== true && accountView(org, nowMs).status === 'active' && !contactComplete(org) && !org.paymentMethodId && (topUps > 0 || issues.some((i) => i.month === month)), // something is billable at month end (AI top-ups, or logins charged before they became free) but there is no way to invoice it staffCount: staff.length,
       clientLogins: { generated: clients.length, issued: issues.length, firstSignedIn: clients.filter((c) => c.firstSignInAt).length },
-      loginPricing: { month, ...loginRateInfo(issues.filter((i) => i.month === month).length, org), over50Flag: issues.filter((i) => i.month === month).length > LOGIN_TIER_2_MAX && !(Number.isInteger(org.customLoginCents) && org.customLoginCents > 0) ? 'over 50 this month, set custom rate' : null },
+      // Client logins are no longer charged (18/11/2026); `issued` counts the legacy rows charged before then.
+      loginPricing: null,
+      // Jobs charged per org this month (A$20 each, plan included, trial free, internal, or unbilled when the Stripe price is not configured).
+      jobs: { month, ...summariseJobs(jobRows), feeCents: JOB_FEE_CENTS, plan: planView(org), billingReady: ready.ready, billingMessage: ready.message, items: jobRows.slice(-25).reverse().map(jobView) },
       // An internal test account is left out of usage, revenue and trial reporting: no usage figures, no invoices.
       ai: org.internal === true ? { month, monthlyCap: org.aiMonthlyCap, creditsUsed: 0, topUps: 0 } : { month, monthlyCap: org.aiMonthlyCap, creditsUsed: used, topUps },
       invoices: org.internal === true ? [] : (await pstore.listInvoices(org.id)).map((i) => ({ id: i.id, number: i.number, month: i.month, status: i.status, totalCents: i.totalCents, issuedAt: i.issuedAt, error: i.error || null })),
@@ -1109,6 +1253,28 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       if (rows[i].amountCents !== price) await pstore.updateLoginIssue(rows[i].loginId, { amountCents: price });
     }
     return json(await adminOrgView(next));
+  }
+  /** GET /portal/admin/orgs/:id/jobs?month=YYYY-MM (bearer admin token): every job row of one org for a month (default this month). */
+  async function adminJobs(r, id) {
+    await adminAuth(r.request);
+    const org = await adminOrg(r, id);
+    const month = r.url.searchParams.get('month') || monthKey(now());
+    if (!MONTH_RE.test(month)) throw new HttpError('BAD_REQUEST', 'month must be YYYY-MM.');
+    const rows = await pstore.listJobCharges(org.id, month);
+    return json({ orgId: org.id, month, ...summariseJobs(rows), feeCents: JOB_FEE_CENTS, items: rows.map(jobView), billingReady: jobBillingReadiness(config).ready, billingMessage: jobBillingReadiness(config).message });
+  }
+  /** POST /portal/admin/orgs/:id/job-plan { plan: 'starter' | 'pro' | 'teams' | null }: the owner puts an org on a capped plan, or takes it off. */
+  async function adminJobPlan(r, id) {
+    await adminAuth(r.request);
+    const org = await adminOrg(r, id);
+    if (org.internal === true) throw new HttpError('BAD_REQUEST', 'An internal test account is never charged, so it has no plan.');
+    const b = await readJson(r.request, 1024).catch(() => ({}));
+    if (b.plan === undefined) throw new HttpError('BAD_REQUEST', 'Send plan as starter, pro, teams or null.');
+    const plan = b.plan === null ? null : jobPlanOf(b.plan);
+    if (b.plan !== null && !plan) throw new HttpError('BAD_REQUEST', 'plan must be starter, pro, teams or null.');
+    const patch = plan ? { jobPlan: plan.id, jobPlanSince: org.jobPlanSince || iso() } : { jobPlan: null, jobPlanSubscriptionId: null, jobPlanSince: null };
+    await pstore.updateOrg(org.id, patch);
+    return json(await adminOrgView({ ...org, ...patch }));
   }
   async function adminConvert(r, id) {
     await adminAuth(r.request);
@@ -1224,7 +1390,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     ['POST', `/clients/${ID}/reset-password`, resetClient], ['GET', `/clients/${ID}/export`, exportClient],
     ['POST', `/clients/${ID}/disable`, (r, id) => setStatus(r, id, 'client', 'disabled')], ['POST', `/clients/${ID}/enable`, (r, id) => setStatus(r, id, 'client', 'active')],
     ['GET', '/projects', listProjects], ['POST', '/projects', saveProject], ['GET', `/projects/${ID}`, openProject],
-    ['GET', '/billing/usage', monthUsage], ['GET', '/billing/invoices', listInvoices], ['GET', `/billing/invoices/${ID}`, getInvoice], ['GET', '/billing/contact', getContact], ['PUT', '/billing/contact', setContact],
+    ['GET', '/billing/usage', monthUsage], ['GET', '/billing/jobs', jobsRoute], ['POST', '/billing/job-plan', jobPlanStart], ['POST', '/billing/job-plan/confirm', jobPlanConfirm], ['POST', '/billing/job-plan/cancel', jobPlanCancel], ['GET', '/billing/invoices', listInvoices], ['GET', `/billing/invoices/${ID}`, getInvoice], ['GET', '/billing/contact', getContact], ['PUT', '/billing/contact', setContact],
     ['GET', '/ai', aiBalance], ['POST', '/ai/top-up', aiTopUp], ['POST', '/ai/token', aiTokenRoute],
     ['GET', '/team', listTeam], ['POST', '/team', inviteStaff], ['PATCH', `/team/${ID}`, updateStaff], ['POST', `/team/${ID}/reset-password`, resetStaff],
     ['POST', `/team/${ID}/disable`, (r, id) => setStatus(r, id, 'staff', 'disabled')], ['POST', `/team/${ID}/enable`, (r, id) => setStatus(r, id, 'staff', 'active')],
@@ -1237,7 +1403,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     ['POST', '/trial-request', trialRequest, { noCsrf: true }], ['GET', `/brand/${ID}`, brandBySlug, { noCsrf: true }], ['POST', `/admin/orgs/${ID}/slug`, adminSlug, { token: true }],
     ['GET', '/admin/trial-requests', adminRequests, { token: true }], ['POST', `/admin/trial-requests/${ID}/approve`, adminApprove, { token: true }], ['POST', `/admin/trial-requests/${ID}/decline`, adminDecline, { token: true }],
     ['GET', '/admin/enquiries', adminEnquiries, { token: true }], ['GET', `/admin/enquiries/${ID}/pdf`, adminEnquiryPdf, { token: true }],
-    ['GET', '/admin/orgs', adminOrgs, { token: true }], ['POST', `/admin/orgs/${ID}/extend-trial`, adminExtend, { token: true }], ['POST', `/admin/orgs/${ID}/convert`, adminConvert, { token: true }], ['POST', `/admin/orgs/${ID}/login-rate`, adminLoginRate, { token: true }], ['POST', `/admin/orgs/${ID}/brand-colours`, adminBrandColours, { token: true }], ['POST', `/admin/orgs/${ID}/reset-admin`, adminResetAdmin, { token: true }],
+    ['GET', '/admin/orgs', adminOrgs, { token: true }], ['POST', `/admin/orgs/${ID}/extend-trial`, adminExtend, { token: true }], ['POST', `/admin/orgs/${ID}/convert`, adminConvert, { token: true }], ['POST', `/admin/orgs/${ID}/login-rate`, adminLoginRate, { token: true }], ['GET', `/admin/orgs/${ID}/jobs`, adminJobs, { token: true }], ['POST', `/admin/orgs/${ID}/job-plan`, adminJobPlan, { token: true }], ['POST', `/admin/orgs/${ID}/brand-colours`, adminBrandColours, { token: true }], ['POST', `/admin/orgs/${ID}/reset-admin`, adminResetAdmin, { token: true }],
     ['POST', `/admin/orgs/${ID}/houses`, adminImportHouses, { token: true }],
     ['POST', '/admin/internal-orgs', adminCreateInternal, { token: true }], ['POST', `/admin/orgs/${ID}/internal`, adminSetInternal, { token: true }],
   ].map(([method, p, handler, opts]) => ({ method, re: new RegExp(`^${p}$`), handler, opts: opts || {} }));
@@ -1311,5 +1477,5 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     return { user, org };
   }
   const isInternal = async (orgId) => !!orgId && (await pstore.getOrg(orgId))?.internal === true;
-  return { route, scheduled, exportContext, identity, gate, isInternal, verifyOrgToken, completeCardSetup, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
+  return { route, scheduled, exportContext, identity, gate, isInternal, verifyOrgToken, completeCardSetup, handleBillingEvent, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
 }

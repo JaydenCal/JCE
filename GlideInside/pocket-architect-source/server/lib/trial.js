@@ -14,7 +14,7 @@ import { sydneyDayStartPlus, ddmmyyyy } from '../../src/portal/billing.js';
 export const TRIAL_DAYS = 14;
 export const TRIAL_EXTENSION_DAYS = 7;
 export const DATA_KEEP_DAYS = 90; // builder data is kept this long after a trial ends unless the builder asks for deletion
-export const TERMS_VERSION = '11/11/2026';
+export const TERMS_VERSION = '18/11/2026';
 export const ORG_STATES = ['trial', 'trial_ended', 'active', 'read_only'];
 const DAY = 86400000;
 
@@ -30,7 +30,7 @@ export function readTrialConfig(env = {}) {
 
 // Errors ----------------------------------------------------------------------------------------------------------------------
 export const trialNoClients = () => new HttpError('TRIAL_NO_CLIENTS', 'Client logins unlock when you add billing details. Your free trial gives your staff everything else.', {}, 403);
-export const trialNoTopUps = () => new HttpError('TRIAL_NO_TOPUPS', 'AI credit top-ups are not available during the free trial. Your monthly AI allowance still applies. Add billing details to unlock top-ups.', {}, 403);
+export const trialNoTopUps = () => new HttpError('TRIAL_NO_TOPUPS', 'AI top-ups are not available during the free trial. Your monthly AI allowance still applies. Add billing details to unlock top-ups.', {}, 403);
 export const readOnlyError = (state) => new HttpError('READ_ONLY', state?.status === 'read_only'
   ? 'This account is read only. Add billing details, or contact Glide Inside, to make changes again.'
   : 'Your free trial has ended, so the account is read only. You can still view your projects. Add billing details to make changes again.', { accountStatus: state?.status || 'trial_ended' }, 403);

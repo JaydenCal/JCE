@@ -144,21 +144,19 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
       await reload();
     });
   }
-  async function setRate(o) {
-    const input = h('input', { type: 'number', min: '1', max: '1000', step: '0.01', 'aria-label': 'Price per client login in dollars including GST', value: o.loginPricing?.customRateCents ? String(o.loginPricing.customRateCents / 100) : '' });
+  // Capped monthly job plan: the owner can put an org on a plan (or take it off) by hand, for example when it is arranged outside Stripe Checkout.
+  async function setPlan(o) {
+    const sel = h('select', { 'aria-label': 'Capped job plan' },
+      h('option', { value: '' }, 'No plan (A$20 per job)'),
+      ...[['starter', 'Builder Starter: A$119 a month, 10 jobs'], ['pro', 'Builder Pro: A$219 a month, 20 jobs'], ['teams', 'Builder Teams: A$419 a month, 40 jobs']].map(([v, t]) => h('option', { value: v, selected: o.jobs?.plan?.id === v }, t)));
     openDialog({
-      title: `Client login price for ${o.name}`,
+      title: `Job plan for ${o.name}`,
       body: h('div', { class: 'pp-form' },
-        h('p', null, 'Standard pricing: logins 1 to 15 in a month are A$30 each incl. GST, logins 16 to 50 are A$25 each, above 50 is set here. A custom price applies to every login that first signs in this month, including ones already charged.'),
-        field('Price per client login (A$ incl. GST)', () => input, { hint: 'Leave empty and press Clear to go back to the standard pricing.' })),
+        h('p', null, 'Each new project a builder starts is one job, A$20 incl. GST. A plan includes a number of jobs each Sydney calendar month. Unused jobs do not roll over, and jobs over the allowance are A$20 each. Setting a plan here does not create a Stripe subscription: the owner bills it separately.'),
+        field('Plan', () => sel)),
       footer: (d) => [
         h('button', { class: 'pp-btn', type: 'button', onclick: () => d.close() }, 'Cancel'),
-        h('button', { class: 'pp-btn', type: 'button', onclick: (e) => busy(e.currentTarget, async () => { await api.setLoginRate(o.id, null); d.close(); toast('Custom rate cleared.', { kind: 'ok' }); await reload(); }) }, 'Clear custom rate'),
-        h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: (e) => busy(e.currentTarget, async () => {
-          const cents = Math.round(Number(input.value) * 100);
-          if (!Number.isFinite(cents) || cents < 100) { toast('Enter a price of A$1 or more.', { kind: 'error' }); return; }
-          await api.setLoginRate(o.id, cents); d.close(); toast(`Custom rate set to ${formatAud(cents)} per login.`, { kind: 'ok' }); await reload();
-        }) }, 'Save custom rate')],
+        h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: (e) => busy(e.currentTarget, async () => { await api.setJobPlan(o.id, sel.value || null); d.close(); toast('Job plan saved.', { kind: 'ok' }); await reload(); }) }, 'Save plan')],
     });
   }
   async function resetAdmin(o, btn) {
@@ -219,16 +217,18 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
         o.account.status === 'trial_ended' ? h('div', { class: 'pp-sub' }, `Ended ${when(o.account.trialEndsAt)}. Data kept until ${when(o.account.dataKeptUntil)}`) : null,
         o.account.card ? h('div', { class: 'pp-sub' }, `Card: ${o.account.card.brand} ending ${o.account.card.last4}`) : o.convertedHow === 'manual' ? h('div', { class: 'pp-sub' }, 'Converted manually') : null,
         o.trialExtendedDays ? h('div', { class: 'pp-sub' }, `Extended ${o.trialExtendedDays} days`) : null),
-      td('Client logins', h('strong', null, String(o.clientLogins.issued)), h('div', { class: 'pp-sub' }, `${o.clientLogins.generated} generated`),
-        o.loginPricing && !o.internal ? h('div', { class: 'pp-sub' }, `${o.loginPricing.count} this month, next ${formatAud(o.loginPricing.currentRateCents)}${o.loginPricing.customRateCents ? ' (custom rate)' : ''}`) : null,
-        o.loginPricing?.over50Flag && !o.internal ? h('div', { class: 'pp-sub pp-adm-err' }, o.loginPricing.over50Flag) : null),
+      td('Client logins', h('strong', null, String(o.clientLogins.issued)), h('div', { class: 'pp-sub' }, `${o.clientLogins.generated} generated`), h('div', { class: 'pp-sub' }, 'Not charged')),
+      td('Jobs this month', o.internal ? 'Never charged' : h('strong', null, `${o.jobs.count} ${o.jobs.count === 1 ? 'job' : 'jobs'}`),
+        o.internal ? null : h('div', { class: 'pp-sub' }, `${formatAud(o.jobs.chargedCents)} charged${o.jobs.planIncludedCount ? `, ${o.jobs.planIncludedCount} in plan` : ''}${o.jobs.trialFreeCount ? `, ${o.jobs.trialFreeCount} free in trial` : ''}`),
+        o.jobs.plan ? h('div', { class: 'pp-sub' }, `${o.jobs.plan.name}, ${o.jobs.plan.jobs} jobs a month`) : null,
+        o.jobs.unbilledCount ? h('div', { class: 'pp-sub pp-adm-err' }, `${o.jobs.unbilledCount} not charged: price not configured`) : null),
       td('AI this month', o.internal ? 'Not reported' : `${o.ai.creditsUsed} credits used`, o.internal ? null : h('div', { class: 'pp-sub' }, `${o.ai.topUps} ${o.ai.topUps === 1 ? 'top-up' : 'top-ups'}`)),
       td('Invoices', o.internal ? 'Never invoiced' : o.invoices.length ? `${o.invoices.length}, last ${last.number} ${last.status}` : 'None', owed ? h('div', { class: 'pp-sub' }, `${formatAud(owed)} open`) : null, last?.error ? h('div', { class: 'pp-sub pp-adm-err' }, last.error) : null),
       td('Actions', h('div', { class: 'pp-actions pp-actions--tight' },
         h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => toggleInternal(o, e.currentTarget) }, o.internal ? 'Make ordinary' : 'Mark internal'),
         !o.internal && o.account.status !== 'active' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => extend(o, e.currentTarget) }, 'Extend 7 days') : null,
         !o.internal && o.account.status !== 'active' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => convert(o, e.currentTarget) }, 'Convert to paid') : null,
-        o.internal ? null : h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => setRate(o) }, 'Login price'),
+        o.internal ? null : h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => setPlan(o) }, 'Job plan'),
         o.internal ? null : h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => resetAdmin(o, e.currentTarget) }, icon('key', 14), 'New admin password'))));
   }
 
@@ -391,8 +391,10 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
     const tabs = h('div', { class: 'pp-tabs', role: 'tablist', 'aria-label': 'Trial requests' }, ...['pending', 'approved', 'declined'].map((s) => h('button', { class: 'pp-tab', role: 'tab', type: 'button', 'aria-selected': String(filter === s), dataset: { tab: s }, onclick: () => { filter = s; paint(); } }, `${s.charAt(0).toUpperCase()}${s.slice(1)} (${count(s)})`)));
     const skipped = orgs.filter((o) => o.billingSkipRisk);
     const skipNote = skipped.length ? h('p', { class: 'pp-notice pp-adm-skip', role: 'status' }, icon('info', 18), `Month end will skip ${skipped.length === 1 ? 'this builder' : 'these builders'} until legal name, ABN and billing email are saved: ${skipped.map((o) => o.name).join(', ')}.`) : null;
+    const jobMsg = orgs.find((o) => !o.internal && o.jobs && o.jobs.billingReady === false)?.jobs.billingMessage;
+    const jobNote = jobMsg ? h('p', { class: 'pp-notice pp-adm-skip', id: 'job-billing-note', role: 'status' }, icon('info', 18), jobMsg) : null;
     const orgTable = orgs.length
-      ? h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table pp-table--stack' }, h('thead', null, h('tr', null, ...['Builder', 'Status', 'Client logins issued', 'AI use', 'Invoices', 'Actions'].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', null, ...orgs.map(orgRow))))
+      ? h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table pp-table--stack' }, h('thead', null, h('tr', null, ...['Builder', 'Status', 'Client logins issued', 'Jobs this month', 'AI use', 'Invoices', 'Actions'].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', null, ...orgs.map(orgRow))))
       : h('p', { class: 'pp-empty' }, 'No builder accounts yet.');
     root.append(h('div', { class: 'pp-brandbar' }, h('div', { class: 'pp-brand' }, h('div', null, h('strong', null, 'Glide Inside admin'), h('small', null, 'Trial requests and builder accounts'))), h('div', { class: 'pp-who' }, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => reload() }, 'Refresh'), h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => signOut() }, icon('logout', 15), 'Lock'))),
       h('main', { class: 'pp-main' },
@@ -400,7 +402,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
         tabs,
         h('div', { class: 'pp-adm-list' }, ...(shown.length ? shown.map(requestCard) : [h('p', { class: 'pp-empty' }, `No ${filter} requests.`)])),
         h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Builder accounts'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Trial, trial ended, active and read only.'))),
-        skipNote, orgTable,
+        jobNote, skipNote, orgTable,
         h('div', { class: 'pp-actions pp-actions--tight', style: { marginTop: '12px' } }, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', id: 'create-internal', onclick: openInternalForm }, 'Create internal test account')),
         trialSection(),
         clientReqSection(),

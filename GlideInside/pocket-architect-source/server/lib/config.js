@@ -1,6 +1,8 @@
 // Server configuration: every variable in docs/SCOPE.md 11.6 with its default.
 // `env` is the platform environment (Workers env, process.env, or a test object). Values are strings.
 
+import { AI_CREDITS_PER_MESSAGE, TOPUP_MESSAGES, TOPUP_CREDITS, TOPUP_FEE_CENTS } from '../../src/portal/billing.js';
+
 const num = (value, fallback) => {
   if (value === undefined || value === null || value === '') return fallback;
   const n = Number(value);
@@ -43,8 +45,12 @@ export function readConfig(env = {}) {
     portalEnabled: ['1', 'true', 'yes'].includes(str(env.PORTAL_ENABLED).toLowerCase()),
     orgMonthlyCredits: Math.round(num(env.ORG_MONTHLY_CREDITS, 300)),
     internalAiMonthly: Math.max(0, Math.round(num(env.INTERNAL_AI_MONTHLY, 1000))), // monthly AI allowance of an internal test account (no top-up charges)
-    topUpCredits: Math.round(num(env.TOPUP_CREDITS, 300)),
-    topUpCents: Math.round(num(env.TOPUP_AMOUNT_CENTS, 1000)),
+    // AI top-up (owner decision 18/11/2026): 100 messages for A$15 incl. GST everywhere. The builder meter counts credits, a typical message is 2, so a pack stores messages x creditsPerMessage.
+    // Fixed in code on purpose: the old TOPUP_CREDITS and TOPUP_AMOUNT_CENTS variables (300 and 1000) may still be set in wrangler files and are ignored, so the price cannot drift from the owner decision.
+    creditsPerMessage: AI_CREDITS_PER_MESSAGE,
+    topUpMessages: TOPUP_MESSAGES,
+    topUpCredits: TOPUP_CREDITS,
+    topUpCents: TOPUP_FEE_CENTS,
     largeRequestCredits: num(env.LARGE_REQUEST_CREDITS, 10),
     ratePerMin: Math.round(num(env.AI_RATE_PER_MIN, 6)),
     ratePerDay: Math.round(num(env.AI_RATE_PER_DAY, 150)),
@@ -87,6 +93,12 @@ export function readConfig(env = {}) {
     sessionDays: num(env.SESSION_DAYS, 30), // sliding
     stripeLiveBillingApproved: str(env.STRIPE_LIVE_BILLING_APPROVED).toLowerCase() === 'owner-written-go-ahead',
     stripeGstTaxRateId: str(env.STRIPE_GST_TAX_RATE_ID),
+    // Builder per job billing (owner decision 18/11/2026). The owner creates these prices in Stripe himself; unset = the feature degrades safely
+    // (the confirm step still shows, nothing is charged, the admin view says the price is not configured). Never put a price amount in code.
+    builderJobPriceId: str(env.BUILDER_JOB_PRICE_ID), // one off price, A$20 incl. GST, one job
+    builderStarterPriceId: str(env.BUILDER_STARTER_PRICE_ID), // recurring, A$119 per month, 10 jobs
+    builderProPriceId: str(env.BUILDER_PRO_PRICE_ID), // recurring, A$219 per month, 20 jobs
+    builderTeamsPriceId: str(env.BUILDER_TEAMS_PRICE_ID), // recurring, A$419 per month, 40 jobs
     // Printed on the PDF title block. Defaults come from src/config.js (decision 17.1).
     disclaimer: str(env.DISCLAIMER),
     // Carried over from the live Glide Inside API (Worker "pocket-architect-api", 15/10/2026).

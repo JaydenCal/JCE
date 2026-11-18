@@ -520,7 +520,7 @@ test('knowledge: no dashes, no banned words, no prices beyond the published list
   const all = [knowledgeText(), systemPrompt('x'), ...FAQ.map((f) => f.a), ...REFUSALS.map((f) => f.a)].join('\n');
   assert.doesNotMatch(all, /[–—]/);
   assert.doesNotMatch(all, /compliant/i);
-  const allowed = new Set(['A$30', 'A$25', 'A$10', 'A$50', 'A$15']);
+  const allowed = new Set(['A$30', 'A$25', 'A$10', 'A$50', 'A$15', 'A$20', 'A$119', 'A$219', 'A$419']); // A$20 a builder job, A$119 / A$219 / A$419 the capped builder plans (18/11/2026)
   for (const m of all.match(/A\$\s?[0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?/g) || []) assert.ok(allowed.has(m.replace(/\s/g, '')), `unpublished price ${m}`);
   assert.doesNotMatch(all, /\b(clarendon|metricon|simonds|g\.?j\.? gardner|hotondo|porter davis|ausbuild|mcdonald jones|coral homes)\b/i);
   assert.ok(answerFromKnowledge('anything about loft decks') === null);
