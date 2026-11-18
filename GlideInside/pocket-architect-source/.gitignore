@@ -2,3 +2,4 @@ node_modules/
 vendor/
 dist/
 .data/
+node_modules
