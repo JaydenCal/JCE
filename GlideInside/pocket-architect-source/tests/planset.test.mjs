@@ -39,9 +39,9 @@ async function run(kind, extra = {}) {
 
 test('site kind: cover, site plan, house plan', async () => {
   const { r } = await run('site');
-  assert.equal(r.pages, 3);
-  assert.equal(await pagesOf(r.blob), 3);
-  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'A100']);
+  assert.equal(r.pages, 6);
+  assert.equal(await pagesOf(r.blob), 6);
+  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'A100', 'A200', 'A300', 'A301']);
   assert.match(r.sheets[0].no, /^GI-L12DP1234567-C000$/);
   assert.match(r.filename, /\.pdf$/);
   assert.equal(r.blob.type, 'application/pdf');
@@ -49,9 +49,9 @@ test('site kind: cover, site plan, house plan', async () => {
 
 test('house kind: cover and house plan only', async () => {
   const { r, text } = await run('house');
-  assert.equal(r.pages, 2);
-  assert.equal(await pagesOf(r.blob), 2);
-  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'A100']);
+  assert.equal(r.pages, 5);
+  assert.equal(await pagesOf(r.blob), 5);
+  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'A100', 'A200', 'A300', 'A301']);
   assert.ok(!text.includes('SITE PLAN'));
 });
 
@@ -116,7 +116,7 @@ test('the caller project is not changed and a schema 2 lot is accepted', async (
   const site = buildSiteLot({ lot: f.lot, aerialMeta: f.aerial, aerialKey: null, contours: f.contours, address: f.search[0].label, source: 'sample' });
   site.setbacks = siteLotSetbacks(site, rules, { storeys: 1, wallHeightM: 3, buildingHeightM: 5 }).setbacks;
   const r = await exportPlanSet({ project, lot: site, kind: 'site', download: false, jsPDF });
-  assert.equal(r.pages, 3);
+  assert.equal(r.pages, 6);
   assert.equal(JSON.stringify(project), before);
 });
 
@@ -136,8 +136,8 @@ const runWith = async (p, l, extra = {}) => {
 
 test('a two storey house gets one sheet per level and the cover index lists it', async () => {
   const { r, text } = await runWith(tmpl('house_double'), { boundaryM: rect(0, 0, 18, 32), frontEdge: 0, lotNumber: '5', planLabel: 'DP 270001', setbacks: { front: 4.5, side: 0.9, rear: 3 } });
-  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'A100', 'A101']);
-  assert.equal(r.pages, 4);
+  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'A100', 'A101', 'A200', 'A300', 'A301']);
+  assert.equal(r.pages, 7);
   assert.match(text, /GI-L5DP270001-A101/);
   assert.match(text, /FIRST FLOOR PLAN/);
 });
@@ -229,29 +229,30 @@ function recorderXY() {
 
 test('contours: drawn when the lot has ground data, with RL labels, spot levels and the legend entry', async () => {
   const { text } = await runWith(project, groundLot());
-  assert.match(text, /Contour \(minor, major\)/);
+  assert.match(text, /Existing contour, 0\.5 m/);
   assert.match(text, /\b2[05]\.0\b/);
-  assert.ok(!/FFL/i.test(text), 'no floor level is stated');
+  assert.match(text, /FFL \d/, 'the floor level is tagged at the house');
   const flat = await runWith(project, { ...lot });
-  assert.ok(!/Contour \(minor, major\)/.test(flat.text));
+  assert.ok(!/Existing contour/.test(flat.text));
+  assert.match(flat.text, /FFL [\d.]+ \(ASSUMED DATUM\)/);
 });
 
 test('contours: the levels note names the state DEM, and a lot without ground data says so', async () => {
   const nsw = (await runWith(project, groundLot())).text.replace(/\s+/g, ' ');
-  assert.match(nsw, /Levels are indicative only, from the NSW 5 m DEM, not survey\. Contours at 1\.0 m intervals\. A registered survey is required\./);
+  assert.match(nsw, /Levels are indicative, interpolated from the NSW 5 m elevation model, not survey\. Contours at 0\.5 m are an interpolation and show the fall only\. A registered surveyor must confirm levels\./);
   const qld = (await runWith(project, groundLot({ state: 'QLD' }))).text.replace(/\s+/g, ' ');
-  assert.match(qld, /from the Queensland 5 m DEM, not survey/);
+  assert.match(qld, /from the Queensland 5 m elevation model, not survey/);
   const none = (await runWith(project, { ...lot })).text.replace(/\s+/g, ' ');
   assert.match(none, /No ground levels for this lot\./);
-  assert.ok(!/Levels are indicative only/.test(none));
+  assert.ok(!/interpolated/.test(none));
   assert.ok(!/[–—]/.test(nsw + qld + none));
 });
 
-test('contours: ground level from the grid and from the contours, whole metre lines only', async () => {
+test('contours: ground level from the grid and from the contours, stored lines kept at every level', async () => {
   const { groundLevelFn, contourLines, hasGround } = await import('../src/premium/exporters/planset/contours.js');
   const g = groundLot();
   assert.ok(hasGround(g));
-  assert.equal(contourLines({ contours: [{ level: 20.5, pts: [0, 0, 10, 10] }] }).length, 0);
+  assert.equal(contourLines({ contours: [{ level: 20.5, pts: [0, 0, 10, 10] }] }).length, 1);
   const z = groundLevelFn({ contours: fallContours() });
   const fall = z({ x: 18000, y: -60000 }) - z({ x: 18000, y: 0 });
   assert.ok(Math.abs(fall - 6) < 0.5, `fall ${fall}`);
@@ -263,7 +264,7 @@ test('contours: RL labels and spot levels never sit on the lot label, dimensions
   const { Rec, items } = recorderXY();
   await exportPlanSet({ project, lot: groundLot(), kind: 'site', download: false, jsPDF: Rec, catalogue, date: new Date(2026, 10, 12), fetchSite: null });
   for (let i = items.length - 1; i >= 0; i--) if (items[i].page !== 2) items.splice(i, 1); // the site plan sheet only
-  const isLevel = (it) => /^\d{2}\.\d$/.test(it.s) && it.size < 5.5;
+  const isLevel = (it) => /^\d{2}\.\d$/.test(it.s) && it.size === 5.6;
   const levels = items.filter(isLevel);
   assert.ok(levels.length > 4, 'level labels were drawn');
   const boxOf = (it) => {
@@ -308,7 +309,7 @@ test('locality plan: without an aerial the sheet says so and draws no picture', 
   assert.ok(!/Imagery and cadastre/.test(text));
   const failing = await run('site', { fetchSite: async () => { throw new Error('offline'); } });
   assert.match(failing.text, /Aerial not available for this lot/);
-  assert.equal(failing.r.pages, 3);
+  assert.equal(failing.r.pages, 6);
   const small = await run('site', { aerial: { image: new Uint8Array([1, 2, 3]), extentM: aerialFor.extentM }, fetchSite: null });
   assert.match(small.text, /Aerial not available for this lot/);
   assert.equal(await imageCount(small.r.blob), await imageCount(r.blob));
@@ -333,7 +334,7 @@ test('locality plan: the wider fetch asks for about 500 m of aerial (2048 px) an
   assert.match(text, /WIDE ROAD/);
   assert.match(text, /Imagery and cadastre/);
   const g = await run('site', { fetchSite: hook, lot: georef });
-  assert.equal(g.r.pages, 3);
+  assert.equal(g.r.pages, 6);
   assert.equal(seen.radius, 300);
   assert.ok(await imageCount(r.blob) >= 1);
 });
@@ -356,13 +357,16 @@ const crun = async (extra = {}) => {
   return { r, text: texts.join('\n'), texts };
 };
 
-test('commercial kind: C000 to C105 sheets, one page each', async () => {
+test('commercial kind: C000, C100, C101, C110 mezzanine, C200 elevations, C300 sections, C900 and C910, one page each', async () => {
   const { r } = await crun();
-  assert.equal(r.pages, 7);
-  assert.equal(await pagesOf(r.blob), 7);
-  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'C101', 'C102', 'C103', 'C104', 'C105']);
+  const codes = r.sheets.map((s) => s.no.split('-').pop());
+  assert.equal(r.pages, r.sheets.length);
+  assert.equal(await pagesOf(r.blob), r.pages);
+  assert.deepEqual(codes.slice(0, 4), ['C000', 'C100', 'C101', 'C110']);
+  assert.deepEqual(codes.slice(-2), ['C900', 'C910']);
+  assert.ok(codes.some((c) => /^C2\d\d$/.test(c)) && codes.some((c) => /^C3\d\d$/.test(c)));
   assert.match(r.filename, /commercial-plan-set\.pdf$/);
-  assert.equal(planSetSheets({ project: cproject, lot: null, kind: 'commercial' }).length, 7);
+  assert.ok(planSetSheets({ project: cproject, lot: null, kind: 'commercial' }).length >= 7);
 });
 
 test('commercial kind: PROPOSED UNIT n labels, areas, schedule and title block', async () => {
@@ -386,7 +390,7 @@ test('commercial kind: no forbidden words, dashes or builder brands; watermark o
   assert.equal(b.texts.filter((x) => /^Prepared for/.test(x)).length, 0);
 });
 
-test('commercial kind: C103 carries the indicative yield and value section with the caveat, data date and sources', async () => {
+test('commercial kind: C900 carries the indicative yield and value section with the caveat, data date and sources', async () => {
   const { text: raw } = await crun({ builderName: '' });
   const text = raw.replace(/\s+/g, ' '); // the caveat is wrapped to the column, so it spans several lines
   for (const want of ['INDICATIVE YIELD AND VALUE', 'Estimates only, not a valuation. Enter your own values in any field. Defaults come from portal listings and published reports; check with a registered valuer and quantity surveyor before relying on them.', 'Portal data as at 13/11/2026, market data as at 15/11/2026', 'All figures are ex GST', 'Council charges', 'Gross realisation (GFA x sale rate)', 'End value by capitalisation (net rent / net yield)', 'Net rent per year', 'Total development cost', 'Indicative margin, sell the units', '$3,714,379', 'commercialrealestate.com.au', 'building footprint plus hardstand', 'clearing and landscaping']) assert.ok(text.includes(want), `missing ${want}`);
@@ -406,12 +410,12 @@ test('commercial exports go through buildExport: pdf is the plan set, dxf still 
   const { buildExport } = await import('../src/premium/exporters/index.js');
   const pdf = await buildExport('pdf', cproject, { jsPDF });
   assert.match(pdf.filename, /commercial-plan-set\.pdf$/);
-  assert.equal(await pagesOf(new Blob([pdf.bytes])), 7);
+  assert.ok(await pagesOf(new Blob([pdf.bytes])) >= 7);
   const dxf = await buildExport('dxf', cproject, {});
   assert.ok(dxf.bytes.length > 1000);
 });
 
-test('commercial kind: catalogue buildings appear on C101 (plan label, docks, canopy) and C103 (schedule row per building, GFA by use)', async () => {
+test('commercial kind: catalogue buildings appear on C101 (plan label, docks, canopy) and C900 (schedule row per building, GFA by use)', async () => {
   const { createStore } = await import('../src/model/store.js');
   const { chooseBuilding } = await import('../src/commercial/catalogue/fit.js');
   const { applyBuildingChoice, addBuilding } = await import('../src/commercial/catalogue/ops.js');
@@ -421,7 +425,7 @@ test('commercial kind: catalogue buildings appear on C101 (plan label, docks, ca
   const { Rec, texts } = recorder();
   const r = await exportPlanSet({ project: s.project, kind: 'commercial', download: false, jsPDF: Rec, fetchSite: null, date: new Date(2026, 10, 13) });
   const text = texts.join('\n');
-  assert.equal(r.pages, 7);
+  assert.equal(r.pages, r.sheets.length);
   assert.match(text, /WAREHOUSE/);
   assert.match(text, /SHOWROOM/);
   assert.match(text, /\d DOCKS?/);

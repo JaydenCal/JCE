@@ -233,7 +233,9 @@ export function drawStrip(doc, ctx, sheet) {
     cy += h;
   }
   // Blocks (legend, boundary schedule): each { title, h, draw(doc, x, y, w) }, stacked while they fit.
-  for (const blk of sheet.blocks || []) {
+  for (const b of sheet.blocks || []) {
+    // A block that can close up (the legend) is fitted to the space that is left rather than dropped.
+    const blk = cy + b.h > bot && typeof b.fitTo === 'function' ? b.fitTo(bot - cy) || b : b;
     if (cy + blk.h > bot) break;
     box(doc, x0, cy, x1, cy + blk.h);
     label(doc, blk.title, x0 + 2, cy + 3.2);

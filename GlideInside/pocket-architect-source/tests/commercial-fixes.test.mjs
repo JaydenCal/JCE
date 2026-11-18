@@ -99,7 +99,7 @@ async function pdfText(project) {
 
 test('plan set list: the copy names the pages that are really in the set', () => {
   assert.equal(COMMERCIAL_SHEETS, COMMERCIAL_SHEET_LIST);
-  assert.equal(sheetListText(), 'C000 and C100 to C105');
+  assert.equal(sheetListText(), 'C000, C100 to C102, C110, C200, C300, C900 and C910');
   assert.equal(sheetListText([{ code: 'C000' }, { code: 'C100' }, { code: 'C101' }]), 'C000 and C100 and C101');
 });
 

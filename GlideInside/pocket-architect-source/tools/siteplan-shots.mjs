@@ -1,10 +1,11 @@
 // Writes the site plan PDFs (residential site plan set, free preview, commercial set) for a visual check of the plan size on the sheet.
 //   node tools/siteplan-shots.mjs <outDir> <prefix>
 // Then: pdftoppm -r 70 -png -f N -l N file.pdf out
-import { writeFileSync, readFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { exportPlanSet } from '../src/premium/exporters/planset/index.js';
 import { createStore } from '../src/model/store.js';
+import { catalogue } from '../src/catalogue/index.js';
 import { commercialProject } from '../tests/helpers/commercial-fixture.mjs';
 
 const require = createRequire(import.meta.url);
@@ -12,8 +13,8 @@ const { jsPDF } = require('jspdf');
 const dir = process.argv[2] || '/home/claude/topview-shots';
 const pre = process.argv[3] || 'pdf';
 mkdirSync(dir, { recursive: true });
-const houses = JSON.parse(readFileSync(new URL('../../golive/builder-houses/hunter-homes.json', import.meta.url), 'utf8'));
-const project = houses[0].project;
+// A generic design (no builder houses or brand names in samples).
+const project = catalogue.createFromTemplate('house_double');
 const rect = (x0, y0, x1, y1) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
 const mk = (w, d, extra = {}) => ({ boundaryM: rect(0, 0, w, d), frontEdge: 0, lotNumber: '12', planLabel: 'DP 1234567', address: '12 Sample Street, Thornton NSW 2322', lga: 'Maitland City Council', setbacks: { front: 6, side: 0.9, rear: 3 }, neighbours: [{ lotNumber: '11', planLabel: 'DP 1234567', ringM: rect(-w, 0, 0, d) }], ...extra });
 const date = new Date(2026, 10, 15);

@@ -6,7 +6,9 @@ import { scheduleData, levelsSorted } from '../shared.js';
 import { buildingRings, roadReserve, deriveDriveway, clearances, lotLabelLines, titleLotDp } from '../../../site/lotplan.js';
 import { pavedSummary, extraPavedInLotM2 } from '../../../site/pavedways.js';
 import { northArrow, placeImage, imageInfo } from '../pdf.js';
-import { PHANTOM, PEN, TXT, clean, wrap, fit, ink, polygon, viewTitle, clippedPolyline, clipPolygon, labelOn, hatch, haloText } from './kit.js';
+import { PHANTOM, PEN, TXT, clean, wrap, fit, ink, polygon, viewTitle, clippedPolyline, clipPolygon, labelOn, hatch, haloText, LabelField } from './kit.js';
+import { drawGroundLayer, streamMark, fmtM } from '../planset/contours.js';
+import { levelsModel } from '../planset/levels.js';
 import { BODY } from './frame.js';
 import { placeUnderlay } from './aerial.js';
 import { isRuralLot, drawLocality, siteFacts, lotBounds, chooseSiteScale, makeT, paletteFor } from './siteplan.js';
@@ -212,6 +214,7 @@ export function drawAnalysis(doc, ctx) {
   // Linework runs edge to edge over the aerial (clipped to the panel); without an aerial it keeps to the diagram window
   const rect = aerial ? { x0: left.x0, y0: left.y0, x1: left.x1, y1: left.y1 } : { x0: vp.x0, y0: vp.y0, x1: vp.x1, y1: vp.y1 };
   const line = (pts, closed = true) => clippedPolyline(doc, pts.map(T), rect, closed);
+  const gmark = streamMark(doc); // existing ground contours go under the diagram linework
   doc.setDrawColor(...pal.neighbour);
   doc.setLineWidth(pal.neighbourW);
   for (const nb of lot.neighbours || []) if (!nb.isRoad) line(nb.ring);
@@ -280,9 +283,20 @@ export function drawAnalysis(doc, ctx) {
   }
   const ll = lotIdLines(project, lot);
   labelOn(doc, `${ll.first} ${ll.second}`.trim(), centre.x, T({ x: G.bbox(lot.boundary).minX, y: G.bbox(lot.boundary).minY }).y + 7, { size: TXT.strong, bold: true, colour: pal.boundary });
+  // Existing ground contours with RL labels, clear of the labels above, the house and the title tab
+  const field = new LabelField(rect);
+  field.addBox({ x0: left.x0, y0: left.y0, x1: left.x0 + 92, y1: left.y0 + 13 });
+  field.addBox({ x0: left.x1 - 27, y0: left.y0 + 10, x1: left.x1 - 1, y1: left.y0 + 38 });
+  field.addBox({ x0: left.x0 + 3, y0: left.y1 - 8, x1: left.x0 + 125, y1: left.y1 - 1 });
+  field.addBox({ x0: centre.x - 32, y0: T({ x: G.bbox(lot.boundary).minX, y: G.bbox(lot.boundary).minY }).y + 1.5, x1: centre.x + 32, y1: T({ x: G.bbox(lot.boundary).minX, y: G.bbox(lot.boundary).minY }).y + 9 });
+  for (const at of tagged) field.addBox({ x0: at.x - 24, y0: at.y - 4, x1: at.x + 24, y1: at.y + 2 });
+  if (fall?.bearingDeg != null) field.addBox({ x0: centre.x - 40, y0: centre.y - 40, x1: centre.x + 40, y1: centre.y + 40 });
+  const hullMasks = [...(project.levels.length ? [project.levels.slice().sort((a, b) => a.elevation - b.elevation)[0]] : [])].flatMap((l) => l.rooms || []).filter((r) => r.status !== 'demolish' && (!r.outdoor || r.roofed) && r.polygon?.length >= 3).map((r) => r.polygon.map(T));
+  const levels = ctx.levels || levelsModel(project, lot);
+  const ground = drawGroundLayer(doc, { lot, levels, S: T, bbox: (() => { const a0 = T({ x: 0, y: 0 }); const bk = (x, y) => ({ x: (x - a0.x) * ds, y: (y - a0.y) * ds }); return G.bbox([bk(rect.x0, rect.y0), bk(rect.x1, rect.y1)]); })(), rect, field, masks: hullMasks, light: true, mark: gmark, labelSize: TXT.min });
   if (aerial) { doc.setFillColor(255, 255, 255); doc.circle(left.x1 - 14, left.y0 + 23, 11.5, 'F'); }
   northArrow(doc, left.x1 - 14, left.y0 + 24, project.site?.northDeg || 0);
-  labelOn(doc, 'Diagram only, not a survey', left.x0 + 4, left.y1 - 4, { size: TXT.body, align: 'left', colour: PEN.grey });
+  labelOn(doc, ground.stroked ? `Diagram only, not a survey. Dashed lines are existing ground contours at ${fmtM(ground.interval.minor)} m, indicative.` : 'Diagram only, not a survey', left.x0 + 4, left.y1 - 4, { size: TXT.body, align: 'left', colour: PEN.grey });
   // The view title sits in a white tab, drawn last so no linework crosses it
   doc.setFillColor(255, 255, 255);
   doc.rect(left.x0, left.y0, 92, 13, 'F');
@@ -550,7 +564,7 @@ export const scheduleCount = (project) => {
 
 // Floor plan side panel --------------------------------------------------------------------------------------------------------
 /** Notes and the room areas of one level, in the free space to the left of the plan. `planLeft` is the sheet x where the plan starts. */
-export function drawLevelPanel(doc, ctx, level, planLeft, { sectionSheet = null } = {}) {
+export function drawLevelPanel(doc, ctx, level, planLeft, { sectionSheet = null, ground = null } = {}) {
   const x0 = BODY.x0;
   const w = planLeft - 14 - x0;
   if (w < 70) return;
@@ -568,6 +582,7 @@ export function drawLevelPanel(doc, ctx, level, planLeft, { sectionSheet = null 
     `Ceiling height ${(level.height / 1000).toFixed(2)} m.`,
     sectionSheet ? `Section A-A is cut where the red chain line crosses the plan: see sheet ${sectionSheet}.` : 'Section A-A is cut where the red chain line crosses the plan.',
     'Furniture is indicative and is not part of the design.',
+    ...(ground?.stroked ? [`Dashed lines outside the plan are existing ground contours at ${fmtM(ground.interval.minor)} m, labelled with their RL. ${ground.note}`] : []),
   ];
   notes.forEach((n, i) => {
     const lines = wrap(doc, `${i + 1}. ${n}`, w);

@@ -48,3 +48,19 @@ export function buildingScheduleRows(c) {
   const tot = rows.reduce((s, r) => ({ ground: s.ground + r.ground, upper: s.upper + r.upper, total: s.total + r.total }), { ground: 0, upper: 0, total: 0 });
   return { rows, tot };
 }
+
+/**
+ * The 3D props of a building (canopies, pump islands, posts, awnings, dock seals, glass bands) as boxes in the building's LOCAL millimetres
+ * (x along the frontage, y toward the rear, z up from the floor): [{ x0, y0, x1, y1, z0, z1, slot }]. The same data the 3D module builds from,
+ * so the elevations and sections show what the model has. Cylinders and other shapes come out as their bounding box.
+ */
+export function buildingProps(b) {
+  let v = null;
+  try { v = b.def?.view3d ? b.def.view3d(b.params, { place: { x: 0, y: 0, rotationDeg: 0 } }) : null; } catch { v = null; }
+  if (!v) return [];
+  const src = Array.isArray(v.items) ? v.items : Array.isArray(v.boxes) ? v.boxes : [];
+  const num = (n) => Number.isFinite(Number(n));
+  const boxed = src.map((p) => (p.shape === 'cyl' && num(p.cx) && num(p.cy) && num(p.r) ? { ...p, x0: p.cx - p.r, x1: p.cx + p.r, y0: p.cy - p.r, y1: p.cy + p.r } : p));
+  return boxed.filter((p) => num(p.x0) && num(p.x1) && num(p.y0) && num(p.y1) && num(p.z0) && num(p.z1))
+    .map((p) => ({ x0: Math.min(p.x0, p.x1), x1: Math.max(p.x0, p.x1), y0: Math.min(p.y0, p.y1), y1: Math.max(p.y0, p.y1), z0: Math.min(p.z0, p.z1), z1: Math.max(p.z0, p.z1), slot: String(p.slot || p.kind || 'steel') }));
+}

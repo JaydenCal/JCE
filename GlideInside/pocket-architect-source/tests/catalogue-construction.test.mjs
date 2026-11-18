@@ -179,19 +179,21 @@ test('feasibility: strata rows in tilt-up cost more than metal clad rows', () =>
   assert.ok(fb.rowWalls.length > 0);
 });
 
-test('plan set: C104 elevations sheet is present and labelled Concept only', async () => {
+test('plan set: the C200 elevations sheet is present and labelled Concept only', async () => {
   const p = commercialProject({ plain: false });
   for (const r of p.commercial.rows) Object.assign(r.unit, { construction: 'tilt_up' });
   const texts = [];
   class Rec extends jsPDF { constructor(...a) { super(...a); const t = this.text.bind(this); this.text = (s, ...rest) => (texts.push(Array.isArray(s) ? s.join(' ') : String(s)), t(s, ...rest)); } }
   const r = await exportPlanSet({ project: p, kind: 'commercial', download: false, jsPDF: Rec, fetchSite: null, date: new Date(2026, 10, 15) });
-  assert.equal(r.sheets.at(-2).no.split('-').pop(), 'C104');
+  assert.ok(r.sheets.some((x) => x.no.endsWith('-C200')), 'the elevations are C200');
+  assert.ok(r.sheets.some((x) => x.no.endsWith('-C300')), 'the sections are C300');
   const all = texts.join('\n');
   assert.match(all, /ELEVATION/);
   assert.match(all, /Concept only/);
   assert.match(all, /RL/);
   assert.ok(!/[–—]/.test(all));
-  assert.equal(planSetSheets({ project: p, lot: null, kind: 'commercial' }).length, 7);
+  const codes = planSetSheets({ project: p, lot: null, kind: 'commercial' }).map((x) => x.code);
+  assert.deepEqual(codes.filter((c) => !/^C[23]/.test(c)), ['C000', 'C100', 'C101', 'C900', 'C910']);
 });
 
 test('AI: set_unit_options accepts the construction keys', () => {

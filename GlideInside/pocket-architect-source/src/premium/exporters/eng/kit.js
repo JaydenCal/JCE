@@ -20,7 +20,7 @@ export const PEN = {
   proposed: [10, 50, 150],
   proposedFill: [214, 226, 248],
   hard: [150, 150, 150],
-  contourMinor: [196, 160, 112],
+  contourMinor: [178, 136, 84],
   contourMajor: [150, 98, 40],
   road: [60, 62, 68],
   phantom: [200, 20, 20],
@@ -195,6 +195,14 @@ export const HATCH = {
   roadAerial: { angle: 0, spacing: 4, width: 0.06, colour: [235, 235, 235] },
   footpath: { angle: 90, spacing: 3.2, width: 0.07, colour: [140, 144, 150] },
   poche: { angle: 45, spacing: 1.1, width: 0.12, colour: [18, 20, 24] },
+  // Section hatches for cut material (commercial plan set sections): concrete (panel, slab) as a stipple, blockwork as a crossed pair, metal sheet
+  // as close vertical lines, framing as a wide single diagonal, fill as dots, cut as a light diagonal, earth as short ticks.
+  cutConcrete: { angle: 45, spacing: 1.8, width: 0.05, colour: [120, 120, 120], dots: true, noLines: true },
+  cutBlock: { angle: 45, spacing: 1.1, width: 0.07, colour: [90, 90, 90], cross: 135 },
+  cutMetal: { angle: 90, spacing: 0.7, width: 0.08, colour: [70, 74, 82] },
+  cutFrame: { angle: 45, spacing: 2.4, width: 0.06, colour: [110, 110, 110] },
+  cutFill: { angle: 0, spacing: 1.6, width: 0.05, colour: [150, 130, 100], dots: true, noLines: true },
+  cutCut: { angle: 135, spacing: 2.2, width: 0.05, colour: [170, 150, 120] },
 };
 
 export function hatch(doc, poly, kind, over = {}) {
