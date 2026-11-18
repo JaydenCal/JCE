@@ -88,15 +88,25 @@ function addSetting(scene, box, aniso) {
   run(c.x - hx, c.z - hz, c.x + hx, c.z - hz);
   run(c.x - hx, c.z - hz, c.x - hx, c.z + hz);
   run(c.x + hx, c.z - hz, c.x + hx, c.z + hz);
-  // trees: unlit, with a clear trunk, casting long shadows
-  const greens = ['#3f7436', '#4d8340', '#35692f', '#5b8f44'];
+  // trees: the open eucalypt look of the online viewers (slender pale trunk, a few limbs, an airy crown of flattened leaf clumps in
+  // natural and grey greens), unlit, casting long shadows. Each tree has its own seeded shape and size.
+  const greens = ['#7aa85a', '#86ad63', '#6f9a58', '#8fb06a', '#79a266', '#93ab7c', '#a0b48a', '#7d9f78'];
   const tree = (x, z, h, k) => {
-    const trunk = new Mesh(new CylinderGeometry(0.1, 0.16, h * 0.62, 7), new MeshBasicMaterial({ color: new Color('#5c4533') }));
-    trunk.position.set(x, y + h * 0.31, z); trunk.castShadow = true; g.add(trunk);
-    const col = new Color(greens[k % greens.length]);
-    for (const [dx, dy, dz, r, tone] of [[0, 0.72, 0, 0.36, 0.95], [0.26, 0.64, 0.1, 0.28, 0.85], [-0.24, 0.67, -0.12, 0.29, 0.9], [0.03, 0.9, 0.03, 0.26, 1.12], [-0.1, 0.6, 0.27, 0.22, 0.8], [0.17, 0.8, -0.23, 0.23, 1.02]]) {
-      const b = new Mesh(new IcosahedronGeometry(r * h * 0.85, 2), new MeshBasicMaterial({ color: col.clone().multiplyScalar(tone) }));
-      b.position.set(x + dx * h * 0.85, y + dy * h, z + dz * h * 0.85); b.scale.y = 0.88; b.castShadow = true; g.add(b);
+    let s = 97 + k * 31;
+    const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+    const bark = new MeshBasicMaterial({ color: new Color('#bdb09e') });
+    const trunk = new Mesh(new CylinderGeometry(0.035 * h * 0.5, 0.07 * h * 0.5, h * 0.72, 5), bark);
+    trunk.position.set(x, y + h * 0.36, z); trunk.castShadow = true; g.add(trunk);
+    const base = new Color(greens[k % greens.length]);
+    const n = 9 + (k % 3);
+    for (let i = 0; i < n; i++) {
+      const a = rnd() * Math.PI * 2;
+      const rad = (0.1 + rnd() * 0.42) * h * 0.5;
+      const cy = (0.58 + rnd() * 0.38) * h * 0.7 + h * 0.34;
+      const r = (0.11 + rnd() * 0.07) * 1.25 * h * 0.5;
+      const tone = 0.95 + (cy / h - 0.6) * 0.5 + (rnd() - 0.5) * 0.12;
+      const b = new Mesh(new IcosahedronGeometry(r * 1.4, 1), new MeshBasicMaterial({ color: base.clone().multiplyScalar(tone) }));
+      b.position.set(x + Math.cos(a) * rad, y + cy, z + Math.sin(a) * rad); b.scale.y = 0.5 + rnd() * 0.18; b.castShadow = true; g.add(b);
     }
   };
   tree(c.x - hx + 2.2, c.z - hz + 2.4, 6.2, 0);
@@ -160,8 +170,37 @@ async function start(container, base64, encoding) {
   }, true);
 
   const roofParts = [];
+  const labels = []; // { el, p: Vector3 } lot and neighbour labels, drawn as rounded semi transparent pills over the terrain
   let home = null;
   let dirty = true;
+
+  function placeLabels(model) {
+    let data = [];
+    try { data = JSON.parse(document.getElementById('pa-labels')?.textContent || '[]'); } catch { data = []; }
+    if (!data.length) return;
+    let terrain = null;
+    model.traverse((o) => { if (o.isMesh && o.name === 'site-terrain') terrain = o; });
+    const ray2 = new Raycaster();
+    for (const l of data) {
+      let y = 0;
+      if (terrain) { ray2.set(new Vector3(l.x, 2000, l.z), new Vector3(0, -1, 0)); const hit = ray2.intersectObject(terrain, false)[0]; if (hit) y = hit.point.y; }
+      const el = document.createElement('div');
+      el.className = 'pa-lbl' + (l.k === 'lot' ? ' lot' : '');
+      l.t.forEach((t, i) => { if (i === 0) el.appendChild(document.createTextNode(t)); else { const sm = document.createElement('small'); sm.textContent = t; el.appendChild(sm); } });
+      container.appendChild(el);
+      labels.push({ el, p: new Vector3(l.x, y + (l.k === 'lot' ? 9 : 4), l.z) });
+    }
+  }
+  const tmp = new Vector3();
+  function updateLabels() {
+    const w = container.clientWidth; const h = container.clientHeight;
+    for (const l of labels) {
+      tmp.copy(l.p).project(camera);
+      const on = tmp.z > -1 && tmp.z < 1;
+      l.el.style.display = on ? '' : 'none';
+      if (on) l.el.style.transform = `translate(-50%,-50%) translate(${((tmp.x + 1) / 2) * w}px,${((1 - tmp.y) / 2) * h}px)`;
+    }
+  }
 
   function resize() {
     const w = container.clientWidth || 1;
@@ -203,6 +242,8 @@ async function start(container, base64, encoding) {
       if (/^(roof|ceiling)/i.test(o.name || '')) roofParts.push(o);
     });
     scene.add(model);
+    model.updateMatrixWorld(true);
+    placeLabels(model);
     const box = new Box3().setFromObject(model);
     const size = box.getSize(new Vector3());
     const centre = box.getCenter(new Vector3());
@@ -264,6 +305,7 @@ async function start(container, base64, encoding) {
     const moved = controls.update();
     if (dirty || moved) {
       renderer.render(scene, camera);
+      updateLabels();
       dirty = false;
     }
   }

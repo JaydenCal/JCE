@@ -375,7 +375,7 @@ ${aerial ? `  vec3 aerC = texture2D(uAerialTex, vAerUv).rgb;
  * addSiteTerrain(ctx, root, project, { texture, edgeColour, showContours }) -> { edgeY, extent, grid } | null
  * `texture` is a THREE.Texture of the aerial (north up, covering lot.aerial.extent), or null for a plain grass surface.
  */
-export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour = null, wideTexture = null, wideEdgeColour = null, showContours = false } = {}) {
+export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour = null, wideTexture = null, wideEdgeColour = null, showContours = false, bakeGround = false } = {}) {
   const lot = project.site?.lot;
   const ext0 = S.terrainExtent(lot, 30);
   const dims = ext0 ? S.gridDims(ext0) : null;
@@ -411,8 +411,24 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   geo.setIndex(S.gridIndices(cols, rows));
   geo.computeVertexNormals();
   let mat = null;
+  // A model file (GLB for the offline HTML export) cannot carry the ground shader, so the lawn inside the lots and the dry paddock beyond
+  // them are baked into vertex colours instead, the same look as the online viewers.
+  const bake = bakeGround && !hasAerial && !grey;
+  if (bake) {
+    const rings = [lot.boundary, ...(lot.neighbours || []).filter((n) => !n.isRoad && n.ring?.length > 2).map((n) => n.ring)].filter((r) => r?.length > 2).map((r) => ({ r, x0: Math.min(...r.map((q) => q.x)), x1: Math.max(...r.map((q) => q.x)), y0: Math.min(...r.map((q) => q.y)), y1: Math.max(...r.map((q) => q.y)) }));
+    const lawn = new THREE.Color(LAWN_COLOUR); const pad = new THREE.Color(PADDOCK);
+    const col = new Float32Array(cols * rows * 3);
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      const x = dims.x0 + i * dims.dx; const y = dims.y0 + j * dims.dy;
+      const inside = rings.some((q) => x >= q.x0 && x <= q.x1 && y >= q.y0 && y <= q.y1 && G.pointInPolygon({ x, y }, q.r));
+      const c = inside ? lawn : pad; const k = (j * cols + i) * 3;
+      col[k] = c.r; col[k + 1] = c.g; col[k + 2] = c.b;
+    }
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  }
   const blended = hasAerial ? lawnGroundMaterial(ctx, lot, ext, texture, !!wideTexture) : null; // the clean lawn with the aerial let through subtly
-  if (blended) mat = blended;
+  if (bake) { mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0 }); mat.userData.shared = false; }
+  else if (blended) mat = blended;
   else if (hasAerial) {
     // Sharp: the aerial at full resolution, bilinear when magnified, trilinear mipmaps and anisotropy when minified.
     texture.colorSpace = THREE.SRGBColorSpace;
