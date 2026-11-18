@@ -14,10 +14,11 @@ import { schemeColours } from '../../../model/colour-schemes.js';
 import { slugify, ascii } from '../shared.js';
 import { projectCode, projectTitle } from '../eng/brand.js';
 import { alignProject } from '../eng/index.js';
+import { buildingAxes, collectTriangles, drawElevations as drawHouseElevations, drawSection as drawHouseSection, elevationScale, sectionScale, drawSectionMarker } from '../eng/views.js';
 import { clean, cleanedDoc, withSuperscripts } from '../eng/kit.js';
 import { titleLotDp } from '../../../site/lotplan.js';
 import { prepare, toSiteLot } from './lot.js';
-import { drawStrip, drawConceptNote, drawWatermark, ddmmyyyy, ABN, ENTITY } from './frame.js';
+import { drawStrip, drawConceptNote, drawWatermark, ddmmyyyy, ABN, ENTITY, AREA } from './frame.js';
 import { drawCover, localityScale, localityView } from './cover.js';
 import { resolveLocality } from './locality.js';
 import { syncCurrency } from '../../../site/custom-rules.js';
@@ -69,6 +70,13 @@ export function planSetSheets({ project, lot, kind, catalogue = null, feasibilit
     const title = hs.length > 1 ? name : kind === 'site' ? 'HOUSE PLAN' : 'FLOOR PLAN';
     sheets.push({ id: 'house', code: `A${100 + i}`, title, scale: `1:${h.scale} @ A3`, house: h });
   });
+  // Elevations and sections of the house (the same drawings as the engineering set): A200, then A300 across the short axis and A301 along the long axis.
+  if (hs.length) {
+    const axes = buildingAxes(alignProject(project).project);
+    sheets.push({ id: 'elev', code: 'A200', title: 'ELEVATIONS', scale: 'AS SHOWN' });
+    sheets.push({ id: 'sect', code: 'A300', title: 'SECTION A-A', scale: 'AS SHOWN', axis: 'short', letter: 'A' });
+    if (axes && axes.widthMm >= 6000 && axes.lengthMm >= 6000) sheets.push({ id: 'sect', code: 'A301', title: 'SECTION B-B', scale: 'AS SHOWN', axis: 'long', letter: 'B' });
+  }
   if (feasibility) sheets.push({ id: 'finance', code: 'F100', title: 'DEVELOPMENT FEASIBILITY', scale: 'NTS' });
   return sheets;
 }
@@ -139,6 +147,17 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
   const raw = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3', compress: true });
   raw.setProperties({ title: `${ascii(title)} concept plan set`, subject: 'Concept design plans, to be checked by a suitably qualified person', author: ENTITY, creator: commercial ? 'Glide Inside commercial layout' : 'Glide Inside lot viewer' });
   const doc = withSuperscripts(cleanedDoc(raw));
+  // House elevations and sections (A200, A300, A301): one pass over the 3D model, the sheet scales follow what fits.
+  const viewArea = { x0: AREA.x0 + 2, y0: AREA.y0 + 2, x1: AREA.x1 - 2, y1: AREA.y1 - 8 };
+  let tris = [];
+  if (!commercial && sheets.some((x) => x.id === 'elev' || x.id === 'sect')) {
+    try { tris = await collectTriangles(aligned.project, catalogue); } catch { tris = []; }
+    for (const x of sheets.filter(() => !preview)) {
+      if (x.id === 'elev') x.scale = tris.length ? `1:${elevationScale(doc, aligned.project, tris, viewArea, 1)} @ A3` : 'NTS';
+      else if (x.id === 'sect') x.scale = tris.length ? `1:${sectionScale(aligned.project, tris, viewArea, 1, x.axis)} @ A3` : 'NTS';
+    }
+  }
+  const viewCtx = { project: aligned.project, k: 1, colours: schemeColours(wp), unalign: aligned.unalign || null, paper: 'A3', ground: levels ? { lot: siteLot, levels, align: aligned.align || null, unalign: aligned.unalign || null } : null, levels };
   const address = clean(wp.titleBlock?.address || siteLot?.address || '');
   const lotDp = clean(siteLot ? titleLotDp(wp) || siteLot.lotLabel || '' : '');
   const base = { project: wp, client: builder || 'Glide Inside customer', projectTitle: title, address, lotDp, total: sheets.length, dateStr, jobId: id, terms };
@@ -179,11 +198,17 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
     } else if (s.id === 'site') {
       Object.assign(facts, drawSite(doc, wp, siteLot, { levels }));
       strip = { ...strip, subtitle: ascii(title), kvTitle: 'SITE DATA', kv: facts.kv, notes: facts.notes, blocks: facts.blocks };
+    } else if (s.id === 'elev' || s.id === 'sect') {
+      const empty = !tris.length;
+      if (empty) { doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.text('The elevations and sections need a building with walls.', viewArea.x0 + 10, viewArea.y0 + 12); }
+      else if (s.id === 'elev') drawHouseElevations(doc, viewCtx, tris, viewArea);
+      else drawHouseSection(doc, { ...viewCtx, sectionAxis: s.axis, sectionLetter: s.letter }, tris, viewArea);
+      strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'elev' ? 'ELEVATION DATA' : 'SECTION DATA', kv: [['Scale', s.scale]], notes: s.id === 'elev' ? ['Indicative concept elevations from the 3D model.', 'Levels are indicative, from the state 5 m elevation model, not survey.'] : [`Indicative concept section ${s.letter}-${s.letter}. Structure and levels are assumed for presentation and are not designed.`] };
     } else if (s.id === 'finance') {
       const r = drawFinancePage(doc, wp);
       strip = { ...strip, subtitle: ascii(title), kvTitle: 'KEY FIGURES', kv: r.kv, notes: r.notes, blocks: r.blocks };
     } else {
-      const h = drawHouseSheet(doc, aligned.project, s.house, { catalogue, northDeg: Number(aligned.project.site?.northDeg) || 0, ground: levels ? { lot: siteLot, levels, align: aligned.align || null, unalign: aligned.unalign || null } : null });
+      const h = drawHouseSheet(doc, aligned.project, s.house, { catalogue, northDeg: Number(aligned.project.site?.northDeg) || 0, sections: tris.length ? sheets.filter((x) => x.id === 'sect').map((x) => ({ axis: x.axis, letter: x.letter, sheet: x.code })) : [], ground: levels ? { lot: siteLot, levels, align: aligned.align || null, unalign: aligned.unalign || null } : null });
       const notes = ['Dimensions in millimetres.', 'Room areas to internal wall faces.', 'Door swings and window positions are shown as designed.', 'Confirm all dimensions on site before ordering.'];
       const kv = [...h.kv];
       const lg = groundLegendBlock(h.ground);

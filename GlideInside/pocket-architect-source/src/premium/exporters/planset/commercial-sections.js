@@ -62,7 +62,7 @@ export function sectionPlanes(t) {
     return len / 2;
   };
   const make = (axis, i) => {
-    const at = nudge(axis, centreOf(axis));
+    const at = t.open && axis === 'x' ? 100 : nudge(axis, centreOf(axis)); // an open canopy is cut through a line of posts
     const h = handed(t);
     const beyond = axis === 'y' ? (h > 0 ? 1 : -1) : (h > 0 ? -1 : 1); // the side of the cut (in the other axis) the view looks toward
     return { id: i, axis, at, beyond, along: axis === 'y' ? t.D : t.L };

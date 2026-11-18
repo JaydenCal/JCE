@@ -8,6 +8,7 @@ import { levelContent } from '../drawing.js';
 import { planGeometry, scaleBar } from '../pdf.js';
 import { PEN, viewTitle, ink } from '../eng/kit.js';
 import { drawRoomLabels } from './labels.js';
+import { drawSectionMarker } from '../eng/views.js';
 import { AREA } from './frame.js';
 import { areaTotals } from './lot.js';
 import { streamMark } from './contours.js';
@@ -70,12 +71,14 @@ export function houseSheets(project, catalogue = null) {
 const levelName = (l) => `${ascii(l.name) || 'Level'} floor plan`.toUpperCase();
 
 /** Draws one floor plan sheet. `project` is squared to the page (alignProject). Returns { scale, scaleLabel, totals, kv }. */
-export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 0, ground = null } = {}) {
+export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 0, ground = null, sections = [] } = {}) {
   const { content, ox, oy, scale: ds, level } = sh;
   const T = (p) => ({ x: ox + (p.x - content.box.minX) / ds, y: oy + (p.y - content.box.minY) / ds });
   const Ti = (q) => ({ x: content.box.minX + (q.x - ox) * ds, y: content.box.minY + (q.y - oy) * ds });
   const gmark = streamMark(doc); // the ground contours sit under the plan
   planGeometry(doc, { ...content, scale: ds }, T, true, catalogue);
+  // Section markers: A-A across the short axis and B-B along the long axis, each pointing at its sheet
+  for (const sc of sections) drawSectionMarker(doc, project, T, sc.sheet, null, sc.axis, sc.letter);
   const lf = drawRoomLabels(doc, { content, T, catalogue, bounds: { x0: AREA.x0 + 2, y0: AREA.y0 + 2, x1: AREA.x1 - 2, y1: AREA.y1 - 8 }, extra: [sh.slot, NORTH_RECT, BAR_RECT] });
   // Dimension strings: overall and running.
   doc.setLineDashPattern([], 0);

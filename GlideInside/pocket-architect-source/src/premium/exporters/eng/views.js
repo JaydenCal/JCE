@@ -223,7 +223,7 @@ export function paintView(doc, r, T, { cutPlane = null, colours = null } = {}) {
 }
 
 // Standard drawing scales for building views (printed 1:n on A3).
-const SCALES = [20, 50, 100, 150, 200, 250, 500];
+const SCALES = [20, 50, 75, 100, 125, 150, 200, 250, 500];
 const fitScale = (w, h, cellW, cellH, k) => SCALES.find((n) => w / (n * k) <= cellW && h / (n * k) <= cellH) || 500;
 
 const cap = (t) => { const s = String(t ?? ''); return s ? s[0].toUpperCase() + s.slice(1) : s; };
@@ -366,10 +366,13 @@ export function drawElevations(doc, ctx, tris, area) {
 // Section ----------------------------------------------------------------------------------------------------------------------
 const SLAB_MM = { ground: 150, upper: 300 };
 
-/** The section plane through the centre of the building across its short axis: { a (plane normal), c, right, axes }. */
-export function sectionPlane(project) {
+/**
+ * The section plane through the centre of the building: { a (plane normal), c, right, axes }. axis 'short' (section A-A) cuts across the short axis,
+ * 'long' (section B-B) cuts along the long axis.
+ */
+export function sectionPlane(project, axis = 'short') {
   const axes = buildingAxes(project);
-  const a = axes ? axes.long : { x: 1, y: 0 };
+  const a = axes ? (axis === 'long' ? axes.short : axes.long) : { x: 1, y: 0 };
   const c = axes ? G.dot(axes.centre, a) : 0;
   const right = { x: -a.y, y: a.x };
   return { a, c, right, axes };
@@ -474,8 +477,8 @@ export function sectionCut(project, tris, pl) {
   return { walls, slabs, ceilings, roof: segs };
 }
 
-export function sectionScale(project, tris, area, k = 1) {
-  const pl = sectionPlane(project);
+export function sectionScale(project, tris, area, k = 1, axis = 'short') {
+  const pl = sectionPlane(project, axis);
   const r = renderView(null, tris, { f: pl.a, clip: { a: pl.a, c: pl.c }, cull: false, skipInner: false });
   return fitScale(r.bounds.x1 - r.bounds.x0, r.bounds.y1 - r.bounds.y0 + 600, area.x1 - area.x0 - 78, area.y1 - area.y0 - 44, k);
 }
@@ -483,16 +486,18 @@ export function sectionScale(project, tris, area, k = 1) {
 /** Section A-A through the house: cut walls hatched, slabs solid, floor and ceiling levels, roof pitch and the heights dimensioned. */
 export function drawSection(doc, ctx, tris, area) {
   const { project, k = 1 } = ctx;
+  const axis = ctx.sectionAxis || 'short';
+  const letter = ctx.sectionLetter || 'A';
   const lot = project.site?.lot;
   const floor = lot?.floorRL;
-  const pl = sectionPlane(project);
+  const pl = sectionPlane(project, axis);
   const cut = sectionCut(project, tris, pl);
   const r = renderView(doc, tris, { f: pl.a, clip: { a: pl.a, c: pl.c }, cull: false, skipInner: false });
   const w = r.bounds.x1 - r.bounds.x0;
   const h = r.bounds.y1 - r.bounds.y0;
   const aw = area.x1 - area.x0;
   const ah = area.y1 - area.y0;
-  const n = sectionScale(project, tris, area, k);
+  const n = sectionScale(project, tris, area, k, axis);
   const ds = n * k;
   const midX = (r.bounds.x0 + r.bounds.x1) / 2;
   // Centred vertically on the sheet: ridge labels above, the overall dimension string below the ground line (about 16 mm, clear of the sheet title and note, and 20 mm).
@@ -666,7 +671,7 @@ export function drawSection(doc, ctx, tris, area) {
     doc.text('NATURAL SURFACE', Math.min(area.x1 - 4, g.x), g.y + 4.4, { align: 'right' });
   }
 
-  viewTitle(doc, area.x0 + 3, area.y0 + 8.4, 'Section A-A', `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.title });
+  viewTitle(doc, area.x0 + 3, area.y0 + 8.4, `Section ${letter}-${letter}`, `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.title });
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(TXT.body);
   doc.setTextColor(...PEN.grey);
@@ -681,8 +686,8 @@ export function drawSection(doc, ctx, tris, area) {
  * section looks, and a circle tag "A" at each end. `T` maps plan mm to sheet mm for that sheet.
  */
 /** The section line in plan millimetres: { p0, p1, right }, or null. */
-export function sectionLinePlan(project, halfMm = null) {
-  const pl = sectionPlane(project);
+export function sectionLinePlan(project, halfMm = null, axis = 'short') {
+  const pl = sectionPlane(project, axis);
   if (!pl.axes) return null;
   const e0 = halfMm?.neg ?? pl.axes.widthMm / 2 + 1750;
   const e1 = halfMm?.pos ?? pl.axes.widthMm / 2 + 1750;
@@ -690,8 +695,8 @@ export function sectionLinePlan(project, halfMm = null) {
   return { p0: { x: mid.x - pl.right.x * e0, y: mid.y - pl.right.y * e0 }, p1: { x: mid.x + pl.right.x * e1, y: mid.y + pl.right.y * e1 }, right: pl.right };
 }
 
-export function drawSectionMarker(doc, project, T, sheetNo = null, halfMm = null) {
-  const pl = sectionPlane(project);
+export function drawSectionMarker(doc, project, T, sheetNo = null, halfMm = null, axis = 'short', letter = 'A') {
+  const pl = sectionPlane(project, axis);
   if (!pl.axes) return;
   const e0 = halfMm?.neg ?? pl.axes.widthMm / 2 + 1750;
   const e1 = halfMm?.pos ?? pl.axes.widthMm / 2 + 1750;
@@ -723,7 +728,7 @@ export function drawSectionMarker(doc, project, T, sheetNo = null, halfMm = null
     doc.circle(c.x, c.y, 3.6, 'FD');
     doc.setFontSize(TXT.strong);
     doc.setTextColor(...PEN.tag);
-    doc.text('A', c.x, c.y + 1.4, { align: 'center' });
+    doc.text(letter, c.x, c.y + 1.4, { align: 'center' });
     doc.setFillColor(...PEN.tag);
   }
   if (sheetNo) {
@@ -732,7 +737,7 @@ export function drawSectionMarker(doc, project, T, sheetNo = null, halfMm = null
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(TXT.small);
     doc.setTextColor(...PEN.tag);
-    doc.text('SECTION A-A', E.x + out.x * 11, E.y + out.y * 11 - 1, { align: out.x >= 0 ? 'left' : 'right' });
+    doc.text(`SECTION ${letter}-${letter}`, E.x + out.x * 11, E.y + out.y * 11 - 1, { align: out.x >= 0 ? 'left' : 'right' });
     doc.setFont('helvetica', 'normal');
     doc.text(`SEE SHEET ${sheetNo}`, E.x + out.x * 11, E.y + out.y * 11 + 2.6, { align: out.x >= 0 ? 'left' : 'right' });
   }

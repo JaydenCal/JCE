@@ -39,9 +39,9 @@ async function run(kind, extra = {}) {
 
 test('site kind: cover, site plan, house plan', async () => {
   const { r } = await run('site');
-  assert.equal(r.pages, 3);
-  assert.equal(await pagesOf(r.blob), 3);
-  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'A100']);
+  assert.equal(r.pages, 6);
+  assert.equal(await pagesOf(r.blob), 6);
+  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'A100', 'A200', 'A300', 'A301']);
   assert.match(r.sheets[0].no, /^GI-L12DP1234567-C000$/);
   assert.match(r.filename, /\.pdf$/);
   assert.equal(r.blob.type, 'application/pdf');
@@ -49,9 +49,9 @@ test('site kind: cover, site plan, house plan', async () => {
 
 test('house kind: cover and house plan only', async () => {
   const { r, text } = await run('house');
-  assert.equal(r.pages, 2);
-  assert.equal(await pagesOf(r.blob), 2);
-  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'A100']);
+  assert.equal(r.pages, 5);
+  assert.equal(await pagesOf(r.blob), 5);
+  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'A100', 'A200', 'A300', 'A301']);
   assert.ok(!text.includes('SITE PLAN'));
 });
 
@@ -114,7 +114,7 @@ test('the caller project is not changed and a schema 2 lot is accepted', async (
   const site = buildSiteLot({ lot: f.lot, aerialMeta: f.aerial, aerialKey: null, contours: f.contours, address: f.search[0].label, source: 'sample' });
   site.setbacks = siteLotSetbacks(site, rules, { storeys: 1, wallHeightM: 3, buildingHeightM: 5 }).setbacks;
   const r = await exportPlanSet({ project, lot: site, kind: 'site', download: false, jsPDF });
-  assert.equal(r.pages, 3);
+  assert.equal(r.pages, 6);
   assert.equal(JSON.stringify(project), before);
 });
 
@@ -134,8 +134,8 @@ const runWith = async (p, l, extra = {}) => {
 
 test('a two storey house gets one sheet per level and the cover index lists it', async () => {
   const { r, text } = await runWith(tmpl('house_double'), { boundaryM: rect(0, 0, 18, 32), frontEdge: 0, lotNumber: '5', planLabel: 'DP 270001', setbacks: { front: 4.5, side: 0.9, rear: 3 } });
-  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'A100', 'A101']);
-  assert.equal(r.pages, 4);
+  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'A100', 'A101', 'A200', 'A300', 'A301']);
+  assert.equal(r.pages, 7);
   assert.match(text, /GI-L5DP270001-A101/);
   assert.match(text, /FIRST FLOOR PLAN/);
 });
@@ -307,7 +307,7 @@ test('locality plan: without an aerial the sheet says so and draws no picture', 
   assert.ok(!/Imagery and cadastre/.test(text));
   const failing = await run('site', { fetchSite: async () => { throw new Error('offline'); } });
   assert.match(failing.text, /Aerial not available for this lot/);
-  assert.equal(failing.r.pages, 3);
+  assert.equal(failing.r.pages, 6);
   const small = await run('site', { aerial: { image: new Uint8Array([1, 2, 3]), extentM: aerialFor.extentM }, fetchSite: null });
   assert.match(small.text, /Aerial not available for this lot/);
   assert.equal(await imageCount(small.r.blob), await imageCount(r.blob));
@@ -332,7 +332,7 @@ test('locality plan: the wider fetch asks for about 500 m of aerial (2048 px) an
   assert.match(text, /WIDE ROAD/);
   assert.match(text, /Imagery and cadastre/);
   const g = await run('site', { fetchSite: hook, lot: georef });
-  assert.equal(g.r.pages, 3);
+  assert.equal(g.r.pages, 6);
   assert.equal(seen.radius, 300);
   assert.ok(await imageCount(r.blob) >= 1);
 });

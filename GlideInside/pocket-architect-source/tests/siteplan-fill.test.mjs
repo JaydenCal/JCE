@@ -105,7 +105,7 @@ test('preview: same plan size, NOT TO SCALE on every page, no printed ratio, wat
   assert.ok(text.includes('NOT TO SCALE'));
   assert.ok(!/\b1:\d+ @ A3/.test(text), 'no scale ratio printed in the free preview');
   assert.ok(/PREVIEW/.test(text), 'preview stamp');
-  assert.equal(await pagesOf(r.blob), 3);
+  assert.equal(await pagesOf(r.blob), r.sheets.length);
 });
 
 test('plan text is larger: bearings and setback labels are 8 pt and 7 pt', async () => {
