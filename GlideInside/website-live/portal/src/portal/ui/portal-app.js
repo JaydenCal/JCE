@@ -1,20 +1,20 @@
 // The portal page: sign in, forced password change, builder dashboard, client home. One module, hash routes for the tabs.
 
-import { h, clear, toast, icon, errorMessage } from './kit.js';
-import { getPortalApi } from '../api.js';
-import { appLink, designLink } from '../links.js';
-import { signInView, forgotView, resetView, changePasswordView } from './auth-views.js';
-import { renderHouses } from './houses-tab.js';
-import { renderGlide } from './glide-tab.js';
-import { renderClients } from './clients-tab.js?v=20261118b';
-import { renderBilling } from './billing-tab.js?v=20261118b';
-import { renderTeam } from './team-tab.js';
-import { renderBranding } from './branding-tab.js';
-import { ddmmyyyy } from '../billing.js';
-import { trialBanner, handleBillingReturn } from './trial-ui.js';
-import { CONFIG } from '../../config.js';
-import { applyBrandTheme, clearBrandTheme, applyWhiteLabel } from '../theme-css.js';
-import { readPick } from '../builders.js';
+import { h, clear, toast, icon, errorMessage } from './kit.js?v=20261119a';
+import { getPortalApi } from '../api.js?v=20261119a';
+import { appLink, designLink } from '../links.js?v=20261119a';
+import { signInView, forgotView, resetView, changePasswordView } from './auth-views.js?v=20261119a';
+import { renderHouses } from './houses-tab.js?v=20261119a';
+import { renderGlide } from './glide-tab.js?v=20261119a';
+import { renderClients } from './clients-tab.js?v=20261119a';
+import { renderBilling } from './billing-tab.js?v=20261119a';
+import { renderTeam } from './team-tab.js?v=20261119a';
+import { renderBranding } from './branding-tab.js?v=20261119a';
+import { ddmmyyyy } from '../billing.js?v=20261119a';
+import { trialBanner, handleBillingReturn } from './trial-ui.js?v=20261119a';
+import { CONFIG } from '../../config.js?v=20261119a';
+import { applyBrandTheme, clearBrandTheme, applyWhiteLabel } from '../theme-css.js?v=20261119a';
+import { readPick } from '../builders.js?v=20261119a';
 
 const TABS = [
   { id: 'houses', label: 'House designs', render: renderHouses },

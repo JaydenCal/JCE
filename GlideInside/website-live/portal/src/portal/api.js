@@ -2,9 +2,9 @@
 // CONFIG.portalMock = true uses the in-browser mock (mock-api.js). Otherwise the same calls go to {apiBase}/portal/... over fetch
 // with the HttpOnly session cookie (gi_session, Path=/api) and the CSRF header X-GI-Request: 1 on every call. Both resolve plain data and reject with ApiError (src/premium/api.js).
 
-import { CONFIG } from '../config.js';
-import { ApiError } from '../premium/api.js';
-import { createMockApi } from './mock-api.js';
+import { CONFIG } from '../config.js?v=20261119a';
+import { ApiError } from '../premium/api.js?v=20261119a';
+import { createMockApi } from './mock-api.js?v=20261119a';
 
 export const CALLS = [
   'signIn', 'signOut', 'me', 'changePassword', 'requestPasswordReset', 'completePasswordReset',

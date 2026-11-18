@@ -1,6 +1,6 @@
 // Where Glide Inside Residential and the portal live, and how a page links into the app with a house or project to open.
 
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config.js?v=20261119a';
 
 const isLocal = () => typeof location !== 'undefined' && ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
 

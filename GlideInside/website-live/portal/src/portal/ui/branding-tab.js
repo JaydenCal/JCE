@@ -1,9 +1,9 @@
 // Builder branding: logo, name and colour scheme. Glide Inside keeps a small credit on every sheet.
 
-import { h, field, busy, toast, scaleLogoFile, errorMessage } from './kit.js';
-import { GI_DEFAULT, normaliseHex, validateColours, deriveTheme, pickColoursFromLogo, hasBrand } from '../theme.js';
-import { previewStyle, injectSettingsStyles } from '../theme-css.js';
-import { DETAIL_KEYS, DETAIL_LABELS, validateDetails, cleanDetails } from '../brand-details.js';
+import { h, field, busy, toast, scaleLogoFile, errorMessage } from './kit.js?v=20261119a';
+import { GI_DEFAULT, normaliseHex, validateColours, deriveTheme, pickColoursFromLogo, hasBrand } from '../theme.js?v=20261119a';
+import { previewStyle, injectSettingsStyles } from '../theme-css.js?v=20261119a';
+import { DETAIL_KEYS, DETAIL_LABELS, validateDetails, cleanDetails } from '../brand-details.js?v=20261119a';
 
 export function renderBranding(host, { api, me, refreshMe }) {
   injectSettingsStyles();
