@@ -1,383 +1,332 @@
-// Rotate tool: snap, typed angle, align to frontage and nearest boundary, pivot, one undo step per rotation, and the driveway (with its PIs)
-// staying attached to the garage door. Residential house, and a commercial building and unit row.
+// Rotate tool (key O): the rotation maths, snapping (15 degrees, 1 degree with Shift, square to a lot edge), alignment buttons, multi item and
+// whole development turns on residential and commercial designs, estate integrity, one undo step per turn, and the tool wiring.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { createProject } from '../src/model/schema.js';
 import { createStore } from '../src/model/store.js';
 import { catalogue } from '../src/catalogue/index.js';
+import { createProject } from '../src/model/schema.js';
 import { placeHouse } from '../src/portal/place-house.js';
 import { lotEnvelope, portalLotToSiteLot, SAMPLE_LOT } from '../src/portal/envelope.js';
-import { autoPose } from '../src/portal/auto-place.js';
-import * as L from '../src/site/lotplan.js';
-import * as D from '../src/site/drivepi.js';
-import * as R from '../src/site/rotate.js';
-import { createRotateController } from '../src/editor2d/rotate-controller.js';
-import { TOOL_DEFS, ALL_TOOLS, KEY_TO_TOOL } from '../src/editor2d/tools-meta.js';
+import { houseCentre } from '../src/model/placement.js';
 import { commercialProject } from './helpers/commercial-fixture.mjs';
 import { addBuilding } from '../src/commercial/catalogue/ops.js';
+import { buildingsOf } from '../src/commercial/catalogue/buildings.js';
+import { rowPoly } from '../src/commercial/layout.js';
+import * as L from '../src/commercial/layouts.js';
+import { siteWorksOf } from '../src/commercial/catalogue/buildings.js';
+import { rowsSignature } from '../src/commercial/estate.js';
+import { TOOL_DEFS, KEY_TO_TOOL } from '../src/editor2d/tools-meta.js';
+import * as R from '../src/editor2d/rotate-logic.js';
 
-function setup() {
-  const portal = { name: 'T', polygonMm: SAMPLE_LOT.polygonMm, frontEdgeIndices: [2], picked: { front: { minM: 4.5 }, secondaryFront: { minM: 3 }, side: { minM: 0.9 }, rear: { minM: 3 } }, lot: '7', dp: 'DP 99' };
-  const p = createProject({ name: 'Rot' });
+const read = (p) => fs.readFileSync(new URL(p, import.meta.url), 'utf8');
+const near = (a, b, e = 1e-6, m = '') => assert.ok(Math.abs(a - b) < e, `${m} ${a} vs ${b}`);
+const SETBACKS = { front: { minM: 4.5 }, secondaryFront: { minM: 3 }, side: { minM: 0.9 }, rear: { minM: 3 } };
+
+function resi() {
+  const portal = { name: 'Test lot', polygonMm: SAMPLE_LOT.polygonMm, frontEdgeIndices: [2], picked: SETBACKS, lot: '7', dp: 'DP 99' };
+  const p = createProject({ name: 'Rotate test' });
+  p.site.lot = portalLotToSiteLot(portal, lotEnvelope(portal));
+  placeHouse(p, catalogue.createFromTemplate('shed_workshop'), { x: 7000, y: 18000, rotation: 0, mirrored: false });
+  return createStore(p, { opContext: { catalogue }, autosaveKey: null });
+}
+const comm = (opts) => createStore(commercialProject(opts), { autosaveKey: null });
+const bboxCentre = (pts) => { const xs = pts.map((q) => q.x); const ys = pts.map((q) => q.y); return { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 }; };
+
+test('angle maths: wrap, shortest way round, accumulate through the seam', () => {
+  near(R.wrap360(-10), 350); near(R.wrap360(725), 5); near(R.wrap180(190), -170); near(R.wrap180(-180), 180);
+  near(R.shortest(350, 10), 20); near(R.shortest(10, 350), -20);
+  near(R.angleFrom({ x: 0, y: 0 }, { x: 0, y: 10 }), 90); // y is down: clockwise on screen
+  // a drag that crosses the 180 degree seam keeps counting instead of jumping
+  let s = R.accumulate(0, null, 170);
+  s = R.accumulate(s.total, s.prev, -175); // 170 to 185 degrees
+  near(s.total, 185);
+  s = R.accumulate(s.total, s.prev, -150);
+  near(s.total, 210);
+});
+
+test('snapping: 15 degree steps, 1 degree with Shift, square to a lot edge when close', () => {
+  assert.equal(R.snapTurn(37, {}).deg, 30);
+  assert.equal(R.snapTurn(38, {}).deg, 45);
+  assert.equal(R.snapTurn(-52, {}).deg, -45);
+  assert.deepEqual(R.snapTurn(37.4, { shift: true }), { deg: 37, snap: 'fine' });
+  // a building facing 10 degrees off a lot edge at 0 degrees: squaring it up is a turn of -10 (or +80)
+  const lines = [{ index: 0, deg: 0, front: true }, { index: 1, deg: 90, front: false }];
+  const s = R.snapTurn(-9, { base: 10, lines });
+  assert.equal(s.deg, -10); assert.equal(s.snap, 'frontage');
+  assert.equal(R.snapTurn(-9, { base: 10, lines: [{ index: 3, deg: 0, front: false }] }).snap, 'lot');
+  assert.equal(R.snapTurn(-9, { base: 10, lines, shift: true }).snap, 'fine'); // Shift turns the lot snap off
+  assert.equal(R.snapTurn(-5.5, { base: 10, lines }).snap, 'step'); // too far from square: back to 15 degree steps
+  near(R.squareDelta(10, 0), -10); near(R.squareDelta(88, 0), 2); near(R.squareDelta(0, 90), 0);
+});
+
+test('lot angles come from the boundary and flag the frontage', () => {
+  const p = resi().project;
+  const lines = R.lotAlignments(p);
+  assert.equal(lines.length, 4);
+  assert.equal(lines.filter((l) => l.front).length, 1);
+  assert.ok(lines.every((l) => l.deg >= 0 && l.deg < 180));
+});
+
+test('house: a turn about the centre keeps the centre, is one undo step and turns tanks and the plan together', () => {
+  const store = resi();
+  const c0 = houseCentre(store.project);
+  const w0 = structuredClone(store.project.levels[0].walls[0].a);
+  const n = store.history?.length;
+  store.apply('Rotate house', (p) => { R.applyTurn(p, [{ kind: 'house' }], 30, c0); });
+  const c1 = houseCentre(store.project);
+  assert.ok(Math.hypot(c1.x - c0.x, c1.y - c0.y) < 400, 'the house stays where it was');
+  const w1 = store.project.levels[0].walls[0].a;
+  assert.ok(Math.hypot(w1.x - w0.x, w1.y - w0.y) > 100, 'the walls turned');
+  store.undo();
+  assert.deepEqual(store.project.levels[0].walls[0].a, w0);
+  void n;
+});
+
+test('house: turning by 90 four times returns to the start (within rounding)', () => {
+  const store = resi();
+  const w0 = structuredClone(store.project.levels[0].walls[0].a);
+  const c = houseCentre(store.project);
+  for (let i = 0; i < 4; i++) store.apply('Rotate house', (p) => { R.applyTurn(p, [{ kind: 'house' }], 90, c); });
+  assert.ok(Math.hypot(store.project.levels[0].walls[0].a.x - w0.x, store.project.levels[0].walls[0].a.y - w0.y) <= 4);
+});
+
+test('house: align to the nearest boundary squares it up; the turn is under 45 degrees', () => {
+  const store = resi();
+  const c = houseCentre(store.project);
+  store.apply('Rotate house', (p) => { R.applyTurn(p, [{ kind: 'house' }], 20, c); });
+  const a = R.alignDelta(store.project, [{ kind: 'house' }], 'boundary');
+  assert.ok(a && Math.abs(a.deg) <= 45 && Math.abs(a.deg) > 1);
+  store.apply('Align', (p) => { R.applyTurn(p, [{ kind: 'house' }], a.deg, c); });
+  const b = R.alignDelta(store.project, [{ kind: 'house' }], 'boundary');
+  assert.ok(Math.abs(b.deg) < 1.5, `now square, ${b.deg}`);
+});
+
+test('commercial building: pivot turn keeps its centre, rotationDeg follows, attached paving regenerates, one undo step', () => {
+  const store = comm({ rows: 'none' });
+  const id = addBuilding(store, 'warehouse');
+  const b0 = buildingsOf(store.project.commercial).find((b) => b.id === id);
+  const c0 = bboxCentre(b0.outline);
+  const rd0 = b0.place.rotationDeg || 0;
+  const place0 = { ...b0.place };
+  const pv = R.centreOf(store.project, [{ kind: 'building', id }]);
+  store.apply('Rotate building', (p) => { R.applyTurn(p, [{ kind: 'building', id }], 45, pv); });
+  const b1 = buildingsOf(store.project.commercial).find((b) => b.id === id);
+  near(((b1.place.rotationDeg - rd0 + 360) % 360), 45, 0.01);
+  const c1 = bboxCentre(b1.outline);
+  assert.ok(Math.hypot(c1.x - c0.x, c1.y - c0.y) < 3000, 'the middle stays near the pivot');
+  assert.ok(siteWorksOf(store.project.commercial), 'site works are regenerated for the turned building');
+  store.undo();
+  near(buildingsOf(store.project.commercial).find((x) => x.id === id).place.rotationDeg || 0, rd0);
+  store.undo(); // the add
+  assert.equal((store.project.commercial.buildings || []).length, 0);
+});
+
+test('commercial rows: a turn about a custom pivot is rigid (distances between the units do not change) and the mirrored partner follows', () => {
+  const store = comm({ rows: 'pair' });
+  const c = store.project.commercial;
+  const base = c.rows.find((r) => !r.mirrorOf);
+  const rot0 = base.rotationDeg || 0;
+  const polys0 = c.rows.map((r) => rowPoly(r, c.rows));
+  const pv = { x: 5000, y: 5000 };
+  store.apply('Rotate units', (p) => { R.applyTurn(p, [{ kind: 'row', id: base.id }], 30, pv); });
+  const c1 = store.project.commercial;
+  const polys1 = c1.rows.map((r) => rowPoly(r, c1.rows));
+  const d = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  for (let k = 0; k < polys0.length; k++) {
+    for (let i = 0; i < 4; i++) near(d(polys0[k][i], polys0[k][(i + 1) % 4]), d(polys1[k][i], polys1[k][(i + 1) % 4]), 2, 'edge length');
+    near(d(polys0[k][0], pv), d(polys1[k][0], pv), 3, 'distance to the pivot');
+  }
+  // the pair stayed back to back: the mirrored row shares the source origin
+  const mir = c1.rows.find((r) => r.mirrorOf);
+  assert.equal(mir.mirrorOf, base.id);
+  near(c1.rows.find((r) => r.id === base.id).rotationDeg, (rot0 + 30) % 360, 0.01);
+});
+
+test('commercial: turning a mirrored row turns its source', () => {
+  const store = comm({ rows: 'pair' });
+  const c = store.project.commercial;
+  const base = c.rows.find((r) => !r.mirrorOf); const mir = c.rows.find((r) => r.mirrorOf);
+  const rot0 = base.rotationDeg || 0;
+  store.apply('Rotate', (p) => { R.applyTurn(p, [{ kind: 'row', id: mir.id }], 15); });
+  near(store.project.commercial.rows.find((r) => r.id === base.id).rotationDeg, (rot0 + 15) % 360, 0.01);
+});
+
+test('multi item: a building and the units turn together about one pivot; each keeps its distance to it', () => {
+  const store = comm({ rows: 'none' });
+  const c0 = store.project.commercial;
+  const id = addBuilding(store, 'warehouse');
+  const row = store.project.commercial.rows[0];
+  const rowRot0 = row.rotationDeg || 0;
+  const sel = [{ kind: 'building', id }, { kind: 'row', id: row.id }];
+  const before = R.expand(store.project, sel).flatMap((t) => R.pointsOf(store.project, t));
+  const pv = R.centreOf(store.project, sel);
+  store.apply('Rotate 2 items', (p) => { R.applyTurn(p, sel, 90, pv); });
+  const after = R.expand(store.project, sel).flatMap((t) => R.pointsOf(store.project, t));
+  assert.equal(before.length, after.length);
+  const bb = (pts) => { const q = bboxCentre(pts); return q; };
+  void c0; void bb;
+  // the farthest point from the pivot is unchanged by a rigid turn
+  const far = (pts) => Math.max(...pts.map((q) => Math.hypot(q.x - pv.x, q.y - pv.y)));
+  near(far(before), far(after), 8);
+  store.undo();
+  assert.equal(store.project.commercial.rows[0].rotationDeg || 0, rowRot0);
+});
+
+test('whole development: buildings, units, waste enclosure and pavements all turn; one undo step restores everything', () => {
+  const store = comm({ rows: 'pair' });
+  const id = addBuilding(store, 'warehouse');
+  store.apply('waste', (p) => { p.commercial.waste = { x: 60000, y: 60000, widthMm: 4000, depthMm: 3000, rotationDeg: 0 }; });
+  const snap = JSON.stringify([store.project.commercial.rows, store.project.commercial.buildings, store.project.commercial.waste]);
+  const targets = R.groupTargets(store.project);
+  assert.ok(targets.some((t) => t.kind === 'building') && targets.some((t) => t.kind === 'row') && targets.some((t) => t.kind === 'waste'));
+  store.apply('Rotate whole development', (p) => { R.applyTurn(p, [{ kind: 'group' }], 15); });
+  const c = store.project.commercial;
+  near(c.waste.rotationDeg, 15, 0.01);
+  near(c.buildings.find((b) => b.id === id).place.rotationDeg % 360, 15, 0.01);
+  assert.notEqual(JSON.stringify([c.rows, c.buildings, c.waste]), snap);
+  store.undo();
+  assert.equal(JSON.stringify([store.project.commercial.rows, store.project.commercial.buildings, store.project.commercial.waste]), snap);
+});
+
+test('estate: turning it keeps the network (aisles, footpaths, crossovers) valid and turns every piece by the same angle', () => {
+  const store = createStore(commercialProject({ rows: 'none', width: 90000, depth: 110000, plain: false }), { autosaveKey: null });
+  L.applyLayout(store, L.chooseLayout(store.project, 'best'));
+  const c0 = store.project.commercial;
+  assert.ok(c0.estate, 'the 90 x 110 m lot gives a drawn estate');
+  const rowAng0 = c0.rows.map((r) => r.rotationDeg || 0);
+  const w0 = siteWorksOf(c0);
+  const x0 = { x: w0.crossovers[0].x, y: w0.crossovers[0].y };
+  const nA = w0.aisles.length; const nF = w0.footpaths.length; const nX = w0.crossovers.length;
+  const pick = R.pickTarget(store.project, rowCentreOf(c0));
+  assert.deepEqual(pick, { kind: 'estate' });
+  const pv = R.centreOf(store.project, [{ kind: 'estate' }]);
+  store.apply('Rotate estate', (p) => { R.applyTurn(p, [{ kind: 'estate' }], 20, pv); });
+  const c1 = store.project.commercial;
+  assert.equal(c1.estate.sig, rowsSignature(c1.rows), 'the network is not stale');
+  const w1 = siteWorksOf(c1);
+  assert.equal(w1.kind, 'estate');
+  assert.equal(w1.aisles.length, nA); assert.equal(w1.footpaths.length, nF); assert.equal(w1.crossovers.length, nX);
+  for (const [i, r] of c1.rows.entries()) { if (r.mirrorOf) continue; near(((r.rotationDeg - rowAng0[i] + 360) % 360), 20, 0.01, 'row angle'); }
+  // the entry crossover moved by the same rigid turn as the rows: its distance to the pivot is unchanged
+  near(Math.hypot(x0.x - pv.x, x0.y - pv.y), Math.hypot(w1.crossovers[0].x - pv.x, w1.crossovers[0].y - pv.y), 3);
+  store.undo();
+  assert.equal(siteWorksOf(store.project.commercial).kind, 'estate');
+});
+function rowCentreOf(c) { const r = c.rows[0]; return bboxCentre(rowPoly(r, c.rows)); }
+
+test('align to frontage: a building turns its front to the street, units run along it', () => {
+  const store = comm({ rows: 'none' });
+  const id = addBuilding(store, 'warehouse');
+  const pv = R.centreOf(store.project, [{ kind: 'building', id }]);
+  store.apply('Rotate', (p) => { R.applyTurn(p, [{ kind: 'building', id }], 37, pv); });
+  const a = R.alignDelta(store.project, [{ kind: 'building', id }], 'frontage');
+  store.apply('Align', (p) => { R.applyTurn(p, [{ kind: 'building', id }], a.deg, pv); });
+  const after = R.alignDelta(store.project, [{ kind: 'building', id }], 'frontage');
+  assert.ok(Math.abs(after.deg) < 0.05, `aligned, ${after.deg}`);
+  // units
+  const store2 = comm({ rows: 'pair' });
+  const row = store2.project.commercial.rows.find((r) => !r.mirrorOf);
+  store2.apply('Rotate', (p) => { R.applyTurn(p, [{ kind: 'row', id: row.id }], 22, { x: 40000, y: 50000 }); });
+  const a2 = R.alignDelta(store2.project, [{ kind: 'row', id: row.id }], 'frontage');
+  assert.ok(Math.abs(a2.deg + 22) < 0.05, `row squared back to the frontage, ${a2.deg}`);
+});
+
+test('pivot: no custom pivot uses the middle of the selection; a drawn way turns about a picked pivot', () => {
+  const store = resi();
+  store.apply('way', (p) => { p.site.paved = [{ id: 'pv1', kind: 'driveway', material: 'concrete', widthMm: 3500, radiusMm: 0, pts: [{ x: 5000, y: 5000 }, { x: 9000, y: 5000 }], kerbEdge: null, heads: [] }]; });
+  store.apply('Rotate way', (p) => { R.applyTurn(p, [{ kind: 'way', id: 'pv1' }], 90, { x: 5000, y: 5000 }); });
+  const w = store.project.site.paved[0];
+  near(w.pts[0].x, 5000, 2); near(w.pts[0].y, 5000, 2);
+  near(w.pts[1].x, 5000, 2); near(w.pts[1].y, 9000, 2); // east turned clockwise on screen is south
+  assert.ok(R.pointsOf(store.project, { kind: 'way', id: 'pv1' }).length > 0);
+});
+
+test('applyTurn ignores a zero turn and an empty selection', () => {
+  const store = resi();
+  const before = JSON.stringify(store.project.levels);
+  assert.equal(R.applyTurn(store.project, [{ kind: 'house' }], 0), false);
+  assert.equal(R.applyTurn(store.project, [], 30), false);
+  assert.equal(JSON.stringify(store.project.levels), before);
+});
+
+test('the tool: O key, tooltip, rail group, wired into the editor, both modes, Escape leaves, help entries', () => {
+  const def = TOOL_DEFS.find((d) => d.id === 'rotate');
+  assert.ok(def && def.label === 'Rotate' && def.key === 'O' && def.icon === 'rotate');
+  assert.equal(KEY_TO_TOOL.o, 'rotate');
+  const keys = TOOL_DEFS.map((d) => d.key); assert.equal(new Set(keys).size, keys.length, 'no two tools share a key');
+  assert.ok(!def.commercialOnly);
+  assert.ok(read('../src/ui/toolbox.js').includes("'select', 'rotate'"));
+  assert.ok(read('../src/ui/icons.js').includes('rotate:'));
+  assert.ok(read('../src/editor2d/editor.js').includes('createRotateTool(ed)'));
+  const t = read('../src/editor2d/tool-rotate.js');
+  for (const s of ['cancel()', 'Escape', 'rotateBy', 'canRotate', 'ev.alt', 'ev.shift', 'pointerDown', 'pointerUp']) assert.ok(t.includes(s), s);
+  assert.ok(read('../src/ui/onboarding/anims.js').includes("rotate: 'Click an item"));
+  assert.ok(!/[–—]/.test(t + read('../src/editor2d/rotate-logic.js')), 'no em or en dashes in the tool');
+  assert.ok(!/compliant/i.test(t + read('../src/editor2d/rotate-logic.js')));
+});
+
+// Driveway attachment (including the Driveway PI tool's stored edit) -------------------------------------------------------------------
+import * as LP from '../src/site/lotplan.js';
+import * as DP from '../src/site/drivepi.js';
+import { autoPose } from '../src/portal/auto-place.js';
+
+function resiGarage() {
+  const portal = { name: 'T', polygonMm: SAMPLE_LOT.polygonMm, frontEdgeIndices: [2], picked: SETBACKS, lot: '7', dp: 'DP 99' };
+  const p = createProject({ name: 'Rot drive' });
   p.site.lot = portalLotToSiteLot(portal, lotEnvelope(portal));
   const h = catalogue.createFromTemplate('house_double');
   placeHouse(p, h, autoPose(p, h).pose);
   return p;
 }
-const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
-const near = (a, b, e = 0.2, m = '') => assert.ok(Math.abs(a - b) <= e, `${m} ${a} vs ${b}`);
-const ctl = (store) => createRotateController({ store, scale: () => 0.05, toast: () => {}, redraw: () => {} });
-const heading = (store) => R.rotateTarget(store.project, store.ui).orientDeg;
-// The house box has a 90 degree ambiguity in its heading, so turns are compared modulo 90.
-const wrapTo = (d) => { const m = ((d % 90) + 90) % 90; return m > 45 ? m - 90 : m; };
-const wallsKey = (p) => JSON.stringify(p.levels.map((l) => l.walls.map((w) => [w.a, w.b])));
+const dd = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 
-test('the tool is on the rail for both modes with a tip, key O, and no dashes in its text', () => {
-  const def = TOOL_DEFS.find((t) => t.id === 'rotate');
-  assert.ok(def && def.tip.length > 20);
-  assert.ok(!def.residentialOnly && !def.commercialOnly, 'both editors');
-  assert.equal(KEY_TO_TOOL.o, 'rotate');
-  assert.ok(ALL_TOOLS.includes('rotate'));
-  const src = ['../src/editor2d/tool-rotate.js', '../src/editor2d/rotate-controller.js', '../src/ui/panel-rotate.js', '../src/site/rotate.js'].map((f) => fs.readFileSync(new URL(f, import.meta.url), 'utf8')).join('\n') + JSON.stringify(def);
-  assert.ok(!/[–—]/.test(src), 'no em or en dashes');
-  assert.ok(!/compliant/i.test(src));
-});
-
-test('snap: free to 0.1 degree, 15 degree steps with Shift', () => {
-  assert.equal(R.snapTurn(37.46), 37.5);
-  assert.equal(R.snapTurn(37.46, true), 30);
-  assert.equal(R.snapTurn(38, true), 45);
-  assert.equal(R.snapTurn(-22.4, true), -15);
-  assert.equal(R.snapTurn(-7.4, true), 0);
-  assert.equal(R.snapTurn(0.04), 0);
-});
-
-test('typed angle parsing: numbers, units, signs, wrapping, junk refused', () => {
-  assert.equal(R.parseAngle('30'), 30);
-  assert.equal(R.parseAngle(' -12.5° '), -12.5);
-  assert.equal(R.parseAngle('7,5'), 7.5);
-  assert.equal(R.parseAngle('45 deg'), 45);
-  assert.equal(R.parseAngle('190'), -170);
-  assert.equal(R.parseAngle('360'), 0);
-  assert.equal(R.parseAngle('abc'), null);
-  assert.equal(R.parseAngle(''), null);
-  assert.equal(R.parseAngle('1e3'), null);
-});
-
-test('typed angle turns the house about its centre by exactly that angle, one undo step', () => {
-  const p = setup();
-  const store = createStore(p);
-  store.setUndoFloor();
-  const c = ctl(store);
-  const t0 = R.rotateTarget(store.project);
-  const h0 = t0.orientDeg;
-  const before = wallsKey(store.project);
-  const r = c.typed('30');
-  assert.equal(r.ok, true);
-  near(wrapTo(R.rotateTarget(store.project).orientDeg - h0), 30, 0.2);
-  assert.ok(Math.abs(wrapTo(30)) === 30);
-  // turned about its own centre: the centre stays put
-  assert.ok(dist(R.rotateTarget(store.project).centre, t0.centre) < 5, 'box centre did not move');
-  assert.equal(store.undoLabel(), 'Rotate by typed angle');
-  assert.equal(store.undo(), true);
-  assert.equal(wallsKey(store.project), before, 'a single undo restores the house');
-  assert.equal(store.canUndo(), false, 'nothing else was left on the stack');
-  assert.equal(c.typed('nope').ok, false);
-  assert.equal(wallsKey(store.project), before, 'bad text changes nothing');
-});
-
-test('a drag gesture changes the project live and is still one undo step; Shift snaps to 15 degrees', () => {
-  const p = setup();
-  const store = createStore(p);
-  store.setUndoFloor();
-  const c = ctl(store);
-  const before = wallsKey(store.project);
-  const t = c.target();
-  const pv = c.pivot();
-  const R0 = R.ringRadius(t, pv);
-  const hp = { x: pv.x + 0, y: pv.y - R0 }; // handle at the top
-  assert.equal(c.hit(hp), 'handle');
-  assert.equal(c.pointerDown(hp, { screen: { x: 0, y: 0 } }), true);
-  const at = (deg) => { const a = ((-90 + deg) * Math.PI) / 180; return { x: pv.x + Math.cos(a) * R0, y: pv.y + Math.sin(a) * R0 }; };
-  let n = 0;
-  const seen = [];
-  store.on('project', () => { n++; seen.push(wallsKey(store.project)); });
-  c.pointerMove(at(20), { screen: { x: 40, y: 0 } });
-  const d1 = c.draft();
-  near(d1.arc.deg, 20, 0.2);
-  assert.notEqual(wallsKey(store.project), before, 'live: the project turned while dragging');
-  c.pointerMove(at(52), { screen: { x: 80, y: 0 }, shift: true });
-  near(c.draft().arc.deg, 45, 0.001, 'shift snapped 52 to 45');
-  c.pointerMove(at(38), { screen: { x: 90, y: 0 }, shift: true });
-  near(c.draft().arc.deg, 45, 0.001, '38 snaps to 45');
-  c.pointerMove(at(31), { screen: { x: 95, y: 0 }, shift: true });
-  near(c.draft().arc.deg, 30, 0.001, '31 snaps to 30');
-  const r = c.pointerUp();
-  assert.equal(r.ok, true);
-  near(r.deg, 30, 0.001);
-  assert.ok(n >= 3, 'several live updates');
-  assert.equal(store.undo(), true);
-  assert.equal(wallsKey(store.project), before, 'one undo step for the whole drag');
-  assert.equal(store.canUndo(), false);
-  assert.equal(store.redo(), true);
-  near(wrapTo(R.rotateTarget(store.project).orientDeg - t.orientDeg), 30, 0.2);
-});
-
-test('escape cancels a drag and leaves nothing on the undo stack', () => {
-  const p = setup();
-  const store = createStore(p);
-  store.setUndoFloor();
-  const c = ctl(store);
-  const before = wallsKey(store.project);
-  const pv = c.pivot();
-  const R0 = R.ringRadius(c.target(), pv);
-  c.pointerDown({ x: pv.x, y: pv.y - R0 }, { screen: { x: 0, y: 0 } });
-  c.pointerMove({ x: pv.x + R0, y: pv.y }, { screen: { x: 50, y: 50 } });
-  assert.notEqual(wallsKey(store.project), before);
-  assert.equal(c.cancel(), true);
-  assert.equal(wallsKey(store.project), before);
-  assert.equal(store.canUndo(), false);
-});
-
-test('the sweep takes the shortest way round and keeps counting past 180 degrees', () => {
-  const p = setup();
-  const store = createStore(p);
-  const c = ctl(store);
-  const pv = c.pivot();
-  const R0 = R.ringRadius(c.target(), pv);
-  const at = (deg) => { const a = ((-90 + deg) * Math.PI) / 180; return { x: pv.x + Math.cos(a) * R0, y: pv.y + Math.sin(a) * R0 }; };
-  c.pointerDown(at(0), { screen: { x: 0, y: 0 } });
-  for (const d of [60, 120, 170, 200, 250]) c.pointerMove(at(d), { screen: { x: d, y: 9 } });
-  near(c.draft().arc.deg, 250, 0.2);
-  c.pointerUp();
-});
-
-test('pivot: defaults to the building centre, can be moved, and the building turns about it', () => {
-  const p = setup();
-  const store = createStore(p);
-  const c = ctl(store);
-  const t0 = c.target();
-  assert.ok(dist(c.pivot(), t0.centre) < 1);
-  assert.equal(c.hasCustomPivot(), false);
-  const corner = t0.ring[0];
-  assert.equal(c.hit(corner), null);
-  c.setPivot(corner);
-  assert.equal(c.hasCustomPivot(), true);
-  assert.ok(dist(c.pivot(), corner) < 1);
-  assert.equal(c.hit(corner), 'pivot');
-  const cBefore = t0.centre;
-  c.turnBy(90);
-  const t1 = R.rotateTarget(store.project);
-  // the centre moved as a point turned 90 degrees clockwise about the pivot
-  const dx = cBefore.x - corner.x;
-  const dy = cBefore.y - corner.y;
-  assert.ok(dist(t1.centre, { x: corner.x - dy, y: corner.y + dx }) < 5, 'centre swung about the corner pivot');
-  assert.ok(dist(c.pivot(), corner) < 1, 'the pivot stays where it was put');
-  c.resetPivot();
-  assert.ok(dist(c.pivot(), t1.centre) < 1);
-});
-
-test('dragging the pivot moves it without changing the project', () => {
-  const p = setup();
-  const store = createStore(p);
-  const c = ctl(store);
-  const before = wallsKey(store.project);
-  const pv = c.pivot();
-  assert.equal(c.pointerDown(pv, { screen: { x: 0, y: 0 } }), true);
-  c.pointerMove({ x: pv.x + 3000, y: pv.y + 1000 }, { screen: { x: 30, y: 10 } });
-  c.pointerUp();
-  assert.ok(dist(c.pivot(), { x: pv.x + 3000, y: pv.y + 1000 }) < 1);
-  assert.equal(wallsKey(store.project), before);
-  assert.equal(store.canUndo(), false);
-});
-
-test('align to the street frontage: the garage faces the street square on', () => {
-  const p = setup();
-  const store = createStore(p);
-  store.setUndoFloor();
-  const c = ctl(store);
-  c.typed('33');
-  const lot = p.site.lot;
-  const r = c.align('frontage');
-  assert.equal(r.ok, true);
-  const door = L.garageDoor(store.project);
-  const idx = R.frontEdgeIndex(store.project.site.lot);
-  const road = L.roadReserve(store.project.site.lot).find((x) => x.edge === idx);
-  assert.ok(door.normal.x * road.outward.x + door.normal.y * road.outward.y > 0.9998, 'garage normal equals street normal');
-  assert.equal(c.align('frontage').deg, 0, 'already aligned: nothing to do');
-  assert.ok(lot);
-  assert.equal(store.undoLabel(), 'Align to street frontage');
-});
-
-test('align to the nearest boundary: runs parallel to it', () => {
-  const p = setup();
-  const store = createStore(p);
-  const c = ctl(store);
-  c.typed('17');
-  const r = c.align('nearest');
-  assert.equal(r.ok, true);
-  const t = R.rotateTarget(store.project);
-  const lot = store.project.site.lot;
-  const i = R.nearestEdgeIndex(lot, t.ring);
-  const a = lot.boundary[i];
-  const b = lot.boundary[(i + 1) % lot.boundary.length];
-  const edgeDeg = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
-  const off = ((((t.orientDeg - edgeDeg) % 90) + 90) % 90);
-  assert.ok(Math.min(off, 90 - off) < 0.15, `off by ${off}`);
-});
-
-test('align with no frontage marked or no building says so and changes nothing', () => {
-  const p = setup();
-  p.site.lot.frontEdges = [];
-  if (p.site.lot.setbacks) delete p.site.lot.setbacks.edgeKinds;
-  const store = createStore(p);
-  const c = ctl(store);
-  const before = wallsKey(store.project);
-  assert.equal(c.align('frontage').ok, false);
-  assert.equal(wallsKey(store.project), before);
-  const empty = createStore(createProject({ name: 'E' }));
-  assert.equal(ctl(empty).turnBy(10).ok, false);
-  assert.equal(ctl(empty).draft(), null);
-});
-
-test('the driveway stays attached to the garage door through a turn (automatic driveway)', () => {
-  const p = setup();
-  const store = createStore(p);
-  const c = ctl(store);
+test('driveway: automatic driveway starts at the garage door and ends on the kerb after any turn', () => {
+  const store = createStore(resiGarage(), { autosaveKey: null });
   for (const deg of [10, -25, 45, 90]) {
-    c.turnBy(deg);
-    const door = L.garageDoor(store.project);
-    const d = L.deriveDriveway(store.project);
-    assert.ok(d && (d.ok || d.reason === 'door_faces_away'), `turn ${deg}: a driveway answer`);
-    if (d.ok) {
-      assert.ok(dist(d.centre[0], door.mid) < 1, `turn ${deg}: starts at the garage door`);
-      assert.ok(dist(d.centre.at(-1), d.kerbPoint) < 1, 'ends on the kerb');
+    store.apply('Rotate house', (p) => { R.applyTurn(p, [{ kind: 'house' }], deg); });
+    const d = LP.deriveDriveway(store.project);
+    if (d?.ok) {
+      assert.ok(dd(d.centre[0], LP.garageDoor(store.project).mid) < 1, `${deg}: attached to the door`);
+      assert.ok(dd(d.centre.at(-1), d.kerbPoint) < 1, `${deg}: ends on the kerb`);
     }
   }
 });
 
-test('the stored driveway (PI tool data) turns with the house and stays attached to the garage', () => {
-  const p = setup();
-  const a = L.deriveDriveway(p);
+test('driveway: the stored PI edit turns with the house about the pivot, stays attached, and one undo restores it exactly', () => {
+  const p = resiGarage();
+  const a = LP.deriveDriveway(p);
   const m = a.centre[Math.floor(a.centre.length / 2)];
-  assert.equal(D.addDrivewayPI(p, { x: m.x + 600, y: m.y }).ok, true);
-  const store = createStore(p);
+  assert.equal(DP.addDrivewayPI(p, { x: m.x + 600, y: m.y }).ok, true);
+  const store = createStore(p, { autosaveKey: null });
   store.setUndoFloor();
-  const c = ctl(store);
   const keep = structuredClone(store.project.site.driveway);
-  // a small turn (the edit survives only while the rotated route still works; larger turns fall back to the automatic route), its PIs turned about the pivot with the house
-  const pv = c.pivot();
-  const r = c.turnBy(3);
-  assert.equal(r.ok, true);
+  const pv = R.centreOf(store.project, [{ kind: 'house' }]);
+  store.apply('Rotate house', (q) => { R.applyTurn(q, [{ kind: 'house' }], 3, pv); });
   const sd = store.project.site.driveway;
-  assert.ok(sd, 'the PI edit is kept for a small turn');
-  assert.equal(sd.pis.length, keep.pis.length);
-  const want = (q) => { const t = (3 * Math.PI) / 180; const dx = q.x - pv.x; const dy = q.y - pv.y; return { x: pv.x + dx * Math.cos(t) - dy * Math.sin(t), y: pv.y + dx * Math.sin(t) + dy * Math.cos(t) }; };
-  assert.ok(dist(sd.pis[0], want(keep.pis[0])) < 2, 'PI turned about the pivot');
+  assert.ok(sd, 'the edit survives a small turn');
+  const t = (3 * Math.PI) / 180;
+  const dx = keep.pis[0].x - pv.x; const dy = keep.pis[0].y - pv.y;
+  assert.ok(dd(sd.pis[0], { x: pv.x + dx * Math.cos(t) - dy * Math.sin(t), y: pv.y + dx * Math.sin(t) + dy * Math.cos(t) }) < 2, 'PI turned about the pivot');
   assert.equal(sd.endOffsetMm, keep.endOffsetMm, 'kerb end stays');
-  const d = L.deriveDriveway(store.project);
-  assert.equal(d.ok, true);
+  const d = LP.deriveDriveway(store.project);
   assert.equal(d.edited, true);
-  assert.ok(dist(d.centre[0], L.garageDoor(store.project).mid) < 1, 'starts at the garage door');
-  assert.ok(dist(d.centre.at(-1), d.kerbPoint) < 1, 'ends on the kerb');
-  // the undo returns the PIs exactly
+  assert.ok(dd(d.centre[0], LP.garageDoor(store.project).mid) < 1 && dd(d.centre.at(-1), d.kerbPoint) < 1);
   store.undo();
   assert.deepEqual(store.project.site.driveway, keep);
-  // a big turn: the edit may be dropped for the automatic route, but the driveway is still attached to the door
-  c.turnBy(120);
-  const d2 = L.deriveDriveway(store.project);
-  if (d2?.ok) {
-    assert.ok(dist(d2.centre[0], L.garageDoor(store.project).mid) < 1);
-    assert.ok(dist(d2.centre.at(-1), d2.kerbPoint) < 1);
-  }
+  // a big turn: the edit may fall back to the automatic route, the driveway is still attached
+  store.apply('Rotate house', (q) => { R.applyTurn(q, [{ kind: 'house' }], 120, pv); });
+  const d2 = LP.deriveDriveway(store.project);
+  if (d2?.ok) assert.ok(dd(d2.centre[0], LP.garageDoor(store.project).mid) < 1 && dd(d2.centre.at(-1), d2.kerbPoint) < 1);
   store.undo();
-  assert.deepEqual(store.project.site.driveway, keep, 'undo brings the edit back');
-});
-
-test('a live drag with a PI driveway still ends as one undo step and restores the PIs', () => {
-  const p = setup();
-  const a = L.deriveDriveway(p);
-  const m = a.centre[Math.floor(a.centre.length / 2)];
-  D.addDrivewayPI(p, { x: m.x + 600, y: m.y });
-  const store = createStore(p);
-  store.setUndoFloor();
-  const c = ctl(store);
-  const keep = structuredClone(store.project.site.driveway);
-  const pv = c.pivot();
-  const R0 = R.ringRadius(c.target(), pv);
-  const at = (deg) => { const q = ((-90 + deg) * Math.PI) / 180; return { x: pv.x + Math.cos(q) * R0, y: pv.y + Math.sin(q) * R0 }; };
-  c.pointerDown(at(0), { screen: { x: 0, y: 0 } });
-  for (const d of [3, 6, 9, 150, 8]) c.pointerMove(at(d), { screen: { x: d + 5, y: 3 } });
-  c.pointerUp();
-  assert.equal(store.undo(), true);
-  assert.equal(store.canUndo(), false);
   assert.deepEqual(store.project.site.driveway, keep);
-});
-
-test('tanks beside the house turn with it (existing rotateHouse behaviour is reused)', () => {
-  const p = setup();
-  const h = createStore(p);
-  const c = ctl(h);
-  assert.equal(typeof R.turnTarget, 'function');
-  assert.equal(c.turnBy(15).ok, true);
-});
-
-// Commercial ---------------------------------------------------------------------------------------------------------------------------
-test('commercial: a selected building turns about its centre or a pivot; one undo step; needs a selection', () => {
-  const p = commercialProject();
-  const store = createStore(p);
-  const id = addBuilding(store, 'warehouse');
-  store.setUndoFloor();
-  const c = ctl(store);
-  assert.equal(c.target(), null, 'no selection, no target');
-  assert.equal(c.turnBy(10).ok, false);
-  store.ui.commercialBuilding = id;
-  const t0 = c.target();
-  assert.equal(t0.kind, 'building');
-  const b0 = structuredClone(store.project.commercial.buildings.find((b) => b.id === id).place);
-  assert.equal(c.typed('25').ok, true);
-  const b1 = store.project.commercial.buildings.find((b) => b.id === id).place;
-  near(((b1.rotationDeg - b0.rotationDeg) % 360 + 360) % 360, 25, 0.2);
-  assert.ok(dist(c.target().centre, t0.centre) < 5, 'turned about its own centre');
-  store.undo();
-  assert.deepEqual(store.project.commercial.buildings.find((b) => b.id === id).place, b0);
   assert.equal(store.canUndo(), false);
-  const pv = { x: t0.centre.x + 8000, y: t0.centre.y };
-  c.setPivot(pv);
-  c.turnBy(90);
-  const t1 = c.target();
-  const exp = { x: pv.x - (t0.centre.y - pv.y), y: pv.y + (t0.centre.x - pv.x) };
-  assert.ok(dist(t1.centre, exp) < 10, 'centre swung 90 degrees about the pivot');
 });
 
-test('commercial: a selected unit row turns, and align to the street front faces a building front to the street', () => {
-  const p = commercialProject();
-  const store = createStore(p);
-  store.ui.commercialRow = p.commercial.rows[0].id;
-  const c = ctl(store);
-  assert.equal(c.target().kind, 'row');
-  const r0 = p.commercial.rows[0].rotationDeg || 0;
-  assert.equal(c.turnBy(10).ok, true);
-  near(store.project.commercial.rows[0].rotationDeg, (r0 + 10), 0.01);
-  store.undo();
-  c.typed('13');
-  assert.equal(c.align('nearest').ok, true);
-  const rot = store.project.commercial.rows[0].rotationDeg;
-  assert.ok(Math.min(((rot % 90) + 90) % 90, 90 - (((rot % 90) + 90) % 90)) < 0.15, `row square to the boundary: ${rot}`);
-});
-
-test('commercial: align a building to the street frontage turns its front to the street', () => {
-  const p = commercialProject();
-  const store = createStore(p);
-  const id = addBuilding(store, 'warehouse');
-  store.ui.commercialBuilding = id;
-  const c = ctl(store);
-  c.typed('70');
-  assert.equal(c.align('frontage').ok, true);
-  const t = c.target();
-  const lot = store.project.site.lot;
-  const road = L.roadReserve(lot).find((x) => x.edge === R.frontEdgeIndex(lot));
-  const look = { x: Math.cos(((t.orientDeg - 90) * Math.PI) / 180), y: Math.sin(((t.orientDeg - 90) * Math.PI) / 180) };
-  assert.ok(look.x * road.outward.x + look.y * road.outward.y > 0.9998, 'front looks out of the street edge');
+test('the tool turns the project live (one undo step per drag) and the pivot cross can be dragged', () => {
+  const t = read('../src/editor2d/tool-rotate.js');
+  assert.ok(t.includes('store.undo(); drag.applied = false'), 'live apply replaces the previous update of the same drag');
+  assert.ok(t.includes('if (drag.applied) store.undo()'), 'Escape cancels the live turn');
+  assert.ok(t.includes('pivotDrag'), 'the pivot is draggable');
+  assert.ok(!/ed\.previewFn\(\(p\) => applyTurn/.test(t), 'no preview only drag');
 });

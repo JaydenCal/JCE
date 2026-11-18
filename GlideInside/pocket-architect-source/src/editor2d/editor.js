@@ -877,7 +877,6 @@ export function createEditor2D(element, store, { catalogue } = {}) {
   api.hardstand = tools.hardstand?.controller || null;
   api.pave = tools.pave?.controller || null;
   api.drivepi = tools.drivepi?.controller || null;
-  api.rotate = tools.rotate?.controller || null;
 
   // Listeners ---------------------------------------------------------------------------------------------------------------------------
   canvas.addEventListener('pointerdown', onPointerDown);

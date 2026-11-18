@@ -27,7 +27,6 @@ const PATHS = {
   tank: '<ellipse cx="12" cy="6.5" rx="6.5" ry="2.5"/><path d="M5.5 6.5v11c0 1.4 2.9 2.5 6.5 2.5s6.5-1.1 6.5-2.5v-11"/>',
   pave: '<path d="M7.5 21c0-7 7-8 7-18M13.5 21c0-5 6-7.5 6-18"/><path d="M10.6 20.5c0-3 3.2-4.4 3.2-7.5 0-2.4 1-4 1-6.5" stroke-dasharray="2 2.2"/>',
   road: '<path d="M4 20.5V13c0-4 3-6 7-6h9.5"/><path d="M9 20.5V14c0-1.6 1.1-2.6 2.8-2.6h8.7"/><path d="M6.5 19V13.4c0-2.8 2.2-4.4 5-4.4H20" stroke-dasharray="2 2.2"/><circle cx="6.5" cy="13.4" r="1.5" fill="currentColor" stroke="none"/>',
-  rotate: '<path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20.5 3.5v4.6h-4.6"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>',
   drivepi: '<path d="M5 20.5c0-6 5-5.5 7-9.5s1-5.5 7.5-6"/><rect x="3.5" y="18.5" width="3" height="3"/><rect x="10.5" y="9.5" width="3" height="3" fill="currentColor" stroke="none"/><circle cx="19.5" cy="5" r="1.7"/>',
   hardstand: '<path d="M3.5 17.5l3-9h11l3 9z"/><path d="M7.5 12.5h9M5.5 15h13M9 8.5l-1 4M15 8.5l1 4"/>',
   measure: '<rect x="2.5" y="8.5" width="19" height="7" rx="1"/><path d="M6.5 8.5v3M10.5 8.5v2M14.5 8.5v3M18.5 8.5v2"/>',

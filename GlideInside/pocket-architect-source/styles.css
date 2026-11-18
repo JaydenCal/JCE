@@ -1078,3 +1078,21 @@ svg { display: block; }
 /* Save design is always labelled. */
 .ps-shell .ps-topbar .ps-prof-save .ps-prof-save-text { display: inline !important; }
 .ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text) { width: auto !important; padding: 0 11px !important; }
+
+/* Rotate tool: the panel over the plan, the live readout and the 1 degree box (src/editor2d/tool-rotate.js) */
+.ps-rot-box { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); display: flex; flex-direction: column; gap: 6px; max-width: calc(100% - 24px); padding: 8px 10px; border-radius: 12px; background: var(--ps-panel); border: 1px solid var(--ps-border-strong); box-shadow: var(--ps-shadow); font-size: 12.5px; z-index: 6; }
+.ps-rot-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ps-rot-head { gap: 8px; }
+.ps-rot-sel { font-weight: 600; }
+.ps-rot-facing { color: var(--ps-muted); font-variant-numeric: tabular-nums; }
+.ps-rot-label { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.ps-rot-input { width: 72px; min-height: 36px; padding: 0 8px; border: 1px solid var(--ps-border-strong); border-radius: 8px; background: var(--ps-canvas); color: var(--ps-text); font: inherit; font-variant-numeric: tabular-nums; }
+.ps-rot-btn { min-height: 36px; padding: 0 12px; border: 1px solid var(--ps-border-strong); border-radius: 8px; background: var(--ps-panel); color: var(--ps-text); font: inherit; font-weight: 600; cursor: pointer; }
+.ps-rot-btn:hover:not(:disabled) { background: var(--ps-hover); }
+.ps-rot-btn[aria-pressed="true"] { background: var(--ps-accent-soft); border-color: var(--ps-accent); color: var(--ps-accent); }
+.ps-rot-btn:disabled, .ps-rot-input:disabled { opacity: 0.45; cursor: default; }
+.ps-rot-hint { color: var(--ps-muted); font-size: 12px; max-width: 460px; }
+.ps-rot-chip { position: absolute; display: flex; flex-direction: column; align-items: flex-start; padding: 5px 10px; border-radius: 10px; background: rgba(26,28,32,0.92); color: #fff; box-shadow: var(--ps-shadow); pointer-events: none; z-index: 7; font-variant-numeric: tabular-nums; }
+.ps-rot-chip strong { font-size: 18px; line-height: 1.1; }
+.ps-rot-chip small { font-size: 11px; opacity: 0.85; }
+.ps-rot-chip[data-snap="lot"], .ps-rot-chip[data-snap="frontage"] { background: #17724a; }
