@@ -23,6 +23,9 @@ import { buildPanelWall, panelEnds, openingsAbove, PANEL_SLOTS } from './panels3
 import { hexOfCladding } from '../commercial/catalogue/construction.js';
 import { addFloorPoly, addGround, addDeck, addRoomBalustrade, addStair, addTank, addFurniture, shade } from './site.js';
 
+// The commercial default roller door colour (Dark grey, the default door in src/commercial/finishes.js), used when a layout names none.
+const ROLLER_DEFAULT_HEX = '#5b6064';
+
 export { disposeModel, modelBounds } from './model-util.js';
 
 export const SLAB = { ground: 0.15, upper: 0.3 };
@@ -376,8 +379,17 @@ export function buildModel(project, opts = {}) {
           ? (project.finishes?.rollerDoor?.colour ? hex(project.finishes.rollerDoor.colour) : '#4b5158')
           : lum(frameHex) < 0.2 ? '#7a5233' : frameHex;
         // A commercial layout names its roller door colour (finishes.rollerDoor); otherwise the door follows the fascia.
-        const doorBase = o.kind === 'roller_door' && project.finishes?.rollerDoor?.colour ? hex(project.finishes.rollerDoor.colour) : fasciaHex;
-        const garageHex = lum(doorBase) < 0.35 ? shade(doorBase, 0.35 / Math.max(0.05, lum(doorBase))) : doorBase;
+        // A commercial roller door with no named colour (a strata layout straight off the card) takes the default door colour, and it
+        // keeps its own colour (no lift) so it never reads as the wall. If it still sits too close to the wall colour it is darkened.
+        const commercialRoller = o.kind === 'roller_door' && project.mode === 'commercial';
+        const doorBase = o.kind === 'roller_door' && project.finishes?.rollerDoor?.colour
+          ? hex(project.finishes.rollerDoor.colour)
+          : commercialRoller ? ROLLER_DEFAULT_HEX : fasciaHex;
+        let garageHex = commercialRoller ? doorBase : lum(doorBase) < 0.35 ? shade(doorBase, 0.35 / Math.max(0.05, lum(doorBase))) : doorBase;
+        if (commercialRoller && fin.externalWalls?.colour) {
+          const wallLum = lum(hex(fin.externalWalls.colour));
+          if (Math.abs(lum(garageHex) - wallLum) < 0.18) garageHex = wallLum > 0.4 ? shade(garageHex, 0.55) : shade(garageHex, 1.6);
+        }
         const mats = {
           frame: o.kind === 'garage_door' || o.kind === 'roller_door' ? lib.plain(garageHex, { tint: ot, rough: 0.55, metal: 0 }) : lib.frame(frameHex, { tint: ot }),
           glass: lib.glass({ tint: ot }),
