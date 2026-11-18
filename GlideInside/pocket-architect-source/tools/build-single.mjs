@@ -22,7 +22,7 @@ const res = await build({
   entryPoints: { 'ps-app': resolve(root, 'src/app.js') },
   bundle: true,
   format: 'esm',
-  minify: true,
+  minify: !process.env.NO_MINIFY,
   target: 'es2020',
   splitting: !inline,
   outdir: inline ? undefined : join(tmpdir(), 'ps-build-out'),
