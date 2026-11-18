@@ -6,6 +6,7 @@
 // never drawn over linework or other text. The legend lives in the title strip, the scale bar in a band below the viewport, and the north
 // point in the emptiest corner of the viewport.
 
+import { drawOverlayOutlines, overlayLegendItems } from './overlays.js';
 import * as G from '../../../model/geometry.js';
 import { classifyEdges, requiredFor } from '../../../model/placement.js';
 import { boundaryDims, roadReserve, ROAD_DEFAULTS, deriveDriveway, clearances, buildingHull, lotLabelLines, inwardNormalOf } from '../../../site/lotplan.js';
@@ -205,7 +206,7 @@ export function northPoint(doc, cx, cy, deg) {
 }
 
 /** Legend block for the title strip. */
-export function legendBlock({ contours = [], paved = null } = {}, avail = null) {
+export function legendBlock({ contours = [], paved = null, extra = [] } = {}, avail = null) {
   const items = [
     ['Lot boundary (DCDB)', (doc, a, b) => { doc.setLineWidth(0.7); doc.setDrawColor(...PEN.ink); doc.line(a, b, a + 12, b); }],
     ['Adjoining lot boundary', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.line(a, b, a + 12, b); }],
@@ -217,13 +218,14 @@ export function legendBlock({ contours = [], paved = null } = {}, avail = null) 
     ...((paved && paved.length ? paved : [{ material: 'concrete' }]).map((e) => [paved && paved.length ? `${PAVE_MATERIALS[e.material].label} paving, ${Math.round(e.areaM2)} m2` : 'Concrete driveway', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.rect(a, b - 1.4, 12, 2.8, 'S'); hatch(doc, [{ x: a, y: b - 1.4 }, { x: a + 12, y: b - 1.4 }, { x: a + 12, y: b + 1.4 }, { x: a, y: b + 1.4 }], HATCH_KIND[e.material]); }])),
     ...(contours || []),
     ['Setback encroachment', (doc, a, b) => { doc.setLineWidth(0.3); doc.setDrawColor(...RED); doc.line(a, b, a + 12, b); }],
+    ...extra, // optional site constraint overlays (planset/overlays.js)
   ];
   const rowH = avail ? Math.min(4, (avail - 6.5) / items.length) : 4;
   return {
     title: 'LEGEND',
     h: 4 + items.length * rowH + 2.5,
     // The title strip asks a legend that does not fit to close up its rows (down to 2.6 mm) instead of being dropped.
-    fitTo: (h) => ((h - 6.5) / items.length >= 2.6 ? legendBlock({ contours, paved }, h) : null),
+    fitTo: (h) => ((h - 6.5) / items.length >= 2.6 ? legendBlock({ contours, paved, extra }, h) : null),
     draw(doc, x, y) {
       items.forEach(([t, draw], i) => {
         const ly = y + 2.4 + i * rowH;
@@ -281,6 +283,8 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
     if (!n.ring || n.ring.length < 3 || n.isRoad) continue;
     polyLine(doc, n.ring.map(S));
   }
+  drawOverlayOutlines(doc, lot, S, (a, b) => segLine(doc, a, b)); // optional site constraint overlays (switched on in the Site panel)
+  dashOff();
   const ground0 = levels.has;
   // The contours are stroked last (so they can leave gaps around labels and the house) and moved back in the page stream to here.
   const gmark = streamMark(doc);
@@ -707,10 +711,11 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
     ['Setback check', cl.status === 'ok' ? 'Inside setbacks (indicative)' : cl.status === 'breach' ? 'Outside setbacks (indicative)' : 'Setbacks not loaded'],
   ].filter(Boolean);
   const pavedSum = pavedSummary(project);
-  const blocks = [legendBlock({ contours: gl.legend, paved: pavedSum.byMaterial })];
+  const blocks = [legendBlock({ contours: gl.legend, paved: pavedSum.byMaterial, extra: overlayLegendItems(lot) })];
   if (schedule.length) blocks.push(scheduleBlock(schedule));
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines and dimensions are indicative.', 'Driveway and road reserve are typical values.'];
   notes.push(ground0 ? gl.note : `No ground levels for this lot.${hullPoly.length ? ' Floor level is on an assumed datum.' : ''}`);
+  if (overlayLegendItems(lot).length) notes.push('Site constraint overlays are indicative, from open government mapping. Check with council.');
   if (schedule.length) notes.push('Edges too short to label are tagged E and listed in the boundary schedule.');
   void clean;
   return { scale, scaleLabel: `1:${scale} @ A3`, kv, blocks, notes, clearance: cl, tooBig, ground: gl, legendContours: gl.legend, groundNote: ground0 ? gl.note : 'No ground levels for this lot.' };

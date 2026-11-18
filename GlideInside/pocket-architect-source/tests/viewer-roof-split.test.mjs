@@ -19,7 +19,7 @@ test('roof off drops canopies and skylights from a building type 3D props, roof 
 
 test('the roof switch reaches the catalogue builder, extras and type props', () => {
   const b = read('../src/viewer3d/build.js');
-  assert.match(b, /addCatalogue3D\(ctx, root, project, \{ showRoof \}\)/);
+  assert.match(b, /addCatalogue3D\(ctx, root, project, \{ showRoof, detail \}\)/);
   const t = read('../src/commercial/catalogue/three.js');
   assert.match(t, /export function addCatalogue3D\(ctx, root, project, \{ showRoof = true \} = \{\}\)/);
   assert.match(t, /if \(showRoof\) for \(const \{ roof, baseMm \} of resolveRoofs/);

@@ -16,6 +16,7 @@ import { terrainAt, floorRLOf } from '../site/model.js';
 import * as S from './site-geom.js';
 import * as G from '../model/geometry.js';
 import { addSiteExtras } from './site-extras.js';
+import { addConstraintTint } from './site-constraints.js';
 import { LAWN_COLOUR } from './site.js';
 import { planGrading, earthworks } from './grading.js';
 import { deriveDriveway, roadReserve } from '../site/lotplan.js';
@@ -469,6 +470,7 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   root.add(rmesh);
 
   addSiteOverlays(root, lot, surf, { showContours });
+  try { addConstraintTint(root, lot, surf); } catch (e) { console.warn('[viewer3d] constraint tint skipped', e); } // optional overlays, never break the model
   let extras = null;
   try {
     extras = addSiteExtras(ctx, root, project, surf, { extent: ext, tm, realAerial: !!texture || !!(lot.aerial?.extent && S.layerOn(lot, 'aerial')) }); // a stored aerial hides the stand-in neighbours even while its picture is still loading

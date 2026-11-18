@@ -28,7 +28,7 @@ import { groundLegendBlock, intervalText } from './contours.js';
 import { drawHouseSheet, houseSheets } from './house.js';
 import { zoneMismatch, RESIDENTIAL_NOTE } from '../../../commercial/zones.js';
 import { drawElevations } from './commercial-elevations.js';
-import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, existingScale, drawLayout, drawMezzanine, drawYield, coverThumbnail, commercialNotes, layoutKind, cap1 } from './commercial.js';
+import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, existingScale, drawLayout, drawMezzanine, drawYield, drawFinancePage, coverThumbnail, commercialNotes, layoutKind, cap1 } from './commercial.js';
 import { lotOf } from '../../../model/placement.js';
 
 void schemeColours;
@@ -55,7 +55,7 @@ async function loadJsPDF(given) {
  * The sheet plan with no drawing done, so the cover's drawing list and the page count always agree.
  * Returns [{ id: 'cover'|'site'|'house', code: 'C000'|'C100'|'A100', title, scale }].
  */
-export function planSetSheets({ project, lot, kind, catalogue = null }) {
+export function planSetSheets({ project, lot, kind, catalogue = null, feasibility = false }) {
   if (kind === 'commercial') return commercialSheetPlan(project, toSiteLot(lot) || (lotOf(project) ? project.site.lot : null));
   const sheets = [{ id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX', scale: 'AS SHOWN' }];
   if (kind === 'site') sheets.push({ id: 'site', code: 'C100', title: 'SITE PLAN', scale: lot ? `1:${siteView(project, lot).scale} @ A3` : 'NTS' });
@@ -65,6 +65,7 @@ export function planSetSheets({ project, lot, kind, catalogue = null }) {
     const title = hs.length > 1 ? name : kind === 'site' ? 'HOUSE PLAN' : 'FLOOR PLAN';
     sheets.push({ id: 'house', code: `A${100 + i}`, title, scale: `1:${h.scale} @ A3`, house: h });
   });
+  if (feasibility) sheets.push({ id: 'finance', code: 'F100', title: 'DEVELOPMENT FEASIBILITY', scale: 'NTS' });
   return sheets;
 }
 
@@ -101,7 +102,7 @@ function withoutScales(JsPDF) {
  * @param {Date} [o.date]
  * @returns {Promise<{ blob: Blob, filename: string, sheets: Array, pages: number }>}
  */
-export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null, terms = null } = {}) {
+export async function exportPlanSet({ project, lot = null, kind = 'site', feasibility = false, builderName = '', download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null, terms = null } = {}) {
   syncCurrency(project);
   if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Glide Inside project');
   if (kind !== 'site' && kind !== 'house' && kind !== 'commercial') throw new Error("exportPlanSet kind must be 'site', 'house' or 'commercial'");
@@ -119,7 +120,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
   const JsPDF = preview ? trialJsPDF(withoutScales(baseJsPDF), PREVIEW_TITLE, PREVIEW_FOOTER) : baseJsPDF;
   const builder = clean(builderName);
   const dateStr = clean(project.titleBlock?.date) || ddmmyyyy(date);
-  const sheets = planSetSheets({ project: wp, lot: kind === 'site' || commercial ? siteLot : null, kind, catalogue });
+  const sheets = planSetSheets({ project: wp, lot: kind === 'site' || commercial ? siteLot : null, kind, catalogue, feasibility });
   const aligned = commercial ? { project: wp } : alignProject(wp);
   const id = projectCode(wp);
   const title = commercial ? commercialTitle(wp) : projectTitle(wp);
@@ -159,8 +160,9 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
         else if (s.id === 'layout') r = drawLayout(doc, cmodel);
         else if (s.id === 'mezz') r = drawMezzanine(doc, cmodel);
         else if (s.id === 'elev') r = drawElevations(doc, cmodel);
+        else if (s.id === 'finance') r = drawFinancePage(doc, wp);
         else r = drawYield(doc, cmodel);
-        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' ? 'SITE DATA' : s.id === 'yield' ? 'KEY FIGURES' : s.id === 'mezz' ? 'MEZZANINE DATA' : s.id === 'elev' ? 'ELEVATION DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
+        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' ? 'SITE DATA' : s.id === 'yield' || s.id === 'finance' ? 'KEY FIGURES' : s.id === 'mezz' ? 'MEZZANINE DATA' : s.id === 'elev' ? 'ELEVATION DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
       }
     } else if (s.id === 'cover') {
       drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
@@ -168,6 +170,9 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
     } else if (s.id === 'site') {
       Object.assign(facts, drawSite(doc, wp, siteLot, { levels }));
       strip = { ...strip, subtitle: ascii(title), kvTitle: 'SITE DATA', kv: facts.kv, notes: facts.notes, blocks: facts.blocks };
+    } else if (s.id === 'finance') {
+      const r = drawFinancePage(doc, wp);
+      strip = { ...strip, subtitle: ascii(title), kvTitle: 'KEY FIGURES', kv: r.kv, notes: r.notes, blocks: r.blocks };
     } else {
       const h = drawHouseSheet(doc, aligned.project, s.house, { catalogue, northDeg: Number(aligned.project.site?.northDeg) || 0, ground: levels ? { lot: siteLot, levels, align: aligned.align || null, unalign: aligned.unalign || null } : null });
       const notes = ['Dimensions in millimetres.', 'Room areas to internal wall faces.', 'Door swings and window positions are shown as designed.', 'Confirm all dimensions on site before ordering.'];
