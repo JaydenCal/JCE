@@ -1,6 +1,7 @@
 <<<<<<<< HEAD:GlideInside/website-live/plan-studio/app/ps-chunk-T6X77QER.js
 <<<<<<<< HEAD:GlideInside/website-live/plan-studio/app/ps-chunk-T6X77QER.js
 <<<<<<<< HEAD:GlideInside/website-live/plan-studio/app/ps-chunk-T6X77QER.js
+<<<<<<<< HEAD:GlideInside/website-live/plan-studio/app/ps-chunk-T6X77QER.js
 import{N as q,O as H,P as K,R as V}from"./ps-chunk-2CD3L6OV.js";import{b as _}from"./ps-chunk-OPAR6OIA.js";import{k as de}from"./ps-chunk-A5UZIHDG.js";import{$ as pe,X as re,Z as Y,_ as ie}from"./ps-chunk-SCWKL5VU.js";import{b as ne}from"./ps-chunk-Z2RRSJCW.js";import{a as n}from"./ps-chunk-N47WDPSB.js";var Ce=`
 ========
 import{N as q,O as H,P as K,R as V}from"./ps-chunk-C4AJQ3O2.js";import{b as _}from"./ps-chunk-6NDQCYCB.js";import{k as de}from"./ps-chunk-A5UZIHDG.js";import{$ as ie,Y as re,_ as Y,aa as pe}from"./ps-chunk-KPPY3CWV.js";import{b as ne}from"./ps-chunk-JR5LO3CV.js";import{a as n}from"./ps-chunk-N47WDPSB.js";var Ce=`
@@ -11,6 +12,9 @@ import{O as q,P as H,Q as K,S as V}from"./ps-chunk-WPSYZJGO.js";import{b as _}fr
 ========
 import{N as q,O as H,P as K,R as V}from"./ps-chunk-Q2FUPMZA.js";import{b as _}from"./ps-chunk-OPAR6OIA.js";import{k as de}from"./ps-chunk-A5UZIHDG.js";import{$ as pe,X as re,Z as Y,_ as ie}from"./ps-chunk-SCWKL5VU.js";import{b as ne}from"./ps-chunk-Z2RRSJCW.js";import{a as n}from"./ps-chunk-N47WDPSB.js";var Ce=`
 >>>>>>>> origin/claude/model-parity:GlideInside/website-live/plan-studio/app/ps-chunk-DFP76HR6.js
+========
+import{N as q,O as H,P as K,R as V}from"./ps-chunk-L3GZ7PG3.js";import{b as _}from"./ps-chunk-OPAR6OIA.js";import{k as de}from"./ps-chunk-A5UZIHDG.js";import{$ as pe,X as re,Z as Y,_ as ie}from"./ps-chunk-SCWKL5VU.js";import{b as ne}from"./ps-chunk-Z2RRSJCW.js";import{a as n}from"./ps-chunk-N47WDPSB.js";var Ce=`
+>>>>>>>> origin/claude/rotate-tool-v2:GlideInside/website-live/plan-studio/app/ps-chunk-6AR4Z45C.js
 .pas-badge{display:inline-block;font:700 11px var(--ps-font-ui,system-ui,sans-serif);border-radius:99px;padding:1px 8px;margin-right:6px;border:1px solid var(--ps-border,#dcdde0);background:var(--ps-panel,#fff)}
 .pas-badge[data-fit=fits]{background:#dff3e4;border-color:#2f7d46;color:#17492a}.pas-badge[data-fit=rotated],.pas-badge[data-fit=mirrored],.pas-badge[data-fit=rotated-mirrored]{background:#f7e9cc;border-color:#935800;color:#5c3800}.pas-badge[data-fit=too-big]{background:#f7dada;border-color:#b52828;color:#7a1a1a}
 .pas-menu{position:relative}.pas-menu-list{position:absolute;right:0;top:100%;margin-top:4px;z-index:60;background:var(--ps-panel,#fff);border:1px solid var(--ps-border-strong,#b6b8bd);border-radius:var(--ps-radius-lg,6px);box-shadow:var(--ps-shadow);min-width:220px;padding:4px;display:grid}

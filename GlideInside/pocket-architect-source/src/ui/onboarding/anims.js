@@ -397,6 +397,7 @@ SCENES.opening = SCENES.door;
 
 export const HINT_TEXT = {
   select: 'Click a piece to select it, then drag it to move it.',
+  rotate: 'Click an item, then drag round it to turn it. It snaps to 15 degrees and to the lot edges.',
   room: 'Drag a rectangle on the plan. The walls are drawn for you.',
   wall: 'Click each corner in turn. Double click or press Esc to finish.',
   door: 'Hover a wall and click to place a door. Tab flips the swing.',
@@ -418,7 +419,7 @@ export const HINT_TEXT = {
 };
 
 export const HINT_TITLE = {
-  select: 'Select and move', room: 'Draw a room', wall: 'Draw walls', door: 'Add a door', sliding_door: 'Sliding door', garage_door: 'Garage door', roller_door: 'Roller door', opening: 'Plain opening', window: 'Add a window',
+  select: 'Select and move', rotate: 'Rotate', room: 'Draw a room', wall: 'Draw walls', door: 'Add a door', sliding_door: 'Sliding door', garage_door: 'Garage door', roller_door: 'Roller door', opening: 'Plain opening', window: 'Add a window',
   furniture: 'Place furniture', stairs: 'Add stairs', deck: 'Deck or patio', tank: 'Rainwater tank', measure: 'Measure', underlay: 'Trace an underlay', status: 'Status brush', wheel: 'Furniture wheel', '3d': '3D view', walk: 'Walk through',
 };
 

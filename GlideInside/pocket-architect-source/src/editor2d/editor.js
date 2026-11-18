@@ -16,6 +16,7 @@ import { clashIds, createClashNotifier } from './clash.js';
 import { KEY_TO_TOOL } from './tools-meta.js';
 import { createSelectTool } from './tool-select.js';
 import { createMoveHouseTool } from './tool-movehouse.js';
+import { createRotateTool } from './tool-rotate.js';
 import { createCommercialTool } from '../commercial/ui/tool-commercial.js';
 import { drawCommercial, commercialExtents } from '../commercial/draw2d.js';
 import { createHardstandTool, createCarparkTool } from '../commercial/ui/tool-hardstand.js';
@@ -866,6 +867,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
   tools = {
     ...createSelectTool(ed),
     ...createMoveHouseTool(ed),
+    ...createRotateTool(ed),
     ...createCommercialTool(ed),
     ...createHardstandTool(ed),
     ...createCarparkTool(ed),

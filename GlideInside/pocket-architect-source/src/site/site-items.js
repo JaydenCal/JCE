@@ -105,4 +105,11 @@ export function settleSiteItems(project, { quiet = false } = {}) {
 
 /** Move the house and let the tanks and the driveway follow. Use these when a move is committed. */
 export function moveHouseBy(project, dx, dy, opts) { translateHouse(project, dx, dy); return settleSiteItems(project, opts); }
-export function turnHouseBy(project, deg, c, opts) { rotateHouse(project, deg, c); return settleSiteItems(project, opts); }
+export function turnHouseBy(project, deg, c, opts) {
+  rotateHouse(project, deg, c);
+  // An edited driveway (the Driveway PI tool, project.site.driveway) turns with the house, so its PIs keep their place against the garage.
+  // The kerb end stays on the frontage. settleSiteItems then drops the edit only if it no longer works, and the automatic route takes over.
+  const sd = storedDriveway(project);
+  if (sd) setStoredDriveway(project, { ...sd, pis: sd.pis.map((q) => G.rotatePoint(q, c, deg)) });
+  return settleSiteItems(project, opts);
+}

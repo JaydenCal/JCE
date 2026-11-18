@@ -5,6 +5,7 @@ export const DOOR_FAMILY = ['door', 'sliding_door', 'garage_door', 'roller_door'
 export const TOOL_DEFS = [
   { id: 'movehouse', key: 'H', label: 'Move house', icon: 'movehouse' },
   { id: 'select', key: 'V', label: 'Edit (select)', icon: 'select' },
+  { id: 'rotate', key: 'O', label: 'Rotate', icon: 'rotate' },
   { id: 'room', key: 'R', label: 'Room', icon: 'room' },
   { id: 'wall', key: 'W', label: 'Wall', icon: 'wall' },
   { id: 'door', key: 'D', label: 'Door', icon: 'door', family: DOOR_FAMILY },
