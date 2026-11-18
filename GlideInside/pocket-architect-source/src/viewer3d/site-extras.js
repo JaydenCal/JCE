@@ -1,5 +1,4 @@
 // What makes the site read as a street and a garden in the 3D view, built from site.lot and the design (no extra data needed):
-//   * the road: asphalt with a faint centre line, concrete gutter, a roll top kerb, the footpath and street trees on the verge,
 //   * the driveway (from the lot planner's driveway path) with its crossover, the path to the front door, a letterbox,
 //   * garden beds with low bushes along the frontage and Colorbond fences on the side and rear boundaries,
 //   * neighbouring houses as tidy massing models (hip roof, eaves, windows, garage door) and trees at the rear of each lot,
@@ -17,7 +16,7 @@ import { roadReserve, deriveDriveway, buildingHull, orientedBox } from '../site/
 import { addDrawnWays } from './pave3d.js';
 import { pavementModel } from '../commercial/catalogue/pavements/logic.js';
 import { buildingsOf } from '../commercial/catalogue/buildings.js';
-import { frontFrame, houseSpec, toWorld, rng, streetTreeSpots, ROOFS, WALLS } from '../site/neighbours.js';
+import { frontFrame, houseSpec, toWorld, rng, ROOFS, WALLS } from '../site/neighbours.js';
 
 const hasDom = typeof document !== 'undefined';
 const texCache = new Map(); // module level: textures are shared between rebuilds and never disposed with a model
@@ -171,92 +170,12 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
     }
   };
   
-  // 1. Road, kerb, footpath ------------------------------------------------------------------------------------------------
-  const reserves = layerOn(lot, 'road') ? roadReserve(lot, { extendM: 60 }) /* 16/11/2026: 400 m tails crossed large lots as phantom roads */ : [];
+  // 1. Road reserve geometry only (no road surface is drawn: the aerial imagery is the only road, owner 18/11/2026) ---------------
+  // The reserve is still needed to place the front door path and the driveway crossover end.
+  const reserves = roadReserve(lot, { extendM: 60 });
   // A commercial site's drive is its own paved site works (asphalt), never the house driveway in concrete (owner 16/11/2026).
   const dw = layerOn(lot, 'driveway') && project.mode !== 'commercial' ? deriveDriveway(project) : null;
-  const streetDirs = [];
-  if (reserves.length && extent) {
-    const b = new GeoBuilder();
-    for (const r of reserves) {
-      const L = r.lines;
-      const clip = (ln) => clipLine(ln[0], ln[1], extent);
-      const lines = Object.fromEntries(Object.entries(L).map(([k, v]) => [k, clip(v)]));
-      if (Object.values(lines).some((v) => !v)) continue;
-      streetDirs.push(r);
-      const S = (k, step = 1.5) => sampleLine(lines[k], step);
-      // carriageway and the gutter strip
-      strip(b, 'asphalt', S('gutter'), S('farGutter'), 0.025, 6, 1);
-      strip(b, 'gutter', S('kerb', 2), S('gutter', 2), 0.015, 3, 0.15, 0.025); // lip meets the asphalt edge flush
-      strip(b, 'gutter', S('farGutter', 2), S('farKerb', 2), 0.025, 3, 0.15, 0.015);
-      // roll top kerb: profile across the line (t metres out from the kerb face towards the property, height m)
-      const prof = [[0, 0.015], [0.015, 0.1], [0.06, 0.145], [0.13, 0.155], [0.2, 0.14], [0.25, 0.09], [0.3, 0.045], [0.34, 0.03]];
-      // The driveway crossover drops the near kerb (layback): span of the crossover along the street, metres from the kerb line's start.
-      let drop = null;
-      if (dw?.ok && dw.crossover?.polygon?.length && dw.edge === r.edge) {
-        const k0 = lines.kerb[0];
-        const ds = dw.crossover.polygon.map((p) => ((p.x - k0.x) * r.u.x + (p.y - k0.y) * r.u.y) / 1000);
-        drop = [Math.min(...ds), Math.max(...ds)];
-      }
-      // sg: +1 near kerb (profile runs back towards the property), -1 far kerb (profile runs out to the far verge)
-      const kerbLine = (name, sg, span) => {
-        const pts = sampleLineWithBreaks(lines[name], 1.5, span ? [span[0] - 0.6, span[0], span[1], span[1] + 0.6] : []);
-        const k0 = lines[name][0];
-        const along = pts.map((p) => ((p.x - k0.x) * r.u.x + (p.y - k0.y) * r.u.y) / 1000);
-        const u = r.outward;
-        for (let k = 0; k + 1 < prof.length; k++) {
-          for (let i = 0; i + 1 < pts.length; i++) {
-            const P = (p, t, h, sc) => {
-              const o = [(p.x - u.x * sg * t * 1000) / 1000, 0, (p.y - u.y * sg * t * 1000) / 1000];
-              // dropped kerb: height falls to the gutter lip and the roll flattens
-              o[1] = H(o[0], o[2]) + 0.015 + (h - 0.015) * sc;
-              return o;
-            };
-            const sa = kerbDropScale(along[i], span);
-            const sb = kerbDropScale(along[i + 1], span);
-            if (sa === 0 && sb === 0) continue;
-            const p0 = P(pts[i], prof[k][0], prof[k][1], sa);
-            const p1 = P(pts[i + 1], prof[k][0], prof[k][1], sb);
-            const q0 = P(pts[i], prof[k + 1][0], prof[k + 1][1], sa);
-            const q1 = P(pts[i + 1], prof[k + 1][0], prof[k + 1][1], sb);
-            b.quad('kerb', p0, p1, q1, q0, undefined, [0, 1, 0]);
-          }
-        }
-      };
-      kerbLine('kerb', 1, drop);
-      kerbLine('farKerb', -1, null);
-      // footpath: between the near and far footpath lines
-      strip(b, 'path', S('footpathNear', 2), S('footpathFar', 2), 0.04, 1.5, 1);
-      // crisp white edge lines, 0.35 m in from each gutter
-      for (const [name, sg] of [['gutter', 1], ['farGutter', -1]]) {
-        const pts = S(name, 2);
-        const off = (d) => pts.map((q) => ({ x: q.x + r.outward.x * sg * d, y: q.y + r.outward.y * sg * d }));
-        strip(b, 'line', off(300), off(420), 0.033, 1, 1);
-      }
-      // white lane line, dashed
-      const c = S('centreline', 0.5);
-      for (let i = 0; i + 1 < c.length; i++) {
-        if (i % 12 > 5) continue;
-        const dx = c[i + 1].x - c[i].x;
-        const dy = c[i + 1].y - c[i].y;
-        const l = Math.hypot(dx, dy) || 1;
-        const nx = (-dy / l) * 55;
-        const ny = (dx / l) * 55;
-        strip(b, 'line', [{ x: c[i].x + nx, y: c[i].y + ny }, { x: c[i + 1].x + nx, y: c[i + 1].y + ny }], [{ x: c[i].x - nx, y: c[i].y - ny }, { x: c[i + 1].x - nx, y: c[i + 1].y - ny }], 0.033, 1, 1);
-      }
-    }
-    if (!b.empty) {
-      const pathMat = mat('#ffffff', { map: conc, roughness: 0.92 });
-      add(makeMesh(b.build(), {
-        asphalt: asphalt ? mat('#eeeeee', { map: asphalt, roughness: 0.95 }) : mat('#45484b', { roughness: 0.95 }),
-        gutter: mat('#a3a19a', { roughness: 0.9 }),
-        kerb: mat('#b4b2aa', { roughness: 0.85 }),
-        path: conc ? pathMat : mat('#c3c0b7'),
-        line: mat('#f4f3ec', { roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }),
-      }, { ground: true }, { cast: false, receive: true, name: 'road' }));
-      stats.road = true;
-    }
-  }
+  const streetDirs = reserves;
 
   // 2. Driveway, crossover, path to the front door ------------------------------------------------------------------------
   const gravelDrive = (G.polygonArea(lot.boundary) || 0) / 1e6 >= 4000; // rural lots get a gravel drive
@@ -264,7 +183,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   const drivePolys = [];
   {
     const b = new GeoBuilder();
-    if (dw?.ok && !dw.manual) { // a driveway drawn with the Driveway and road tool is built below, in its own material
+    if (dw?.ok && !dw.manual) { // a saved drawn driveway is ignored (the tool is retired), in its own material
       stats.driveway = true;
       const half = dw.widthMm / 2;
       const left = [];
@@ -297,7 +216,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       driveCentres.push(c);
       drivePolys.push(dw.polygon);
     }
-    // Driveways and roads drawn with the Driveway and road tool: one surface per material, draped, with fine edge lines.
+    // Driveways and roads drawn with the Road or pavement tool: one surface per material, draped, with fine edge lines.
     const drawn = addDrawnWays(project, surf);
     if (drawn?.mesh) { add(drawn.mesh); stats.driveway = true; stats.drawn = drawn.stats; for (const c of drawn.centres) driveCentres.push(c); }
     // front door path
@@ -473,25 +392,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   const treeSpots = [];
   // Around a commercial site the neighbours are drawn as plain industrial sheds, not houses.
   if (housesOn) (project.mode === 'commercial' ? buildNeighbourSheds : buildNeighbourHouses)(group, rings, H, stats, treeSpots);
-  if (reserves.length || housesOn) {
-    for (const t of streetTreeSpots(rings)) {
-      const x = t.x * 1000;
-      const y = t.y * 1000;
-      if (extent && (x < extent.x0 + 2000 || x > extent.x1 - 2000 || y < extent.y0 + 2000 || y > extent.y1 - 2000)) continue;
-      // keep clear of the lot's own driveway and the roads' lines
-      if (driveCentres.some((c) => c.some((q, i) => !(i % 2) && Math.hypot(q.x - x, q.y - y) < 2600))) continue;
-      // keep the view of the lot from across the road clear: no street trees in front of its own frontage, on either side of the road
-      if (reserves.some((rv) => {
-        const [pa, pb] = rv.lines.property;
-        const half = G.dist(pa, pb) / 2;
-        const mx = (pa.x + pb.x) / 2; const my = (pa.y + pb.y) / 2;
-        const along = (x - mx) * rv.u.x + (y - my) * rv.u.y;
-        const out = (x - mx) * rv.outward.x + (y - my) * rv.outward.y;
-        return out > 0 && out < 40000 && Math.abs(along) < half + 2500;
-      })) continue;
-      treeSpots.push({ x: t.x, z: t.y, r: t.r, h: t.h, seed: t.seed });
-    }
-  }
+  // Street trees are not drawn: the aerial shows the real road and verge, and a modelled verge tree could sit on it (owner 18/11/2026).
   treeSpots.push(...frontTrees);
   addTrees(group, treeSpots, H, stats);
   addBushes(group, bushSpots, H, stats);

@@ -18,7 +18,7 @@ import * as G from '../model/geometry.js';
 import { addSiteExtras } from './site-extras.js';
 import { LAWN_COLOUR } from './site.js';
 import { planGrading, earthworks } from './grading.js';
-import { deriveDriveway, roadReserve } from '../site/lotplan.js';
+import { deriveDriveway } from '../site/lotplan.js';
 import { buildingsOf } from '../commercial/catalogue/buildings.js';
 import { pavementModel } from '../commercial/catalogue/pavements/logic.js';
 import { addCommercialPavements } from '../commercial/catalogue/pavements/view3d.js';
@@ -106,14 +106,8 @@ export function terrainModel(project, opts = {}) {
           driveways.push({ polys: [dw.polygon, ...(dw.crossover?.polygon?.length > 3 ? [dw.crossover.polygon] : [])], dir: { o: h, u: { x: (st.x - h.x) / l, y: (st.y - h.y) / l } } });
         }
       }
-      // The road reserve corridor (footpath to far kerb) is graded to one plane: smooth longitudinal profile, small crossfall.
+      // No road corridor is flattened: the aerial imagery is the only road (owner 18/11/2026).
       const corridors = [];
-      if (S.layerOn(lot, 'road')) {
-        for (const r of roadReserve(lot, { extendM: 60 })) {
-          const L = r.lines;
-          corridors.push({ poly: [L.footpathNear[0], L.footpathNear[1], L.farKerb[1], L.farKerb[0]].map((q) => ({ x: q.x, y: q.y })), u: r.u, outward: r.outward });
-        }
-      }
       grading = planGrading({ rawAt: rawY, padY, fp, pads: project.mode === 'commercial' && project.commercial ? buildingsOf(project.commercial).map((b) => b.outline).filter((q) => q?.length >= 3) : null, paving, driveways, corridors, cellM: opts.cellM || 0.75 });
     } catch (e) {
       console.warn('[viewer3d] auto grading skipped', e);

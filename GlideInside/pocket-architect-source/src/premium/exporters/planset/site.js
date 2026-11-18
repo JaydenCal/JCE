@@ -102,6 +102,8 @@ function offsetChain(pts, outward, d, ext) {
  * bulb gives one road, not one road per edge. Returns [{ run: [edge], pts, vergeM, lines: { name: [pt] }, reach, outward: [vec] }].
  */
 export function roadModel(lot) {
+  return []; // the automatic road at the frontage is not drawn (owner 18/11/2026); only roads the user drew appear
+  // eslint-disable-next-line no-unreachable
   const n = lot.boundary.length;
   const edges = classifyEdges(lot);
   const front = new Set(edges.filter((e) => e.kind === 'front' || e.kind === 'secondaryFront').map((e) => e.index));

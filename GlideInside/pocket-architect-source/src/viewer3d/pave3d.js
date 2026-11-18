@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import { GeoBuilder } from './mesh-builder.js';
 import { makeMesh } from './model-util.js';
-import { getWays, wayGeometry, MATERIALS } from '../site/pavedways.js';
+import { getWays, wayGeometry, ringWithinBuffer, MATERIALS } from '../site/pavedways.js';
 import { pavementById } from '../commercial/catalogue/pavements/pavements.js';
 import { textureFor } from '../commercial/catalogue/pavements/view3d.js';
 
@@ -72,6 +72,8 @@ export function addDrawnWays(project, surf) {
     const uv = (xm, zm) => [(xm * ca + zm * sa) / tile, (-xm * sa + zm * ca) / tile];
     const V = (xm, zm) => [xm, H(xm, zm) + LIFT_M, zm];
     for (const pc of g.pieces) {
+      // Guard: a piece with a stray or non finite point is skipped, never triangulated (that made a fan of strips across the aerial).
+      if (pc.ring.length < 3 || !ringWithinBuffer(pc.ring, way)) { stats.skipped = (stats.skipped || 0) + 1; continue; }
       stats.pieces += 1;
       stats.byMaterial[way.material] = (stats.byMaterial[way.material] || 0) + 1;
       for (const [p, q, r] of drapeTriangles(pc.ring)) {
