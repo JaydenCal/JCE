@@ -36,6 +36,9 @@ import { hasGround, groundLevelFn, drawGroundLayer, streamMark, outwardSpots, co
 import { levelsModel, fflText } from './levels.js';
 import { envelopePoly } from './lot.js';
 import { elevationScaleOf } from './commercial-elevations.js';
+import { sectionScaleOf } from './commercial-sections.js';
+import { viewTargets } from './commercial-targets.js';
+import { hasUpperPlans, upperScaleOf } from './commercial-upper.js';
 
 export const COMMERCIAL_SHEETS = COMMERCIAL_SHEET_LIST;
 
@@ -250,22 +253,43 @@ export function existingScale(project, lot, { aerial = false } = {}) {
   return `1:${siteView(blankProject(project, lot), lot, { turn: !aerial }).scale} @ A3`;
 }
 
-/** [{ id, code, title, scale }] for the commercial plan set, without drawing anything. `lot` is the site lot (plan mm) or null. */
-export function commercialSheetPlan(project, lot) {
-  const base = COMMERCIAL_SHEETS.map((s) => ({ ...s, scale: 'NTS' }));
-  base[0].scale = 'AS SHOWN';
-  base[4].scale = 'NTS';
-  if (!lot || !project?.commercial) return base;
-  try {
-    const model = commercialModel(project, lot);
-    base[1].scale = `1:${siteView(blankProject(project, lot), lot).scale} @ A3`;
-    base[2].scale = `1:${layoutView(model).scale} @ A3`;
-    base[3].scale = `1:${mezzView(model).scale} @ A3`;
-    base[5].scale = elevationScaleOf(model.project);
-  } catch {
-    // scales stay NTS
+/**
+ * [{ id, code, title, scale, target?, upper? }] for the commercial plan set, without drawing anything. `lot` is the site lot (plan mm) or null. The
+ * list is dynamic: C000 cover, C100 existing site, C101 layout, then (when they have something to show) C102 levels plan and C110 upper level
+ * plans, one elevation sheet (C200, C201...) and one section sheet (C300, C301...) for every building or unit row, then C900 yield and C910
+ * feasibility. A sheet with nothing to draw is not issued.
+ */
+export function commercialSheetPlan(project, lot, { levels = null } = {}) {
+  const out = [
+    { id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX', scale: 'AS SHOWN' },
+    { id: 'existing', code: 'C100', title: 'EXISTING SITE AND LEVELS', scale: 'NTS' },
+    { id: 'layout', code: 'C101', title: 'PROPOSED LAYOUT', scale: 'NTS' },
+  ];
+  let model = null;
+  if (lot && project?.commercial) {
+    try {
+      model = commercialModel(project, lot);
+      out[1].scale = `1:${siteView(blankProject(project, lot), lot).scale} @ A3`;
+      out[2].scale = `1:${layoutView(model).scale} @ A3`;
+    } catch {
+      model = null;
+    }
   }
-  return base;
+  const targets = project?.commercial ? viewTargets(project) : [];
+  const many = targets.length > 1;
+  let up = 0;
+  if (model && model.units.some((u) => mezzanineOf(u.spec).enabled)) out.push({ id: 'upper', code: `C${110 + up++}`, title: 'MEZZANINE LEVEL PLAN', scale: `1:${mezzView(model).scale} @ A3`, upper: 'mezz' });
+  for (const t of targets) if (hasUpperPlans(t)) out.push({ id: 'upper', code: `C${110 + up++}`, title: many ? `UPPER LEVEL PLANS, ${t.tag}` : 'UPPER LEVEL PLANS', scale: upperScaleOf(t), upper: t.key, target: t.key });
+  targets.forEach((t, i) => {
+    let scale = 'NTS';
+    try { scale = elevationScaleOf(project, t, levels); } catch { /* NTS */ }
+    out.push({ id: 'elev', code: `C${200 + i}`, title: many ? `ELEVATIONS, ${t.tag}` : 'ELEVATIONS', scale, target: t.key });
+  });
+  targets.forEach((t, i) => {
+    out.push({ id: 'sect', code: `C${300 + i}`, title: many ? `SECTIONS, ${t.tag}` : 'SECTIONS', scale: sectionScaleOf(t, levels), target: t.key });
+  });
+  out.push({ id: 'yield', code: 'C900', title: 'YIELD SUMMARY AND SCHEDULES', scale: 'NTS' }, { id: 'finance', code: 'C910', title: 'DEVELOPMENT FEASIBILITY', scale: 'NTS' });
+  return out;
 }
 
 // Drawing helpers -----------------------------------------------------------------------------------------------------------

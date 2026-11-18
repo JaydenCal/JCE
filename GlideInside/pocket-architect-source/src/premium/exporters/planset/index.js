@@ -28,6 +28,9 @@ import { groundLegendBlock, intervalText } from './contours.js';
 import { drawHouseSheet, houseSheets } from './house.js';
 import { zoneMismatch, RESIDENTIAL_NOTE } from '../../../commercial/zones.js';
 import { drawElevations } from './commercial-elevations.js';
+import { drawSections, sectionLetters } from './commercial-sections.js';
+import { drawUpperPlans } from './commercial-upper.js';
+import { viewTargets } from './commercial-targets.js';
 import { withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, existingScale, drawLayout, drawMezzanine, drawYield, drawFinancePage, coverThumbnail, commercialNotes, layoutKind, cap1 } from './commercial.js';
 import { lotOf } from '../../../model/placement.js';
 
@@ -55,8 +58,8 @@ async function loadJsPDF(given) {
  * The sheet plan with no drawing done, so the cover's drawing list and the page count always agree.
  * Returns [{ id: 'cover'|'site'|'house', code: 'C000'|'C100'|'A100', title, scale }].
  */
-export function planSetSheets({ project, lot, kind, catalogue = null, feasibility = false }) {
-  if (kind === 'commercial') return commercialSheetPlan(project, toSiteLot(lot) || (lotOf(project) ? project.site.lot : null));
+export function planSetSheets({ project, lot, kind, catalogue = null, feasibility = false, levels = null }) {
+  if (kind === 'commercial') return commercialSheetPlan(project, toSiteLot(lot) || (lotOf(project) ? project.site.lot : null), { levels });
   const sheets = [{ id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX', scale: 'AS SHOWN' }];
   if (kind === 'site') sheets.push({ id: 'site', code: 'C100', title: 'SITE PLAN', scale: lot ? `1:${siteView(project, lot).scale} @ A3` : 'NTS' });
   const hs = houseSheets(alignProject(project).project, catalogue);
@@ -120,13 +123,16 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
   const JsPDF = preview ? trialJsPDF(withoutScales(baseJsPDF), PREVIEW_TITLE, PREVIEW_FOOTER) : baseJsPDF;
   const builder = clean(builderName);
   const dateStr = clean(project.titleBlock?.date) || ddmmyyyy(date);
-  const sheets = planSetSheets({ project: wp, lot: kind === 'site' || commercial ? siteLot : null, kind, catalogue, feasibility });
+  // Ground and floor levels, from the same model the 3D uses (loaded on demand; none when the lot has no ground data).
+  const levels = siteLot ? levelsModel(wp, siteLot, { tm: await loadTerrainModel(wp) }) : null;
+  const sheets = planSetSheets({ project: wp, lot: kind === 'site' || commercial ? siteLot : null, kind, catalogue, feasibility, levels });
   const aligned = commercial ? { project: wp } : alignProject(wp);
   const id = projectCode(wp);
   const title = commercial ? commercialTitle(wp) : projectTitle(wp);
-  // Ground and floor levels, from the same model the 3D uses (loaded on demand; none when the lot has no ground data).
-  const levels = siteLot ? levelsModel(wp, siteLot, { tm: await loadTerrainModel(wp) }) : null;
   const cmodel = commercial ? commercialModel(wp, siteLot, { levels }) : null;
+  const targets = commercial ? viewTargets(wp) : [];
+  const targetsByKey = new Map(targets.map((x) => [x.key, x]));
+  const letters = sectionLetters(targets);
   sheets.forEach((s, i) => { s.n = i + 1; s.no = `GI-${id}-${s.code}`; if (preview) s.scale = 'NOT TO SCALE'; });
 
   const raw = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3', compress: true });
@@ -158,11 +164,12 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
       } else {
         if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null, levels });
         else if (s.id === 'layout') r = drawLayout(doc, cmodel);
-        else if (s.id === 'mezz') r = drawMezzanine(doc, cmodel);
-        else if (s.id === 'elev') r = drawElevations(doc, cmodel);
+        else if (s.id === 'upper') r = s.upper === 'mezz' ? drawMezzanine(doc, cmodel) : drawUpperPlans(doc, cmodel, targetsByKey.get(s.target), levels);
+        else if (s.id === 'elev') r = drawElevations(doc, cmodel, targetsByKey.get(s.target), levels);
+        else if (s.id === 'sect') r = drawSections(doc, cmodel, targetsByKey.get(s.target), letters.get(s.target), levels);
         else if (s.id === 'finance') r = drawFinancePage(doc, wp);
         else r = drawYield(doc, cmodel);
-        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' ? 'SITE DATA' : s.id === 'yield' || s.id === 'finance' ? 'KEY FIGURES' : s.id === 'mezz' ? 'MEZZANINE DATA' : s.id === 'elev' ? 'ELEVATION DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
+        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' ? 'SITE DATA' : s.id === 'yield' || s.id === 'finance' ? 'KEY FIGURES' : s.id === 'upper' ? 'UPPER LEVEL DATA' : s.id === 'elev' ? 'ELEVATION DATA' : s.id === 'sect' ? 'SECTION DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
       }
     } else if (s.id === 'cover') {
       drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });

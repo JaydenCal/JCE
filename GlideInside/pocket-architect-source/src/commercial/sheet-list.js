@@ -1,12 +1,16 @@
-// The commercial plan set pages, in one light module (no PDF code) so the buttons, the gate and the plan set agree on what is sold.
+// The commercial plan set sheet FAMILIES, in one light module (no PDF code) so the buttons, the gate and the plan set agree on what is sold. Plans are
+// C1xx, elevations C2xx (one sheet per building or row group, C200, C201...), sections C3xx, schedules C900 and C910. The sheets a project really gets
+// (a levels plan only with ground data, upper level plans only with an upper level) are built by commercialSheetPlan() in planset/commercial.js.
 export const COMMERCIAL_SHEET_LIST = Object.freeze([
   { id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX' },
-  { id: 'existing', code: 'C100', title: 'EXISTING SITE' },
+  { id: 'existing', code: 'C100', title: 'EXISTING SITE AND LEVELS' },
   { id: 'layout', code: 'C101', title: 'PROPOSED LAYOUT' },
-  { id: 'mezz', code: 'C102', title: 'MEZZANINE LEVEL PLAN' },
-  { id: 'yield', code: 'C103', title: 'YIELD SUMMARY' },
-  { id: 'elev', code: 'C104', title: 'ELEVATIONS' },
-  { id: 'finance', code: 'C105', title: 'DEVELOPMENT FEASIBILITY' },
+  { id: 'levels', code: 'C102', title: 'LEVELS AND GRADING PLAN (INDICATIVE)' },
+  { id: 'upper', code: 'C110', title: 'UPPER LEVEL PLANS' },
+  { id: 'elev', code: 'C200', title: 'ELEVATIONS' },
+  { id: 'sect', code: 'C300', title: 'SECTIONS' },
+  { id: 'yield', code: 'C900', title: 'YIELD SUMMARY AND SCHEDULES' },
+  { id: 'finance', code: 'C910', title: 'DEVELOPMENT FEASIBILITY' },
 ]);
 
 /** 'C000 and C100 to C103': consecutive codes are joined into a range, anything else is listed. */

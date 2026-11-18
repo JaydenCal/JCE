@@ -138,7 +138,9 @@ export function defineType(def) {
       for (const op of s.openings || []) {
         const w = wallIndex.get(`${op.level ?? 0}:${op.wall}`);
         if (!w) continue;
-        const o = S.createOpening({ wallId: w.id, kind: op.kind, offset: op.offset, width: op.width, height: op.height, sill: op.sill ?? 0, style: op.style });
+        // The type specs write `offset` as the LEFT EDGE of the opening along its wall (the lowest x or y), the model stores the opening CENTRE
+        // (see openingSpan in model/geometry.js), so the 3D, the plans and the elevations all read the same place.
+        const o = S.createOpening({ wallId: w.id, kind: op.kind, offset: op.offset + op.width / 2, width: op.width, height: op.height, sill: op.sill ?? 0, style: op.style });
         o.auto = true; o.generated = GEN; o.level = w.level;
         if (op.dock) o.dockDoor = true;
         if (op.seal) o.seal = true;
