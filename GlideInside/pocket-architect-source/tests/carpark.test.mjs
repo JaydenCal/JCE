@@ -294,17 +294,12 @@ test('duplicate drives: a road drawn on top of an existing one is offered a merg
   assert.equal(R.roadList(c).length, 2);
 });
 
-test('duplicate drives: the road tool offers Merge with existing', () => {
-  const { store, ctl, toasts } = rig();
+test('duplicate drives: the road tool no longer offers a merge (the car park meets the frontage at a crossover)', () => {
+  const { ctl, toasts } = rig();
   setHsState({ mode: 'road', roadKind: 'road', roadWidth: null });
   const click = (p) => ctl.pointerDown(p, { screen: { x: 0, y: 0 } });
   for (const q of [[{ x: 72000, y: 10000 }, { x: 72000, y: 60000 }], [{ x: 72200, y: 12000 }, { x: 72200, y: 58000 }]]) { click(q[0]); click(q[1]); ctl.finishRoad(); }
-  const t = toasts.find((x) => x.action?.label === 'Merge with existing');
-  assert.ok(t, 'merge is offered');
-  t.action.onClick();
-  assert.equal(R.roadList(store.project.commercial).length, 1);
-  store.undo();
-  assert.equal(R.roadList(store.project.commercial).length, 2, 'merge is one undo step');
+  assert.ok(!toasts.find((x) => x.action?.label === 'Merge with existing'), 'no merge offer');
 });
 
 test('duplicate drives: the Road or pavement tool merges drawn ways', () => {

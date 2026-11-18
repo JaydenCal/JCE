@@ -251,6 +251,17 @@ function route(g, blocked, sources_, target, costAt) {
   return path.reverse();
 }
 
+/** Up to `n` free cells nearest (i0, j0), nearest first, so a goal that cannot be routed to can fall back to the next one. */
+const nearestFreeList = (g, blocked, i0, j0, n = 12, maxR = 40) => {
+  const out = [];
+  for (let r = 0; r <= maxR && out.length < n; r++) for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) {
+    if (Math.max(Math.abs(di), Math.abs(dj)) !== r) continue;
+    const i = i0 + di; const j = j0 + dj;
+    if (i >= 0 && j >= 0 && i < g.W && j < g.H && !blocked[j * g.W + i]) out.push({ i, j });
+  }
+  return out.slice(0, n);
+};
+
 const nearestFree = (g, blocked, i0, j0, maxR = 60) => {
   for (let r = 0; r <= maxR; r++) for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) {
     if (Math.max(Math.abs(di), Math.abs(dj)) !== r) continue;
@@ -507,11 +518,19 @@ export function generateSiteWorks(project, opts = {}) {
       const goal = nearestFree(g, blocked, tc.i, tc.j, 40) || nearestFree(g, blockedNarrow, tc.i, tc.j, 40);
       if (!goal) { unreachable.push(tg.buildingId); continue; }
       const srcCells = [...new Set(routed)].map(fromCell).map((q) => ({ q, d: Math.abs(q.i - goal.i) + Math.abs(q.j - goal.j) })).sort((p, q) => p.d - q.d).slice(0, 16).map((x) => x.q); // the nearest few network cells are the only sensible starts
-      const path = route(g, blocked, srcCells, goal, costAt) || route(g, blockedNarrow, srcCells, goal, costAt);
+      let path = route(g, blocked, srcCells, goal, costAt) || route(g, blockedNarrow, srcCells, goal, costAt);
+      let used = goal;
+      if (!path) { // the nearest free cell can sit in a pocket cut off from the network: try the next few
+        for (const alt of [...nearestFreeList(g, blocked, tc.i, tc.j, 24), ...nearestFreeList(g, blockedNarrow, tc.i, tc.j, 24)]) {
+          const wide = srcCells.length ? [...new Set(routed)].map(fromCell).sort((p, q) => (Math.abs(p.i - alt.i) + Math.abs(p.j - alt.j)) - (Math.abs(q.i - alt.i) + Math.abs(q.j - alt.j))).slice(0, 16) : srcCells;
+          path = route(g, blocked, wide, alt, costAt) || route(g, blockedNarrow, wide, alt, costAt);
+          if (path) { used = alt; break; }
+        }
+      }
       if (!path) { unreachable.push(tg.buildingId); continue; }
       addPath(path, tg.type === 'fuel-canopy' ? 'forecourt' : 'aisle');
       for (const cc of path) routed.push(cc.j * g.W + cc.i);
-      tg.cell = goal;
+      tg.cell = used;
     }
     // Each crossover the spine does not sit on joins the network, with an entry run from the boundary to its first cell.
     for (let k = 0; k < startCells.length; k++) {

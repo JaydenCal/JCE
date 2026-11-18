@@ -24,14 +24,17 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
   const { chooseBuilding } = await import('../src/commercial/catalogue/fit.js');
   const { applyBuildingChoice, moveBuilding } = await import('../src/commercial/catalogue/ops.js');
   const { buildingsOf } = await import('../src/commercial/catalogue/buildings.js');
-  const warehouse = (rot) => {
-    const store = createStore(commercialProject({ width: 80000, depth: 110000, rows: 'none' }));
-    applyBuildingChoice(store, chooseBuilding(store.project, 'warehouse'));
+  const warehouse = (rot, w = 80000, d = 110000, type = 'warehouse') => {
+    const store = createStore(commercialProject({ width: w, depth: d, rows: 'none', plain: false }));
+    applyBuildingChoice(store, chooseBuilding(store.project, type));
     if (rot) { const b = buildingsOf(store.project.commercial)[0]; moveBuilding(store, b.id, { x: b.place.x, y: b.place.y, rotationDeg: (b.place.rotationDeg || 0) + rot }); }
     return store.project;
   };
   const CASES = {
     warehouse: { project: () => warehouse(0), rerun: true },
+    small: { project: () => warehouse(0, 40000, 60000, 'office'), rerun: true },
+    deepnarrow: { project: () => warehouse(0, 30000, 120000), rerun: true },
+    large: { project: () => warehouse(0, 100000, 140000), rerun: true },
     warehouse25: { project: () => warehouse(25), rerun: true },
     strata: { project: () => commercialProject({ plain: false }), rerun: false },
     hardstand: { project: () => commercialProject({ plain: false }), rerun: false, hardstand: true },
@@ -59,7 +62,7 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
     await ctx.route(/^https:\/\/www\.googletagmanager\.com\//, (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: '' }));
     const page = await ctx.newPage();
     page.on('pageerror', (e) => log.push(`${name} pageerror: ${e.message}`));
-    const shot = async (n) => { await page.waitForTimeout(700); await page.screenshot({ path: path.join(OUT, `${name}-${n}-${TAG}.png`) }); console.log('shot', name, n); };
+    const shot = async (n) => { await page.waitForTimeout(700); for (let k = 0; k < 3; k++) { try { await page.screenshot({ path: path.join(OUT, `${name}-${n}-${TAG}.png`), timeout: 90000 }); console.log('shot', name, n); break; } catch (e) { log.push(`${name} ${n} screenshot retry`); } } };
     await page.goto(`${ORIGIN}/plan-studio/app/index.html?mode=commercial`);
     await page.waitForFunction(() => window.__ps && window.__ps.store, null, { timeout: 30000 });
     await page.waitForTimeout(1200);

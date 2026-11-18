@@ -226,21 +226,10 @@ export function createHardstandController({ store, scale, toast = () => {}, redr
         const w = HS.drawnWarnings(road.polygon, ctx).buildings;
         if (w.length && kind.id !== 'pavement') parts.push(`Crosses ${[...new Set(w)].join(', ')}. It is not blocked, check the layout.`);
         say(parts.join(' '), w.length ? 'warn' : 'ok');
-        offerMerge(res.ids[0]);
       }
     }
     redraw();
     return res;
-  }
-
-  /** When a road lies mostly on an existing road or driveway, offer to merge it (never two parallel strips). */
-  function offerMerge(id) {
-    const dup = R.duplicateRoad(store.project.commercial, id);
-    if (!dup) return null;
-    say(`This lies ${Math.round(dup.fraction * 100)}% on an existing ${dup.generated ? 'driveway or road' : 'road'}. Merge them so there are not two strips side by side.`, 'info', {
-      action: { label: 'Merge with existing', onClick: () => { const r = edit('Merge with existing road', (c) => R.mergeRoadInto(c, id, dup.id, lotRing())); if (r) { setHsState({ selected: dup.generated ? null : dup.id }); say('Merged. One strip remains.', 'ok'); } redraw(); } }, timeout: 12000,
-    });
-    return dup;
   }
 
   function commitRoad(id, patch, label) {
