@@ -93,7 +93,8 @@ export function applyDesignType(store, typeId, catalogue) {
     Object.assign(p, structuredClone(next));
   });
   store.select(null);
-  store.setUI({ activeLevelId: store.project.levels[0].id, levelFilter: 'all' });
+  // The card's title follows the design the person placed from the carousel; a new design type is no longer that design.
+  store.setUI({ activeLevelId: store.project.levels[0].id, levelFilter: 'all', placedDesign: null });
   return store.project;
 }
 
