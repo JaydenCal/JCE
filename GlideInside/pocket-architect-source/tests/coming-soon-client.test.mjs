@@ -202,7 +202,8 @@ test('website: the widget card is Coming soon, the other five stay Available, th
     assert.match(s, /gx-badge soon">Coming soon<\/span><h3>See it on your block widget<\/h3>/, `${f}: widget is Coming soon`);
     for (const t of ['Site overlays', 'Branded siting report', 'Site cost estimator', 'Engineering order menu from JCE', 'Lead inbox and integrations']) assert.match(s, new RegExp(`gx-badge now">Available</span><h3>${t}</h3>`), `${f}: ${t} is Available`);
     assert.ok(!/Site overlays and lead integrations coming soon/.test(s), `${f}: the stale comparison cell is gone`);
-    assert.match(s, /Site overlays and a lead inbox with webhooks are available now\. The website widget is coming soon\./);
+    // the home page dropped its comparison table in marketing round 7; for-builders keeps it
+    if (f === 'for-builders/index.html') assert.match(s, /Site overlays and a lead inbox with webhooks are available now\. The website widget is coming soon\./);
     const soonAt = s.indexOf('<h3 class="gx-sub">Coming soon</h3>');
     assert.ok(soonAt > s.indexOf('Lead inbox and integrations'), `${f}: the five Available cards sit under Available now`);
   }
