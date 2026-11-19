@@ -70,7 +70,7 @@ export function setbacksText(lot) {
   if (sb && (sb.front != null || sb.side != null || sb.rear != null)) {
     // Setback values can be plain metres or rule objects ({ minM } or { value }); requiredFor reads both.
     const f = (k) => { const v = requiredFor(k, sb); return Number.isFinite(v) ? `${v.toFixed(1)} m` : 'check with council'; };
-    return `Council rules loaded. Front ${f('front')}, side ${f('side')}, rear ${f('rear')}`;
+    return `Indicative setbacks loaded. Front ${f('front')}, side ${f('side')}, rear ${f('rear')}`;
   }
   if (lot.setbacksDefault) return 'Council rules not loaded. Indicative setbacks are used';
   if (lot.setbacksStatus === 'error') return 'Council rules could not be loaded. Check with council';
