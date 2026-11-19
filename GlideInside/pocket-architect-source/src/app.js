@@ -11,6 +11,10 @@ import { createEditor2D } from './editor2d/editor.js';
 import { attachSetbacks } from './site/setback-stage.js';
 import { h, isTyping } from './ui/dom.js';
 import { initTheme } from './ui/theme.js';
+import { installPhoneMode, phoneApi } from './phone/mode.js';
+import { injectPhoneCss } from './phone/css.js';
+import { createPhoneChrome } from './phone/chrome.js';
+import { h as hEl } from './ui/dom.js';
 import { buildShell } from './ui/shell.js';
 import { mountToasts, toast } from './ui/toast.js';
 import { mountModals, askConfirm } from './ui/modal.js';
@@ -145,6 +149,8 @@ function initialProject(catalogue) {
 
 async function main() {
   initTheme();
+  installPhoneMode(); // html[data-phone]: a finger on a window up to 700 px wide (src/phone/mode.js)
+  injectPhoneCss();
   const root = document.getElementById('app');
   if (!root) throw new Error('#app is missing');
   const refs = buildShell(root);
@@ -335,6 +341,14 @@ async function main() {
   const drawer = createDrawer(refs.drawer, store, { catalogue, onInventory: openInventory });
   const statusbar = createStatusBar(refs.statusbar, store, { editor });
   const chips = createStageChips(refs.chips, store);
+  // Phone mode (residential tool only): bottom dock, tools sheet, quick move bar and the Share button. Hidden by CSS unless html[data-phone="1"].
+  if (!VIEWER && !demoMode() && !COMMERCIAL_TOOL) {
+    refs.shell.dataset.phoneUi = '1';
+    const more = () => refs.topbar.querySelector('[data-ps="topbar-more"]');
+    createPhoneChrome({ store, refs, editor, openMore: () => more()?.click() });
+    const pop = refs.topbar.querySelector('[data-ps="topbar-more-menu"]');
+    pop?.append(hEl('button', { class: 'ps-btn ps-more-desktop', type: 'button', dataset: { ps: 'desktop-view' }, onclick: () => phoneApi()?.setDesktopView(true) }, hEl('span', { class: 'ps-btn-text' }, 'Desktop view')));
+  }
   createFrontageBar(refs.stage, store);
   statusbar.setAutosave(!noAutosave);
   if (!noAutosave) mountTabGuard(document.body, store); // on the body: it shows over the guided flow too

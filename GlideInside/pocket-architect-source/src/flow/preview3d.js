@@ -1,5 +1,6 @@
 // A 3D preview with orbit for the Check it step: a second viewer on the same project, in its own element. WebGL missing: a plain note.
 import { h } from '../ui/dom.js';
+import { isPhoneMode } from '../phone/mode.js';
 
 export async function mount3dPreview(host, store, catalogue) {
   host.replaceChildren(h('div', { class: 'gf-empty', dataset: { ps: 'flow-3d-loading' } }, 'Loading the 3D view'));
@@ -11,7 +12,7 @@ export async function mount3dPreview(host, store, catalogue) {
     v.setMode?.('orbit');
     v.setActive?.(true);
     try { await v.snapToRoom?.('aerial', { duration: 0.01, site: true }); } catch { /* the viewer keeps its own framing */ }
-    host.append(h('div', { class: 'gf-note', style: { position: 'absolute', left: '10px', bottom: '6px', margin: '0', color: '#fff', background: 'rgba(18,38,58,.78)', padding: '2px 8px', borderRadius: '999px', fontSize: '12px', pointerEvents: 'none' } }, 'Drag to orbit, scroll to zoom'));
+    host.append(h('div', { class: 'gf-note', style: { position: 'absolute', left: '10px', bottom: '6px', margin: '0', color: '#fff', background: 'rgba(18,38,58,.78)', padding: '2px 8px', borderRadius: '999px', fontSize: '12px', pointerEvents: 'none' } }, isPhoneMode() ? 'Drag to orbit. Pinch to zoom.' : 'Drag to orbit, scroll to zoom'));
     return v;
   } catch (e) {
     console.warn('[flow] 3D preview unavailable', e);

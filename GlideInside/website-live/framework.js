@@ -185,14 +185,6 @@
       live.start("");
     });
   });
-  // "Send the link to myself": the phone's share sheet where there is one, otherwise the mail app with the link filled in. Nothing is sent by this site.
-  document.querySelectorAll("[data-share]").forEach(function (a) {
-    a.addEventListener("click", function (e) {
-      if (!navigator.share) return;
-      e.preventDefault();
-      navigator.share({ title: "Glide Inside", text: "Glide Inside: see the house on your block.", url: "https://glideinside.com.au/" }).catch(function () {});
-    });
-  });
   // Links that take the visitor back to the address field.
   document.querySelectorAll("[data-focus-search]").forEach(function (a) {
     a.addEventListener("click", function (e) {

@@ -22,6 +22,9 @@ import { createSendToEngineer } from '../lotcard/send-engineer.js';
 import { ENGINEER_LABEL, NOTHING_FITS } from '../site/fit-advice.js';
 import { toast } from '../ui/toast.js';
 import { createFinance } from '../finance/ui.js';
+import { isPhoneMode } from '../phone/mode.js';
+import { planWithHouseSvg } from './phone-plan.js';
+import { MOVE_HINT } from '../phone/hint.js';
 
 // The fit card's host side, shared by steps 3 and 4: the designs that are loaded (for the other sizes), a guide handed to the editor,
 // and send to a registered engineer.
@@ -128,7 +131,8 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
   let disposed = false;
   let touched = false;
   let refits = 0;
-  let nudgeMm = 100;
+  const phone = isPhoneMode();
+  let nudgeMm = phone ? 500 : 100;
   let handleDeg = -90;
   let drag = null;
   let aerial = null;
@@ -138,7 +142,7 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
   let aerialOn = true;
   let aerialState = 'loading'; // loading | done
   let sides = []; // the boundary edges the house breaches, highlighted on the plan
-  const narrow = () => (typeof window !== 'undefined' ? window.innerWidth <= 900 : false);
+  const narrow = () => phone || (typeof window !== 'undefined' ? window.innerWidth <= 900 : false);
   const acts = fitActions(ctx, { getHomes });
   const fitCard = createFitCard({ store, theme: 'light', getDesigns: acts.getDesigns, onSwapped: acts.onSwapped, onGuide: acts.onGuide, onEngineer: acts.onEngineer, canEngineer: acts.canEngineer, compact: narrow(), onSides: (s) => { sides = s; }, onChange: () => syncStatus() });
   acts.ready.then(() => { if (!disposed) fitCard.update({ now: true }); });
@@ -165,6 +169,7 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
   const nameEl = h('div', { class: 'gf-note', style: { margin: '0' } });
   const mk = (label, fn, ps, cls = '') => h('button', { class: `gf-btn ${cls}`, type: 'button', dataset: { ps }, onclick: fn }, label);
   const stepSel = h('select', { 'aria-label': 'Nudge step', dataset: { ps: 'flow-nudge-step' }, onchange: () => { nudgeMm = Number(stepSel.value); } }, h('option', { value: '100' }, '0.1 m'), h('option', { value: '500' }, '0.5 m'), h('option', { value: '1000' }, '1 m'));
+  stepSel.value = String(nudgeMm);
   const arrow = (t, dx, dy, ps) => mk(t, () => nudge(dx, dy), ps, 'gf-btn--sm');
   const pad = h('div', { class: 'gf-pad', role: 'group', 'aria-label': 'Nudge the home' },
     h('span'), arrow('↑', 0, -1, 'flow-nudge-up'), h('span'),
@@ -174,10 +179,11 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
   const fitWrap = h('div', { class: 'gf-fitwrap' }, statusCard, fitCard.el);
   // The fit card says what is wrong better than the one line status, so the status steps aside while the card is up.
   function syncStatus() {
-    statusEl.hidden = !fitCard.el.hidden && !['fits', 'tight'].includes(fitCard.el.dataset.verdict) && !fitCard.el.classList.contains('is-min');
+    statusEl.hidden = phone ? false : !fitCard.el.hidden && !['fits', 'tight'].includes(fitCard.el.dataset.verdict) && !fitCard.el.classList.contains('is-min');
     // On a phone the card sits above the plan: one thing at a time, so the plan stays in view.
     statusCard.hidden = narrow() && statusEl.hidden;
     coachRow.classList.toggle('gf-wait', narrow() && statusEl.hidden);
+    if (phone) syncSheetState();
   }
   const side = h('div', { class: 'gf-side' },
     h('div', { class: 'gf-card' },
@@ -198,7 +204,26 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
       h('p', { class: 'gf-note' }, 'Drag the white dot to slide the driveway along the street. Drag a yellow dot to bend it.'),
       h('p', { class: 'gf-note' }, 'Best fit puts the home back square to the street, garage facing the street. The rainwater tank and the driveway follow the home.')),
     h('p', { class: 'gf-note' }, INDICATIVE));
-  const el = h('div', { class: 'gf-place gf-place--fit' }, coachRow, stage, fitWrap, side);
+  // Phone: the map fills the screen and everything else is in a bottom sheet: one status line, big nudge and rotate buttons, then "More" for the rest.
+  const bigBtn = (label, text, fn, ps) => h('button', { class: 'gf-pbtn', type: 'button', 'aria-label': label, title: label, dataset: { ps }, onclick: fn }, text);
+  const quick = h('div', { class: 'gf-pctl', role: 'group', 'aria-label': 'Move and turn the home', dataset: { ps: 'flow-phone-controls' } },
+    bigBtn('Nudge left', '\u2190', () => nudge(-1, 0), 'flow-pnudge-left'), bigBtn('Nudge up', '\u2191', () => nudge(0, -1), 'flow-pnudge-up'),
+    bigBtn('Nudge down', '\u2193', () => nudge(0, 1), 'flow-pnudge-down'), bigBtn('Nudge right', '\u2192', () => nudge(1, 0), 'flow-pnudge-right'),
+    bigBtn('Turn left 15 degrees', '\u21BA', () => turn(-15), 'flow-prot-left'), bigBtn('Turn right 15 degrees', '\u21BB', () => turn(15), 'flow-prot-right'));
+  const moreBtn = h('button', { class: 'gf-pmore', type: 'button', 'aria-expanded': 'false', dataset: { ps: 'flow-sheet-more' }, onclick: () => { sheetEl.classList.toggle('is-open'); syncSheetState(); } }, 'More');
+  const statusRow = h('div', { class: 'gf-prow' }, statusEl, moreBtn);
+  const moreBody = h('div', { class: 'gf-pbody', dataset: { ps: 'flow-sheet-body' } }, fitCard.el, side);
+  const sheetEl = h('div', { class: 'gf-sheet', dataset: { ps: 'flow-sheet' } }, statusRow, quick, moreBody);
+  function syncSheetState() {
+    const open = sheetEl.classList.contains('is-open');
+    moreBtn.setAttribute('aria-expanded', String(open));
+    moreBtn.textContent = open ? 'Less' : 'More';
+    // A home outside the setbacks, or one that does not fit, opens the fixes by itself the first time.
+    moreBtn.dataset.attention = !fitCard.el.hidden && !['fits', 'tight'].includes(fitCard.el.dataset.verdict) ? '1' : '0';
+  }
+  const el = phone
+    ? h('div', { class: 'gf-place gf-place--phone' }, stage, sheetEl)
+    : h('div', { class: 'gf-place gf-place--fit' }, coachRow, stage, fitWrap, side);
 
   // Geometry ---------------------------------------------------------------------------------------------------------------
   let box = null;
@@ -295,7 +320,7 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
     if (dw?.ok && !dw.manual) { // a driveway drawn in the editor has its own handles there
       const knob = (pt, kind, idx, fill) => {
         const c = document.createElementNS(NS, 'circle');
-        for (const [k, v] of Object.entries({ cx: Math.round(pt.x), cy: Math.round(pt.y), r: Math.round(9 * px), fill, stroke: '#1b4fd1', 'stroke-width': Math.round(2 * px), 'data-ps': 'flow-drive-handle', 'data-kind': kind, 'data-idx': String(idx), style: 'cursor:grab' })) c.setAttribute(k, v);
+        for (const [k, v] of Object.entries({ cx: Math.round(pt.x), cy: Math.round(pt.y), r: Math.round((phone ? 15 : 9) * px), fill, stroke: '#1b4fd1', 'stroke-width': Math.round(2 * px), 'data-ps': 'flow-drive-handle', 'data-kind': kind, 'data-idx': String(idx), style: 'cursor:grab' })) c.setAttribute(k, v);
         svg.append(c);
       };
       knob(dw.kerbPoint, 'end', 0, '#ffffff');
@@ -345,11 +370,11 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
       handleG = group({ class: 'gf-handle', 'data-ps': 'flow-handle' });
       handleG.append(line(c, hp, { stroke: '#1b4fd1', 'stroke-width': Math.round(1.5 * px), 'stroke-dasharray': `${Math.round(5 * px)} ${Math.round(4 * px)}` }));
       const dot = document.createElementNS(NS, 'circle');
-      for (const [k, v] of Object.entries({ cx: Math.round(hp.x), cy: Math.round(hp.y), r: Math.round(11 * px), fill: '#ffc83d', stroke: '#1b4fd1', 'stroke-width': Math.round(2 * px) })) dot.setAttribute(k, v);
+      for (const [k, v] of Object.entries({ cx: Math.round(hp.x), cy: Math.round(hp.y), r: Math.round((phone ? 17 : 11) * px), fill: '#ffc83d', stroke: '#1b4fd1', 'stroke-width': Math.round(2 * px) })) dot.setAttribute(k, v);
       handleG.append(dot);
       svg.append(handleG);
     }
-    svg.append(text({ x: V.x + V.w / 2, y: V.y + V.h - 9 * px }, 'Drag the home to move it, scroll to zoom', 11, { fill: '#3b3f46', opacity: '0.8' }));
+    svg.append(text({ x: V.x + V.w / 2, y: V.y + V.h - 9 * px }, phone ? MOVE_HINT : 'Drag the home to move it, scroll to zoom', phone ? 12 : 11, { fill: '#3b3f46', opacity: '0.8' }));
     paintStatus(st);
     // While dragging the card follows the preview (words only); the fixes come back on the drop.
     if (drag && (drag.mode === 'move' || drag.mode === 'turn') && project !== store.project) fitCard.update({ live: true, project });
@@ -357,7 +382,7 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
 
   function paintStatus(st = placementStatus(liveProject || store.project)) {
     statusEl.dataset.state = st.state;
-    statusEl.replaceChildren(h('span', { 'aria-hidden': 'true' }, st.state === 'inside' ? '✓' : st.state === 'outside' ? '!' : 'i'), h('span', null, st.state === 'inside' ? (store.project.placedHouse?.turnedToFit && !touched ? 'Inside the setbacks. The home was turned to suit the shape of this lot.' : 'Inside the setbacks. Good position.') : st.text));
+    statusEl.replaceChildren(h('span', { 'aria-hidden': 'true' }, st.state === 'inside' ? '✓' : st.state === 'outside' ? '!' : 'i'), h('span', null, st.state === 'inside' ? (phone ? 'Inside the setbacks. Good position.' : store.project.placedHouse?.turnedToFit && !touched ? 'Inside the setbacks. The home was turned to suit the shape of this lot.' : 'Inside the setbacks. Good position.') : phone && st.state === 'unknown' ? 'Setbacks not loaded. Position not checked.' : st.text));
     const ph = store.project.placedHouse;
     nameEl.textContent = ph?.name ? `Home: ${ph.name}` : '';
   }
@@ -409,14 +434,17 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
   const ptrs = new Map();
   let pinch = null;
   const pinchDist = () => { const [a, b] = [...ptrs.values()]; return Math.hypot(a.x - b.x, a.y - b.y); };
+  const pinchAng = () => { const [a, b] = [...ptrs.values()]; return (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI; };
+  const TWIST_DEAD = 8; // degrees of twist before two fingers turn the home: a plain pinch zoom never nudges it
   const pinchMid = () => { const [a, b] = [...ptrs.values()]; return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; };
   stage.addEventListener('pointerdown', (ev) => {
-    if (ev.target.closest?.('.gf-zoom')) return;
+    if (ev.target.closest?.('.gf-zb')) return;
     if (ev.isPrimary) { ptrs.clear(); pinch = null; } // a new gesture starts with the primary pointer: a lost pointerup never leaves a stale finger
     ptrs.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
     if (ptrs.size === 2) {
       if (drag) { drag = null; draw(store.project); }
-      pinch = { d: pinchDist(), mid: pinchMid() };
+      const a0 = pinchAng();
+      pinch = { d: pinchDist(), mid: pinchMid(), prevA: a0, acc: 0, twist: false, deg: 0 };
     }
   }, true);
   function doPinch() {
@@ -430,9 +458,30 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
       view = clampView({ ...view, x: view.x - (mid.x - pinch.mid.x) / sc, y: view.y - (mid.y - pinch.mid.y) / sc });
       draw(liveProject || store.project);
     }
-    pinch = { d, mid };
+    if (phone && pinch.prevA != null) {
+      const a = pinchAng();
+      pinch.acc += ((a - pinch.prevA + 540) % 360) - 180;
+      pinch.prevA = a;
+      if (!pinch.twist && Math.abs(pinch.acc) >= TWIST_DEAD) pinch.twist = true;
+      if (pinch.twist) {
+        pinch.deg = Math.round(pinch.acc);
+        const prev = previewCopy(store.project);
+        rotateHouse(prev, pinch.deg, houseCentre(store.project));
+        draw(prev);
+      }
+    }
+    pinch = { ...pinch, d, mid };
   }
-  const endPointer = (ev) => { ptrs.delete(ev.pointerId); if (ptrs.size < 2) pinch = null; };
+  const endPointer = (ev) => {
+    ptrs.delete(ev.pointerId);
+    if (ptrs.size < 2) {
+      const tw = pinch;
+      pinch = null;
+      if (tw?.twist) {
+        if (tw.deg) { touched = true; coach.did('turn'); handleDeg += tw.deg; turnHouse(store, tw.deg); } else draw(store.project);
+      }
+    }
+  };
   const onDown = (ev) => {
     if (ev.button != null && ev.button !== 0) return;
     if (ptrs.size > 1) return; // a pinch, not a drag
@@ -585,7 +634,22 @@ function mountCheckStep(ctx, { catalogue, getHomes, want = {} }) {
   const acts = fitActions(ctx, { getHomes });
   const fitCard = createFitCard({ store, theme: 'light', getDesigns: acts.getDesigns, onSwapped: acts.onSwapped, onGuide: acts.onGuide, onEngineer: acts.onEngineer, canEngineer: acts.canEngineer });
   acts.ready.then(() => fitCard.update({ now: true }));
-  const el = h('div', { class: 'gf-check' }, h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '0' } }, fitCard.el, card), view);
+  const phone = isPhoneMode();
+  let planAerial = null;
+  let showing = '3d';
+  const planEl = h('div', { class: 'gf-planview', hidden: true, dataset: { ps: 'flow-plan-view' } });
+  const tab = (id, label) => h('button', { class: 'gf-ptab', type: 'button', role: 'tab', 'aria-selected': String(id === showing), dataset: { ps: `flow-view-${id}`, view: id }, onclick: () => setShowing(id) }, label);
+  const tabs = h('div', { class: 'gf-ptabs', role: 'tablist', 'aria-label': 'Plan or 3D', dataset: { ps: 'flow-view-toggle' } }, tab('3d', '3D'), tab('plan', 'Plan'));
+  function setShowing(id) {
+    showing = id;
+    for (const b of tabs.children) b.setAttribute('aria-selected', String(b.dataset.view === id));
+    view.hidden = id !== '3d';
+    planEl.hidden = id !== 'plan';
+    if (id === 'plan') planEl.innerHTML = planWithHouseSvg(store.project, { aerial: planAerial });
+  }
+  const el = phone
+    ? h('div', { class: 'gf-check gf-check--phone' }, tabs, h('div', { class: 'gf-viewbox' }, view, planEl), h('div', { class: 'gf-pcol' }, fitCard.el, card))
+    : h('div', { class: 'gf-check' }, h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '0' } }, fitCard.el, card), view);
   const fin = createFinance(store, { mode: 'step' });
   let preview = null;
   let disposed = false;
@@ -594,6 +658,22 @@ function mountCheckStep(ctx, { catalogue, getHomes, want = {} }) {
     const s = checkSummary(store.project);
     if (!s.ok) { card.replaceChildren(h('p', null, s.lines[0])); return; }
     const verdictChip = s.verdict === 'met' ? h('span', { class: 'gf-chip gf-chip--ok' }, 'Setbacks met') : s.verdict === 'not-met' ? h('span', { class: 'gf-chip gf-chip--warn' }, 'Setbacks not met') : h('span', { class: 'gf-chip' }, 'Setbacks not checked');
+    if (phone) {
+      const li = (k, v, state = '') => h('li', { dataset: state ? { met: state } : undefined }, h('span', null, k), h('b', null, v));
+      card.replaceChildren(
+        h('div', { class: 'gf-row', style: { justifyContent: 'space-between', flexWrap: 'nowrap' } }, h('strong', { style: { fontSize: '17px' } }, store.project.placedHouse?.name || 'Your home'), verdictChip),
+        h('ul', { class: 'gf-facts', dataset: { ps: 'flow-facts' } },
+          ...s.rows.map((r) => li(`${r.label}`, `${r.clearanceM.toFixed(1)} m${r.requiredM != null ? ` of ${r.requiredM.toFixed(1)} m` : ''}`, String(r.met))),
+          li('Site coverage', `${Math.round(s.coverageM2)} m2${s.coveragePct != null ? `, ${Math.round(s.coveragePct)} percent` : ''}`),
+          s.openSpaceM2 != null ? li('Open space', `${Math.round(s.openSpaceM2)} m2${s.openSpacePct != null ? `, ${Math.round(s.openSpacePct)} percent` : ''}`) : null,
+          li('Garage', s.garage.has ? (s.garage.facesStreet ? 'Faces the street' : 'Not to the street') : 'No garage'),
+          li('Driveway', s.driveway.state === 'ok' ? `${s.driveway.lengthM.toFixed(1)} m to the street` : s.driveway.state === 'none' ? 'None' : 'Not linked')),
+        h('ul', { class: 'gf-lines', dataset: { ps: 'flow-lines' } }, ...[...s.lines, ...gradingLinesOf(store.project)].map((t) => h('li', null, t))),
+        h('details', { class: 'gf-more' }, h('summary', null, 'Feasibility'), fin.el),
+        h('p', { class: 'gf-note' }, h('a', { href: '#', onclick: (e) => { e.preventDefault(); ctx.go(3); } }, 'Back to placement'), ' to move or turn the home.'));
+      if (showing === 'plan') planEl.innerHTML = planWithHouseSvg(store.project, { aerial: planAerial });
+      return;
+    }
     card.replaceChildren(
       h('div', { class: 'gf-row', style: { justifyContent: 'space-between' } }, h('strong', { style: { fontSize: '18px' } }, store.project.placedHouse?.name || 'Your home'), verdictChip),
       h('table', { class: 'gf-table', dataset: { ps: 'flow-setback-table' } },
@@ -615,7 +695,7 @@ function mountCheckStep(ctx, { catalogue, getHomes, want = {} }) {
   return {
     el,
     nextLabel: 'Open the editor',
-    async onEnter() { await ensureFlowAerial(store); preview = await mount3dPreview(view, store, catalogue); if (disposed) preview?.dispose?.(); },
+    async onEnter() { await ensureFlowAerial(store); if (phone) { try { planAerial = await aerialOf(lotOf(store.project)); } catch { planAerial = null; } } preview = await mount3dPreview(view, store, catalogue); if (disposed) preview?.dispose?.(); },
     dispose() { disposed = true; off?.(); fin.dispose(); preview?.dispose?.(); fitCard.dispose(); },
   };
 }

@@ -1190,3 +1190,13 @@ svg { display: block; }
 .gw-widget .ps-embed-full,.gw-widget [data-ps="lc-full-editor"],.gw-widget [data-ps="lc-edit"],.gw-widget [data-ps="lc-send-engineer"],.gw-widget [data-ps="lc-pdf"],.gw-widget [data-ps="lc-pdf-house"],.gw-widget [data-ps="lc-upload"],.gw-widget [data-ps="embed-full"]{display:none!important}
 
 .gw-widget-wait .ps-shell canvas,.gw-widget-wait [data-ps="lot-card"]{visibility:hidden!important}
+
+/* Back to plan and the 3D edit buttons never share the top left corner: the Edit bar keeps clear of the Back to plan button at every width (it wraps to a second row instead). */
+.ps-stage:has(.ps-backplan:not([hidden])) .ps3d-editbar { max-width: calc(100% - 156px); }
+/* The status bar help line wraps on a narrow window (full words, nothing cut off); phones also get a shorter, touch worded line (src/phone/hint.js). */
+@media (max-width: 599.98px) {
+  .ps-status-hint { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.35; }
+}
+
+/* Keyboard hints mean nothing to a finger. */
+@media (pointer: coarse) { .ps3d-key { display: none; } }

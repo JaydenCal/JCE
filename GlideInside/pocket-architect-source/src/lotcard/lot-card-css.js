@@ -68,6 +68,8 @@ export const LOT_CARD_CSS = `
 .lc-root.is-compact .lc-rooms{display:block!important;left:12px;right:116px;max-width:none;top:156px;bottom:auto;padding:8px 10px}
 .lc-root.is-compact .lc-sp-rooms{display:none}
 .lc-root.is-compact .lc-tabs{flex-wrap:nowrap;overflow-x:auto}
+/* The room buttons wrap onto more rows in the editor, so none runs past the edge without a hint (the embedded viewer keeps its scrolling row with the fade). */
+.lc-root.is-compact:not(.lc-embed) .lc-tabs{flex-wrap:wrap;overflow:visible}
 .lc-root.is-compact .lc-rooms-row{display:none}
 .lc-root.is-compact .lc-body{display:none}
 .lc-root.is-compact .lc-card.is-open .lc-body{display:block}

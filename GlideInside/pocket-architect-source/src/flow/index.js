@@ -10,6 +10,7 @@ import { h } from '../ui/dom.js';
 import { createGuidedFlow } from './guided.js';
 import { createTutorial } from '../tutorial/coach.js';
 import { arrangeOnLoadWatching } from './arrange-on-load.js';
+import { isPhoneMode } from '../phone/mode.js';
 import { flowOf, flowInProgress, writeFlow, EDIT_STEP, portalDeepLink } from './state.js';
 import { residentialSteps, RESIDENTIAL_BRAND } from './residential.js';
 import { commercialSteps, COMMERCIAL_BRAND } from './commercial.js';
@@ -53,7 +54,7 @@ export async function initGuidedFlow({ api, store, refs, catalogue, viewer = fal
   const step = f && f.kind === kind && f.step < EDIT_STEP ? f.step : kept ? 2 : 1;
   if (kept) writeFlow(store, { kind, step });
   await flow.open(step);
-  tutorialOf(api).startIfFirst(kind, step);
+  if (!(kind === 'residential' && isPhoneMode())) tutorialOf(api).startIfFirst(kind, step); // a phone has no pop up tour: Show me how is in the menu
   attachBackPill({ api, store, refs, catalogue, wantCommercial });
   void hasAddress;
   return flow;
