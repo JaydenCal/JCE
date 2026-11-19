@@ -48,7 +48,11 @@ export function stampPdf(doc, title = TRIAL_TITLE, footer = TRIAL_FOOTER) {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(eng ? 8 * k : 7);
     doc.setTextColor(64, 64, 64);
-    if (eng) {
+    if (doc.giStampMargin) {
+      // Plan set sheets (planset/): the stamp line sits in the 5 mm band between the inner and outer sheet borders, so it never overprints the general notes or the title strip.
+      doc.setFontSize(6.5 * (w / ENG_SW));
+      doc.text(footer, w / 2, h - 6.8 * (w / ENG_SW), { align: 'center' });
+    } else if (eng) {
       const tw = doc.getTextWidth(footer) + 3 * k;
       const by = ENG_TRIAL_Y * k;
       doc.setFillColor(255, 255, 255);

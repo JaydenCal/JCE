@@ -330,10 +330,10 @@ test('shed templates', () => {
   assert.equal(f.site.tanks[0].capacityL, 22500);
 });
 
-test('granny flat is about 60 m2 with a 2.4 m deck', () => {
+test('granny flat is 60 m2 or under with a 2.4 m deck', () => {
   const p = catalogue.createFromTemplate('granny_flat');
   const area = indoorArea(p);
-  assert.ok(area > 55 && area < 68, `indoor ${area}`);
+  assert.ok(area > 58 && area <= 60, `indoor ${area}`);
   const types = p.levels[0].rooms.map((r) => r.type);
   assert.equal(types.filter((t) => t === 'bedroom').length, 2);
   for (const t of ['bathroom', 'laundry', 'kitchen', 'living', 'deck']) assert.ok(types.includes(t) || p.levels[0].rooms.some((r) => /kitchen|living/i.test(r.name)), t);

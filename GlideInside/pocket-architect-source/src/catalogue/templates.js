@@ -40,7 +40,7 @@ export const TEMPLATES = [
     id: 'granny_flat',
     name: 'Granny flat, 2 bedroom',
     type: 'unit',
-    description: 'About 60 m²: open kitchen, dining and living, two bedrooms with robes, bathroom, laundry and a 2.4 m deep front deck.',
+    description: '59.5 m²: open kitchen, dining and living, two bedrooms with robes, bathroom, laundry and a 2.4 m deep front deck.',
     levels: 1,
     create: grannyFlat,
   },

@@ -871,3 +871,5 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 .proof-grid li>span{display:block}
 .formats+.price-anchor{margin-top:24px}
 .sec .dl-row{margin-top:20px}
+/* Landing pages with a product hero: tighter vertical rhythm on desktop (sections were 112 px top and bottom, a 240 px gap between text blocks). */
+@media(min-width:900px){body:has(.product-hero) .section{padding-block:68px}body:has(.product-hero) .section.cta-band{padding-block:84px}}

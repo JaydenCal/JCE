@@ -53,7 +53,7 @@ export function placeCorner(r, size, view, avoid = []) {
 }
 
 export function createTutorial({ getFlow = () => null, onEnter = null, storage } = {}) {
-  let kind = null, steps = [], i = 0, active = false, timer = null, chapterId = BASICS_ID, hint = '';
+  let kind = null, steps = [], i = 0, skippedAddress = false, active = false, timer = null, chapterId = BASICS_ID, hint = '';
   const text = h('p'), count = h('div', { class: 'tut-count' });
   const back = h('button', { type: 'button', dataset: { ps: 'tutorial-back' }, onclick: () => go(i - 1) }, 'Back');
   const next = h('button', { type: 'button', class: 'tut-next', dataset: { ps: 'tutorial-next' }, onclick: () => go(i + 1) }, 'Next');
@@ -112,6 +112,12 @@ export function createTutorial({ getFlow = () => null, onEnter = null, storage }
     const flow = getFlow(); if (!flow) return;
     const s = steps[i]; if (!s) return;
     const open = !!flow.isOpen;
+    // A lot is already found (the website's ?sample=1 link, or a returning visit): the card moves past "Type your address" once, so it never opens over the step that follows. Back still reaches it.
+    if (!skippedAddress && s.id === 'address' && open && flow.step === 1 && typeof document !== 'undefined' && document.querySelector('[data-ps="flow-setbacks"]')) {
+      skippedAddress = true;
+      const j = steps.findIndex((x, n) => n > i && x.where === 'flow' && x.flowStep === 1);
+      if (j >= 0) { i = j; return; }
+    }
     if (s.where === 'flow' && open && s.flowStep !== flow.step) { const j = stepIndexForFlow(steps, flow.step); if (j !== null) i = j; }
     else if (s.where === 'flow' && !open) { const j = steps.findIndex((x) => x.where === 'editor'); if (j >= 0) i = j; }
     else if (s.where === 'editor' && open) { const j = stepIndexForFlow(steps, flow.step); if (j !== null) i = j; }
@@ -155,7 +161,7 @@ export function createTutorial({ getFlow = () => null, onEnter = null, storage }
     Object.assign(arrow.style, { left: pos.side === 'right' ? '-6px' : pos.side === 'left' ? 'auto' : `${Math.max(12, Math.min(236, cx))}px`, right: pos.side === 'left' ? '-6px' : 'auto', top: pos.side === 'below' ? '-6px' : pos.side === 'above' ? 'auto' : `${Math.max(12, cy)}px`, bottom: pos.side === 'above' ? '-6px' : 'auto' });
   }
   const begin = (k, from, chapter = null) => {
-    kind = k; chapterId = chapter?.id || BASICS_ID; steps = chapter ? chapter.steps : tutorialFor(k); active = true; i = from ?? 0;
+    kind = k; skippedAddress = false; chapterId = chapter?.id || BASICS_ID; steps = chapter ? chapter.steps : tutorialFor(k); active = true; i = from ?? 0;
     clearInterval(timer); timer = setInterval(paint, 700);
     if (i > 0) go(i); else { paint(); go(0); }
   };
