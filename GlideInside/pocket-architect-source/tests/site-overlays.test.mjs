@@ -9,7 +9,7 @@ import { createSite } from '../server/lib/site.js';
 import { OVERLAY_SOURCES } from '../server/lib/site-overlay-sources.js';
 import { lonLatToMga } from '../src/site/geo.js';
 import {
-  clipRingToBox, clipPolygonsToBox, buildOverlays, constraintSummary, coverageOfLot, legendEntries, overlayOn, overlayRequestFor, drawableLayers, CHECK_WITH_COUNCIL,
+  clipRingToBox, clipPolygonsToBox, autoShowOverlays, creditLines, buildOverlays, constraintSummary, coverageOfLot, legendEntries, overlayOn, overlayRequestFor, drawableLayers, CHECK_WITH_COUNCIL,
 } from '../src/site/overlays.js';
 import { addConstraintTint, trianglesFor } from '../src/viewer3d/site-constraints.js';
 import { drawOverlays } from '../src/editor2d/draw-overlays.js';
@@ -351,4 +351,34 @@ test('mock overlays: SAMPLE data is labelled, covers both states, and is clipped
   const qld = mockOverlays({ state: 'QLD', srid: 7855, origin: '500000,7000000', bbox: '499900,6999900,500100,7000100' });
   assert.equal(qld.layers.find((l) => l.id === 'easement').features.length, 1);
   assert.equal(drawableLayers({ overlays: buildOverlays(qld) }).length, 1);
+});
+
+// Shown when the address is entered (19/11/2026) ------------------------------------------------------------------------------------
+test('refreshOverlays: layers mapped over the lot switch on by themselves; an explicit choice is kept', async () => {
+  const json = await fullResp();
+  const fetchImpl = async () => new Response(JSON.stringify(json), { status: 200, headers: { 'content-type': 'application/json' } });
+  const lot = lotFixture();
+  lot.layers = { ov_heritage: false };
+  const store = fakeStore(lot);
+  assert.equal(await refreshOverlays(store, lot, { fetchImpl }), true);
+  const l = store.project.site.lot;
+  const shown = legendEntries(l).map((e) => e.id);
+  const hit = drawableLayers(l).filter((x) => coverageOfLot(l, x).hit).map((x) => x.id);
+  assert.deepEqual(shown, hit.filter((id) => id !== 'heritage'));
+  assert.equal(l.layers.ov_heritage, false);
+  assert.ok(autoShowOverlays(l).length === 0, 'a second call changes nothing');
+  assert.deepEqual(autoShowOverlays({}), []);
+});
+
+test('legend and plan set notes carry the source and data date, with the check with council caution', async () => {
+  const lot = lotFixture();
+  lot.overlays = buildOverlays(await fullResp());
+  lot.layers.ov_flood = true;
+  const credits = creditLines(legendEntries(lot));
+  assert.ok(credits.length === 1 && /^Flood planning area: .+, data dated /.test(credits[0]), credits[0]);
+  const rec = recorder();
+  drawOverlays(rec.ctx, stFor(lot));
+  assert.ok(rec.calls.some((c) => c[0] === 'fillText' && /Indicative only\. Check with council/.test(c[1])));
+  assert.ok(rec.calls.some((c) => c[0] === 'fillText' && /data dated/.test(c[1])));
+  assert.ok(!/[\u2013\u2014]/.test(credits.join(' ') + CHECK_WITH_COUNCIL));
 });

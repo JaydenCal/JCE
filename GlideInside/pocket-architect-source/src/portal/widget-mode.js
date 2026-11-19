@@ -40,6 +40,7 @@ const STYLE = `
 .gw-card input[type=text],.gw-card input[type=email],.gw-card input[type=tel]{width:100%;box-sizing:border-box;min-height:38px;border:1px solid var(--ps-border-strong,#b6b8bd);border-radius:8px;padding:0 10px;font:inherit;background:var(--ps-field,#fff);color:inherit}
 .gw-consent{display:flex;gap:8px;align-items:flex-start;margin:12px 0 4px;font-weight:400!important}.gw-consent input{margin-top:3px}
 .gw-fine{font-size:12px;color:var(--ps-muted,#5a5e66)}.gw-err{color:#b52828;font-weight:600;min-height:1.2em}.gw-hp{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
+.gw-widget .ps-embed-full,.gw-widget [data-ps="lc-full-editor"],.gw-widget [data-ps="lc-send-engineer"],.gw-widget [data-ps="lc-pdf"],.gw-widget [data-ps="lc-pdf-house"],.gw-widget [data-ps="lc-upload"],.gw-widget [data-ps="lc-menu"]{display:none!important}
 .gw-row{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
 `;
 
@@ -111,6 +112,7 @@ export async function initWidgetMode(app, { fetchImpl = (...a) => globalThis.fet
   if (!document.getElementById('gw-style')) { const s = document.createElement('style'); s.id = 'gw-style'; s.textContent = STYLE; document.head.append(s); }
 
   const { store } = app;
+  document.body.classList.add('gw-widget');
   const bar = h('div', { class: 'gw-bar', role: 'region', 'aria-label': `${bname} design offer`, dataset: { gw: 'bar' } },
     h('div', { class: 'gw-bar-who' }, cfg.logoDataUrl ? h('img', { src: cfg.logoDataUrl, alt: '' }) : null, h('div', null, h('strong', null, bname), h('div', null, h('small', null, 'Concept only, indicative. Check with council.')))),
     h('button', { class: 'gw-btn', type: 'button', dataset: { gw: 'open' }, onclick: () => openForm() }, 'Send me this design'));

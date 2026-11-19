@@ -17,7 +17,7 @@ import { createFlows } from './ui/flows.js';
 import { createTopbarUI } from './ui/topbar.js';
 import { createAssistant } from './ui/assistant.js';
 import { runExport, exportLabel, EXPORT_ITEMS, isLocalHost, coverImage, loadJsPDF } from './export-client.js';
-import { openOrderEngineering } from './ui/order-engineering.js';
+import { openOrderRequest, jobOf } from './ui/order-request.js';
 import { normaliseCredits } from './credits.js';
 import { friendlyError, isAuthLoss } from './messages.js';
 import { ApiError } from './api.js';
@@ -382,7 +382,14 @@ export function createPremium(store, options = {}) {
     const setDesign = store.readOnly ? null : (rates) => { store.apply('Site cost rates', (p) => { if (rates) p.siteCosts = rates; else delete p.siteCosts; }); };
     return openSiteCosts({ layer, getProject: () => store.project, setDesign });
   };
-  const openOrderPanel = () => (canEnquire() ? openOrderEngineering({ layer, openEnquiry: (extra) => openEnquiryForm(extra) }) : layer.notify(portalOn() ? 'Your builder has turned off sending to JCE.' : 'Ordering engineering comes with the Plan Pack.', 'info', 6000));
+  // Order engineering: an order request saved on the server for JCE (POST /api/order/engineering), shown in the admin portal. Nothing is emailed.
+  const sendOrder = async (body) => {
+    const r = await (fetchImpl || globalThis.fetch)(`${cfg.apiBase}/order/engineering`, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json', 'x-gi-request': '1' }, body: JSON.stringify(body) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { const e = new Error(j?.error?.message || j?.message || 'That could not be sent. Please try again.'); e.status = r.status; e.code = j?.error?.code; throw e; }
+    return j;
+  };
+  const openOrderPanel = () => (canEnquire() ? openOrderRequest({ layer, send: sendOrder, project: store.project, job: jobOf(store.project, { href: globalThis.location?.href || '', portalLot: globalThis.__ps?.portal?.getLot?.() || {} }) }) : layer.notify(portalOn() ? 'Your builder has turned off sending to JCE.' : 'Ordering engineering comes with the Plan Pack.', 'info', 6000));
 
   // PDF plans: everyone sees the sheets first (watermarked and low resolution when free). Download is the paid path.
   let previewing = null;

@@ -5,7 +5,7 @@ import { el, clear } from '../util.js';
 import { plainDashes } from '../../site/plain-text.js';
 import { estimateSiteCosts, fmtAud, DISCLAIMER } from './estimate.js';
 import { NOT_FOUND } from './council.js';
-import { RATE_DEFS, REGIONS, RATES_DATE, saveSettings, resetSettings, regionOf, rateOf, isCustomised, effectiveSettings, baseSettings, diffSettings, builderDefaults, defaultSettings, settingsSource } from './rates.js';
+import { RATE_DEFS, REGIONS, RATES_DATE, saveSettings, resetSettings, regionOf, rateOf, isCustomised, effectiveSettings, mergeSettings, diffSettings, builderDefaults, defaultSettings, settingsSource } from './rates.js';
 import { gstOf, GST_NOTE } from './gst.js';
 
 const SOURCE_TEXT = { design: 'This design has its own rates.', builder: 'Rates come from your builder default.', browser: 'Rates are the ones saved in this browser.', default: 'Rates are the standard defaults.' };
@@ -18,7 +18,7 @@ export function openSiteCosts({ layer, getProject, setDesign = null, onChange = 
   const hasBuilder = () => !!globalThis.__ps?.siteCostDefaults?.set;
   // With no builder account the rates are kept in this browser, as before. With one, edits are held until saved for the design or as the builder default.
   const persist = () => { if (!hasBuilder() && !getProject()?.siteCosts) saveSettings(settings); onChange?.(settings); };
-  const saveDesign = () => { const d = diffSettings(baseSettings(), settings); setDesign?.(d); msg = d ? 'Saved with this design.' : 'This design now uses the base rates.'; later(); };
+  const saveDesign = () => { const d = diffSettings(builderDefaults() ? mergeSettings(defaultSettings(), builderDefaults()) : defaultSettings(), settings); setDesign?.(d); msg = d ? 'Saved with this design.' : 'This design now uses the base rates.'; later(); };
   const saveBuilder = async () => {
     try { await globalThis.__ps.siteCostDefaults.set(diffSettings(defaultSettings(), settings) || {}); setDesign?.(null); settings = effectiveSettings(getProject()); msg = 'Saved as your builder default.'; } catch (e) { msg = `Could not save the default: ${e?.message || 'try again'}`; }
     later();

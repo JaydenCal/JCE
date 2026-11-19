@@ -81,3 +81,26 @@ test('widget mode helpers', () => {
   assert.equal(widgetIdFromSearch('?embed=1'), '');
   assert.equal(hostOrigin({ ancestorOrigins: ['https://builder.example'], search: '' }, null), 'https://builder.example');
 });
+
+import { jobOf, jceMailto, ORDER_CONSENT, ORDER_PRIVACY } from '../src/premium/ui/order-request.js';
+import fs from 'node:fs';
+
+test('order request: job details, share link only when the page is one, mailto only with a configured address', () => {
+  const p = { name: 'Sample 3 bed', site: { lot: { address: '1 Sample St, Town NSW', lotNumber: '7', planLabel: 'DP 99' } } };
+  const j = jobOf(p, { href: 'https://example.test/plan-studio/app/?share=abc123' });
+  assert.equal(j.lotLabel, 'Lot 7 DP 99');
+  assert.match(j.designLink, /share=abc123/);
+  assert.equal(jobOf(p, { href: 'https://example.test/plan-studio/app/' }).designLink, '');
+  assert.equal(jceMailto({}, { job: j, services: ['stormwater-concept'] }), '');
+  assert.equal(jceMailto(undefined, { job: j }), '');
+  const m = jceMailto({ jceEmail: 'orders@example.test' }, { job: j, services: ['stormwater-concept'] });
+  assert.match(m, /^mailto:orders@example\.test\?subject=/);
+  assert.match(decodeURIComponent(m), /Stormwater concept/);
+});
+
+test('order request: wording rules and no regional or defence mentions', () => {
+  const src = fs.readFileSync(new URL('../src/premium/ui/order-request.js', import.meta.url), 'utf8') + ORDER_CONSENT + ORDER_PRIVACY;
+  assert.ok(!/Queensland|FNQ|RPEQ|Gunnedah|Macksville|Defence|compliant|Pocket Architect/i.test(src));
+  assert.ok(!/[–—]/.test(src));
+  assert.ok(!/!/.test(ORDER_CONSENT + ORDER_PRIVACY));
+});

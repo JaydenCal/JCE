@@ -175,7 +175,7 @@ export function constraintSummary(lot) {
 
 /** Legend entries for whichever overlay layers are switched on and have data (2D plan, plan set sheet). */
 export function legendEntries(lot) {
-  return drawableLayers(lot).filter((l) => overlayOn(lot, l.id)).map((l) => ({ id: l.id, label: l.label, rgb: OVERLAY_STYLE[l.id].rgb, hatch: OVERLAY_STYLE[l.id].hatch }));
+  return drawableLayers(lot).filter((l) => overlayOn(lot, l.id)).map((l) => ({ id: l.id, label: l.label, rgb: OVERLAY_STYLE[l.id].rgb, hatch: OVERLAY_STYLE[l.id].hatch, source: l.source || '', date: l.date || null }));
 }
 
 /** Request parameters for GET /api/site/overlays from a stored site.lot (plan mm): the lot box plus a margin, in MGA metres. */
@@ -189,4 +189,27 @@ export function overlayRequestFor(lot, marginM = 100) {
   const minN = lot.origin.n + Math.min(...ys) - marginM;
   const maxN = lot.origin.n + Math.max(...ys) + marginM;
   return { state: lot.state, srid: lot.srid, origin: `${lot.origin.e},${lot.origin.n}`, bbox: `${r(minE)},${r(minN)},${r(maxE)},${r(maxN)}` };
+}
+
+/**
+ * Switch on the overlay layers that touch the lot, when the person has not chosen yet (an explicit On or Off is never changed).
+ * Called when the lookup arrives, so a flood or bushfire mapped over the lot shows on the plan as soon as the address is entered.
+ * Returns the ids switched on.
+ */
+export function autoShowOverlays(lot) {
+  if (!lot?.overlays) return [];
+  const on = [];
+  for (const l of drawableLayers(lot)) {
+    const key = OVERLAY_LAYER_KEY(l.id);
+    if (lot.layers?.[key] !== undefined) continue;
+    if (!coverageOfLot(lot, l).hit) continue;
+    (lot.layers ||= {})[key] = true;
+    on.push(l.id);
+  }
+  return on;
+}
+
+/** One credit line per layer for the legend and the plan set notes: "Flood planning area: <source>, data dated <date>." */
+export function creditLines(entries) {
+  return entries.filter((e) => e.source).map((e) => `${e.label}: ${e.source}${e.date ? `, data dated ${e.date}` : ''}.`);
 }

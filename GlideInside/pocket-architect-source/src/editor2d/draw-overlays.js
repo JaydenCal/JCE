@@ -3,7 +3,7 @@
 // Screen space patterns, so the hatch stays the same density at any zoom.
 
 import { worldToScreen } from './math.js';
-import { OVERLAY_STYLE, drawableLayers, overlayOn } from '../site/overlays.js';
+import { OVERLAY_STYLE, drawableLayers, overlayOn, creditLines, legendEntries } from '../site/overlays.js';
 
 const patterns = new Map();
 
@@ -65,17 +65,17 @@ export function drawOverlays(ctx, st) {
     }
   }
   ctx.setLineDash([]);
-  drawLegend(ctx, st, on);
+  drawLegend(ctx, st, on, creditLines(legendEntries(lot)));
   ctx.restore();
 }
 
 // A compact legend, bottom left, only for the switched-on layers: swatch, name and the "indicative" caution.
-function drawLegend(ctx, st, on) {
+function drawLegend(ctx, st, on, credits = []) {
   if (st.size.w < 420) return;
   const rowH = 17;
-  const w = 232;
+  const w = 252;
   const x = st.size.w - w - 14; // top right, under the north point and the Map data chip
-  const h = on.length * rowH + 24;
+  const h = on.length * rowH + 24 + credits.length * 11 + 26;
   let y = 168;
   ctx.fillStyle = 'rgba(255,255,255,0.88)';
   ctx.strokeStyle = 'rgba(0,0,0,0.18)';
@@ -101,4 +101,11 @@ function drawLegend(ctx, st, on) {
     ctx.fillText(l.label, x + 34, y);
     y += rowH;
   }
+  // Source and data date per layer, then the caution. Long source names are cut to fit the box.
+  ctx.fillStyle = '#555';
+  ctx.font = `400 9px ${st.theme.f.ui}`;
+  const fit = (t) => { let o = t; while (o.length > 4 && (ctx.measureText?.(o)?.width ?? 0) > w - 16) o = `${o.slice(0, -4)}...`; return o; };
+  for (const c of credits) { ctx.fillText(fit(c), x + 8, y); y += 11; }
+  ctx.fillText('Indicative only. Check with council.', x + 8, y + 2);
+  ctx.fillText('Open government mapping, not a survey.', x + 8, y + 13);
 }

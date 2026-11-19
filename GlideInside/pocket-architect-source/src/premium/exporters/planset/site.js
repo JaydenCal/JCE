@@ -8,6 +8,7 @@
 
 import { gradingLinesOf } from '../../../flow/grading-lines.js';
 import { drawOverlayOutlines, overlayLegendItems } from './overlays.js';
+import { creditLines, legendEntries } from '../../../site/overlays.js';
 import * as G from '../../../model/geometry.js';
 import { classifyEdges, requiredFor } from '../../../model/placement.js';
 import { boundaryDims, roadReserve, ROAD_DEFAULTS, deriveDriveway, clearances, buildingHull, lotLabelLines, inwardNormalOf } from '../../../site/lotplan.js';
@@ -729,7 +730,7 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
   if (schedule.length) blocks.push(scheduleBlock(schedule));
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines and dimensions are indicative.', 'Driveway and crossover are typical values.'];
   notes.push(ground0 ? gl.note : `No ground levels for this lot.${hullPoly.length ? ' Floor level is on an assumed datum.' : ''}`);
-  if (overlayLegendItems(lot).length) notes.push('Site constraint overlays are indicative, from open government mapping. Check with council.');
+  if (overlayLegendItems(lot).length) notes.push('Site constraint overlays are indicative, from open government mapping. Check with council.', ...creditLines(legendEntries(lot)));
   if (schedule.length) notes.push('Edges too short to label are tagged E and listed in the boundary schedule.');
   { const gl = gradingLinesOf(project); if (gl.length) notes.push(gl[0], ...gl.slice(1).filter((t) => /steeper|retaining|towards/.test(t)).slice(0, 2)); } // indicative cut and fill, and any grade line over typical guidance
   void clean;
