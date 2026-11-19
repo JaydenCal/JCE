@@ -1,5 +1,5 @@
 node_modules/
-vendor/
+vendor
 dist/
 .data/
 node_modules

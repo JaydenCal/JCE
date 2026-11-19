@@ -4,7 +4,7 @@ import { h } from '../ui/dom.js';
 import { tutorialFor, readTutorial, writeTutorial, shouldStartTutorial, stepIndexForFlow, chapterById, markChapter, BASICS_ID } from './steps.js';
 import { createHelpMenu } from './menu.js';
 
-const AVOID_FLOW = '.gf-stage,.gf-3d';
+const AVOID_FLOW = '.gf-stage,.gf-3d,.gf-foot';
 const AVOID_EDITOR = '.lc-card,[data-ps="lot-card"],.ps-stage canvas';
 export const CSS = `
 .tut-card{position:fixed;z-index:2147483000;width:260px;box-sizing:border-box;padding:12px 14px;border-radius:12px;background:#12263a;color:#fff;font:500 13px/1.4 system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35)}
