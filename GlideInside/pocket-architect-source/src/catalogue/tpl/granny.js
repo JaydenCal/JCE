@@ -1,4 +1,4 @@
-// Granny flat: about 60 m2, two bedrooms, open living, kitchen and dining, front deck 2.4 m deep.
+// Granny flat: 59.5 m2 indoor (under the 60 m2 secondary dwelling limit), two bedrooms, open living, kitchen and dining, front deck 2.4 m deep.
 // Coordinates are polygon centre lines. The front (deck) faces south.
 
 import { plan } from './kit.js';
@@ -6,15 +6,15 @@ import { plan } from './kit.js';
 export function grannyFlat() {
   const b = plan({ name: 'Granny flat, 2 bedroom', type: 'unit' });
 
-  // North row (y 0..3200) and south row (y 3200..6400), overall 9600 x 6400.
+  // North row (y 0..3200) and south row (y 3200..6200), overall 9600 x 6200 (59.52 m2 indoor).
   const bed2 = b.room('bedroom', 'Bed 2', 0, 0, 3000, 3200);
   const hall = b.room('hall', 'Hall', 3000, 0, 1100, 3200);
   const bath = b.room('bathroom', 'Bathroom', 4100, 0, 1500, 3200);
   const bed1 = b.room('bedroom', 'Bed 1', 5600, 0, 4000, 3200);
-  const laundry = b.room('laundry', 'Laundry', 0, 3200, 1600, 3200);
-  const kitchen = b.room('kitchen', 'Kitchen and dining', 1600, 3200, 4000, 3200);
-  const living = b.room('living', 'Living', 5600, 3200, 4000, 3200);
-  const deck = b.room('deck', 'Deck', 4400, 6400, 5200, 2400, { walls: false });
+  const laundry = b.room('laundry', 'Laundry', 0, 3200, 1600, 3000);
+  const kitchen = b.room('kitchen', 'Kitchen and dining', 1600, 3200, 4000, 3000);
+  const living = b.room('living', 'Living', 5600, 3200, 4000, 3000);
+  const deck = b.room('deck', 'Deck', 4400, 6200, 5200, 2400, { walls: false });
 
   // Doors.
   b.door(bed2, 'e', 2500, { into: bed2 });
@@ -63,14 +63,14 @@ export function grannyFlat() {
 
   // Living.
   b.against('sofa_3', living, 'n', { at: 6900, abs: true });
-  b.place('rug', 6900, 4850, 0, { w: 2400, d: 1500 });
-  b.place('coffee_table', 6900, 4850, 0);
+  b.place('rug', 6900, 4700, 0, { w: 2400, d: 1500 });
+  b.place('coffee_table', 6900, 4700, 0);
   b.against('tv_unit', living, 's', { at: 6400, abs: true, w: 1500 });
   b.place('armchair', 9000, 4600, 90);
 
   // Deck.
-  b.place('outdoor_table', 5900, 7700, 0);
-  b.place('sun_lounge', 8300, 8250, 90);
+  b.place('outdoor_table', 5900, 7500, 0);
+  b.place('sun_lounge', 8300, 8050, 90);
 
   b.tank(10900, 5200, 5000);
   b.run('set_finish', { target: 'external_walls', material: 'weatherboard', colour: 'paint-warm-white' });

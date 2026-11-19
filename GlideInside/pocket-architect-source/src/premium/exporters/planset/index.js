@@ -152,6 +152,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
   sheets.forEach((s, i) => { s.n = i + 1; s.no = `GI-${id}-${s.code}`; if (preview) s.scale = 'NOT TO SCALE'; });
 
   const raw = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3', compress: true });
+  raw.giStampMargin = true; // the trial or sample stamp line goes in the sheet margin below the border, clear of the notes and the strip (watermark.js)
   raw.setProperties({ title: `${ascii(title)} concept plan set`, subject: 'Concept design plans, to be checked by a suitably qualified person', author: bld?.name || ENTITY, creator: bld ? `${bld.name || 'Builder'} plan set` : commercial ? 'Glide Inside commercial layout' : 'Glide Inside lot viewer' });
   const doc = withSuperscripts(cleanedDoc(raw));
   // House elevations and sections (A200, A300, A301): one pass over the 3D model, the sheet scales follow what fits.
