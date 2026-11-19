@@ -25,6 +25,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
   let usage = null; // commercial AI usage and cost
   let termsStats = null; // plan set terms acceptances per version
   let clientReqs = []; // every builder's client login requests (read only)
+  let engOrders = []; // engineering order requests (server/lib/orders.js)
   let contacts = null; // free profile contacts: { contacts, total, matching, marketable }
   const contactFilters = { consent: '', type: '', from: '', to: '', designs: '', mode: '', suburb: '' };
 
@@ -57,6 +58,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
   async function load() {
     [requests, orgs] = await Promise.all([api.listRequests(), api.listOrgs()]);
     clientReqs = (await api.listClientRequests?.().catch(() => [])) || [];
+    engOrders = (await api.engineeringOrders?.().catch(() => null))?.orders || [];
     // The commercial sections are extras: a failure there must not lock the owner out of trial requests.
     [trial, usage, termsStats, contacts] = await Promise.all([api.commercialTrial?.().catch(() => null) ?? null, api.commercialUsage?.().catch(() => null) ?? null, api.termsCounts?.().catch(() => null) ?? null, api.profileContacts?.(contactFilters).catch(() => null) ?? null]);
   }
@@ -321,6 +323,21 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
       h('tbody', null, ...clientReqs.slice(0, 100).map((q) => h('tr', null, td('Builder', q.builderName), td('Name', q.name), td('Contact', h('div', null, q.email), h('div', { class: 'pp-sub' }, q.phone)), td('Lot address', q.lotAddress || ''), td('Design', q.designName || ''), td('Status', q.status), td('Requested', when(q.createdAt))))))));
   }
 
+  // Engineering order requests from the export screen (Order engineering, JCE Infrastructure). Saved on the server; nothing is emailed.
+  function engineeringOrdersSection() {
+    const head = h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Engineering orders'), h('p', { class: 'pp-lead pp-lead--sm' }, `${engOrders.filter((o) => o.status === 'new').length} new. Requests from the Order engineering form, each with the job (address, lot, design link). Nothing is emailed from here: contact the person yourself.`)));
+    if (!engOrders.length) return h('div', { dataset: { ps: 'engineering-orders-admin' } }, head, h('p', { class: 'pp-empty' }, 'No engineering orders yet.'));
+    const mark = async (o, status) => { try { await api.setEngineeringOrderStatus(o.id, status); o.status = status; paint(); } catch (e) { toast(errorMessage(e), { kind: 'error' }); } };
+    return h('div', { dataset: { ps: 'engineering-orders-admin' } }, head, h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table pp-table--stack' },
+      h('thead', null, h('tr', null, ...['Reference', 'Requested', 'Services', 'Contact', 'Job', 'Builder', 'Status'].map((t) => h('th', { scope: 'col' }, t)))),
+      h('tbody', null, ...engOrders.slice(0, 100).map((o) => h('tr', { dataset: { ref: o.id } },
+        td('Reference', o.id), td('Requested', when(o.createdAt)), td('Services', o.serviceLabels.join(', ')),
+        td('Contact', h('div', null, o.name), h('div', null, h('a', { href: `mailto:${o.email}` }, o.email)), o.phone ? h('div', { class: 'pp-sub' }, o.phone) : null),
+        td('Job', h('div', null, o.address || 'No address'), o.lotLabel ? h('div', { class: 'pp-sub' }, o.lotLabel) : null, o.designName ? h('div', { class: 'pp-sub' }, o.designName) : null, o.designLink ? h('a', { href: o.designLink, target: '_blank', rel: 'noopener' }, 'Open design') : null, o.notes ? h('div', { class: 'pp-sub' }, o.notes) : null),
+        td('Builder', o.orgName || 'Direct'),
+        td('Status', h('select', { 'aria-label': `Status for ${o.id}`, onchange: (e) => mark(o, e.target.value) }, ...['new', 'seen', 'closed'].map((v) => h('option', { value: v, selected: o.status === v }, v)))))))))); 
+  }
+
   // Plan set terms: how many accounts have accepted each version (signed in accounts only; free previews are recorded in the browser).
   function termsSection() {
     const head = h('div', { class: 'pp-head', style: { marginTop: '32px' } }, h('div', null, h('h2', null, 'Plan set terms acceptances'), h('p', { class: 'pp-lead pp-lead--sm' }, termsStats ? `Current version ${termsStats.currentVersion}. Counts are accounts that accepted each version (signed in accounts and Plan Packs; anonymous free previews are recorded in the browser only).` : 'Acceptances could not be loaded.')));
@@ -406,6 +423,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
         h('div', { class: 'pp-actions pp-actions--tight', style: { marginTop: '12px' } }, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', id: 'create-internal', onclick: openInternalForm }, 'Create internal test account')),
         trialSection(),
         clientReqSection(),
+        engineeringOrdersSection(),
         usageSection(),
         termsSection(),
         contactsSection()));

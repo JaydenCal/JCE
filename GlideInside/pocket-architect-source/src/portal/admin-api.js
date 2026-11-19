@@ -38,6 +38,9 @@ export function createAdminApi({ token, base = CONFIG.apiBase, fetchImpl = null 
     listOrgs: () => call('GET', '/orgs'),
     /** Every builder's client access requests (read only; the builder decides). */
     listClientRequests: () => call('GET', '/client-requests'),
+    /** Engineering order requests saved from the export screen (server/lib/orders.js): the owner reads them here. Nothing is emailed. */
+    engineeringOrders: () => call('GET', '/engineering-orders'),
+    setEngineeringOrderStatus: (id, status) => call('POST', `/engineering-orders/${encodeURIComponent(id)}/status`, { status }),
     extendTrial: (id) => call('POST', `/orgs/${encodeURIComponent(id)}/extend-trial`, {}),
     convert: (id, note) => call('POST', `/orgs/${encodeURIComponent(id)}/convert`, { note }),
     /** Jobs charged to one org for a month (default this month), and the capped plan: setJobPlan(id, 'starter' | 'pro' | 'teams' | null). */

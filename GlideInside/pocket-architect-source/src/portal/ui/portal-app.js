@@ -10,6 +10,8 @@ import { renderClients } from './clients-tab.js?v=20261118b';
 import { renderBilling } from './billing-tab.js?v=20261118b';
 import { renderTeam } from './team-tab.js';
 import { renderBranding } from './branding-tab.js';
+import { renderLeads } from './leads-tab.js';
+import { renderWidget } from './widget-tab.js';
 import { ddmmyyyy } from '../billing.js';
 import { trialBanner, handleBillingReturn } from './trial-ui.js';
 import { CONFIG } from '../../config.js';
@@ -22,6 +24,8 @@ const TABS = [
   { id: 'clients', label: 'Clients', render: renderClients, perm: 'clients.read' },
   { id: 'billing', label: 'Billing', render: renderBilling, perm: 'billing.read' },
   { id: 'team', label: 'Team', render: renderTeam, perm: 'clients.read' },
+  { id: 'leads', label: 'Leads', render: renderLeads, perm: 'clients.read' },
+  { id: 'widget', label: 'Website widget', render: renderWidget, perm: 'branding.write' },
   { id: 'branding', label: 'Branding', render: renderBranding },
 ];
 
