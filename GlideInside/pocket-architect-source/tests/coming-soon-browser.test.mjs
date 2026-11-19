@@ -218,7 +218,7 @@ test('Leads tab: the signing secret is not on the page until asked for; a design
       const lead = { id: 'lead_1', createdAt: '2026-11-19T01:00:00.000Z', name: 'Sarah Jones', email: 's@example.com', phone: '', address: '22 Banksia Rise', lotLabel: 'Lot 14', houseName: 'Banksia 25', status: 'new', note: '' };
       const api = {
         listLeads: async () => ({ leads: [lead], total: 1, newCount: 1 }),
-        getWebhook: async () => ({ configured: true, url: 'https://hooks.zapier.com/x', enabled: true, secretHint: SECRET.slice(0, 10) + '...', deliveries: [], maxAttempts: 5 }),
+        getWebhook: async () => ({ configured: true, url: 'https://hooks.zapier.com/x', enabled: true, secretHint: '...' + SECRET.slice(-4), deliveries: [], maxAttempts: 5 }),
         revealWebhookSecret: async () => { calls.push('reveal'); return { secret: SECRET }; },
         updateLead: async () => { calls.push('update'); return lead; },
       };

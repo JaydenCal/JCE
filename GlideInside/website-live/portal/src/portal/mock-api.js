@@ -4,16 +4,16 @@
 //
 //   const api = createMockApi({ now, storage, latency });   // tests pass a controllable clock and an in-memory storage
 
-import { ApiError } from '../premium/api.js?v=20261119f';
-import { migrate, validate } from '../model/schema.js?v=20261119f';
-import { GLIDE_LIBRARY } from './glide-library.generated.js?v=20261119f';
-import { houseStats } from './house-stats.js?v=20261119f';
-import { validateColours } from './theme.js?v=20261119f';
-import { validateDetails } from './brand-details.js?v=20261119f';
-import { projectToSvg } from './thumbnail.js?v=20261119f';
-import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js?v=20261119f';
-import { gstOfTotal, monthLabel } from './billing.js?v=20261119f';
-import { NEW_LOGIN_FEE_CENTS, JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, jobPriceFor, summariseJobs, formatAud, TOPUP_FEE_CENTS, TOPUP_CREDITS, TOPUP_MESSAGES, topUpInvoiceLines, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js?v=20261119f';
+import { ApiError } from '../premium/api.js?v=20261120a';
+import { migrate, validate } from '../model/schema.js?v=20261120a';
+import { GLIDE_LIBRARY } from './glide-library.generated.js?v=20261120a';
+import { houseStats } from './house-stats.js?v=20261120a';
+import { validateColours } from './theme.js?v=20261120a';
+import { validateDetails } from './brand-details.js?v=20261120a';
+import { projectToSvg } from './thumbnail.js?v=20261120a';
+import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js?v=20261120a';
+import { gstOfTotal, monthLabel } from './billing.js?v=20261120a';
+import { NEW_LOGIN_FEE_CENTS, JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, jobPriceFor, summariseJobs, formatAud, TOPUP_FEE_CENTS, TOPUP_CREDITS, TOPUP_MESSAGES, topUpInvoiceLines, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js?v=20261120a';
 
 const DB_KEY = 'gi.portal.mock.v1';
 const SESSION_KEY = 'gi.portal.session.v1';
@@ -139,7 +139,7 @@ function seedDb(now) {
   };
 }
 
-export function createMockApi({ now = () => Date.now(), storage = browserStorage(), seed = true, latency = 0, loadCatalogue = () => import('../catalogue/templates.js?v=20261119f') } = {}) {
+export function createMockApi({ now = () => Date.now(), storage = browserStorage(), seed = true, latency = 0, loadCatalogue = () => import('../catalogue/templates.js?v=20261120a') } = {}) {
   const wait = () => (latency ? new Promise((r) => setTimeout(r, latency)) : null);
 
   function load() {
@@ -898,7 +898,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     async listLeads() { await wait(); const { db, org } = ctx('clients.read'); const leads = (db.leads || []).filter((l) => l.orgId === org.id).sort((a, c) => (a.createdAt < c.createdAt ? 1 : -1)); return { leads, total: leads.length, newCount: leads.filter((l) => l.status === 'new').length }; },
     async updateLead(id, b = {}) { await wait(); const { db, org } = ctx('clients.write'); const l = (db.leads || []).find((x) => x.id === id && x.orgId === org.id); if (!l) throw err('NOT_FOUND', 'That lead was not found.', 404); if (b.status) l.status = b.status; if (b.note !== undefined) l.note = String(b.note); save(db); return l; },
     async deleteLead(id) { await wait(); const { db, org } = ctx('clients.write'); db.leads = (db.leads || []).filter((x) => !(x.id === id && x.orgId === org.id)); save(db); return { ok: true }; },
-    async getWebhook() { await wait(); const { db, org } = ctx('branding.write'); const h = (db.hooks ||= {})[org.id]; return { configured: !!h, url: h?.url || '', enabled: !!h?.enabled, secretHint: h?.secret ? `${h.secret.slice(0, 10)}...` : '', deliveries: [], maxAttempts: 5 }; }, // the secret itself is never in the settings (as on the server)
+    async getWebhook() { await wait(); const { db, org } = ctx('branding.write'); const h = (db.hooks ||= {})[org.id]; return { configured: !!h, url: h?.url || '', enabled: !!h?.enabled, secretHint: h?.secret ? `...${h.secret.slice(-4)}` : '', deliveries: [], maxAttempts: 5 }; }, // the secret itself is never in the settings (as on the server)
     async setWebhook(b = {}) { await wait(); const { db, org } = ctx('branding.write'); if (!/^https:\/\//.test(String(b.url || ''))) throw err('BAD_REQUEST', 'The webhook address must start with https://.', 400); const cur = (db.hooks ||= {})[org.id]; db.hooks[org.id] = { url: String(b.url), enabled: b.enabled !== false, secret: cur?.secret || 'whsec_mock0000000000000000000000000000000000000000' }; save(db); return cur ? api.getWebhook() : { ...(await api.getWebhook()), secret: db.hooks[org.id].secret }; },
     async deleteWebhook() { await wait(); const { db, org } = ctx('branding.write'); delete (db.hooks ||= {})[org.id]; save(db); return api.getWebhook(); },
     async rotateWebhookSecret() { await wait(); const { db, org } = ctx('branding.write'); const h = (db.hooks ||= {})[org.id]; if (h) h.secret = `whsec_mock${Math.random().toString(16).slice(2).padEnd(38, '0')}`; save(db); return { ...(await api.getWebhook()), secret: h?.secret }; },

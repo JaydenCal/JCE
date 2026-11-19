@@ -12,7 +12,7 @@ for (const f of files) cpSync(resolve(root, f), resolve(out, f.replace(/^src\//,
 // Cache busting: every relative import in the synced copy carries the same ?v= token, so a browser never mixes a fresh module
 // with a stale cached one (18/11/2026: billing-tab.js failed on a cached billing.js). Bump PORTAL_V on every portal release and
 // keep the portal/index.html and portal/admin/index.html entry imports on the same token.
-export const PORTAL_V = '20261119f';
+export const PORTAL_V = '20261120a';
 const walk = (d) => readdirSync(d).flatMap((n) => { const f = resolve(d, n); return statSync(f).isDirectory() ? walk(f) : [f]; });
 let n = 0;
 for (const f of walk(out).filter((x) => x.endsWith('.js'))) {

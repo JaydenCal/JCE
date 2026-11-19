@@ -163,7 +163,7 @@ export function createTutorial({ getFlow = () => null, onEnter = null, storage }
   const begin = (k, from, chapter = null) => {
     kind = k; skippedAddress = false; chapterId = chapter?.id || BASICS_ID; steps = chapter ? chapter.steps : tutorialFor(k); active = true; i = from ?? 0;
     clearInterval(timer); timer = setInterval(paint, 700);
-    if (i > 0) go(i); else { paint(); go(0); }
+    if (i > 0) go(i); else { paint(); go(i); } // paint() may already have moved past "Type your address" (a lot is loaded); go(i) keeps that
   };
   const menu = createHelpMenu({ storage, onWalk: (k, id) => api.startChapter(k, id) });
   const api = {

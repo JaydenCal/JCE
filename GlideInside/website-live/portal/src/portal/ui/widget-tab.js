@@ -2,9 +2,9 @@
 // copy (script or iframe) and a live preview. A visitor enters an address, picks one of these designs and leaves their details; the lead
 // goes to the Leads tab. Nothing is emailed. See docs/WIDGET_LEADS.md.
 
-import { h, field, busy, toast, errorMessage, copyText } from './kit.js?v=20261119f';
-import { widgetSnippets, widgetFrameUrl, originsFromText, WIDGET_HEIGHT } from '../widget-snippet.js?v=20261119f';
-import { appBase } from '../links.js?v=20261119f';
+import { h, field, busy, toast, errorMessage, copyText } from './kit.js?v=20261120a';
+import { widgetSnippets, widgetFrameUrl, originsFromText, WIDGET_HEIGHT } from '../widget-snippet.js?v=20261120a';
+import { appBase } from '../links.js?v=20261120a';
 
 export async function renderWidget(host, { api, me }) {
   const canWrite = me.permissions.includes('branding.write');

@@ -2,7 +2,7 @@
 // createViewer3D(element, store, { catalogue }) -> { setActive, setMode, setEdit, resetCamera, getModel, snapshot, dispose }
 // Edit in 3D (key B or the Edit toggle) is in edit.js; door animation for the walk-through is in doors.js.
 
-import { createWatchdog } from './watchdog.js';
+import { createWatchdog, isColdBuild, detailNoteText } from './watchdog.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { buildModel, disposeModel, modelBounds } from './build.js';
@@ -565,7 +565,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     roomEdit?.onRebuild();
     stats.buildMs = performance.now() - t0;
     stats.builds++;
-    const verdict = watchdog.record(stats.buildMs, detail);
+    const verdict = isColdBuild(stats.builds) ? null : watchdog.record(stats.buildMs, detail); // the first build of a session is never judged (cold start costs)
     if (verdict === 'degrade') {
       detail = 'low';
       stats.simplified = true;
@@ -589,9 +589,9 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
         detailNote.setAttribute('role', 'status');
         detailNote.dataset.ps = 'viewer-simplified';
         detailNote.style.cssText = 'position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:8px 14px;border-radius:999px;background:rgba(20,24,28,.88);color:#fff;font:600 13px system-ui,sans-serif;z-index:5;pointer-events:none;transition:opacity .4s';
-        detailNote.textContent = 'Large site, simplifying view';
         rootEl.appendChild(detailNote);
       }
+      detailNote.textContent = detailNoteText(store.project.site?.lot?.areaM2);
       detailNote.style.opacity = '1';
       setTimeout(() => { if (detailNote) detailNote.style.opacity = '0'; }, 4000);
     } catch { /* the note is a courtesy */ }

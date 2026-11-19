@@ -1,8 +1,8 @@
 // Small UI kit for the portal screens (dashboard page on the site): DOM builder, dialogs, toasts, copy and download helpers.
 // Plain DOM, no framework. Styles are in website-live/portal/portal.css (class prefix pp-).
 
-import { h, clear } from '../../ui/dom.js?v=20261119f';
-import { ApiError } from '../../premium/api.js?v=20261119f';
+import { h, clear } from '../../ui/dom.js?v=20261120a';
+import { ApiError } from '../../premium/api.js?v=20261120a';
 
 export { h, clear };
 

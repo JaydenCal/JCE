@@ -8,7 +8,7 @@ import { readTheme } from './theme.js';
 import { buildScene, drawGrid, drawWideAerial, wideAerialExtent, drawUnderlay, drawGhostLevel, drawRooms, drawRoomLabels, drawWalls } from './draw-plan.js';
 import { drawOpenings, drawStairs, drawFurniture, drawTanks } from './draw-items.js';
 import { drawSite, drawCredits } from './draw-site.js';
-import { drawOverlayLegend } from './draw-overlays.js';
+import { drawOverlayLegend, floatingPanelBoxes } from './draw-overlays.js';
 import { drawArrangeOverlay, drawBreachWalls, drawSchemeTint } from './draw-lotplan.js';
 import { nearestEdge, toggleEdge, isCorner } from '../site/frontage.js';
 import { drawOverallDims, drawSelection, drawHover, drawNorthArrow, drawScaleBar } from './draw-annot.js';
@@ -287,6 +287,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       selectedBuilding: store.ui.commercialBuilding || null,
       furnSize: ed.furnSize,
       scaleRight: !!document.querySelector('.lc-root:not([hidden])'),
+      avoidBoxes: floatingPanelBoxes(canvas),
     };
     const clashes = currentClashes(project);
     // In a commercial layout every upright label is collected and placed clear of the others (src/editor2d/label-layer.js).

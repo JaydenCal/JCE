@@ -75,5 +75,25 @@ export function createToolbox(el, store, { onWheel } = {}) {
   });
   const offProject = store.on('project', syncAll);
   syncAll();
-  return { sync: syncAll, dispose: () => { off(); offProject(); } };
+  // The single column is kept while every tool fits. When it does not (a 1440 x 900 window, residential or commercial), the shell gets data-tools2 and the
+  // toolbox lays out in two columns, the same layout the short laptop windows use, instead of scrolling and clipping the last tool.
+  function fit() {
+    const shell = el.closest?.('.ps-shell');
+    if (!shell || typeof window === 'undefined' || window.innerWidth < 900 || !el.offsetParent) return;
+    const had = shell.hasAttribute('data-tools2');
+    if (had) shell.removeAttribute('data-tools2');
+    const need = el.scrollHeight > el.clientHeight + 1;
+    if (need) shell.setAttribute('data-tools2', '');
+    else if (had) shell.removeAttribute('data-tools2');
+  }
+  let fitQueued = false;
+  const queueFit = () => { if (fitQueued) return; fitQueued = true; requestAnimationFrame(() => { fitQueued = false; fit(); }); };
+  let ro = null, mo = null;
+  try {
+    ro = new ResizeObserver(queueFit); ro.observe(el);
+    mo = new MutationObserver(queueFit); mo.observe(el, { attributes: true, attributeFilter: ['hidden'], subtree: true });
+    window.addEventListener('resize', queueFit);
+  } catch { /* no observers: the layout stays single column */ }
+  queueFit();
+  return { sync: () => { syncAll(); queueFit(); }, fit, dispose: () => { off(); offProject(); ro?.disconnect(); mo?.disconnect(); try { window.removeEventListener('resize', queueFit); } catch { /* none */ } } };
 }

@@ -1,9 +1,9 @@
 // "Leads": every person who tried the builder's designs through the website widget, in one inbox, with CSV export, a webhook (signed JSON, retries)
 // and the Zapier "Webhooks by Zapier" steps. Nothing is emailed. See docs/WIDGET_LEADS.md.
 
-import { h, field, busy, toast, errorMessage, copyText, confirmDialog, chip } from './kit.js?v=20261119f';
-import { ddmmyyyy } from '../billing.js?v=20261119f';
-import { CONFIG } from '../../config.js?v=20261119f';
+import { h, field, busy, toast, errorMessage, copyText, confirmDialog, chip } from './kit.js?v=20261120a';
+import { ddmmyyyy } from '../billing.js?v=20261120a';
+import { CONFIG } from '../../config.js?v=20261120a';
 
 export const ZAPIER_STEPS = [
   'In Zapier, choose Create Zap. For the trigger, search for "Webhooks by Zapier" and choose the event "Catch Hook".',
@@ -60,13 +60,13 @@ async function renderIntegrations(host, { api }) {
   const log = h('div', { dataset: { ps: 'webhook-log' } });
   const result = h('p', { class: 'pp-hint', role: 'status' });
   let showSecret = false;
-  // The server never sends the signing secret with the settings, only its first characters. The full secret arrives once when it is made
+  // The server never sends the signing secret with the settings, only its last 4 characters. The full secret arrives once when it is made
   // (first save, new secret) or when asked for with Show or Copy, and is kept here only while this page is open.
   let secret = null;
   const take = (r) => { if (r?.secret) secret = r.secret; return r; };
   const fullSecret = async () => { if (!secret) secret = (await api.revealWebhookSecret()).secret; return secret; };
   function paint() {
-    secretBox.textContent = hv.configured ? (showSecret && secret ? secret : `${String(hv.secretHint || '').replace(/\.+$/, '')}${'*'.repeat(16)}`) : 'Created when you save the address.';
+    secretBox.textContent = hv.configured ? (showSecret && secret ? secret : `${'*'.repeat(16)}${String(hv.secretHint || '').replace(/^\.+/, '').slice(-4)}`) : 'Created when you save the address.';
     log.replaceChildren(hv.deliveries.length
       ? h('table', { class: 'pp-table pp-table--stack' }, h('thead', null, h('tr', null, ...['When', 'Result', 'Attempts', 'Detail', ''].map((t) => h('th', { scope: 'col' }, t)))),
         h('tbody', null, ...hv.deliveries.map((d) => h('tr', null, h('td', { dataset: { label: 'When' } }, when(d.createdAt)), h('td', { dataset: { label: 'Result' } }, chip(d.status === 'delivered' ? 'Delivered' : d.status === 'failed' ? 'Failed' : 'Retrying', d.status === 'delivered' ? 'ok' : d.status === 'failed' ? 'warn' : 'muted')), h('td', { dataset: { label: 'Attempts' } }, `${d.attempts} of ${hv.maxAttempts}`), h('td', { dataset: { label: 'Detail' } }, d.lastError || ''),

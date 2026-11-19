@@ -428,8 +428,9 @@ export function openFullEditor(project) {
 }
 
 /** The "Open full editor" link (top right) and a small loading note, over the 3D view. */
-export function mountViewerChrome(stage, store) {
-  if (inFrame()) return { link: null, busy: stage.appendChild(h('div', { class: 'ps-embed-busy', role: 'status', 'aria-live': 'polite' }, 'Loading your block')) };
+export function mountViewerChrome(stage, store, { widget = false } = {}) {
+  // The builder's website widget never carries the link (not even hidden): it has no way to the full editor.
+  if (widget || inFrame()) return { link: null, busy: stage.appendChild(h('div', { class: 'ps-embed-busy', role: 'status', 'aria-live': 'polite' }, 'Loading your block')) };
   const link = h('a', { class: 'ps-embed-full', href: FULL_EDITOR_PATH, target: '_top', dataset: { ps: 'embed-full' }, onclick: (e) => { e.preventDefault(); openFullEditor(store.project); } }, 'Open full editor', h('span', { 'aria-hidden': 'true' }, ' \u2197'));
   const busy = h('div', { class: 'ps-embed-busy', role: 'status', 'aria-live': 'polite' }, 'Loading your block');
   stage.append(link, busy);

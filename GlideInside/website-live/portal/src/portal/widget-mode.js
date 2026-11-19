@@ -5,12 +5,12 @@
 //   - a "Send me this design" form (name, email, optional phone, consent) that saves a lead for the builder (POST /api/widget/:id/lead).
 // Nothing is emailed. Never imports the portal API: a visitor has no login, so these are plain public calls.
 
-import { h } from '../ui/dom.js?v=20261119f';
-import { toast } from '../ui/toast.js?v=20261119f';
-import { CONFIG } from '../config.js?v=20261119f';
-import { applyBrandTheme } from './theme-css.js?v=20261119f';
-import { builderDesigns } from '../lotcard/designs.js?v=20261119f';
-import { lotOf } from '../model/placement.js?v=20261119f';
+import { h } from '../ui/dom.js?v=20261120a';
+import { toast } from '../ui/toast.js?v=20261120a';
+import { CONFIG } from '../config.js?v=20261120a';
+import { applyBrandTheme } from './theme-css.js?v=20261120a';
+import { builderDesigns } from '../lotcard/designs.js?v=20261120a';
+import { lotOf } from '../model/placement.js?v=20261120a';
 
 export const widgetIdFromSearch = (search = typeof location !== 'undefined' ? location.search : '') => {
   const v = (new URLSearchParams(search).get('widget') || '').trim().toLowerCase();

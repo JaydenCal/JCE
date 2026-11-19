@@ -35,3 +35,12 @@ export function createWatchdog(limitMs) {
     reset() { streak = 0; need = RECOVER_STREAK; lastFull = 0; recovering = false; ratio = 3; learned = false; },
   };
 }
+
+/** The first build in a session carries one-off costs (shader compile, texture upload, cold caches), so its time says nothing about the site: it never degrades the view. */
+export const isColdBuild = (buildsSoFar) => buildsSoFar <= 1;
+/** "Large" is a lot over this area (m2); an ordinary suburban lot is never called large. */
+export const LARGE_SITE_M2 = 20000;
+/** The pill text: names the site as large only when it is, otherwise it just says the view was lightened. */
+export function detailNoteText(lotAreaM2) {
+  return Number.isFinite(lotAreaM2) && lotAreaM2 >= LARGE_SITE_M2 ? 'Large site, simplifying view' : 'Simplifying the 3D view to keep it smooth';
+}
