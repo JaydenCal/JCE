@@ -47,15 +47,24 @@ export function originAllowed(list, host, siteOrigin) {
   return (list || []).some((a) => a === o || bare(a) === bare(o));
 }
 
-/** A webhook URL must be https on a public host name (no IP address, localhost or internal names) and the standard port. */
-export function webhookUrlProblem(v) {
+export const LEAD_RETENTION_MONTHS = 24;
+export const DELIVERY_RETENTION_DAYS = 90;
+export const CRON_DELIVERY_CAP = 25;
+// Wildcard DNS services whose names resolve to whatever address is written in them (127.0.0.1.nip.io): a way round the IP address rule.
+const REBINDING = /(^|\.)(nip\.io|sslip\.io|localtest\.me|lvh\.me|xip\.io|traefik\.me|workers\.dev)$/;
+
+/** A webhook URL must be https on a public host name (no IP address, localhost or internal names), the standard port, and not this site.
+ *  Workers cannot reach private address ranges at all (the platform refuses), which is the backstop if a public name resolves inwards. */
+export function webhookUrlProblem(v, siteOrigin = '') {
   let u;
   try { u = new URL(String(v || '').trim()); } catch { return 'Enter the full address, starting with https://.'; }
   if (u.protocol !== 'https:') return 'The webhook address must start with https://.';
   if (u.username || u.password) return 'Leave the user name and password out of the address.';
   if (u.port && u.port !== '443') return 'Use the standard https port.';
-  const host = u.hostname.toLowerCase();
-  if (!host.includes('.') || /^\d+(\.\d+){3}$/.test(host) || host.includes(':') || /(^|\.)(localhost|local|internal|lan|home|corp)$/.test(host)) return 'Use a public web address, not an IP address or a local name.';
+  const host = u.hostname.toLowerCase().replace(/\.+$/, ''); // "localhost." is the same name as "localhost"
+  try { if (siteOrigin && host === new URL(siteOrigin).hostname.toLowerCase().replace(/\.+$/, '')) return 'The webhook cannot point at Glide Inside itself.'; } catch { /* no site origin */ }
+  if (!host.includes('.') || /^[\d.]+$/.test(host) || /^0x[0-9a-f]+/.test(host) || /\d+\.\d+\.\d+\.\d+/.test(host) || host.includes(':') || host.startsWith('[') || /(^|\.)(localhost|local|internal|lan|home|corp|intranet|test|invalid|example)$/.test(host)) return 'Use a public web address, not an IP address or a local name.';
+  if (REBINDING.test(host)) return 'Use your own web address or your automation service address, not a wildcard name service.';
   if (String(v).length > 500) return 'That address is too long.';
   return null;
 }
@@ -77,6 +86,7 @@ export const LEAD_CSV_HEADER = ['Date', 'Name', 'Email', 'Phone', 'Block address
 export const leadsToCsv = (leads) => `${[LEAD_CSV_HEADER, ...leads.map((l) => [ddmmyyyy(l.createdAt), l.name, l.email, l.phone, l.address, l.lotLabel, l.houseName, l.hostOrigin, l.status, l.note, ddmmyyyy(l.consentAt), l.id])].map((r) => r.map(csvCell).join(',')).join('\r\n')}\r\n`;
 
 export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, now = () => Date.now() }) {
+  const siteHost = (() => { try { return new URL(config.siteOrigin).origin; } catch { return ''; } })();
   const iso = (ms = now()) => new Date(ms).toISOString();
   const leadView = (l) => ({ id: l.id, createdAt: l.createdAt, source: l.source, name: l.name, email: l.email, phone: l.phone, address: l.address, lotLabel: l.lotLabel, houseId: l.houseId, houseName: l.houseName, hostOrigin: l.hostOrigin, status: l.status, note: l.note, consentAt: l.consentAt });
 
@@ -114,9 +124,12 @@ export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, 
     res.headers.set('cache-control', 'no-store');
     return res;
   }
-  async function widgetLead(request, url, id) {
+  async function widgetLead(request, url, id, ctx) {
     if (request.method !== 'POST') throw new HttpError('BAD_REQUEST', 'Use POST for this endpoint.', {}, 405);
     if (request.headers.get('x-gi-request') !== '1') throw new HttpError('FORBIDDEN', 'That request was blocked.'); // the custom header forces a CORS check, so another website cannot post here
+    // The widget is the Glide Inside app in an iframe, so its posts come from this site's own origin. Another site cannot post here.
+    const sent = request.headers.get('origin');
+    if (siteHost && sent !== siteHost) throw new HttpError('FORBIDDEN', 'That request was blocked.');
     const b = await readJson(request, 8000);
     const { org, w } = await widgetFor(request, url, id, b.host);
     if ((await store.hitRate(`widget:lead:ip:${clientIp(request)}`, 3600, now())) > 10 || (await store.hitRate(`widget:lead:org:${org.id}`, 86400, now())) > 300) throw new HttpError('RATE_LIMITED', 'Too many requests. Please try again later.', { retryAfter: 3600 });
@@ -130,34 +143,51 @@ export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, 
     const address = str(b.address, 'The address', 200);
     const lotLabel = str(b.lotLabel, 'The lot', 100);
     let house = null;
-    if (b.designId != null && b.designId !== '') { house = await pstore.getHouse(org.id, str(b.designId, 'The design', 120)); if (!house || house.archived) throw new HttpError('BAD_REQUEST', 'That design is not on offer.'); }
+    if (b.designId != null && b.designId !== '') {
+      const did = str(b.designId, 'The design', 120);
+      if (!(await offered(org, w)).some((x) => x.id === did)) throw new HttpError('BAD_REQUEST', 'That design is not on offer.');
+      house = await pstore.getHouse(org.id, did);
+      if (!house || house.archived) throw new HttpError('BAD_REQUEST', 'That design is not on offer.');
+    }
     const houseId = house?.id || '';
-    if (await lstore.findRecentLead(org.id, email, houseId, iso(now() - 10 * 60e3))) return json({ ok: true, reference: 'duplicate' }); // a double press: one lead
+    const dup = await lstore.findRecentLead(org.id, email, houseId, iso(now() - 10 * 60e3));
+    if (dup) return json({ ok: true, reference: dup.id, duplicate: true }); // a double press: one lead, and the visitor gets that lead's reference
     const brand = portal.brandOf(org);
-    const lead = { id: rid('lead'), orgId: org.id, createdAt: iso(), source: 'widget', name, email, phone, address, lotLabel, houseId, houseName: house?.name || '', hostOrigin: cleanOrigin(b.host) || '', consentAt: iso(), consentText: consentTextFor(brand.displayName), status: 'new', note: '' };
+    const lead = { id: rid('lead'), orgId: org.id, createdAt: iso(), source: 'widget', name, email, phone, address, lotLabel, houseId, houseName: house?.name || '', hostOrigin: cleanOrigin(b.host) || '', consentAt: iso(), consentText: consentTextFor(brand.displayName), consentVersion: LEAD_CONSENT_VERSION, status: 'new', note: '' };
     await lstore.insertLead(lead);
-    await queueWebhook(org, lead);
+    await background(ctx, queueWebhook(org, lead));
     return json({ ok: true, reference: lead.id });
   }
 
   // Webhook delivery -----------------------------------------------------------------------------------------------------------
   const payloadFor = (org, lead, event = 'lead.created') => ({ event, id: lead.id, createdAt: lead.createdAt, builder: { id: org.slug || org.id, name: portal.brandOf(org).displayName },
-    lead: { name: lead.name, email: lead.email, phone: lead.phone, address: lead.address, lot: lead.lotLabel, design: { id: lead.houseId, name: lead.houseName }, website: lead.hostOrigin, source: lead.source, consentAt: lead.consentAt, consentText: lead.consentText } });
+    lead: { name: lead.name, email: lead.email, phone: lead.phone, address: lead.address, lot: lead.lotLabel, design: { id: lead.houseId, name: lead.houseName }, website: lead.hostOrigin, source: lead.source, consentAt: lead.consentAt, consentVersion: lead.consentVersion || '', consentText: lead.consentText } });
+
+  /** Run a delivery after the visitor's response has gone (Workers: ctx.waitUntil). Without a ctx (tests, other platforms) it is awaited. */
+  async function background(ctx, promise) {
+    const safe = promise.catch((e) => console.error(JSON.stringify({ event: 'webhook_queue_failed', message: e?.message })));
+    if (ctx?.waitUntil) { ctx.waitUntil(safe); return; }
+    await safe;
+  }
 
   /** One attempt. Records the outcome on the delivery row (unless it is a test) and returns { ok, status, error }. */
   async function attempt(org, hook, delivery, payload, { timeoutMs = 4000 } = {}) {
     const body = JSON.stringify(payload);
     const ts = Math.floor(now() / 1000);
     let ok = false; let status = null; let error = '';
-    try {
-      const res = await fetchImpl(hook.url, { method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(timeoutMs), headers: { 'content-type': 'application/json', 'user-agent': 'GlideInside-Webhook/1', 'x-glideinside-event': payload.event, 'x-glideinside-delivery': delivery?.id || 'test', 'x-glideinside-signature': `t=${ts},v1=${await signWebhook(hook.secret, ts, body)}` }, body });
-      status = res.status;
-      ok = res.status >= 200 && res.status < 300;
-      if (!ok) error = `The address answered HTTP ${res.status}.`;
-    } catch (e) { error = e?.name === 'TimeoutError' ? 'The address did not answer in time.' : 'The address could not be reached.'; }
+    const problem = webhookUrlProblem(hook.url, config.siteOrigin); // checked again on every attempt: the rules may have been tightened since the address was saved
+    if (problem) error = problem;
+    else {
+      try {
+        const res = await fetchImpl(hook.url, { method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(timeoutMs), headers: { 'content-type': 'application/json', 'user-agent': 'GlideInside-Webhook/1', 'x-glideinside-event': payload.event, 'x-glideinside-delivery': delivery?.id || 'test', 'x-glideinside-signature': `t=${ts},v1=${await signWebhook(hook.secret, ts, body)}` }, body });
+        status = res.status;
+        ok = res.status >= 200 && res.status < 300;
+        if (!ok) error = `The address answered HTTP ${res.status}.`;
+      } catch (e) { error = e?.name === 'TimeoutError' ? 'The address did not answer in time.' : 'The address could not be reached.'; }
+    }
     if (delivery) {
       const n = delivery.attempts + 1;
-      const done = ok || n >= WEBHOOK_MAX_ATTEMPTS;
+      const done = ok || n >= WEBHOOK_MAX_ATTEMPTS || !!problem;
       await lstore.updateDelivery(delivery.id, { attempts: n, status: ok ? 'delivered' : done ? 'failed' : 'pending', lastStatus: status, lastError: ok ? '' : error, lastAttemptAt: iso(), nextAttemptAt: done ? null : iso(now() + RETRY_DELAYS_MS[Math.min(n - 1, RETRY_DELAYS_MS.length - 1)]) });
     }
     return { ok, status, error };
@@ -168,30 +198,33 @@ export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, 
     const delivery = { id: rid('dlv'), orgId: org.id, leadId: lead.id, createdAt: iso(), attempts: 0, status: 'pending', nextAttemptAt: iso() };
     await lstore.insertDelivery(delivery);
     await attempt(org, hook, delivery, payloadFor(org, lead));
-    await retryDue(org); // other deliveries of this builder that are due
   }
-  /** Retry this builder's due deliveries (called when a lead arrives and when the portal opens the inbox). */
-  async function retryDue(org) {
-    const hook = await lstore.getWebhook(org.id);
-    if (!hook?.enabled) return 0;
+  /** The Worker cron: retry due deliveries for every builder, oldest first, at most CRON_DELIVERY_CAP in total so one run stays short. */
+  async function retryAllDue() {
     let n = 0;
-    for (const d of await lstore.listDueDeliveries(org.id, iso(), 5)) {
-      const lead = await lstore.getLead(org.id, d.leadId);
+    const orgs = new Map();
+    for (const d of await lstore.listDueDeliveriesAll(iso(), CRON_DELIVERY_CAP)) {
+      if (!orgs.has(d.orgId)) { const org = await pstore.getOrg(d.orgId); orgs.set(d.orgId, org ? { org, hook: await lstore.getWebhook(d.orgId) } : null); }
+      const ctxOrg = orgs.get(d.orgId);
+      if (!ctxOrg) { await lstore.updateDelivery(d.id, { ...d, status: 'failed', lastError: 'The builder no longer exists.', nextAttemptAt: null }); continue; }
+      if (!ctxOrg.hook?.enabled) { await lstore.updateDelivery(d.id, { ...d, status: 'failed', lastError: 'The webhook is off or was removed.', nextAttemptAt: null }); continue; }
+      const lead = await lstore.getLead(d.orgId, d.leadId);
       if (!lead) { await lstore.updateDelivery(d.id, { ...d, status: 'failed', lastError: 'The lead was deleted.', nextAttemptAt: null }); continue; }
-      await attempt(org, hook, d, payloadFor(org, lead));
+      await attempt(ctxOrg.org, ctxOrg.hook, d, payloadFor(ctxOrg.org, lead));
       n += 1;
     }
     return n;
   }
-  /** The Worker cron: retry every builder's due deliveries. */
-  async function retryAllDue() {
-    let n = 0;
-    for (const d of await lstore.listDueDeliveriesAll(iso(), 25)) { const org = await pstore.getOrg(d.orgId); if (org) { n += await retryDue(org); break; } }
-    return n;
+  /** Retention: delivery logs after 90 days, leads (with their deliveries) after 24 months. Run by the cron. */
+  async function purgeOld() {
+    const d = new Date(now());
+    const leadsBefore = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - LEAD_RETENTION_MONTHS, d.getUTCDate())).toISOString();
+    const deliveriesBefore = new Date(now() - DELIVERY_RETENTION_DAYS * 86400e3).toISOString();
+    return lstore.purgeOld({ leadsBefore, deliveriesBefore, ordersBefore: leadsBefore });
   }
 
   // Portal ---------------------------------------------------------------------------------------------------------------------
-  const staff = (r, need, write = false) => portal.session(r.request, r.url, { need, write });
+  const staff = async (r, need, write = false) => { const a = await portal.session(r.request, r.url, { need, write }); if (a.setCookie) r.setCookie = a.setCookie; return a; }; // keeps the sliding session cookie refresh
   const snippetId = (org) => org.slug || org.id;
 
   async function getWidget(r) {
@@ -218,17 +251,16 @@ export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, 
 
   async function listLeads(r) {
     const { org } = await staff(r, 'clients.read');
-    await retryDue(org).catch(() => 0);
     const leads = await lstore.listLeads(org.id);
-    return json({ leads: leads.map(leadView), total: leads.length, newCount: leads.filter((l) => l.status === 'new').length });
+    return json({ leads: leads.map(leadView), total: await lstore.countLeads(org.id), newCount: leads.filter((l) => l.status === 'new').length });
   }
   async function exportLeads(r) {
-    const { org } = await staff(r, 'clients.read');
+    const { org } = await staff(r, 'clients.write'); // the full list with email and phone: the builder admin, not a designer
     const csv = leadsToCsv(await lstore.listLeads(org.id, { limit: 5000 }));
     return new Response(csv, { headers: { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': `attachment; filename="leads-${iso().slice(0, 10)}.csv"`, 'cache-control': 'no-store' } });
   }
   async function patchLead(r, id) {
-    const { org } = await staff(r, 'clients.read', true);
+    const { org } = await staff(r, 'clients.write', true);
     const b = await readJson(r.request, 4000);
     const patch = {};
     if (b.status !== undefined) { if (!['new', 'contacted', 'closed'].includes(b.status)) throw new HttpError('BAD_REQUEST', 'Status must be new, contacted or closed.'); patch.status = b.status; }
@@ -244,28 +276,38 @@ export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, 
 
   const hookView = async (org) => {
     const h = await lstore.getWebhook(org.id);
-    return { configured: !!h, url: h?.url || '', enabled: !!h?.enabled, secret: h?.secret || '', deliveries: (await lstore.listDeliveries(org.id, 20)).map((d) => ({ id: d.id, leadId: d.leadId, createdAt: d.createdAt, attempts: d.attempts, status: d.status, lastStatus: d.lastStatus, lastError: d.lastError, nextAttemptAt: d.nextAttemptAt })), maxAttempts: WEBHOOK_MAX_ATTEMPTS };
+    // The signing secret is never sent with the settings: only its first characters, to tell secrets apart. It is returned in full by rotate, by the first save and by reveal-secret.
+    return { configured: !!h, url: h?.url || '', enabled: !!h?.enabled, secretHint: h?.secret ? `${h.secret.slice(0, 10)}...` : '', deliveries: (await lstore.listDeliveries(org.id, 20)).map((d) => ({ id: d.id, leadId: d.leadId, createdAt: d.createdAt, attempts: d.attempts, status: d.status, lastStatus: d.lastStatus, lastError: d.lastError, nextAttemptAt: d.nextAttemptAt })), maxAttempts: WEBHOOK_MAX_ATTEMPTS };
   };
   async function getWebhook(r) {
     const { org } = await staff(r, 'branding.write');
-    await retryDue(org).catch(() => 0);
     return json(await hookView(org));
   }
   async function putWebhook(r) {
     const { org } = await staff(r, 'branding.write', true);
     const b = await readJson(r.request, 2000);
-    const problem = webhookUrlProblem(b.url);
+    const problem = webhookUrlProblem(b.url, config.siteOrigin);
     if (problem) throw new HttpError('BAD_REQUEST', problem);
     const cur = await lstore.getWebhook(org.id);
     await lstore.putWebhook(org.id, { url: String(b.url).trim(), secret: cur?.secret || newSecret(), enabled: b.enabled !== false }, iso());
-    return json(await hookView(org));
+    const view = await hookView(org);
+    return json(cur ? view : { ...view, secret: (await lstore.getWebhook(org.id)).secret }); // the first save shows the secret once
+  }
+  async function revealSecret(r) {
+    const { org } = await staff(r, 'branding.write', true);
+    if ((await store.hitRate(`webhook:reveal:${org.id}`, 600, now())) > 20) throw new HttpError('RATE_LIMITED', 'Too many requests. Wait a few minutes.', { retryAfter: 600 });
+    const cur = await lstore.getWebhook(org.id);
+    if (!cur) throw new HttpError('BAD_REQUEST', 'Save a webhook address first.');
+    const res = json({ secret: cur.secret });
+    res.headers.set('cache-control', 'no-store');
+    return res;
   }
   async function rotateSecret(r) {
     const { org } = await staff(r, 'branding.write', true);
     const cur = await lstore.getWebhook(org.id);
     if (!cur) throw new HttpError('BAD_REQUEST', 'Save a webhook address first.');
     await lstore.putWebhook(org.id, { ...cur, secret: newSecret() }, iso());
-    return json(await hookView(org));
+    return json({ ...(await hookView(org)), secret: (await lstore.getWebhook(org.id)).secret });
   }
   async function removeWebhook(r) {
     const { org } = await staff(r, 'branding.write', true);
@@ -283,6 +325,7 @@ export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, 
   }
   async function retryDelivery(r, id) {
     const { org } = await staff(r, 'branding.write', true);
+    if ((await store.hitRate(`webhook:test:${org.id}`, 600, now())) > 10) throw new HttpError('RATE_LIMITED', 'Too many tries. Wait a few minutes.', { retryAfter: 600 });
     const d = await lstore.getDelivery(org.id, id);
     const hook = await lstore.getWebhook(org.id);
     if (!d || !hook) throw new HttpError('NOT_FOUND', 'That delivery was not found.');
@@ -323,12 +366,12 @@ export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, 
     ['GET', `/widget/${P}/config`, widgetConfig, 'public'], ['GET', `/widget/${P}/designs`, widgetDesigns, 'public'], ['POST', `/widget/${P}/lead`, widgetLead, 'public'],
     ['GET', '/portal/widget', getWidget], ['PUT', '/portal/widget', putWidget],
     ['GET', '/portal/leads', listLeads], ['GET', '/portal/leads/export', exportLeads], ['PATCH', `/portal/leads/${P}`, patchLead], ['DELETE', `/portal/leads/${P}`, deleteLead],
-    ['GET', '/portal/webhook', getWebhook], ['PUT', '/portal/webhook', putWebhook], ['DELETE', '/portal/webhook', removeWebhook], ['POST', '/portal/webhook/rotate-secret', rotateSecret], ['POST', '/portal/webhook/test', testWebhook], ['POST', `/portal/webhook/deliveries/${P}/retry`, retryDelivery],
+    ['GET', '/portal/webhook', getWebhook], ['PUT', '/portal/webhook', putWebhook], ['DELETE', '/portal/webhook', removeWebhook], ['POST', '/portal/webhook/rotate-secret', rotateSecret], ['POST', '/portal/webhook/reveal-secret', revealSecret], ['POST', '/portal/webhook/test', testWebhook], ['POST', `/portal/webhook/deliveries/${P}/retry`, retryDelivery],
     ['GET', '/portal/site-costs', getCosts], ['PUT', '/portal/site-costs', putCosts], ['DELETE', '/portal/site-costs', deleteCosts],
   ].map(([method, p, handler, kind]) => ({ method, re: new RegExp(`^${p}$`), handler, kind }));
 
   /** Returns a Response, or null when the path is not one of these routes. */
-  async function route(request, url, path) {
+  async function route(request, url, path, ctx) {
     let matched = false;
     for (const rt of ROUTES) {
       const m = rt.re.exec(path);
@@ -337,11 +380,14 @@ export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, 
       if (rt.method !== request.method && !(rt.kind === 'public' && request.method === 'POST' && rt.method === 'POST')) continue;
       if (rt.kind !== 'public' && !portal.portalOpen()) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not open yet.');
       const args = m.slice(1).map((v) => { try { return decodeURIComponent(v); } catch { throw new HttpError('NOT_FOUND', 'No such endpoint.'); } });
-      if (rt.kind === 'public') return rt.handler(request, url, ...args);
-      return rt.handler({ request, url }, ...args);
+      if (rt.kind === 'public') return rt.handler(request, url, ...args, ctx);
+      const r = { request, url, setCookie: null };
+      const res = await rt.handler(r, ...args);
+      if (r.setCookie) res.headers.append('set-cookie', r.setCookie);
+      return res;
     }
     if (matched) throw new HttpError('BAD_REQUEST', 'That method is not allowed for this endpoint.', {}, 405);
     return null;
   }
-  return { route, retryAllDue, retryDue };
+  return { route, retryAllDue, purgeOld };
 }

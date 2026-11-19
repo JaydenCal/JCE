@@ -322,7 +322,7 @@ export function drawCredits(ctx, st) {
 // All site layers in drawing order (called after the aerial underlay, before the plan).
 export function drawSite(ctx, st) {
   if (!st.project.site?.lot) return;
-  drawOverlays(ctx, st); // site constraint overlays (off until switched on), under everything else
+  drawOverlays(ctx, st); // site constraint overlays (off until switched on), under everything else; their legend is a separate final pass (drawOverlayLegend, editor.js)
   drawContours(ctx, st);
   drawNeighbours(ctx, st);
   drawLot(ctx, st);

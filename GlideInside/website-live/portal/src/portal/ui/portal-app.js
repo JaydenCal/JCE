@@ -1,22 +1,22 @@
 // The portal page: sign in, forced password change, builder dashboard, client home. One module, hash routes for the tabs.
 
-import { h, clear, toast, icon, errorMessage } from './kit.js?v=20261119e';
-import { getPortalApi } from '../api.js?v=20261119e';
-import { appLink, designLink } from '../links.js?v=20261119e';
-import { signInView, forgotView, resetView, changePasswordView } from './auth-views.js?v=20261119e';
-import { renderHouses } from './houses-tab.js?v=20261119e';
-import { renderGlide } from './glide-tab.js?v=20261119e';
-import { renderClients } from './clients-tab.js?v=20261119e';
-import { renderBilling } from './billing-tab.js?v=20261119e';
-import { renderTeam } from './team-tab.js?v=20261119e';
-import { renderBranding } from './branding-tab.js?v=20261119e';
-import { renderLeads } from './leads-tab.js?v=20261119e';
-import { renderWidget } from './widget-tab.js?v=20261119e';
-import { ddmmyyyy } from '../billing.js?v=20261119e';
-import { trialBanner, handleBillingReturn } from './trial-ui.js?v=20261119e';
-import { CONFIG } from '../../config.js?v=20261119e';
-import { applyBrandTheme, clearBrandTheme, applyWhiteLabel } from '../theme-css.js?v=20261119e';
-import { readPick } from '../builders.js?v=20261119e';
+import { h, clear, toast, icon, errorMessage } from './kit.js?v=20261119f';
+import { getPortalApi } from '../api.js?v=20261119f';
+import { appLink, designLink } from '../links.js?v=20261119f';
+import { signInView, forgotView, resetView, changePasswordView } from './auth-views.js?v=20261119f';
+import { renderHouses } from './houses-tab.js?v=20261119f';
+import { renderGlide } from './glide-tab.js?v=20261119f';
+import { renderClients } from './clients-tab.js?v=20261119f';
+import { renderBilling } from './billing-tab.js?v=20261119f';
+import { renderTeam } from './team-tab.js?v=20261119f';
+import { renderBranding } from './branding-tab.js?v=20261119f';
+import { renderLeads } from './leads-tab.js?v=20261119f';
+import { renderWidget } from './widget-tab.js?v=20261119f';
+import { ddmmyyyy } from '../billing.js?v=20261119f';
+import { trialBanner, handleBillingReturn } from './trial-ui.js?v=20261119f';
+import { CONFIG } from '../../config.js?v=20261119f';
+import { applyBrandTheme, clearBrandTheme, applyWhiteLabel } from '../theme-css.js?v=20261119f';
+import { readPick } from '../builders.js?v=20261119f';
 
 const TABS = [
   { id: 'houses', label: 'House designs', render: renderHouses },

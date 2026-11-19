@@ -1141,3 +1141,8 @@ svg { display: block; }
 }
 .ps-more-pop .ps-group { flex-wrap: wrap; }
 .ps-more-pop .ps-group .ps-btn { width: auto !important; padding: 0 10px !important; }
+
+/* The website widget (src/portal/widget-mode.js): no route to the full editor, the Glide library, uploads or PDFs, from the first paint. */
+.gw-widget .ps-embed-full,.gw-widget [data-ps="lc-full-editor"],.gw-widget [data-ps="lc-edit"],.gw-widget [data-ps="lc-send-engineer"],.gw-widget [data-ps="lc-pdf"],.gw-widget [data-ps="lc-pdf-house"],.gw-widget [data-ps="lc-upload"],.gw-widget [data-ps="embed-full"]{display:none!important}
+
+.gw-widget-wait .ps-shell canvas,.gw-widget-wait [data-ps="lot-card"]{visibility:hidden!important}

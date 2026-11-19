@@ -8,7 +8,7 @@ import { ENGINEERING_SERVICES, priceLabel } from '../engineering-services.js';
 
 export const ORDER_REQUEST_TITLE = 'Order engineering';
 export const ORDER_CONSENT = 'I agree to my details and the job being sent to JCE Infrastructure so they can contact me about this order';
-export const ORDER_PRIVACY = 'We keep your name, email, optional phone, the address and the design details you see here, and give them to JCE Infrastructure only. This site does not email you. Read the';
+export const ORDER_PRIVACY = 'We keep your name, email, optional phone, the address and the design details you see here, and give them to JCE Infrastructure only. We keep them for 24 months. This site does not email you. Read the';
 
 const nz = (...v) => v.find((x) => x != null && String(x).trim() !== '') || '';
 
@@ -68,7 +68,7 @@ export function openOrderRequest({ layer, send, project = null, job = null, serv
     f.name.row, f.email.row, f.phone.row, f.address.row, f.lot.row,
     el('label', { style: { display: 'block', margin: '6px 0' } }, 'Notes (optional)', el('br'), notes),
     el('label', { style: { display: 'flex', gap: '8px', alignItems: 'flex-start', margin: '6px 0' } }, consent, el('span', null, ORDER_CONSENT)),
-    el('p', { class: 'psp-sc-note' }, ORDER_PRIVACY, ' ', el('a', { href: privacyUrl, target: '_blank', rel: 'noopener' }, 'privacy page'), '.'),
+    el('p', { class: 'psp-sc-note' }, ORDER_PRIVACY, ' ', el('a', { href: `${privacyUrl}#engineering-orders`, target: '_blank', rel: 'noopener' }, 'privacy page'), '.'),
     hp, status, el('div', { class: 'psp-sc-row' }, sendBtn, el('button', { class: 'psp-btn', type: 'button', onclick: () => modal?.close('cancel') }, 'Cancel')), mail);
   paintMail();
   form.addEventListener('submit', async (e) => {

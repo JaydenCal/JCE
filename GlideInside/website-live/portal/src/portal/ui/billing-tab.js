@@ -1,9 +1,9 @@
 // Billing: this month's issued logins and AI top-ups with the running total, past tax invoices, billing details, top-up setting.
 
-import { h, openDialog, field, busy, toast, chip, icon, errorMessage } from './kit.js?v=20261119e';
-import { formatAud, ddmmyyyyTime, ddmmyyyy, monthLabel, topUpQuantityText } from '../billing.js?v=20261119e';
-import { CHARGE_NOTICE } from './clients-tab.js?v=20261119e';
-import { accountOf, isReadOnly, addBillingButton, TRIAL_PRICING_TEXT } from './trial-ui.js?v=20261119e';
+import { h, openDialog, field, busy, toast, chip, icon, errorMessage } from './kit.js?v=20261119f';
+import { formatAud, ddmmyyyyTime, ddmmyyyy, monthLabel, topUpQuantityText } from '../billing.js?v=20261119f';
+import { CHARGE_NOTICE } from './clients-tab.js?v=20261119f';
+import { accountOf, isReadOnly, addBillingButton, TRIAL_PRICING_TEXT } from './trial-ui.js?v=20261119f';
 
 export async function renderBilling(host, { api, me, refreshMe, goBilling }) {
   const acct = accountOf(me);

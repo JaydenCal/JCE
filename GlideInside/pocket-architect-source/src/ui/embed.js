@@ -21,7 +21,12 @@ const isEmbedded = () => {
 };
 
 // handlers: { loadTemplate(id), setMode('demo'|'full'), getProjectId() }
-export function createEmbed({ handlers = {} } = {}) {
+export function createEmbed({ handlers = {}, widget = false } = {}) {
+  // The website widget on a builder's own page has no bridge at all: it takes no messages from the page around it (?host= is only a claim)
+  // and sends it nothing, so no analytics event leaves the frame for a site whose visitors have not seen the Glide Inside cookie notice.
+  if (widget) {
+    return { allowed: [], embedded: isEmbedded(), post: () => false, ready: () => false, openFull: () => false, upgrade: () => false, dispose() {} };
+  }
   const host = hostOrigin();
   const allowed = new Set([location.origin, host].filter((o) => o && o !== 'null'));
   const targetOrigin = host || location.origin;

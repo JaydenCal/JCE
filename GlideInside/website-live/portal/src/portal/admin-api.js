@@ -1,8 +1,8 @@
 // Client for the owner's admin routes (/api/portal/admin/..., bearer ADMIN_TOKEN). Used only by the private page /portal/admin/.
 // The token is held by the page for the session; nothing here stores it.
 
-import { CONFIG } from '../config.js?v=20261119e';
-import { ApiError } from '../premium/api.js?v=20261119e';
+import { CONFIG } from '../config.js?v=20261119f';
+import { ApiError } from '../premium/api.js?v=20261119f';
 
 const contactQuery = (f) => {
   const q = new URLSearchParams();
@@ -41,6 +41,8 @@ export function createAdminApi({ token, base = CONFIG.apiBase, fetchImpl = null 
     /** Engineering order requests saved from the export screen (server/lib/orders.js): the owner reads them here. Nothing is emailed. */
     engineeringOrders: () => call('GET', '/engineering-orders'),
     setEngineeringOrderStatus: (id, status) => call('POST', `/engineering-orders/${encodeURIComponent(id)}/status`, { status }),
+    /** Delete one engineering order (a person asked for their request to be removed, or it is past its retention). */
+    deleteEngineeringOrder: (id) => call('DELETE', `/engineering-orders/${encodeURIComponent(id)}`),
     extendTrial: (id) => call('POST', `/orgs/${encodeURIComponent(id)}/extend-trial`, {}),
     convert: (id, note) => call('POST', `/orgs/${encodeURIComponent(id)}/convert`, { note }),
     /** Jobs charged to one org for a month (default this month), and the capped plan: setJobPlan(id, 'starter' | 'pro' | 'teams' | null). */

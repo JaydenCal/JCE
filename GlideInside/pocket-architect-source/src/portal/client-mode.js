@@ -106,7 +106,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   // The builder's default site cost rates (portal Site costs). Staff can save them from the Site costs panel; clients only use them, read through the estimate.
   {
     let costDefaults = null;
-    const canSave = me.user.role !== 'client';
+    const canSave = Array.isArray(me.permissions) && me.permissions.includes('branding.write'); // the same permission the server needs: designers and clients only read
     try { costDefaults = (await api.getSiteCostDefaults?.())?.settings || null; } catch { costDefaults = null; }
     app.siteCostDefaults = {
       get: () => costDefaults,

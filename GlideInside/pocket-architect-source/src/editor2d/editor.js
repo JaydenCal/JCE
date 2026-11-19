@@ -8,6 +8,7 @@ import { readTheme } from './theme.js';
 import { buildScene, drawGrid, drawWideAerial, wideAerialExtent, drawUnderlay, drawGhostLevel, drawRooms, drawRoomLabels, drawWalls } from './draw-plan.js';
 import { drawOpenings, drawStairs, drawFurniture, drawTanks } from './draw-items.js';
 import { drawSite, drawCredits } from './draw-site.js';
+import { drawOverlayLegend } from './draw-overlays.js';
 import { drawArrangeOverlay, drawBreachWalls, drawSchemeTint } from './draw-lotplan.js';
 import { nearestEdge, toggleEdge, isCorner } from '../site/frontage.js';
 import { drawOverallDims, drawSelection, drawHover, drawNorthArrow, drawScaleBar } from './draw-annot.js';
@@ -317,6 +318,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     drawBreachWalls(ctx, st);
     drawArrangeOverlay(ctx, st);
     if (labels) labels.flush({ w: state.size.w * state.dpr, h: state.size.h * state.dpr });
+    drawOverlayLegend(g2, st); // after every plan layer: nothing can cover it
     drawNorthArrow(g2, st);
     drawScaleBar(g2, st);
     drawCredits(g2, st);

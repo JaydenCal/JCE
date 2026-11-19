@@ -19,6 +19,7 @@
   f.setAttribute('allow', 'fullscreen');
   f.style.cssText = 'border:0;width:100%;max-width:100%;height:' + h + 'px;display:block';
   var t = s.getAttribute('data-target');
-  var host = t ? document.querySelector(t) : null;
+  var host = null;
+  try { host = t ? document.querySelector(t) : null; } catch (e) { host = null; } // a bad data-target selector falls back to the script's own place
   if (host) host.appendChild(f); else s.parentNode.insertBefore(f, s.nextSibling);
 })();

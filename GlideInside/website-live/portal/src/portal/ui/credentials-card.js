@@ -1,6 +1,6 @@
 // The "shown once" card for a generated username and password, with Copy buttons and Copy both.
 
-import { h, icon, copyText, toast } from './kit.js?v=20261119e';
+import { h, icon, copyText, toast } from './kit.js?v=20261119f';
 
 /**
  * credentialsCard({ username, password, who, signInUrl, expiryDays })

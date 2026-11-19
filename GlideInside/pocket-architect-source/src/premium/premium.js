@@ -359,7 +359,8 @@ export function createPremium(store, options = {}) {
       const jsPDF = portalOn() && state.portal.watermark ? trialJsPDF(base) : base;
       const shot = await coverImage(getViewer, { width: 1500, height: 960, maxChars: 9_000_000, timeoutMs: 8000 });
       const image = shot ? await toJpeg(shot) : null;
-      const bytes = await toSitingReport(store.project, { jsPDF, image, layout });
+      const placedName = String(store.ui?.placedDesign?.name || '').replace(/[\u0000-\u001f]+/g, ' ').trim();
+      const bytes = await toSitingReport(store.project, { jsPDF, image, layout, ...(placedName ? { title: placedName } : {}) }); // the design shown, not the project's own name
       const filename = layout === 'summary' ? sitingSummaryFilename(store.project) : sitingReportFilename(store.project);
       (saveFile || downloadBlob)(new Blob([bytes], { type: 'application/pdf' }), filename);
       track('ps_export', { type: layout === 'summary' ? 'siting-summary' : 'siting-report' });

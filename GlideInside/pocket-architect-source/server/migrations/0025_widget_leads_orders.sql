@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS leads (
   host_origin TEXT,                             -- the website that showed the widget
   consent_at TEXT NOT NULL,                     -- the person ticked the consent box at this time
   consent_text TEXT NOT NULL,                   -- the exact wording shown beside the box
+  consent_version TEXT,                         -- the version of that wording (LEAD_CONSENT_VERSION)
   status TEXT NOT NULL DEFAULT 'new',           -- new | contacted | closed
   note TEXT                                     -- the builder's own note
 );
@@ -81,6 +82,7 @@ CREATE TABLE IF NOT EXISTS engineering_orders (
   notes TEXT,
   consent_at TEXT NOT NULL,
   consent_text TEXT NOT NULL,
+  consent_version TEXT,                         -- the version of that wording (ORDER_CONSENT_VERSION)
   status TEXT NOT NULL DEFAULT 'new'            -- new | seen | closed
 );
 CREATE INDEX IF NOT EXISTS idx_eng_orders_created ON engineering_orders(created_at);

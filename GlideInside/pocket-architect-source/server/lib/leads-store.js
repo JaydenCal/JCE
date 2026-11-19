@@ -5,9 +5,9 @@
 const j = (v, d) => { try { return v == null ? d : JSON.parse(v); } catch { return d; } };
 const b = (v) => !!v;
 
-const leadOut = (r) => r && ({ id: r.id, orgId: r.org_id, createdAt: r.created_at, source: r.source, name: r.name, email: r.email, phone: r.phone || '', address: r.address || '', lotLabel: r.lot_label || '', houseId: r.house_id || '', houseName: r.house_name || '', hostOrigin: r.host_origin || '', consentAt: r.consent_at, consentText: r.consent_text, status: r.status, note: r.note || '' });
+const leadOut = (r) => r && ({ id: r.id, orgId: r.org_id, createdAt: r.created_at, source: r.source, name: r.name, email: r.email, phone: r.phone || '', address: r.address || '', lotLabel: r.lot_label || '', houseId: r.house_id || '', houseName: r.house_name || '', hostOrigin: r.host_origin || '', consentAt: r.consent_at, consentText: r.consent_text, consentVersion: r.consent_version || '', status: r.status, note: r.note || '' });
 const delOut = (r) => r && ({ id: r.id, orgId: r.org_id, leadId: r.lead_id, createdAt: r.created_at, attempts: r.attempts, status: r.status, lastStatus: r.last_status ?? null, lastError: r.last_error || '', lastAttemptAt: r.last_attempt_at || null, nextAttemptAt: r.next_attempt_at || null });
-const orderOut = (r) => r && ({ id: r.id, createdAt: r.created_at, orgId: r.org_id || null, orgName: r.org_name || '', services: j(r.services_json, []), name: r.name, email: r.email, phone: r.phone || '', address: r.address || '', lotLabel: r.lot_label || '', designName: r.design_name || '', designLink: r.design_link || '', notes: r.notes || '', consentAt: r.consent_at, consentText: r.consent_text, status: r.status });
+const orderOut = (r) => r && ({ id: r.id, createdAt: r.created_at, orgId: r.org_id || null, orgName: r.org_name || '', services: j(r.services_json, []), name: r.name, email: r.email, phone: r.phone || '', address: r.address || '', lotLabel: r.lot_label || '', designName: r.design_name || '', designLink: r.design_link || '', notes: r.notes || '', consentAt: r.consent_at, consentText: r.consent_text, consentVersion: r.consent_version || '', status: r.status });
 
 export function createD1LeadsStore(db) {
   const run = (sql, ...a) => db.prepare(sql).bind(...a).run();
@@ -24,7 +24,7 @@ export function createD1LeadsStore(db) {
       await run('INSERT INTO widget_settings (org_id, enabled, origins_json, house_ids_json, updated_at) VALUES (?1, ?2, ?3, ?4, ?5) ON CONFLICT(org_id) DO UPDATE SET enabled = ?2, origins_json = ?3, house_ids_json = ?4, updated_at = ?5', orgId, w.enabled ? 1 : 0, JSON.stringify(w.origins || []), JSON.stringify(w.houseIds || []), at);
     },
     async insertLead(l) {
-      await run('INSERT INTO leads (id, org_id, created_at, source, name, email, phone, address, lot_label, house_id, house_name, host_origin, consent_at, consent_text, status, note) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16)', l.id, l.orgId, l.createdAt, l.source, l.name, l.email, l.phone || null, l.address || null, l.lotLabel || null, l.houseId || null, l.houseName || null, l.hostOrigin || null, l.consentAt, l.consentText, l.status || 'new', l.note || null);
+      await run('INSERT INTO leads (id, org_id, created_at, source, name, email, phone, address, lot_label, house_id, house_name, host_origin, consent_at, consent_text, consent_version, status, note) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)', l.id, l.orgId, l.createdAt, l.source, l.name, l.email, l.phone || null, l.address || null, l.lotLabel || null, l.houseId || null, l.houseName || null, l.hostOrigin || null, l.consentAt, l.consentText, l.consentVersion || null, l.status || 'new', l.note || null);
     },
     async listLeads(orgId, { limit = 500 } = {}) { return (await all('SELECT * FROM leads WHERE org_id = ?1 ORDER BY created_at DESC, id LIMIT ?2', orgId, limit)).map(leadOut); },
     async getLead(orgId, id) { return leadOut(await first('SELECT * FROM leads WHERE org_id = ?1 AND id = ?2', orgId, id)); },
@@ -55,10 +55,20 @@ export function createD1LeadsStore(db) {
     async putSiteCostDefaults(orgId, settings, at) { await run('INSERT INTO site_cost_defaults (org_id, settings_json, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(org_id) DO UPDATE SET settings_json = ?2, updated_at = ?3', orgId, JSON.stringify(settings), at); },
     async deleteSiteCostDefaults(orgId) { await run('DELETE FROM site_cost_defaults WHERE org_id = ?1', orgId); },
     async insertOrder(o) {
-      await run('INSERT INTO engineering_orders (id, created_at, org_id, org_name, services_json, name, email, phone, address, lot_label, design_name, design_link, notes, consent_at, consent_text, status) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16)', o.id, o.createdAt, o.orgId || null, o.orgName || null, JSON.stringify(o.services), o.name, o.email, o.phone || null, o.address || null, o.lotLabel || null, o.designName || null, o.designLink || null, o.notes || null, o.consentAt, o.consentText, o.status || 'new');
+      await run('INSERT INTO engineering_orders (id, created_at, org_id, org_name, services_json, name, email, phone, address, lot_label, design_name, design_link, notes, consent_at, consent_text, consent_version, status) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)', o.id, o.createdAt, o.orgId || null, o.orgName || null, JSON.stringify(o.services), o.name, o.email, o.phone || null, o.address || null, o.lotLabel || null, o.designName || null, o.designLink || null, o.notes || null, o.consentAt, o.consentText, o.consentVersion || null, o.status || 'new');
     },
     async listOrders(limit = 200) { return (await all('SELECT * FROM engineering_orders ORDER BY created_at DESC, id LIMIT ?1', limit)).map(orderOut); },
     async updateOrderStatus(id, status) { return changed(await run('UPDATE engineering_orders SET status = ?2 WHERE id = ?1', id, status)); },
+    async deleteOrder(id) { return changed(await run('DELETE FROM engineering_orders WHERE id = ?1', id)); },
+    /** Retention. Deliveries older than deliveriesBefore, leads (and their deliveries) and orders older than the other two dates. Returns the counts removed. */
+    async purgeOld({ leadsBefore, deliveriesBefore, ordersBefore }) {
+      const out = {};
+      out.deliveries = (await run('DELETE FROM webhook_deliveries WHERE created_at < ?1', deliveriesBefore))?.meta?.changes ?? 0;
+      await run('DELETE FROM webhook_deliveries WHERE lead_id IN (SELECT id FROM leads WHERE created_at < ?1)', leadsBefore);
+      out.leads = (await run('DELETE FROM leads WHERE created_at < ?1', leadsBefore))?.meta?.changes ?? 0;
+      out.orders = (await run('DELETE FROM engineering_orders WHERE created_at < ?1', ordersBefore))?.meta?.changes ?? 0;
+      return out;
+    },
   };
 }
 
@@ -92,5 +102,13 @@ export function createMemoryLeadsStore() {
     async insertOrder(o) { orders.set(o.id, { phone: '', address: '', lotLabel: '', designName: '', designLink: '', notes: '', status: 'new', orgId: null, orgName: '', ...cp(o) }); },
     async listOrders(limit = 200) { return [...orders.values()].sort(byNew).slice(0, limit).map(cp); },
     async updateOrderStatus(id, status) { const o = orders.get(id); if (!o) return false; o.status = status; return true; },
+    async deleteOrder(id) { return orders.delete(id); },
+    async purgeOld({ leadsBefore, deliveriesBefore, ordersBefore }) {
+      const out = { deliveries: 0, leads: 0, orders: 0 };
+      for (const [k, d] of deliveries) if (d.createdAt < deliveriesBefore) { deliveries.delete(k); out.deliveries += 1; }
+      for (const [k, l] of leads) if (l.createdAt < leadsBefore) { leads.delete(k); out.leads += 1; for (const [dk, d] of deliveries) if (d.leadId === k) deliveries.delete(dk); }
+      for (const [k, o] of orders) if (o.createdAt < ordersBefore) { orders.delete(k); out.orders += 1; }
+      return out;
+    },
   };
 }

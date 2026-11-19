@@ -329,13 +329,14 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
     if (!engOrders.length) return h('div', { dataset: { ps: 'engineering-orders-admin' } }, head, h('p', { class: 'pp-empty' }, 'No engineering orders yet.'));
     const mark = async (o, status) => { try { await api.setEngineeringOrderStatus(o.id, status); o.status = status; paint(); } catch (e) { toast(errorMessage(e), { kind: 'error' }); } };
     return h('div', { dataset: { ps: 'engineering-orders-admin' } }, head, h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table pp-table--stack' },
-      h('thead', null, h('tr', null, ...['Reference', 'Requested', 'Services', 'Contact', 'Job', 'Builder', 'Status'].map((t) => h('th', { scope: 'col' }, t)))),
+      h('thead', null, h('tr', null, ...['Reference', 'Requested', 'Services', 'Contact', 'Job', 'Builder', 'Status', ''].map((t) => h('th', { scope: 'col' }, t)))),
       h('tbody', null, ...engOrders.slice(0, 100).map((o) => h('tr', { dataset: { ref: o.id } },
         td('Reference', o.id), td('Requested', when(o.createdAt)), td('Services', o.serviceLabels.join(', ')),
         td('Contact', h('div', null, o.name), h('div', null, h('a', { href: `mailto:${o.email}` }, o.email)), o.phone ? h('div', { class: 'pp-sub' }, o.phone) : null),
         td('Job', h('div', null, o.address || 'No address'), o.lotLabel ? h('div', { class: 'pp-sub' }, o.lotLabel) : null, o.designName ? h('div', { class: 'pp-sub' }, o.designName) : null, o.designLink ? h('a', { href: o.designLink, target: '_blank', rel: 'noopener' }, 'Open design') : null, o.notes ? h('div', { class: 'pp-sub' }, o.notes) : null),
         td('Builder', o.orgName || 'Direct'),
-        td('Status', h('select', { 'aria-label': `Status for ${o.id}`, onchange: (e) => mark(o, e.target.value) }, ...['new', 'seen', 'closed'].map((v) => h('option', { value: v, selected: o.status === v }, v)))))))))); 
+        td('Status', h('select', { 'aria-label': `Status for ${o.id}`, onchange: (e) => mark(o, e.target.value) }, ...['new', 'seen', 'closed'].map((v) => h('option', { value: v, selected: o.status === v }, v)))),
+        td('', h('button', { class: 'pp-btn pp-btn--sm pp-btn--danger', type: 'button', dataset: { ps: 'order-delete' }, onclick: async () => { if (await confirmDialog({ title: `Delete ${o.id}?`, message: 'The request is removed from the server. This cannot be undone.', confirmLabel: 'Delete request', danger: true })) { try { await api.deleteEngineeringOrder(o.id); engOrders = engOrders.filter((x) => x.id !== o.id); paint(); } catch (e) { toast(errorMessage(e), { kind: 'error' }); } } } }, 'Delete'))))))));
   }
 
   // Plan set terms: how many accounts have accepted each version (signed in accounts only; free previews are recorded in the browser).

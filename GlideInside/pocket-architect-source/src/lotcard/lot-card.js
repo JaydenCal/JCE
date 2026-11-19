@@ -46,7 +46,7 @@ const DOT = { inside: '#6fd39a', outside: '#ff8a7a', check: '#f2b94b' };
 /** The muted header line: "Builder name · Concept only" in the portal, "Concept only" in the public app. */
 export const mutedLine = (builderName) => (builderName ? `${builderName} · Concept only` : 'Concept only');
 
-export function createLotCard({ store, host, viewerHost = host, catalogue = null, getApp = () => (typeof window !== 'undefined' ? window.__ps : null), getViewer = () => null, onEdit = null, onMini = null, onFind = null, onFullEditor = null, embed = false }) {
+export function createLotCard({ store, host, viewerHost = host, catalogue = null, getApp = () => (typeof window !== 'undefined' ? window.__ps : null), getViewer = () => null, onEdit = null, onMini = null, onFind = null, onFullEditor = null, embed = false, widget = false }) {
   if (!document.getElementById(STYLE_ID)) {
     const st = document.createElement('style');
     st.id = STYLE_ID;
@@ -64,9 +64,9 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const stats = E('lc-stats');
   const chips = E('lc-strip', 'div', { role: 'group', 'aria-label': 'Colour schemes' });
   const bWalk = h('button', { class: 'lc-btn lc-pri', type: 'button', dataset: { ps: 'lc-walk' }, onclick: () => walkInside() }, 'Walk inside');
-  const bEdit = h('button', { class: 'lc-btn', type: 'button', dataset: { ps: 'lc-edit' }, onclick: () => (onEdit ? onEdit() : store.setUI({ view: '2d' })) }, embed ? 'Choose and place a home' : 'Edit floor plan');
-  const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf' }, onclick: () => planSetPdf('site') }, 'Site plan PDF');
-  const bPdfH = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf-house' }, onclick: () => planSetPdf('house') }, 'House plan PDF');
+  const bEdit = h('button', { class: 'lc-btn', type: 'button', hidden: widget, dataset: { ps: 'lc-edit' }, onclick: () => (onEdit ? onEdit() : store.setUI({ view: '2d' })) }, embed ? 'Choose and place a home' : 'Edit floor plan');
+  const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', hidden: widget, dataset: { ps: 'lc-pdf' }, onclick: () => planSetPdf('site') }, 'Site plan PDF');
+  const bPdfH = h('button', { class: 'lc-btn lc-gh', type: 'button', hidden: widget, dataset: { ps: 'lc-pdf-house' }, onclick: () => planSetPdf('house') }, 'House plan PDF');
   // Under the PDF links: send the plans to a registered engineer (hidden until the premium layer is loaded and sending is allowed).
   const bSend = h('button', { class: 'lc-btn lc-sendbtn', type: 'button', hidden: true, dataset: { ps: 'lc-send-engineer' }, onclick: () => engineer.open() }, SEND_LABEL);
   const sendRow = E('lc-send', 'div', { hidden: true }, bSend);
@@ -90,12 +90,13 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     getDesigns: () => designs,
     onSwapped: (d) => { store.setUI({ placedDesign: { id: d.id, name: d.name } }); selTab = 'aerial'; bedI = 0; go('aerial'); },
     onGuide: (text) => {
+      if (widget) { toast('Try another design from this builder to find one that suits this block.', { kind: 'info', timeout: 12000 }); return; }
       if (embed) { stashGuidance(text); (onFullEditor || onEdit)?.(); return; }
       store.setUI({ view: '2d' });
       toast(text, { kind: 'info', timeout: 20000 });
     },
     onEngineer: () => engineer.open(),
-    canEngineer: () => engineer.available(),
+    canEngineer: () => !widget && engineer.available(),
   });
   const coach = createCoach({ theme: 'glass', steps: TOPVIEW_COACH, onChange: () => { try { sizeInset(); } catch { /* not ready */ } } });
   const advice = E('lc-advice', 'div', null, coach.el, fitCard.el);
@@ -158,7 +159,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     b.innerHTML = '<svg viewBox="-20 -20 40 40" aria-hidden="true"><circle r="17" fill="none" stroke="rgba(255,255,255,.6)"/><path d="M0-13 L4 3 L0 0 L-4 3Z" fill="#ffc83d"/><path d="M0 13 L4 3 L0 6 L-4 3Z" fill="rgba(255,255,255,.55)"/></svg>';
     return b;
   })() : null;
-  const menuItems = embed ? [
+  const menuItems = widget ? [['Enlarge top view', () => topView.toggle()]] : embed ? [
     ['Open full editor', () => (onFullEditor || onEdit)?.()],
     ['Site plan PDF', () => planSetPdf('site')],
     ['House plan PDF', () => planSetPdf('house')],
@@ -169,9 +170,9 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     ['Enlarge top view', () => topView.toggle()],
   ] : [];
   injectUploadCss();
-  const uploadBtn = embed ? h('button', { class: 'lc-upload lc-glass', type: 'button', dataset: { ps: 'lc-upload' }, title: 'Use your own lot boundary, anywhere in the world', onclick: () => runUpload(store, { viewer: true, catalogue }) }, 'Upload boundary') : null;
+  const uploadBtn = embed && !widget ? h('button', { class: 'lc-upload lc-glass', type: 'button', dataset: { ps: 'lc-upload' }, title: 'Use your own lot boundary, anywhere in the world', onclick: () => runUpload(store, { viewer: true, catalogue }) }, 'Upload boundary') : null;
   // The main call to action: a big gold button, a real button so Tab reaches it and Enter or Space opens the full editor.
-  const fullBtn = embed ? h('button', { class: 'lc-full', type: 'button', dataset: { ps: 'lc-full-editor' }, title: 'Open this lot and design in the full editor', onclick: () => (onFullEditor || onEdit)?.() }, 'Open full editor', h('span', { 'aria-hidden': 'true' }, ' \u2197')) : null;
+  const fullBtn = embed && !widget ? h('button', { class: 'lc-full', type: 'button', dataset: { ps: 'lc-full-editor' }, title: 'Open this lot and design in the full editor', onclick: () => (onFullEditor || onEdit)?.() }, 'Open full editor', h('span', { 'aria-hidden': 'true' }, ' \u2197')) : null;
   const menuList = embed ? h('div', { class: 'lc-menu-list lc-glass', role: 'menu', hidden: true }, ...menuItems.map(([label, fn]) => h('button', { class: 'lc-menu-item', type: 'button', role: 'menuitem', onclick: () => { menuList.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); fn(); paintMenu(); } }, label))) : null;
   const menuBtn = embed ? (() => {
     const b = h('button', { class: 'lc-menu lc-glass', type: 'button', 'aria-label': 'Menu', 'aria-haspopup': 'menu', 'aria-expanded': 'false', dataset: { ps: 'lc-menu' }, onclick: () => { paintMenu(); menuList.hidden = !menuList.hidden; b.setAttribute('aria-expanded', String(!menuList.hidden)); } });
@@ -260,7 +261,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   function lotKey() {
     const lot = lotOf(store.project);
     if (!lot) return null;
-    return `${lot.lotLabel}|${lot.areaM2}|${(lot.envelope || []).length}|${(lot.frontEdges || []).join(',')}|${lot.setbacksKey || ''}|${app().lotDesigns ? 'p' : 'c'}`;
+    return `${lot.lotLabel}|${lot.areaM2}|${(lot.envelope || []).length}|${(lot.frontEdges || []).join(',')}|${lot.setbacksKey || ''}|${app().lotDesigns ? 'p' : 'c'}${app().widgetRev || 0}`;
   }
 
   async function loadDesigns() {
@@ -331,7 +332,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   function swapChoices() {
     const out = designs.map((d) => ({ id: d.id, name: d.name, group: 'Designs for this lot', d }));
     const seen = new Set(out.map((x) => x.id));
-    for (const t of Array.isArray(catalogue?.templates) ? catalogue.templates : []) {
+    for (const t of widget ? [] : Array.isArray(catalogue?.templates) ? catalogue.templates : []) { // the widget offers the builder's designs only
       if (!t?.id || t.id === 'blank' || seen.has(t.id)) continue;
       out.push({ id: t.id, name: t.name || t.id, group: 'Building types', make: () => ({ id: t.id, name: t.name || t.id, project: catalogue.createFromTemplate ? catalogue.createFromTemplate(t.id) : t.create?.() }) });
     }

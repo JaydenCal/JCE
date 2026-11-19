@@ -9,9 +9,9 @@
 // clockwise as seen on the plan; `mirrored: true` flips the house left to right first (a mirrored plan, still the same rooms).
 // Use `previewPlacement` while the person drags, and `placeHouse` inside store.apply to commit.
 
-import { createLevel, uid } from '../model/schema.js?v=20261119e';
-import { mirrorPlan } from '../model/ops.js?v=20261119e';
-import { lowestLevel } from './house-stats.js?v=20261119e';
+import { createLevel, uid } from '../model/schema.js?v=20261119f';
+import { mirrorPlan } from '../model/ops.js?v=20261119f';
+import { lowestLevel } from './house-stats.js?v=20261119f';
 
 const ELEV_TOL = 1;
 const rad = (deg) => (deg * Math.PI) / 180;

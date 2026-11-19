@@ -26,7 +26,7 @@ export function hostOrigin(loc = globalThis.location, doc = globalThis.document)
 }
 
 export const LEAD_NO_LOT = 'Enter your address first, then send the design you like.';
-export const LEAD_PRIVACY = 'We keep your name, email, optional phone, your address and the design you chose, and pass them to the builder only. We do not send you any email. Read the';
+export const LEAD_PRIVACY = 'We keep your name, email, optional phone, your address and the design you chose, and pass them to the builder, and to any service the builder has set up to receive its leads. We keep them for 24 months and send you no email. Read the';
 
 const STYLE = `
 .gw-bar{position:absolute;left:12px;right:12px;bottom:12px;z-index:30;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--ps-panel,#fff);border:1px solid var(--ps-border-strong,#b6b8bd);border-radius:10px;padding:8px 12px;box-shadow:0 6px 24px rgba(0,0,0,.18);font:500 13px var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-text,#1a1c20)}
@@ -40,7 +40,8 @@ const STYLE = `
 .gw-card input[type=text],.gw-card input[type=email],.gw-card input[type=tel]{width:100%;box-sizing:border-box;min-height:38px;border:1px solid var(--ps-border-strong,#b6b8bd);border-radius:8px;padding:0 10px;font:inherit;background:var(--ps-field,#fff);color:inherit}
 .gw-consent{display:flex;gap:8px;align-items:flex-start;margin:12px 0 4px;font-weight:400!important}.gw-consent input{margin-top:3px}
 .gw-fine{font-size:12px;color:var(--ps-muted,#5a5e66)}.gw-err{color:#b52828;font-weight:600;min-height:1.2em}.gw-hp{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
-.gw-widget .ps-embed-full,.gw-widget [data-ps="lc-full-editor"],.gw-widget [data-ps="lc-send-engineer"],.gw-widget [data-ps="lc-pdf"],.gw-widget [data-ps="lc-pdf-house"],.gw-widget [data-ps="lc-upload"],.gw-widget [data-ps="lc-menu"]{display:none!important}
+.gw-widget .ps-embed-full,.gw-widget [data-ps="lc-full-editor"],.gw-widget [data-ps="lc-edit"],.gw-widget [data-ps="lc-send-engineer"],.gw-widget [data-ps="lc-pdf"],.gw-widget [data-ps="lc-pdf-house"],.gw-widget [data-ps="lc-upload"],.gw-widget [data-ps="embed-full"]{display:none!important}
+.gw-unavail{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--ps-panel,#fff);color:var(--ps-text,#1a1c20);font:500 16px/1.45 var(--ps-font-ui,system-ui,sans-serif);text-align:center}.gw-unavail h2{margin:0 0 6px;font:700 20px var(--ps-font-ui,system-ui,sans-serif)}.gw-unavail p{margin:0;color:var(--ps-muted,#5a5e66);font-size:14px}
 .gw-row{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
 `;
 
@@ -60,7 +61,7 @@ export function leadForm({ cfg, context, send, onDone, onSummary = null, privacy
     h('label', { for: 'gw-email' }, 'Your email'), email,
     h('label', { for: 'gw-phone' }, 'Phone ', h('span', { class: 'gw-opt' }, '(optional)')), phone,
     h('label', { class: 'gw-consent', for: 'gw-consent' }, consent, h('span', null, cfg.consentText)),
-    h('p', { class: 'gw-fine' }, `${LEAD_PRIVACY} `, h('a', { href: privacyUrl, target: '_blank', rel: 'noopener' }, 'privacy page'), '.'),
+    h('p', { class: 'gw-fine' }, `${LEAD_PRIVACY} `, h('a', { href: `${privacyUrl}#widget-leads`, target: '_blank', rel: 'noopener' }, 'privacy page'), '.'),
     h('div', { class: 'gw-hp' }, hp), err,
     h('div', { class: 'gw-row' }, h('button', { class: 'gw-btn gw-btn--ghost', type: 'button', onclick: () => onDone?.(false) }, 'Cancel'), submit));
   form.addEventListener('submit', async (e) => {
@@ -83,6 +84,17 @@ export function leadForm({ cfg, context, send, onDone, onSummary = null, privacy
   return form;
 }
 
+/** The widget could not start (not switched on, this website not on the list, a server fault): a plain panel in place of everything else. Never the normal viewer. */
+export function showUnavailable(doc = globalThis.document) {
+  if (!doc?.body) return null;
+  doc.body.classList.add('gw-widget', 'gw-off');
+  if (!doc.getElementById('gw-style')) { const s = doc.createElement('style'); s.id = 'gw-style'; s.textContent = STYLE; doc.head.append(s); }
+  for (const el of [...doc.body.children]) { if (el.classList?.contains('gw-unavail')) continue; el.hidden = true; el.setAttribute('inert', ''); el.style.display = 'none'; }
+  const panel = h('div', { class: 'gw-unavail', role: 'status', dataset: { gw: 'unavailable' } }, h('div', null, h('h2', null, 'This widget is not available right now'), h('p', null, 'Please try again later.')));
+  doc.body.append(panel);
+  return panel;
+}
+
 export async function initWidgetMode(app, { fetchImpl = (...a) => globalThis.fetch(...a), loc = globalThis.location } = {}) {
   const id = widgetIdFromSearch(loc.search);
   if (!id) return null;
@@ -97,15 +109,17 @@ export async function initWidgetMode(app, { fetchImpl = (...a) => globalThis.fet
   };
   let cfg; let all;
   try { [cfg, all] = await Promise.all([get('config'), get('designs')]); } catch (e) {
-    const msg = e.status === 403 ? 'This website is not on the builder\'s list for the widget.' : 'This widget is not switched on.';
-    toast(msg, { kind: 'warn', timeout: 12000 });
-    return { error: msg };
+    console.warn(`[widget] not available (${e?.status || 'network'})`);
+    app.widgetUnavailable = true;
+    showUnavailable();
+    return { error: 'unavailable' };
   }
   const designs = (all.designs || []).map((d) => ({ id: d.id, name: d.name, project: d.project, group: 'builder' }));
   if (cfg.colours) applyBrandTheme(cfg.colours);
   const bname = cfg.name || 'Your builder';
   app.builder = { name: bname, logo: cfg.logoDataUrl || null, colours: cfg.colours || null, details: cfg.details || null, widget: true, client: null };
   app.lotDesigns = (project) => Promise.resolve(builderDesigns(project || app.store.project, designs, { allowGlide: false }));
+  app.widgetRev = (app.widgetRev || 0) + 1; // the lot card reloads its carousel from these designs
   const prod = document.querySelector('.ps-brand .ps-product');
   if (prod) prod.textContent = bname;
   try { document.title = `${bname} | See it on your block`; } catch { /* no title */ }

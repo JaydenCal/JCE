@@ -1,6 +1,7 @@
 // Site constraint overlays: server route with recorded-shape ArcGIS fixtures for NSW and QLD, clipping, failure tolerance, the browser
 // model and summary card wording, the 3D tint, the 2D drawing and the plan set hook.
 import test from 'node:test';
+import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createApp } from '../server/lib/app.js';
@@ -13,6 +14,7 @@ import {
 } from '../src/site/overlays.js';
 import { addConstraintTint, trianglesFor } from '../src/viewer3d/site-constraints.js';
 import { drawOverlays } from '../src/editor2d/draw-overlays.js';
+import { drawOverlayLegend, legendPlacement, legendHeight, LEGEND_W } from '../src/editor2d/draw-overlays.js';
 import { overlayLegendItems, drawOverlayOutlines } from '../src/premium/exporters/planset/overlays.js';
 import { legendBlock } from '../src/premium/exporters/planset/site.js';
 import { refreshOverlays } from '../src/site/apply.js';
@@ -319,10 +321,34 @@ test('2D: nothing is drawn while overlays are off; switched on they fill, outlin
   drawOverlays(on.ctx, stFor(lot));
   const names = on.calls.map((c) => c[0]);
   assert.ok(names.includes('fill') && names.includes('stroke'));
+  assert.equal(on.calls.some((c) => c[0] === 'fillText'), false, 'drawOverlays draws no legend: that is a final pass');
+  drawOverlayLegend(on.ctx, stFor(lot));
   assert.ok(on.calls.some((c) => c[0] === 'fillText' && /Site constraints \(indicative\)/.test(c[1])));
   assert.ok(on.calls.some((c) => c[0] === 'fillText' && c[1] === 'Flood planning area'));
   assert.ok(on.calls.some((c) => c[0] === 'fillText' && c[1] === 'Heritage'));
   assert.doesNotThrow(() => drawOverlays(recorder().ctx, stFor({ ...lotFixture() })));
+  const offLegend = recorder();
+  drawOverlayLegend(offLegend.ctx, stFor(lotFixture()));
+  assert.equal(offLegend.calls.length, 0);
+});
+
+test('2D legend: drawn in the editor after every plan layer, and placed clear of the lot', async () => {
+  const src = fs.readFileSync(new URL('../src/editor2d/editor.js', import.meta.url), 'utf8');
+  const last = Math.max(...['drawSelection(', 'drawBreachWalls(', 'drawArrangeOverlay(', 'drawRoomLabels(', 'drawFurniture(', 'drawSite('].map((k) => src.indexOf(k)));
+  assert.ok(src.indexOf('drawOverlayLegend(g2, st)') > last, 'the legend pass comes after the plan layers');
+  assert.ok(!/drawLegend\(ctx, st, on, creditLines/.test(fs.readFileSync(new URL('../src/editor2d/draw-overlays.js', import.meta.url), 'utf8')), 'drawOverlays no longer draws it');
+  const size = { w: 1000, h: 700 }; const h = legendHeight(2, 1);
+  assert.deepEqual(legendPlacement(size, null, h), { x: 1000 - LEGEND_W - 14, y: 168 }, 'no lot: top right');
+  const overRight = { minX: 600, maxX: 950, minY: 150, maxY: 500 };
+  const p2 = legendPlacement(size, overRight, h);
+  assert.equal(p2.x, 14, 'the lot is on the right: bottom left');
+  assert.equal(legendPlacement(size, overRight, h, LEGEND_W, { cardLeft: true }).x, 1000 - LEGEND_W - 14, 'the design card is bottom left: the legend goes bottom right, never under the card');
+  const wide = { minX: 20, maxX: 980, minY: 100, maxY: 640 };
+  assert.deepEqual(legendPlacement(size, wide, h), { x: 1000 - LEGEND_W - 14, y: 168 }, 'nothing is clear: the first spot');
+  const box = (b) => ({ minX: b.x, maxX: b.x + LEGEND_W, minY: b.y, maxY: b.y + h });
+  const p3 = legendPlacement(size, { minX: 14, maxX: 600, minY: 168, maxY: 640 }, h);
+  const b3 = box(p3), l3 = { minX: 14, maxX: 600, minY: 168, maxY: 640 };
+  assert.ok(!(b3.minX < l3.maxX && b3.maxX > l3.minX && b3.minY < l3.maxY && b3.maxY > l3.minY), 'it does not sit over the lot');
 });
 
 // Plan set hook --------------------------------------------------------------------------------------------------------------------
@@ -377,7 +403,7 @@ test('legend and plan set notes carry the source and data date, with the check w
   const credits = creditLines(legendEntries(lot));
   assert.ok(credits.length === 1 && /^Flood planning area: .+, data dated /.test(credits[0]), credits[0]);
   const rec = recorder();
-  drawOverlays(rec.ctx, stFor(lot));
+  drawOverlayLegend(rec.ctx, stFor(lot));
   assert.ok(rec.calls.some((c) => c[0] === 'fillText' && /Indicative only\. Check with council/.test(c[1])));
   assert.ok(rec.calls.some((c) => c[0] === 'fillText' && /data dated/.test(c[1])));
   assert.ok(!/[\u2013\u2014]/.test(credits.join(' ') + CHECK_WITH_COUNCIL));

@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import { createApp } from '../server/lib/app.js';
 import { createMemoryStore, createD1Store } from '../server/lib/store.js';
 import { createMemoryPortalStore, createD1PortalStore } from '../server/lib/portal-store.js';
-import { createD1LeadsStore } from '../server/lib/leads-store.js';
+import { createD1LeadsStore, createMemoryLeadsStore } from '../server/lib/leads-store.js';
 import { createProject } from '../src/model/schema.js';
 import { signWebhook, webhookUrlProblem, originAllowed, cleanOrigin, leadsToCsv, WEBHOOK_MAX_ATTEMPTS } from '../server/lib/leads.js';
 
@@ -31,8 +31,9 @@ function world({ d1 = false, hook = null } = {}) {
   const db = d1 ? makeD1() : null;
   const outbound = [];
   const fetchImpl = async (url, init) => { outbound.push({ url: String(url), init }); if (hook) return hook(String(url), init, outbound.length); throw new Error(`unexpected network call ${url}`); };
-  const app = createApp({ store: d1 ? createD1Store(db) : createMemoryStore(), portalStore: d1 ? createD1PortalStore(db) : createMemoryPortalStore(), ...(d1 ? { leadsStore: createD1LeadsStore(db) } : {}), fetchImpl, now: () => clock.t, env: { SITE_URL: SITE, ENTITLEMENT_SECRET: 'unit-test-secret', PORTAL_ENABLED: '1', ADMIN_TOKEN } });
-  const w = { clock, app, outbound, db };
+  const lstore = d1 ? createD1LeadsStore(db) : createMemoryLeadsStore();
+  const app = createApp({ store: d1 ? createD1Store(db) : createMemoryStore(), portalStore: d1 ? createD1PortalStore(db) : createMemoryPortalStore(), leadsStore: lstore, fetchImpl, now: () => clock.t, env: { SITE_URL: SITE, ENTITLEMENT_SECRET: 'unit-test-secret', PORTAL_ENABLED: '1', ADMIN_TOKEN } });
+  const w = { clock, app, outbound, db, lstore };
   w.browser = (ip = '203.0.113.5') => {
     const jar = { cookie: null };
     const call = async (method, path, body, { noCsrf = false, headers = {}, raw = false } = {}) => {
@@ -148,7 +149,9 @@ for (const [label, d1] of [['memory', false], ...(DatabaseSync ? [['D1 (SQLite s
     const ok = await post(lead({ designId: hid }));
     assert.equal(ok.status, 200, JSON.stringify(ok.data));
     assert.match(ok.data.reference, /^lead_/);
-    assert.equal((await post(lead({ designId: hid }))).data.reference, 'duplicate');
+    const again = await post(lead({ designId: hid }));
+    assert.equal(again.data.reference, ok.data.reference); // a double press returns the first lead's real reference
+    assert.equal(again.data.duplicate, true);
     assert.equal((await post(lead({ website: 'http://spam', email: 'bot@example.com' }))).status, 200); // honeypot: silently dropped
     const inbox = await a.admin.get('/portal/leads');
     assert.equal(inbox.data.total, 1);
@@ -198,7 +201,8 @@ for (const [label, d1] of [['memory', false], ...(DatabaseSync ? [['D1 (SQLite s
     assert.equal((await a.admin.put('/portal/webhook', { url: 'http://insecure.example/h' })).status, 400);
     const saved = await a.admin.put('/portal/webhook', { url: 'https://hooks.zapier.com/hooks/catch/123/abc/', enabled: true });
     assert.equal(saved.status, 200);
-    const secret = saved.data.secret;
+    const secret = saved.data.secret; // the first save shows the secret once
+    assert.equal((await a.admin.get('/portal/webhook')).data.secret, undefined); // never again with the settings
     assert.match(secret, /^whsec_[0-9a-f]{48}$/);
     // staff designers cannot read the secret
     const test1 = await a.admin.post('/portal/webhook/test');
@@ -226,7 +230,7 @@ for (const [label, d1] of [['memory', false], ...(DatabaseSync ? [['D1 (SQLite s
     hv = (await a.admin.get('/portal/webhook')).data;
     assert.equal(hv.deliveries[0].status, 'pending');
     assert.equal(hv.deliveries[0].attempts, 1);
-    for (const mins of [2, 10, 60, 240]) { w.clock.t += mins * 60000; await a.admin.get('/portal/webhook'); }
+    for (const mins of [2, 10, 60, 240]) { w.clock.t += mins * 60000; await w.app.scheduled(); } // the cron does the retries; opening the portal does not
     hv = (await a.admin.get('/portal/webhook')).data;
     assert.equal(hv.deliveries[0].status, 'failed');
     assert.equal(hv.deliveries[0].attempts, WEBHOOK_MAX_ATTEMPTS);
@@ -243,6 +247,7 @@ for (const [label, d1] of [['memory', false], ...(DatabaseSync ? [['D1 (SQLite s
     // rotate secret changes the signature key; delete removes the hook so a later lead sends nothing
     const rot = await a.admin.post('/portal/webhook/rotate-secret');
     assert.notEqual(rot.data.secret, secret);
+    assert.equal((await a.admin.post('/portal/webhook/reveal-secret')).data.secret, rot.data.secret);
     await a.admin.del('/portal/webhook');
     const n = w.outbound.length;
     await anon.post(`/widget/${id}/lead`, lead({ email: 'three@example.com' }));
@@ -271,13 +276,13 @@ for (const [label, d1] of [['memory', false], ...(DatabaseSync ? [['D1 (SQLite s
     const w = world({ d1 });
     const anon = w.browser('192.0.2.20');
     const good = { services: ['stormwater-concept', 'site-classification'], name: 'Sarah Jones', email: 'sarah@example.com', phone: '0412 345 678', address: '22 Banksia Rise, Thornton NSW', lotLabel: 'Lot 14 DP 1234', designName: 'Banksia 25', designLink: `${SITE}/plan-studio/app/?share=abc`, notes: 'Sloping block', consent: true };
-    assert.equal((await anon.post('/order/engineering', { ...good, consent: false }, { noCsrf: true })).status, 400);
-    assert.equal((await anon.post('/order/engineering', { ...good, services: ['made-up'] }, { noCsrf: true })).status, 400);
-    assert.equal((await anon.post('/order/engineering', { ...good, email: 'x' }, { noCsrf: true })).status, 400);
-    const ok = await anon.post('/order/engineering', { ...good, designLink: 'https://evil.example/x' }, { noCsrf: true });
+    assert.equal((await anon.post('/order/engineering', { ...good, consent: false })).status, 400);
+    assert.equal((await anon.post('/order/engineering', { ...good, services: ['made-up'] })).status, 400);
+    assert.equal((await anon.post('/order/engineering', { ...good, email: 'x' })).status, 400);
+    const ok = await anon.post('/order/engineering', { ...good, designLink: 'https://evil.example/x' });
     assert.equal(ok.status, 200, JSON.stringify(ok.data));
     assert.match(ok.data.reference, /^EO-/);
-    assert.equal((await anon.post('/order/engineering', good, { noCsrf: true })).status, 200);
+    assert.equal((await anon.post('/order/engineering', good)).status, 200);
     assert.equal((await anon.get('/portal/admin/engineering-orders')).status, 401);
     const list = await w.admin('GET', '/portal/admin/engineering-orders');
     assert.equal(list.status, 200);
@@ -291,3 +296,204 @@ for (const [label, d1] of [['memory', false], ...(DatabaseSync ? [['D1 (SQLite s
     assert.deepEqual(w.outbound, []);
   });
 }
+
+// Review fixes (19/11/2026) --------------------------------------------------------------------------------------------------------
+test('webhook address rules: trailing dot, own host, workers.dev, wildcard DNS names, numeric and private forms', () => {
+  const bad = ['https://localhost./x', 'https://foo.localhost./x', 'https://LOCALHOST/x', 'https://127.0.0.1.nip.io/x', 'https://10.0.0.1.sslip.io/x', 'https://a.localtest.me/x', 'https://x.lvh.me/x', 'https://evil.workers.dev/x',
+    'https://2130706433/x', 'https://0x7f.1/x', 'https://017700000001/x', 'https://[::1]/x', 'https://169.254.169.254/x', 'https://192.168.1.1./x', 'https://intranet.corp./x', 'https://printer.lan/x', 'https://10.1.2.3.example.com/x'];
+  for (const u of bad) assert.ok(webhookUrlProblem(u, SITE), `${u} must be refused`);
+  assert.match(webhookUrlProblem('https://site.test/x', SITE), /Glide Inside itself/);
+  assert.match(webhookUrlProblem('https://site.test./x', SITE), /Glide Inside itself/);
+  assert.equal(webhookUrlProblem('https://hooks.zapier.com/hooks/catch/1/a/', SITE), null);
+  assert.equal(webhookUrlProblem('https://hook.eu1.make.com/abc', SITE), null);
+});
+
+for (const [label, d1] of [['memory', false], ...(DatabaseSync ? [['D1 (SQLite shim)', true]] : [])]) {
+  test(`${label}: the webhook secret is never in a GET, a PUT update or a delete, only on first save, rotate and reveal`, async () => {
+    const w = world({ d1, hook: () => new Response('ok', { status: 200 }) });
+    const a = await w.makeOrg('Hunter Homes', 'Sam');
+    const first = await a.admin.put('/portal/webhook', { url: 'https://hooks.zapier.com/hooks/catch/1/a/' });
+    assert.match(first.data.secret, /^whsec_/);
+    const second = await a.admin.put('/portal/webhook', { url: 'https://hooks.zapier.com/hooks/catch/1/b/', enabled: true });
+    assert.equal('secret' in second.data, false);
+    const get = await a.admin.get('/portal/webhook');
+    assert.equal('secret' in get.data, false);
+    assert.equal(get.data.secretHint, `${first.data.secret.slice(0, 10)}...`);
+    assert.equal(JSON.stringify(get.data).includes(first.data.secret.slice(12)), false);
+    const rev = await a.admin.post('/portal/webhook/reveal-secret');
+    assert.equal(rev.data.secret, first.data.secret);
+    assert.equal((await a.admin.call('POST', '/portal/webhook/reveal-secret', {}, { noCsrf: true })).status, 403); // CSRF header required
+    assert.equal((await w.browser('192.0.2.77').post('/portal/webhook/reveal-secret')).status, 401);
+    const rot = await a.admin.post('/portal/webhook/rotate-secret');
+    assert.match(rot.data.secret, /^whsec_/);
+    const del = await a.admin.del('/portal/webhook');
+    assert.equal('secret' in del.data, false);
+  });
+
+  test(`${label}: a webhook delivery runs after the response (waitUntil), and the cron retries every builder, capped per run`, async () => {
+    let release; const gate = new Promise((r) => { release = r; });
+    let mode = 'down';
+    const w = world({ d1, hook: async () => { if (mode === 'gate') { await gate; } return new Response('x', { status: mode === 'down' ? 500 : 200 }); } });
+    const pending = [];
+    const ctx = { waitUntil: (p) => pending.push(p) };
+    const orgs = [];
+    for (const [n, f] of [['Hunter Homes', 'Sam'], ['Other Builders', 'Pat'], ['Third Builders', 'Lee']]) {
+      const o = await w.makeOrg(n, f);
+      const id = (await o.admin.get('/portal/widget')).data.id;
+      await o.admin.put('/portal/widget', { enabled: true, origins: ['https://www.builder.example'] });
+      await o.admin.put('/portal/webhook', { url: `https://hooks.zapier.com/hooks/catch/${f}/a/` });
+      orgs.push({ o, id });
+    }
+    // 1. the visitor's response returns while the delivery is still waiting on the endpoint
+    mode = 'gate';
+    const post = (id, email, ip) => w.app.fetch(new Request(`${SITE}/api/widget/${id}/lead`, { method: 'POST', headers: { origin: SITE, 'x-gi-request': '1', 'content-type': 'application/json', 'cf-connecting-ip': ip }, body: JSON.stringify(lead({ email })) }), ctx);
+    const res = await post(orgs[0].id, 'a@example.com', '192.0.2.31');
+    assert.equal(res.status, 200);
+    assert.equal(pending.length, 1);
+    let hv = (await orgs[0].o.admin.get('/portal/webhook')).data;
+    assert.equal(hv.deliveries[0].attempts, 0); // not attempted yet from the visitor's point of view
+    release(); await Promise.all(pending); pending.length = 0;
+    hv = (await orgs[0].o.admin.get('/portal/webhook')).data;
+    assert.equal(hv.deliveries[0].status, 'delivered');
+    // 2. an endpoint that is down for all three builders: one cron run retries all of them, not only the first
+    mode = 'down';
+    for (const [i, x] of orgs.entries()) await post(x.id, `b${i}@example.com`, `192.0.2.4${i}`).then(async () => { await Promise.all(pending); pending.length = 0; });
+    for (const x of orgs) assert.equal((await x.o.admin.get('/portal/webhook')).data.deliveries.filter((d) => d.status === 'pending').length >= 1, true);
+    const before = w.outbound.length;
+    w.clock.t += 2 * 60000;
+    await w.app.scheduled();
+    const hit = new Set(w.outbound.slice(before).map((c) => c.url));
+    assert.equal(hit.size, 3, 'every builder is retried in one run');
+    // opening the portal no longer calls out
+    const n = w.outbound.length;
+    w.clock.t += 60 * 60000;
+    await orgs[0].o.admin.get('/portal/webhook'); await orgs[0].o.admin.get('/portal/leads');
+    assert.equal(w.outbound.length, n, 'GET has no outbound side effects');
+  });
+
+  test(`${label}: the cron cap is 25 deliveries per run`, async () => {
+    const w = world({ d1, hook: () => new Response('no', { status: 500 }) });
+    const a = await w.makeOrg('Hunter Homes', 'Sam');
+    await a.admin.put('/portal/webhook', { url: 'https://hooks.zapier.com/hooks/catch/1/a/' });
+    const org = (await a.admin.get('/portal/me')).data.org.id;
+    const at = new Date(w.clock.t).toISOString();
+    for (let i = 0; i < 30; i++) {
+      const lid = `lead_cap${i}`;
+      await w.lstore.insertLead({ id: lid, orgId: org, createdAt: at, source: 'widget', name: 'N', email: `n${i}@example.com`, consentAt: at, consentText: 'c', status: 'new' });
+      await w.lstore.insertDelivery({ id: `dlv_cap${i}`, orgId: org, leadId: lid, createdAt: at, attempts: 0, status: 'pending', nextAttemptAt: at });
+    }
+    w.outbound.length = 0;
+    w.clock.t += 1000;
+    await w.app.scheduled();
+    assert.equal(w.outbound.length, 25);
+  });
+
+  test(`${label}: lead status and notes, and the full CSV, need the builder admin; a designer can read the inbox only`, async () => {
+    const w = world({ d1 });
+    const a = await w.makeOrg('Hunter Homes', 'Sam');
+    const id = (await a.admin.get('/portal/widget')).data.id;
+    await a.admin.put('/portal/widget', { enabled: true, origins: ['https://www.builder.example'] });
+    await w.browser('192.0.2.51').post(`/widget/${id}/lead`, lead());
+    const lid = (await a.admin.get('/portal/leads')).data.leads[0].id;
+    const r = await a.admin.post('/portal/team', { firstName: 'Tom', role: 'designer', email: 'tom@hunter.example' });
+    assert.equal(r.status, 201, JSON.stringify(r.data));
+    const d = w.browser('198.51.100.9');
+    await d.post('/portal/session', { identifier: r.data.credentials.username, password: r.data.credentials.password });
+    await d.post('/portal/password', { currentPassword: r.data.credentials.password, newPassword: 'Designer-Pass-Phrase-55' });
+    assert.equal((await d.get('/portal/leads')).status, 200);
+    assert.equal((await d.patch(`/portal/leads/${lid}`, { status: 'closed' })).status, 403);
+    assert.equal((await d.del(`/portal/leads/${lid}`)).status, 403);
+    assert.equal((await d.call('GET', '/portal/leads/export', undefined, { raw: true })).status, 403);
+    assert.equal((await d.get('/portal/webhook')).status, 403);
+    assert.equal((await d.post('/portal/webhook/reveal-secret')).status, 403);
+    assert.equal((await a.admin.patch(`/portal/leads/${lid}`, { status: 'closed' })).status, 200);
+  });
+
+  test(`${label}: lead posts need this site's Origin, and only designs the widget offers`, async () => {
+    const w = world({ d1 });
+    const a = await w.makeOrg('Hunter Homes', 'Sam');
+    const h1 = await seedHouse(a, 'Banksia 25'); const h2 = await seedHouse(a, 'Wattle 30');
+    const id = (await a.admin.get('/portal/widget')).data.id;
+    await a.admin.put('/portal/widget', { enabled: true, origins: ['https://www.builder.example'], houseIds: [h1] });
+    const anon = w.browser('192.0.2.61');
+    const raw = (origin) => anon.post(`/widget/${id}/lead`, lead({ designId: h1 }), { headers: origin === null ? { origin: '' } : { origin } });
+    assert.equal((await raw('https://evil.example')).status, 403);
+    assert.equal((await raw('https://www.builder.example')).status, 403, 'the builder site posts via the iframe, whose origin is this site');
+    assert.equal((await anon.post(`/widget/${id}/lead`, lead({ designId: h2 }))).status, 400, 'a design the widget does not offer');
+    assert.equal((await anon.post(`/widget/${id}/lead`, lead({ designId: h1 }))).status, 200);
+  });
+
+  test(`${label}: consent version and time are stored with each lead and order, and the config tells the widget the version`, async () => {
+    const w = world({ d1 });
+    const a = await w.makeOrg('Hunter Homes', 'Sam');
+    const id = (await a.admin.get('/portal/widget')).data.id;
+    await a.admin.put('/portal/widget', { enabled: true, origins: ['https://www.builder.example'] });
+    const anon = w.browser('192.0.2.71');
+    await anon.post(`/widget/${id}/lead`, lead());
+    await anon.post('/order/engineering', { services: ['stormwater-concept'], name: 'S J', email: 's@example.com', consent: true });
+    const { LEAD_CONSENT_VERSION } = await import('../server/lib/leads.js');
+    const { ORDER_CONSENT_VERSION } = await import('../server/lib/orders.js');
+    if (d1) {
+      const l = w.db._db.prepare('SELECT consent_version, consent_at FROM leads').get();
+      const o = w.db._db.prepare('SELECT consent_version, consent_at FROM engineering_orders').get();
+      assert.equal(l.consent_version, LEAD_CONSENT_VERSION); assert.ok(l.consent_at);
+      assert.equal(o.consent_version, ORDER_CONSENT_VERSION); assert.ok(o.consent_at);
+    }
+    assert.equal((await w.admin('GET', '/portal/admin/engineering-orders')).data.orders[0].consentVersion, ORDER_CONSENT_VERSION);
+  });
+
+  test(`${label}: engineering orders refuse a cross site post, a foreign Origin, and a flood; and the owner can delete one`, async () => {
+    const w = world({ d1 });
+    const good = { services: ['stormwater-concept'], name: 'Sarah Jones', email: 'sarah@example.com', consent: true };
+    const anon = w.browser('192.0.2.81');
+    assert.equal((await anon.post('/order/engineering', good, { noCsrf: true })).status, 403, 'no x-gi-request header (a text/plain no-cors post)');
+    assert.equal((await anon.post('/order/engineering', good, { headers: { origin: 'https://evil.example' } })).status, 403);
+    const ok = await anon.post('/order/engineering', good);
+    assert.equal(ok.status, 200);
+    assert.match(ok.data.reference, /^EO-[A-HJ-NP-Z2-9]{6}$/);
+    // 6 per hour per address
+    for (let i = 0; i < 5; i++) await anon.post('/order/engineering', good);
+    assert.equal((await anon.post('/order/engineering', good)).status, 429);
+    // a global cap across all addresses (200 a day)
+    let last = 200;
+    for (let i = 0; i < 210; i++) last = (await w.browser(`198.18.${Math.floor(i / 250)}.${(i % 250) + 1}`).post('/order/engineering', good)).status;
+    assert.equal(last, 429, 'the global daily cap');
+    // delete
+    const list = (await w.admin('GET', '/portal/admin/engineering-orders')).data.orders;
+    const id = list[0].id;
+    assert.equal((await w.browser('192.0.2.82').del(`/portal/admin/engineering-orders/${id}`)).status, 401);
+    assert.equal((await w.admin('DELETE', `/portal/admin/engineering-orders/${id}`)).status, 200);
+    assert.equal((await w.admin('DELETE', `/portal/admin/engineering-orders/${id}`)).status, 404);
+    assert.equal((await w.admin('GET', '/portal/admin/engineering-orders')).data.orders.some((o) => o.id === id), false);
+  });
+
+  test(`${label}: retention purge removes delivery logs after 90 days and leads and orders after 24 months`, async () => {
+    const w = world({ d1, hook: () => new Response('ok', { status: 200 }) });
+    const a = await w.makeOrg('Hunter Homes', 'Sam');
+    const id = (await a.admin.get('/portal/widget')).data.id;
+    await a.admin.put('/portal/widget', { enabled: true, origins: ['https://www.builder.example'] });
+    await a.admin.put('/portal/webhook', { url: 'https://hooks.zapier.com/hooks/catch/1/a/' });
+    await w.browser('192.0.2.91').post(`/widget/${id}/lead`, lead());
+    await w.browser('192.0.2.92').post('/order/engineering', { services: ['stormwater-concept'], name: 'S J', email: 's@example.com', consent: true });
+    const org = (await a.admin.get('/portal/me')).data.org.id; // sessions lapse over this much time, so the store is read directly from here on
+    assert.equal((await w.lstore.listDeliveries(org)).length, 1);
+    w.clock.t += 91 * 86400e3; await w.app.scheduled();
+    assert.equal((await w.lstore.listDeliveries(org)).length, 0, 'delivery log gone after 90 days');
+    assert.equal(await w.lstore.countLeads(org), 1, 'the lead stays');
+    w.clock.t += 24 * 31 * 86400e3; await w.app.scheduled();
+    assert.equal(await w.lstore.countLeads(org), 0, 'lead gone after 24 months');
+    assert.equal((await w.lstore.listOrders()).length, 0);
+  });
+}
+
+test('before migration 0025 the routes say so plainly instead of a generic 500', async () => {
+  if (!DatabaseSync) return;
+  const w = world({ d1: true });
+  const a = await w.makeOrg('Hunter Homes', 'Sam');
+  const id = (await a.admin.get('/portal/widget')).data.id;
+  for (const t of ['webhook_deliveries', 'leads', 'lead_webhooks', 'widget_settings', 'site_cost_defaults', 'engineering_orders']) w.db._db.exec(`DROP TABLE ${t}`);
+  for (const r of [await a.admin.get('/portal/leads'), await a.admin.get('/portal/widget'), await a.admin.get('/portal/site-costs'), await w.browser('192.0.2.99').get(`/widget/${id}/config?host=${encodeURIComponent(SITE)}`, { noCsrf: true }), await w.browser('192.0.2.98').post('/order/engineering', { services: ['stormwater-concept'], name: 'S J', email: 's@example.com', consent: true })]) {
+    assert.equal(r.status, 503, JSON.stringify(r.data));
+    assert.match(r.data.error.message, /0025 database update/);
+  }
+});

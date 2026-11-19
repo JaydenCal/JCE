@@ -2,9 +2,9 @@
 // CONFIG.portalMock = true uses the in-browser mock (mock-api.js). Otherwise the same calls go to {apiBase}/portal/... over fetch
 // with the HttpOnly session cookie (gi_session, Path=/api) and the CSRF header X-GI-Request: 1 on every call. Both resolve plain data and reject with ApiError (src/premium/api.js).
 
-import { CONFIG } from '../config.js?v=20261119e';
-import { ApiError } from '../premium/api.js?v=20261119e';
-import { createMockApi } from './mock-api.js?v=20261119e';
+import { CONFIG } from '../config.js?v=20261119f';
+import { ApiError } from '../premium/api.js?v=20261119f';
+import { createMockApi } from './mock-api.js?v=20261119f';
 
 export const CALLS = [
   'signIn', 'signOut', 'me', 'changePassword', 'requestPasswordReset', 'completePasswordReset',
@@ -17,7 +17,7 @@ export const CALLS = [
   'setBranding', 'setOrgSettings', 'enquiryJce', 'getBrand',
   'searchBuilders', 'requestClientAccess', 'listClientRequests', 'approveClientRequest', 'declineClientRequest',
   // Website widget, lead inbox, webhook, builder site cost defaults (server/lib/leads.js, migration 0025)
-  'getWidget', 'setWidget', 'listLeads', 'updateLead', 'deleteLead', 'getWebhook', 'setWebhook', 'deleteWebhook', 'rotateWebhookSecret', 'testWebhook', 'retryWebhookDelivery',
+  'getWidget', 'setWidget', 'listLeads', 'updateLead', 'deleteLead', 'getWebhook', 'setWebhook', 'deleteWebhook', 'rotateWebhookSecret', 'revealWebhookSecret', 'testWebhook', 'retryWebhookDelivery',
   'getSiteCostDefaults', 'setSiteCostDefaults', 'deleteSiteCostDefaults',
 ];
 
@@ -77,7 +77,7 @@ const ROUTES = {
   declineClientRequest: ['POST', '/portal/client-requests/:id/decline'],
   getWidget: ['GET', '/portal/widget'], setWidget: ['PUT', '/portal/widget'],
   listLeads: ['GET', '/portal/leads'], updateLead: ['PATCH', '/portal/leads/:id'], deleteLead: ['DELETE', '/portal/leads/:id'],
-  getWebhook: ['GET', '/portal/webhook'], setWebhook: ['PUT', '/portal/webhook'], deleteWebhook: ['DELETE', '/portal/webhook'], rotateWebhookSecret: ['POST', '/portal/webhook/rotate-secret'], testWebhook: ['POST', '/portal/webhook/test'], retryWebhookDelivery: ['POST', '/portal/webhook/deliveries/:id/retry'],
+  getWebhook: ['GET', '/portal/webhook'], setWebhook: ['PUT', '/portal/webhook'], deleteWebhook: ['DELETE', '/portal/webhook'], rotateWebhookSecret: ['POST', '/portal/webhook/rotate-secret'], revealWebhookSecret: ['POST', '/portal/webhook/reveal-secret'], testWebhook: ['POST', '/portal/webhook/test'], retryWebhookDelivery: ['POST', '/portal/webhook/deliveries/:id/retry'],
   getSiteCostDefaults: ['GET', '/portal/site-costs'], setSiteCostDefaults: ['PUT', '/portal/site-costs'], deleteSiteCostDefaults: ['DELETE', '/portal/site-costs'],
   getBrand: ['GET', '/portal/brand/:id'], // public: { name, logoUrl, colours } for the branded sign in page; 404 when the builder is not on Glide Inside
 };

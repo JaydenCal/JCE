@@ -2,9 +2,9 @@
 // copy (script or iframe) and a live preview. A visitor enters an address, picks one of these designs and leaves their details; the lead
 // goes to the Leads tab. Nothing is emailed. See docs/WIDGET_LEADS.md.
 
-import { h, field, busy, toast, errorMessage, copyText } from './kit.js?v=20261119e';
-import { widgetSnippets, widgetFrameUrl, originsFromText, WIDGET_HEIGHT } from '../widget-snippet.js?v=20261119e';
-import { appBase } from '../links.js?v=20261119e';
+import { h, field, busy, toast, errorMessage, copyText } from './kit.js?v=20261119f';
+import { widgetSnippets, widgetFrameUrl, originsFromText, WIDGET_HEIGHT } from '../widget-snippet.js?v=20261119f';
+import { appBase } from '../links.js?v=20261119f';
 
 export async function renderWidget(host, { api, me }) {
   const canWrite = me.permissions.includes('branding.write');
@@ -27,7 +27,7 @@ export async function renderWidget(host, { api, me }) {
   function paint() {
     const sn = widgetSnippets(origin, st.id);
     snippetHost.replaceChildren(
-      snippetBlock('Script snippet (recommended)', sn.script, 'Paste it into your page where the widget should appear. It adds the frame there and sizes it to the page.'),
+      snippetBlock('Script snippet (recommended)', sn.script, 'Paste it into your page where the widget should appear. It adds the frame there and fills the width of the page.'),
       snippetBlock('Plain iframe snippet', sn.iframe, 'Use this if your website builder does not allow scripts.'));
     previewHost.replaceChildren(st.enabled
       ? h('iframe', { src: widgetFrameUrl(origin, st.id, { host: location.origin }), title: 'Widget preview', loading: 'lazy', style: { width: '100%', height: `${WIDGET_HEIGHT}px`, border: '1px solid var(--pp-line, #cfd8dc)', borderRadius: '8px', maxWidth: '100%' } })

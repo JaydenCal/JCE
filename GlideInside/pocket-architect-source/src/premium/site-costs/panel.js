@@ -15,6 +15,7 @@ export function openSiteCosts({ layer, getProject, setDesign = null, onChange = 
   let settings = effectiveSettings(getProject());
   const out = el('div', null);
   let msg = '';
+  let confirmingRemove = false;
   const hasBuilder = () => !!globalThis.__ps?.siteCostDefaults?.set;
   // With no builder account the rates are kept in this browser, as before. With one, edits are held until saved for the design or as the builder default.
   const persist = () => { if (!hasBuilder() && !getProject()?.siteCosts) saveSettings(settings); onChange?.(settings); };
@@ -77,7 +78,13 @@ export function openSiteCosts({ layer, getProject, setDesign = null, onChange = 
       el('div', { class: 'psp-sc-row' },
         setDesign ? el('button', { class: 'psp-btn', type: 'button', dataset: { action: 'save-design' }, onclick: saveDesign }, 'Save rates for this design') : null,
         hasBuilder() ? el('button', { class: 'psp-btn', type: 'button', dataset: { action: 'save-builder' }, onclick: saveBuilder }, 'Save as my builder default') : null,
-        el('button', { class: 'psp-btn', type: 'button', dataset: { action: 'reset' }, onclick: async () => { setDesign?.(null); if (hasBuilder()) { try { await globalThis.__ps.siteCostDefaults.clear(); } catch { /* keep going */ } } settings = hasBuilder() ? effectiveSettings(getProject()) : resetSettings(); msg = ''; onChange?.(settings); later(); } }, 'Reset all rates to the defaults')));
+        // Reset only touches this design and this screen. It never changes the builder default, which every designer and client of the builder uses.
+        el('button', { class: 'psp-btn', type: 'button', dataset: { action: 'reset' }, onclick: () => { setDesign?.(null); settings = builderDefaults() ? effectiveSettings(getProject()) : resetSettings(); msg = ''; confirmingRemove = false; onChange?.(settings); later(); } }, hasBuilder() ? 'Reset to the builder rates' : 'Reset all rates to the defaults'),
+        hasBuilder() && builderDefaults() && !confirmingRemove ? el('button', { class: 'psp-btn', type: 'button', dataset: { action: 'remove-builder' }, onclick: () => { confirmingRemove = true; later(); } }, 'Remove my builder default') : null),
+      hasBuilder() && builderDefaults() && confirmingRemove ? el('div', { class: 'psp-sc-row', role: 'alertdialog', 'aria-label': 'Remove the builder default', dataset: { testid: 'remove-builder-confirm' } },
+        el('p', { class: 'psp-sc-note' }, 'This removes the default rates for every designer and client of your builder, in every design that does not carry its own rates. It cannot be undone.'),
+        el('button', { class: 'psp-btn', type: 'button', dataset: { action: 'remove-builder-yes' }, onclick: async () => { try { await globalThis.__ps.siteCostDefaults.clear(); setDesign?.(null); settings = effectiveSettings(getProject()); msg = 'The builder default was removed.'; } catch (e) { msg = `Could not remove the default: ${e?.message || 'try again'}`; } confirmingRemove = false; onChange?.(settings); later(); } }, 'Remove it'),
+        el('button', { class: 'psp-btn', type: 'button', dataset: { action: 'remove-builder-no' }, onclick: () => { confirmingRemove = false; later(); } }, 'Keep it')) : null);
   }
   render();
   return layer.openModal({ title: 'Site costs, indicative', body: () => out, footer: (close) => el('button', { class: 'psp-btn', type: 'button', onclick: () => close('done') }, 'Close') });

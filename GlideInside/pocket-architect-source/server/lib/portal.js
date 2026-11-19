@@ -1503,7 +1503,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   const isInternal = async (orgId) => !!orgId && (await pstore.getOrg(orgId))?.internal === true;
   // For lib/leads.js (the website widget, lead inbox and webhook, migration 0025): the same signed in check as every portal route, the public brand view,
   // the portal on/off switch and the owner token check.
-  const session = async (request, url, { need = null, write = false } = {}) => { if (write) checkCsrf(request, url); const a = await auth({ request, url, setCookie: null }, { need }); return { user: a.user, org: a.org, state: a.state }; };
+  const session = async (request, url, { need = null, write = false } = {}) => { if (write) checkCsrf(request, url); const r = { request, url, setCookie: null }; const a = await auth(r, { need }); return { user: a.user, org: a.org, state: a.state, setCookie: r.setCookie }; };
   const brandOf = (org) => publicOrg(org, 'client').branding;
   return { session, brandOf, portalOpen: () => !!config.portalEnabled, adminAuth: (request) => adminAuth(request), route, scheduled, exportContext, identity, gate, isInternal, verifyOrgToken, completeCardSetup, handleBillingEvent, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
 }

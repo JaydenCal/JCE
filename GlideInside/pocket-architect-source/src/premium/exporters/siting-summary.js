@@ -11,7 +11,6 @@ import { constraintFacts, CHECK_WITH_COUNCIL } from './siting-facts.js';
 import { GST_NOTE, gstOf } from '../site-costs/gst.js';
 import { ddmmyyyy } from './eng/brand.js';
 
-export const SUMMARY_NOTE = 'Concept only. Indicative, prepared from public lot and elevation data and the design as drawn. Not a survey, not a development application and not a quote. Setbacks, levels, overlays and costs are for the council and suitably qualified people to confirm.';
 export const SUMMARY_STEPS = [
   'Confirm the lot, boundaries and council controls with the council and a registered surveyor.',
   'Confirm the ground with a geotechnical report (site classification).',
@@ -23,6 +22,9 @@ const PAGE_W = 210;
 const CW = PAGE_W - 2 * M;
 
 /** Builds the page. kit = { text, para, heading, band, table, footer, drawSitingPlan, setbackRows } from siting-report.js. */
+/** What a layer with no open data says: easements are on the registered plan and title, other layers on the council map. */
+export const unansweredText = (r) => (r.id === 'easement' ? 'Not in open data, check the title' : r.answer === 'Not checked' ? 'Not checked, see the council map' : 'Not in open data, check the council map');
+
 export function buildSitingSummary({ doc, brand, project, kit, facts, stats, areas, est, img, contact, dateText, title, options = {} }) {
   const { text, para, band, table, footer, drawSitingPlan, setbackRows } = kit;
   const lot = project.site?.lot || null;
@@ -63,7 +65,7 @@ export function buildSitingSummary({ doc, brand, project, kit, facts, stats, are
   text(doc, 'MAPPED CONSTRAINTS (INDICATIVE)', M, y, { size: 8, bold: true, colour: brand.primary });
   const cf = constraintFacts(lot);
   let cy = y + 1.6;
-  cy = table(doc, brand, M, cy, [{ w: 30, head: 'LAYER' }, { w: colW - 30, head: 'ANSWER' }], cf.map((r) => [r.title, r.answer === 'Yes' ? 'Mapped over the lot' : r.answer === 'No mapped' ? 'None mapped' : 'Check the council map']), { size: 7.2, lead: 3.2, pad: 1 });
+  cy = table(doc, brand, M, cy, [{ w: 30, head: 'LAYER' }, { w: colW - 30, head: 'ANSWER' }], cf.map((r) => [r.title, r.answer === 'Yes' ? 'Mapped over the lot' : r.answer === 'No mapped' ? 'None mapped' : unansweredText(r)]), { size: 7.2, lead: 3.2, pad: 1 });
   text(doc, 'INDICATIVE SITE COSTS', M + colW + 5, y, { size: 8, bold: true, colour: brand.primary });
   let ky = y + 1.6;
   if (est?.ok) {

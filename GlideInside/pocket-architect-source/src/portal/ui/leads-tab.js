@@ -3,6 +3,7 @@
 
 import { h, field, busy, toast, errorMessage, copyText, confirmDialog, chip } from './kit.js';
 import { ddmmyyyy } from '../billing.js';
+import { CONFIG } from '../../config.js';
 
 export const ZAPIER_STEPS = [
   'In Zapier, choose Create Zap. For the trigger, search for "Webhooks by Zapier" and choose the event "Catch Hook".',
@@ -18,7 +19,7 @@ const STATUSES = [['new', 'New'], ['contacted', 'Contacted'], ['closed', 'Closed
 
 export async function renderLeads(host, { api, me }) {
   const canHooks = me.permissions.includes('branding.write');
-  const canDelete = me.permissions.includes('clients.write');
+  const canDelete = me.permissions.includes('clients.write'); // status, notes, the full CSV and delete are the builder admin's; a designer reads the inbox
   let data = await api.listLeads();
   const summary = h('p', { class: 'pp-lead', dataset: { ps: 'leads-summary' } });
   const tbody = h('tbody');
@@ -32,8 +33,8 @@ export async function renderLeads(host, { api, me }) {
     table.hidden = data.leads.length === 0;
     tbody.replaceChildren(...data.leads.map((l) => {
       const td = (label, ...kids) => h('td', { dataset: { label } }, ...kids);
-      const sel = h('select', { 'aria-label': `Status for ${l.name}`, onchange: async () => { try { Object.assign(l, await api.updateLead(l.id, { status: sel.value })); data.newCount = data.leads.filter((x) => x.status === 'new').length; paint(); } catch (e) { toast(errorMessage(e), { kind: 'error' }); sel.value = l.status; } } }, ...STATUSES.map(([v, t]) => h('option', { value: v, selected: l.status === v }, t)));
-      const note = h('input', { type: 'text', maxlength: '1000', value: l.note || '', 'aria-label': `Note for ${l.name}`, placeholder: 'Add a note', onchange: async () => { try { await api.updateLead(l.id, { note: note.value }); l.note = note.value; } catch (e) { toast(errorMessage(e), { kind: 'error' }); } } });
+      const sel = h('select', { 'aria-label': `Status for ${l.name}`, disabled: !canDelete, onchange: async () => { try { Object.assign(l, await api.updateLead(l.id, { status: sel.value })); data.newCount = data.leads.filter((x) => x.status === 'new').length; paint(); } catch (e) { toast(errorMessage(e), { kind: 'error' }); sel.value = l.status; } } }, ...STATUSES.map(([v, t]) => h('option', { value: v, selected: l.status === v }, t)));
+      const note = h('input', { type: 'text', maxlength: '1000', disabled: !canDelete, value: l.note || '', 'aria-label': `Note for ${l.name}`, placeholder: 'Add a note', onchange: async () => { try { await api.updateLead(l.id, { note: note.value }); l.note = note.value; } catch (e) { toast(errorMessage(e), { kind: 'error' }); } } });
       return h('tr', { dataset: { id: l.id, ps: 'lead-row' } },
         td('Date', when(l.createdAt)), td('Name', h('strong', null, l.name)),
         td('Contact', h('a', { href: `mailto:${l.email}` }, l.email), l.phone ? h('div', null, l.phone) : null),
@@ -43,7 +44,7 @@ export async function renderLeads(host, { api, me }) {
   }
   host.append(h('h2', null, 'Leads'), summary,
     h('div', { class: 'pp-row' },
-      h('a', { class: 'pp-btn pp-btn--sm', href: '/api/portal/leads/export', download: '', dataset: { ps: 'leads-csv' } }, 'Export CSV'),
+      canDelete ? h('a', { class: 'pp-btn pp-btn--sm', href: `${String(CONFIG.apiBase || '/api').replace(/\/+$/, '')}/portal/leads/export`, download: '', dataset: { ps: 'leads-csv' } }, 'Export CSV') : null,
       h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: async () => { data = await api.listLeads(); paint(); } }, 'Refresh')),
     empty, h('div', { class: 'pp-table-wrap' }, table),
     h('p', { class: 'pp-hint' }, 'Each lead is a person who ticked the consent box and asked you to contact them. Use their details only for that purpose. Glide Inside keeps the name, email, optional phone, the block address and the design they chose, and removes a lead when you delete it. Leads are never emailed.'));
@@ -59,15 +60,20 @@ async function renderIntegrations(host, { api }) {
   const log = h('div', { dataset: { ps: 'webhook-log' } });
   const result = h('p', { class: 'pp-hint', role: 'status' });
   let showSecret = false;
+  // The server never sends the signing secret with the settings, only its first characters. The full secret arrives once when it is made
+  // (first save, new secret) or when asked for with Show or Copy, and is kept here only while this page is open.
+  let secret = null;
+  const take = (r) => { if (r?.secret) secret = r.secret; return r; };
+  const fullSecret = async () => { if (!secret) secret = (await api.revealWebhookSecret()).secret; return secret; };
   function paint() {
-    secretBox.textContent = hv.configured ? (showSecret ? hv.secret : `${hv.secret.slice(0, 10)}${'*'.repeat(16)}`) : 'Created when you save the address.';
+    secretBox.textContent = hv.configured ? (showSecret && secret ? secret : `${String(hv.secretHint || '').replace(/\.+$/, '')}${'*'.repeat(16)}`) : 'Created when you save the address.';
     log.replaceChildren(hv.deliveries.length
       ? h('table', { class: 'pp-table pp-table--stack' }, h('thead', null, h('tr', null, ...['When', 'Result', 'Attempts', 'Detail', ''].map((t) => h('th', { scope: 'col' }, t)))),
         h('tbody', null, ...hv.deliveries.map((d) => h('tr', null, h('td', { dataset: { label: 'When' } }, when(d.createdAt)), h('td', { dataset: { label: 'Result' } }, chip(d.status === 'delivered' ? 'Delivered' : d.status === 'failed' ? 'Failed' : 'Retrying', d.status === 'delivered' ? 'ok' : d.status === 'failed' ? 'warn' : 'muted')), h('td', { dataset: { label: 'Attempts' } }, `${d.attempts} of ${hv.maxAttempts}`), h('td', { dataset: { label: 'Detail' } }, d.lastError || ''),
           h('td', null, d.status !== 'delivered' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: async (e) => busy(e.currentTarget, async () => { hv = await api.retryWebhookDelivery(d.id); paint(); }) }, 'Retry now') : null)))))
       : h('p', { class: 'pp-empty' }, 'No deliveries yet.'));
   }
-  const save = h('button', { class: 'pp-btn pp-btn--primary', type: 'button', dataset: { ps: 'webhook-save' }, onclick: () => busy(save, async () => { hv = await api.setWebhook({ url: url.value, enabled: on.checked }); paint(); toast('Webhook saved.', { kind: 'ok' }); }) }, 'Save webhook');
+  const save = h('button', { class: 'pp-btn pp-btn--primary', type: 'button', dataset: { ps: 'webhook-save' }, onclick: () => busy(save, async () => { hv = take(await api.setWebhook({ url: url.value, enabled: on.checked })); if (secret && !showSecret) showSecret = true; paint(); toast('Webhook saved.', { kind: 'ok' }); }) }, 'Save webhook');
   const test = h('button', { class: 'pp-btn', type: 'button', dataset: { ps: 'webhook-test' }, onclick: () => busy(test, async () => { const r = await api.testWebhook(); result.textContent = r.ok ? `The address accepted the test (HTTP ${r.status}).` : `The test did not go through. ${r.error}`; }) }, 'Send a test');
   paint();
   host.append(h('section', { class: 'pp-card', id: 'integrations', dataset: { ps: 'integrations' } },
@@ -75,13 +81,13 @@ async function renderIntegrations(host, { api }) {
     h('p', { class: 'pp-lead pp-lead--sm' }, 'Send each new lead to your CRM, a spreadsheet or Zapier as soon as it arrives. Glide Inside posts JSON to the address you give. A delivery that fails is tried again up to five times.'),
     field('Webhook address', () => url, { hint: 'Must start with https://. Use a public web address.', wide: true }),
     h('label', { class: 'pp-check' }, on, h('span', null, 'Send new leads to this address')),
-    h('div', { class: 'pp-row' }, save, test, hv.configured ? h('button', { class: 'pp-btn pp-btn--sm pp-btn--danger', type: 'button', onclick: async () => { if (await confirmDialog({ title: 'Remove the webhook?', message: 'New leads will no longer be sent. Your inbox is not affected.', confirmLabel: 'Remove', danger: true })) { hv = await api.deleteWebhook(); url.value = ''; paint(); } } }, 'Remove webhook') : null), result,
+    h('div', { class: 'pp-row' }, save, test, hv.configured ? h('button', { class: 'pp-btn pp-btn--sm pp-btn--danger', type: 'button', onclick: async () => { if (await confirmDialog({ title: 'Remove the webhook?', message: 'New leads will no longer be sent. Your inbox is not affected.', confirmLabel: 'Remove', danger: true })) { hv = await api.deleteWebhook(); secret = null; showSecret = false; url.value = ''; paint(); } } }, 'Remove webhook') : null), result,
     h('h4', null, 'Signing secret'),
     h('p', { class: 'pp-hint' }, 'Every delivery carries a signature made with this secret, so your system can check it came from Glide Inside and was not changed. Keep it private.'),
     h('div', { class: 'pp-row' }, secretBox,
-      h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => { showSecret = !showSecret; paint(); } }, 'Show or hide'),
-      h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: async () => toast((await copyText(hv.secret)) ? 'Copied.' : 'Select the text and copy it.', { kind: 'info' }) }, 'Copy'),
-      h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: async () => { if (!hv.configured) return; if (await confirmDialog({ title: 'Make a new secret?', message: 'The old secret stops working at once. Update your system with the new one.', confirmLabel: 'New secret' })) { hv = await api.rotateWebhookSecret(); showSecret = true; paint(); } } }, 'New secret')),
+      h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: async (e) => { if (!showSecret && hv.configured) { await busy(e.currentTarget, fullSecret); if (!secret) return; } showSecret = !showSecret; paint(); } }, 'Show or hide'),
+      h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: async () => { if (!hv.configured) return; try { toast((await copyText(await fullSecret())) ? 'Copied.' : 'Select the text and copy it.', { kind: 'info' }); } catch (err) { toast(errorMessage(err), { kind: 'error' }); } } }, 'Copy'),
+      h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: async () => { if (!hv.configured) return; if (await confirmDialog({ title: 'Make a new secret?', message: 'The old secret stops working at once. Update your system with the new one.', confirmLabel: 'New secret' })) { hv = take(await api.rotateWebhookSecret()); showSecret = true; paint(); } } }, 'New secret')),
     h('details', { class: 'pp-help' }, h('summary', null, 'What is posted and how to check the signature'),
       h('p', null, 'Each request is a POST with a JSON body: event (lead.created), id, createdAt, builder (id, name) and lead (name, email, phone, address, lot, design, website, consentAt). Headers: X-GlideInside-Event, X-GlideInside-Delivery and X-GlideInside-Signature, which reads t=<unix seconds>,v1=<hex>.'),
       h('p', null, 'To check it, compute HMAC SHA-256 of the text "<t>.<raw body>" with your secret, as lower case hex, and compare it with v1. Reject a request whose t is more than five minutes old. Answer with any 2xx status to confirm. A delivery may repeat, so use the id to skip duplicates.')),

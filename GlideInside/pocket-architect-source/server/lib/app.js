@@ -714,7 +714,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   }
 
   // Router ----------------------------------------------------------------------------------------
-  async function route(request, url) {
+  async function route(request, url, ctx = null) {
     const m = /\/api(\/.*)?$/.exec(url.pathname.replace(/\/+$/, '') || '/');
     const path = m?.[1] || '';
     const method = request.method;
@@ -756,7 +756,12 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     const pexp = /^\/portal\/export\/([a-z0-9]+)$/.exec(path);
     if (pexp) return allow('POST'), portalExportFile(request, url, pexp[1]);
     if (path.startsWith('/widget/') || path.startsWith('/order/') || /^\/portal\/(widget|leads|webhook|site-costs|admin\/engineering-orders)/.test(path)) {
-      const res = (leads && (await leads.route(request, url, path))) || (orders && (await orders.route(request, url, path)));
+      let res = null;
+      try { res = (leads && (await leads.route(request, url, path, ctx))) || (orders && (await orders.route(request, url, path))); } catch (e) {
+        // Migration 0025 not run yet: say so plainly instead of a generic server error.
+        if (!(e instanceof HttpError) && /no such table/i.test(String(e?.message))) throw new HttpError('PORTAL_NOT_CONFIGURED', 'This feature needs the 0025 database update.');
+        throw e;
+      }
       if (res) return res;
       if (!leads) throw new HttpError('PORTAL_NOT_CONFIGURED', 'This feature is not available on this server.');
     }
@@ -769,11 +774,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     throw new HttpError('NOT_FOUND', 'No such endpoint.');
   }
 
-  async function handle(request) {
+  async function handle(request, ctx = null) {
     const cors = corsHeaders(request, config);
     try {
       if (request.method === 'OPTIONS') return withSecurityHeaders(new Response(null, { status: 204, headers: cors }));
-      const res = await route(request, new URL(request.url));
+      const res = await route(request, new URL(request.url), ctx);
       for (const [k, v] of Object.entries(cors)) res.headers.set(k, v);
       return withSecurityHeaders(res);
     } catch (e) {
@@ -791,7 +796,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       await store.purgeRateLimits?.(nowMs)?.catch?.(() => null);
       await pstore?.purgeAuthFailures?.(nowMs)?.catch?.(() => null);
     }
-    await leads?.retryAllDue?.()?.catch?.(() => null); // webhook deliveries that are due for another try
+    await leads?.retryAllDue?.()?.catch?.(() => null); // webhook deliveries that are due for another try, every builder, capped per run
+    await leads?.purgeOld?.()?.catch?.(() => null); // retention: delivery logs 90 days, leads and order requests 24 months (docs/WIDGET_LEADS.md, privacy page)
     await profstore?.purgeConsentArchive?.(iso(nowMs - config.consentArchiveYears * 365.25 * 86400000))?.catch?.(() => null);
   }
 

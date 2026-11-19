@@ -313,7 +313,7 @@ export async function toSitingReport(project, options = {}) {
   // Commercial layouts have no house, so the house estimator does not apply: they use the plain allowance estimator (one figure, editable rates).
   const cest = commercial && lot ? await estimateForProject(project, { rates: options.rates }).catch(() => null) : null;
   const est = commercial ? { ok: false } : (options.estimate || (lot ? estimateSiteCosts(project, { settings: options.settings }) : { ok: false }));
-  const title = projectTitle(project);
+  const title = (typeof options.title === 'string' && options.title.trim().slice(0, 120)) || projectTitle(project); // the placed design's name when the caller gives it
   const sections = [];
   const img = options.image ? imageInfo(options.image) : null;
   const contact = options.contact || brand.contact || null;

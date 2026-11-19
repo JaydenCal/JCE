@@ -57,6 +57,9 @@ const demoMode = () => CONFIG.embedMode === 'demo';
 // ?embed=1 or ?view=viewer: the cinematic single lot 3D view only (the home page frame). See src/ui/embed-viewer.js.
 const VIEWER = viewerEmbedRequested();
 const COMMERCIAL_VIEWER = VIEWER && new URLSearchParams(location.search).get('mode') === 'commercial';
+// ?embed=1&widget=<builder id>: the "See it on your block" widget on a builder's website. A visitor there gets the builder's own designs and a lead form
+// and nothing else: no route to the full editor, the Glide library, uploads, PDFs or the host page bridge (src/portal/widget-mode.js, docs/WIDGET_LEADS.md).
+const WIDGET = VIEWER && !COMMERCIAL_VIEWER && !!new URLSearchParams(location.search).get('widget');
 
 async function loadCatalogue() {
   try {
@@ -365,6 +368,7 @@ async function main() {
   }
 
   embed = createEmbed({
+    widget: WIDGET,
     handlers: {
       loadTemplate: (id) => {
         const t = templatesOf(catalogue).find((x) => x.id === id);
@@ -509,17 +513,19 @@ async function main() {
   defaultTool();
   track('ps_open', { embedMode: CONFIG.embedMode });
 
-  const openFull = () => openFullEditor(store.project);
+  const openFull = () => (WIDGET ? null : openFullEditor(store.project));
+  if (WIDGET) { document.body.classList.add('gw-widget', 'gw-widget-wait'); api.widgetMode = true; api.lotDesigns = async () => []; } // until the builder's designs arrive nothing from the Glide library is offered
   // The home page card's call to action starts the guided flow at step 2 (choose a home) with the lot already set; "Open full editor" goes straight to the editor.
   const openGuided = () => {
+    if (WIDGET) return;
     const p = store.project;
     const kind = p.mode === 'commercial' ? 'commercial' : 'residential';
     openFullEditor({ ...p, flow: { kind, step: p.site?.lot ? 2 : 1, designId: p.placedHouse?.id || null } });
   };
-  const openEditorDirect = () => openFullEditor({ ...store.project, flow: { kind: store.project.mode === 'commercial' ? 'commercial' : 'residential', step: 5 } });
+  const openEditorDirect = () => WIDGET ? null : openFullEditor({ ...store.project, flow: { kind: store.project.mode === 'commercial' ? 'commercial' : 'residential', step: 5 } });
   const lotCard = COMMERCIAL_VIEWER
     ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a) })
-    : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
+    : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true, widget: WIDGET } : {}) });
   api.lotCard = lotCard;
   // "Make it narrower" in the homepage viewer hands over to this editor: say how, once it has opened.
   if (!VIEWER) import('./ui/fit-card.js').then((m) => { const g = m.takeGuidance(); if (g) setTimeout(() => { store.setUI({ view: '2d' }); toast(g, { kind: 'info', timeout: 20000 }); }, 1800); }).catch(() => {});
@@ -527,7 +533,7 @@ async function main() {
   if (VIEWER) {
     window.addEventListener('message', (ev) => {
       if (ev.origin !== location.origin || ev.source !== window.parent) return;
-      if (ev.data && typeof ev.data === 'object' && ev.data.type === 'gi:open-editor') openEditorDirect(); // Open full editor always carries the embed's project into the editor itself (residential and commercial)
+      if (!WIDGET && ev.data && typeof ev.data === 'object' && ev.data.type === 'gi:open-editor') openEditorDirect(); // Open full editor always carries the embed's project into the editor itself (residential and commercial)
     });
   }
   if (COMMERCIAL_TOOL) api.commercial = createCommercialPanel({ store, host: refs.stage, editor }); // the residential tool has no commercial panel

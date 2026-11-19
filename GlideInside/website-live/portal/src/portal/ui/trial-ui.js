@@ -1,8 +1,8 @@
 // Free trial pieces shared by the dashboard, the Clients tab and the Billing tab: the banner, the "Add billing details" action and
 // the return from Stripe Checkout (card details are entered on Stripe's page, never on ours).
 
-import { h, toast, icon, busy, errorMessage } from './kit.js?v=20261119e';
-import { ddmmyyyy } from '../billing.js?v=20261119e';
+import { h, toast, icon, busy, errorMessage } from './kit.js?v=20261119f';
+import { ddmmyyyy } from '../billing.js?v=20261119f';
 
 export const TRIAL_PRICING_TEXT = 'After the trial: A$20 incl. GST per new job (one new project), confirmed and charged to your card when you start it, and A$15 incl. GST per top-up of 100 AI messages, billed monthly. Client logins are free. No monthly fee.';
 

@@ -27,7 +27,7 @@ export async function renderWidget(host, { api, me }) {
   function paint() {
     const sn = widgetSnippets(origin, st.id);
     snippetHost.replaceChildren(
-      snippetBlock('Script snippet (recommended)', sn.script, 'Paste it into your page where the widget should appear. It adds the frame there and sizes it to the page.'),
+      snippetBlock('Script snippet (recommended)', sn.script, 'Paste it into your page where the widget should appear. It adds the frame there and fills the width of the page.'),
       snippetBlock('Plain iframe snippet', sn.iframe, 'Use this if your website builder does not allow scripts.'));
     previewHost.replaceChildren(st.enabled
       ? h('iframe', { src: widgetFrameUrl(origin, st.id, { host: location.origin }), title: 'Widget preview', loading: 'lazy', style: { width: '100%', height: `${WIDGET_HEIGHT}px`, border: '1px solid var(--pp-line, #cfd8dc)', borderRadius: '8px', maxWidth: '100%' } })

@@ -6,7 +6,7 @@
 //   picked = { front: { minM }, secondaryFront: { minM }, side: { minM }, rear: { minM } } as returned by pickRules.
 
 /** Same signature as src/site/setbacks.js buildEnvelope. Convex lots only; returns null when the setbacks consume the lot. */
-import { buildEnvelope } from '../site/setbacks.js?v=20261119e';
+import { buildEnvelope } from '../site/setbacks.js?v=20261119f';
 
 export function stubBuildEnvelope(lotPolygonMm, frontEdgeIndices, picked) {
   if (!picked || !Array.isArray(lotPolygonMm) || lotPolygonMm.length < 3) return null;

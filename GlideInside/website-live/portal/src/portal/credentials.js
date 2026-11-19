@@ -72,7 +72,7 @@ export function generateToken(bytes = 16) {
   return [...globalThis.crypto.getRandomValues(new Uint8Array(bytes))].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-import { COMMON_PASSWORDS } from './common-passwords.js?v=20261119e';
+import { COMMON_PASSWORDS } from './common-passwords.js?v=20261119f';
 
 export const MIN_PASSWORD_LENGTH = 10;
 
