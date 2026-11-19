@@ -4,7 +4,7 @@
 //   const ranked = rankDesigns(designs, envelopePolygonMm)   // designs: [{ id, name, footprint: [{x,y}] , widthMm, depthMm }]
 //   ranked[0] = { ...design, fit: { status, rotationDeg, mirrored, badge, reason, rank } }
 
-import { lowestLevel } from './house-stats.js?v=20261119c';
+import { lowestLevel } from './house-stats.js?v=20261119e';
 
 const hull = (pts) => {
   const p = [...pts].sort((a, b) => a.x - b.x || a.y - b.y);

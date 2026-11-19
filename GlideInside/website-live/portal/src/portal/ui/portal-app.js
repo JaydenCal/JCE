@@ -1,20 +1,22 @@
 // The portal page: sign in, forced password change, builder dashboard, client home. One module, hash routes for the tabs.
 
-import { h, clear, toast, icon, errorMessage } from './kit.js?v=20261119c';
-import { getPortalApi } from '../api.js?v=20261119c';
-import { appLink, designLink } from '../links.js?v=20261119c';
-import { signInView, forgotView, resetView, changePasswordView } from './auth-views.js?v=20261119c';
-import { renderHouses } from './houses-tab.js?v=20261119c';
-import { renderGlide } from './glide-tab.js?v=20261119c';
-import { renderClients } from './clients-tab.js?v=20261119c';
-import { renderBilling } from './billing-tab.js?v=20261119c';
-import { renderTeam } from './team-tab.js?v=20261119c';
-import { renderBranding } from './branding-tab.js?v=20261119c';
-import { ddmmyyyy } from '../billing.js?v=20261119c';
-import { trialBanner, handleBillingReturn } from './trial-ui.js?v=20261119c';
-import { CONFIG } from '../../config.js?v=20261119c';
-import { applyBrandTheme, clearBrandTheme, applyWhiteLabel } from '../theme-css.js?v=20261119c';
-import { readPick } from '../builders.js?v=20261119c';
+import { h, clear, toast, icon, errorMessage } from './kit.js?v=20261119e';
+import { getPortalApi } from '../api.js?v=20261119e';
+import { appLink, designLink } from '../links.js?v=20261119e';
+import { signInView, forgotView, resetView, changePasswordView } from './auth-views.js?v=20261119e';
+import { renderHouses } from './houses-tab.js?v=20261119e';
+import { renderGlide } from './glide-tab.js?v=20261119e';
+import { renderClients } from './clients-tab.js?v=20261119e';
+import { renderBilling } from './billing-tab.js?v=20261119e';
+import { renderTeam } from './team-tab.js?v=20261119e';
+import { renderBranding } from './branding-tab.js?v=20261119e';
+import { renderLeads } from './leads-tab.js?v=20261119e';
+import { renderWidget } from './widget-tab.js?v=20261119e';
+import { ddmmyyyy } from '../billing.js?v=20261119e';
+import { trialBanner, handleBillingReturn } from './trial-ui.js?v=20261119e';
+import { CONFIG } from '../../config.js?v=20261119e';
+import { applyBrandTheme, clearBrandTheme, applyWhiteLabel } from '../theme-css.js?v=20261119e';
+import { readPick } from '../builders.js?v=20261119e';
 
 const TABS = [
   { id: 'houses', label: 'House designs', render: renderHouses },
@@ -22,6 +24,8 @@ const TABS = [
   { id: 'clients', label: 'Clients', render: renderClients, perm: 'clients.read' },
   { id: 'billing', label: 'Billing', render: renderBilling, perm: 'billing.read' },
   { id: 'team', label: 'Team', render: renderTeam, perm: 'clients.read' },
+  { id: 'leads', label: 'Leads', render: renderLeads, perm: 'clients.read' },
+  { id: 'widget', label: 'Website widget', render: renderWidget, perm: 'branding.write' },
   { id: 'branding', label: 'Branding', render: renderBranding },
 ];
 

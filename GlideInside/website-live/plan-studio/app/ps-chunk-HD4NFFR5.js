@@ -1,0 +1,1 @@
+var o="Site costs are shown GST excluded. GST at 10 percent is added in the included figure. Indicative only: not a quote and not a tax invoice.",c=n=>{let t=Math.round(Number(n)||0),e=Math.round(t*.1);return{ex:t,gst:e,incl:t+e}};export{o as a,c as b};

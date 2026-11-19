@@ -3,8 +3,8 @@
 //   Builder or client: their own organisation's library (GET /api/portal/houses). The Glide Inside library is added only when `wantsGlide`
 //   says so, and the carousel falls back to it only for builder staff with an empty library (allowGlide).
 
-import { wantsGlide } from './design-mode.js?v=20261119c';
-import { builderDesigns } from '../lotcard/designs.js?v=20261119c';
+import { wantsGlide } from './design-mode.js?v=20261119e';
+import { builderDesigns } from '../lotcard/designs.js?v=20261119e';
 
 export function createDesignSource({ api, me, params = new URLSearchParams(), clientLike = false } = {}) {
   let cache = null;

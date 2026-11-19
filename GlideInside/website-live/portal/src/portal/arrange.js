@@ -8,12 +8,12 @@
 // Only the house moves. The lot, its boundary and the road are not part of the design geometry, so mirroring the house can
 // never mirror the lot (a fault seen in an earlier builder lot planner).
 
-import { rotateHouse, translateHouse, lotOf } from '../model/placement.js?v=20261119c';
-import { settleSiteItems } from '../site/site-items.js?v=20261119c';
-import { mirrorPlan } from '../model/ops.js?v=20261119c';
-import { buildingHull, orientedBox, clearances, faceGarageAngle } from '../site/lotplan.js?v=20261119c';
-import * as G from '../model/geometry.js?v=20261119c';
-import { runPoseSession } from './pose-session.js?v=20261119c';
+import { rotateHouse, translateHouse, lotOf } from '../model/placement.js?v=20261119e';
+import { settleSiteItems } from '../site/site-items.js?v=20261119e';
+import { mirrorPlan } from '../model/ops.js?v=20261119e';
+import { buildingHull, orientedBox, clearances, faceGarageAngle } from '../site/lotplan.js?v=20261119e';
+import * as G from '../model/geometry.js?v=20261119e';
+import { runPoseSession } from './pose-session.js?v=20261119e';
 
 /** Centre of the smallest rectangle round the building (unchanged by turning the house), or null with no building. */
 export function houseBoxCentre(project) {

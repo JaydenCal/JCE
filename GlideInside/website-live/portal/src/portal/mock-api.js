@@ -4,16 +4,16 @@
 //
 //   const api = createMockApi({ now, storage, latency });   // tests pass a controllable clock and an in-memory storage
 
-import { ApiError } from '../premium/api.js?v=20261119c';
-import { migrate, validate } from '../model/schema.js?v=20261119c';
-import { GLIDE_LIBRARY } from './glide-library.generated.js?v=20261119c';
-import { houseStats } from './house-stats.js?v=20261119c';
-import { validateColours } from './theme.js?v=20261119c';
-import { validateDetails } from './brand-details.js?v=20261119c';
-import { projectToSvg } from './thumbnail.js?v=20261119c';
-import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js?v=20261119c';
-import { gstOfTotal, monthLabel } from './billing.js?v=20261119c';
-import { NEW_LOGIN_FEE_CENTS, JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, jobPriceFor, summariseJobs, formatAud, TOPUP_FEE_CENTS, TOPUP_CREDITS, TOPUP_MESSAGES, topUpInvoiceLines, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js?v=20261119c';
+import { ApiError } from '../premium/api.js?v=20261119e';
+import { migrate, validate } from '../model/schema.js?v=20261119e';
+import { GLIDE_LIBRARY } from './glide-library.generated.js?v=20261119e';
+import { houseStats } from './house-stats.js?v=20261119e';
+import { validateColours } from './theme.js?v=20261119e';
+import { validateDetails } from './brand-details.js?v=20261119e';
+import { projectToSvg } from './thumbnail.js?v=20261119e';
+import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js?v=20261119e';
+import { gstOfTotal, monthLabel } from './billing.js?v=20261119e';
+import { NEW_LOGIN_FEE_CENTS, JOB_FEE_CENTS, JOB_PLANS, jobPlanOf, jobPriceFor, summariseJobs, formatAud, TOPUP_FEE_CENTS, TOPUP_CREDITS, TOPUP_MESSAGES, topUpInvoiceLines, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js?v=20261119e';
 
 const DB_KEY = 'gi.portal.mock.v1';
 const SESSION_KEY = 'gi.portal.session.v1';
@@ -139,7 +139,7 @@ function seedDb(now) {
   };
 }
 
-export function createMockApi({ now = () => Date.now(), storage = browserStorage(), seed = true, latency = 0, loadCatalogue = () => import('../catalogue/templates.js?v=20261119c') } = {}) {
+export function createMockApi({ now = () => Date.now(), storage = browserStorage(), seed = true, latency = 0, loadCatalogue = () => import('../catalogue/templates.js?v=20261119e') } = {}) {
   const wait = () => (latency ? new Promise((r) => setTimeout(r, latency)) : null);
 
   function load() {
@@ -891,6 +891,22 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       save(db);
       return { ok: true, reference, mock: true };
     },
+
+    // Website widget, lead inbox, webhook and site cost defaults: review mode keeps them in the mock database. Nothing is sent anywhere.
+    async getWidget() { await wait(); const { db, org } = ctx('clients.read'); const w = (db.widgets ||= {})[org.id] || { enabled: false, origins: [], houseIds: [] }; return { id: org.slug || org.id, ...w, houses: db.houses.filter((h) => h.orgId === org.id && !h.archived).map((h) => ({ id: h.id, name: h.name })), consentText: `I agree to ${org.branding?.displayName || org.name} contacting me about this design and my block, using the details I have entered.`, leadCount: (db.leads || []).filter((l) => l.orgId === org.id).length }; },
+    async setWidget(b = {}) { await wait(); const { db, org } = ctx('branding.write'); (db.widgets ||= {})[org.id] = { enabled: b.enabled === true, origins: (b.origins || []).filter(Boolean).map(String), houseIds: b.houseIds || [] }; save(db); return api.getWidget(); },
+    async listLeads() { await wait(); const { db, org } = ctx('clients.read'); const leads = (db.leads || []).filter((l) => l.orgId === org.id).sort((a, c) => (a.createdAt < c.createdAt ? 1 : -1)); return { leads, total: leads.length, newCount: leads.filter((l) => l.status === 'new').length }; },
+    async updateLead(id, b = {}) { await wait(); const { db, org } = ctx('clients.read'); const l = (db.leads || []).find((x) => x.id === id && x.orgId === org.id); if (!l) throw err('NOT_FOUND', 'That lead was not found.', 404); if (b.status) l.status = b.status; if (b.note !== undefined) l.note = String(b.note); save(db); return l; },
+    async deleteLead(id) { await wait(); const { db, org } = ctx('clients.write'); db.leads = (db.leads || []).filter((x) => !(x.id === id && x.orgId === org.id)); save(db); return { ok: true }; },
+    async getWebhook() { await wait(); const { db, org } = ctx('branding.write'); const h = (db.hooks ||= {})[org.id]; return { configured: !!h, url: h?.url || '', enabled: !!h?.enabled, secret: h?.secret || '', deliveries: [], maxAttempts: 5 }; },
+    async setWebhook(b = {}) { await wait(); const { db, org } = ctx('branding.write'); if (!/^https:\/\//.test(String(b.url || ''))) throw err('BAD_REQUEST', 'The webhook address must start with https://.', 400); const cur = (db.hooks ||= {})[org.id]; db.hooks[org.id] = { url: String(b.url), enabled: b.enabled !== false, secret: cur?.secret || 'whsec_mock0000000000000000000000000000000000000000' }; save(db); return api.getWebhook(); },
+    async deleteWebhook() { await wait(); const { db, org } = ctx('branding.write'); delete (db.hooks ||= {})[org.id]; save(db); return api.getWebhook(); },
+    async rotateWebhookSecret() { await wait(); const { db, org } = ctx('branding.write'); const h = (db.hooks ||= {})[org.id]; if (h) h.secret = `whsec_mock${Math.random().toString(16).slice(2).padEnd(38, '0')}`; save(db); return api.getWebhook(); },
+    async testWebhook() { await wait(); ctx('branding.write'); return { ok: true, status: 200, error: '', mock: true }; },
+    async retryWebhookDelivery() { await wait(); ctx('branding.write'); return api.getWebhook(); },
+    async getSiteCostDefaults() { await wait(); const { db, org } = ctx(); return { settings: (db.siteCosts ||= {})[org.id] || null }; },
+    async setSiteCostDefaults(b = {}) { await wait(); const { db, org } = ctx('branding.write'); (db.siteCosts ||= {})[org.id] = b.settings || null; save(db); return { settings: b.settings || null }; },
+    async deleteSiteCostDefaults() { await wait(); const { db, org } = ctx('branding.write'); delete (db.siteCosts ||= {})[org.id]; save(db); return { settings: null }; },
 
     /** Test and demo helper: wipe the mock back to its sample data. Not part of the real API. */
     async _reset() {

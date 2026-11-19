@@ -2,7 +2,7 @@
 // :root[data-brand-theme], which is only set while a builder staff or client login is active, so the public site and the public
 // app keep the Glide Inside look. Override rules are additive; the existing rules are not edited.
 
-import { deriveTheme, themeVars, hasBrand } from './theme.js?v=20261119c';
+import { deriveTheme, themeVars, hasBrand } from './theme.js?v=20261119e';
 
 const STYLE_ID = 'gi-brand-theme';
 const decl = (o) => Object.entries(o).map(([k, v]) => `${k}:${v}`).join(';');
