@@ -1,4 +1,4 @@
-// When to offer "Create a free profile to save your design". No DOM here (covered by tests/free-profile.test.mjs); ui.js supplies the pieces.
+// When to offer "Save your design (saving is included, no payment needed)". No DOM here (covered by tests/free-profile.test.mjs); ui.js supplies the pieces.
 //   a. once per session, at the first moment of value: after the first design is placed (in the guided flow, when the person reaches the
 //      Check it step) or drawn. Finding the lot alone is not value, so it never starts the prompt
 //   b. when the person tries to leave with work that is not saved to a profile (only where the browser allows a leave prompt)

@@ -218,7 +218,7 @@ test('privacy page: widget leads, webhooks, engineering orders, retention and de
   assert.match(s, /JCE Infrastructure Pty Ltd, ABN 29 699 165 663, a separate business/);
   assert.match(s, /deleted 24 months after/); assert.match(s, /after 90 days/);
   assert.match(s, /To have a widget lead deleted/); assert.match(s, /To have an engineering order request deleted/);
-  assert.match(s, /Last updated 19\/11\/2026/);
+  assert.match(s, /Last updated 20\/11\/2026/);
   assert.ok(!/[–—]/.test(s), 'no em or en dashes'); assert.ok(!/compliant/i.test(s));
   // the two forms link to the sections that cover them
   assert.match(readSrc('src/portal/widget-mode.js'), /#widget-leads/); assert.match(readSrc('src/premium/ui/order-request.js'), /#engineering-orders/);

@@ -145,7 +145,7 @@ for (const [label, d1] of runs) {
     assert.equal(ok.status, 201);
     assert.equal(ok.body.profile.name, 'Sam Builder');
     assert.equal(ok.body.profile.marketing, false, 'marketing consent is off unless the box was ticked');
-    assert.equal(ok.body.profile.designLimit, 10);
+    assert.equal(ok.body.profile.designLimit, 100);
     const cookie = ok.headers.get('set-cookie');
     assert.match(cookie, /^gi_profile=[A-Za-z0-9_-]{40,}; Path=\/api; HttpOnly; Secure; SameSite=Lax/);
     assert.ok(!ok.text.includes(PW) && !/passwordHash|password_hash|pbkdf2/.test(ok.text), 'the answer never carries the password or its hash');
@@ -627,7 +627,7 @@ test('copy has no em or en dashes and never says compliant; no new Pocket Archit
   assert.ok(!/[–—]/.test(section) && !/complian/i.test(section));
   assert.match(section, /Marketing is opt in/);
   assert.match(section, /Delete my account/);
-  assert.match(privacy, /Last updated 19\/11\/2026/);
+  assert.match(privacy, /Last updated 20\/11\/2026/);
 });
 
 test('password strength hint', () => {
@@ -876,7 +876,7 @@ test('autosave: a full profile says so plainly and keeps the design in the brows
   k.store.run('add_room', { type: 'bedroom', name: 'Bed', x: 7000, y: 0, width: 3000, depth: 3000 });
   await k.fire();
   assert.equal(k.controller.state.saveState, 'limit');
-  assert.match(k.controller.state.message, /up to 1 designs/);
+  assert.match(k.controller.state.message, /keeps up to 1 designs/);
   assert.equal(k.timers.length, 0, 'no retry loop on a limit');
 });
 

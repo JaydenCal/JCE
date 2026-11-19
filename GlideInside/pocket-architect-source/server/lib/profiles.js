@@ -341,7 +341,7 @@ export function createProfiles({ store, pstore, config, now = () => Date.now() }
     return { project: p, text, bytes, thumbnail: thumb, name: cleanText(p.name, 80) || 'Untitled design', address: addressOf(p), kind: kindOf(p) };
   }
 
-  const limitMessage = () => `A free profile keeps up to ${config.freeProfileMaxDesigns} designs. Delete one to save another.`;
+  const limitMessage = () => `Your profile keeps up to ${config.freeProfileMaxDesigns} designs. Delete one to save another.`;
 
   async function listDesigns(r) {
     const { profile } = await auth(r);

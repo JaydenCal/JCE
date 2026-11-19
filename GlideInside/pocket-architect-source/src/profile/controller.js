@@ -1,6 +1,6 @@
 // Free profile state and saving, with no DOM (covered by tests/free-profile.test.mjs).
 //   status: 'loading' | 'unavailable' (no profile service here: nothing about profiles is shown) | 'out' | 'in'
-//   saveState: 'idle' | 'saving' | 'saved' | 'error' | 'limit'
+//   saveState: 'idle' | 'unsaved' (the design on screen is not in the profile yet) | 'saving' | 'saved' | 'error' | 'limit'
 // Signed in: every change is saved to the profile after a short pause ("Saved" in the status bar). Creating a profile saves the design that is
 // open straight away. Plan Packs held by this browser for a saved design are linked to the profile so they survive a change of device.
 
@@ -25,7 +25,7 @@ export function createProfileController({
   api, store, thumbnail = async () => null, packToken = () => null, acceptPack = () => {}, debounceMs = 2500, retryMs = 15000,
   setTimer = (fn, ms) => setTimeout(fn, ms), clearTimer = (t) => clearTimeout(t), now = () => Date.now(),
 } = {}) {
-  const state = { status: 'loading', profile: null, saveState: 'idle', savedAt: null, message: '', designId: null, limit: 10, resetNote: '' };
+  const state = { status: 'loading', profile: null, saveState: 'idle', savedAt: null, message: '', designId: null, limit: 100, resetNote: '' };
   const listeners = new Set();
   const emit = () => listeners.forEach((fn) => { try { fn(state); } catch (e) { console.error('[profile] listener failed', e); } });
   const set = (patch) => { Object.assign(state, patch); emit(); };
@@ -36,6 +36,7 @@ export function createProfileController({
   let again = false;
   let dirty = false;
   let retries = 0;
+  let savedId = null; // id of the design last saved to (or opened from) the profile: any other design on screen is not saved
   const linked = new Set(); // project ids whose Plan Pack was linked in this session
 
   const signedIn = () => state.status === 'in';
@@ -92,6 +93,7 @@ export function createProfileController({
         const thumb = await thumbnail(project).catch(() => null);
         const out = await api.saveDesign(project, thumb);
         retries = 0;
+        savedId = project.id;
         set({ saveState: 'saved', savedAt: now(), designId: out.design.id, message: '' });
         await linkPackFor(project);
         return { ok: true, created: !!out.created, design: out.design };
@@ -119,9 +121,16 @@ export function createProfileController({
     return inFlight;
   }
 
+  /** A different design is on screen (New, a file, the guided flow): it is not in the profile until it is saved, and the status must not say it is. */
+  function reconcile() {
+    if (!signedIn() || store.readOnly) return;
+    if (store.project?.id !== savedId && state.saveState === 'saved') set({ saveState: 'unsaved', message: '' });
+  }
+
   /** Called on every project change (store 'project' event). Signed in: saves after a pause. */
   function noteChange(label) {
-    if (!signedIn() || store.readOnly || /^Open project/.test(String(label || ''))) return;
+    if (!signedIn() || store.readOnly) return;
+    if (/^Open project/.test(String(label || ''))) { reconcile(); return; }
     dirty = true;
     set({ saveState: 'saving' });
     clearTimer(timer);
@@ -200,6 +209,7 @@ export function createProfileController({
     if (problems.length) throw new ProfileError('BAD_PROJECT', 'That design has problems and cannot be opened.');
     if (res.pack?.token) acceptPack(res.pack);
     if (!replaceProject(project)) throw new ProfileError('OPEN_FAILED', 'That design could not be opened.');
+    savedId = project.id;
     set({ designId: res.design.id, saveState: 'saved', savedAt: now() });
     return res.design;
   }
@@ -211,7 +221,7 @@ export function createProfileController({
   };
 
   return {
-    state, init, signUp, signIn, signOut, deleteAccount, setMarketing, changePassword, saveNow, noteChange, flush,
+    state, init, signUp, signIn, signOut, deleteAccount, setMarketing, changePassword, saveNow, noteChange, reconcile, flush,
     listDesigns, openDesign, renameDesign, duplicateDesign, removeDesign,
     subscribe: (fn) => { listeners.add(fn); return () => listeners.delete(fn); },
     dispose: () => { clearTimers(); listeners.clear(); },

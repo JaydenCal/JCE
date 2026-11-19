@@ -14,6 +14,9 @@ export const MARKETING_TEXTS = {
 export const MARKETING_TEXT_VERSION = 'mk-2026-11-15';
 export const MARKETING_TEXT = MARKETING_TEXTS[MARKETING_TEXT_VERSION];
 
+/** Said at the top of the save dialog and the save prompt: saving never involves payment. */
+export const SAVE_INCLUDED_TEXT = 'Saving is included. No payment or card needed. Your design is saved to your profile straight away and you can open it on any device.';
+
 export const ROLES = [
   ['homeowner', 'Homeowner'],
   ['builder', 'Builder'],

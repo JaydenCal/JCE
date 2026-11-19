@@ -144,7 +144,7 @@ export function readConfig(env = {}) {
     commercialTrialWatermark: !['0', 'false', 'off', 'no'].includes(str(env.COMMERCIAL_TRIAL_WATERMARK, '1').toLowerCase()), // on by default
     commercialTrialKeepDays: Math.max(1, num(env.COMMERCIAL_TRIAL_KEEP_DAYS, 30)), // trial saved projects are cleared after this
     // Free user profiles (lib/profiles.js): sign up with name and email to keep designs. Nothing here sends email.
-    freeProfileMaxDesigns: Math.max(1, Math.round(num(env.FREE_PROFILE_MAX_DESIGNS, 10))), // saved designs per free profile
+    freeProfileMaxDesigns: Math.max(1, Math.round(num(env.FREE_PROFILE_MAX_DESIGNS, 100))), // saved designs per free profile
     profileSignupRateMax: Math.max(1, Math.round(num(env.PROFILE_SIGNUP_RATE_MAX, 5))), // sign ups per IP address per hour
     profileSigninIpMax: Math.max(1, Math.round(num(env.PROFILE_SIGNIN_IP_MAX, 30))), // sign in attempts per IP address per 10 minutes
     profileSigninEmailMax: Math.max(1, Math.round(num(env.PROFILE_SIGNIN_EMAIL_MAX, 8))), // sign in attempts per email AND address per 15 minutes (M4: a stranger cannot throttle the owner on another address)

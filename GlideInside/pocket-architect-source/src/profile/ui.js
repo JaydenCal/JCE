@@ -10,12 +10,12 @@ import { projectToSvg, svgDataUri } from '../portal/thumbnail.js';
 import { passwordProblem } from '../portal/credentials.js';
 import { ddmmyyyyOf } from '../ui/cloud.js';
 import { ProfileError } from './api.js';
-import { MARKETING_TEXT, MARKETING_TEXT_VERSION, ROLES, passwordStrength } from './wording.js';
+import { MARKETING_TEXT, MARKETING_TEXT_VERSION, SAVE_INCLUDED_TEXT, passwordStrength } from './wording.js';
 
 const STYLE = `
 .ps-prof-btn .ps-prof-dot{display:none}
 .ps-prof-btn[data-state="in"] .ps-prof-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ps-ok);margin-left:2px}
-.ps-prof-save-text{display:inline;font-weight:600}.ps-shell .ps-topbar .ps-btn.ps-prof-save{height:40px;padding:0 16px!important;margin-right:8px;border-radius:8px;background:#1f7a4d!important;border-color:#1f7a4d!important;color:#fff!important;font-size:15px;gap:6px}.ps-shell .ps-topbar .ps-btn.ps-prof-save:hover{background:#18643f!important}.ps-shell .ps-topbar .ps-btn.ps-prof-save .ps-icon{color:#fff}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}
+.ps-prof-save-text{display:inline;font-weight:600}.ps-shell .ps-topbar .ps-btn.ps-prof-save{height:40px;padding:0 16px!important;margin-right:16px;border-radius:8px;background:#1f7a4d!important;border-color:#1f7a4d!important;color:#fff!important;font-size:15px;gap:6px}.ps-shell .ps-topbar .ps-btn.ps-prof-save:hover{background:#18643f!important}.ps-shell .ps-topbar .ps-btn.ps-prof-save .ps-icon{color:#fff}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}
 @media (min-width:1700px){.ps-shell .ps-topbar .ps-prof-save .ps-prof-save-text{display:inline}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}}
 .gf-open .ps-prof-prompt{position:fixed;z-index:950;top:64px;bottom:auto}
 .ps-prof-prompt{position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:40;width:min(380px,calc(100% - 32px));padding:14px 14px 12px;background:var(--ps-panel);color:var(--ps-text);border:1px solid var(--ps-border-strong);border-left:4px solid var(--ps-accent);border-radius:var(--ps-radius-lg);box-shadow:var(--ps-shadow,0 6px 24px rgba(0,0,0,.2));animation:ps-toast-in .18s ease-out}
@@ -27,6 +27,7 @@ const STYLE = `
 .ps-prof-tab{padding:8px 12px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--ps-muted);font-weight:600;font-size:14px}
 .ps-prof-tab[aria-selected="true"]{color:var(--ps-text);border-bottom-color:var(--ps-accent)}
 .ps-prof-form{display:grid;gap:10px}
+.ps-prof-intro{margin:0 0 12px;font-size:14px;line-height:1.45;color:var(--ps-text)}
 .ps-prof-form label.ps-prof-lab{display:block;font-size:13px;font-weight:600;margin:0 0 3px}
 .ps-prof-form .ps-prof-opt{font-weight:400;color:var(--ps-muted)}
 .ps-prof-form .ps-input,.ps-prof-form .ps-select{width:100%}
@@ -150,15 +151,17 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
 
   // Top bar -------------------------------------------------------------------------------------------------------------------
   const anchor = refs.topbar?.querySelector('[data-action="share"]') || refs.topbar?.querySelector('[data-action="save"]');
-  const saveBtn = h('button', { class: 'ps-btn ps-prof-btn ps-prof-save', type: 'button', title: 'Save this design to your free profile', 'aria-label': 'Save design', dataset: { action: 'profile-save' }, onclick: () => onSaveClick() },
+  const saveBtn = h('button', { class: 'ps-btn ps-prof-btn ps-prof-save', type: 'button', title: 'Save this design to your profile. Saving is included, no payment needed.', 'aria-label': 'Save design', dataset: { action: 'profile-save' }, onclick: () => onSaveClick() },
     glyph(GLYPH.saveProfile), h('span', { class: 'ps-btn-text ps-prof-save-text' }, 'Save design'));
   const saveText = saveBtn.querySelector('.ps-prof-save-text');
   let savedTimer = null;
   async function onSaveClick() {
     if (controller.state.status !== 'in') { policy.openFromButton(); return; }
+    if (controller.state.saveState === 'limit') { openLimit(); return; }
     saveText.textContent = 'Saving';
     let r = null;
     try { r = await controller.saveNow(); } catch { r = null; }
+    if (r && r.ok === false && r.code === 'DESIGN_LIMIT_REACHED') { saveText.textContent = 'Profile full'; openLimit(); return; }
     saveText.textContent = r && r.ok === false ? 'Not saved' : 'Saved';
     clearTimeout(savedTimer);
     savedTimer = setTimeout(() => { saveText.textContent = 'Save design'; }, 2500);
@@ -191,10 +194,31 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
     clear(statusText);
     if (s.saveState === 'saving') statusText.append('Saving to profile');
     else if (s.saveState === 'saved') statusText.append(`Saved to profile ${s.savedAt ? clock(s.savedAt) : ''}`.trim());
-    else if (s.saveState === 'limit') statusText.append('Not saved. ', h('button', { type: 'button', onclick: () => openDesigns() }, 'Free up a spot'));
+    else if (s.saveState === 'limit') statusText.append(`Not saved. Your profile is full (${s.limit} ${s.limit === 1 ? 'design' : 'designs'}). `, h('button', { type: 'button', dataset: { action: 'status-my-designs' }, onclick: () => openDesigns() }, 'Open My designs'), ' or ', h('button', { type: 'button', dataset: { action: 'status-save-file' }, onclick: () => saveToFile() }, 'Save to file'));
     else if (s.saveState === 'error') statusText.append(s.message || 'Not saved to your profile yet');
-    else statusText.append('Profile ready');
+    else statusText.append('Not saved to your profile yet. ', h('button', { type: 'button', dataset: { action: 'status-save-now' }, onclick: () => onSaveClick() }, 'Save design'));
     statusText.title = s.message || '';
+    if (s.saveState === 'limit') saveText.textContent = 'Profile full';
+    else if (saveText.textContent === 'Profile full') saveText.textContent = 'Save design';
+  }
+
+  /** The profile is at its limit: say so plainly, with one click to My designs and the file save right there. Never a payment step. */
+  function limitText() {
+    return `Your profile is full (${controller.state.limit} ${controller.state.limit === 1 ? 'design' : 'designs'}). Delete an old design in My designs to save this one, or use Save to file.`;
+  }
+  function saveToFile() {
+    const b = refs.topbar?.querySelector('[data-action="save"]');
+    if (b) b.click();
+  }
+  function openLimit() {
+    if (document.querySelector('[data-role="profile-limit"]')) return;
+    openModal({
+      title: 'Your profile is full', size: 'sm',
+      body: h('p', { dataset: { role: 'profile-limit' }, style: { margin: 0 } }, limitText()),
+      footer: (close) => [
+        h('button', { class: 'ps-btn', type: 'button', dataset: { action: 'limit-save-file' }, onclick: () => { close('file'); saveToFile(); } }, 'Save to file'),
+        h('button', { class: 'ps-btn ps-btn--primary', type: 'button', dataset: { action: 'limit-my-designs' }, onclick: () => { close('designs'); openDesigns(); } }, 'Open My designs')],
+    });
   }
 
   function refresh() {
@@ -223,11 +247,11 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   function showPrompt(reason) {
     if (prompt) return;
     track('ps_profile_prompt', { reason });
-    const title = h('h2', { id: 'ps-prof-prompt-title' }, 'Create a free profile to save your design');
+    const title = h('h2', { id: 'ps-prof-prompt-title' }, 'Save your design');
     prompt = h('section', { class: 'ps-prof-prompt', role: 'region', 'aria-labelledby': 'ps-prof-prompt-title', dataset: { role: 'profile-prompt', reason } },
       h('button', { class: 'ps-btn ps-btn--ghost ps-btn--icon ps-prof-x', type: 'button', 'aria-label': 'Not now', onclick: () => notNow() }, icon('close', { size: 16 })),
       title,
-      h('p', null, reason === 'leave' ? 'Your design is only in this browser. A free profile keeps it safe and lets you open it on any device.' : 'Keep your designs safe and open them on any device. It takes under a minute and costs nothing.'),
+      h('p', null, reason === 'leave' ? 'Your design is only in this browser. Saving it to your profile keeps it safe and lets you open it on any device. No payment or card needed.' : SAVE_INCLUDED_TEXT),
       h('div', { class: 'ps-prof-actions' },
         h('button', { class: 'ps-btn ps-btn--primary', type: 'button', dataset: { action: 'prompt-create' }, onclick: () => { closePrompt(); openAuth('create'); } }, 'Create profile'),
         h('button', { class: 'ps-btn', type: 'button', dataset: { action: 'prompt-signin' }, onclick: () => { closePrompt(); openAuth('signin'); } }, 'Sign in'),
@@ -261,11 +285,11 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   // Create profile and sign in ---------------------------------------------------------------------------------------------------
   let authClosed = null;
   let accountWait = null;
-  function openAuth(initial = 'create') {
+  function openAuth(initial = 'create', { purpose = 'save' } = {}) {
     if (modal) modal.close('replace');
     let tab = initial;
     const body = h('div');
-    const handle = openModal({ title: initial === 'signin' ? 'Sign in' : 'Create your free profile', size: 'sm', body, onClose: () => { modal = null; authClosed?.(); } });
+    const handle = openModal({ title: initial === 'signin' ? 'Sign in' : purpose === 'save' ? 'Save your design' : 'Create your profile', size: 'sm', body, onClose: () => { modal = null; authClosed?.(); } });
     modal = handle;
     const title = handle.el.querySelector('.ps-modal-head h2');
 
@@ -291,33 +315,27 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
       const email = h('input', { class: 'ps-input', id: 'ps-prof-email', type: 'email', autocomplete: 'email', maxlength: '254', required: true });
       const pw = pwBox('ps-prof-pw', 'new-password');
       const meter = h('div', { class: 'ps-prof-meter', 'aria-hidden': 'true', dataset: { score: '0' } }, h('i'), h('i'), h('i'), h('i'));
-      const hint = h('p', { class: 'ps-prof-note', id: 'ps-prof-pw-hint', style: { marginTop: '4px' } }, 'At least 10 characters. A few random words makes a strong password.');
+      const PW_HINT = 'At least 10 characters.';
+      const hint = h('p', { class: 'ps-prof-note', id: 'ps-prof-pw-hint', style: { marginTop: '4px' } }, PW_HINT);
       pw.input.setAttribute('aria-describedby', 'ps-prof-pw-hint');
       pw.input.addEventListener('input', () => {
         const v = pw.input.value;
         const st = passwordStrength(v);
         meter.dataset.score = String(st.score);
         const problem = v ? passwordProblem(v, { email: email.value }) : null;
-        hint.textContent = !v ? 'At least 10 characters. A few random words makes a strong password.' : problem || `Strength: ${st.label}.`;
+        hint.textContent = !v ? PW_HINT : problem || `Strength: ${st.label}.`;
       });
-      const phone = h('input', { class: 'ps-input', id: 'ps-prof-phone', type: 'tel', autocomplete: 'tel', maxlength: '30' });
-      const postcode = h('input', { class: 'ps-input', id: 'ps-prof-post', type: 'text', autocomplete: 'postal-code', maxlength: '60' });
-      const role = h('select', { class: 'ps-select', id: 'ps-prof-role' }, h('option', { value: '' }, 'Choose'), ...ROLES.map(([id, label]) => h('option', { value: id }, label)));
-      const terms = h('input', { type: 'checkbox', id: 'ps-prof-terms', required: true });
-      const privacy = h('input', { type: 'checkbox', id: 'ps-prof-privacy', required: true });
+      const terms = h('input', { type: 'checkbox', id: 'ps-prof-terms', required: true }); // one tick covers the site terms and the privacy policy
       const marketing = h('input', { type: 'checkbox', id: 'ps-prof-mk', dataset: { version: MARKETING_TEXT_VERSION } }); // unticked by default (Spam Act)
       const submit = h('button', { class: 'ps-btn ps-btn--primary', type: 'submit', dataset: { action: 'create-submit' } }, 'Create profile');
       const form = h('form', { class: 'ps-prof-form', novalidate: true, autocomplete: 'on' },
         field('Name', name, { id: 'ps-prof-name' }),
         field('Email', email, { id: 'ps-prof-email' }),
         field('Password', pw.row, { id: 'ps-prof-pw', hint: h('div', null, meter, hint) }),
-        h('div', { class: 'ps-prof-grid' }, field('Phone', phone, { id: 'ps-prof-phone', optional: true }), field('Postcode or suburb', postcode, { id: 'ps-prof-post', optional: true })),
-        field('I am a', role, { id: 'ps-prof-role', optional: true }),
-        h('label', { class: 'ps-prof-check', for: 'ps-prof-terms' }, terms, h('span', null, 'I accept the ', h('a', { href: termsUrl, target: '_blank', rel: 'noopener' }, 'site terms'), '.')),
-        h('label', { class: 'ps-prof-check', for: 'ps-prof-privacy' }, privacy, h('span', null, 'I have read the ', h('a', { href: privacyUrl, target: '_blank', rel: 'noopener' }, 'privacy policy'), '.')),
+        h('label', { class: 'ps-prof-check', for: 'ps-prof-terms' }, terms, h('span', null, 'I accept the ', h('a', { href: termsUrl, target: '_blank', rel: 'noopener' }, 'site terms'), ' and ', h('a', { href: privacyUrl, target: '_blank', rel: 'noopener' }, 'privacy policy'), '.')),
         h('label', { class: 'ps-prof-check', for: 'ps-prof-mk' }, marketing, h('span', null, MARKETING_TEXT)),
         err, submit,
-        h('p', { class: 'ps-prof-note' }, 'No email is sent when you create a profile. Your current design is saved to it straight away.'));
+        h('p', { class: 'ps-prof-note' }, 'No email is sent when you create a profile.'));
       form.addEventListener('submit', async (ev) => {
         ev.preventDefault();
         showErr('');
@@ -325,12 +343,12 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim())) return showErr('Enter a valid email address.'), email.focus();
         const problem = passwordProblem(pw.input.value, { email: email.value });
         if (problem) return showErr(problem), pw.input.focus();
-        if (!terms.checked || !privacy.checked) return showErr('Please accept the site terms and the privacy policy to create a profile.');
+        if (!terms.checked) return showErr('Please accept the site terms and privacy policy to save your design.');
         busy(submit, true);
         try {
           const out = await controller.signUp({
-            name: name.value.trim(), email: email.value.trim(), password: pw.input.value, phone: phone.value.trim() || undefined, postcode: postcode.value.trim() || undefined,
-            role: role.value || undefined, acceptTerms: true, acceptPrivacy: true, marketing: marketing.checked,
+            name: name.value.trim(), email: email.value.trim(), password: pw.input.value,
+            acceptTerms: true, acceptPrivacy: true, marketing: marketing.checked,
           });
           pw.input.value = '';
           track('ps_profile_signup', { marketing: marketing.checked });
@@ -373,11 +391,11 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
 
     function paint() {
       showErr('');
-      title.textContent = tab === 'signin' ? 'Sign in' : 'Create your free profile';
+      title.textContent = tab === 'signin' ? 'Sign in' : purpose === 'save' ? 'Save your design' : 'Create your profile';
       const tabs = h('div', { class: 'ps-prof-tabs', role: 'tablist' },
         ...[['create', 'Create profile'], ['signin', 'Sign in']].map(([id, label]) => h('button', { class: 'ps-prof-tab', type: 'button', role: 'tab', 'aria-selected': String(tab === id), dataset: { tab: id }, onclick: () => { tab = id; paint(); } }, label)));
       clear(body);
-      body.append(tabs, tab === 'signin' ? signInForm() : createForm());
+      body.append(tabs, tab === 'signin' ? signInForm() : h('div', null, h('p', { class: 'ps-prof-intro', dataset: { role: 'save-included' } }, purpose === 'save' ? SAVE_INCLUDED_TEXT : 'A profile is included. No payment or card needed.'), createForm()));
       setTimeout(() => body.querySelector('input')?.focus({ preventScroll: true }), 0);
     }
     paint();
@@ -591,7 +609,7 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
       const show = () => {
         if (st() === 'in') { finish(true); return; }
         closePrompt();
-        const handle = openAuth('create');
+        const handle = openAuth('create', { purpose: 'account' });
         accountWait = { reason };
         off = controller.subscribe(() => { if (st() === 'in') { try { handle.close('signed-in'); } catch { /* closed */ } finish(true); } });
         authClosed = () => { if (st() === 'in') finish(true); else finish(false); authClosed = null; };

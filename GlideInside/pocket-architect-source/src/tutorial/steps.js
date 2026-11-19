@@ -10,7 +10,7 @@ export const RESIDENTIAL_TUTORIAL = Object.freeze([
   { id: 'design', where: 'flow', flowStep: 2, target: '[data-ps="flow-homes"]', text: 'Pick a design. Use the filters and your lot width to narrow the list.' },
   { id: 'place', where: 'flow', flowStep: 3, target: '[data-ps="flow-place-status"]', text: 'Drag the house to move it and use the ring to rotate it. Auto fit helps, and the fit card tells you if it does not fit.' },
   { id: 'check', where: 'flow', flowStep: 4, target: '[data-ps="flow-summary"]', text: 'Look at it in 3D and walk inside to see how it feels.' },
-  { id: 'save', where: 'editor', target: '[data-action="profile-save"]', text: 'Save design keeps your work in a free profile.' },
+  { id: 'save', where: 'editor', target: '[data-action="profile-save"]', text: 'Save design keeps your work in your profile. Saving is included, no payment needed.' },
   { id: 'planset', where: 'editor', target: '[data-ps="lc-pdf"]', text: 'Get the plan set, or send it to a registered engineer.' },
 ]);
 
@@ -73,8 +73,8 @@ const CHAPTERS_RESIDENTIAL = [
     E('presets', '[data-ps="view3d-aerial"]', 'Preset views such as Street view, Front and Aerial jump the camera to a useful angle.'),
     E('walk', '[data-view="walk"]', 'Walk puts you inside at eye height. Use W A S D to move and drag to look.'),
   ] },
-  { id: 'save', title: 'Save and profile', blurb: 'Keep your work in a free profile, or as a file.', steps: [
-    E('profile', '[data-action="profile-save"]', 'Save design keeps your work in a free profile. Open it on any device later.'),
+  { id: 'save', title: 'Save and profile', blurb: 'Keep your work in your profile, or as a file. Saving is included.', steps: [
+    E('profile', '[data-action="profile-save"]', 'Save design keeps your work in your profile, with no payment needed. Open it on any device later.'),
     E('save', '[data-action="save"]', 'Save also downloads the design as a file you can keep.'),
     E('open', '[data-action="open"]', 'Open brings back a design you saved earlier.'),
     E('share', '[data-action="share"]', 'Share makes a link so someone else can view the design.'),
@@ -125,7 +125,7 @@ const CHAPTERS_COMMERCIAL = [
     E('rerun', '[data-ps="rerun-site-layout"]', 'Re-run car park layout redraws the car park after you move a building. Areas you drew are kept.'),
   ] },
   { id: 'planset', title: 'Plan set', blurb: 'Save the layout, get the plan set or send it to an engineer.', steps: [
-    E('save', '[data-action="profile-save"]', 'Save design keeps the layout in a free profile.'),
+    E('save', '[data-action="profile-save"]', 'Save design keeps the layout in your profile. No payment needed.'),
     E('pdf', '[data-ps="cc-planset"]', 'The plan set button builds the PDF for this layout.', { openCard: true }),
     E('engineer', '[data-ps="lc-send-engineer"]', 'Send to engineer passes the layout to a registered engineer.'),
   ] },
