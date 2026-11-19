@@ -1,16 +1,28 @@
 // The "Site costs" panel: the indicative estimate (low, likely, high) and the editable rates, each with its source note and date.
-// Reset puts every default back. Rates are kept in this browser (see rates.js). Indicative only, not a quote.
+// Reset puts every default back. Rates are kept with the design, as the builder default, or in this browser (see rates.js). Indicative only, not a quote.
 
 import { el, clear } from '../util.js';
 import { plainDashes } from '../../site/plain-text.js';
 import { estimateSiteCosts, fmtAud, DISCLAIMER } from './estimate.js';
 import { NOT_FOUND } from './council.js';
-import { RATE_DEFS, REGIONS, RATES_DATE, loadSettings, saveSettings, resetSettings, regionOf, rateOf, isCustomised } from './rates.js';
+import { RATE_DEFS, REGIONS, RATES_DATE, saveSettings, resetSettings, regionOf, rateOf, isCustomised, effectiveSettings, baseSettings, diffSettings, builderDefaults, defaultSettings, settingsSource } from './rates.js';
+import { gstOf, GST_NOTE } from './gst.js';
 
-export function openSiteCosts({ layer, getProject, onChange = null } = {}) {
-  let settings = loadSettings();
+const SOURCE_TEXT = { design: 'This design has its own rates.', builder: 'Rates come from your builder default.', browser: 'Rates are the ones saved in this browser.', default: 'Rates are the standard defaults.' };
+
+// setDesign(overrides|null) saves rates with the design (store.apply on the project). The builder default lives in the portal: globalThis.__ps.siteCostDefaults.
+export function openSiteCosts({ layer, getProject, setDesign = null, onChange = null } = {}) {
+  let settings = effectiveSettings(getProject());
   const out = el('div', null);
-  const persist = () => { saveSettings(settings); onChange?.(settings); };
+  let msg = '';
+  const hasBuilder = () => !!globalThis.__ps?.siteCostDefaults?.set;
+  // With no builder account the rates are kept in this browser, as before. With one, edits are held until saved for the design or as the builder default.
+  const persist = () => { if (!hasBuilder() && !getProject()?.siteCosts) saveSettings(settings); onChange?.(settings); };
+  const saveDesign = () => { const d = diffSettings(baseSettings(), settings); setDesign?.(d); msg = d ? 'Saved with this design.' : 'This design now uses the base rates.'; later(); };
+  const saveBuilder = async () => {
+    try { await globalThis.__ps.siteCostDefaults.set(diffSettings(defaultSettings(), settings) || {}); setDesign?.(null); settings = effectiveSettings(getProject()); msg = 'Saved as your builder default.'; } catch (e) { msg = `Could not save the default: ${e?.message || 'try again'}`; }
+    later();
+  };
 
   // Re-render after the current event finishes: a field being edited is replaced, and replacing it inside its own change event upsets blur handling.
   const later = () => setTimeout(render, 0);
@@ -34,8 +46,13 @@ export function openSiteCosts({ layer, getProject, onChange = null } = {}) {
         rows.push(el('tr', null, el('td', null, l.label, el('span', { class: 'psp-sc-src' }, l.note)), el('td', { class: 'psp-num' }, `${Math.round(l.qty * 10) / 10} ${l.unit}`), el('td', { class: 'psp-num' }, fmtAud(l.low)), el('td', { class: 'psp-num' }, fmtAud(l.likely)), el('td', { class: 'psp-num' }, fmtAud(l.high))));
       }
       rows.push(el('tr', { class: 'psp-sc-total' }, el('td', { colspan: '2' }, 'Total, GST excluded'), el('td', { class: 'psp-num' }, fmtAud(est.total.low)), el('td', { class: 'psp-num' }, fmtAud(est.total.likely)), el('td', { class: 'psp-num' }, fmtAud(est.total.high))));
+      const g = ['low', 'likely', 'high'].map((k) => gstOf(est.total[k]));
+      rows.push(el('tr', null, el('td', { colspan: '2' }, 'GST, 10 percent'), ...g.map((x) => el('td', { class: 'psp-num' }, fmtAud(x.gst)))),
+        el('tr', { class: 'psp-sc-total' }, el('td', { colspan: '2' }, 'Total, GST included'), ...g.map((x) => el('td', { class: 'psp-num' }, fmtAud(x.incl)))));
+      const i = est.inputs || {};
+      if (i.earthworksRead) out.append(el('p', { class: 'psp-sc-note', 'data-testid': 'cutfill' }, `Cut ${Math.round(i.cutM3)} cubic metres, fill ${Math.round(i.fillM3)} cubic metres, pad ${Math.round(i.padAreaM2)} square metres, slope ${Math.round((i.slopePct || 0) * 10) / 10} percent.`));
       out.append(el('table', { class: 'psp-sc-table', 'aria-label': 'Indicative site costs' }, el('thead', null, el('tr', null, el('th', null, 'Item'), el('th', { class: 'psp-num' }, 'Quantity'), el('th', { class: 'psp-num' }, 'Low'), el('th', { class: 'psp-num' }, 'Likely'), el('th', { class: 'psp-num' }, 'High'))), el('tbody', null, ...rows)),
-        ...est.assumptions.map((a) => el('p', { class: 'psp-sc-note' }, a)));
+        ...est.assumptions.map((a) => el('p', { class: 'psp-sc-note' }, a)), el('p', { class: 'psp-sc-note', 'data-testid': 'gst-note' }, GST_NOTE));
     }
     // Council rules for this lot's council, cited
     if (est.ok) {
@@ -56,7 +73,11 @@ export function openSiteCosts({ layer, getProject, onChange = null } = {}) {
       rrows.push(el('tr', null, el('td', null, el('span', { class: custom ? 'psp-sc-custom' : '' }, d.label), el('span', { class: 'psp-sc-src' }, `${d.source} Default dated ${RATES_DATE}.`)), el('td', null, input), el('td', { class: 'psp-num' }, `${d.unit}${custom ? ` (default ${d[region]})` : ''}`)));
     }
     out.append(el('table', { class: 'psp-sc-table', 'aria-label': 'Rates' }, el('tbody', null, ...rrows)),
-      el('div', { class: 'psp-sc-row' }, el('button', { class: 'psp-btn', type: 'button', dataset: { action: 'reset' }, onclick: () => { settings = resetSettings(); onChange?.(settings); later(); } }, 'Reset all rates to the defaults')));
+      el('p', { class: 'psp-sc-note', 'data-testid': 'rate-source' }, SOURCE_TEXT[settingsSource(getProject())], msg ? ` ${msg}` : ''),
+      el('div', { class: 'psp-sc-row' },
+        setDesign ? el('button', { class: 'psp-btn', type: 'button', dataset: { action: 'save-design' }, onclick: saveDesign }, 'Save rates for this design') : null,
+        hasBuilder() ? el('button', { class: 'psp-btn', type: 'button', dataset: { action: 'save-builder' }, onclick: saveBuilder }, 'Save as my builder default') : null,
+        el('button', { class: 'psp-btn', type: 'button', dataset: { action: 'reset' }, onclick: async () => { setDesign?.(null); if (hasBuilder()) { try { await globalThis.__ps.siteCostDefaults.clear(); } catch { /* keep going */ } } settings = hasBuilder() ? effectiveSettings(getProject()) : resetSettings(); msg = ''; onChange?.(settings); later(); } }, 'Reset all rates to the defaults')));
   }
   render();
   return layer.openModal({ title: 'Site costs, indicative', body: () => out, footer: (close) => el('button', { class: 'psp-btn', type: 'button', onclick: () => close('done') }, 'Close') });

@@ -13,7 +13,7 @@ export async function initPortalViewer(app, { api = getPortalApi() } = {}) {
   if (!me?.user || me.user.mustChangePassword || !me.org) return null;
   const brand = me.org.branding || {};
   const source = createDesignSource({ api, me, params: new URLSearchParams(), clientLike: me.user.role === 'client' });
-  app.builder = { name: brand.displayName || me.org.name, logo: brand.logoDataUrl || null, details: brand.details || null, client: me.user.role === 'client' ? { name: me.user.name || '', lotAddress: me.user.lotAddress || '' } : null };
+  app.builder = { name: brand.displayName || me.org.name, logo: brand.logoDataUrl || null, details: brand.details || null, colours: brand.colours || null, client: me.user.role === 'client' ? { name: me.user.name || '', lotAddress: me.user.lotAddress || '' } : null };
   app.lotDesigns = (project) => source.lotDesigns(project);
   app.lotCard?.refresh?.();
   return { me, source };

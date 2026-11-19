@@ -559,7 +559,9 @@ async function main() {
   if (VIEWER) {
     mountViewerChrome(refs.stage, store);
     // Signed in? The first placement waits for this (src/ui/embed-viewer.js designPool), so the viewer opens on the person's own first design.
-    if (!demoMode() && CONFIG.portalEnabled) api.portalReady = import('./portal/viewer-mode.js').then((m) => m.initPortalViewer(api)).catch((e) => { console.warn('[portal] viewer mode not available', e); return null; });
+    // ?widget=<builder id>: the "See it on your block" widget on a builder's own website (src/portal/widget-mode.js). A visitor has no login: the builder's public designs and a lead form.
+    if (!demoMode() && new URLSearchParams(location.search).get('widget')) api.portalReady = import('./portal/widget-mode.js').then((m) => m.initWidgetMode(api)).catch((e) => { console.warn('[widget] not available', e); return null; });
+    else if (!demoMode() && CONFIG.portalEnabled) api.portalReady = import('./portal/viewer-mode.js').then((m) => m.initPortalViewer(api)).catch((e) => { console.warn('[portal] viewer mode not available', e); return null; });
     const ev = initEmbedViewer({ store, catalogue, shell: refs.shell, viewerMode: true, getViewer, commercial: COMMERCIAL_VIEWER });
     api.embedViewer = ev;
     if (addressParam) ev.run(addressParam);

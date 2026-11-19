@@ -96,3 +96,40 @@ export function rateOf(settings, id, region) {
 
 export const isCustomised = (settings, id, region) => Number.isFinite(settings?.rates?.[id]?.[region]) && settings.rates[id][region] !== RATE_BY_ID[id][region];
 export const anyCustomised = (settings) => RATE_DEFS.some((d) => ['nsw', 'qld'].some((r) => isCustomised(settings, d.id, r)));
+
+// Where rates come from, in order (19/11/2026): this design's own rates (project.siteCosts, saved with the design), else the builder's default
+// (the portal, server table site_cost_defaults, handed over as window.__ps.siteCostDefaults.get()), else this browser's saved rates, else the defaults.
+
+/** over laid on base: a region, the rate overrides per id and region, and the rock option. Neither argument is changed. */
+export function mergeSettings(base, over) {
+  const out = { region: base?.region || 'auto', rates: {}, rock: { ...(base?.rock || { enabled: false, fractionOfCut: 0.3 }) } };
+  for (const [id, v] of Object.entries(base?.rates || {})) out.rates[id] = { ...v };
+  if (!over || typeof over !== 'object') return out;
+  if (['auto', 'nsw', 'qld'].includes(over.region)) out.region = over.region;
+  for (const [id, v] of Object.entries(over.rates || {})) {
+    if (!RATE_BY_ID[id] || !v || typeof v !== 'object') continue;
+    for (const r of ['nsw', 'qld']) if (Number.isFinite(v[r]) && v[r] >= 0) (out.rates[id] ||= {})[r] = v[r];
+  }
+  if (over.rock && typeof over.rock === 'object') out.rock = { enabled: over.rock.enabled === true, fractionOfCut: Number.isFinite(over.rock.fractionOfCut) ? Math.min(1, Math.max(0, over.rock.fractionOfCut)) : out.rock.fractionOfCut };
+  return out;
+}
+
+/** What differs between settings and base (the part worth saving with a design), or null when nothing does. */
+export function diffSettings(base, settings) {
+  const out = {};
+  if (settings.region !== (base?.region || 'auto')) out.region = settings.region;
+  const rates = {};
+  for (const [id, v] of Object.entries(settings.rates || {})) for (const r of ['nsw', 'qld']) if (Number.isFinite(v?.[r]) && v[r] !== (Number.isFinite(base?.rates?.[id]?.[r]) ? base.rates[id][r] : RATE_BY_ID[id]?.[r])) (rates[id] ||= {})[r] = v[r];
+  if (Object.keys(rates).length) out.rates = rates;
+  const b = base?.rock || { enabled: false, fractionOfCut: 0.3 };
+  if (settings.rock && (settings.rock.enabled !== b.enabled || settings.rock.fractionOfCut !== b.fractionOfCut)) out.rock = { ...settings.rock };
+  return Object.keys(out).length ? out : null;
+}
+
+export const builderDefaults = () => { try { return globalThis.__ps?.siteCostDefaults?.get?.() || null; } catch { return null; } };
+/** The base a design's own rates sit on: the builder's default when there is one, else this browser's saved rates. */
+export const baseSettings = () => { const b = builderDefaults(); return b ? mergeSettings(defaultSettings(), b) : loadSettings(); };
+/** The rates in force for a design. */
+export const effectiveSettings = (project) => mergeSettings(baseSettings(), project?.siteCosts || null);
+/** 'design' | 'builder' | 'browser' | 'default': where the rates in force mostly come from, for the panel. */
+export const settingsSource = (project) => (project?.siteCosts ? 'design' : builderDefaults() ? 'builder' : anyCustomised(loadSettings()) ? 'browser' : 'default');

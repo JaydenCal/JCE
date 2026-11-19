@@ -344,27 +344,27 @@ export function createPremium(store, options = {}) {
       img.src = url;
     } catch { resolve(url); }
   });
-  async function exportSitingReport() {
+  async function exportSitingReport({ layout = 'full', widget = false } = {}) {
     if (store.readOnly) { layer.notify('This shared design is view only, so a report cannot be made from it.', 'info', 6000); return null; }
-    if (!isEntitled()) { openUpgrade({ source: 'export-siting-report' }); return null; }
+    if (!widget && !isEntitled()) { openUpgrade({ source: 'export-siting-report' }); return null; }
     if (!store.project?.site?.lot) { layer.notify('Find the lot first. The siting report needs a lot on the design.', 'info', 6000); return null; }
     if (state.exporting) return null;
     if (!(await planTermsGate.require({ context: 'siting-report' }))) return null;
     state.exporting = 'siting-report';
     topbar?.setBusy('siting-report', 'Building the siting report');
     try {
-      const { toSitingReport, sitingReportFilename } = await import('./exporters/siting-report.js');
+      const { toSitingReport, sitingReportFilename, sitingSummaryFilename } = await import('./exporters/siting-report.js');
       const base = await loadJsPDF();
       const { trialJsPDF } = await import('./exporters/watermark.js');
       const jsPDF = portalOn() && state.portal.watermark ? trialJsPDF(base) : base;
       const shot = await coverImage(getViewer, { width: 1500, height: 960, maxChars: 9_000_000, timeoutMs: 8000 });
       const image = shot ? await toJpeg(shot) : null;
-      const bytes = await toSitingReport(store.project, { jsPDF, image });
-      const filename = sitingReportFilename(store.project);
+      const bytes = await toSitingReport(store.project, { jsPDF, image, layout });
+      const filename = layout === 'summary' ? sitingSummaryFilename(store.project) : sitingReportFilename(store.project);
       (saveFile || downloadBlob)(new Blob([bytes], { type: 'application/pdf' }), filename);
-      track('ps_export', { type: 'siting-report' });
-      layer.notify(`Siting report downloaded as ${filename}.`, 'ok');
-      topbar?.announce('Siting report downloaded');
+      track('ps_export', { type: layout === 'summary' ? 'siting-summary' : 'siting-report' });
+      layer.notify(`${layout === 'summary' ? 'One page summary' : 'Siting report'} downloaded as ${filename}.`, 'ok');
+      topbar?.announce(layout === 'summary' ? 'One page summary downloaded' : 'Siting report downloaded');
       return { filename, bytes: bytes.length };
     } catch (e) {
       console.warn('[premium] siting report failed', e);
@@ -379,7 +379,8 @@ export function createPremium(store, options = {}) {
   const openSiteCostsPanel = async () => {
     if (!store.project?.site?.lot) return layer.notify('Find the lot first. The site cost estimate needs a lot on the design.', 'info', 6000);
     const { openSiteCosts } = await import('./site-costs/panel.js');
-    return openSiteCosts({ layer, getProject: () => store.project });
+    const setDesign = store.readOnly ? null : (rates) => { store.apply('Site cost rates', (p) => { if (rates) p.siteCosts = rates; else delete p.siteCosts; }); };
+    return openSiteCosts({ layer, getProject: () => store.project, setDesign });
   };
   const openOrderPanel = () => (canEnquire() ? openOrderEngineering({ layer, openEnquiry: (extra) => openEnquiryForm(extra) }) : layer.notify(portalOn() ? 'Your builder has turned off sending to JCE.' : 'Ordering engineering comes with the Plan Pack.', 'info', 6000));
 
@@ -436,6 +437,7 @@ export function createPremium(store, options = {}) {
         previewPdf: () => previewPdf(),
         enquiry: () => openEnquiryForm(),
         sitingReport: () => exportSitingReport(),
+        sitingSummary: (o) => exportSitingReport({ ...(o || {}), layout: 'summary' }),
         siteCosts: () => openSiteCostsPanel(),
         orderEngineering: () => openOrderPanel(),
       },
@@ -618,7 +620,8 @@ export function createPremium(store, options = {}) {
     exportAs,
     previewPdf,
     openEnquiry: openEnquiryForm,
-    sitingReport: exportSitingReport,
+    sitingReport: () => exportSitingReport(),
+    sitingSummary: (o) => exportSitingReport({ ...(o || {}), layout: 'summary' }),
     openSiteCosts: openSiteCostsPanel,
     openOrderEngineering: openOrderPanel,
     // For the finance tool (async, because the estimate loads on demand): .total.likely, or siteCostsForFinance. A page module can also import src/premium/site-costs/index.js directly.

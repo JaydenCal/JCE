@@ -103,6 +103,19 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   // The PDF plan set leads with the builder's name and logo and credits Glide Inside in small print.
   // colours feed the siting report (src/premium/exporters/siting-report.js). No contact details beyond the builder's own on file.
   app.builder = { name: brand.displayName || me.org.name, logo: brand.logoDataUrl || null, details: brand.details || null, colours: brand.colours || null, client: me.user.role === 'client' ? { name: me.user.name || '', lotAddress: me.user.lotAddress || '' } : null };
+  // The builder's default site cost rates (portal Site costs). Staff can save them from the Site costs panel; clients only use them, read through the estimate.
+  {
+    let costDefaults = null;
+    const canSave = me.user.role !== 'client';
+    try { costDefaults = (await api.getSiteCostDefaults?.())?.settings || null; } catch { costDefaults = null; }
+    app.siteCostDefaults = {
+      get: () => costDefaults,
+      ...(canSave ? {
+        set: async (settings) => { costDefaults = (await api.setSiteCostDefaults({ settings }))?.settings || null; },
+        clear: async () => { await api.deleteSiteCostDefaults(); costDefaults = null; },
+      } : {}),
+    };
+  }
   document.querySelector('.ps-welcome')?.remove();
   let aiTok = null; // the login's AI token (see refreshAiToken)
   const entitlement = () => ({
@@ -161,6 +174,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     ...(designMode ? [['Open full editor', () => { loc.href = fullEditorHref(loc.href); }]] : []),
     ...(!isClient && !designMode ? [['Design on a lot', () => { loc.href = designNewHref(loc.href); }]] : []),
     ...(me.enquiry ? [['Send plans to a registered engineer', () => premium?.openEnquiry?.()], ['Order engineering', () => premium?.openOrderEngineering?.()]] : []),
+    ['One page summary', () => premium?.sitingSummary?.()],
     ...(!isClient ? [['Site costs', () => premium?.openSiteCosts?.()]] : []),
     ...(!isClient ? [['Builder dashboard', () => { loc.href = portalUrl(); }]] : []),
     ['Sign out', signOut],

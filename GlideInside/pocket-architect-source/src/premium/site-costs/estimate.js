@@ -9,7 +9,7 @@ import { deriveDriveway, clearances, boundaryDims } from '../../site/lotplan.js'
 import { siteAreaOf } from '../exporters/eng/area.js';
 import { readEarthworks } from './earthworks-adapter.js';
 import { councilRules, metres, citation, NOT_FOUND } from './council.js';
-import { loadSettings, rateOf, regionOf, isCustomised, anyCustomised, RATE_BY_ID, REGIONS, RATES_DATE, SLOPE_BANDS, ACCESS_BANDS } from './rates.js';
+import { effectiveSettings, rateOf, regionOf, isCustomised, anyCustomised, RATE_BY_ID, REGIONS, RATES_DATE, SLOPE_BANDS, ACCESS_BANDS } from './rates.js';
 
 export const DISCLAIMER = 'Indicative site cost estimate only. Not a quote. Allowances from the 3D grading and default rates, GST excluded. Confirm with a site survey, a geotechnical report, the council and the utilities before pricing a contract.';
 
@@ -84,7 +84,7 @@ export function councilChecks(council, { eng, driveWidthM, lot }) {
 export function estimateSiteCosts(project, opts = {}) {
   const lot = project?.site?.lot;
   if (!lot?.boundary?.length) return { ok: false, reason: 'no_lot', disclaimer: DISCLAIMER };
-  const settings = opts.settings || loadSettings();
+  const settings = opts.settings || effectiveSettings(project);
   const region = regionOf(lot, settings);
   const rate = (id) => rateOf(settings, id, region);
   // The council's own retaining trigger (where the council database has one) sets the height above which a wall is priced as engineered.
