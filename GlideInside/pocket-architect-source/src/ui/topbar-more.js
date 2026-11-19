@@ -3,6 +3,7 @@
 // every handler and later update keeps working, and they return to their places when the screen widens.
 import { h } from './dom.js';
 import { icon } from './icons.js';
+import { onPhoneChange, isPhoneMode } from '../phone/mode.js';
 
 export const MORE_QUERY = '(max-width: 599.98px)';
 
@@ -18,7 +19,7 @@ export function createTopbarMore(topbar, { keep = [], slot = null, matchMedia = 
   const moved = new Map(); // node -> placeholder comment
   let applying = false;
 
-  const stays = (n) => keep.includes(n) || n === wrap || n === slot || n.classList?.contains('ps-prof-save') || n.classList?.contains('ps-topbar-spacer') || n.classList?.contains('ps-brand') || n.classList?.contains('psp-bar');
+  const stays = (n) => keep.includes(n) || n === wrap || n === slot || n.classList?.contains('ps-prof-save') || n.classList?.contains('ps-topbar-spacer') || n.classList?.contains('ps-brand') || n.classList?.contains('psp-bar') || n.classList?.contains('ps-phone-share');
   const containers = () => [topbar, ...(slot ? [slot, ...slot.querySelectorAll('.psp-bar')] : [])]; // the premium buttons sit in a .psp-bar inside the slot
   const candidates = () => containers().flatMap((c) => [...c.children]).filter((n) => !stays(n));
   const watched = new Set();
@@ -46,8 +47,10 @@ export function createTopbarMore(topbar, { keep = [], slot = null, matchMedia = 
     } finally { applying = false; }
   }
   const setOpen = (on) => { pop.hidden = !on; btn.setAttribute('aria-expanded', String(on)); topbar.dataset.moreOpen = on ? '1' : '0'; };
+  // Phone mode (a finger on a window up to 700 px) uses the menu too, so the bar is Back, the name, undo and Save design.
+  const wanted = () => mq.matches || isPhoneMode();
   const apply = () => {
-    if (mq.matches) { topbar.dataset.more = '1'; wrap.hidden = false; relocate(); } else { setOpen(false); delete topbar.dataset.more; wrap.hidden = true; restore(); }
+    if (wanted()) { topbar.dataset.more = '1'; wrap.hidden = false; relocate(); } else { setOpen(false); delete topbar.dataset.more; wrap.hidden = true; restore(); }
   };
   btn.addEventListener('click', () => setOpen(pop.hidden));
   const onDown = (e) => { if (!pop.hidden && !wrap.contains(e.target) && !e.target.closest?.('.psp-menu,.psp-modal,.ps-modal')) setOpen(false); };
@@ -55,8 +58,9 @@ export function createTopbarMore(topbar, { keep = [], slot = null, matchMedia = 
   document.addEventListener('pointerdown', onDown, true);
   document.addEventListener('keydown', onKey);
   // Late arrivals (the premium buttons, the help button, a profile button) join the menu too.
-  try { obs = new MutationObserver(() => { if (mq.matches && !applying) relocate(); }); obs.observe(pop, { childList: true, subtree: true }); watch(); } catch { /* no observer: the next resize catches up */ }
+  try { obs = new MutationObserver(() => { if (wanted() && !applying) relocate(); }); obs.observe(pop, { childList: true, subtree: true }); watch(); } catch { /* no observer: the next resize catches up */ }
   (mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener?.(apply));
+  const offPhone = onPhoneChange(apply);
   apply();
-  return { get narrow() { return mq.matches; }, setOpen, dispose() { obs?.disconnect(); document.removeEventListener('pointerdown', onDown, true); document.removeEventListener('keydown', onKey); restore(); wrap.remove(); } };
+  return { get narrow() { return wanted(); }, setOpen, dispose() { offPhone(); obs?.disconnect(); document.removeEventListener('pointerdown', onDown, true); document.removeEventListener('keydown', onKey); restore(); wrap.remove(); } };
 }

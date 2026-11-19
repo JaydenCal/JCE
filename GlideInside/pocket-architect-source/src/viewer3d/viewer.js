@@ -18,6 +18,7 @@ import { loadBitmap } from '../editor2d/underlay.js';
 import { edgeColourOf } from './terrain.js';
 import { createRoomEdit } from './room-edit.js';
 import { snapToRoom as snapRoom, flyTo as flyToPose, enableRoomCutaway, createRoomBar, roomTabs as roomTabsOf } from './rooms.js';
+import { isPhoneMode } from '../phone/mode.js';
 
 const STYLE_ID = 'ps3d-style';
 const RAD = Math.PI / 180;
@@ -95,13 +96,17 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   canvas.setAttribute('role', 'application');
   canvas.setAttribute('aria-label', '3D view of the design. Drag to orbit, scroll to zoom, arrow keys to move the view.');
   rootEl.appendChild(canvas);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  // Phone mode keeps the frame rate reasonable: a lower pixel ratio, a smaller shadow map and plain (not soft) shadow filtering.
+  const PHONE_3D = isPhoneMode();
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PHONE_3D ? 1.5 : 2));
+  canvas.dataset.perf = PHONE_3D ? 'phone' : 'desktop';
+  canvas.dataset.pixelRatio = String(renderer.getPixelRatio());
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   // Neutral tone mapping keeps the chosen finish colours true and the picture clean (the filmic curve greyed and flattened them).
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = PHONE_3D ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
   const sky = makeSky();
@@ -127,7 +132,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   scene.add(hemi);
   const sun = new THREE.DirectionalLight('#fff3e0', 2.9);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(3072, 3072);
+  sun.shadow.mapSize.set(PHONE_3D ? 1536 : 3072, PHONE_3D ? 1536 : 3072);
   sun.shadow.bias = -0.0004;
   sun.shadow.normalBias = 0.04;
   sun.shadow.radius = 3.2; // soft edge, still a crisp shadow line

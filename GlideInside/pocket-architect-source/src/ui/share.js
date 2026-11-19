@@ -262,10 +262,18 @@ export function initShare({ store, refs, config, replaceProject, hasEdits = () =
     });
   }
 
+  /** The design link for the phone Share button: saves a copy online (or updates the one this browser already made) and returns its address. No email is sent. */
+  async function ensureLink() {
+    store.saveNow?.();
+    const out = await saveShared(cloud, store.project, {});
+    track('ps_share_save', { created: out.created, how: 'phone' });
+    return out.url || readShare(store.project.id)?.url || '';
+  }
+
   // The live link format: ?share=<id>
   function linkFromAddress() {
     return shareIdFromSearch(globalThis.location?.search);
   }
 
-  return { openDialog, share, forkShared, editShared, openLink, linkFromAddress, leave: leaveShared, cloud, state, button, dispose: () => { button.remove(); clearBanner(); } };
+  return { openDialog, ensureLink, share, forkShared, editShared, openLink, linkFromAddress, leave: leaveShared, cloud, state, button, dispose: () => { button.remove(); clearBanner(); } };
 }

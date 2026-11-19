@@ -804,7 +804,10 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 .pg-search .hero-alt{margin:0}
 .handoff{display:none;margin:18px 0 0;padding:16px 18px;border:1px solid var(--glass-line);border-radius:16px;background:rgba(255,255,255,.05)}
 .handoff p{margin:0 0 12px;font-size:15px}
-.handoff .btn{width:100%}
+.handoff .handoff-t{margin:0 0 4px;font-size:18px;font-weight:700}
+.handoff .handoff-s{margin:0 0 14px;color:var(--on-night-2)}
+.handoff .handoff-n{margin:12px 0 0;font-size:14px;color:var(--on-night-2)}
+.handoff .btn{width:100%;min-height:52px;display:flex;align-items:center;justify-content:center;font-size:16px}
 @media(max-width:760px){.handoff{display:block}}
 .vid-sec .vid-wrap{max-width:960px;margin:0 auto}
 .vid-sec video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#0a111e;border-radius:18px;border:1px solid var(--glass-line)}

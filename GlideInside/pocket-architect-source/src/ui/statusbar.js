@@ -8,6 +8,8 @@ import { toast } from './toast.js';
 import { currentTheme, applyTheme, onTheme } from './theme.js';
 import { openModal } from './modal.js';
 import { CONFIG } from '../config.js';
+import { phoneHint } from '../phone/hint.js';
+import { isPhoneMode, onPhoneChange } from '../phone/mode.js';
 
 const fmt = (n) => (Math.round(n) + 0).toLocaleString('en-AU');
 const clock = (t) => new Date(t).toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit' });
@@ -57,10 +59,19 @@ export function createStatusBar(el, store, { editor } = {}) {
   const syncTheme = () => {
     themeBtn.replaceChildren(icon(currentTheme() === 'dark' ? 'sun' : 'moon', { size: 14 }));
   };
-  const setHint = (t) => {
-    hint.textContent = t || '';
-    hint.title = t || '';
+  // On a phone (phone mode or a window under 600 px) the line is short and in touch words; the full keyboard and mouse line stays for everything else.
+  let rawHint = '';
+  const touchLine = () => isPhoneMode() || !!globalThis.matchMedia?.('(max-width: 599.98px)')?.matches;
+  const paintHint = () => {
+    hint.textContent = touchLine() ? phoneHint(rawHint, store.ui.tool) : rawHint;
+    hint.title = rawHint;
   };
+  const setHint = (t) => {
+    rawHint = t || '';
+    paintHint();
+  };
+  const offPhone = onPhoneChange(paintHint);
+  globalThis.matchMedia?.('(max-width: 599.98px)')?.addEventListener?.('change', paintHint);
 
   snapBtn.addEventListener('click', () => store.setUI({ snap: !store.ui.snap }));
   fit.addEventListener('click', () => editor?.zoomToFit());
@@ -113,5 +124,5 @@ export function createStatusBar(el, store, { editor } = {}) {
   syncTheme();
   syncView();
   zoom.textContent = `${Math.round((editor?.getView?.().scale ?? 0.08) * 1000)}%`;
-  return { setHint, setAutosave: (on) => { saved.hidden = !on; }, dispose: () => offs.forEach((o) => o?.()) };
+  return { setHint, setAutosave: (on) => { saved.hidden = !on; }, dispose: () => { offPhone(); offs.forEach((o) => o?.()); } };
 }

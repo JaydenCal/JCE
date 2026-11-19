@@ -9,6 +9,9 @@
 import { h } from '../ui/dom.js';
 import { FLOW_CSS } from './css.js';
 import { stepsFor, EDIT_STEP, clampStep, flowOf, writeFlow } from './state.js';
+import { onPhoneChange, phoneApi } from '../phone/mode.js';
+import { openSheet, sheetButton } from '../phone/sheet.js';
+import { saveDesign, shareDesign, isSaved } from '../phone/actions.js';
 
 let styled = false;
 function injectStyle() {
@@ -32,7 +35,9 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
   const prog = h('ol', { class: 'gf-prog', 'aria-label': 'Progress', dataset: { ps: 'flow-progress' } });
   const skip = h('button', { class: 'gf-skip', type: 'button', dataset: { ps: 'flow-skip' }, onclick: () => skipToEditor() }, 'Skip to editor');
   const help = h('button', { class: 'gf-skip gf-help', type: 'button', title: 'Show me how', 'aria-label': 'Show me how', dataset: { ps: 'flow-help' }, onclick: () => onHelp?.() }, 'Show me how');
-  const head = h('header', { class: 'gf-head' }, brandEl, prog, help, skip);
+  // Phone mode: the header keeps the brand and the progress; the rest lives behind one Menu button (a bottom sheet).
+  const menuBtn = h('button', { class: 'gf-menu', type: 'button', 'aria-label': 'Menu', dataset: { ps: 'flow-menu' }, onclick: () => openMenu() }, 'Menu');
+  const head = h('header', { class: 'gf-head' }, brandEl, menuBtn, prog, help, skip);
   const titleEl = h('h1', { class: 'gf-title', dataset: { ps: 'flow-title' }, tabindex: '-1' });
   const introEl = h('p', { class: 'gf-intro' });
   const content = h('div', { class: 'gf-content', style: { display: 'flex', flexDirection: 'column', flex: '1', minHeight: '0' } });
@@ -47,6 +52,20 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
 
   const stepNo = () => current + 1;
   let ctx = null;
+
+  function openMenu() {
+    let sheet = null;
+    const act = (fn) => () => { sheet?.close(); fn(); };
+    const items = [sheetButton({ label: 'Save design', hint: 'Keep this design on your profile', ps: 'flow-menu-save', onClick: act(() => saveDesign()) })];
+    if (isSaved()) items.push(sheetButton({ label: 'Share design link', hint: 'Send it to yourself to carry on at a computer', ps: 'flow-menu-share', onClick: act(() => shareDesign()) }));
+    items.push(sheetButton({ label: 'Show me how', ps: 'flow-menu-help', onClick: act(() => onHelp?.()) }));
+    items.push(sheetButton({ label: 'Skip to the editor', ps: 'flow-menu-skip', onClick: act(() => skipToEditor()) }));
+    const pa = phoneApi();
+    if (pa) items.push(sheetButton({ label: 'Desktop view', hint: 'Show the full page layout', ps: 'flow-menu-desktop', onClick: act(() => pa.setDesktopView(true)) }));
+    sheet = openSheet({ title: 'Menu', id: 'flow-menu-sheet', body: h('div', { class: 'ps-sheet-list' }, ...items) });
+  }
+  // The steps lay themselves out for a phone or for a desktop: when the mode flips (a turn of the phone, Desktop view) the current step is built again.
+  const offPhone = onPhoneChange(() => { if (!root.hidden && live) show(current + 1); });
 
   function paintProgress() {
     prog.replaceChildren(...meta.map((m, i) => {
@@ -139,7 +158,7 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
     editor: () => toEditor(),
     go,
     refresh,
-    destroy() { leave(); document.removeEventListener('keydown', onKey); root.remove(); },
+    destroy() { leave(); offPhone(); document.removeEventListener('keydown', onKey); root.remove(); },
   };
   return api;
 }
