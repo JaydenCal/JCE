@@ -131,6 +131,8 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
   const wp = prep.project;
   if (commercial) wp.site = { ...(wp.site || {}), lot: prep.lot };
   const siteLot = prep.lot; // the house plan also quotes the lot when there is one
+  // One indicative line for the site sheet notes: the site cost estimate, GST excluded and included. Loaded on demand; any failure just leaves the line out.
+  const siteCostNote = kind === 'site' && !preview && siteLot ? await import('../site-costs/note.js').then((m) => m.siteCostNote(wp, siteLot)).catch(() => null) : null;
   // The free preview: every page is stamped "PREVIEW, NOT TO SCALE" and the scale labels say so. The to-scale set needs a Plan Pack, a builder
   // or client login, a commercial subscription or an internal account (the caller decides, see src/lotcard/lot-card.js).
   const baseJsPDF = await loadJsPDF(jsPDF);
@@ -214,7 +216,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
       // C100A is drawn with no aerial image: white sheet, cadastre and linework only. C100 goes over the washed aerial with red boundaries.
       const over = s.id === 'site' && siteAerial ? aerialUnder(doc, siteAerial, siteView(wp, siteLot, { turn: false }).T) : false;
       Object.assign(facts, drawSite(doc, wp, siteLot, { levels, overAerial: over, turn: !over }));
-      strip = { ...strip, subtitle: ascii(title), kvTitle: 'SITE DATA', kv: facts.kv, notes: s.id === 'site' && !siteAerial && !preview ? [...facts.notes, 'Aerial not available for this sheet.'] : facts.notes, blocks: facts.blocks };
+      strip = { ...strip, subtitle: ascii(title), kvTitle: 'SITE DATA', kv: facts.kv, notes: [...(s.id === 'site' && !siteAerial && !preview ? [...facts.notes, 'Aerial not available for this sheet.'] : facts.notes), ...(s.id === 'site' && siteCostNote ? [siteCostNote] : [])], blocks: facts.blocks };
     } else if (s.id === 'elev' || s.id === 'sect') {
       const empty = !tris.length;
       if (empty) { doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.text('The elevations and sections need a building with walls.', viewArea.x0 + 10, viewArea.y0 + 12); }

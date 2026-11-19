@@ -3,7 +3,7 @@
 // Screen space patterns, so the hatch stays the same density at any zoom.
 
 import { worldToScreen } from './math.js';
-import { OVERLAY_STYLE, drawableLayers, overlayOn } from '../site/overlays.js';
+import { OVERLAY_STYLE, drawableLayers, overlayOn, creditLines, legendEntries } from '../site/overlays.js';
 
 const patterns = new Map();
 
@@ -65,20 +65,47 @@ export function drawOverlays(ctx, st) {
     }
   }
   ctx.setLineDash([]);
-  drawLegend(ctx, st, on);
   ctx.restore();
 }
 
-// A compact legend, bottom left, only for the switched-on layers: swatch, name and the "indicative" caution.
-function drawLegend(ctx, st, on) {
-  if (st.size.w < 420) return;
+export const LEGEND_W = 252;
+export const legendHeight = (rows, credits) => rows * 17 + 24 + credits * 11 + 26;
+
+/** Where the legend goes: top right under the north point and the Map data chip, else bottom left, else bottom right, the first spot that does not sit over the lot. */
+export function legendPlacement(size, lotBox, h, w = LEGEND_W, { cardLeft = false } = {}) {
+  const hit = (b) => !!lotBox && b.x < lotBox.maxX && b.x + w > lotBox.minX && b.y < lotBox.maxY && b.y + h > lotBox.minY;
+  // The design card (HTML, over the canvas) is docked bottom left when cardLeft (the scale bar then moves right): never put the legend under it.
+  const spots = [{ x: size.w - w - 14, y: 168 }, ...(cardLeft ? [] : [{ x: 14, y: size.h - h - 104 }]), { x: size.w - w - 14, y: size.h - h - 104 }];
+  return spots.find((b) => b.y >= 14 && !hit(b)) || spots[0];
+}
+
+/** The legend is drawn in its own pass after every plan layer (editor.js), so the house, driveway and labels can never cover it. */
+export function drawOverlayLegend(ctx, st) {
+  const lot = st.project.site?.lot;
+  if (!lot?.overlays) return;
+  const on = drawableLayers(lot).filter((l) => overlayOn(lot, l.id));
+  if (!on.length || st.size.w < 420) return;
+  const credits = creditLines(legendEntries(lot));
+  const h = legendHeight(on.length, credits.length);
+  let lotBox = null;
+  if (Array.isArray(lot.boundary) && lot.boundary.length) {
+    const pts = lot.boundary.map((p) => worldToScreen(st.view, p));
+    lotBox = { minX: Math.min(...pts.map((p) => p.x)), maxX: Math.max(...pts.map((p) => p.x)), minY: Math.min(...pts.map((p) => p.y)), maxY: Math.max(...pts.map((p) => p.y)) };
+  }
+  ctx.save();
+  drawLegend(ctx, st, on, credits, legendPlacement(st.size, lotBox, h, LEGEND_W, { cardLeft: !!st.scaleRight }));
+  ctx.restore();
+}
+
+// A compact legend, only for the switched-on layers: swatch, name and the "indicative" caution.
+function drawLegend(ctx, st, on, credits = [], at = { x: st.size.w - LEGEND_W - 14, y: 168 }) {
   const rowH = 17;
-  const w = 232;
-  const x = st.size.w - w - 14; // top right, under the north point and the Map data chip
-  const h = on.length * rowH + 24;
-  let y = 168;
-  ctx.fillStyle = 'rgba(255,255,255,0.88)';
-  ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+  const w = LEGEND_W;
+  const x = at.x;
+  const h = legendHeight(on.length, credits.length);
+  let y = at.y;
+  ctx.fillStyle = 'rgba(255,255,255,0.94)';
+  ctx.strokeStyle = 'rgba(0,0,0,0.22)';
   ctx.lineWidth = 1;
   ctx.fillRect(x, y, w, h);
   ctx.strokeRect(x + 0.5, y + 0.5, w, h);
@@ -101,4 +128,11 @@ function drawLegend(ctx, st, on) {
     ctx.fillText(l.label, x + 34, y);
     y += rowH;
   }
+  // Source and data date per layer, then the caution. Long source names are cut to fit the box.
+  ctx.fillStyle = '#555';
+  ctx.font = `400 9px ${st.theme.f.ui}`;
+  const fit = (t) => { let o = t; while (o.length > 4 && (ctx.measureText?.(o)?.width ?? 0) > w - 16) o = `${o.slice(0, -4)}...`; return o; };
+  for (const c of credits) { ctx.fillText(fit(c), x + 8, y); y += 11; }
+  ctx.fillText('Indicative only. Check with council.', x + 8, y + 2);
+  ctx.fillText('Open government mapping, not a survey.', x + 8, y + 13);
 }

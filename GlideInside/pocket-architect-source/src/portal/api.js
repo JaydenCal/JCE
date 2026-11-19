@@ -16,6 +16,9 @@ export const CALLS = [
   'listTeam', 'inviteStaff', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff',
   'setBranding', 'setOrgSettings', 'enquiryJce', 'getBrand',
   'searchBuilders', 'requestClientAccess', 'listClientRequests', 'approveClientRequest', 'declineClientRequest',
+  // Website widget, lead inbox, webhook, builder site cost defaults (server/lib/leads.js, migration 0025)
+  'getWidget', 'setWidget', 'listLeads', 'updateLead', 'deleteLead', 'getWebhook', 'setWebhook', 'deleteWebhook', 'rotateWebhookSecret', 'revealWebhookSecret', 'testWebhook', 'retryWebhookDelivery',
+  'getSiteCostDefaults', 'setSiteCostDefaults', 'deleteSiteCostDefaults',
 ];
 
 // method, path (":id" filled from the first argument), body from the arguments.
@@ -72,9 +75,13 @@ const ROUTES = {
   listClientRequests: ['GET', '/portal/client-requests'],
   approveClientRequest: ['POST', '/portal/client-requests/:id/approve'],
   declineClientRequest: ['POST', '/portal/client-requests/:id/decline'],
+  getWidget: ['GET', '/portal/widget'], setWidget: ['PUT', '/portal/widget'],
+  listLeads: ['GET', '/portal/leads'], updateLead: ['PATCH', '/portal/leads/:id'], deleteLead: ['DELETE', '/portal/leads/:id'],
+  getWebhook: ['GET', '/portal/webhook'], setWebhook: ['PUT', '/portal/webhook'], deleteWebhook: ['DELETE', '/portal/webhook'], rotateWebhookSecret: ['POST', '/portal/webhook/rotate-secret'], revealWebhookSecret: ['POST', '/portal/webhook/reveal-secret'], testWebhook: ['POST', '/portal/webhook/test'], retryWebhookDelivery: ['POST', '/portal/webhook/deliveries/:id/retry'],
+  getSiteCostDefaults: ['GET', '/portal/site-costs'], setSiteCostDefaults: ['PUT', '/portal/site-costs'], deleteSiteCostDefaults: ['DELETE', '/portal/site-costs'],
   getBrand: ['GET', '/portal/brand/:id'], // public: { name, logoUrl, colours } for the branded sign in page; 404 when the builder is not on Glide Inside
 };
-const ID_CALLS = new Set(['approveClientRequest', 'declineClientRequest', 'getBrand', 'getHouse', 'duplicateHouse', 'archiveHouse', 'getGlideModel', 'updateClient', 'resetClientPassword', 'disableClient', 'enableClient', 'deleteClient', 'exportClientProjects', 'getInvoice', 'openProject', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff']);
+const ID_CALLS = new Set(['updateLead', 'deleteLead', 'retryWebhookDelivery', 'approveClientRequest', 'declineClientRequest', 'getBrand', 'getHouse', 'duplicateHouse', 'archiveHouse', 'getGlideModel', 'updateClient', 'resetClientPassword', 'disableClient', 'enableClient', 'deleteClient', 'exportClientProjects', 'getInvoice', 'openProject', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff']);
 
 // The session cookie is HttpOnly (JavaScript cannot see it), so a plain localStorage flag is set at sign in and cleared at sign out or on a 401.
 // With no flag an anonymous visitor never calls /portal/me, so public pages log no 401 in the console. Server auth is unchanged.

@@ -10,6 +10,7 @@ import { createApp } from './lib/app.js';
 import { createD1Store } from './lib/store.js';
 import { createD1PortalStore } from './lib/portal-store.js';
 import { createD1ProfileStore } from './lib/profile-store.js';
+import { createD1LeadsStore } from './lib/leads-store.js';
 
 let cached = null;
 
@@ -21,6 +22,7 @@ function appFor(env) {
         store: createD1Store(env.DB),
         portalStore: createD1PortalStore(env.DB),
         profileStore: createD1ProfileStore(env.DB), // free user profiles (migration 0015)
+        leadsStore: createD1LeadsStore(env.DB), // widget, leads, webhook, site cost defaults, engineering orders (migration 0025)
         env,
         // STAGING ONLY: the staging Worker (staging/wrangler.staging.toml sets STAGING=1) offers a free test Plan Pack so PDF, DXF, 3D and HTML
         // exports can be tried. Never on a Worker that holds a Stripe key, so it cannot exist on the live Worker.
@@ -46,14 +48,14 @@ function stagingEnv(env, origin) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     if (env.STAGING === '1') {
       const url = new URL(request.url);
       // /api/* is routed here first (assets run_worker_first); anything else is a page or file of the staging site.
       if (!/^\/api(\/|$)/.test(url.pathname) && env.ASSETS) return env.ASSETS.fetch(request);
-      return appFor(stagingEnv(env, url.origin)).fetch(request);
+      return appFor(stagingEnv(env, url.origin)).fetch(request, ctx);
     }
-    return appFor(env).fetch(request);
+    return appFor(env).fetch(request, ctx);
   },
   // Cron (wrangler.toml [triggers]): month end invoicing at 06:00 on the 1st, Sydney time. The cron fires at 19:00 and 20:00 UTC
   // so one of them is 06:00 in both AEDT and AEST; the handler does nothing at any other Sydney time. Invoices are idempotent per org per month.

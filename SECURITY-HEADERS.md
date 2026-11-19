@@ -52,6 +52,10 @@ Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' h
 
 (Only `frame-ancestors` and `form-action` differ from rule 1. The portal does not need Stripe Checkout from a form: card setup goes through the Worker.)
 
+### Rule 3 (when the website widget is released): "Widget framing"
+
+Only when the "See it on your block" widget is switched on for builders. Place it below rules 1 and 2. Filter: `(http.request.uri.path eq "/plan-studio/app/" or http.request.uri.path eq "/plan-studio/app/index.html") and http.request.uri.query contains "widget="`. Header: the same `Content-Security-Policy` as rule 1 with `frame-ancestors https:` in place of `frame-ancestors 'self'`. Full steps, checks and the reason it must sit below rule 1: `GlideInside/pocket-architect-source/docs/WIDGET_LEADS.md`, "Cloudflare setup for framing". Not applied yet.
+
 ## Turning on HSTS the right way
 
 `Strict-Transport-Security` makes browsers refuse plain http for a year, for the apex AND every subdomain (`includeSubDomains`). Before saving rule 1:

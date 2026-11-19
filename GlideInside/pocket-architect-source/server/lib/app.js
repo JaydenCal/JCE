@@ -21,6 +21,9 @@ import { createProjects } from './projects.js';
 import { createProfiles } from './profiles.js';
 import { createMemoryProfileStore } from './profile-store.js';
 import { createMemoryPortalStore } from './portal-store.js';
+import { createMemoryLeadsStore } from './leads-store.js';
+import { createLeads } from './leads.js';
+import { createOrders } from './orders.js';
 import { createCommercial, COMMERCIAL_EXPORT_TYPES } from './commercial.js';
 import { createTerms } from './terms.js';
 import { secretEqual } from './password.js';
@@ -32,7 +35,7 @@ const randomId = (prefix) => `${prefix}_${[...crypto.getRandomValues(new Uint8Ar
 
 // `files` is the R2 bucket binding (env.FILES on the Worker): shared designs under projects/<id>.json and issued PDF sets under pdf/<entitlement>.pdf.
 // Without it Save and share answers 503 SHARING_UNAVAILABLE and the one-PDF-set rule is not enforced (hosts without R2).
-export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), catalogue = null, loadExporters = null, loadJsPDF = null, devGrant = false, portalStore = undefined, profileStore = undefined, loadTemplates = undefined, files = null } = {}) {
+export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), catalogue = null, loadExporters = null, loadJsPDF = null, devGrant = false, portalStore = undefined, leadsStore = undefined, profileStore = undefined, loadTemplates = undefined, files = null } = {}) {
   if (!store) throw new Error('createApp needs a store');
   const config = readConfig(env);
   setTrustForwardedHeaders(config.trustForwardedHeaders);
@@ -45,6 +48,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   // and local development. Other stores (Upstash) cannot hold it, so those hosts answer 503 PORTAL_NOT_CONFIGURED.
   const pstore = portalStore !== undefined ? portalStore : ['memory', 'file'].includes(store.kind) ? createMemoryPortalStore() : null;
   const portal = pstore ? createPortal({ store, pstore, config, fetchImpl: doFetch, env, now, ...(loadTemplates ? { loadTemplates } : {}) }) : null;
+  // Widget, lead inbox, webhook, site cost defaults and engineering orders (migration 0025): D1 in production (the Worker passes one), memory in tests.
+  const lstore = leadsStore !== undefined ? leadsStore : ['memory', 'file'].includes(store.kind) ? createMemoryLeadsStore() : null;
+  const leads = lstore && pstore ? createLeads({ lstore, pstore, portal, store, config, fetchImpl: doFetch, now }) : null;
+  const orders = lstore && pstore ? createOrders({ lstore, portal, store, config, now }) : null;
 
   // Free user profiles (lib/profiles.js): D1 in production (the Worker passes one), memory in tests and local development. Other stores answer 503.
   const profstore = profileStore !== undefined ? profileStore : ['memory', 'file'].includes(store.kind) ? createMemoryProfileStore() : null;
@@ -707,7 +714,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   }
 
   // Router ----------------------------------------------------------------------------------------
-  async function route(request, url) {
+  async function route(request, url, ctx = null) {
     const m = /\/api(\/.*)?$/.exec(url.pathname.replace(/\/+$/, '') || '/');
     const path = m?.[1] || '';
     const method = request.method;
@@ -748,6 +755,16 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (path === '/enquiry/jce') return allow('POST'), enquiryJce(request);
     const pexp = /^\/portal\/export\/([a-z0-9]+)$/.exec(path);
     if (pexp) return allow('POST'), portalExportFile(request, url, pexp[1]);
+    if (path.startsWith('/widget/') || path.startsWith('/order/') || /^\/portal\/(widget|leads|webhook|site-costs|admin\/engineering-orders)/.test(path)) {
+      let res = null;
+      try { res = (leads && (await leads.route(request, url, path, ctx))) || (orders && (await orders.route(request, url, path))); } catch (e) {
+        // Migration 0025 not run yet: say so plainly instead of a generic server error.
+        if (!(e instanceof HttpError) && /no such table/i.test(String(e?.message))) throw new HttpError('PORTAL_NOT_CONFIGURED', 'This feature needs the 0025 database update.');
+        throw e;
+      }
+      if (res) return res;
+      if (!leads) throw new HttpError('PORTAL_NOT_CONFIGURED', 'This feature is not available on this server.');
+    }
     if (path.startsWith('/portal/') || path === '/billing/run-month') {
       if (!portal) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not available on this server.');
       return portal.route(request, url, path);
@@ -757,11 +774,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     throw new HttpError('NOT_FOUND', 'No such endpoint.');
   }
 
-  async function handle(request) {
+  async function handle(request, ctx = null) {
     const cors = corsHeaders(request, config);
     try {
       if (request.method === 'OPTIONS') return withSecurityHeaders(new Response(null, { status: 204, headers: cors }));
-      const res = await route(request, new URL(request.url));
+      const res = await route(request, new URL(request.url), ctx);
       for (const [k, v] of Object.entries(cors)) res.headers.set(k, v);
       return withSecurityHeaders(res);
     } catch (e) {
@@ -779,6 +796,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       await store.purgeRateLimits?.(nowMs)?.catch?.(() => null);
       await pstore?.purgeAuthFailures?.(nowMs)?.catch?.(() => null);
     }
+    await leads?.retryAllDue?.()?.catch?.(() => null); // webhook deliveries that are due for another try, every builder, capped per run
+    await leads?.purgeOld?.()?.catch?.(() => null); // retention: delivery logs 90 days, leads and order requests 24 months (docs/WIDGET_LEADS.md, privacy page)
     await profstore?.purgeConsentArchive?.(iso(nowMs - config.consentArchiveYears * 365.25 * 86400000))?.catch?.(() => null);
   }
 

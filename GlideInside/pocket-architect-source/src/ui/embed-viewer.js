@@ -51,6 +51,7 @@ export const sameAddress = (a, b) => {
 const inFrame = () => { try { return window.parent !== window; } catch { return true; } };
 export function postToParent(msg) {
   if (!inFrame()) return;
+  if (typeof window !== 'undefined' && window.__ps?.widgetMode) return; // the website widget says nothing to the page around it
   try { window.parent.postMessage(msg, location.origin); } catch { /* the parent is gone or cross origin */ }
 }
 
@@ -84,6 +85,7 @@ const lotId = (store) => { const l = store.project.site?.lot; return l ? `${l.or
 
 export const EMPTY_LIBRARY = 'Your builder has not added house designs yet. Ask them to add one, or draw your own with Edit floor plan.';
 const PORTAL_WAIT_MS = 5000;
+const WIDGET_WAIT_MS = 15000;
 
 /**
  * The designs the first placement chooses from. A signed in builder or client gets their own library, so the viewer opens on their own
@@ -93,8 +95,12 @@ const PORTAL_WAIT_MS = 5000;
 export async function designPool(store, catalogue, app = typeof window !== 'undefined' ? window.__ps : null) {
   if (app?.portalReady) {
     let t;
-    await Promise.race([Promise.resolve(app.portalReady).catch(() => null), new Promise((r) => { t = setTimeout(r, PORTAL_WAIT_MS); })]);
+    await Promise.race([Promise.resolve(app.portalReady).catch(() => null), new Promise((r) => { t = setTimeout(r, app.widgetMode ? WIDGET_WAIT_MS : PORTAL_WAIT_MS); })]);
     clearTimeout(t);
+  }
+  // The website widget never falls back to the Glide Inside samples: the builder's designs, or nothing (the widget says it is not available).
+  if (app?.widgetMode) {
+    try { const own = await app.lotDesigns?.(store.project); return { list: Array.isArray(own) ? own : [], own: true, empty: false, widget: true }; } catch { return { list: [], own: true, empty: false, widget: true }; }
   }
   if (app?.lotDesigns) {
     try {
@@ -189,7 +195,9 @@ export async function placeBestDesign(store, catalogue, wantId = null, { after =
   if (lotId(store) !== id0) return null; // another lot was loaded while the library came in
   if (pool.empty) toast(EMPTY_LIBRARY, { kind: 'warn', timeout: 7000 });
   let choice = null;
-  try { choice = await chooseDesign(store, pool, wantId); } catch (e) { console.warn('[embed] design choice failed', e); }
+  // The widget opens on the builder's own first design when it sits on the block.
+  const want = wantId || (pool.widget ? pool.list[0]?.id || null : null);
+  try { choice = await chooseDesign(store, pool, want); } catch (e) { console.warn('[embed] design choice failed', e); }
   if (lotId(store) !== id0) return null;
   if (!choice) return null;
   const first = placeChoice(store, choice);
@@ -198,7 +206,7 @@ export async function placeBestDesign(store, catalogue, wantId = null, { after =
   waitForEnvelope(store, 25000).then(async () => {
     if (lotId(store) !== id || !hasEnvelope(store)) return;
     try {
-      const again = await chooseDesign(store, await designPool(store, catalogue), store.ui.placedDesign?.id || wantId);
+      const again = await chooseDesign(store, await designPool(store, catalogue), store.ui.placedDesign?.id || want);
       if (again && lotId(store) === id) { placeChoice(store, again); after?.(); }
     } catch (e) { console.warn('[embed] placement failed', e); }
   });
@@ -270,6 +278,8 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
   const settle = () => {
     busy = false;
     delete shell.dataset.embedBusy;
+    // The widget shows nothing of the app's own sample house: the view stays covered until the builder's design is on the block.
+    if (window.__ps?.widgetMode && store.ui.placedDesign) document.body.classList.remove('gw-widget-wait');
     if (pending != null) { const a = pending; const n = pendingNotify; const pk = pendingPick; pending = null; pendingNotify = false; pendingPick = null; run(a, { notify: n, pick: pk }); }
   };
 
@@ -323,6 +333,7 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
   }
 
   const onMessage = (ev) => {
+    if (window.__ps?.widgetMode) return; // and takes nothing from it
     if (ev.origin !== location.origin || ev.source !== window.parent) return;
     const m = ev.data;
     if (!m || typeof m !== 'object' || m.type !== 'gi:find-address' || typeof m.address !== 'string') return;
@@ -401,6 +412,7 @@ export function takeHandoff(storage = typeof localStorage !== 'undefined' ? loca
 
 /** Open the full editor in the top window (a new tab when the frame is not allowed to navigate the page). */
 export function openFullEditor(project) {
+  if (typeof window !== 'undefined' && window.__ps?.widgetMode) return; // the website widget has no route to the editor
   let url = fullEditorUrl(project);
   try {
     if (project?.site?.lot && project.levels?.length) {

@@ -37,9 +37,9 @@ Not wired (zoning context is already in the lot card for NSW; Queensland has no 
 
 ## App
 
-- Layers panel: "Flood planning area (overlay)" etc., off by default, offered only when that layer has features. Stored as `site.lot.layers.ov_<id> === true`.
-- 2D plan: hatched, tinted polygons with an outline under the lot (src/editor2d/draw-overlays.js) and a small legend.
+- Layers panel: "Flood planning area (overlay)" etc., offered only when that layer has features. A layer that touches the lot is switched on when the lookup arrives (`autoShowOverlays`, 19/11/2026); a layer the person has already switched on or off is left alone. Stored as `site.lot.layers.ov_<id>`.
+- 2D plan: hatched, tinted polygons with an outline under the lot (src/editor2d/draw-overlays.js) and a legend with each layer's source and data date and the "Indicative only. Check with council" caution.
 - 3D: unlit 26 % tint draped on the ground (src/viewer3d/site-constraints.js), flagged `ground` so it never changes the framing.
 - Site panel card "Site constraints (indicative)": Yes, No mapped, Not available or Not checked for flood, bushfire, heritage and easements, with source and data date, and the check with council wording. Never claims anything about compliance and says an area with none mapped is not an all clear.
-- Plan set site sheet: hook only (src/premium/exporters/planset/overlays.js): outlines of switched on layers, one legend row each, one note.
+- Plan set site sheet (src/premium/exporters/planset/overlays.js): outlines of switched on layers, one legend row each, the caution note and one source and date line per layer.
 - Sample mode (CONFIG.siteMock) serves invented overlays from src/site/fixtures/overlays.js, labelled SAMPLE DATA.

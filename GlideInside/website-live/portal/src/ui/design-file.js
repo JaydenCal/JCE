@@ -1,6 +1,6 @@
 // Reading a saved design file. Pure: no DOM, so it is covered by tests/editor2d.test.mjs.
 
-import { migrate, validate } from '../model/schema.js?v=20261119c';
+import { migrate, validate } from '../model/schema.js?v=20261119f';
 
 // Parse and check a file's text. Returns { project } or { error } with a message fit for the person.
 export function parseDesign(text) {

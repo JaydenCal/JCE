@@ -18,6 +18,7 @@ import { siteAreaOf, fmtArea } from './eng/area.js';
 import { estimateSiteCosts, frontageM, fmtAud } from '../site-costs/estimate.js';
 import { ENGINEERING_SERVICES } from '../engineering-services.js';
 import { NOT_FOUND } from '../site-costs/council.js';
+import { GST_NOTE, gstOf } from '../site-costs/gst.js';
 import { lotFacts, constraintFacts, lotFall, fallSentence, buildingFacts, REPORT_LIMITATIONS, CHECK_WITH_COUNCIL } from './siting-facts.js';
 import { estimateForProject, fmtAUD as fmtAUD2, ESTIMATE_NOTE } from '../site-costs/commercial-estimate.js';
 
@@ -38,6 +39,9 @@ const lum = ([r, g, b]) => (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
 const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
 const WHITE = [255, 255, 255];
 
+/** The builder's contact lines from the Branding settings (title block details): phone, email, website, licence and ABN. Nothing else is printed. */
+export const contactOf = (d) => (d && (d.phone || d.email || d.website || d.licence || d.abn) ? { phone: clean(d.phone || ''), email: clean(d.email || ''), website: clean(d.website || ''), licence: clean(d.licence || ''), abn: clean(d.abn || '') } : null);
+
 /** Brand for the report: builder colours and logo from the portal, else Glide Inside. */
 export function reportBrand(options = {}) {
   let builder = options.builder;
@@ -50,7 +54,7 @@ export function reportBrand(options = {}) {
   return {
     own, name: own ? clean(builder.name) || 'Your builder' : 'Glide Inside', logo: own ? asImg(builder.logo) : glide, glide,
     primary, accent, primaryInk: lum(primary) > 0.6 ? [18, 20, 24] : WHITE, soft: mix(accent, WHITE, 0.88),
-    credit: own ? `Prepared with ${BRAND.name}` : '', contact: own ? builder.contact || null : null,
+    credit: own ? `Prepared with ${BRAND.name}` : '', contact: own ? builder.contact || contactOf(builder.details) : null,
   };
 }
 
@@ -309,10 +313,19 @@ export async function toSitingReport(project, options = {}) {
   // Commercial layouts have no house, so the house estimator does not apply: they use the plain allowance estimator (one figure, editable rates).
   const cest = commercial && lot ? await estimateForProject(project, { rates: options.rates }).catch(() => null) : null;
   const est = commercial ? { ok: false } : (options.estimate || (lot ? estimateSiteCosts(project, { settings: options.settings }) : { ok: false }));
-  const title = projectTitle(project);
+  const title = (typeof options.title === 'string' && options.title.trim().slice(0, 120)) || projectTitle(project); // the placed design's name when the caller gives it
   const sections = [];
   const img = options.image ? imageInfo(options.image) : null;
   const contact = options.contact || brand.contact || null;
+
+  // One page summary (builder account, the widget, or asked for): site plan, chosen design, key setbacks, constraints, costs and next steps on one A4 page.
+  if (options.layout === 'summary' && !commercial) {
+    const { buildSitingSummary } = await import('./siting-summary.js');
+    buildSitingSummary({ doc, brand, project, kit: { text, para, heading, band, table, footer, drawSitingPlan, setbackRows }, facts, stats, areas, est, img, contact, dateText, title, options });
+    const sbytes = new Uint8Array(doc.output('arraybuffer'));
+    Object.defineProperty(sbytes, 'layout', { value: { pages: 1, sections: ['summary'], brand: { own: brand.own, name: brand.name, primary: brand.primary }, hasImage: !!img, estimate: est.ok ? est.total : null }, enumerable: false });
+    return sbytes;
+  }
 
   // Page 1: cover ---------------------------------------------------------------------------------------------------------------
   sections.push('cover');
@@ -434,9 +447,11 @@ export async function toSitingReport(project, options = {}) {
       else for (const l of g.rows) rows.push({ cells: [`${l.label}`, `${fmtQty(l.qty)} ${l.unit}`, fmtAud(l.low), fmtAud(l.likely), fmtAud(l.high)], colours: [PEN.ink, PEN.grey, PEN.grey, PEN.ink, PEN.grey] });
     }
     rows.push({ cells: ['Total, GST excluded', '', fmtAud(est.total.low), fmtAud(est.total.likely), fmtAud(est.total.high)], bold: true, fill: brand.soft });
+    const gl = gstOf(est.total.low); const gm = gstOf(est.total.likely); const gh = gstOf(est.total.high);
+    rows.push({ cells: ['GST, 10 percent', '', fmtAud(gl.gst), fmtAud(gm.gst), fmtAud(gh.gst)] }, { cells: ['Total, GST included', '', fmtAud(gl.incl), fmtAud(gm.incl), fmtAud(gh.incl)], bold: true, fill: brand.soft });
     y = table(doc, brand, M, y, [{ w: 80, head: 'ITEM' }, { w: 30, head: 'QUANTITY' }, { w: 22, head: 'LOW', align: 'right' }, { w: 24, head: 'LIKELY', align: 'right' }, { w: CW - 156, head: 'HIGH', align: 'right' }], rows, { size: 7.6, lead: 3.4, pad: 1.3 });
     const basis = `Rates: ${est.ratesCustomised ? 'the builder\'s own rates where set, otherwise Glide Inside defaults' : 'Glide Inside defaults'} for ${est.regionLabel.toLowerCase()}, dated ${est.ratesDate}.`;
-    y = para(doc, `${basis} ${est.assumptions.join(' ')}`, M, y + 3, CW, { size: 7.4, colour: PEN.grey, lead: 3.4 });
+    y = para(doc, `${basis} ${GST_NOTE} ${est.assumptions.join(' ')}`, M, y + 3, CW, { size: 7.4, colour: PEN.grey, lead: 3.4 });
   } else y = para(doc, 'A site cost estimate needs a lot on the design. Find the lot first.', M, y + 1, CW, { size: 9 });
 
   // Page 4: next steps and contact ------------------------------------------------------------------------------------------------
@@ -489,4 +504,5 @@ export async function toSitingReport(project, options = {}) {
 }
 
 const fmtQty = (n) => (Math.abs(n) >= 100 ? String(Math.round(n)) : String(Math.round(n * 10) / 10));
+export const sitingSummaryFilename = (project) => sitingReportFilename(project).replace(/-siting-report\.pdf$/, '-siting-summary.pdf');
 export const sitingReportFilename = (project) => `${String(project?.name || 'design').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'design'}-siting-report.pdf`;

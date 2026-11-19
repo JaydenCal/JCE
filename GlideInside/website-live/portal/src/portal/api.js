@@ -2,9 +2,9 @@
 // CONFIG.portalMock = true uses the in-browser mock (mock-api.js). Otherwise the same calls go to {apiBase}/portal/... over fetch
 // with the HttpOnly session cookie (gi_session, Path=/api) and the CSRF header X-GI-Request: 1 on every call. Both resolve plain data and reject with ApiError (src/premium/api.js).
 
-import { CONFIG } from '../config.js?v=20261119c';
-import { ApiError } from '../premium/api.js?v=20261119c';
-import { createMockApi } from './mock-api.js?v=20261119c';
+import { CONFIG } from '../config.js?v=20261119f';
+import { ApiError } from '../premium/api.js?v=20261119f';
+import { createMockApi } from './mock-api.js?v=20261119f';
 
 export const CALLS = [
   'signIn', 'signOut', 'me', 'changePassword', 'requestPasswordReset', 'completePasswordReset',
@@ -16,6 +16,9 @@ export const CALLS = [
   'listTeam', 'inviteStaff', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff',
   'setBranding', 'setOrgSettings', 'enquiryJce', 'getBrand',
   'searchBuilders', 'requestClientAccess', 'listClientRequests', 'approveClientRequest', 'declineClientRequest',
+  // Website widget, lead inbox, webhook, builder site cost defaults (server/lib/leads.js, migration 0025)
+  'getWidget', 'setWidget', 'listLeads', 'updateLead', 'deleteLead', 'getWebhook', 'setWebhook', 'deleteWebhook', 'rotateWebhookSecret', 'revealWebhookSecret', 'testWebhook', 'retryWebhookDelivery',
+  'getSiteCostDefaults', 'setSiteCostDefaults', 'deleteSiteCostDefaults',
 ];
 
 // method, path (":id" filled from the first argument), body from the arguments.
@@ -72,9 +75,13 @@ const ROUTES = {
   listClientRequests: ['GET', '/portal/client-requests'],
   approveClientRequest: ['POST', '/portal/client-requests/:id/approve'],
   declineClientRequest: ['POST', '/portal/client-requests/:id/decline'],
+  getWidget: ['GET', '/portal/widget'], setWidget: ['PUT', '/portal/widget'],
+  listLeads: ['GET', '/portal/leads'], updateLead: ['PATCH', '/portal/leads/:id'], deleteLead: ['DELETE', '/portal/leads/:id'],
+  getWebhook: ['GET', '/portal/webhook'], setWebhook: ['PUT', '/portal/webhook'], deleteWebhook: ['DELETE', '/portal/webhook'], rotateWebhookSecret: ['POST', '/portal/webhook/rotate-secret'], revealWebhookSecret: ['POST', '/portal/webhook/reveal-secret'], testWebhook: ['POST', '/portal/webhook/test'], retryWebhookDelivery: ['POST', '/portal/webhook/deliveries/:id/retry'],
+  getSiteCostDefaults: ['GET', '/portal/site-costs'], setSiteCostDefaults: ['PUT', '/portal/site-costs'], deleteSiteCostDefaults: ['DELETE', '/portal/site-costs'],
   getBrand: ['GET', '/portal/brand/:id'], // public: { name, logoUrl, colours } for the branded sign in page; 404 when the builder is not on Glide Inside
 };
-const ID_CALLS = new Set(['approveClientRequest', 'declineClientRequest', 'getBrand', 'getHouse', 'duplicateHouse', 'archiveHouse', 'getGlideModel', 'updateClient', 'resetClientPassword', 'disableClient', 'enableClient', 'deleteClient', 'exportClientProjects', 'getInvoice', 'openProject', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff']);
+const ID_CALLS = new Set(['updateLead', 'deleteLead', 'retryWebhookDelivery', 'approveClientRequest', 'declineClientRequest', 'getBrand', 'getHouse', 'duplicateHouse', 'archiveHouse', 'getGlideModel', 'updateClient', 'resetClientPassword', 'disableClient', 'enableClient', 'deleteClient', 'exportClientProjects', 'getInvoice', 'openProject', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff']);
 
 // The session cookie is HttpOnly (JavaScript cannot see it), so a plain localStorage flag is set at sign in and cleared at sign out or on a 401.
 // With no flag an anonymous visitor never calls /portal/me, so public pages log no 401 in the console. Server auth is unchanged.

@@ -1,7 +1,7 @@
 // "Find my block": look an address up and put the real lot into the open project (one undo step).
 
 import { fetchSite, fetchOverlays } from './client.js';
-import { buildOverlays, overlayRequestFor } from './overlays.js';
+import { buildOverlays, overlayRequestFor, autoShowOverlays } from './overlays.js';
 import { planView } from '../ui/view-mode.js';
 import { buildSiteLot, underlayFor, buildContours, buildTerrain, defaultFloorRL } from './model.js';
 import { faceGarageAngle, buildingHull, orientedBox, roadReserve, AUTO_LOT_DP } from './lotplan.js';
@@ -172,6 +172,7 @@ export async function refreshOverlays(store, forLot = null, { fetchImpl } = {}) 
   const cur = store.project.site?.lot;
   if (!model || !cur || cur.origin?.e !== lot0.origin?.e || cur.origin?.n !== lot0.origin?.n || cur.lotLabel !== lot0.lotLabel) return false;
   cur.overlays = model;
+  autoShowOverlays(cur); // a layer mapped over the lot is shown on the plan straight away (the person can switch it off)
   store.emit('project', { label: 'overlays' });
   return true;
 }
