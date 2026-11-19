@@ -318,7 +318,7 @@ for (const [label, d1] of [['memory', false], ...(DatabaseSync ? [['D1 (SQLite s
     assert.equal('secret' in second.data, false);
     const get = await a.admin.get('/portal/webhook');
     assert.equal('secret' in get.data, false);
-    assert.equal(get.data.secretHint, `${first.data.secret.slice(0, 10)}...`);
+    assert.equal(get.data.secretHint, `...${first.data.secret.slice(-4)}`, 'the hint is the last 4 characters only');
     assert.equal(JSON.stringify(get.data).includes(first.data.secret.slice(12)), false);
     const rev = await a.admin.post('/portal/webhook/reveal-secret');
     assert.equal(rev.data.secret, first.data.secret);
@@ -496,4 +496,44 @@ test('before migration 0025 the routes say so plainly instead of a generic 500',
     assert.equal(r.status, 503, JSON.stringify(r.data));
     assert.match(r.data.error.message, /0025 database update/);
   }
+});
+
+// ---- Stress test 20/11/2026 fixes (server side) ----
+test('stress 20/11: 6a. webhook secret hint is the last 4 characters only', async () => {
+  const w = world();
+  const o = await w.makeOrg('Hint Homes', 'Sam');
+  const put = await o.admin.put('/portal/webhook', { url: 'https://hooks.zapier.com/hooks/catch/1/hint/' });
+  assert.equal(put.status, 200, put.text);
+  const get = await o.admin.get('/portal/webhook');
+  assert.equal(get.data.secretHint, `...${put.data.secret.slice(-4)}`);
+  assert.ok(get.data.secretHint.replace(/\./g, '').length <= 4);
+  assert.ok(!JSON.stringify(get.data).includes(put.data.secret.slice(0, 10)), 'no leading characters of the secret');
+  const mock = read('../src/portal/mock-api.js');
+  assert.match(mock, /secretHint: h\?\.secret \? `\.\.\.\$\{h\.secret\.slice\(-4\)\}`/);
+});
+
+test('stress 20/11: 6b. the engineering order and widget lead endpoints refuse a POST with no Origin header', async () => {
+  const w = world();
+  const anon = w.browser('192.0.2.201');
+  const good = { services: ['stormwater-concept'], name: 'Sarah Jones', email: 'sarah@example.com', consent: true };
+  assert.equal((await anon.post('/order/engineering', good, { headers: { origin: '' } })).status, 403, 'order: no Origin');
+  assert.equal((await anon.post('/order/engineering', good, { headers: { origin: 'https://evil.example' } })).status, 403, 'order: foreign Origin');
+  assert.equal((await anon.post('/order/engineering', good)).status, 200, 'order: the site origin still works');
+  const lead = { name: 'A B', email: 'a@example.com', consent: true };
+  assert.equal((await anon.post('/widget/nosuchwidget/lead', lead, { headers: { origin: '' } })).status, 403, 'widget lead: no Origin');
+  assert.notEqual((await anon.post('/widget/nosuchwidget/lead', lead)).status, 403, 'widget lead: the site origin passes the origin check');
+});
+
+test('stress 20/11: 5b. a builder admin can save, read and remove the site cost default through the server, and designers and clients can only read it', async () => {
+  const w = world();
+  const o = await w.makeOrg('Default Homes', 'Sam');
+  const me = await o.admin.get('/portal/me');
+  assert.ok(me.data.permissions.includes('branding.write'), 'the admin is offered the save and remove buttons');
+  assert.equal((await o.admin.get('/portal/site-costs')).data.settings ?? null, null);
+  const put = await o.admin.put('/portal/site-costs', { settings: { region: 'auto', rates: { site_prep: { nsw: 123 } } } });
+  assert.equal(put.status, 200, put.text);
+  assert.equal(put.data.settings.rates.site_prep.nsw, 123);
+  assert.equal((await o.admin.get('/portal/site-costs')).data.settings.rates.site_prep.nsw, 123, 'kept (Reset in the panel never calls the server)');
+  assert.equal((await o.admin.del('/portal/site-costs')).status, 200);
+  assert.equal((await o.admin.get('/portal/site-costs')).data.settings ?? null, null, 'removed');
 });

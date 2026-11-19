@@ -27,8 +27,9 @@ export function createOrders({ lstore, portal, store, config, now = () => Date.n
   async function create(request) {
     // Same origin and the custom header only: another website cannot post here (a text/plain no-cors post carries neither).
     if (request.headers.get('x-gi-request') !== '1') throw new HttpError('FORBIDDEN', 'That request was blocked.');
+    // Browsers always send Origin on a cross-site POST (and on a same-origin form post), so a post with none is not from the site: refused.
     const sent = request.headers.get('origin');
-    if (sent && config.siteOrigin && sent !== config.siteOrigin) throw new HttpError('FORBIDDEN', 'That request was blocked.');
+    if (!sent || (config.siteOrigin && sent !== config.siteOrigin)) throw new HttpError('FORBIDDEN', 'That request was blocked.');
     const b = await readJson(request, 12000);
     if (b.website) return json({ ok: true, reference: rid() }); // honeypot
     if ((await store.hitRate(`order:ip:${clientIp(request)}`, 3600, now())) > 6 || (await store.hitRate('order:all', 86400, now())) > 200) throw new HttpError('RATE_LIMITED', 'Too many requests. Please try again later.', { retryAfter: 3600 });

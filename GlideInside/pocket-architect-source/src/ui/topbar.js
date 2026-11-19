@@ -8,6 +8,7 @@ import { hasExtensionContent, levelsByElevation } from '../editor2d/math.js';
 import { CONFIG } from '../config.js';
 import { VIEWS, hasPlan } from './view-mode.js';
 import { createTopbarMore } from './topbar-more.js';
+import { fitNameBox } from './topbar-name.js';
 
 const STATUS_VIEWS = [['existing', 'Existing'], ['proposed', 'Proposed'], ['both', 'Both']];
 const MOD = /Mac|iPhone|iPad/.test(globalThis.navigator?.platform || '') ? 'Cmd' : 'Ctrl';
@@ -167,8 +168,12 @@ export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, o
     roofBtn.title = on ? 'Roof is shown. Click to hide it.' : 'Roof is hidden. Click to show it.';
     roofBtn.setAttribute('aria-label', roofBtn.title);
   }
+  let nameQueued = false;
+  const fitName = () => { if (nameQueued) return; nameQueued = true; requestAnimationFrame(() => { nameQueued = false; fitNameBox(nameInput, el); }); };
   function syncName() {
     if (document.activeElement !== nameInput) nameInput.value = store.project.name;
+    nameInput.title = nameInput.value;
+    fitName();
   }
   function syncAll() {
     syncName();
@@ -190,8 +195,11 @@ export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, o
     }),
   ];
   syncAll();
+  nameInput.addEventListener('input', () => { nameInput.title = nameInput.value; fitName(); });
+  let nameRo = null;
+  try { window.addEventListener('resize', fitName); nameRo = new ResizeObserver(fitName); nameRo.observe(el); } catch { /* none */ }
   // Under 600 px the secondary buttons live in a "More" menu so the bar is one or two rows.
   const more = createTopbarMore(el, { keep: [backBtn, nameInput, historyGroup, viewSeg], slot: premiumSlot });
 
-  return { premiumSlot, nameInput, setDemo, refresh: syncAll, dispose: () => { offs.forEach((o) => o?.()); more.dispose(); } };
+  return { premiumSlot, nameInput, setDemo, refresh: syncAll, dispose: () => { offs.forEach((o) => o?.()); more.dispose(); nameRo?.disconnect(); try { window.removeEventListener('resize', fitName); } catch { /* none */ } } };
 }

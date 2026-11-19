@@ -67,6 +67,8 @@ export function createTopbarUI({ root, config, getState, actions }) {
     if (actions.sitingReport) {
       menu.append(el('button', { class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: 'siting-report' }, onclick: () => { closeMenu(false); actions.sitingReport(); } },
         el('span', null, 'Siting report'), icon(locked ? 'lock' : 'download', 16), el('small', null, locked ? 'Branded PDF with site plan and indicative site costs. Locked.' : 'Branded PDF with site plan and indicative site costs')));
+      if (actions.sitingSummary && !st.commercial) menu.append(el('button', { class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: 'siting-summary' }, onclick: () => { closeMenu(false); actions.sitingSummary(); } },
+        el('span', null, 'One page siting summary'), icon(locked ? 'lock' : 'download', 16), el('small', null, locked ? 'One page PDF: site plan and the key numbers. Locked.' : 'One page PDF: site plan and the key numbers')));
       if (!st.commercial && st.portal?.role !== 'client' && actions.siteCosts) menu.append(el('button', { class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: 'site-costs' }, onclick: () => { closeMenu(false); actions.siteCosts(); } },
         el('span', null, 'Site costs'), icon('eye', 16), el('small', null, 'Indicative estimate and your rates')));
     }

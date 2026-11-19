@@ -579,7 +579,7 @@ async function main() {
     toast('Your earlier design is kept in this browser.', { kind: 'info', timeout: 12000, action: { label: 'Open earlier design', onClick: () => replaceProject(prev) } });
   }
   if (VIEWER) {
-    mountViewerChrome(refs.stage, store);
+    mountViewerChrome(refs.stage, store, { widget: WIDGET });
     // Signed in? The first placement waits for this (src/ui/embed-viewer.js designPool), so the viewer opens on the person's own first design.
     // ?widget=<builder id>: the "See it on your block" widget on a builder's own website (src/portal/widget-mode.js). A visitor has no login: the builder's public designs and a lead form.
     if (!demoMode() && new URLSearchParams(location.search).get('widget')) api.portalReady = import('./portal/widget-mode.js').then((m) => m.initWidgetMode(api)).catch((e) => { console.warn('[widget] not available', e); return null; });

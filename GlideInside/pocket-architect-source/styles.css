@@ -1146,6 +1146,16 @@ svg { display: block; }
   .ps-tool-sep { flex: 0 0 100%; width: 100%; height: 1px; margin: 2px 8px; }
 }
 
+/* Any desktop window where the single column does not fit (1440 x 900 needs 856 px for residential, 913 for commercial): src/ui/toolbox.js sets data-tools2 on the shell, the same two column layout as above. */
+@media (min-width: 900px) {
+  .ps-shell[data-tools2]:not([data-view="3d"]):not([data-view="walk"]) .ps-main { grid-template-columns: 92px minmax(0, 1fr) 328px; }
+  .ps-shell[data-tools2][data-panel="hidden"]:not([data-view="3d"]):not([data-view="walk"]) .ps-main { grid-template-columns: 92px minmax(0, 1fr) 0; }
+  .ps-shell[data-tools2] .ps-toolbox { flex-direction: row; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 4px; padding: 6px 4px; }
+  .ps-shell[data-tools2] .ps-tool { width: 36px; height: 36px; }
+  .ps-shell[data-tools2] .ps-tool svg { width: 20px; height: 20px; }
+  .ps-shell[data-tools2] .ps-tool-sep { flex: 0 0 100%; width: 100%; height: 1px; margin: 2px 8px; }
+}
+
 /* Top bar under 600 px: Back, name, More, undo and redo, view switch and Save design only; the rest lives in the More menu (src/ui/topbar-more.js). */
 .ps-more-wrap { position: relative; display: inline-flex; }
 .ps-more-wrap[hidden], .ps-more-pop[hidden] { display: none !important; }

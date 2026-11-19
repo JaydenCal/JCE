@@ -2,10 +2,10 @@
 // kept in sessionStorage for the tab. Lists trial requests and builder orgs; approving creates the org and its first admin login,
 // shown once with Copy so the owner can pass it on himself. Nothing is emailed to the builder from here.
 
-import { h, clear, openDialog, confirmDialog, field, busy, toast, chip, icon, errorMessage, downloadText } from './kit.js?v=20261119f';
-import { credentialsCard } from './credentials-card.js?v=20261119f';
-import { createAdminApi } from '../admin-api.js?v=20261119f';
-import { ddmmyyyy, formatAud } from '../billing.js?v=20261119f';
+import { h, clear, openDialog, confirmDialog, field, busy, toast, chip, icon, errorMessage, downloadText } from './kit.js?v=20261120a';
+import { credentialsCard } from './credentials-card.js?v=20261120a';
+import { createAdminApi } from '../admin-api.js?v=20261120a';
+import { ddmmyyyy, formatAud } from '../billing.js?v=20261120a';
 
 const KEY = 'gi.admin.token';
 const store = {

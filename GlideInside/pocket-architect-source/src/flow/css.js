@@ -107,7 +107,7 @@ export const FLOW_CSS = `
 .gf-pad .gf-mid{grid-column:2;grid-row:2;font-size:11px;color:var(--gf-muted);display:grid;place-items:center}
 .gf-check{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);flex:1;min-height:0}
 .gf-3d{position:relative;border:1px solid var(--gf-border);border-radius:12px;overflow:hidden;background:#cfd8e0;min-height:320px}
-.gf-3d>.ps3d-root,.gf-3d>div{position:absolute;inset:0}
+.gf-3d>.ps3d-root,.gf-3d>div:not(.gf-note){position:absolute;inset:0}
 .gf-table{width:100%;border-collapse:collapse;font-size:13px}
 .gf-table th,.gf-table td{text-align:left;padding:6px 4px;border-bottom:1px solid var(--gf-border)}
 .gf-lines{margin:12px 0 0;padding:0 0 0 18px}

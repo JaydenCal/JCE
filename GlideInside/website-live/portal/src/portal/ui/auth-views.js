@@ -1,10 +1,10 @@
 // Sign in, forgot password, reset, and the forced change of a temporary password.
 
-import { h, field, busy, toast, errorMessage, icon } from './kit.js?v=20261119f';
-import { DEMO_LOGINS } from '../mock-api.js?v=20261119f';
-import { CONFIG } from '../../config.js?v=20261119f';
-import { MIN_PASSWORD_LENGTH } from '../credentials.js?v=20261119f';
-import { applyBrandTheme } from '../theme-css.js?v=20261119f';
+import { h, field, busy, toast, errorMessage, icon } from './kit.js?v=20261120a';
+import { DEMO_LOGINS } from '../mock-api.js?v=20261120a';
+import { CONFIG } from '../../config.js?v=20261120a';
+import { MIN_PASSWORD_LENGTH } from '../credentials.js?v=20261120a';
+import { applyBrandTheme } from '../theme-css.js?v=20261120a';
 
 const authShell = (title, intro, ...children) =>
   h('section', { class: 'pp-auth' }, h('div', { class: 'pp-auth-card' }, h('h1', null, title), intro ? h('p', { class: 'pp-lead' }, intro) : null, ...children));

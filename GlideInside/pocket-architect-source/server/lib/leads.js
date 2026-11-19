@@ -129,7 +129,7 @@ export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, 
     if (request.headers.get('x-gi-request') !== '1') throw new HttpError('FORBIDDEN', 'That request was blocked.'); // the custom header forces a CORS check, so another website cannot post here
     // The widget is the Glide Inside app in an iframe, so its posts come from this site's own origin. Another site cannot post here.
     const sent = request.headers.get('origin');
-    if (siteHost && sent !== siteHost) throw new HttpError('FORBIDDEN', 'That request was blocked.');
+    if (!sent || (siteHost && sent !== siteHost)) throw new HttpError('FORBIDDEN', 'That request was blocked.');
     const b = await readJson(request, 8000);
     const { org, w } = await widgetFor(request, url, id, b.host);
     if ((await store.hitRate(`widget:lead:ip:${clientIp(request)}`, 3600, now())) > 10 || (await store.hitRate(`widget:lead:org:${org.id}`, 86400, now())) > 300) throw new HttpError('RATE_LIMITED', 'Too many requests. Please try again later.', { retryAfter: 3600 });
@@ -277,7 +277,7 @@ export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, 
   const hookView = async (org) => {
     const h = await lstore.getWebhook(org.id);
     // The signing secret is never sent with the settings: only its first characters, to tell secrets apart. It is returned in full by rotate, by the first save and by reveal-secret.
-    return { configured: !!h, url: h?.url || '', enabled: !!h?.enabled, secretHint: h?.secret ? `${h.secret.slice(0, 10)}...` : '', deliveries: (await lstore.listDeliveries(org.id, 20)).map((d) => ({ id: d.id, leadId: d.leadId, createdAt: d.createdAt, attempts: d.attempts, status: d.status, lastStatus: d.lastStatus, lastError: d.lastError, nextAttemptAt: d.nextAttemptAt })), maxAttempts: WEBHOOK_MAX_ATTEMPTS };
+    return { configured: !!h, url: h?.url || '', enabled: !!h?.enabled, secretHint: h?.secret ? `...${h.secret.slice(-4)}` : '', deliveries: (await lstore.listDeliveries(org.id, 20)).map((d) => ({ id: d.id, leadId: d.leadId, createdAt: d.createdAt, attempts: d.attempts, status: d.status, lastStatus: d.lastStatus, lastError: d.lastError, nextAttemptAt: d.nextAttemptAt })), maxAttempts: WEBHOOK_MAX_ATTEMPTS };
   };
   async function getWebhook(r) {
     const { org } = await staff(r, 'branding.write');

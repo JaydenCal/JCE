@@ -71,6 +71,8 @@ const html = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Glide Inside</title>
 <meta name="description" content="Draw a floor plan, see it in 3D and walk through it. Houses, granny flats, units, sheds and extensions.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://glideinside.com.au/plan-studio/app/">
 <!-- GI_CONFIG (portalEnabled, portalMock) comes from the site config; the portal stays closed if this file is missing -->
 <script src="../../site.config.js?v=20261111"></script>
 ${mapboxTag}${preloadTags}
