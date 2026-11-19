@@ -57,7 +57,7 @@ export function createDrivePIController({ store, scale, toast = () => {}, redraw
   function drawDown(w) {
     if (!drawing) {
       const k = D.kerbSnap(store.project, w);
-      if (!k || k.distMm > KERB_PICK_PX * mmPerPx() + 3000) { say('Start the driveway on the street frontage.', 'info'); return true; }
+      if (!k || (k.pickMm ?? k.distMm) > KERB_PICK_PX * mmPerPx() + 1500) { say('Start the driveway on the street frontage.', 'info'); return true; }
       drawing = { pts: [k.point], cursor: k.point };
       redraw();
       return true;

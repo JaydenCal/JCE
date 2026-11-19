@@ -44,7 +44,12 @@ export function kerbSnap(project, pt) {
     const s = Math.min(len, Math.max(0, G.dot(G.sub(pt, off), r.u)));
     const point = G.add(off, G.mul(r.u, s));
     const d = G.dist(point, pt);
-    if (!best || d < best.distMm) best = { point, edge: r.edge, offsetMm: s, distMm: d };
+    // pickMm: how far the click is from the frontage zone, the strip from the property line out to the kerb. The kerb is the verge (4 m by
+    // default) beyond the boundary, so a click ON the boundary edge is a verge width from the kerb line itself, which at high zoom is
+    // further than any screen tolerance. Measured to the strip, a click on the edge, inside the lot beside it, or between it and the kerb is near.
+    const prop = G.add(a, G.mul(r.u, s));
+    const pick = Math.min(d, G.projectToSegment(pt, prop, point).d);
+    if (!best || pick < best.pickMm) best = { point, edge: r.edge, offsetMm: s, distMm: d, pickMm: pick };
   }
   return best;
 }

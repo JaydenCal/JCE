@@ -99,6 +99,54 @@ export function drawGrid(ctx, st) {
   }
 }
 
+// Wide aerial --------------------------------------------------------------------------------------
+/**
+ * The wide, lower resolution site aerial (site.lot.aerialWide, the same picture the 3D view drapes beyond the sharp tile), drawn under the
+ * sharp inner underlay so zooming out shows photograph, not blank grid. It follows the same conventions as the 3D view: only when it
+ * surrounds the inner tile, only while the aerial layer is on, and never beside a person's own aerial (own-aerial.js clears aerialWide).
+ * The sharp tile's rectangle is cut out so the translucent inner tile is not laid over a second layer of photograph.
+ * Returns true when something was drawn.
+ */
+export function wideAerialExtent(project) {
+  const lot = project.site?.lot;
+  const w = lot?.aerialWide?.extent;
+  const u = project.site?.underlay;
+  if (!lot?.aerialWide?.key || !w || ![w.x0, w.y0, w.x1, w.y1].every(Number.isFinite) || !(w.x1 > w.x0 && w.y1 > w.y0)) return null;
+  if (lot.layers?.aerial === false) return null;
+  if (!u?.site || lot.aerial?.userSupplied) return null; // the site aerial must be the underlay in use
+  const a = lot.aerial?.extent;
+  if (a && !(w.x0 <= a.x0 && w.y0 <= a.y0 && w.x1 >= a.x1 && w.y1 >= a.y1)) return null; // it must surround the sharp tile
+  return w;
+}
+
+export function drawWideAerial(ctx, st) {
+  const bmp = st.wideBitmap;
+  const w = wideAerialExtent(st.project);
+  if (!w || !bmp) return false;
+  const u = st.project.site.underlay;
+  const a = worldToScreen(st.view, { x: w.x0, y: w.y0 });
+  const b = worldToScreen(st.view, { x: w.x1, y: w.y1 });
+  ctx.save();
+  const inner = st.underlayBitmap ? M_underlayRect(st, u) : null;
+  if (inner) { // cut the inner tile out
+    ctx.beginPath();
+    ctx.rect(a.x, a.y, b.x - a.x, b.y - a.y);
+    ctx.rect(inner.x, inner.y, inner.w, inner.h);
+    ctx.clip('evenodd');
+  }
+  ctx.globalAlpha = Math.min(1, Math.max(0.05, u.opacity ?? 0.5));
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(bmp.img, a.x, a.y, b.x - a.x, b.y - a.y);
+  ctx.restore();
+  return true;
+}
+
+function M_underlayRect(st, u) {
+  const bmp = st.underlayBitmap;
+  const tl = worldToScreen(st.view, { x: u.x - (bmp.w * u.mmPerPx) / 2, y: u.y - (bmp.h * u.mmPerPx) / 2 });
+  return { x: tl.x, y: tl.y, w: bmp.w * u.mmPerPx * st.view.scale, h: bmp.h * u.mmPerPx * st.view.scale };
+}
+
 // Underlay -----------------------------------------------------------------------------------------
 export function drawUnderlay(ctx, st) {
   const u = st.project.site?.underlay;

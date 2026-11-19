@@ -5,7 +5,7 @@ import * as G from '../model/geometry.js';
 import { applyOp, findEntity } from '../model/ops.js';
 import * as M from './math.js';
 import { readTheme } from './theme.js';
-import { buildScene, drawGrid, drawUnderlay, drawGhostLevel, drawRooms, drawRoomLabels, drawWalls } from './draw-plan.js';
+import { buildScene, drawGrid, drawWideAerial, wideAerialExtent, drawUnderlay, drawGhostLevel, drawRooms, drawRoomLabels, drawWalls } from './draw-plan.js';
 import { drawOpenings, drawStairs, drawFurniture, drawTanks } from './draw-items.js';
 import { drawSite, drawCredits } from './draw-site.js';
 import { drawArrangeOverlay, drawBreachWalls, drawSchemeTint } from './draw-lotplan.js';
@@ -65,6 +65,8 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     underlayKey: null,
     underlayBitmap: null,
     underlayMissing: false,
+    wideKey: null,
+    wideBitmap: null,
     calibrating: false,
     rclick: null,
     rotAcc: 0,
@@ -277,6 +279,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       statusView: store.ui.statusView,
       tool: store.ui.tool,
       underlayBitmap: state.underlayBitmap,
+      wideBitmap: state.wideBitmap,
       frontageEdit: !!store.ui.frontageEdit,
       overlay: state.overlay,
       selectedRow: state.selectedRow || store.ui.commercialRow || null,
@@ -292,6 +295,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     ctx.fillStyle = state.theme.c.canvas;
     ctx.fillRect(0, 0, state.size.w, state.size.h);
     drawGrid(ctx, st);
+    drawWideAerial(ctx, st);
     drawUnderlay(ctx, st);
     drawSite(ctx, st);
     drawGhostLevel(ctx, st, M.levelBelow(project, level));
@@ -699,7 +703,22 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     requestDraw();
   }
 
+  // The wide aerial is fetched after the sharp tile has been asked for, off the first paint, and the plan redraws when it arrives.
+  function syncWide() {
+    const key = wideAerialExtent(store.project) ? store.project.site.lot.aerialWide.key : null;
+    if (key === state.wideKey) return;
+    state.wideKey = key;
+    state.wideBitmap = null;
+    if (!key) return;
+    loadBitmap(key).then((bmp) => {
+      if (state.wideKey !== key || state.disposed) return;
+      state.wideBitmap = bmp;
+      requestDraw();
+    });
+  }
+
   function syncUnderlay() {
+    syncWide();
     const u = store.project.site?.underlay;
     if (!u) {
       state.underlayKey = null;
