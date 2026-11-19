@@ -11,6 +11,10 @@ import { lotOf } from '../model/placement.js';
 import { ensureFlowAerial } from './flow-aerial.js';
 import { lotMapSvg, frontageM, aerialOf, setbacksText } from './lot-map.js';
 
+// ?sample=1 on the app link opens the sample lot once, as the "Try a sample lot" button does (used by the website's "Load a sample lot" links).
+let sampleLinkUsed = false;
+export const sampleLinkAsked = (search = typeof location !== 'undefined' ? location.search : '') => new URLSearchParams(search).get('sample') === '1';
+
 const fmt = (n, d = 0) => (n == null || !Number.isFinite(n) ? 'n/a' : n.toLocaleString('en-AU', { maximumFractionDigits: d, minimumFractionDigits: d }));
 
 /** Zone text for a lot, e.g. "R1 General Residential". */
@@ -169,6 +173,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
   if (pre) { loading = true; Promise.resolve(pre).catch((e) => { error = e?.message || ''; }).finally(() => { loading = false; if (!disposed) { paint(); ctx.refresh(); } }); }
   const adr = lotOf(store.project)?.address; if (adr) input.value = adr;
   paint();
+  if (!sampleLinkUsed && !lotOf(store.project) && !pre && sampleLinkAsked()) { sampleLinkUsed = true; Promise.resolve().then(() => { if (!disposed) useSample(); }); }
 
   return {
     el,

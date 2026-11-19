@@ -131,7 +131,8 @@
   function openAddress(address, pick) {
     live.last = address; live.lastPick = pick || null; syncEdit();
     try { if (window.gtag) window.gtag("event", "address_search", {}); } catch (e) {}
-    if (phoneMq.matches || !live.frame) { location.assign(appUrl(address)); return; }
+    if (!live.frame) { location.assign(APP + "?mode=residential&address=" + encodeURIComponent(address)); return; }
+    if (phoneMq.matches) { location.assign(appUrl(address)); return; }
     live.box.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
     setBusy(true);
     if (live.ready) { postFind(address, pick); return; }
@@ -171,6 +172,40 @@
       else if (m.state === "done") { setBusy(false); if (m.address) { live.last = m.address; syncEdit(); } setStatus(m.address ? "Showing " + m.address : "", ""); }
       else if (m.state === "error") { setBusy(false); setStatus(m.message || "That address could not be loaded.", "warn", m.retry && live.last ? function () { setBusy(true); setStatus(""); postFind(live.last, live.lastPick); } : null); }
     }
+  });
+  // "No address handy? Load a sample lot": with the live viewer on the page, start it on the sample lot (the viewer loads it when no address is given);
+  // on a phone it opens the viewer full screen. Without a viewer the link goes to the app, which opens the sample lot (?sample=1).
+  document.querySelectorAll("[data-sample-lot]").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      if (!live.frame || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      try { if (window.gtag) window.gtag("event", "sample_lot", {}); } catch (er) {}
+      if (phoneMq.matches) { location.assign(appUrl("")); return; }
+      live.box.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+      live.start("");
+    });
+  });
+  // "Send the link to myself": the phone's share sheet where there is one, otherwise the mail app with the link filled in. Nothing is sent by this site.
+  document.querySelectorAll("[data-share]").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      if (!navigator.share) return;
+      e.preventDefault();
+      navigator.share({ title: "Glide Inside", text: "Glide Inside: see the house on your block.", url: "https://glideinside.com.au/" }).catch(function () {});
+    });
+  });
+  // Links that take the visitor back to the address field.
+  document.querySelectorAll("[data-focus-search]").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      var inp = document.querySelector("[data-addr-input]"); if (!inp) return;
+      e.preventDefault(); inp.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+      setTimeout(function () { try { inp.focus({ preventScroll: true }); } catch (er) {} }, 350);
+    });
+  });
+  // Log in menu in the header: closes on an outside click, on Escape and when a link is chosen.
+  document.querySelectorAll(".login-menu").forEach(function (d) {
+    document.addEventListener("click", function (e) { if (d.open && !d.contains(e.target)) d.open = false; });
+    d.addEventListener("keydown", function (e) { if (e.key === "Escape" && d.open) { d.open = false; var sm = d.querySelector("summary"); if (sm) sm.focus(); } });
+    d.addEventListener("click", function (e) { if (e.target.closest(".login-pop a")) d.open = false; });
   });
   var searchCache = {};
   document.querySelectorAll("[data-addr-search]").forEach(function (root) {

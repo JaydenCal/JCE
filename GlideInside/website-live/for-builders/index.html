@@ -20,8 +20,8 @@
 <link rel="preload" href="../assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="../assets/hero-builders-phone.webp" type="image/webp" media="(max-width:760px)" fetchpriority="high">
 <link rel="preload" as="image" href="../assets/hero-builders-2400.webp" imagesrcset="../assets/hero-builders-1600.webp 1600w, ../assets/hero-builders-2400.webp 2400w, ../assets/hero-builders-3200.webp 3200w" imagesizes="min(92vw, 1240px)" type="image/webp" media="(min-width:761px)" fetchpriority="high">
-<link rel="stylesheet" href="../framework.css?v=20261118f">
-<script src="../site.config.js?v=20261118d"></script><script src="../framework.js?v=20261118f" defer></script><script src="../analytics.js" defer></script><!-- CONCIERGE: launcher stub, inert unless site.config.js conciergeEnabled is true --><script src="../assets/concierge/launcher.js?v=20261115a" defer></script>
+<link rel="stylesheet" href="../framework.css?v=20261119a">
+<script src="../site.config.js?v=20261119a"></script><script src="../framework.js?v=20261119a" defer></script><script src="../analytics.js" defer></script><!-- CONCIERGE: launcher stub, inert unless site.config.js conciergeEnabled is true --><script src="../assets/concierge/launcher.js?v=20261115a" defer></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Glide Inside builder portal","applicationCategory":"BusinessApplication","operatingSystem":"Web browser","url":"https://glideinside.com.au/for-builders/","description":"A private builder portal where each client places the builder's own house designs on their real lot in 2D and 3D. Concept designs only.","publisher":{"@id":"https://glideinside.com.au/#organization"},"offers":[{"@type":"Offer","name":"Free 14 day trial","price":"0","priceCurrency":"AUD"},{"@type":"Offer","name":"Per job","price":"20","priceCurrency":"AUD","priceSpecification":{"@type":"PriceSpecification","price":"20","priceCurrency":"AUD","valueAddedTaxIncluded":true}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://glideinside.com.au/"},{"@type":"ListItem","position":2,"name":"For builders","item":"https://glideinside.com.au/for-builders/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is a client login?", "acceptedAnswer": {"@type": "Answer", "text": "A login you issue from your builder portal with the Generate account button. Your client uses it to open Glide Inside with your house library and your branding, find their block and place your designs on it. Client exports are a builder-branded PDF by default."}}, {"@type": "Question", "name": "How do clients reach my portal?", "acceptedAnswer": {"@type": "Answer", "text": "By the private link or access code you send them. There is no public list of builders, so nobody can browse to your portal without it."}}, {"@type": "Question", "name": "Where does the lot data come from?", "acceptedAnswer": {"@type": "Answer", "text": "The lot boundary and neighbouring lots come from the state cadastre (NSW Spatial Services, and the State of Queensland), with aerial imagery and LiDAR contours where the state provides them. Council setbacks are drawn from the council DCP where one is available, otherwise the NSW Codes SEPP Housing Code. In Queensland they follow the Queensland Development Code."}}, {"@type": "Question", "name": "How accurate is it?", "acceptedAnswer": {"@type": "Answer", "text": "The tool is a concept planning aid. Setbacks and other planning controls are indicative only, and the plans are concept only, not for construction. They are not construction drawings or development application documents, and they are not checked against planning controls, the National Construction Code or BASIX. Confirm every control with the council and a suitably qualified person."}}, {"@type": "Question", "name": "Who owns my house designs?", "acceptedAnswer": {"@type": "Answer", "text": "You do. You keep ownership of the designs, logos and other content you add. You give Glide Inside a licence to store, host, display and process them to run your account, for example to show them to your clients and build the files you ask for."}}, {"@type": "Question", "name": "Can other builders or clients see my designs?", "acceptedAnswer": {"@type": "Answer", "text": "No. Clients see only the designs in your own library. The Glide Inside sample designs stay hidden unless you choose to show them, and your designs are never shown to other builders. Authorised Glide Inside staff can see them to support your account."}}, {"@type": "Question", "name": "Can a client download my design files?", "acceptedAnswer": {"@type": "Answer", "text": "By default clients get your branded PDF plans only. You can choose to let them export DXF and 3D model files as well, and you can switch off the option to send plans to JCE."}}, {"@type": "Question", "name": "What does it cost?", "acceptedAnswer": {"@type": "Answer", "text": "Free 14 day trial for builder staff. Then pay A$20 incl. GST per job, with no monthly fee. A job is one new project: you see the price and confirm before it is created, and it is charged to your saved card. Client logins are free. Capped monthly plans (Starter A$119 with 10 jobs, Pro A$219 with 20, Teams A$419 with 40, extra jobs A$20 each, unused jobs do not roll over) are coming soon for busy builders. Each login includes a monthly AI allowance that stops when it is used up. AI top-ups are 100 messages for A$15 incl. GST, added to your monthly invoice."}}, {"@type": "Question", "name": "How does the free trial work?", "acceptedAnswer": {"@type": "Answer", "text": "Ask for a free 14 day trial below. We approve each request, usually within one business day, and then give you a staff login. During the trial your staff can use everything except issuing client logins and buying AI credit top-ups, and new jobs are free. When the trial ends the account becomes read only until you add card details. Client logins unlock as soon as you add them. Read the trial terms for the detail."}}, {"@type": "Question", "name": "Which areas does it cover?", "acceptedAnswer": {"@type": "Answer", "text": "New South Wales and Queensland, with a focus on regional areas."}}]}</script>
@@ -81,21 +81,21 @@
   <nav class="site-nav" id="site-nav" aria-label="Main">
     <a href="../">Residential</a>
     <a href="../commercial/">Commercial</a>
-    <a href="../for-builders/" aria-current="page">For builders</a>
-    <a href="../subdivision/">Subdivisions</a>
+    <a href="../for-builders/" aria-current="page">Builders</a>
     <a href="../plans/">Plans</a>
     <a href="../pricing/">Pricing</a>
-    <a href="../help/">How to</a>
+    <a href="../help/">Help</a>
     <div class="nav-logins">
+      <p class="nav-logins-h">Log in</p>
       <a href="../portal/" data-portal hidden>Builder login</a>
       <a href="../portal/?client=1" data-portal hidden>Client login</a>
-      <a class="btn" data-cfg-href="toolUrl" data-app-mode="residential" href="../plan-studio/app/">Start residential</a>
+      <a href="../#builder-access" data-bp-link>I have a builder access code</a>
+      <a class="btn" data-cfg-href="toolUrl" data-app-mode="residential" href="../plan-studio/app/">Try it on your block</a>
     </div>
   </nav>
   <div class="head-end">
-    <a class="login" href="../portal/" data-portal hidden>Builder login</a>
-    <a class="login" href="../portal/?client=1" data-portal hidden>Client login</a>
-    <a class="btn btn-sm" data-cfg-href="toolUrl" data-app-mode="residential" href="../plan-studio/app/">Start residential</a>
+    <details class="login-menu"><summary class="login">Log in</summary><div class="login-pop"><a href="../portal/" data-portal hidden>Builder login</a><a href="../portal/?client=1" data-portal hidden>Client login</a><a href="../#builder-access" data-bp-link>I have a builder access code</a></div></details>
+    <a class="btn btn-sm" data-cfg-href="toolUrl" data-app-mode="residential" href="../plan-studio/app/">Try it on your block</a>
   </div>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
 </div></header>
@@ -106,8 +106,8 @@
     <h1 id="hero-title">Show every client your home on their own block.</h1>
     <div class="cine-side">
       <p class="lead">A private builder portal in Glide Inside. Your own house designs, in your colours, placed by each client on their real lot, in 2D and 3D, before your next meeting.</p>
-      <div class="hero-cta"><a class="btn" href="#trial" data-trial-cta>Start free trial</a><a class="btn btn-ghost" data-cfg-href="builderDemoUrl" href="../book-a-demo/">Book a demo</a></div>
-      <p class="fine" style="margin:14px 0 0;color:var(--on-night-2);font-size:14px">Free for 14 days, no card needed to ask. No monthly fee after that.</p>
+      <div class="hero-cta"><a class="btn" href="#trial" data-trial-cta>Start free trial</a><a class="btn btn-ghost" href="../plan-studio/app/?embed=1">See a sample client view</a><a class="btn btn-ghost" data-cfg-href="builderDemoUrl" href="../book-a-demo/">Book a demo</a></div>
+      <p class="fine" style="margin:14px 0 0;color:var(--on-night-2);font-size:14px">14 day trial. No card needed. Then A$20 per job, with no monthly fee.</p>
     </div>
   </div>
   <div class="shell stage-wrap">
@@ -174,6 +174,23 @@
       <li><div class="vis"><img src="../assets/builder-issue-login.webp" width="1600" height="1200" alt="The builder portal Generate account form for a client named Sample Client, and the login ready screen with a username and a hidden password" loading="lazy" decoding="async"></div><div class="txt"><h3>Issue a client login</h3><p>Enter the client&rsquo;s name and, if you know it, their lot. The portal makes the login, and there is no charge for it. You pass it on with your private link or access code.</p></div></li>
       <li><div class="vis"><img src="../assets/builder-client-designer.webp" width="1600" height="1200" alt="The client designer in Glide Inside with the builder&rsquo;s name in the bar: a sample house placed on a sample lot in plan and 3D, with contours and neighbouring lots" loading="lazy" decoding="async"></div><div class="txt"><h3>The client places your home</h3><p>They find their block, place your design, adjust it, walk through it and produce your branded PDF.</p></div></li>
     </ol>
+<div class="trial-mini" id="trial-quick">
+      <h3>Start the 14 day trial</h3>
+      <p>Four details and we set up your staff login, usually within one business day. No card needed.</p>
+      <form class="trial-form" data-trial novalidate autocomplete="on">
+        <div class="trial-grid">
+          <label class="tf"><span class="tl">Name <span class="req">*</span></span><input name="name" type="text" maxlength="120" required autocomplete="name"></label>
+          <label class="tf"><span class="tl">Company <span class="req">*</span></span><input name="company" type="text" maxlength="120" required autocomplete="organization"></label>
+          <label class="tf"><span class="tl">Email <span class="req">*</span></span><input name="email" type="email" maxlength="160" required autocomplete="email"></label>
+          <label class="tf"><span class="tl">Phone <span class="req">*</span></span><input name="phone" type="tel" maxlength="40" required autocomplete="tel"></label>
+        </div>
+        <div class="trial-hp" aria-hidden="true"><label>Leave this empty<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+        <label class="tf-check"><input name="consent" type="checkbox" required><span>I have read and agree to the <a class="link" href="../trial-terms.html" target="_blank" rel="noopener">trial terms</a> and the <a class="link" href="../plan-terms.html" target="_blank" rel="noopener">Plan set terms of use</a>. <span class="req">*</span></span></label>
+        <p class="trial-error" role="alert" hidden></p>
+        <div class="trial-actions"><button class="btn" type="submit">Start free trial</button></div>
+      </form>
+      <div class="trial-done" role="status" hidden><h3>Thanks. We set up each trial ourselves, usually within one business day.</h3><p>While you wait, <a class="link" href="../help/">watch the overview video</a> or <a class="link" href="../plan-studio/app/?embed=1">open the sample client view</a>.</p></div>
+    </div>
   </div>
 </section>
 
@@ -242,14 +259,14 @@
 <section class="sec" id="why" aria-labelledby="why-title">
   <div class="shell">
     <div class="sec-head"><p class="fb-eyebrow">Why Glide Inside</p><h2 id="why-title">Built for regional builders, sloping blocks and real walk throughs</h2><p>How it differs from a typical address based siting tool.</p></div>
-    <table class="gx-cmp"><thead><tr><th scope="col"><span class="visually-hidden">Capability</span></th><th scope="col" class="us">Glide Inside</th><th scope="col">Other siting tools, typically</th></tr></thead><tbody><tr><th scope="row">Regional, rural and acreage blocks</th><td class="us" data-label="Glide Inside">Built for large and irregular lots across NSW and Queensland, with aerial and LiDAR contours.</td><td data-label="Other siting tools, typically">Often focused on suburban lots. Rural addresses can be hard to select.</td></tr><tr><th scope="row">Sloping blocks and grading</th><td class="us" data-label="Glide Inside">Grading and cut and fill on the lot, with the ground reshaped in 3D.</td><td data-label="Other siting tools, typically">Contours shown. Cut and fill is rarely calculated.</td></tr><tr><th scope="row">Real 3D walk through</th><td class="us" data-label="Glide Inside">Edit the floor plan, then walk through the actual house in 3D.</td><td data-label="Other siting tools, typically">A footprint or a catalogue design placed on the lot.</td></tr><tr><th scope="row">Commercial and industrial sites</th><td class="us" data-label="Glide Inside">33 building types, a car park tool, auto layouts and finance scenarios.</td><td data-label="Other siting tools, typically">Usually residential only.</td></tr><tr><th scope="row">Client access</th><td class="us" data-label="Glide Inside">A private branded client login and an offline 3D viewer the client keeps.</td><td data-label="Other siting tools, typically">Often staff only. Clients receive a PDF.</td></tr><tr><th scope="row">Entry price</th><td class="us" data-label="Glide Inside">Free to draw, A$20 per job, no monthly fee. Capped monthly plans coming soon.</td><td data-label="Other siting tools, typically">Typically a monthly subscription with a set number of address lookups.</td></tr><tr><th scope="row">Nationwide overlays and CRM links</th><td class="us" data-label="Glide Inside">NSW and Queensland today. Site overlays and lead integrations coming soon.</td><td data-label="Other siting tools, typically">Often stronger today, with national coverage and CRM connections.</td></tr></tbody></table><p class="gx-note">General comparison with address based siting tools, written on 18/11/2026. Features differ by product. Where others lead, such as national overlays, it is shown plainly.</p>
+    <table class="gx-cmp"><thead><tr><th scope="col"><span class="visually-hidden">Capability</span></th><th scope="col" class="us">Glide Inside</th><th scope="col">Other siting tools, typically</th></tr></thead><tbody><tr><th scope="row">Regional, rural and acreage blocks</th><td class="us" data-label="Glide Inside">Built for large and irregular lots across NSW and Queensland, with aerial and LiDAR contours.</td><td data-label="Other siting tools, typically">Often focused on suburban lots. Rural addresses can be hard to select.</td></tr><tr><th scope="row">Sloping blocks and grading</th><td class="us" data-label="Glide Inside">Grading and cut and fill on the lot, with the ground reshaped in 3D.</td><td data-label="Other siting tools, typically">Contours shown. Cut and fill is rarely calculated.</td></tr><tr><th scope="row">Real 3D walk through</th><td class="us" data-label="Glide Inside">Edit the floor plan, then walk through the actual house in 3D.</td><td data-label="Other siting tools, typically">A footprint or a catalogue design placed on the lot.</td></tr><tr><th scope="row">Commercial and industrial sites</th><td class="us" data-label="Glide Inside">33 building types, a car park tool, auto layouts and finance scenarios.</td><td data-label="Other siting tools, typically">Usually residential only.</td></tr><tr><th scope="row">Client access</th><td class="us" data-label="Glide Inside">A private branded client login and an offline 3D viewer the client keeps.</td><td data-label="Other siting tools, typically">Often staff only. Clients receive a PDF.</td></tr><tr><th scope="row">Entry price</th><td class="us" data-label="Glide Inside">Home owners: free to draw, A$30 per job for the files. Builders: A$20 per job, no monthly fee. Capped monthly plans coming soon.</td><td data-label="Other siting tools, typically">Typically a monthly subscription with a set number of address lookups.</td></tr><tr><th scope="row">Nationwide overlays and CRM links</th><td class="us" data-label="Glide Inside">NSW and Queensland today. Site overlays and lead integrations coming soon.</td><td data-label="Other siting tools, typically">Often stronger today, with national coverage and CRM connections.</td></tr></tbody></table><p class="gx-note">General comparison with address based siting tools, written on 18/11/2026. Features differ by product. Where others lead, such as national overlays, it is shown plainly.</p>
   </div>
 </section>
 
 <section class="sec bld dark" id="builder-pricing" aria-labelledby="price-title">
   <div class="shell bld-grid">
     <div>
-      <div class="sec-head" style="margin-bottom:0"><p class="fb-eyebrow">Pricing</p><h2 id="price-title">Pay per job, or cap it with a monthly plan.</h2><p>Start with a free 14 day trial for your staff. After that, pay A$20 for each new job you start, with no monthly fee. Client logins are free. Capped monthly plans are coming soon for busy builders. All prices include GST. The full detail is on the <a class="link" href="../pricing/#builders">pricing page</a>.</p></div>
+      <div class="sec-head" style="margin-bottom:0"><p class="fb-eyebrow">Pricing</p><h2 id="price-title">Pay per job, or cap it with a monthly plan.</h2><p>Start with a free 14 day trial for your staff. After that, pay A$20 for each new job you start, with no monthly fee. Client logins are free. Capped monthly plans are coming soon for busy builders. All prices include GST. The full detail is on the <a class="link" href="../pricing/#builders">pricing page</a>.</p><p class="price-anchor on-dark">Address based siting tools are usually sold by monthly subscription with a capped number of address lookups, often from around A$200 a month before GST. Glide Inside is A$20 per job with no monthly fee, and client logins do not cost extra. General comparison based on published list prices checked on 19/11/2026. Products and features differ.</p></div>
       <div class="bld-points">
         <div><h3>Free 14 day trial</h3><p>Try it with your own staff and designs before a client ever logs in.</p></div>
         <div><h3>A confirm step for every job</h3><p>A job is one new project. You see the price and what it covers, then confirm, and it is charged to your saved card. Opening and saving the same project again is free.</p></div>
@@ -331,7 +348,7 @@
       <p class="trial-error" id="trial-error" role="alert" hidden></p>
       <div class="trial-actions"><button class="btn" type="submit" id="trial-submit">Start free trial</button><span class="trial-note">After the trial, each new job is A$20 incl. GST, charged when you start it. Client logins are free. No monthly fee.</span></div>
     </form>
-      <div class="trial-done" id="trial-done" role="status" hidden><h3>Thanks, we will be in touch within one business day.</h3><p>We review each request ourselves. Nothing is sent to you automatically, so there is nothing to look for in your inbox until we reach out.</p></div>
+      <div class="trial-done" id="trial-done" role="status" hidden><h3>Thanks. We set up each trial ourselves, usually within one business day.</h3><p>While you wait, <a class="link" href="../help/">watch the overview video</a> or <a class="link" href="../plan-studio/app/?embed=1">open the sample client view</a>. Nothing is sent to you automatically, so there is nothing to look for in your inbox until we reach out.</p></div>
     </div>
   </div>
 </section>
@@ -355,31 +372,33 @@
 </style>
 <script>
 (function () {
-  var form = document.getElementById("trial-form");
-  if (!form) return;
-  var err = document.getElementById("trial-error"), btn = document.getElementById("trial-submit"), done = document.getElementById("trial-done");
-  function show(msg) { err.textContent = msg; err.hidden = !msg; if (msg) err.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    var f = form.elements, g = function (n) { return (f[n].value || "").trim(); };
-    show("");
-    if (!g("name")) return show("Enter your name.");
-    if (!g("company")) return show("Enter your company name.");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g("email"))) return show("Enter a valid email address.");
-    if (!/^\d{8,15}$/.test(g("phone").replace(/[\s()+-]/g, ""))) return show("Enter a valid phone number.");
-    if (!f.consent.checked) return show("Tick the box to agree to the trial terms.");
-    if (f.website.value) { form.hidden = true; done.hidden = false; return; }
-    var body = { name: g("name"), company: g("company"), email: g("email"), phone: g("phone"), consent: true, website: g("website") };
-    btn.disabled = true;
-    fetch(((window.GI_CONFIG && window.GI_CONFIG.apiBase) || "/api") + "/portal/trial-request", { method: "POST", headers: { "content-type": "application/json", "x-gi-request": "1" }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d || {} }; }); })
-      .then(function (x) {
-        var saved = x.ok || x.d.saved || (x.d.error && x.d.error.saved);
-        if (!saved) { show((x.d.error && x.d.error.message) || x.d.message || "That did not send. Check the details and try again, or email hello@glideinside.com.au."); btn.disabled = false; return; }
-        form.hidden = true; done.hidden = false; done.scrollIntoView({ block: "center", behavior: "smooth" });
-        try { if (window.gtag) window.gtag("event", "trial_request", { page: location.pathname }); } catch (_) {}
-      })
-      .catch(function () { show("Could not reach the server. Check your connection and try again, or email hello@glideinside.com.au."); btn.disabled = false; });
+  var forms = document.querySelectorAll("#trial-form, form[data-trial]");
+  Array.prototype.forEach.call(forms, function (form) {
+    var box = form.closest(".trial-wrap") || form.closest(".trial-mini") || form.parentNode;
+    var err = form.querySelector(".trial-error") || document.getElementById("trial-error"), btn = form.querySelector("button[type=submit]"), done = box.querySelector(".trial-done");
+    function show(msg) { err.textContent = msg; err.hidden = !msg; if (msg) err.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var f = form.elements, g = function (n) { return (f[n].value || "").trim(); };
+      show("");
+      if (!g("name")) return show("Enter your name.");
+      if (!g("company")) return show("Enter your company name.");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g("email"))) return show("Enter a valid email address.");
+      if (!/^\d{8,15}$/.test(g("phone").replace(/[\s()+-]/g, ""))) return show("Enter a valid phone number.");
+      if (!f.consent.checked) return show("Tick the box to agree to the trial terms.");
+      if (f.website.value) { form.hidden = true; done.hidden = false; return; }
+      var body = { name: g("name"), company: g("company"), email: g("email"), phone: g("phone"), consent: true, website: g("website") };
+      btn.disabled = true;
+      fetch(((window.GI_CONFIG && window.GI_CONFIG.apiBase) || "/api") + "/portal/trial-request", { method: "POST", headers: { "content-type": "application/json", "x-gi-request": "1" }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d || {} }; }); })
+        .then(function (x) {
+          var saved = x.ok || x.d.saved || (x.d.error && x.d.error.saved);
+          if (!saved) { show((x.d.error && x.d.error.message) || x.d.message || "That did not send. Check the details and try again, or email hello@glideinside.com.au."); btn.disabled = false; return; }
+          form.hidden = true; done.hidden = false; done.scrollIntoView({ block: "center", behavior: "smooth" });
+          try { if (window.gtag) window.gtag("event", "trial_request", { page: location.pathname }); } catch (_) {}
+        })
+        .catch(function () { show("Could not reach the server. Check your connection and try again, or email hello@glideinside.com.au."); btn.disabled = false; });
+    });
   });
 })();
 </script>
@@ -389,12 +408,13 @@
   <div class="hero-cta"><a class="btn" href="#trial" data-trial-cta>Start free trial</a><a class="btn btn-ghost" data-cfg-href="builderDemoUrl" href="../book-a-demo/">Book a demo</a></div></div>
 </section>
 
+<div class="sticky-trial"><a class="btn" href="#trial" data-trial-cta>Start the 14 day trial</a></div>
 </main>
 <footer class="site-footer"><div class="shell">
   <div class="brand"><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"><p>Site planning and house design in 3D for regional New South Wales and Queensland.</p></div>
-  <nav aria-label="Product"><p class="foot-h">Product</p><a href="../">Glide Inside Residential</a><a href="../commercial/">Glide Inside Commercial</a><a href="../plan-studio/">How it works</a><a href="../pricing/">Pricing</a><a href="../help/">How to videos</a><a href="../plan-studio/#addons">Add-ons</a><a href="../subdivision/">Subdivisions</a><a href="../sample-plan-set/">Sample plan set</a><a href="../how-accurate-is-it/">How accurate is it</a></nav>
+  <nav aria-label="Product"><p class="foot-h">Product</p><a href="../">Glide Inside Residential</a><a href="../commercial/">Glide Inside Commercial</a><a href="../plan-studio/">How it works</a><a href="../pricing/">Pricing</a><a href="../help/">How to videos</a><a href="../plan-studio/#addons">Add-ons</a><a href="../subdivision/">Subdivisions</a><a href="../sample-plan-set/">Sample plan set</a><a href="../examples/">Worked examples</a><a href="../how-accurate-is-it/">How accurate is it</a></nav>
   <nav aria-label="Builders and plans"><p class="foot-h">Builders and plans</p><a href="../for-builders/">For builders</a><a href="../book-a-demo/">Book a demo</a><a href="../portal/" data-portal hidden>Builder login</a><a href="../portal/?client=1" data-portal hidden>Client login</a><a href="../plans/">Plan library</a><a href="../granny-flat-designs/">Granny flat designs</a><a href="../shed-with-living-quarters/">Shed with living quarters</a><a href="../3d-floor-plan-maker/">3D floor plan maker</a></nav>
-  <nav aria-label="Company"><p class="foot-h">Glide Inside</p><span>Glide Inside, ABN <span data-cfg="abn">11 549 431 925</span></span><a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au"><span data-cfg="email">hello@glideinside.com.au</span></a><span data-cfg="phone">0477 207 027</span><a href="../terms.html">Order terms</a><a href="../plan-terms.html">Plan set terms</a><a href="../privacy.html">Privacy</a></nav>
+  <nav aria-label="Company"><p class="foot-h">Glide Inside</p><a href="../about/">About Glide Inside</a><span>Glide Inside, ABN <span data-cfg="abn">11 549 431 925</span></span><a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au"><span data-cfg="email">hello@glideinside.com.au</span></a><span data-cfg="phone">0477 207 027</span><a href="../terms.html">Order terms</a><a href="../terms.html#refunds">Refunds</a><a href="../trial-terms.html">Trial terms</a><a href="../plan-terms.html">Plan set terms</a><a href="../privacy.html">Privacy</a></nav>
   <p class="legal-line">Glide Inside provides concept planning tools only. Plans are not a survey, a development application, a building approval, or engineering, legal or financial advice. Setbacks, zoning, parking rates and other controls are indicative, can be wrong or out of date, and must be checked with the relevant council and suitably qualified people before you rely on them. Data has been cropped and redrawn and is not a survey. Glide Inside is a software tool. It is not an architect and does not provide architectural services. Prices include GST. See <a class="link" href="../how-accurate-is-it/">how accurate it is</a>, the <a class="link" href="../plan-terms.html">Plan set terms of use</a> and the <a class="link" href="../terms.html">Order terms</a>.</p>
   <p class="legal-line attrib">Cadastre and imagery &copy; NSW Spatial Services (CC BY 3.0 AU). Queensland cadastre &copy; State of Queensland (CC BY 4.0); Queensland aerial imagery and elevation data &copy; State of Queensland (CC BY-SA).</p>
 </div></footer>
