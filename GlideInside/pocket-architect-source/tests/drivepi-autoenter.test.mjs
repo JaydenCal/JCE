@@ -52,3 +52,18 @@ test('the editor enters from Select and Move house only, Escape and an off-drive
   assert.match(s, /setTool\(store, 'drivepi'\)/);
   assert.match(s, /e\.key === 'Escape' && store\.ui\.tool === 'drivepi' && state\.drivePrev/);
 });
+
+import { driveWorksPoints, allInView } from '../src/editor2d/drivepi-autoenter.js';
+test('the Driveway PI tool frames the building and the nearest spot on the frontage; off screen is detected', () => {
+  const project = { site: { lot: { boundary: [{ x: 0, y: 0 }, { x: 20000, y: 0 }, { x: 20000, y: 40000 }, { x: 0, y: 40000 }], frontEdges: [0] } } };
+  const hull = [{ x: 6000, y: 20000 }, { x: 14000, y: 20000 }, { x: 14000, y: 30000 }, { x: 6000, y: 30000 }];
+  const pts = driveWorksPoints(project, hull);
+  assert.equal(pts.length, 5);
+  assert.deepEqual(pts.at(-1), { x: 10000, y: 0 }, 'the frontage point straight in front of the house');
+  assert.deepEqual(driveWorksPoints({ site: {} }, hull), []);
+  const size = { w: 800, h: 600 };
+  const fit = { scale: 0.015, ox: 250, oy: 50 };
+  assert.equal(allInView(fit, size, pts), true);
+  assert.equal(allInView({ scale: 0.015, ox: 250, oy: -200 }, size, pts), false, 'frontage scrolled off the top');
+  assert.equal(allInView({ scale: 0.05, ox: 0, oy: 0 }, size, pts), false, 'zoomed in too far to hold both');
+});

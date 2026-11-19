@@ -6,7 +6,7 @@ import { icon } from './icons.js';
 import { toast } from './toast.js';
 import { openModal } from './modal.js';
 import { CONFIG } from '../config.js';
-import { smartSearch, NOT_FOUND_TEXT, SEARCH_DEBOUNCE_MS } from '../site/address-search.js';
+import { smartSearch, NOT_FOUND_TEXT, SEARCH_DEBOUNCE_MS, SEARCH_BUSY_TEXT, isBusyFailure } from '../site/address-search.js';
 import { demoSite } from '../site/demo-lot.js';
 import { applySiteLookup } from '../site/apply.js';
 import { runUpload } from '../site/upload/flow.js';
@@ -66,9 +66,22 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     if (active >= 0) input.setAttribute('aria-activedescendant', `${id}-o${active}`);
   }
 
-  async function search() {
+  let flightQ = null; // the query being searched now: an identical one (Enter pressed again) joins it instead of calling again
+  let flight = null;
+  function search() {
+    const q = input.value.trim();
+    if (flight && flightQ === q.toLowerCase().replace(/\s+/g, ' ')) return flight;
+    flight = searchNow();
+    return flight;
+  }
+  async function searchNow() {
     const q = input.value.trim();
     controller?.abort();
+    const key = q.toLowerCase().replace(/\s+/g, ' ');
+    flightQ = key;
+    try { await searchOnce(q); } finally { if (flightQ === key) { flightQ = null; flight = null; } }
+  }
+  async function searchOnce(q) {
     if (q.length < 3) {
       results = [];
       paint();
@@ -82,7 +95,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     try {
       results = await smartSearch(q, { signal: controller.signal, onRetry: () => say('Busy, trying again') });
       if (results.length) cache.set(ck, results);
-      if (!results.length && results.rateLimited) { active = -1; paint(); say(''); return; } // still rate limited after the quiet retry: no error, no "not found"
+      if (!results.length && results.rateLimited) { active = -1; paint(); say(SEARCH_BUSY_TEXT, 'warn'); return; } // still rate limited after the quiet retry: say it is busy, not "not found"
       active = -1;
       paint();
       say(results.length ? '' : NOT_FOUND_TEXT, results.length ? '' : 'warn');
@@ -91,7 +104,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
       if (e?.name === 'AbortError') return;
       results = [];
       paint();
-      say(e?.message || 'The address search failed. You can keep drawing without a lot.', 'warn');
+      say(isBusyFailure(e) ? SEARCH_BUSY_TEXT : e?.message || 'The address search failed. You can keep drawing without a lot.', 'warn');
       if (e?.code === 'SLOW') status.append(' ', h('button', { class: 'ps-btn ps-btn--ghost', type: 'button', dataset: { ps: 'find-retry' }, onclick: () => search() }, 'Try again'));
     }
   }
@@ -147,7 +160,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     }
   }
 
-  input.addEventListener('input', () => { controller?.abort(); debounced(); }); // every keystroke aborts the request in flight
+  input.addEventListener('input', () => { controller?.abort(); flightQ = null; flight = null; debounced(); }); // every keystroke aborts the request in flight
   input.addEventListener('focus', () => { if (results.length) paint(); });
   input.addEventListener('blur', () => setTimeout(closeList, 120));
   input.addEventListener('keydown', (e) => {

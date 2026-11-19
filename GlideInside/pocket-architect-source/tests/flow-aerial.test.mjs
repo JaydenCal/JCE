@@ -47,3 +47,24 @@ test('ensureFlowAerial retries the imagery request once before giving up', async
   await ensureFlowAerial(store, { fetchImpl: async () => { n++; return new Response('x', { status: 500 }); }, retryMs: 1 });
   assert.equal(n, 2);
 });
+
+import { saveImage } from '../src/editor2d/underlay.js';
+import { aerialOf } from '../src/flow/lot-map.js';
+test('step 3 draws the stored aerial: aerialOf reads the decoded bitmap ({ img, w, h }) and returns a picture with the lot extent', async () => {
+  const drawn = [];
+  globalThis.createImageBitmap = async () => ({ width: 2048, height: 1024, close() {} });
+  globalThis.document = { createElement: () => ({ width: 0, height: 0, getContext: () => ({ drawImage: (...a) => drawn.push(a) }), toDataURL: () => 'data:image/jpeg;base64,AAAA' }) };
+  const key = 'ps.underlay.test.site.1';
+  await saveImage(key, new Blob(['x'], { type: 'image/png' }));
+  const extent = { x0: -1, y0: -2, x1: 3, y1: 4 };
+  const a = await aerialOf({ aerial: { key, extent } });
+  assert.ok(a?.href?.startsWith('data:image/jpeg'), 'a stored aerial gives a picture');
+  assert.deepEqual(a.extent, extent);
+  assert.equal(drawn.length, 1);
+  assert.equal(drawn[0][1] + drawn[0][2], 0);
+  assert.equal(drawn[0][3], 1024, 'scaled to 1024 px on the long side');
+  assert.equal(drawn[0][4], 512);
+  assert.equal(await aerialOf({ aerial: { key: 'missing', extent } }), null);
+  assert.equal(await aerialOf({ aerial: null }), null);
+  delete globalThis.createImageBitmap; delete globalThis.document;
+});

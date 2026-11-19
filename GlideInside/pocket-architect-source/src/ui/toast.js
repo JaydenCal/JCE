@@ -3,6 +3,9 @@
 import { h } from './dom.js';
 
 let region = null;
+// The same message shown again within this many ms is not stacked a second time (a tool that complains on every click).
+export const TOAST_DEDUPE_MS = 2000;
+const recent = new Map();
 
 export function mountToasts(el) {
   region = el;
@@ -14,6 +17,9 @@ export function toast(message, { kind = 'info', timeout, action } = {}) {
     (kind === 'error' ? console.error : console.log)(`[toast] ${message}`);
     return { dismiss() {} };
   }
+  const nowT = Date.now();
+  const prev = recent.get(message);
+  if (prev && nowT - prev.at < TOAST_DEDUPE_MS && prev.el?.isConnected) { prev.at = nowT; return prev.handle; }
   const ms = timeout ?? (kind === 'error' ? 8000 : kind === 'warn' ? 6000 : 3800);
   let timer = null;
   const el = h('div', { class: 'ps-toast', role: kind === 'error' ? 'alert' : 'status', dataset: { kind } }, h('span', null, message));
@@ -41,5 +47,8 @@ export function toast(message, { kind = 'info', timeout, action } = {}) {
   while (region.children.length >= 3) region.firstChild.remove();
   region.append(el);
   if (ms > 0) timer = setTimeout(dismiss, ms);
-  return { dismiss };
+  const handle = { dismiss };
+  recent.set(message, { at: nowT, el, handle });
+  if (recent.size > 20) recent.delete(recent.keys().next().value);
+  return handle;
 }

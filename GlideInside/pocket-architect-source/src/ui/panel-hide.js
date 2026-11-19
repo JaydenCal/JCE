@@ -52,7 +52,8 @@ export function mountPanelHide(refs, { panel: panelApi } = {}) {
     panel.setAttribute('aria-hidden', String(hidden));
     tab.hidden = !hidden;
     if (remember) writePanelHidden(hidden);
-    if (!hidden) panel.dataset.open = 'true';
+    // Opening the panel again is the person's own action; the start up pass (remember false) leaves a phone's bottom sheet collapsed so the plan keeps the height.
+    if (!hidden && remember) panel.dataset.open = 'true';
     if (focus) (hidden ? tab : hide).focus?.();
     // The plan and 3D hosts follow their container size; nudge them so the freed width is used straight away.
     try { globalThis.dispatchEvent?.(new Event('resize')); } catch { /* ignore */ }

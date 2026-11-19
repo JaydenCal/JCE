@@ -44,6 +44,7 @@ export function createHints(ps, { isEnabled, isBusy, layer }) {
   function show(id, { force = false } = {}) {
     if (!hasScene(id)) return false;
     if (!force) {
+      if (store.ui.tool === 'drivepi') return false; // the Driveway PI tool has its own hint line: no "Select and move" card over it
       if (!isEnabled() || isBusy() || readSeen().includes(id)) return false;
     }
     close();
@@ -67,6 +68,7 @@ export function createHints(ps, { isEnabled, isBusy, layer }) {
   offs.push(store.on('ui', (patch = {}) => {
     if ('tool' in patch && patch.tool !== last.tool) {
       last.tool = patch.tool;
+      if (patch.tool === 'drivepi') close(); // a card for the tool just left (e.g. Select and move) goes
       kick(patch.tool);
     }
     if ('view' in patch && patch.view !== last.view) {

@@ -4,10 +4,11 @@
 import { CONFIG } from '../config.js';
 
 export class SiteError extends Error {
-  constructor(message, code = 'SITE_ERROR') {
+  constructor(message, code = 'SITE_ERROR', status = null) {
     super(message);
     this.name = 'SiteError';
     this.code = code;
+    if (status != null) this.status = status; // the HTTP status, when the failure was an HTTP answer
   }
 }
 
@@ -32,20 +33,23 @@ async function readJson(res) {
   } catch {
     /* not JSON */
   }
-  if (!res.ok) throw new SiteError(friendly(body, res.status), body?.code || `HTTP_${res.status}`);
+  if (!res.ok) throw new SiteError(friendly(body, res.status), body?.code || `HTTP_${res.status}`, res.status);
   return body;
 }
+
+export const GOV_DOWN_TEXT = 'The government map service is not responding. Try again soon, or keep drawing without a lot.';
 
 function friendly(body, status) {
   if (body?.code === 'UNSUPPORTED_AREA') return 'That address is outside NSW and Queensland. Site lookup only covers those two states. You can still draw without a lot.';
   if (body?.code === 'NOT_FOUND') return 'No lot was found at that address. Try a nearby address, or keep drawing without a lot.';
   if (body?.code === 'RATE_LIMITED' || status === 429) return 'Too many lookups just now. Wait a minute and try again.';
-  if (status >= 500) return 'The government map service is not responding. Try again soon, or keep drawing without a lot.';
+  if (status >= 500) return GOV_DOWN_TEXT;
   return body?.message || 'The lookup failed. You can keep drawing without a lot.';
 }
 
 export const RETRY_DELAY_MS = 1500;
 export const SLOW_TEXT = 'The address service is slow, try again.';
+export const LOT_TIMEOUT_MS = 25000; // one lot request that never answers is given up on, then retried once, then the final message shows
 export const SEARCH_TIMEOUT_MS = 16000; // the server allows its prefix query up to 6.5 s plus one retry
 export const RATE_RETRY_MS = 2500; // a 429 waits a little longer before its one quiet retry
 export const BUSY_MESSAGE = 'Busy, trying again';
@@ -64,7 +68,7 @@ function wait(ms, signal, sleepImpl = sleep) {
 }
 
 // getJson with a per attempt timeout (TIMEOUT error) that still honours the caller's own abort signal.
-async function getJsonTimed(path, params, { signal, fetchImpl, timeoutMs = SEARCH_TIMEOUT_MS } = {}) {
+async function getJsonTimed(path, params, { signal, fetchImpl, timeoutMs = SEARCH_TIMEOUT_MS, timeoutText = 'The address lookup took too long. Try again.' } = {}) {
   const ctl = new AbortController();
   let timedOut = false;
   const onAbort = () => ctl.abort();
@@ -74,7 +78,7 @@ async function getJsonTimed(path, params, { signal, fetchImpl, timeoutMs = SEARC
   try {
     return await getJson(path, params, { signal: ctl.signal, fetchImpl });
   } catch (e) {
-    if (timedOut && e?.name === 'AbortError') throw new SiteError('The address lookup took too long. Try again.', 'TIMEOUT');
+    if (timedOut && e?.name === 'AbortError') throw new SiteError(timeoutText, 'TIMEOUT');
     throw e;
   } finally {
     clearTimeout(timer);
@@ -127,15 +131,16 @@ export async function searchAddresses(q, opts = {}) {
 }
 
 /** The lot lookup with one retry after about 1.5 s on a 5xx, timeout or network failure (onRetry shows "Busy, trying again"). */
-export async function getLot(params, { signal, fetchImpl, onRetry, retryDelayMs = RETRY_DELAY_MS, sleepImpl } = {}) {
+export async function getLot(params, { signal, fetchImpl, onRetry, retryDelayMs = RETRY_DELAY_MS, sleepImpl, timeoutMs = LOT_TIMEOUT_MS } = {}) {
+  const once = () => getJsonTimed('lot', params, { signal, fetchImpl, timeoutMs, timeoutText: GOV_DOWN_TEXT });
   try {
-    return await getJson('lot', params, { signal, fetchImpl });
+    return await once();
   } catch (e) {
     if (!isRetryable(e)) throw e;
   }
   onRetry?.();
   await wait(retryDelayMs, signal, sleepImpl);
-  return getJson('lot', params, { signal, fetchImpl });
+  return once();
 }
 
 // Metres of margin around the lot for the aerial and the elevation grid.

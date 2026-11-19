@@ -25,3 +25,37 @@ export function driveClick(project, w, scale) {
   if (Array.isArray(poly) && poly.length > 2 && G.pointInPolygon(w, poly)) return { hit: null };
   return null;
 }
+
+/**
+ * The points the Driveway PI tool needs in view when it opens: the building and the spot on the street frontage nearest to it (where a
+ * driveway starts). Plan mm. Empty when there is no building or no frontage.
+ */
+export function driveWorksPoints(project, hull) {
+  const lot = project?.site?.lot;
+  const b = lot?.boundary;
+  if (!Array.isArray(b) || b.length < 3 || !hull?.length) return [];
+  const c = G.polygonCentroid(hull);
+  const pts = [...hull];
+  let best = null;
+  for (const i of lot.frontEdges || []) {
+    if (!Number.isInteger(i) || i < 0 || i >= b.length) continue;
+    const pr = G.projectToSegment(c, b[i], b[(i + 1) % b.length]);
+    if (!best || pr.d < best.d) best = pr;
+  }
+  if (!best) return [];
+  pts.push(best.point);
+  return pts;
+}
+
+/** True when every point is on screen (inside `margin` px of the edges of the area left clear by overlay cards). */
+export function allInView(view, size, pts, { margin = 36, inset = {} } = {}) {
+  const l = (inset.left || 0) + margin;
+  const t = (inset.top || 0) + margin;
+  const r = size.w - (inset.right || 0) - margin;
+  const bt = size.h - (inset.bottom || 0) - margin;
+  return pts.every((p) => {
+    const x = p.x * view.scale + view.ox;
+    const y = p.y * view.scale + view.oy;
+    return x >= l && x <= r && y >= t && y <= bt;
+  });
+}

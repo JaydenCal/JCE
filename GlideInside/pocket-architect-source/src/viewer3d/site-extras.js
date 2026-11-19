@@ -125,6 +125,15 @@ export function sampleLineWithBreaks(line, step = 1.5, breaks = []) {
   return [...ts].sort((x, y) => x - y).map((t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }));
 }
 
+// Distance from a point to a polyline, measured to each segment (a straight drawn driveway has only its end points as vertices).
+export function distToPolyline(p, line) {
+  if (!line?.length) return Infinity;
+  if (line.length === 1) return Math.hypot(line[0].x - p.x, line[0].y - p.y);
+  let d = Infinity;
+  for (let i = 0; i + 1 < line.length; i++) d = Math.min(d, G.projectToSegment(p, line[i], line[i + 1]).d);
+  return d;
+}
+
 /** Height scale (0 = fully dropped, 1 = full kerb) at distance d metres along the kerb for a driveway crossover spanning [s0, s1] metres, with a ramp each side. */
 export function kerbDropScale(d, span, ramp = 0.6) {
   if (!span) return 1;
@@ -270,7 +279,7 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
       } catch { paved = []; }
     }
     const onPaved = (p, m = 600) => paved.some((poly) => G.pointInPolygon(p, poly) || poly.some((q, i) => G.projectToSegment(p, q, poly[(i + 1) % poly.length]).d < m));
-    const clearOf = (p, rad) => !onPaved(p) && driveCentres.every((c) => c.every((q, i) => i % 2 || Math.hypot(q.x - p.x, q.y - p.y) > rad));
+    const clearOf = (p, rad) => !onPaved(p) && driveCentres.every((c) => distToPolyline(p, c) > rad);
     for (const ei of frontEdges.slice(0, 2)) {
       const a = lot.boundary[ei];
       const bb = lot.boundary[(ei + 1) % lot.boundary.length];

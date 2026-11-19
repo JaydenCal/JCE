@@ -19,6 +19,7 @@ import { createToolbox } from './ui/toolbox.js';
 import { createDrawer } from './ui/drawer.js';
 import { createPanel } from './ui/panel.js';
 import { createStatusBar } from './ui/statusbar.js';
+import { mountTabGuard } from './ui/tab-guard.js';
 import { createStageChips, createWelcome, createMapCredit } from './ui/stage-ui.js';
 import { openTemplatePicker } from './ui/templates.js';
 import { openFindBlock } from './ui/find-block.js';
@@ -333,6 +334,7 @@ async function main() {
   const chips = createStageChips(refs.chips, store);
   createFrontageBar(refs.stage, store);
   statusbar.setAutosave(!noAutosave);
+  if (!noAutosave) mountTabGuard(document.body, store); // on the body: it shows over the guided flow too
 
   let premiumLoading = null;
   function mountPremium() {
@@ -518,8 +520,8 @@ async function main() {
   };
   const openEditorDirect = () => openFullEditor({ ...store.project, flow: { kind: store.project.mode === 'commercial' ? 'commercial' : 'residential', step: 5 } });
   const lotCard = COMMERCIAL_VIEWER
-    ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a) })
-    : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
+    ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a, row) => api.embedViewer?.run(a, row ? { pick: row } : {}) })
+    : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a, row) => api.embedViewer?.run(a, row ? { pick: row } : {}), onMini: () => {}, embed: true } : {}) });
   api.lotCard = lotCard;
   // "Make it narrower" in the homepage viewer hands over to this editor: say how, once it has opened.
   if (!VIEWER) import('./ui/fit-card.js').then((m) => { const g = m.takeGuidance(); if (g) setTimeout(() => { store.setUI({ view: '2d' }); toast(g, { kind: 'info', timeout: 20000 }); }, 1800); }).catch(() => {});

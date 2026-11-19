@@ -31,7 +31,7 @@ import { toast } from '../ui/toast.js';
 import { openPopover } from '../ui/popover.js';
 import { h, isTyping } from '../ui/dom.js';
 import { setTool } from '../ui/toolstate.js';
-import { driveClick, DRIVE_ENTER_FROM } from './drivepi-autoenter.js';
+import { driveClick, DRIVE_ENTER_FROM, driveWorksPoints, allInView } from './drivepi-autoenter.js';
 
 const RIGHT_DRAG_PX = 4;
 
@@ -368,6 +368,15 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     zoomToRegion(pts, 5000);
   }
 
+  // The Driveway PI tool opens with the building and the street frontage both on screen: pan and zoom to them when either is off screen.
+  function showDriveWorks() {
+    if (!state.size.w || !state.active) return;
+    let hull = [];
+    try { hull = buildingHull(store.project); } catch { hull = []; }
+    const pts = driveWorksPoints(store.project, hull);
+    if (pts.length && !allInView(state.view, state.size, pts, { inset: state.inset })) zoomToRegion(pts, 4000);
+  }
+
   function zoomToFit() {
     if (!state.size.w) {
       state.fitted = false;
@@ -695,6 +704,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       state.toolId = id;
       current = tools[id];
       current.activate?.();
+      if (id === 'drivepi') showDriveWorks();
       state.hover = null;
       ed.clearPreview();
     }

@@ -953,7 +953,10 @@ export const OPS = {
     params: { name: P.str('Design name'), type: P.enm(S.PROJECT_TYPES, 'Design type') },
     required: [],
     run(p, a) {
-      if (a.name != null) p.name = String(a.name).slice(0, 80);
+      if (a.name != null) {
+        p.name = String(a.name).slice(0, 80);
+        p.nameEdited = true; // a name the person typed is kept when they change the home
+      }
       if (a.type != null) {
         const t = oneOf(a.type, S.PROJECT_TYPES, 'type');
         if (t !== p.type) delete p.designType; // the design type is read from the new type

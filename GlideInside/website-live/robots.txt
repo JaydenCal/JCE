@@ -3,5 +3,6 @@ Allow: /
 Disallow: /plan-studio/app/
 Disallow: /plan-studio/launch/
 Disallow: /_review/
+Disallow: /subdivision/ptm/
 
 Sitemap: https://glideinside.com.au/sitemap.xml

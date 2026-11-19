@@ -44,7 +44,7 @@ test('a shared design is read only: every change is refused, opening a design is
     store.replace(forkProject(store.project));
     store.run('add_room', { type: 'bedroom', name: 'Bed', x: 7000, y: 0, width: 3000, depth: 3000 });
     store.saveNow();
-    assert.deepEqual(writes, ['ps.autosave.v1']);
+    assert.deepEqual(writes, ['ps.autosave.v1', 'ps.autosave.v1.meta'], 'the design, then its tab id and version counter');
   } finally {
     delete globalThis.localStorage;
   }

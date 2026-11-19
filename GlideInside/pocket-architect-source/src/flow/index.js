@@ -113,11 +113,13 @@ export function attachBackPill({ api, store, refs, catalogue, wantCommercial }) 
     const cr = card && !card.hidden && getComputedStyle(card).display !== 'none' ? card.getBoundingClientRect() : null;
     if (!cr || cr.width < 2 || sr.height < 2) {
       // No lot card: beside the row of aerial and grading pills (never over them).
+      // It joins that row (it wraps inside the panel column), so it can never run under the commercial stats bar or the other pills.
       const row = refs.stage.querySelector('.ps-pillrow');
-      const rr = innerWidth > 599.98 && row && row.children.length && row.getBoundingClientRect().width > 2 ? row.getBoundingClientRect() : null;
-      pill.style.bottom = ''; pill.style.left = rr ? `${Math.round(rr.right - sr.left + 8)}px` : '';
+      pill.style.bottom = ''; pill.style.left = '';
+      if (innerWidth > 599.98 && row && row.children.length) { if (pill.parentElement !== row) row.append(pill); } else if (pill.parentElement !== refs.stage) refs.stage.append(pill);
       return;
     }
+    if (pill.parentElement !== refs.stage) refs.stage.append(pill); // out of the pill row: it sits above the lot card
     pill.style.left = `${Math.max(12, Math.round(cr.left - sr.left))}px`;
     pill.style.bottom = `${Math.max(12, Math.round(sr.bottom - cr.top + 10))}px`;
   };

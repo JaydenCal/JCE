@@ -202,7 +202,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     else if (findPill) findPill.lastChild.textContent = lotText || 'Find my block';
   };
   // A failed search puts the previous lot back in the pill (the viewer toasts the reason).
-  const pickAddress = async (label) => {
+  const pickAddress = async (label, row = null) => {
     closeSugg();
     const before = shownText;
     findInput.value = label;
@@ -211,7 +211,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     finding = true;
     findPill.classList.add('is-busy');
     try {
-      const ok = await onFind(label);
+      const ok = await onFind(label, row);
       if (ok === false) findInput.value = before;
     } catch {
       findInput.value = before;
@@ -223,7 +223,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     }
   };
   const paintSugg = () => {
-    findList.replaceChildren(...sugg.slice(0, 6).map((r, i) => h('li', { class: 'lc-find-item', role: 'option', 'aria-selected': String(i === suggI), onpointerdown: (e) => { e.preventDefault(); pickAddress(r.label); } }, h('span', null, r.label), h('i', null, r.state || ''))));
+    findList.replaceChildren(...sugg.slice(0, 6).map((r, i) => h('li', { class: 'lc-find-item', role: 'option', 'aria-selected': String(i === suggI), onpointerdown: (e) => { e.preventDefault(); pickAddress(r.label, r); } }, h('span', null, r.label), h('i', null, r.state || ''))));
     findList.hidden = !sugg.length;
   };
   if (findInput) {
@@ -231,6 +231,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       getText: () => findInput.value,
       onBusy: () => { findList.replaceChildren(h('li', { class: 'lc-find-item lc-find-busy', role: 'status' }, h('span', null, 'Busy, trying again'))); findList.hidden = false; },
       onResults: (r) => { sugg = r; suggI = -1; paintSugg(); },
+      onError: (text) => { findList.replaceChildren(h('li', { class: 'lc-find-item lc-find-busy', role: 'status', dataset: { ps: 'find-busy' } }, h('span', null, text))); findList.hidden = false; },
     });
     const ask = () => live.trigger();
     findInput.addEventListener('input', ask);
@@ -239,7 +240,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     findInput.addEventListener('keydown', (e) => {
       const n = Math.min(6, sugg.length);
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { if (n) { suggI = (suggI + (e.key === 'ArrowDown' ? 1 : -1) + n) % n; paintSugg(); } e.preventDefault(); }
-      else if (e.key === 'Enter') { e.preventDefault(); const t = suggI >= 0 ? sugg[suggI]?.label : findInput.value.trim(); if (t && t.length >= 3) pickAddress(t); } // typed text: the search takes the top match (exact house number first)
+      else if (e.key === 'Enter') { e.preventDefault(); if (suggI >= 0 && sugg[suggI]) pickAddress(sugg[suggI].label, sugg[suggI]); else if (findInput.value.trim().length >= 3) live.now().then((rows) => { if (rows?.length) pickAddress(rows[0].label, rows[0]); }); } // typed text: the same debounced, aborting search takes the top match (exact house number first)
       else if (e.key === 'Escape') { closeSugg(); findInput.blur(); }
     });
   }

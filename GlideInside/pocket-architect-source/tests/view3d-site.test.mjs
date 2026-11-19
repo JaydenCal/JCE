@@ -479,3 +479,19 @@ test('neighbour context (massing houses, sheds, rear trees) is off even when the
     assert.ok(g.getObjectByName('neighbour-boundaries'), 'neighbour lot lines stay');
   }
 });
+
+import { distToPolyline } from '../src/viewer3d/site-extras.js';
+test('garden bed clearance is measured to each drawn driveway segment, not to alternate vertices', () => {
+  const rad = 3000 / 2 + 700;
+  // a straight drawn driveway: two end points 12 m apart, a bed sample mid-leg is on the driveway
+  const straight = [{ x: 0, y: 0 }, { x: 12000, y: 0 }];
+  assert.ok(distToPolyline({ x: 6000, y: 0 }, straight) < rad, 'bed sample on the drive is not clear');
+  assert.ok(distToPolyline({ x: 6000, y: rad - 50 }, straight) < rad, 'inside half width + 700 on the side');
+  assert.ok(distToPolyline({ x: 6000, y: rad + 50 }, straight) > rad, 'beyond half width + 700 clears');
+  // one PI: three vertices, the old test skipped the middle (odd) vertex and missed the first leg
+  const onePi = [{ x: 0, y: 0 }, { x: 10000, y: 0 }, { x: 10000, y: 8000 }];
+  assert.ok(distToPolyline({ x: 5000, y: 100 }, onePi) < rad);
+  assert.ok(distToPolyline({ x: 10000, y: 4000 }, onePi) < rad);
+  assert.ok(distToPolyline({ x: 5000, y: rad + 50 }, onePi) > rad);
+  assert.equal(distToPolyline({ x: 1, y: 1 }, []), Infinity);
+});

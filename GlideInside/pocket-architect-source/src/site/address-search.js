@@ -105,31 +105,69 @@ export const NOT_FOUND_TEXT = 'We could not find that address. Check the spellin
 
 export const SEARCH_DEBOUNCE_MS = 300;
 
+/** Shown in the dropdown (and the status line) when the search answered 429 or 5xx, or could not be reached. */
+export const SEARCH_BUSY_TEXT = 'The address search is busy. Try again in a moment.';
+
+/** A failure to tell the person about: a 429, a 5xx, a timeout or no network. Never the person's own abort. */
+export function isBusyFailure(e) {
+  if (!e || e.name === 'AbortError') return false;
+  if (e.status === 429 || e.status >= 500) return true;
+  return e.code === 'RATE_LIMITED' || e.code === 'NETWORK' || e.code === 'TIMEOUT' || e.code === 'SITE_UPSTREAM' || /^HTTP_(429|5\d\d)$/.test(e.code || '') || e.rateLimited === true;
+}
+
 /**
  * Live suggestions for a search box: waits delay ms after the last keystroke, aborts the previous request on every keystroke (and when
- * cancelled), ignores aborted and out of date answers, and never reports a failure (a 429 or error just clears the suggestions).
- * trigger() on each input event; onBusy() only for a real timeout, 5xx or 429 retry; onResults(rows) with the final rows.
+ * cancelled), ignores aborted and out of date answers.
+ * trigger() on each input event; now() for Enter: searches at once, aborts the one in flight, and does not repeat a query that is already
+ * in flight or was just answered (the same rows are handed back). onBusy() only for a real timeout, 5xx or 429 retry; onResults(rows)
+ * with the final rows; onError(text) when the search failed (a 429, 5xx or no network): the stale rows are cleared first.
  */
-export function createLiveSearch({ getText, onResults, onBusy, search = smartSearch, delay = SEARCH_DEBOUNCE_MS, setT = setTimeout, clearT = clearTimeout }) {
+export function createLiveSearch({ getText, onResults, onBusy, onError, search = smartSearch, delay = SEARCH_DEBOUNCE_MS, setT = setTimeout, clearT = clearTimeout }) {
   let timer = null;
   let ctl = null;
-  const cancel = () => { clearT(timer); timer = null; ctl?.abort(); ctl = null; };
+  let flightQ = null; // the query in flight
+  let flight = null;
+  let doneQ = null; // the last query answered with rows, and its rows
+  let doneRows = null;
+  const cancel = () => { clearT(timer); timer = null; ctl?.abort(); ctl = null; flightQ = null; flight = null; };
   const run = async () => {
     const q = String(getText() || '').trim();
-    if (q.length < 3) { onResults([]); return; }
+    if (q.length < 3) { doneQ = null; onResults([]); return []; }
     const mine = new AbortController();
     ctl = mine;
+    flightQ = q;
     try {
       const rows = await search(q, { signal: mine.signal, onRetry: () => { if (!mine.signal.aborted) onBusy?.(); } });
-      if (mine.signal.aborted || String(getText() || '').trim() !== q) return;
-      onResults(Array.isArray(rows) ? rows : []);
+      if (mine.signal.aborted || String(getText() || '').trim() !== q) return null;
+      const list = Array.isArray(rows) ? rows : [];
+      if (!list.length && rows?.rateLimited) { doneQ = null; onResults([]); onError?.(SEARCH_BUSY_TEXT); return Object.assign([], { failed: true }); }
+      doneQ = list.length ? q : null;
+      doneRows = list;
+      onResults(list);
+      return list;
     } catch (e) {
-      if (e?.name === 'AbortError' || mine.signal.aborted) return;
-      onResults([]);
+      if (e?.name === 'AbortError' || mine.signal.aborted) return null;
+      doneQ = null;
+      onResults([]); // never leave the previous suggestions up after a failure
+      const busy = isBusyFailure(e);
+      if (busy) onError?.(SEARCH_BUSY_TEXT);
+      return Object.assign([], { failed: busy, error: e });
+    } finally {
+      if (ctl === mine) { flight = null; flightQ = null; }
     }
   };
   return {
-    trigger() { cancel(); timer = setT(run, delay); },
+    trigger() { cancel(); timer = setT(() => (flight = run()), delay); },
     cancel,
+    /** Search now (Enter). Resolves with the rows, or null when this answer was superseded. */
+    now() {
+      const q = String(getText() || '').trim();
+      clearT(timer); timer = null;
+      if (flight && flightQ === q) return flight; // the same query is already on its way
+      if (doneQ === q && doneRows) { onResults(doneRows); return Promise.resolve(doneRows); } // just answered: no second call
+      ctl?.abort();
+      flight = run();
+      return flight;
+    },
   };
 }

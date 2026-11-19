@@ -63,6 +63,8 @@ export function swapHouse(store, house, { id = null, name = '' } = {}) {
     p.site.tanks = [];
     placeHouse(p, h, pose);
     settleSiteItems(p);
+    // The design name follows the chosen home (top bar, saved file, DXF and title block), unless the person typed their own name.
+    if (!p.nameEdited && h.name) p.name = String(h.name).slice(0, 80);
     p.placedHouse = tooBig ? { id, name: h.name, tooBig: true } : { id, name: h.name };
     if (turnedDeg) p.placedHouse.turnedToFit = Math.round(turnedDeg); // turned off square to the street so it fits this lot
   });

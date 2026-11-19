@@ -186,3 +186,22 @@ test('swap: replaces the design on the lot in one undo step, keeps the lot and s
   store.undo();
   assert.equal(store.project.levels.flatMap((l) => l.rooms).length, before);
 });
+
+test('swap: the design name follows the chosen home, unless the person typed their own name', () => {
+  const p = lotOnHouse();
+  p.name = 'Single storey, 4 bedroom';
+  const store = createStore(p, { autosaveKey: null, opContext: { catalogue } });
+  swapHouse(store, migrate(catalogue.createFromTemplate('granny_flat')), { id: 'granny_flat', name: 'Granny flat' });
+  assert.equal(store.project.name, 'Granny flat', 'name follows the home');
+  swapHouse(store, migrate(catalogue.createFromTemplate('house_single')), { id: 'house_single', name: 'Single storey' });
+  assert.equal(store.project.name, 'Single storey');
+  store.undo();
+  assert.equal(store.project.name, 'Granny flat', 'undo restores the name with the house');
+  // a typed name sticks (and survives a save and reload)
+  store.run('set_project', { name: 'Smith residence' });
+  assert.equal(store.project.nameEdited, true);
+  const again = createStore(migrate(JSON.parse(JSON.stringify(store.project))), { autosaveKey: null, opContext: { catalogue } });
+  swapHouse(again, migrate(catalogue.createFromTemplate('granny_flat')), { id: 'granny_flat', name: 'Granny flat' });
+  assert.equal(again.project.name, 'Smith residence');
+  assert.equal(again.project.placedHouse.name, 'Granny flat');
+});

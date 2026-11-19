@@ -124,3 +124,18 @@ test('jsPDF loader uses the sibling file URL the page sets (window.__PS_JSPDF__)
     delete globalThis.document;
   }
 });
+
+import { GOV_DOWN_TEXT } from '../src/site/client.js';
+test('lot: a request that never answers times out, is retried once, then shows the same final message as a 500', async () => {
+  let calls = 0;
+  const hang = (url, { signal }) => { calls++; return new Promise((_, rej) => signal.addEventListener('abort', () => rej(Object.assign(new Error('a'), { name: 'AbortError' })))); };
+  const { sleepImpl } = fastSleep();
+  let busy = 0;
+  await assert.rejects(getLot({ lon: 1, lat: 2 }, { fetchImpl: hang, sleepImpl, timeoutMs: 20, onRetry: () => busy++ }), (e) => e.message === GOV_DOWN_TEXT && e.code === 'TIMEOUT');
+  assert.equal(calls, 2);
+  assert.equal(busy, 1);
+  const five = seq(status(500), status(500));
+  await assert.rejects(getLot({ lon: 1, lat: 2 }, { fetchImpl: five.f, sleepImpl }), (e) => e.message === GOV_DOWN_TEXT);
+  const gw = seq(status(504), status(504));
+  await assert.rejects(getLot({ lon: 1, lat: 2 }, { fetchImpl: gw.f, sleepImpl }), (e) => e.message === GOV_DOWN_TEXT);
+});

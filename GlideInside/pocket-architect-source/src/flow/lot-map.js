@@ -49,11 +49,15 @@ export async function aerialOf(lot, maxPx = 1024) {
     const { loadBitmap } = await import('../editor2d/underlay.js');
     const bmp = await loadBitmap(a.key);
     if (!bmp) return null;
-    const k = Math.min(1, maxPx / Math.max(bmp.width, bmp.height));
+    // loadBitmap gives { img, w, h } (the decoded image and its size), not the image itself.
+    const bw = bmp.w || bmp.width;
+    const bh = bmp.h || bmp.height;
+    const src = bmp.img || bmp;
+    const k = Math.min(1, maxPx / Math.max(bw, bh));
     const c = document.createElement('canvas');
-    c.width = Math.max(1, Math.round(bmp.width * k));
-    c.height = Math.max(1, Math.round(bmp.height * k));
-    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    c.width = Math.max(1, Math.round(bw * k));
+    c.height = Math.max(1, Math.round(bh * k));
+    c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
     return { href: c.toDataURL('image/jpeg', 0.8), extent: a.extent };
   } catch {
     return null;

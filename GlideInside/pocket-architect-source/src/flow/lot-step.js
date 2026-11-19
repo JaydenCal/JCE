@@ -2,7 +2,7 @@
 // the setbacks status. The commercial flow adds a zone warning through `extra(project)`.
 
 import { h } from '../ui/dom.js';
-import { smartSearch, NOT_FOUND_TEXT } from '../site/address-search.js';
+import { NOT_FOUND_TEXT, SEARCH_BUSY_TEXT, createLiveSearch } from '../site/address-search.js';
 import { applySiteLookup } from '../site/apply.js';
 import { demoSite } from '../site/demo-lot.js';
 import { runUpload } from '../site/upload/flow.js';
@@ -21,7 +21,6 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
   let loading = false;
   let error = '';
   let list = [];
-  let timer = 0;
   let notFound = false;
   let slow = false;
   let disposed = false;
@@ -47,17 +46,15 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     input.setAttribute('aria-expanded', String(!!items.length));
   };
 
-  let sctl = null;
-  async function suggest() {
-    const q = input.value.trim();
-    if (q.length < 4) { setSugg([]); return; }
-    const mine = new AbortController();
-    sctl = mine;
-    try {
-      const r = await smartSearch(q, { signal: mine.signal });
-      if (!disposed && !mine.signal.aborted && input.value.trim() === q) setSugg(r.slice(0, 5));
-    } catch { /* the Find button reports a failed search; an abort or a rate limit shows nothing */ }
-  }
+  // Suggestions while typing and the Enter search share one debounced, aborting path (createLiveSearch). A busy search clears the stale
+  // suggestions and says so in the dropdown.
+  const setBusy = (text) => {
+    list = [];
+    sugg.replaceChildren(h('li', { role: 'status', class: 'gf-suggest-busy', dataset: { ps: 'flow-suggest-busy' } }, text));
+    sugg.hidden = false;
+    input.setAttribute('aria-expanded', 'false');
+  };
+  const live = createLiveSearch({ getText: () => input.value, onResults: (r) => { if (!disposed) setSugg(r.slice(0, 5)); }, onError: (t) => { if (!disposed) setBusy(t); } });
 
   async function choose(pick) {
     if (loading) return;
@@ -77,11 +74,20 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
   }
 
   async function find() {
+    if (loading) return; // Enter pressed again while the search is on its way
     const q = input.value.trim();
     if (q.length < 3) { error = 'Type a street address first.'; paint(); return; }
     loading = true; error = ''; notFound = false; slow = false; paint();
     let pick = list.find((r) => String(r.label || '').toLowerCase() === q.toLowerCase()) || null; // a suggestion already shown: no second search
-    try { if (!pick) { const r = await smartSearch(q, {}); pick = r[0]; if (!pick && r.rateLimited) { error = 'The address service is busy. Press Find my lot again in a moment.'; slow = true; } } } catch (e) { error = e?.message || 'The address search is not available right now.'; slow = e?.code === 'SLOW'; }
+    let failed = false;
+    if (!pick) {
+      const r = await live.now(); // same debounce-free, aborting path as the suggestions; an identical query is not sent twice
+      if (r === null) { loading = false; paint(); return; } // superseded by typing
+      pick = r[0] || null;
+      failed = !!r.failed;
+      if (!pick && failed) { error = SEARCH_BUSY_TEXT; slow = true; }
+      else if (!pick && r.error) { error = r.error.message || 'The address search is not available right now.'; slow = r.error.code === 'SLOW'; }
+    }
     loading = false;
     if (!pick && !error) { error = NOT_FOUND_TEXT; notFound = true; }
     if (pick) await choose(pick); else paint();
@@ -158,7 +164,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     paintConfirm();
   }
 
-  input.addEventListener('input', () => { sctl?.abort(); clearTimeout(timer); timer = setTimeout(suggest, 300); });
+  input.addEventListener('input', () => { live.trigger(); });
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); if (list.length) choose(list[0]); else find(); } else if (e.key === 'Escape') setSugg([]); });
   input.addEventListener('blur', () => setTimeout(() => setSugg([]), 150));
   findBtn.addEventListener('click', find);
@@ -174,6 +180,6 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     el,
     canNext: () => !!lotOf(store.project) && !loading,
     nextLabel: 'This is my lot',
-    dispose() { disposed = true; sctl?.abort(); clearTimeout(timer); clearTimeout(slowT); off?.(); },
+    dispose() { disposed = true; live.cancel(); clearTimeout(slowT); off?.(); },
   };
 }

@@ -629,6 +629,14 @@ svg { display: block; }
 .ps-toast[data-kind="warn"] { background: var(--ps-warning); color: var(--ps-on-status); }
 .ps-toast[data-kind="ok"] { background: var(--ps-ok); color: var(--ps-on-status); }
 .ps-toast button { background: transparent; border: 0; color: inherit; text-decoration: underline; padding: 0; }
+/* Another tab saved this design (src/ui/tab-guard.js): a banner under the top bar, never a modal. */
+.ps-tabguard {
+  position: fixed; left: 50%; top: 64px; z-index: 900; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
+  width: min(640px, calc(100% - 24px)); padding: 8px 12px;
+  background: var(--ps-warning); color: var(--ps-on-status); border-radius: var(--ps-radius); box-shadow: var(--ps-shadow); font-size: 13px;
+}
+.ps-tabguard-text { flex: 1 1 260px; }
 @keyframes ps-toast-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
 /* Responsive ----------------------------------------------------------------------------- */
@@ -1041,6 +1049,36 @@ svg { display: block; }
   .ps-stage[data-commercial="1"][data-sheet="open"] .pso-dock, .ps-stage[data-commercial="1"][data-sheet="open"] .ps-credit { display: none; }
 }
 
+/* Top bar on one row from 600 to 1600 px, in Plan, Split and 3D (1440 x 900 in Split wrapped Save design, Exports and ? onto a second row):
+   tighter spacing, a shorter design name, and the Roof button as an icon (it has a tooltip). */
+@media (min-width: 600px) and (max-width: 1599.98px) {
+  .ps-topbar { gap: 6px; }
+  .ps-topbar .ps-name { width: 72px; }
+  .ps-topbar .ps-seg-btn { padding: 0 8px; }
+  .ps-topbar .ps-level-tab { padding: 0 6px; }
+  .ps-topbar > .ps-btn--wide:not(.ps-back) .ps-btn-text { display: none; }
+  .ps-topbar > .ps-btn--wide:not(.ps-back):has(.ps-btn-text) { width: 32px; padding: 0; }
+  .ps-premium-slot, .ps-premium-slot .psp-bar { gap: 6px; }
+}
+
+/* While the Confirm frontage card is up, the Back to placement pill and the tips chip step aside (they sat on the card's last line); on the commercial plan the card
+   starts to the right of the layout panel instead of centred over it. */
+.ps-stage:has(.ps-frontage:not([hidden])) .gf-backpill, .ps-stage:has(.ps-frontage:not([hidden])) .pso-dock { display: none; }
+@media (min-width: 600px) {
+  .ps-shell:not([data-view="split"]) .ps-stage[data-commercial="1"] .ps-frontage { left: 342px; transform: none; width: min(520px, calc(100% - 354px)); }
+}
+
+/* Commercial plan, desktop: the pill row (Aerial, Use my own aerial, Grading, Back to placement) wraps inside the panel column so it never runs under the
+   bottom stats bar, and the tips chip and the panel leave room for it (1536 x 730: Back to placement sat on the stats bar and the tips chip on "Settings apply to"). */
+@media (min-width: 600px) {
+  .ps-shell:not([data-view="3d"]):not([data-view="walk"]) .ps-stage[data-commercial="1"] .ps-pillrow { flex-wrap: wrap-reverse; max-width: 318px; row-gap: 6px; }
+  .ps-stage[data-commercial="1"] .cm-dock { max-height: calc(100% - 140px); }
+  .ps-stage[data-commercial="1"] .pso-dock { bottom: 88px; }
+  .ps-stage[data-commercial="1"]:has(.gf-backpill:not([hidden])) .cm-dock { max-height: calc(100% - 176px); }
+  .ps-stage[data-commercial="1"]:has(.gf-backpill:not([hidden])) .pso-dock { bottom: 124px; }
+}
+.ps-pillrow > .gf-backpill { min-height: 30px; height: 30px; padding: 0 12px; font-size: 12px; line-height: 28px; white-space: nowrap; }
+
 /* Hide / show the side panel ------------------------------------------------------------------------------------------------ */
 .ps-panel[hidden] { display: none; }
 .ps-shell[data-panel="hidden"] .ps-main { grid-template-columns: 54px minmax(0, 1fr) 0; }
@@ -1136,6 +1174,12 @@ svg { display: block; }
 
 /* Phone: while the Confirm frontage card is up, the lot card and its design pager step aside (they sat over it and over the plan). */
 @media (max-width: 599.98px) {
+  /* Commercial: Back to placement and the tips chip sit under the stats strip; the pill row clears the closed layout sheet; the strip and the credit
+     step aside while the Confirm frontage card is up. */
+  .ps-stage[data-commercial="1"] .gf-backpill { top: 76px; }
+  .ps-stage[data-commercial="1"] .pso-dock:not(.pso-dock--fixed), .ps-stage[data-commercial="1"]:has(.gf-backpill:not([hidden])) .pso-dock:not(.pso-dock--fixed) { top: 116px; }
+  .ps-stage[data-commercial="1"] .ps-pillrow { bottom: 62px; }
+  .ps-stage:has(.ps-frontage:not([hidden])) .cm-strip, .ps-stage:has(.ps-frontage:not([hidden])) .ps-credit { display: none; }
   .ps-stage:has(.ps-frontage:not([hidden])) .lc-root .lc-pager,
   .ps-stage:has(.ps-frontage:not([hidden])) .lc-root .lc-card { display: none !important; }
 }

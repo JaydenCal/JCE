@@ -27,6 +27,26 @@ export function createStore(project, opts = {}) {
   const limit = opts.historyLimit ?? 100;
   let saveTimer = null;
   let autosaveOn = true;
+  // Two tabs on one design: each tab has an id, and every autosave carries a version counter in a small side key. A tab whose last
+  // known version is older than the stored one (another tab saved since) does not overwrite it until the person chooses to keep editing here.
+  const tabId = `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+  const metaKey = opts.autosaveKey ? `${opts.autosaveKey}.meta` : null;
+  const readMeta = () => {
+    try {
+      const m = JSON.parse(localStorage.getItem(metaKey) || 'null');
+      return m && typeof m === 'object' ? { tab: String(m.tab || ''), v: Number(m.v) || 0 } : { tab: '', v: 0 };
+    } catch { return { tab: '', v: 0 }; }
+  };
+  let knownV = 0;
+  let stale = false;
+  const hasStorage = () => !!metaKey && typeof localStorage !== 'undefined';
+  if (hasStorage()) knownV = readMeta().v;
+  const markStale = () => {
+    if (stale) return;
+    stale = true;
+    clearTimeout(saveTimer);
+    store.emit('autosave-conflict', { reload: () => { if (typeof location !== 'undefined') location.reload(); }, keep: () => store.keepEditing() });
+  };
 
   const store = {
     project: migrate(project),
@@ -164,7 +184,25 @@ export function createStore(project, opts = {}) {
     },
     opContext: ctx,
     saveNow,
+    tabId,
+    get autosaveStale() { return stale; },
+    /** The person chose to keep editing in this tab: its design replaces the stored one from the next save. */
+    keepEditing() {
+      if (!stale) return;
+      stale = false;
+      if (hasStorage()) knownV = readMeta().v;
+      store.emit('autosave-resolved', {});
+      scheduleSave();
+    },
   };
+  if (hasStorage() && typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('storage', (e) => {
+      if (e.key !== opts.autosaveKey && e.key !== metaKey) return;
+      if (!autosaveOn) return;
+      const m = readMeta();
+      if (m.tab && m.tab !== tabId && m.v > knownV) markStale();
+    });
+  }
 
   store.ui.activeLevelId = store.project.levels[0].id;
 
@@ -188,8 +226,14 @@ export function createStore(project, opts = {}) {
 
   function saveNow() {
     if (!autosaveOn || !opts.autosaveKey || typeof localStorage === 'undefined') return;
+    if (hasStorage()) {
+      const m = readMeta();
+      if (m.tab && m.tab !== tabId && m.v > knownV) { markStale(); return; } // a newer save from another tab: wait for the person's choice
+    }
     try {
+      const v = Math.max(knownV, hasStorage() ? readMeta().v : 0) + 1;
       localStorage.setItem(opts.autosaveKey, JSON.stringify(store.project));
+      if (hasStorage()) { localStorage.setItem(metaKey, JSON.stringify({ tab: tabId, v })); knownV = v; }
       store.emit('saved', { at: Date.now() });
     } catch (e) {
       store.emit('autosave-error', e);
