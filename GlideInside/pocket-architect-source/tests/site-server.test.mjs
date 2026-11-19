@@ -40,7 +40,7 @@ function tiffF32(width, height, fn, nodata = -9999) {
   return new Uint8Array(buf);
 }
 
-function upstream({ failDirectAerial = false, fail = null, calls = [], failNeighbours = null } = {}) {
+function upstream({ failDirectAerial = false, fineLimit = false, fail = null, calls = [], failNeighbours = null } = {}) {
   const j = (b) => new Response(JSON.stringify(b), { status: 200, headers: { 'content-type': 'application/json' } });
   const impl = async (input, init) => {
     const url = new URL(String(input));
@@ -73,6 +73,13 @@ function upstream({ failDirectAerial = false, fail = null, calls = [], failNeigh
     if (p.includes('NSW_Imagery_Dates')) return j({ features: [{ attributes: { BlockStartDate: Date.UTC(2022, 2, 5), Resolution_cm: 10 } }] });
     if (p.endsWith('NSW_Imagery/MapServer/export')) {
       if (failDirectAerial && q.get('imageSR') === '7856') return new Response('bad', { status: 400 });
+      if (fineLimit) {
+        // NSW Imagery from 11/2026: 500 for anything finer than about 0.15 m per pixel (ground metres per pixel in MGA, web units in 3857).
+        const [bx0, , bx1] = q.get('bbox').split(',').map(Number);
+        const [sw] = q.get('size').split(',').map(Number);
+        const k = q.get('imageSR') === '3857' ? 1 / Math.cos((LAT * Math.PI) / 180) : 1;
+        if ((bx1 - bx0) / k / sw < 0.15) return new Response('{"error":{"code":500}}', { status: 500, headers: { 'content-type': 'application/json' } });
+      }
       return new Response(new Uint8Array(500).fill(7), { status: 200, headers: { 'content-type': 'image/jpeg' } });
     }
     if (p.endsWith('NSW_5M_Elevation/ImageServer/exportImage')) {
@@ -214,6 +221,24 @@ test('aerial: falls back to web mercator when the MGA export is refused', async 
   assert.equal(meta.georef, 'web-mercator');
   assert.ok(meta.webBbox.maxX > meta.webBbox.minX);
   assert.ok(meta.outWidthPx > 0 && meta.outHeightPx > 0);
+});
+
+test('aerial: NSW refuses exports finer than about 0.15 m per pixel, so the server steps down to 0.2 m per pixel', async () => {
+  const { get, fetchImpl } = mk({ fineLimit: true });
+  const res = await get(`/aerial?state=NSW&srid=7856&bbox=${C.e - 40},${C.n - 50},${C.e + 40},${C.n + 50}&res=0.1`);
+  assert.equal(res.status, 200);
+  const meta = JSON.parse(decodeURIComponent(res.headers.get('x-site-meta')));
+  assert.equal(meta.georef, 'mga');
+  assert.ok(meta.mmPerPx >= 150 && meta.mmPerPx <= 210, `mmPerPx ${meta.mmPerPx}`);
+  assert.ok(fetchImpl.calls.filter((c) => c.endsWith('NSW_Imagery/MapServer/export')).length >= 2);
+});
+
+test('aerial: web mercator fallback also steps down when NSW refuses fine exports', async () => {
+  const { get } = mk({ fineLimit: true, failDirectAerial: true });
+  const res = await get(`/aerial?state=NSW&srid=7856&bbox=${C.e - 40},${C.n - 50},${C.e + 40},${C.n + 50}&res=0.1`);
+  assert.equal(res.status, 200);
+  const meta = JSON.parse(decodeURIComponent(res.headers.get('x-site-meta')));
+  assert.equal(meta.georef, 'web-mercator');
 });
 
 test('aerial: QLD is refused unless imagery is openly licensed aerial', async () => {

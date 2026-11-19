@@ -817,7 +817,16 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     const baseMeta = { source, attribution, licence, captureDate: capture, retrieved: iso() };
     // First choice: draw directly in MGA so the picture is already north up in the grid.
     let direct = null;
-    for (const f of [1, 0.5]) {
+    // NSW Imagery (from 11/2026) answers 500 for any export finer than about 0.15 m per pixel, so after the asked size and half size
+    // also try 0.2 m and 0.3 m per pixel. The browser georeferences from widthPx/heightPx, so a coarser picture still lines up.
+    const span = Math.max(box.maxE - box.minE, box.maxN - box.minN);
+    const longest = Math.max(w, h);
+    const factors = [1, 0.5];
+    for (const r of [0.2, 0.3]) {
+      const f = Math.min(1, span / r / longest);
+      if (f < factors[factors.length - 1] - 0.01) factors.push(f);
+    }
+    for (const f of factors) {
       const dw = Math.max(64, Math.round(w * f));
       const dh = Math.max(64, Math.round(h * f));
       try {
@@ -839,10 +848,26 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     // Fallback: web mercator over a box that covers the MGA box; the browser re-samples it north up (src/site/warp.js).
     const wb = mgaBoxToWebBox(box, zone);
     const k = 1 / Math.cos((centre.lat * Math.PI) / 180); // web units per ground metre
-    const ww = Math.min(maxW, Math.ceil(((wb.maxX - wb.minX) / k) / res));
-    const wh = Math.min(maxH, Math.ceil(((wb.maxY - wb.minY) / k) / res));
-    const web = await upstream(exportUrl, { bbox: `${wb.minX},${wb.minY},${wb.maxX},${wb.maxY}`, bboxSR: '3857', imageSR: '3857', size: `${ww},${wh}`, ...fmt }, { as: 'bytes', timeoutMs: 40000 });
-    if (!/^image\//i.test(web.type) || web.bytes.length < 200) throw new HttpError('SITE_UPSTREAM', 'The imagery service did not return a picture.');
+    let ww = 0;
+    let wh = 0;
+    let web = null;
+    let lastErr = null;
+    // Same resolution floor as above: asked resolution first, then at least 0.2 m and 0.3 m per ground pixel.
+    for (const r of [res, Math.max(res, 0.2), Math.max(res, 0.3)].filter((v, i, a) => a.indexOf(v) === i)) {
+      ww = Math.min(maxW, Math.ceil(((wb.maxX - wb.minX) / k) / r));
+      wh = Math.min(maxH, Math.ceil(((wb.maxY - wb.minY) / k) / r));
+      try {
+        web = await upstream(exportUrl, { bbox: `${wb.minX},${wb.minY},${wb.maxX},${wb.maxY}`, bboxSR: '3857', imageSR: '3857', size: `${ww},${wh}`, ...fmt }, { as: 'bytes', timeoutMs: 40000, retries: 0 });
+        if (/^image\//i.test(web.type) && web.bytes.length >= 200) break;
+      } catch (e) {
+        lastErr = e;
+      }
+      web = null;
+    }
+    if (!web) {
+      if (lastErr) throw lastErr;
+      throw new HttpError('SITE_UPSTREAM', 'The imagery service did not return a picture.');
+    }
     const meta = { ...baseMeta, georef: 'web-mercator', srid, zone, bbox: box, webBbox: { minX: wb.minX, minY: wb.minY, maxX: wb.maxX, maxY: wb.maxY }, widthPx: ww, heightPx: wh, outWidthPx: w, outHeightPx: h, mmPerPx: round(((box.maxE - box.minE) / w) * 1000, 3) };
     return { body: web.bytes.buffer.slice(web.bytes.byteOffset, web.bytes.byteOffset + web.bytes.byteLength), headers: { 'content-type': web.type.split(';')[0], 'x-site-meta': encodeURIComponent(JSON.stringify(meta)) } };
   }
