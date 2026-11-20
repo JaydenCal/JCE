@@ -169,7 +169,9 @@ export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, o
     roofBtn.setAttribute('aria-label', roofBtn.title);
   }
   let nameQueued = false;
-  const fitName = () => { if (nameQueued) return; nameQueued = true; requestAnimationFrame(() => { nameQueued = false; if (more) more.fit(() => fitNameBox(nameInput, el)); else fitNameBox(nameInput, el); }); };
+  let applyingFit = false;
+  let lateMo = null;
+  const fitName = () => { if (nameQueued) return; nameQueued = true; requestAnimationFrame(() => { nameQueued = false; if (more) { applyingFit = true; try { more.fit(() => fitNameBox(nameInput, el)); } finally { applyingFit = false; } lateMo?.takeRecords(); } else fitNameBox(nameInput, el); }); };
   function syncName() {
     if (document.activeElement !== nameInput) nameInput.value = store.project.name;
     nameInput.title = nameInput.value;
@@ -199,10 +201,9 @@ export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, o
   let nameRo = null;
   try { window.addEventListener('resize', fitName); nameRo = new ResizeObserver(fitName); nameRo.observe(el); } catch { /* none */ }
   // Under 600 px the secondary buttons live in a "More" menu so the bar is one or two rows.
-  const more = createTopbarMore(el, { keep: [backBtn, nameInput, historyGroup, viewSeg], slot: premiumSlot, collapse: ['.ps-tut-q', roofBtn, siteBtn, statusSeg, '.psp-bar-slot', fileGroup] });
+  const more = createTopbarMore(el, { keep: [backBtn, nameInput, historyGroup, viewSeg], slot: premiumSlot, collapse: ['.ps-tut-q', roofBtn, siteBtn, statusSeg, fileGroup, levels], signature: () => `${nameInput.value}|${levels.children.length}|${roofBtn.hidden}|${statusSeg.hidden}` });
   // Late arrivals (the premium buttons, Save design, the help button) and level changes can fill the row: look again when children change.
-  let lateMo = null;
-  try { lateMo = new MutationObserver(fitName); lateMo.observe(el, { childList: true }); lateMo.observe(premiumSlot, { childList: true, subtree: true }); lateMo.observe(levels, { childList: true }); } catch { /* none */ }
+  try { lateMo = new MutationObserver(() => { if (applyingFit) return; fitName(); }); lateMo.observe(el, { childList: true }); lateMo.observe(premiumSlot, { childList: true, subtree: true }); lateMo.observe(levels, { childList: true }); } catch { /* none */ }
   fitName();
 
   return { premiumSlot, nameInput, setDemo, refresh: syncAll, dispose: () => { offs.forEach((o) => o?.()); more.dispose(); nameRo?.disconnect(); lateMo?.disconnect(); try { window.removeEventListener('resize', fitName); } catch { /* none */ } } };

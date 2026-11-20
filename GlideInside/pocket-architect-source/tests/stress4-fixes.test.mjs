@@ -96,7 +96,7 @@ test('6. touch wording: no click, keys or Q wheel in the phone tool tips, panel 
 });
 
 test('7. the coach keeps clear of the flow header buttons', () => {
-  assert.match(read('src/tutorial/coach.js'), /const AVOID_FLOW = '[^']*\.gf-head'/);
+  assert.match(read('src/tutorial/coach.js'), /const AVOID_FLOW = '[^']*\.gf-head[^']*'/);
 });
 
 test('8. top bar: lower priority buttons collapse into More before the bar wraps; the name keeps 180 px from 1280', () => {
@@ -104,7 +104,7 @@ test('8. top bar: lower priority buttons collapse into More before the bar wraps
   assert.equal(nameMinFor(1280), 180);
   assert.equal(nameMinFor(1536), 180);
   const t = read('src/ui/topbar.js');
-  assert.match(t, /collapse: \['\.ps-tut-q', roofBtn, siteBtn, statusSeg, '\.psp-bar-slot', fileGroup\]/);
+  assert.match(t, /collapse: \['\.ps-tut-q', roofBtn, siteBtn, statusSeg, fileGroup, levels\]/);
   assert.match(read('src/ui/topbar-more.js'), /function fit\(size\)/);
 });
 

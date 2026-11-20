@@ -6,6 +6,7 @@
 // frontage and Align to nearest boundary. One undo step per turn. Comma and full stop turn 90 (15 with Shift), Q and E 1 degree, Shift and scroll
 // 15 degrees a notch. Escape clears the pivot, then the selection, then leaves the tool. The maths is in rotate-logic.js.
 
+import { tt } from '../phone/touch-text.js';
 import { h } from '../ui/dom.js';
 import { rotationStep } from './tools-meta.js';
 import {
@@ -159,8 +160,8 @@ export function createRotateTool(ed) {
       picking = !picking; sync(); ed.canvas.style.cursor = picking ? 'crosshair' : tool.cursor();
     };
     els.hint.textContent = !has
-      ? 'Click an item, then drag around it to turn it. Or choose Whole development.'
-      : 'Drag to turn. Snaps to 15° and to lot edges. Shift for 1°. Alt and click sets the pivot. Ctrl and click adds items.';
+      ? tt('Click an item, then drag around it to turn it. Or choose Whole development.', 'Tap an item, then drag round it or twist with two fingers to turn it. Or choose Whole development.')
+      : tt('Drag to turn. Snaps to 15° and to lot edges. Shift for 1°. Alt and click sets the pivot. Ctrl and click adds items.', 'Drag or twist with two fingers to turn. Snaps to 15° and to lot edges.');
   }
   function updateChip() {
     if (!drag?.moved) { chip?.remove(); chip = null; return; }

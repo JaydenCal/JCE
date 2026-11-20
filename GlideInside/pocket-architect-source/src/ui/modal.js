@@ -42,7 +42,7 @@ document.addEventListener('keydown', (e) => {
 }, true);
 
 // body: Node, or (close) => Node. footer: Node, or (close) => Node.
-export function openModal({ title, body, footer, size = 'md', dismissible = true, onClose } = {}) {
+export function openModal({ title, body, footer, size = 'md', dismissible = true, sheet = false, onClose } = {}) {
   const host = root || document.body;
   const previous = document.activeElement;
   let closed = false;
@@ -67,7 +67,7 @@ export function openModal({ title, body, footer, size = 'md', dismissible = true
   const foot = typeof footer === 'function' ? footer(close) : footer;
   const dialog = h(
     'div',
-    { class: `ps-modal${size === 'sm' ? ' ps-modal--sm' : size === 'lg' ? ' ps-modal--lg' : size === 'find' ? ' ps-modal--find' : ''}`, role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': titleId },
+    { class: `ps-modal${sheet ? ' ps-modal--sheet' : ''}${size === 'sm' ? ' ps-modal--sm' : size === 'lg' ? ' ps-modal--lg' : size === 'find' ? ' ps-modal--find' : ''}`, role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': titleId },
     h('div', { class: 'ps-modal-head' },
       h('h2', { id: titleId }, title),
       dismissible ? h('button', { class: 'ps-btn ps-btn--ghost ps-btn--icon', type: 'button', 'aria-label': 'Close', onclick: () => close('dismiss') }, icon('close', { size: 18 })) : null),

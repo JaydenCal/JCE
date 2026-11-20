@@ -23,6 +23,7 @@ export function openTemplatePicker({ templates = [], hasEdits = false, designNam
 
   return openModal({
     title: 'Start a new design',
+    sheet: true,
     body: (close) => {
       const finish = (entry) => {
         close('chosen');

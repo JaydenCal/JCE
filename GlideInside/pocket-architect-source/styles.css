@@ -870,7 +870,7 @@ html[data-phone="1"] .ps-modal, html[data-phone="1"] .ps-modal--sm, html[data-ph
   width: 100%; max-height: calc(100dvh - 20px); border-radius: 18px 18px 0 0; border-bottom: 0;
   padding-bottom: env(safe-area-inset-bottom);
 }
-html[data-phone="1"] .ps-modal:not(.ps-modal--sm):not(.ps-modal--find) { height: calc(100dvh - 20px); }
+html[data-phone="1"] .ps-modal--sheet { height: calc(100dvh - 20px); }
 html[data-phone="1"] .ps-modal-head { padding-top: 12px; }
 @media (max-width: 599.98px) {
   .ps-scrim--top { padding: 0; align-items: stretch; }

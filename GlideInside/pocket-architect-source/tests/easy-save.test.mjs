@@ -141,6 +141,8 @@ test('saving never reaches Unlock or a checkout: residential, commercial, signed
       const unlockOpen = () => page.locator('.psp-layer [data-act="unlock"], .psp-layer [data-role="upgrade"], .psp-modal:has-text("Plan Pack")').count();
       const save = page.locator('.ps-topbar [data-action="save"]').first();
       if (await save.count()) {
+        // On a narrow bar the file buttons live in the More menu: open it first.
+        if (await page.locator('.ps-more-pop [data-action="save"]').count()) await page.locator('[data-ps="topbar-more"]').first().click();
         const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 8000 }), save.click()]);
         assert.match(dl.suggestedFilename(), /\.glideinside\.json$/, `${query}: Save to file downloads without paying`);
         assert.equal(await unlockOpen(), 0, `${query}: no Unlock after Save to file`);

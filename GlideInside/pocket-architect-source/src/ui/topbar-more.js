@@ -7,7 +7,7 @@ import { onPhoneChange, isPhoneMode } from '../phone/mode.js';
 
 export const MORE_QUERY = '(max-width: 599.98px)';
 
-export function createTopbarMore(topbar, { keep = [], slot = null, collapse = [], matchMedia = globalThis.matchMedia?.bind(globalThis) } = {}) {
+export function createTopbarMore(topbar, { keep = [], slot = null, collapse = [], signature = () => '', matchMedia = globalThis.matchMedia?.bind(globalThis) } = {}) {
   if (!matchMedia || typeof document === 'undefined') return { dispose() {}, get narrow() { return false; } };
   const mq = matchMedia(MORE_QUERY);
   const btn = h('button', { class: 'ps-btn ps-more-btn', type: 'button', 'aria-haspopup': 'true', 'aria-expanded': 'false', title: 'More', 'aria-label': 'More', dataset: { ps: 'topbar-more' } },
@@ -54,8 +54,12 @@ export function createTopbarMore(topbar, { keep = [], slot = null, collapse = []
     return cy.length > 1 && Math.max(...cy) - Math.min(...cy) > 14;
   };
   const resolve = (c) => (typeof c === 'string' ? topbar.querySelector(c) : c);
+  // fit() is a no-op while nothing it depends on has changed: the bar's width, its parts and the caller's signature (e.g. the design name).
+  let lastSig = '';
+  const sigNow = () => [topbar.clientWidth, topbar.children.length, topbar.querySelectorAll('*').length, signature()].join('|');
   function fit(size) {
     if (wanted() || applying) return;
+    if (sigNow() === lastSig) return;
     applying = true;
     try {
       restore();
@@ -76,6 +80,8 @@ export function createTopbarMore(topbar, { keep = [], slot = null, collapse = []
       if (!moved.size) delete topbar.dataset.moreCollapsed;
     } finally { applying = false; }
     obs?.takeRecords();
+    lastSig = sigNow();
+    fit.afterApply?.();
   }
   const setOpen = (on) => { pop.hidden = !on; btn.setAttribute('aria-expanded', String(on)); topbar.dataset.moreOpen = on ? '1' : '0'; };
   // Phone mode (a finger on a window up to 700 px) uses the menu too, so the bar is Back, the name, undo and Save design.
@@ -84,6 +90,8 @@ export function createTopbarMore(topbar, { keep = [], slot = null, collapse = []
     if (wanted()) { topbar.dataset.more = '1'; wrap.hidden = false; relocate(); } else { setOpen(false); delete topbar.dataset.more; wrap.hidden = true; restore(); }
   };
   btn.addEventListener('click', () => setOpen(pop.hidden));
+  // Choosing an item closes the menu, so a dialog or sheet it opens is never under the menu panel.
+  pop.addEventListener('click', (e) => { if (e.target.closest?.('button, [role="button"], a[href], summary')) setTimeout(() => setOpen(false), 0); });
   const onDown = (e) => { if (!pop.hidden && !wrap.contains(e.target) && !e.target.closest?.('.psp-menu,.psp-modal,.ps-modal')) setOpen(false); };
   const onKey = (e) => { if (e.key === 'Escape' && !pop.hidden) { setOpen(false); btn.focus(); } };
   document.addEventListener('pointerdown', onDown, true);
@@ -93,5 +101,5 @@ export function createTopbarMore(topbar, { keep = [], slot = null, collapse = []
   (mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener?.(apply));
   const offPhone = onPhoneChange(apply);
   apply();
-  return { get narrow() { return wanted(); }, setOpen, fit, dispose() { offPhone(); obs?.disconnect(); document.removeEventListener('pointerdown', onDown, true); document.removeEventListener('keydown', onKey); restore(); wrap.remove(); } };
+  return { get narrow() { return wanted(); }, setOpen, fit, invalidate() { lastSig = ''; }, dispose() { offPhone(); obs?.disconnect(); document.removeEventListener('pointerdown', onDown, true); document.removeEventListener('keydown', onKey); restore(); wrap.remove(); } };
 }

@@ -9,7 +9,7 @@ export const PHONE_CSS = `
 .ps-sheet-grab{width:44px;height:5px;border-radius:3px;background:var(--ps-border-strong,#c3c6cc);margin:8px auto 0}
 .ps-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 16px 8px}
 .ps-sheet-head h2{margin:0;font-size:18px}
-.ps-sheet-close{min-height:44px;min-width:64px;border:0;border-radius:10px;background:transparent;color:var(--ps-accent,#1b4fd1);font:600 16px inherit;font-family:inherit}
+.ps-sheet-close{min-height:44px;min-width:64px;border:0;border-radius:10px;background:transparent;color:var(--ps-accent,#1b4fd1);font-weight:600;font-size:16px;font-family:inherit;}
 .ps-sheet-body{overflow:auto;padding:0 12px 14px;overscroll-behavior:contain}
 .ps-sheet-list{display:flex;flex-direction:column;gap:8px}
 .ps-sheet-item{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:10px 14px;text-align:left;border:1px solid var(--ps-border,#dcdde0);border-radius:12px;background:var(--ps-panel,#fff);color:inherit;font:inherit}
@@ -31,11 +31,11 @@ html[data-phone="1"] .gf-root[data-kind="residential"] .gf-brand{font-size:15px}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-help,html[data-phone="1"] .gf-root[data-kind="residential"] .gf-skip{display:none}
 /* Find your lot: the sample lot and the upload are real secondary buttons on a phone, never hidden with the header links. */
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-alts{display:flex;flex-direction:column;gap:8px}
-html[data-phone="1"] .gf-root[data-kind="residential"] .gf-skip.gf-alt{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;margin:0!important;padding:8px 14px!important;border:1px solid var(--gf-border);border-radius:12px;background:var(--gf-panel);color:var(--gf-text);font:600 15px inherit;font-family:inherit;text-decoration:none;white-space:normal}
+html[data-phone="1"] .gf-root[data-kind="residential"] .gf-skip.gf-alt{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;margin:0!important;padding:8px 14px!important;border:1px solid var(--gf-border);border-radius:12px;background:var(--gf-panel);color:var(--gf-text);font-weight:600;font-size:15px;font-family:inherit;;text-decoration:none;white-space:normal}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-skip.gf-alt[hidden]{display:none}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-fail-actions{flex-direction:column}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-fail-actions .gf-btn{min-height:48px;width:100%}
-html[data-phone="1"] .gf-root[data-kind="residential"] .gf-menu{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:72px;padding:0 14px;border:1px solid var(--gf-border);border-radius:12px;background:var(--gf-panel);color:var(--gf-text);font:600 15px inherit;font-family:inherit}
+html[data-phone="1"] .gf-root[data-kind="residential"] .gf-menu{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:72px;padding:0 14px;border:1px solid var(--gf-border);border-radius:12px;background:var(--gf-panel);color:var(--gf-text);font-weight:600;font-size:15px;font-family:inherit;}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-prog{grid-column:1/-1;order:0;width:100%;flex-basis:auto;justify-content:space-between}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-prog li{padding:2px 6px}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-prog li button{min-width:44px;min-height:44px;justify-content:center}
@@ -77,7 +77,7 @@ html[data-phone="1"] .gf-root[data-step-id="place"] .gf-body{overflow:hidden;pad
 .gf-sheet.is-open{max-height:54%;overflow:auto}
 .gf-prow{display:flex;align-items:center;gap:8px}
 .gf-prow .gf-status{flex:1;min-width:0;margin:0;padding:8px 10px;font-size:14px;line-height:1.3}
-.gf-pmore{flex:none;min-height:44px;min-width:68px;padding:0 12px;border-radius:12px;border:1px solid var(--gf-border);background:var(--gf-panel);color:var(--gf-text);font:600 14px inherit;font-family:inherit}
+.gf-pmore{flex:none;min-height:44px;min-width:68px;padding:0 12px;border-radius:12px;border:1px solid var(--gf-border);background:var(--gf-panel);color:var(--gf-text);font-weight:600;font-size:14px;font-family:inherit;}
 .gf-pmore[data-attention="1"]{border-color:var(--gf-warn);color:var(--gf-warn)}
 .gf-pctl{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
 .gf-pbtn{min-height:52px;border-radius:12px;border:1px solid var(--gf-border);background:var(--gf-panel);color:var(--gf-text);font-size:22px;line-height:1;padding:0}
@@ -90,7 +90,7 @@ html[data-phone="1"] .gf-root[data-step-id="place"] .gf-body{overflow:hidden;pad
 /* Step 4 */
 .gf-check--phone{display:flex;flex-direction:column;gap:10px}
 .gf-ptabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--gf-panel);border:1px solid var(--gf-border);border-radius:14px}
-.gf-ptab{min-height:44px;border:0;border-radius:10px;background:transparent;color:var(--gf-text);font:600 16px inherit;font-family:inherit}
+.gf-ptab{min-height:44px;border:0;border-radius:10px;background:transparent;color:var(--gf-text);font-weight:600;font-size:16px;font-family:inherit;}
 .gf-ptab[aria-selected="true"]{background:var(--gf-acc);color:var(--gf-acc-ink)}
 .gf-viewbox{position:relative;height:min(46vh,420px);min-height:240px;border-radius:12px;overflow:hidden;border:1px solid var(--gf-border);background:#cfd8e0}
 .gf-viewbox>.gf-3d{position:absolute;inset:0;min-height:0;height:auto;border:0;border-radius:0}
@@ -199,6 +199,7 @@ html[data-phone="1"] .lc-root .lc-pager,html[data-phone="1"] .lc-root.is-compact
 html[data-phone="1"] .lc-mini-x{position:relative}
 html[data-phone="1"] .lc-mini-x::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%)}
 html[data-phone="1"] .ps3d-roombar .ps3d-chip,html[data-phone="1"] .ps3d-chip--toggle,html[data-phone="1"] .ps3d-chip--btn,html[data-phone="1"] .ps3d-btn,html[data-phone="1"] .ps-backplan{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+html[data-phone="1"] .ps3d-edit .ps3d-key{display:none}
 html[data-phone="1"] .ps3d-edit,html[data-phone="1"] .ps3d-tool,html[data-phone="1"] .ps3d-itembtn,html[data-phone="1"] .ps3d-armbar .ps3d-btn,html[data-phone="1"] .ps3d-editbar button,html[data-phone="1"] .ps3d-editbar .ps3d-chip,html[data-phone="1"] .ps3d-editbar label,html[data-phone="1"] .ps3d-editbar .ps3d-btn{min-height:44px}
 /* The way back to the placement step stays at the top left in 2D and the Rotate box stands under it. */
 html[data-phone="1"] .ps-shell[data-phone-ui][data-view="2d"] .gf-backpill{top:12px!important}

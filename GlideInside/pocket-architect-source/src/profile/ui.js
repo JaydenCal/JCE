@@ -422,7 +422,7 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   async function openDesigns() {
     if (controller.state.status !== 'in') return openAuth('signin');
     const body = h('div', { dataset: { role: 'my-designs' } });
-    const handle = openModal({ title: 'My designs', size: 'lg', body, footer: (close) => h('button', { class: 'ps-btn', type: 'button', onclick: () => close('done') }, 'Close') });
+    const handle = openModal({ title: 'My designs', size: 'lg', sheet: true, body, footer: (close) => h('button', { class: 'ps-btn', type: 'button', onclick: () => close('done') }, 'Close') });
     const msg = h('p', { class: 'ps-hint', role: 'status', 'aria-live': 'polite' }, 'Loading');
     body.append(msg);
     let data;

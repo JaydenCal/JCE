@@ -6,7 +6,7 @@ import { createHelpMenu } from './menu.js';
 import { isPhoneMode } from '../phone/mode.js';
 import { touchLine } from '../phone/touch-text.js';
 
-const AVOID_FLOW = '.gf-stage,.gf-3d,.gf-foot,.gf-head';
+const AVOID_FLOW = '.gf-stage,.gf-3d,.gf-foot,.gf-head,.gf-card';
 const AVOID_EDITOR = '.lc-card,[data-ps="lot-card"],.ps-stage canvas';
 export const CSS = `
 .tut-card{position:fixed;z-index:2147483000;width:260px;box-sizing:border-box;padding:12px 14px;border-radius:12px;background:#12263a;color:#fff;font:500 13px/1.4 system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35)}
@@ -52,6 +52,15 @@ export function placeCorner(r, size, view, avoid = []) {
     if (!avoid.some((a) => hit(box, a)) && !(r && hit(box, r))) return { left, top };
   }
   return null;
+}
+
+/** The bottom right, standing just above the flow footer (clear of the header and of the control `r`), for a step whose card fills the screen. */
+export function aboveFoot(r, size, light) {
+  const foot = light.reduce((m, b) => (b.top > 200 ? Math.min(m, b.top) : m), innerHeight);
+  const left = innerWidth - size.w - 16, top = foot - size.h - 8;
+  const box = { left, top, right: left + size.w, bottom: top + size.h };
+  const over = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  return top > 60 && !(r && over(box, r)) ? { left, top } : null;
 }
 
 export function createTutorial({ getFlow = () => null, onEnter = null, storage } = {}) {
@@ -148,7 +157,10 @@ export function createTutorial({ getFlow = () => null, onEnter = null, storage }
     }
     const avoidFor = () => [...document.querySelectorAll(document.querySelector('[data-ps="flow-root"]:not([hidden])') ? AVOID_FLOW : AVOID_EDITOR)].map((n) => n.getBoundingClientRect()).filter((b) => b.width > 40 && b.height > 40);
     const corner = (rect) => {
-      const c = placeCorner(rect, { w: el.offsetWidth || 260, h: el.offsetHeight || 120 }, { w: innerWidth, h: innerHeight }, avoidFor());
+      const size = { w: el.offsetWidth || 260, h: el.offsetHeight || 120 };
+      const light = [...document.querySelectorAll('.gf-foot,.gf-head')].map((n) => n.getBoundingClientRect()).filter((b) => b.width > 40 && b.height > 4);
+      // No clear corner (a tall card fills the step): stand over the 3D view rather than over the card's text, but never over the header or footer.
+      const c = placeCorner(rect, size, { w: innerWidth, h: innerHeight }, avoidFor()) || (document.querySelector('[data-ps="flow-root"]:not([hidden])') ? aboveFoot(rect, size, light) : null);
       el.style.left = `${c ? c.left : 8}px`; el.style.top = c ? `${c.top}px` : 'auto'; el.style.bottom = c ? 'auto' : '8px'; arrow.style.display = 'none';
     };
     if (!t) { corner(null); return; }
