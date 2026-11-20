@@ -7,14 +7,14 @@ import { onPhoneChange, isPhoneMode } from '../phone/mode.js';
 
 export const MORE_QUERY = '(max-width: 599.98px)';
 
-export function createTopbarMore(topbar, { keep = [], slot = null, matchMedia = globalThis.matchMedia?.bind(globalThis) } = {}) {
+export function createTopbarMore(topbar, { keep = [], slot = null, collapse = [], matchMedia = globalThis.matchMedia?.bind(globalThis) } = {}) {
   if (!matchMedia || typeof document === 'undefined') return { dispose() {}, get narrow() { return false; } };
   const mq = matchMedia(MORE_QUERY);
   const btn = h('button', { class: 'ps-btn ps-more-btn', type: 'button', 'aria-haspopup': 'true', 'aria-expanded': 'false', title: 'More', 'aria-label': 'More', dataset: { ps: 'topbar-more' } },
     icon('more', { size: 18 }), h('span', { class: 'ps-btn-text' }, 'More'));
   const pop = h('div', { class: 'ps-more-pop', hidden: true, role: 'group', 'aria-label': 'More', dataset: { ps: 'topbar-more-menu' } });
   const wrap = h('div', { class: 'ps-more-wrap', hidden: true }, btn, pop);
-  topbar.append(wrap);
+  if (slot && slot.parentNode === topbar) slot.before(wrap); else topbar.append(wrap);
   let obs = null;
   const moved = new Map(); // node -> placeholder comment
   let applying = false;
@@ -46,6 +46,37 @@ export function createTopbarMore(topbar, { keep = [], slot = null, matchMedia = 
       moved.clear();
     } finally { applying = false; }
   }
+  // Wide screens (600 px and up, no phone mode): the bar stays on ONE row. When it would wrap, the lowest priority buttons (`collapse`, first
+  // to go first) move into the same More menu, one at a time, until it fits. They return as soon as there is room.
+  const isWrapped = () => {
+    const els = [...topbar.querySelectorAll(':scope > *, :scope .psp-bar > *')].filter((e) => !e.hidden && e.offsetParent !== null && !e.classList.contains('ps-topbar-spacer') && !e.classList.contains('psp-sr'));
+    const cy = els.map((e) => e.getBoundingClientRect()).filter((r) => r.width > 0 && r.height > 0).map((r) => r.top + r.height / 2);
+    return cy.length > 1 && Math.max(...cy) - Math.min(...cy) > 14;
+  };
+  const resolve = (c) => (typeof c === 'string' ? topbar.querySelector(c) : c);
+  function fit(size) {
+    if (wanted() || applying) return;
+    applying = true;
+    try {
+      restore();
+      wrap.hidden = true;
+      size?.();
+      for (const c of collapse) {
+        if (!isWrapped()) break;
+        const n = resolve(c);
+        if (!n || n.hidden || !n.isConnected || pop.contains(n)) continue;
+        const ph = document.createComment('more');
+        n.before(ph);
+        moved.set(n, ph);
+        pop.append(n);
+        wrap.hidden = false;
+        topbar.dataset.moreCollapsed = String(moved.size);
+        size?.();
+      }
+      if (!moved.size) delete topbar.dataset.moreCollapsed;
+    } finally { applying = false; }
+    obs?.takeRecords();
+  }
   const setOpen = (on) => { pop.hidden = !on; btn.setAttribute('aria-expanded', String(on)); topbar.dataset.moreOpen = on ? '1' : '0'; };
   // Phone mode (a finger on a window up to 700 px) uses the menu too, so the bar is Back, the name, undo and Save design.
   const wanted = () => mq.matches || isPhoneMode();
@@ -62,5 +93,5 @@ export function createTopbarMore(topbar, { keep = [], slot = null, matchMedia = 
   (mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener?.(apply));
   const offPhone = onPhoneChange(apply);
   apply();
-  return { get narrow() { return wanted(); }, setOpen, dispose() { offPhone(); obs?.disconnect(); document.removeEventListener('pointerdown', onDown, true); document.removeEventListener('keydown', onKey); restore(); wrap.remove(); } };
+  return { get narrow() { return wanted(); }, setOpen, fit, dispose() { offPhone(); obs?.disconnect(); document.removeEventListener('pointerdown', onDown, true); document.removeEventListener('keydown', onKey); restore(); wrap.remove(); } };
 }

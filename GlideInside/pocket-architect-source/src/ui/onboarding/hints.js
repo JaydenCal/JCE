@@ -1,6 +1,8 @@
 // First-use tool hints: a small floating card beside the button with a looping animation, once per tool.
 
 import { createAnim, hasScene, HINT_TEXT, HINT_TITLE } from './anims.js';
+import { isPhoneMode } from '../../phone/mode.js';
+import { HINT_TEXT_TOUCH } from '../../phone/touch-text.js';
 import { findButton, h, placeBeside, planCanvas, readSeen, writeSeen, visible } from './util.js';
 
 export function createHints(ps, { isEnabled, isBusy, layer }) {
@@ -28,16 +30,33 @@ export function createHints(ps, { isEnabled, isBusy, layer }) {
     return findButton('tool', id) || findButton('tool', base);
   }
 
+  // The lot card (its header and body), the fit tips and the other floating cards: a tip never stands over them.
+  const avoidRects = () => [...document.querySelectorAll('.lc-root:not([hidden]) .lc-card, .lc-root:not([hidden]) .lc-head, .lc-root:not([hidden]) .lc-pager, .fitcoach, .ps-credit, .ps3d-editbar, .ps-topbar')]
+    .filter((n) => n.offsetParent !== null).map((n) => n.getBoundingClientRect()).filter((r) => r.width > 4 && r.height > 4);
+
+  // Place the card clear of the avoid rects. With no room for the full card, the animation goes (the text and Got it stay) and it tries again.
+  function placeClear(rect, prefer) {
+    card.classList.remove('pso-hint--compact');
+    anim?.svg && (anim.svg.style.display = '');
+    let side = placeBeside(card, rect, prefer, 14, avoidRects());
+    if (side === 'free' && anim?.svg) {
+      card.classList.add('pso-hint--compact');
+      anim.svg.style.display = 'none';
+      side = placeBeside(card, rect, prefer, 14, avoidRects());
+    }
+    return side;
+  }
+
   function position() {
     if (!card) return;
     const a = anchorEl && visible(anchorEl) ? anchorEl.getBoundingClientRect() : null;
     if (a) {
       const isView = !!anchorEl.dataset?.view;
-      placeBeside(card, a, isView ? ['below', 'left'] : ['right', 'below']);
+      placeClear(a, isView ? ['below', 'left'] : ['right', 'below']);
     } else {
       const c = planCanvas()?.getBoundingClientRect();
       const r = c ? { left: c.left + c.width / 2, right: c.left + c.width / 2, top: c.top + 60, bottom: c.top + 60, width: 0, height: 0 } : { left: 300, right: 300, top: 120, bottom: 120, width: 0, height: 0 };
-      placeBeside(card, r, ['below']);
+      placeClear(r, ['below']);
     }
   }
 
@@ -54,7 +73,7 @@ export function createHints(ps, { isEnabled, isBusy, layer }) {
     card = h('div', { class: 'pso-card pso-hint', role: 'status', 'aria-label': `${HINT_TITLE[id] || id} tip` },
       anim.svg,
       h('p', { class: 'pso-title' }, HINT_TITLE[id] || id),
-      h('p', { class: 'pso-text' }, HINT_TEXT[id] || ''),
+      h('p', { class: 'pso-text' }, (isPhoneMode() ? HINT_TEXT_TOUCH[id] : null) || HINT_TEXT[id] || ''),
       h('div', { class: 'pso-row' }, h('span', { class: 'pso-grow' }), gotIt));
     layer.append(card);
     position();

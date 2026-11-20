@@ -876,3 +876,7 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 .sec .dl-row{margin-top:20px}
 /* Landing pages with a product hero: tighter vertical rhythm on desktop (sections were 112 px top and bottom, a 240 px gap between text blocks). */
 @media(min-width:900px){body:has(.product-hero) .section{padding-block:68px}body:has(.product-hero) .section.cta-band{padding-block:84px}}
+
+/* Touch: 44 px tap targets for the header logo link and the Menu button (phones and small tablets). */
+@media (pointer:coarse) and (max-width:1120px){.nav-toggle{min-height:44px;min-width:44px}}
+@media (pointer:coarse) and (max-width:700px){.site-header .logo{display:inline-flex;align-items:center;min-height:44px;min-width:44px}}

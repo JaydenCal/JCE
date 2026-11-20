@@ -1,6 +1,9 @@
 // The design name box in the top bar: wide enough for the name (up to a limit), never so wide that the bar wraps to a second row.
 export const NAME_MIN_PX = 100;
 export const NAME_MAX_PX = 260;
+/** From 1280 px wide the name keeps at least this much room (the bar collapses lower priority buttons into More first). */
+export const NAME_WIDE_MIN_PX = 180;
+export const nameMinFor = (width) => (Number.isFinite(width) && width >= 1280 ? NAME_WIDE_MIN_PX : NAME_MIN_PX);
 const NAME_PAD_PX = 26; // the input's own padding and border
 
 /** The box width for a name whose text is textPx wide: the text and padding, kept between the minimum and maximum. */
@@ -17,10 +20,11 @@ export function fitNameBox(input, bar) {
     const c = (fitNameBox.canvas ||= document.createElement('canvas')).getContext('2d');
     if (c) { c.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; textPx = c.measureText(input.value).width; }
   } catch { /* the estimate stands */ }
-  const want = nameBoxWidth(textPx);
-  input.style.width = `${NAME_MIN_PX}px`;
+  const min = nameMinFor(window.innerWidth);
+  const want = nameBoxWidth(textPx, { min });
+  input.style.width = `${min}px`;
   const rowH = bar.offsetHeight;
   let w = want;
   input.style.width = `${w}px`;
-  while (w > NAME_MIN_PX && bar.offsetHeight > rowH + 2) { w = Math.max(NAME_MIN_PX, w - 20); input.style.width = `${w}px`; }
+  while (w > min && bar.offsetHeight > rowH + 2) { w = Math.max(min, w - 20); input.style.width = `${w}px`; }
 }

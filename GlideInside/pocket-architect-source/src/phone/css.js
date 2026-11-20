@@ -29,10 +29,16 @@ html[data-phone="1"] .gf-root[data-kind="residential"]{height:100dvh;bottom:auto
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;align-items:center;padding:6px 12px 8px}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-brand{font-size:15px}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-help,html[data-phone="1"] .gf-root[data-kind="residential"] .gf-skip{display:none}
+/* Find your lot: the sample lot and the upload are real secondary buttons on a phone, never hidden with the header links. */
+html[data-phone="1"] .gf-root[data-kind="residential"] .gf-alts{display:flex;flex-direction:column;gap:8px}
+html[data-phone="1"] .gf-root[data-kind="residential"] .gf-skip.gf-alt{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;margin:0!important;padding:8px 14px!important;border:1px solid var(--gf-border);border-radius:12px;background:var(--gf-panel);color:var(--gf-text);font:600 15px inherit;font-family:inherit;text-decoration:none;white-space:normal}
+html[data-phone="1"] .gf-root[data-kind="residential"] .gf-skip.gf-alt[hidden]{display:none}
+html[data-phone="1"] .gf-root[data-kind="residential"] .gf-fail-actions{flex-direction:column}
+html[data-phone="1"] .gf-root[data-kind="residential"] .gf-fail-actions .gf-btn{min-height:48px;width:100%}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-menu{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:72px;padding:0 14px;border:1px solid var(--gf-border);border-radius:12px;background:var(--gf-panel);color:var(--gf-text);font:600 15px inherit;font-family:inherit}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-prog{grid-column:1/-1;order:0;width:100%;flex-basis:auto;justify-content:space-between}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-prog li{padding:2px 6px}
-html[data-phone="1"] .gf-root[data-kind="residential"] .gf-prog li button{min-width:36px;min-height:36px;justify-content:center}
+html[data-phone="1"] .gf-root[data-kind="residential"] .gf-prog li button{min-width:44px;min-height:44px;justify-content:center}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-body{padding:10px 12px;overflow-x:hidden}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-title{font-size:20px;margin-bottom:2px}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-intro{font-size:14px;margin-bottom:10px}
@@ -100,8 +106,7 @@ html[data-phone="1"] .gf-root[data-step-id="place"] .gf-body{overflow:hidden;pad
 
 html[data-phone="1"] .gf-viewbox .ps3d-viewbar,html[data-phone="1"] .gf-viewbox .ps3d-hints,html[data-phone="1"] .gf-viewbox .ps3d-chip--toggle,html[data-phone="1"] .gf-viewbox .lc-root,html[data-phone="1"] .gf-viewbox .ps3d-editbar{display:none!important}
 
-/* The profile offer sits above the bottom bar, in reach of a thumb, and never over the header. */
-html[data-phone="1"].gf-open .ps-prof-prompt{top:auto;bottom:calc(88px + env(safe-area-inset-bottom));left:8px;right:8px;width:auto;transform:none}
+/* The profile offer: in the flow it is an inline card above the bottom bar (see profile/ui.js); in the editor it sits above the dock. */
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-prof-prompt{top:auto;bottom:calc(150px + env(safe-area-inset-bottom));left:8px;right:8px;width:auto;transform:none}
 html[data-phone="1"] .ps-shell[data-phone-ui] .lc-root[data-view="2d"]{display:none!important}
 html[data-phone="1"] .ps3d-edit-state{display:none}
@@ -161,6 +166,49 @@ html[data-phone="1"] .ps-shell[data-phone-ui] .ps-more-pop .ps-group{display:fle
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-more-pop .ps-more-desktop{display:inline-flex;align-items:center}
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-more-pop .ps-prof-save{display:none}
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-more-pop .ps-levels{flex-wrap:wrap}
+/* ---------------- Tap targets: 44 px on a phone (owner stress test, 20/11/2026) ----------------
+   Real size where the layout has room; an invisible hit area (::after) for small pills that sit among other controls. */
+html[data-phone="1"] .ps-btn,html[data-phone="1"] .ps-btn--sm,html[data-phone="1"] .ps-btn--icon{min-height:44px;min-width:44px}
+html[data-phone="1"] .ps-shell[data-phone-ui] .ps-topbar>.ps-back{min-width:44px!important}
+html[data-phone="1"] .ps-modal .ps-input,html[data-phone="1"] .ps-modal .ps-select,html[data-phone="1"] .ps-modal input:not([type=checkbox]):not([type=radio]):not([type=range]),html[data-phone="1"] .ps-modal select,html[data-phone="1"] .ps-prof-form .ps-input{min-height:44px;font-size:16px}
+html[data-phone="1"] .ps-prof-check{min-height:44px;align-items:center}
+html[data-phone="1"] .ps-prof-check input{width:22px;height:22px;margin:0}
+html[data-phone="1"] .ps-prof-tab{min-height:44px}
+html[data-phone="1"] .ps-prof-prompt .ps-btn,html[data-phone="1"] .ps-prof-prompt .ps-prof-x{min-height:44px;min-width:44px}
+html[data-phone="1"] .ps-prof-prompt .ps-prof-x{top:2px;right:2px}
+html[data-phone="1"] .ps-prof-prompt h2{padding-right:44px}
+html[data-phone="1"] .fitc-x{width:44px;height:44px;border-radius:22px;margin:-12px -12px 0 0}
+html[data-phone="1"] .fitc-btn,html[data-phone="1"] .fitcoach-ok,html[data-phone="1"] .fitcoach-skip{min-height:44px;min-width:44px}
+html[data-phone="1"] .pso-btn{min-height:44px;min-width:64px}
+html[data-phone="1"] .gf-backpill{min-height:44px!important;height:44px;padding:0 16px!important;line-height:1.2;font-size:13px!important}
+html[data-phone="1"] .ps-status-btn,html[data-phone="1"] .ps-credit-chip{position:relative}
+html[data-phone="1"] .ps-status-btn::after,html[data-phone="1"] .ps-credit-chip::after{content:"";position:absolute;left:-6px;right:-6px;top:50%;height:44px;transform:translateY(-50%)}
+html[data-phone="1"] .ps-seg-btn,html[data-phone="1"] .ps-level-tab,html[data-phone="1"] .ps-radio{min-height:44px}
+html[data-phone="1"] .ps-rot-input,html[data-phone="1"] .ps-rot-btn{min-height:44px}
+html[data-phone="1"] .ps-panel-hide{min-width:44px;min-height:44px}
+html[data-phone="1"] .ps-more-pop .psp-menu-btn,html[data-phone="1"] .ps-more-pop .psp-bar-slot>*,html[data-phone="1"] .ps-more-pop .psp-menu-wrap>*{min-height:44px}
+html[data-phone="1"] .ps-drawer input,html[data-phone="1"] .ps-drawer select{min-height:44px;font-size:16px}
+html[data-phone="1"] .ps-drawer .ps-chip,html[data-phone="1"] .ps-drawer [role=tab],html[data-phone="1"] .ps-drawer button{min-height:44px;min-width:44px}
+/* 3D overlays: the lot card controls, the room chips, Edit room and Back to the plan. */
+html[data-phone="1"] .lc-chev,html[data-phone="1"] .lc-min,html[data-phone="1"] .lc-more{position:relative;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+html[data-phone="1"] .lc-more{height:44px}
+html[data-phone="1"] .lc-root .lc-tab,html[data-phone="1"] .lc-root.is-compact .lc-tab{height:44px;min-height:44px}
+html[data-phone="1"] .lc-root .lc-btn,html[data-phone="1"] .lc-root.is-compact .lc-btn,html[data-phone="1"] .lc-root .lc-sendbtn{min-height:44px;height:auto}
+html[data-phone="1"] .lc-root .lc-pager button,html[data-phone="1"] .lc-root.is-compact .lc-pager button{width:44px;height:44px;line-height:42px}
+html[data-phone="1"] .lc-root .lc-pager,html[data-phone="1"] .lc-root.is-compact .lc-pager{height:48px}
+html[data-phone="1"] .lc-mini-x{position:relative}
+html[data-phone="1"] .lc-mini-x::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%)}
+html[data-phone="1"] .ps3d-roombar .ps3d-chip,html[data-phone="1"] .ps3d-chip--toggle,html[data-phone="1"] .ps3d-chip--btn,html[data-phone="1"] .ps3d-btn,html[data-phone="1"] .ps-backplan{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+html[data-phone="1"] .ps3d-edit,html[data-phone="1"] .ps3d-tool,html[data-phone="1"] .ps3d-itembtn,html[data-phone="1"] .ps3d-armbar .ps3d-btn,html[data-phone="1"] .ps3d-editbar button,html[data-phone="1"] .ps3d-editbar .ps3d-chip,html[data-phone="1"] .ps3d-editbar label,html[data-phone="1"] .ps3d-editbar .ps3d-btn{min-height:44px}
+/* The way back to the placement step stays at the top left in 2D and the Rotate box stands under it. */
+html[data-phone="1"] .ps-shell[data-phone-ui][data-view="2d"] .gf-backpill{top:12px!important}
+html[data-phone="1"] .ps-stage:has(.gf-backpill:not([hidden])) .ps-rot-box{top:64px}
+/* The save offer in the editor clears the move and turn buttons. */
+html[data-phone="1"] .ps-shell[data-phone-ui]:has(.ps-quick:not([hidden])) .ps-prof-prompt{bottom:calc(236px + env(safe-area-inset-bottom))}
+/* Pinch zoom: never on the page while the editor is up, and never when a pinch starts on a 3D overlay (the lot card, room chips, credit text). */
+html[data-phone="1"] .ps-shell[data-phone-ui]{touch-action:pan-x pan-y}
+html[data-phone="1"] .ps-shell[data-phone-ui] .ps-stage,html[data-phone="1"] .lc-root,html[data-phone="1"] .lc-root>*,html[data-phone="1"] .ps-credit,html[data-phone="1"] .ps-credit *,html[data-phone="1"] .ps3d-roombar,html[data-phone="1"] .ps3d-roombar *,html[data-phone="1"] .ps3d-viewbar,html[data-phone="1"] .ps3d-editbar,html[data-phone="1"] .ps3d-hints{touch-action:pan-x pan-y}
+
 /* 3D on a phone: the dock holds the Plan toggle, and the 3D overlays keep clear of the dock. */
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-hintbar{display:none}
 `;

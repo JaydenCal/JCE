@@ -1,6 +1,8 @@
 // Guided first-use tour: spotlight cut-out, a small card and interactive steps detected from store events.
 
 import { createAnim } from './anims.js';
+import { isPhoneMode } from '../../phone/mode.js';
+import { touchLine } from '../../phone/touch-text.js';
 import { findButton, h, isTyping, planCanvas, placeBeside, visible, clamp } from './util.js';
 
 const lv = (ps) => ps.store.level();
@@ -235,7 +237,7 @@ export function createTour(ps, { layer, onFinish, onActive }) {
       h('p', { class: 'pso-step' }, h('span', null, `Step ${i + 1} of ${steps.length}`), h('span', { class: 'pso-tick' }, 'Done')),
       anim?.svg,
       h('p', { class: 'pso-title' }, step.title),
-      h('p', { class: 'pso-text' }, step.text),
+      h('p', { class: 'pso-text' }, isPhoneMode() ? touchLine(step.text) : step.text),
       h('div', { class: 'pso-row' }, skip, h('span', { class: 'pso-grow' }), back, next));
     card?.replaceWith(nc);
     if (!card) layer.append(nc);

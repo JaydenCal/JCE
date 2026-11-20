@@ -86,7 +86,21 @@ export function clamp(v, a, b) {
 }
 
 // Place a floating card beside a rect, preferring the given sides, kept inside the viewport.
-export function placeBeside(card, rect, prefer = ['right', 'below', 'left', 'above'], gap = 14) {
+const hits = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+
+/** Where a card of size (w, h) may stand: inside the viewport, clear of every rect in `avoid` and of `rect` (the control it points at). Pure. */
+export function clearSpot({ x, y, w, h }, { vw, vh, avoid = [], rect = null, step = 12 }) {
+  const free = (px, py) => px >= 8 && py >= 8 && px + w <= vw - 8 && py + h <= vh - 8 && !avoid.some((a) => hits({ left: px, top: py, right: px + w, bottom: py + h }, a)) && !(rect && hits({ left: px, top: py, right: px + w, bottom: py + h }, rect));
+  if (free(x, y)) return { x, y };
+  // Slide up and down from the wanted spot, nearest first, keeping the same column.
+  for (let d = step; d <= vh; d += step) {
+    if (free(x, y + d)) return { x, y: y + d };
+    if (free(x, y - d)) return { x, y: y - d };
+  }
+  return null;
+}
+
+export function placeBeside(card, rect, prefer = ['right', 'below', 'left', 'above'], gap = 14, avoid = []) {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const cw = card.offsetWidth;
@@ -98,6 +112,14 @@ export function placeBeside(card, rect, prefer = ['right', 'below', 'left', 'abo
     else if (side === 'left') { x = rect.left - gap - cw; y = rect.top + rect.height / 2 - ch / 2; }
     else if (side === 'below') { x = rect.left + rect.width / 2 - cw / 2; y = rect.bottom + gap; }
     else { x = rect.left + rect.width / 2 - cw / 2; y = rect.top - gap - ch; }
+    if (avoid.length) {
+      const spot = clearSpot({ x, y, w: cw, h: ch }, { vw, vh, avoid, rect });
+      if (!spot) continue;
+      card.style.left = `${Math.round(spot.x)}px`;
+      card.style.top = `${Math.round(spot.y)}px`;
+      card.dataset.side = side;
+      return side;
+    }
     if (x >= 8 && y >= 8 && x + cw <= vw - 8 && y + ch <= vh - 8) {
       card.style.left = `${Math.round(x)}px`;
       card.style.top = `${Math.round(y)}px`;

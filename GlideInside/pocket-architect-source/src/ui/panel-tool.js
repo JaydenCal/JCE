@@ -11,6 +11,7 @@ import { hardstandPanel } from '../commercial/ui/panel-hardstand.js';
 import { carparkPanel } from '../commercial/ui/panel-carpark.js';
 import { pavePanel } from './panel-pave.js';
 import { drivePIPanel } from './panel-drivepi.js';
+import { tt } from '../phone/touch-text.js';
 
 function helpCard(title, lines) {
   return h('div', null, h('div', { class: 'ps-sel-title' }, h('strong', null, title)), h('ul', { class: 'ps-hint', style: { paddingLeft: '18px', margin: '0 0 10px' } }, lines.map((l) => h('li', { style: { marginBottom: '3px' } }, l))));
@@ -56,10 +57,14 @@ export function buildToolPanel(ctx, tool) {
     }
     body.append(section('Size', list));
     body.append(h('ul', { class: 'ps-hint', style: { paddingLeft: '18px' } },
-      h('li', null, 'Move over a wall to preview. Click to place.'),
-      h('li', null, 'Red means it overlaps or does not fit.'),
-      kind === 'door' ? h('li', null, 'Tab flips the swing. Shift and Tab flips the hinge.') : null,
-      h('li', null, 'Hold Alt to ignore snapping.')));
+      ...tt([
+        h('li', null, 'Move over a wall to preview. Click to place.'),
+        h('li', null, 'Red means it overlaps or does not fit.'),
+        kind === 'door' ? h('li', null, 'Tab flips the swing. Shift and Tab flips the hinge.') : null,
+        h('li', null, 'Hold Alt to ignore snapping.')], [
+        h('li', null, 'Tap a wall to place it.'),
+        h('li', null, 'Red means it overlaps or does not fit.'),
+        kind === 'door' ? h('li', null, 'Select it afterwards to flip the swing or the hinge.') : null])));
   }
 
   function furniturePanel() {
@@ -75,9 +80,13 @@ export function buildToolPanel(ctx, tool) {
       button('Choose item', () => store.emit('plan:open-drawer'), { cls: 'ps-btn--primary' }),
       button('Stop placing', () => setTool(store, 'select'))));
     body.append(h('ul', { class: 'ps-hint', style: { paddingLeft: '18px' } },
-      h('li', null, 'Click the plan to place. Keep clicking to place more.'),
-      h('li', null, 'Comma and full stop rotate 90 degrees. Add Shift for 15 degrees, or hold Shift and scroll.'),
-      h('li', null, 'Hold Q for the inventory wheel to pick another item without leaving the plan.')));
+      ...tt([
+        h('li', null, 'Click the plan to place. Keep clicking to place more.'),
+        h('li', null, 'Comma and full stop rotate 90 degrees. Add Shift for 15 degrees, or hold Shift and scroll.'),
+        h('li', null, 'Hold Q for the inventory wheel to pick another item without leaving the plan.')], [
+        h('li', null, 'Tap the plan to place. Keep tapping to place more.'),
+        h('li', null, 'Twist with two fingers to turn it, or use the on-screen rotate buttons.'),
+        h('li', null, 'Tap Choose item to pick another piece without leaving the plan.')])));
   }
 
   function tankPanel() {
@@ -90,7 +99,7 @@ export function buildToolPanel(ctx, tool) {
         h('span', { class: 'ps-mono', style: { fontSize: '12px', color: 'var(--ps-muted)' } }, `Ø${t.diameter} × ${t.height}`)));
     }
     body.append(section('Capacity', list));
-    body.append(h('p', { class: 'ps-hint' }, 'Click the plan to place a tank. Select it later to see the roof area on plan.'));
+    body.append(h('p', { class: 'ps-hint' }, tt('Click the plan to place a tank. Select it later to see the roof area on plan.', 'Tap the plan to place a tank. Select it later to see the roof area on plan.')));
   }
 
   function deckPanel() {
@@ -115,8 +124,8 @@ export function buildToolPanel(ctx, tool) {
       if (ctx.run('set_status', { ids: ['*'], status: 'existing' })) ctx.toast('Everything is now marked existing.', { kind: 'ok', action: { label: 'Undo', onClick: () => store.undo() } });
     }, { icon: icon('check', { size: 16 }) })));
     body.append(h('ul', { class: 'ps-hint', style: { paddingLeft: '18px' } },
-      h('li', null, 'Click a wall to mark it and its openings.'),
-      h('li', null, 'Click a room to mark it with its own walls.'),
+      h('li', null, tt('Click a wall to mark it and its openings.', 'Tap a wall to mark it and its openings.')),
+      h('li', null, tt('Click a room to mark it with its own walls.', 'Tap a room to mark it with its own walls.')),
       h('li', null, 'Drag across several to paint them in one step.'),
       h('li', null, 'Use the Existing, Proposed and Both switch in the top bar to check the result.')));
   }
@@ -160,9 +169,11 @@ export function buildToolPanel(ctx, tool) {
     body.append(h('div', { class: 'ps-row', style: { marginBottom: '10px' } },
       button(st.missing ? 'Upload image' : 'Replace image', () => input.click(), { icon: icon('underlay', { size: 16 }) }),
       button(calibrating ? 'Cancel calibration' : 'Calibrate', () => (calibrating ? editor.cancelCalibration() : editor.startCalibration()), { cls: calibrating ? '' : 'ps-btn--primary', icon: icon('measure', { size: 16 }) })));
-    body.append(h('p', { class: 'ps-hint' }, calibrating
+    body.append(h('p', { class: 'ps-hint' }, tt(calibrating
       ? 'Click two points a known distance apart on the image, then type the true distance.'
-      : 'Calibrate by clicking two points a known distance apart, then entering the true distance in millimetres.'));
+      : 'Calibrate by clicking two points a known distance apart, then entering the true distance in millimetres.', calibrating
+      ? 'Tap two points a known distance apart on the image, then type the true distance.'
+      : 'Calibrate by tapping two points a known distance apart, then entering the true distance in millimetres.')));
     const setU = (label, fn) => ctx.apply(label, (p) => fn(p.site.underlay));
     const opacity = h('input', { class: 'ps-range', type: 'range', min: '5', max: '100', step: '1', 'aria-label': 'Underlay opacity' });
     opacity.value = String(Math.round((u.opacity ?? 0.5) * 100));
@@ -190,13 +201,13 @@ export function buildToolPanel(ctx, tool) {
     else if (tool === 'deck') deckPanel();
     else if (tool === 'status') statusPanel();
     else if (tool === 'underlay') underlayPanel();
-    else if (tool === 'room') body.append(helpCard('Room', ['Drag a rectangle on the plan.', 'Then choose the room type and name.', 'Rooms that touch share their wall.', 'Hold Alt to ignore snapping.']));
-    else if (tool === 'wall') body.append(helpCard('Wall', ['Click to start, click again for each corner.', 'Double click, Enter or Esc finishes.', 'Hold Shift to lock to 15 degree steps.', 'Type a length and press Enter to set it exactly.', 'Backspace removes the last wall.']));
-    else if (tool === 'stairs') body.append(helpCard('Stairs', ['Drag a rectangle along the run, from the bottom step to the top.', 'Click once for a standard 1.0 by 3.6 m flight.', 'The arrow shows the way up.']));
-    else if (tool === 'measure') body.append(helpCard('Measure', ['Click two points to read a distance.', 'Or right click anywhere on the plan to start, then click to finish.', 'Nothing is saved to the design.', 'Esc clears the measurement.']));
-    else if (tool === 'rotate') body.append(helpCard('Rotate', ['Click an item, then drag round it to turn it. A turns the whole development.', 'Snaps to 15 degrees and to the lot edges. Hold Shift for 1 degree steps.', 'Alt and click sets the pivot. Ctrl and click adds more items.', 'Type an exact angle or use the buttons above the plan.', 'Comma and full stop turn 90 degrees. Esc leaves.']));
-    else if (tool === 'commercial') body.append(helpCard('Commercial layout', ['Drag a unit to slide its row.', 'Drag the gold ring to turn the row. Hold Shift for 15 degree steps.', 'Arrow keys nudge the row 0.1 m, Shift for 1 m. Q and E turn it 1 degree.', 'Unit sizes, doors, offices, mezzanines and parking are set in the panel on the left.', 'Figures are indicative, check with council.']));
-    else body.append(helpCard(toolLabel(tool), ['Press V to go back to Select.']));
+    else if (tool === 'room') body.append(helpCard('Room', tt(['Drag a rectangle on the plan.', 'Then choose the room type and name.', 'Rooms that touch share their wall.', 'Hold Alt to ignore snapping.'], ['Drag a rectangle on the plan.', 'Then choose the room type and name.', 'Rooms that touch share their wall.'])));
+    else if (tool === 'wall') body.append(helpCard('Wall', tt(['Click to start, click again for each corner.', 'Double click, Enter or Esc finishes.', 'Hold Shift to lock to 15 degree steps.', 'Type a length and press Enter to set it exactly.', 'Backspace removes the last wall.'], ['Tap to start, tap again for each corner.', 'Double tap to finish.', 'Use Undo to remove the last wall.'])));
+    else if (tool === 'stairs') body.append(helpCard('Stairs', tt(['Drag a rectangle along the run, from the bottom step to the top.', 'Click once for a standard 1.0 by 3.6 m flight.', 'The arrow shows the way up.'], ['Drag a rectangle along the run, from the bottom step to the top.', 'Tap once for a standard 1.0 by 3.6 m flight.', 'The arrow shows the way up.'])));
+    else if (tool === 'measure') body.append(helpCard('Measure', tt(['Click two points to read a distance.', 'Or right click anywhere on the plan to start, then click to finish.', 'Nothing is saved to the design.', 'Esc clears the measurement.'], ['Tap two points to read a distance.', 'Nothing is saved to the design.', 'Choose another tool to clear the measurement.'])));
+    else if (tool === 'rotate') body.append(helpCard('Rotate', tt(['Click an item, then drag round it to turn it. A turns the whole development.', 'Snaps to 15 degrees and to the lot edges. Hold Shift for 1 degree steps.', 'Alt and click sets the pivot. Ctrl and click adds more items.', 'Type an exact angle or use the buttons above the plan.', 'Comma and full stop turn 90 degrees. Esc leaves.'], ['Tap an item, then drag round it to turn it, or twist with two fingers.', 'Snaps to 15 degrees and to the lot edges.', 'Type an exact angle or use the on-screen rotate buttons.'])));
+    else if (tool === 'commercial') body.append(helpCard('Commercial layout', tt(['Drag a unit to slide its row.', 'Drag the gold ring to turn the row. Hold Shift for 15 degree steps.', 'Arrow keys nudge the row 0.1 m, Shift for 1 m. Q and E turn it 1 degree.', 'Unit sizes, doors, offices, mezzanines and parking are set in the panel on the left.', 'Figures are indicative, check with council.'], ['Drag a unit to slide its row.', 'Drag the gold ring to turn the row.', 'Unit sizes, doors, offices, mezzanines and parking are set in the panel.', 'Figures are indicative, check with council.'])));
+    else body.append(helpCard(toolLabel(tool), [tt('Press V to go back to Select.', 'Tap Select to go back.')]));
   }
 
   render();

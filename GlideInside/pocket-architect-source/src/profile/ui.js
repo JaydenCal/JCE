@@ -17,7 +17,9 @@ const STYLE = `
 .ps-prof-btn[data-state="in"] .ps-prof-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ps-ok);margin-left:2px}
 .ps-prof-save-text{display:inline;font-weight:600}.ps-shell .ps-topbar .ps-btn.ps-prof-save{height:40px;padding:0 16px!important;margin-right:16px;border-radius:8px;background:#1f7a4d!important;border-color:#1f7a4d!important;color:#fff!important;font-size:15px;gap:6px}.ps-shell .ps-topbar .ps-btn.ps-prof-save:hover{background:#18643f!important}.ps-shell .ps-topbar .ps-btn.ps-prof-save .ps-icon{color:#fff}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}
 @media (min-width:1700px){.ps-shell .ps-topbar .ps-prof-save .ps-prof-save-text{display:inline}.ps-shell .ps-topbar .ps-prof-save:has(.ps-prof-save-text){width:auto;padding:0 11px}}
-.gf-open .ps-prof-prompt{position:fixed;z-index:950;top:64px;bottom:auto}
+/* In the guided flow the offer is an inline card between the step and the Back / Next bar: it never covers the fit card or the facts. */
+.gf-root>.ps-prof-prompt{position:relative;left:auto;top:auto;bottom:auto;right:auto;transform:none;z-index:auto;flex:none;width:auto;max-width:640px;margin:0 20px 10px;align-self:flex-start;animation:none}
+@media (max-width:640px){.gf-root>.ps-prof-prompt{margin:0 12px 8px;align-self:stretch;max-width:none;padding:10px 12px}.gf-root>.ps-prof-prompt p{margin:0 0 8px;font-size:13px}}
 .ps-prof-prompt{position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:40;width:min(380px,calc(100% - 32px));padding:14px 14px 12px;background:var(--ps-panel);color:var(--ps-text);border:1px solid var(--ps-border-strong);border-left:4px solid var(--ps-accent);border-radius:var(--ps-radius-lg);box-shadow:var(--ps-shadow,0 6px 24px rgba(0,0,0,.2));animation:ps-toast-in .18s ease-out}
 .ps-prof-prompt h2{margin:0 0 4px;font-size:16px;font-weight:600}
 .ps-prof-prompt p{margin:0 0 10px;font-size:14px;color:var(--ps-muted)}
@@ -157,7 +159,11 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   let savedTimer = null;
   async function onSaveClick() {
     if (controller.state.status !== 'in') { policy.openFromButton(); return; }
-    if (controller.state.saveState === 'limit') { openLimit(); return; }
+    if (controller.state.saveState === 'limit') {
+      // The count may have dropped since the limit was hit (a design deleted here or in another tab): check before showing the full message.
+      try { await controller.listDesigns(); } catch { /* keep the limit state */ }
+      if (controller.state.saveState === 'limit') { openLimit(); return; }
+    }
     saveText.textContent = 'Saving';
     let r = null;
     try { r = await controller.saveNow(); } catch { r = null; }
@@ -257,7 +263,17 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
         h('button', { class: 'ps-btn', type: 'button', dataset: { action: 'prompt-signin' }, onclick: () => { closePrompt(); openAuth('signin'); } }, 'Sign in'),
         h('button', { class: 'ps-btn ps-btn--ghost', type: 'button', dataset: { action: 'prompt-notnow' }, onclick: () => notNow() }, 'Not now')));
     // Inside the guided flow (Check it step) the prompt stands above the flow, in the page itself.
-    (document.documentElement.classList.contains('gf-open') ? document.body : refs.shell || document.body).append(prompt);
+    const flowRoot = document.documentElement.classList.contains('gf-open') ? document.querySelector('.gf-root:not([hidden])') : null;
+    const flowFoot = flowRoot?.querySelector(':scope > .gf-foot');
+    if (flowRoot && flowFoot) {
+      flowFoot.before(prompt);
+      // When the flow closes the card goes on into the editor, where it stands under the top bar as before.
+      const mo = new MutationObserver(() => {
+        if (!prompt) { mo.disconnect(); return; }
+        if (!document.documentElement.classList.contains('gf-open')) { (refs.shell || document.body).append(prompt); mo.disconnect(); }
+      });
+      mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    } else (refs.shell || document.body).append(prompt);
     document.addEventListener('keydown', onPromptKey, true);
     window.addEventListener('keydown', onPromptKey, true);
     // Focus belongs to the prompt while it is open: a leftover onboarding button must not keep it (Escape then goes to the prompt).

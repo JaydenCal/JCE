@@ -34,13 +34,17 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
   const findBtn = h('button', { class: 'gf-btn gf-btn--primary', type: 'button', dataset: { ps: 'flow-find' } }, 'Find my lot');
   const sugg = h('ul', { class: 'gf-suggest', role: 'listbox', hidden: true, dataset: { ps: 'flow-suggest' } });
   const status = h('p', { class: 'gf-note', role: 'status', 'aria-live': 'polite', dataset: { ps: 'flow-lot-status' } });
-  const sample = h('button', { class: 'gf-skip', type: 'button', style: { marginLeft: '0', padding: '0' }, dataset: { ps: 'flow-sample' }, onclick: () => useSample() }, 'No address? Try a sample lot');
+  const sample = h('button', { class: 'gf-skip gf-alt', type: 'button', style: { marginLeft: '0', padding: '0' }, dataset: { ps: 'flow-sample' }, onclick: () => useSample() }, 'No address? Try a sample lot');
   // Not found: the sample lot and the boundary upload are always offered side by side, so the person is never stuck.
-  const upload = h('button', { class: 'gf-skip', type: 'button', hidden: true, style: { marginLeft: '12px', padding: '0' }, dataset: { ps: 'flow-upload' }, onclick: () => useUpload() }, 'Upload your own boundary');
+  const upload = h('button', { class: 'gf-skip gf-alt', type: 'button', hidden: true, style: { marginLeft: '12px', padding: '0' }, dataset: { ps: 'flow-upload' }, onclick: () => useUpload() }, 'Upload your own boundary');
+  // When the address or map service fails, the way on is right under the message: a sample lot, or the editor with no lot.
+  const failActions = h('div', { class: 'gf-fail-actions', hidden: true, dataset: { ps: 'flow-fail-actions' } },
+    h('button', { class: 'gf-btn', type: 'button', dataset: { ps: 'flow-fail-sample' }, onclick: () => useSample() }, 'Try a sample lot'),
+    h('button', { class: 'gf-btn', type: 'button', dataset: { ps: 'flow-fail-skip' }, onclick: () => (ctx.flow?.skip ? ctx.flow.skip() : ctx.flow?.editor?.()) }, 'Keep drawing without a lot'));
   const confirm = h('div', { dataset: { ps: 'flow-lot-confirm' } });
   const search = h('div', { class: 'gf-card' },
     h('label', { class: 'gf-note', style: { margin: '0 0 6px', display: 'block', fontWeight: '600' } }, 'Street address'),
-    h('div', { class: 'gf-field' }, input, findBtn, sugg), status, h('p', { class: 'gf-note' }, sample, upload));
+    h('div', { class: 'gf-field' }, input, findBtn, sugg), status, failActions, h('p', { class: 'gf-note gf-alts' }, sample, upload));
   const el = h('div', { class: 'gf-grid', style: { alignItems: 'start' } }, h('div', null, search), confirm);
 
   const setSugg = (items) => {
@@ -151,7 +155,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
 
   function paint() {
     findBtn.disabled = loading;
-    upload.hidden = !notFound;
+    upload.hidden = !(notFound || (error && !loading));
     sample.textContent = notFound ? 'Try a sample lot' : 'No address? Try a sample lot';
     if (loading) {
       if (!loadStart) { loadStart = Date.now(); slowT = setTimeout(() => { if (loading && !disposed) paint(); }, 8000); }
@@ -165,6 +169,8 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     confirm.setAttribute('aria-busy', String(!!loading));
     if (slow && error && !loading) status.append(' ', h('button', { class: 'gf-skip', type: 'button', style: { padding: '0 0 0 6px', fontWeight: '700' }, dataset: { ps: 'flow-retry' }, onclick: () => find() }, 'Try again'));
     status.className = `gf-note${error && !loading ? ' gf-note--bad' : ''}`;
+    failActions.hidden = !(error && !loading);
+    sample.hidden = !failActions.hidden;
     paintConfirm();
   }
 

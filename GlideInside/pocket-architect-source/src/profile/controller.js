@@ -198,8 +198,16 @@ export function createProfileController({
   const listDesigns = async () => {
     const res = await api.listDesigns();
     set({ limit: res.limit ?? state.limit });
+    clearLimitIfRoom(Array.isArray(res.designs) ? res.designs.length : null);
     return res;
   };
+  /** The profile is no longer full: drop the stale "limit" state so Save design retries at once and the status line updates. */
+  function clearLimitIfRoom(count) {
+    if (state.saveState !== 'limit') return false;
+    if (count != null && count >= state.limit) return false;
+    set({ saveState: 'unsaved', message: '' });
+    return true;
+  }
   /** Fetch a saved design. A Plan Pack linked to it hands its token back, which is stored before the design opens so it unlocks at once. */
   async function openDesign(id, { replaceProject }) {
     await flush();
@@ -218,11 +226,12 @@ export function createProfileController({
   const removeDesign = async (id) => {
     await api.deleteDesign(id);
     if (state.designId === id) set({ designId: null });
+    clearLimitIfRoom(null);
   };
 
   return {
     state, init, signUp, signIn, signOut, deleteAccount, setMarketing, changePassword, saveNow, noteChange, reconcile, flush,
-    listDesigns, openDesign, renameDesign, duplicateDesign, removeDesign,
+    listDesigns, clearLimitIfRoom, openDesign, renameDesign, duplicateDesign, removeDesign,
     subscribe: (fn) => { listeners.add(fn); return () => listeners.delete(fn); },
     dispose: () => { clearTimers(); listeners.clear(); },
   };

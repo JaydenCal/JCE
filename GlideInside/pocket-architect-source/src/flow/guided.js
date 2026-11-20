@@ -156,6 +156,8 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
     close() { leave(); root.hidden = true; document.documentElement.classList.remove('gf-open'); },
     /** Straight to the editor (step 5) without the step's own question: used by "Make it narrower". */
     editor: () => toEditor(),
+    /** The Skip to editor action (also runs the page's onSkip), for a step that offers it itself. */
+    skip: () => skipToEditor(),
     go,
     refresh,
     destroy() { leave(); offPhone(); document.removeEventListener('keydown', onKey); root.remove(); },
