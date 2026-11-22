@@ -146,5 +146,5 @@ test('payload: the 3D code waits behind the start screen, and the first screen p
   assert.match(v, /startScreenCovers/);
   const b = read('tools/build-single.mjs');
   assert.match(b, /modulepreload/);
-  assert.match(b, /media="print" onload=/);
+  assert.match(b, /rel="preload" href="..\/..\/assets\/fonts\/barlow/); // the fonts are self hosted and preloaded (the old Google Fonts print swap link is gone)
 });

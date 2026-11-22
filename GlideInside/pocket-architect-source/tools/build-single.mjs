@@ -64,6 +64,10 @@ if (mbToken) {
   else console.warn('MAPBOX_PUBLIC_TOKEN was ignored: it must be a public token that starts with pk.');
 }
 
+// Self hosted fonts (23/11/2026; were fetched from Google Fonts, which cost a connection and a late swap). Latin subset, files in website-live/assets/fonts.
+const fontFaces = [['Barlow', 400, 'barlow-latin-400-normal'], ['Barlow', 500, 'barlow-latin-500-normal'], ['Barlow', 600, 'barlow-latin-600-normal'], ['Barlow Condensed', 500, 'barlow-condensed-latin-500-normal'], ['Barlow Condensed', 600, 'barlow-condensed-latin-600-normal'], ['JetBrains Mono', 400, 'jetbrains-mono-latin-400-normal'], ['JetBrains Mono', 500, 'jetbrains-mono-latin-500-normal']]
+  .map(([fam, w, f]) => `@font-face{font-family:'${fam}';font-style:normal;font-weight:${w};font-display:swap;src:url(../../assets/fonts/${f}.woff2) format('woff2')}`).join('\n');
+
 const html = `<!doctype html>
 <html lang="en-AU">
 <head>
@@ -74,13 +78,13 @@ const html = `<!doctype html>
 <meta name="robots" content="noindex">
 <link rel="canonical" href="https://glideinside.com.au/plan-studio/app/">
 <!-- GI_CONFIG (portalEnabled, portalMock) comes from the site config; the portal stays closed if this file is missing -->
-<script src="../../site.config.js?v=20261111"></script>
+<script src="../../site.config.js?v=20261111" defer></script>
+<link rel="preload" href="../../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/barlow-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/barlow-condensed-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 ${mapboxTag}${preloadTags}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 <style>
+${fontFaces}
 ${css}
 </style>
 </head>

@@ -1,8 +1,11 @@
+/* Fonts: the self hosted woff2 faces are added by tools/build-single.mjs (their URLs are relative to the built page). The Fallback faces match the metrics so the swap does not move the layout. */
+@font-face{font-family:'Barlow Fallback';src:local(Arial),local('Liberation Sans'),local(Helvetica);size-adjust:94.5%;ascent-override:105.8%;descent-override:21.2%;line-gap-override:0%}
+@font-face{font-family:'Barlow Condensed Fallback';src:local(Arial),local('Liberation Sans'),local(Helvetica);size-adjust:76%;ascent-override:131.6%;descent-override:26.3%;line-gap-override:0%}
 /* Plan Studio. Drafting-table tool. All colours are --ps-* tokens (docs/SCOPE.md 10.4). */
 
 :root {
-  --ps-font-ui: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --ps-font-label: 'Barlow Condensed', 'Arial Narrow', 'Barlow', system-ui, sans-serif;
+  --ps-font-ui: 'Barlow', 'Barlow Fallback', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ps-font-label: 'Barlow Condensed', 'Barlow Condensed Fallback', 'Arial Narrow', 'Barlow', system-ui, sans-serif;
   --ps-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --ps-radius: 5px;
   --ps-radius-sm: 4px;
@@ -218,6 +221,10 @@ svg { display: block; }
   background: var(--ps-panel);
   min-width: 0;
 }
+/* The shell is painted before the top bar is filled (the catalogue loads in between): keep the bar's height so the stage below does not jump. */
+.ps-topbar:empty { min-height: 48px; box-sizing: border-box; }
+@media (max-width: 860px) { .ps-topbar:empty { min-height: 82px; } }
+@media (pointer: coarse) and (max-width: 700px) { .ps-topbar:empty { min-height: 56px; } } /* phone mode: its own 56 px bar */
 .ps-brand { display: flex; align-items: center; gap: 8px; }
 .ps-logo {
   width: 22px; height: 22px; flex: none;

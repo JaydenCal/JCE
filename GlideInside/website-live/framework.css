@@ -1,11 +1,13 @@
 /* Glide Inside v5 design system. Survey-sheet language: ink and eucalypt, rust for action, survey blue for setback lines. */
 @font-face{font-family:"Bricolage Grotesque";src:url(assets/fonts/bricolage-grotesque-latin-wght-normal.woff2) format("woff2");font-weight:200 800;font-display:swap}
+@font-face{font-family:"Manrope Fallback";src:local(Arial),local("Liberation Sans"),local(Helvetica);size-adjust:102.1%;ascent-override:104.8%;descent-override:29.4%;line-gap-override:0%}
+@font-face{font-family:"Newsreader Fallback";src:local("Times New Roman"),local("Liberation Serif"),local(Times);size-adjust:104.4%;ascent-override:70.9%;descent-override:25.9%;line-gap-override:0%}
 @font-face{font-family:Manrope;src:url(assets/fonts/manrope-latin-wght-normal.woff2) format("woff2");font-weight:200 800;font-display:swap}
 :root{
   --paper:#f3f5f2; --scene:#e6ebe7; --ink:#16211d; --muted:#55625b; --line:#d3dad4; --line-2:#e3e8e3;
   --accent:#a3532d; --accent-hover:#8a4323; --accent-ink:#fff; --accent-soft:#e2b08a; --deep:#12231c; --deep-2:#1b3328; --sage:#7e9487;
   --card:#fff; --ok:#2f7a52; --survey:#1d6a8c; --survey-soft:#d9e8ee;
-  --font:Manrope,"Segoe UI",Arial,sans-serif; --display:"Bricolage Grotesque",Manrope,"Segoe UI",Arial,sans-serif; --mono:var(--font);
+  --font:Manrope,"Manrope Fallback","Segoe UI",Arial,sans-serif; --display:"Bricolage Grotesque",Manrope,"Manrope Fallback","Segoe UI",Arial,sans-serif; --mono:var(--font);
   --r:14px; --r-lg:22px; --gut:clamp(16px,4vw,48px); --max:1240px; --head-h:68px;
   --shadow-lg:0 40px 90px -40px rgba(18,35,28,.55),0 12px 30px -18px rgba(18,35,28,.35);
 }
@@ -337,7 +339,7 @@ html,body{overflow-x:clip}
   --deep:#0a111e; --deep-2:#121b2b; --night:#0a111e; --night-2:#111a2a; --night-3:#18233a;
   --on-night:#eef1f6; --on-night-2:#a9b3c4; --glass:rgba(16,24,38,.62); --glass-line:rgba(255,255,255,.12);
   --card:#fff; --ok:#3fbf7a; --survey:#4f8fe0; --survey-soft:#e1ebf8; --sage:#8c95a6;
-  --display:Newsreader,"Iowan Old Style",Georgia,serif;
+  --display:Newsreader,"Newsreader Fallback","Iowan Old Style",Georgia,serif;
   --r:16px; --r-lg:24px; --max:1280px;
   --shadow-lg:0 60px 120px -50px rgba(6,11,22,.6),0 20px 44px -26px rgba(6,11,22,.4);
   --shadow-soft:0 30px 70px -40px rgba(6,11,22,.45),0 8px 20px -12px rgba(6,11,22,.18);
@@ -880,3 +882,14 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 /* Touch: 44 px tap targets for the header logo link and the Menu button (phones and small tablets). */
 @media (pointer:coarse) and (max-width:1120px){.nav-toggle{min-height:44px;min-width:44px}}
 @media (pointer:coarse) and (max-width:700px){.site-header .logo{display:inline-flex;align-items:center;min-height:44px;min-width:44px}}
+
+/* Home: arrow under the live viewer that points down to the how to video (23/11/2026) */
+.vid-hint{display:flex;justify-content:center;margin:18px 0 0}
+.vid-hint .vh-arrow{display:inline-flex;align-items:center;gap:12px;min-height:48px;padding:8px 10px 8px 20px;border-radius:999px;color:#fff;text-decoration:none;font:600 14.5px/1.2 var(--font);background:rgba(16,24,38,.58);border:1px solid rgba(255,255,255,.22);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);box-shadow:0 14px 34px -18px rgba(6,11,22,.55);transition:background .25s,border-color .25s}
+.vid-hint .vh-arrow svg{flex:none;width:32px;height:32px;padding:6px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28)}
+.vid-hint .vh-arrow:hover{background:rgba(16,24,38,.78);border-color:rgba(255,255,255,.4)}
+.vid-hint .vh-arrow:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(prefers-reduced-motion:no-preference){.vid-hint .vh-arrow svg{animation:vh-bob 2.4s ease-in-out infinite}}
+@keyframes vh-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@media(max-width:480px){.vid-hint .vh-arrow{font-size:14px;padding-left:16px;gap:10px;text-wrap:balance}}
+@media(max-width:400px){.vid-hint .vh-arrow{font-size:13px;padding-left:14px;gap:8px}}
