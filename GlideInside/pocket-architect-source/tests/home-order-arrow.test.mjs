@@ -41,14 +41,15 @@ test('no hero or script link relies on the old order, and the new copy follows t
   assert.ok(!/[–—]/.test(arrow) && !/compliant|Pocket Architect/i.test(arrow));
 });
 
-test('speed: no preload of the viewer poster, gtag is deferred, site.config.js does not block, critical css is inline', () => {
+test('speed: no preload of the viewer poster, gtag loads async from the deferred analytics file, site.config.js does not block, critical css is inline', () => {
   assert.ok(!/rel="preload" as="image"/.test(html), 'the below the fold poster must not be preloaded');
   assert.match(html, /<script src="site\.config\.js[^"]*" defer>/);
   assert.match(html, /<style id="critical-css">/);
   assert.match(html, /<link rel="stylesheet" href="framework\.css\?v=[^"]+" media="print" onload="this\.media='all'">/);
   const an = fs.readFileSync(path.join(SITE, 'analytics.js'), 'utf8');
-  assert.ok(!/document\.head\.appendChild\(s\);\s*\n\s*\}\s*\n\s*function send/.test(an), 'gtag is no longer appended straight away');
-  assert.match(an, /requestIdleCallback\(loadGtag/);
+  // Review 23/11/2026: gtag is added as an async script when the deferred analytics.js runs, so quick ad visits are still counted.
+  assert.match(an, /s\.async = true; s\.src = "https:\/\/www\.googletagmanager\.com\/gtag\/js/);
+  assert.match(html, /<script src="analytics\.js[^"]*" defer>/);
   for (const f of ['assets/step-block-600.webp', 'assets/video-poster-residential.webp', 'assets/hero-builders-phone-800.webp']) assert.ok(fs.existsSync(path.join(SITE, f)), f);
 });
 

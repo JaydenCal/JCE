@@ -3,7 +3,7 @@
 // card repaints when it arrives. Where a synchronous answer is needed (plan set export, tests) import ./grading-lines.js directly.
 let mod = null; let pending = null; const waiters = new Set();
 export function loadGrading() {
-  if (!pending) pending = import('./grading-lines.js').then((m) => { mod = m; for (const f of [...waiters]) { try { f(); } catch { /* a repaint that fails must not stop the others */ } } waiters.clear(); return m; }).catch(() => null);
+  if (!pending) pending = import('./grading-lines.js').then((m) => { mod = m; for (const f of [...waiters]) { try { f(); } catch { /* a repaint that fails must not stop the others */ } } waiters.clear(); return m; }).catch(() => { pending = null; return null; });
   return pending;
 }
 /** Same answer as grading-lines.js; [] until that module has loaded, when repaint (if given) is called once. */

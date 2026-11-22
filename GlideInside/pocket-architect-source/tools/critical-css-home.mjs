@@ -43,8 +43,8 @@ const css = await p2.evaluate(({ cssText, keep }) => { const st = document.creat
   return ser(st.sheet.cssRules, ''); }, { cssText, keep: [...keep] });
 await b2.close(); srv2.close();
 const min = css.replace(/\s*\{\s*/g, '{').replace(/;\s*}/g, '}').replace(/\s+/g, ' ').replace(/\s*([;:,>])\s*/g, '$1').replace(/;}/g, '}');
-// Fonts are preloaded and the first paint can now happen before they arrive: block (not swap) in the inline copy so the text does not reflow when the font lands.
-const minB = min.replace(/font-display:swap/g, 'font-display:block');
+// Keep swap: the metric-matched fallback faces stop the text reflowing when the web font lands, and text is never hidden on slow connections.
+const minB = min;
 const block = `<!--CRITICAL-CSS-START--><style id="critical-css">${minB}</style><link rel="stylesheet" href="${cssHref}" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="${cssHref}"></noscript><!--CRITICAL-CSS-END-->`;
 let out = html;
 if (/<!--CRITICAL-CSS-START-->/.test(out)) out = out.replace(/<!--CRITICAL-CSS-START-->[\s\S]*?<!--CRITICAL-CSS-END-->/, () => block);

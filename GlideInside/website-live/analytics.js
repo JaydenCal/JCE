@@ -56,19 +56,12 @@
     window.gtag("js", new Date());
     window.gtag("config", gaId);
     if (adsId) window.gtag("config", adsId);
-    // The gtag library (about 180 KB) is fetched after the page has loaded and gone idle, or on the first interaction,
-    // whichever is first. The commands above are already queued in dataLayer, so page_view and every event sent
-    // before the library arrives are replayed by it. Added 23/11/2026 for page speed.
-    var gtagLoaded = false;
-    var loadGtag = function () {
-      if (gtagLoaded) return; gtagLoaded = true;
-      var s = document.createElement("script");
-      s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(gaId);
-      document.head.appendChild(s);
-    };
-    ["pointerdown", "keydown", "scroll", "touchstart"].forEach(function (ev) { window.addEventListener(ev, loadGtag, { capture: true, passive: true, once: true }); });
-    var afterLoad = function () { if ("requestIdleCallback" in window) requestIdleCallback(loadGtag, { timeout: 6000 }); else setTimeout(loadGtag, 6000); };
-    if (document.readyState === "complete") afterLoad(); else window.addEventListener("load", afterLoad, { once: true });
+    // The gtag library (about 180 KB) is added as an async script once this deferred file runs (after the HTML is parsed),
+    // so it never blocks the first paint but still loads early enough that quick visits and fast clicks from ads are counted.
+    // Commands queued above are replayed when it arrives. Updated 23/11/2026.
+    var s = document.createElement("script");
+    s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(gaId);
+    document.head.appendChild(s);
   }
 
   function send(name, params) {

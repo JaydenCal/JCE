@@ -885,9 +885,9 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 
 /* Home: arrow under the live viewer that points down to the how to video (23/11/2026) */
 .vid-hint{display:flex;justify-content:center;margin:18px 0 0}
-.vid-hint .vh-arrow{display:inline-flex;align-items:center;gap:12px;min-height:48px;padding:8px 10px 8px 20px;border-radius:999px;color:#fff;text-decoration:none;font:600 14.5px/1.2 var(--font);background:rgba(16,24,38,.58);border:1px solid rgba(255,255,255,.22);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);box-shadow:0 14px 34px -18px rgba(6,11,22,.55);transition:background .25s,border-color .25s}
+.vid-hint .vh-arrow{display:inline-flex;align-items:center;gap:12px;min-height:48px;padding:8px 10px 8px 20px;border-radius:999px;color:#fff;text-decoration:none;font:600 14.5px/1.2 var(--font);background:rgba(16,24,38,.74);border:1px solid rgba(255,255,255,.22);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);box-shadow:0 14px 34px -18px rgba(6,11,22,.55);transition:background .25s,border-color .25s}
 .vid-hint .vh-arrow svg{flex:none;width:32px;height:32px;padding:6px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28)}
-.vid-hint .vh-arrow:hover{background:rgba(16,24,38,.78);border-color:rgba(255,255,255,.4)}
+.vid-hint .vh-arrow:hover{background:rgba(16,24,38,.86);border-color:rgba(255,255,255,.4)}
 .vid-hint .vh-arrow:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 @media(prefers-reduced-motion:no-preference){.vid-hint .vh-arrow svg{animation:vh-bob 2.4s ease-in-out infinite}}
 @keyframes vh-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
