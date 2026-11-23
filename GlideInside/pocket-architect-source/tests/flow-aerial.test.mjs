@@ -44,7 +44,7 @@ test('the commercial viewer recovers a missing aerial like the residential flow 
 test('ensureFlowAerial retries the imagery request once before giving up', async () => {
   let n = 0;
   const store = { project: { id: 'r', site: { lot: { ...lot } } }, emit() {} };
-  await ensureFlowAerial(store, { fetchImpl: async () => { n++; return new Response('x', { status: 500 }); }, retryMs: 1 });
+  await ensureFlowAerial(store, { fetchImpl: async (u) => { if (String(u).includes('/site/aerial?')) n++; return new Response('x', { status: 500 }); }, retryMs: 1 }); // NSW also tries the tile fallback, which is not an export retry
   assert.equal(n, 2);
 });
 

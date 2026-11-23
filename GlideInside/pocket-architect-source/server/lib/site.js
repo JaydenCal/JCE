@@ -54,6 +54,7 @@ import { dedupeRaster } from '../../src/site/dem-dedupe.js';
 import { contourLines, fillGaps, gridRange, smoothTerraces } from '../../src/site/contours.js';
 import { clipPolygonsToBox } from '../../src/site/overlays.js';
 import { overlaySourcesFor } from './site-overlay-sources.js';
+import { createAerialTiles } from './aerial-tiles.js';
 
 export const SERVICES = {
   nswLot: 'https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9',
@@ -75,7 +76,7 @@ export const SERVICES = {
 };
 
 const TTL = { search: 86400, lot: 7 * 86400, aerial: 7 * 86400, contours: 7 * 86400, overlays: 86400, health: 60 };
-const LIMITS = { search: [60, 60], lot: [20, 60], aerial: [20, 60], contours: [12, 60], overlays: [12, 60], health: [10, 60] }; // [hits, window seconds] per IP
+const LIMITS = { search: [60, 60], lot: [20, 60], aerial: [20, 60], aerialTiles: [30, 60], contours: [12, 60], overlays: [12, 60], health: [10, 60] }; // [hits, window seconds] per IP
 // Search is the one endpoint shared offices hit in bursts, so it gets a second, short window on top of the 60 per minute: a burst of
 // up to 30 requests in any 10 second window (approximating a token bucket of 60 per minute, burst 30), then at most 60 per minute.
 // Requests answered from a cache cost the upstream nothing and are not counted at all. Abuse protection stays: 60 per minute and the
@@ -872,6 +873,18 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     return { body: web.bytes.buffer.slice(web.bytes.byteOffset, web.bytes.byteOffset + web.bytes.byteLength), headers: { 'content-type': web.type.split(';')[0], 'x-site-meta': encodeURIComponent(JSON.stringify(meta)) } };
   }
 
+  const tiles = createAerialTiles({
+    baseUrl: SERVICES.nswImagery, upstream, doFetch, bytesCache, now, iso, rateLimit,
+    captureDate: (box, zone) => { const c = mgaToLonLat((box.minE + box.maxE) / 2, (box.minN + box.maxN) / 2, zone); return nswCaptureDate(c.lon, c.lat); },
+    parseBbox, srsFor: (u) => srsFor(u), stateParam: (u, o) => stateParam(u, o),
+    meta: (capture) => ({
+      source: 'NSW Imagery (NSW Spatial Services), cached tiles',
+      attribution: 'Imagery: NSW Spatial Services, (c) Department of Customer Service 2020. Includes third party imagery (AAM, Jacobs Group Ausimage, Landsat).',
+      licence: 'CC BY 3.0 AU as listed by NSW LPI; service metadata states no licence and notes third party imagery. Verify terms before commercial use.',
+      captureDate: capture, retrieved: iso(),
+    }),
+  });
+
   // Contours -----------------------------------------------------------------------------------------------------------------------
   // Bilinear sample of a raster (row 0 at the top) at fractional pixel position; NoData neighbours are skipped.
   function sampleRaster(r, fx, fy, nodata) {
@@ -1125,6 +1138,8 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     if (subpath === '/search') return search(request, url);
     if (subpath === '/lot') return lot(request, url);
     if (subpath === '/aerial') return aerial(request, url);
+    if (subpath === '/aerial-tiles') return tiles.plan(request, url); // NSW fallback when the dynamic export is down or slow
+    if (subpath === '/tile') return tiles.tile(request, url);
     if (subpath === '/contours') return contours(request, url);
     if (subpath === '/overlays') return overlays(request, url);
     if (subpath === '/health') return health(request);

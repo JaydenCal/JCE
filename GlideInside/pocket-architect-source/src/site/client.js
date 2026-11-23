@@ -301,7 +301,46 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep, deferCon
   return { lot, aerial, aerialWide, contours, warnings };
 }
 
-export async function fetchAerial(params, { signal, fetchImpl = globalThis.fetch }) {
+// NSW only: when the dynamic export fails or takes longer than EXPORT_SLOW_MS the aerial is built from NSW's cached tiles instead (same imagery).
+// After a slow or failed export the export is skipped for EXPORT_DOWN_MS so the inner and wide pictures do not each wait the full time.
+export const EXPORT_SLOW_MS = 12000;
+export const EXPORT_DOWN_MS = 120000;
+let exportDownUntil = 0;
+export const resetExportBreaker = () => { exportDownUntil = 0; };
+
+export async function fetchAerial(params, opts = {}) {
+  if (params?.state !== 'NSW' || opts.noTiles || CONFIG.siteTiles === false) return fetchAerialExport(params, opts);
+  const { signal, fetchImpl = globalThis.fetch, exportSlowMs = Number(globalThis.GI_CONFIG?.siteExportSlowMs) || EXPORT_SLOW_MS } = opts; // the host page may shorten it (tests)
+  const tiles = async () => (await import('./tile-mosaic.js')).fetchAerialTiles(params, { signal, fetchImpl, ...(opts.tileOpts || {}) });
+  if (Date.now() < exportDownUntil) {
+    try { return await tiles(); } catch (e) { if (e?.name === 'AbortError') throw e; /* tiles failed too: try the export once more */ }
+    return fetchAerialExport(params, opts);
+  }
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  let slow = false;
+  const onAbort = () => ctl?.abort();
+  if (signal?.aborted) ctl?.abort();
+  else signal?.addEventListener?.('abort', onAbort, { once: true });
+  const timer = ctl ? setTimeout(() => { slow = true; ctl.abort(); }, exportSlowMs) : null;
+  try {
+    return await fetchAerialExport(params, { ...opts, signal: ctl?.signal || signal });
+  } catch (first) {
+    if (signal?.aborted) throw first; // the caller's own abort
+    if (!slow && ['BAD_REQUEST', 'UNSUPPORTED_AREA', 'RATE_LIMITED', 'NOT_FOUND'].includes(first?.code)) throw first; // a refusal the tiles would not fix
+    exportDownUntil = Date.now() + EXPORT_DOWN_MS;
+    try {
+      return await tiles();
+    } catch (e) {
+      if (e?.name === 'AbortError') throw e;
+      throw slow ? new SiteError('the imagery service is too slow right now', 'TIMEOUT') : first;
+    }
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener?.('abort', onAbort);
+  }
+}
+
+export async function fetchAerialExport(params, { signal, fetchImpl = globalThis.fetch } = {}) {
   let res;
   try {
     res = await fetchImpl(`${base()}/site/aerial?${new URLSearchParams(params)}`, { signal });
