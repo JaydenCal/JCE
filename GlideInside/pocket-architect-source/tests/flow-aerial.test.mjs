@@ -36,7 +36,7 @@ test('the commercial viewer recovers a missing aerial like the residential flow 
   const fn = s.slice(s.indexOf('export async function loadAddressCommercial'), s.indexOf('export async function loadDemoCommercial'));
   assert.match(fn, /ensureFlowAerial\(store\)/);
   assert.match(fn, /pick: given/);
-  assert.match(s, /loadAddressCommercial\(store, address, \{ onStep: null, pick \}\)/);
+  assert.match(s, /loadAddressCommercial\(store, address, \{ onStep, signal: ctl\.signal, pick \}\)/);
   const t = fs.readFileSync(new URL('../src/viewer3d/terrain.js', import.meta.url), 'utf8');
   assert.match(t, /realAerial: !!texture \|\| !!\(lot\.aerial\?\.extent/);
 });

@@ -176,6 +176,23 @@ export function wideAerialParams(b, px = WIDE_PX) {
   return { bbox: `${w.minE},${w.minN},${w.maxE},${w.maxN}`, res: res.toFixed(3), maxpx: String(px) };
 }
 
+// A lot this long (metres, longest side of its box) is a rural block or a large holding. Its aerial is asked at no finer than about 2048 px
+// along the long side (the service otherwise works through several failing sizes, 40 s each, before it answers), and the optional wide tile
+// is skipped past WIDE_SKIP_SPAN_M. Every aerial request is also given up on after a time limit: the aerial is optional, the lot is not.
+export const BIG_LOT_SPAN_M = 600;
+export const WIDE_SKIP_SPAN_M = 900;
+export const BIG_AERIAL_PX = 2048;
+export const AERIAL_TIMEOUT_MS = 25000;
+export const BIG_AERIAL_TIMEOUT_MS = 20000;
+export const WIDE_AERIAL_TIMEOUT_MS = 15000;
+
+/** The inner aerial request for a lot box: the finest resolution, or for a big lot one that keeps the picture to about 2048 px. */
+export function innerAerialRes(b, m = margin()) {
+  const span = Math.max(b.maxE - b.minE, b.maxN - b.minN) + 2 * m;
+  if (Math.max(b.maxE - b.minE, b.maxN - b.minN) <= BIG_LOT_SPAN_M) return INNER_RES;
+  return Math.min(2, Math.max(Number(INNER_RES), span / BIG_AERIAL_PX)).toFixed(3);
+}
+
 export const CONTOURS_TIMEOUT_MS = 30000;
 const CONTOURS_KEEP_MS = 120000;
 const contoursCache = new Map(); // request -> promise, so an identical request (a second search for the same lot) never goes out twice
@@ -229,7 +246,7 @@ export async function fetchOverlays(request, { fetchImpl, timeoutMs = OVERLAYS_T
  * fetchSite(selection, { fetchImpl, signal, onStep, deferContours }) -> { lot, aerial: { blob, meta } | null, contours | null, warnings: [] }
  * selection: { label, state, lon, lat }. The lot is required. A failed aerial or elevation request only adds a warning.
  */
-export async function fetchSite(selection, { fetchImpl, signal, onStep, deferContours = false, retryDelayMs, sleepImpl } = {}) {
+export async function fetchSite(selection, { fetchImpl, signal, onStep, deferContours = false, retryDelayMs, sleepImpl, aerialTimeoutMs = 0 } = {}) {
   const warnings = [];
   const step = (s) => onStep?.(s);
   if (CONFIG.siteMock) {
@@ -276,18 +293,20 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep, deferCon
   const common = { state: lot.state, srid: lot.srid, origin: `${lot.origin.e},${lot.origin.n}` };
 
   step('aerial');
+  const spanM = Math.max(b.maxE - b.minE, b.maxN - b.minN);
+  const big = spanM > BIG_LOT_SPAN_M;
   let aerial = null;
   try {
-    aerial = await fetchAerial({ ...common, bbox, res: INNER_RES }, opts);
+    aerial = await fetchAerial({ ...common, bbox, res: innerAerialRes(b, m) }, { ...opts, timeoutMs: aerialTimeoutMs || (big ? BIG_AERIAL_TIMEOUT_MS : AERIAL_TIMEOUT_MS) });
   } catch (e) {
     if (e?.name === 'AbortError') throw e;
     warnings.push(`No aerial image: ${e.message}`);
   }
   // The wide outer tile is optional: if it fails the view still works with the inner tile and the fade ring as before.
   let aerialWide = null;
-  if (aerial) {
+  if (aerial && spanM <= WIDE_SKIP_SPAN_M) {
     try {
-      aerialWide = await fetchAerial({ ...common, ...wideAerialParams(b, lot.state === 'NSW' ? WIDE_PX_NSW : WIDE_PX) }, opts);
+      aerialWide = await fetchAerial({ ...common, ...wideAerialParams(b, lot.state === 'NSW' ? WIDE_PX_NSW : WIDE_PX) }, { ...opts, timeoutMs: aerialTimeoutMs || WIDE_AERIAL_TIMEOUT_MS });
     } catch (e) {
       if (e?.name === 'AbortError') throw e;
     }
@@ -301,14 +320,24 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep, deferCon
   return { lot, aerial, aerialWide, contours, warnings };
 }
 
-export async function fetchAerial(params, { signal, fetchImpl = globalThis.fetch }) {
+export async function fetchAerial(params, { signal, fetchImpl = globalThis.fetch, timeoutMs = 0 } = {}) {
   let res;
+  // A request that never answers is given up on after timeoutMs (a TIMEOUT error, not an abort), still honouring the caller's own signal.
+  const ctl = new AbortController();
+  let timedOut = false;
+  const onAbort = () => ctl.abort();
+  if (signal?.aborted) ctl.abort(); else signal?.addEventListener?.('abort', onAbort, { once: true });
+  const timer = timeoutMs ? setTimeout(() => { timedOut = true; ctl.abort(); }, timeoutMs) : null;
+  const clean = () => { clearTimeout(timer); signal?.removeEventListener?.('abort', onAbort); };
+  const tooLong = () => new SiteError('the imagery service took too long', 'TIMEOUT');
   try {
-    res = await fetchImpl(`${base()}/site/aerial?${new URLSearchParams(params)}`, { signal });
+    res = await fetchImpl(`${base()}/site/aerial?${new URLSearchParams(params)}`, { signal: ctl.signal });
   } catch (e) {
-    if (e?.name === 'AbortError') throw e;
+    clean();
+    if (e?.name === 'AbortError') { if (timedOut) throw tooLong(); throw e; }
     throw new SiteError('the imagery service could not be reached', 'NETWORK');
   }
+  try {
   if (!res.ok) {
     let body = null;
     try {
@@ -324,10 +353,20 @@ export async function fetchAerial(params, { signal, fetchImpl = globalThis.fetch
   } catch {
     throw new SiteError('the imagery response had no georeference', 'NO_GEOREF');
   }
-  let blob = await res.blob();
+  let blob;
+  try {
+    blob = await res.blob(); // the body can stall after the headers: the same time limit covers it
+  } catch (e) {
+    if (e?.name === 'AbortError' && timedOut) throw tooLong();
+    throw e;
+  }
+  clean(); // the picture is here: the rest is local work
   if (meta.georef && meta.georef !== 'mga') {
     const { warpToMga } = await import('./warp.js');
     ({ blob, meta } = await warpToMga(blob, meta));
   }
   return { blob, meta };
+  } finally {
+    clean();
+  }
 }

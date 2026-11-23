@@ -56,6 +56,7 @@ import { offerSwitch, openInTool } from './ui/tool-switch.js';
 import { effectiveClass } from './commercial/zones.js';
 import { initGuidedFlow, shouldStart, openFlow, tutorialOf } from './flow/index.js';
 import { flowInProgress, portalDeepLink } from './flow/state.js';
+import { createLoadTracker, withDeadline, RUN_TIMEOUT_MS } from './site/load-steps.js';
 import { viewerEmbedRequested, addressFromSearch, openFullEditor, sameAddress, initEmbedViewer, loadAddress, mountViewerChrome, takeHandoff } from './ui/embed-viewer.js';
 
 const demoMode = () => CONFIG.embedMode === 'demo';
@@ -590,7 +591,13 @@ async function main() {
     else ev.startDemo();
   } else if (addressParam) {
     initEmbedViewer({ store, catalogue, shell: refs.shell, viewerMode: false }); // also answers gi:find-address
-    api.addressLoad = loadAddress(store, catalogue, addressParam, { place: !startsFlow });
+    // The page-started lookup reports its steps to a tracker the guided flow's Find your lot step shows as its loading bar.
+    const tracker = createLoadTracker();
+    api.addressTracker = tracker;
+    tracker.start('address');
+    const lookupCtl = new AbortController();
+    api.addressLoad = withDeadline(loadAddress(store, catalogue, addressParam, { place: !startsFlow, onStep: (s) => tracker.step(s), signal: lookupCtl.signal }), RUN_TIMEOUT_MS, { onTimeout: () => lookupCtl.abort() });
+    api.addressLoad.then(() => tracker.done(), (e) => tracker.fail(e?.message || ''));
     api.addressLoad
       .then(({ lot }) => {
         if (!startsFlow) toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' });

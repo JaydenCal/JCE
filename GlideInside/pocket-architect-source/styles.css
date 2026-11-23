@@ -1225,3 +1225,27 @@ html[data-phone="1"] .ps-modal-head { padding-top: 12px; }
 
 /* Keyboard hints mean nothing to a finger. */
 @media (pointer: coarse) { .ps3d-key { display: none; } }
+
+/* Loading bar (src/ui/load-progress.js): slim, determinate, with the step in progress named. Moves only when a real step completes. */
+.ps-lp { --lp-fg: #fff; --lp-track: rgba(255, 255, 255, 0.22); --lp-fill: #e9b66f; font: 600 12.5px/1.3 var(--ps-font-ui, system-ui, sans-serif); color: var(--lp-fg); }
+.ps-lp[hidden] { display: none; }
+.ps-lp-track { display: block; height: 4px; border-radius: 999px; background: var(--lp-track); overflow: hidden; }
+.ps-lp-fill { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--lp-fill); transition: width 0.45s ease; }
+.ps-lp-row { display: flex; justify-content: space-between; gap: 12px; margin-top: 6px; }
+.ps-lp-count { opacity: 0.75; font-weight: 500; white-space: nowrap; }
+.ps-lp[data-state="error"] { --lp-fill: #ff8a7a; }
+.ps-lp[data-state="done"] { --lp-fill: #6fd39b; }
+.ps-lp--bottom { position: absolute; left: 0; right: 0; bottom: 0; z-index: 46; display: flex; align-items: center; gap: 12px; min-height: 30px; padding: 6px max(14px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); background: rgba(14, 16, 20, 0.82); pointer-events: none; }
+.ps-lp--bottom[hidden] { display: none; }
+.ps-lp--bottom .ps-lp-row { display: contents; }
+.ps-lp--bottom .ps-lp-label { order: 0; white-space: nowrap; }
+.ps-lp--bottom .ps-lp-track { order: 1; flex: 1 1 auto; min-width: 40px; }
+.ps-lp--bottom .ps-lp-count { order: 2; }
+.ps-lp--inline { --lp-fg: #26323d; --lp-track: rgba(38, 50, 61, 0.16); --lp-fill: #b9741f; margin: 10px 0 2px; }
+.ps-lp--inline[data-state="error"] { --lp-fill: #c0392b; }
+.ps-lp--inline[data-state="done"] { --lp-fill: #2f7a52; }
+@media (max-width: 600px) {
+  .ps-lp--bottom { padding-left: 12px; padding-right: 12px; }
+  .ps-lp { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .ps-lp-fill { transition: none; } }

@@ -5,7 +5,9 @@
 //   parent -> app   { type: 'gi:find-address', address, pick? } same origin parent only; pick { label, state, lon, lat } is a suggestion the
 //                                                              visitor chose, used as is (no second search)
 //   app -> parent   { type: 'gi:ready' }                         the app is listening for gi:find-address
-//   app -> parent   { type: 'gi:status', state: 'loading' | 'done' | 'error', message?, address?, retry? }
+//   app -> parent   { type: 'gi:status', state: 'loading' | 'step' | 'done' | 'error', message?, address?, retry?, step?, total?, label? }
+//                   'step' is sent as each real loading step begins: step (1 based), total and label ("Loading the lot boundary"). A page that
+//                   does not know 'step' ignores it; 'loading' still comes first and 'done' or 'error' always ends the load.
 
 import { h } from './dom.js';
 import { toast } from './toast.js';
@@ -19,6 +21,9 @@ import { swapHouse, poseFor } from '../lotcard/swap.js';
 import { computeSetbacks } from '../site/setback-stage.js';
 import { setbackStatusLine } from '../site/lot-checks.js';
 import { defaultEnvelope } from '../site/default-setbacks.js';
+import { createProgressBar } from './load-progress.js';
+import { statusMessage, withDeadline, RUN_TIMEOUT_MS, TOO_LONG_TEXT } from '../site/load-steps.js';
+export { RUN_TIMEOUT_MS, TOO_LONG_TEXT };
 
 export const FULL_EDITOR_PATH = '/plan-studio/app/';
 const PREFER = ['house_single', 'house_double', 'duplex', 'granny_flat'];
@@ -189,8 +194,9 @@ export function placeChoice(store, choice) {
  * setbacks could not be worked out yet (they arrive a moment later), place one now and again once they have loaded. The second pass is
  * skipped when the lot has been replaced in the meantime.
  */
-export async function placeBestDesign(store, catalogue, wantId = null, { after = null } = {}) {
+export async function placeBestDesign(store, catalogue, wantId = null, { after = null, onStep = null } = {}) {
   const id0 = lotId(store);
+  onStep?.('setbacks');
   const pool = await designPool(store, catalogue);
   if (lotId(store) !== id0) return null; // another lot was loaded while the library came in
   if (pool.empty) toast(EMPTY_LIBRARY, { kind: 'warn', timeout: 7000 });
@@ -200,6 +206,7 @@ export async function placeBestDesign(store, catalogue, wantId = null, { after =
   try { choice = await chooseDesign(store, pool, want); } catch (e) { console.warn('[embed] design choice failed', e); }
   if (lotId(store) !== id0) return null;
   if (!choice) return null;
+  onStep?.('place');
   const first = placeChoice(store, choice);
   if (choice.envelope || hasEnvelope(store)) return first;
   const id = lotId(store);
@@ -219,31 +226,32 @@ export const validPick = (p) => !!p && typeof p === 'object' && Number.isFinite(
  * Find my block without any dialogs: look the address up, take the first result, load the lot, accept the detected frontage and
  * place the current design. Throws a readable Error when the address is not found.
  */
-export async function loadAddress(store, catalogue, address, { onStep, viewer = false, after = null, place = true, pick: given = null } = {}) {
+export async function loadAddress(store, catalogue, address, { onStep, signal, viewer = false, after = null, place = true, pick: given = null } = {}) {
   const q = String(address || '').trim();
   if (q.length < 3) throw new Error('Type a street address first.');
   // A suggestion the visitor already chose carries its coordinates: use it directly, no second search.
-  const pick = validPick(given) ? given : (await smartSearch(q, { onRetry: () => onStep?.('busy') }))[0];
+  const pick = validPick(given) ? given : (await smartSearch(q, { onRetry: () => onStep?.('busy'), signal }))[0];
   if (!pick) throw Object.assign(new Error(NOT_FOUND_TEXT), { notFound: true });
   const wantId = store.ui.placedDesign?.id || null;
-  const { lot, warnings } = await applySiteLookup(store, pick, { onStep });
+  const { lot, warnings } = await applySiteLookup(store, pick, { onStep, signal });
   confirmFrontage(store, viewer);
-  if (place) await placeBestDesign(store, catalogue, wantId, { after });
+  if (place) await placeBestDesign(store, catalogue, wantId, { after, onStep });
   return { lot, warnings, pick };
 }
 
 /** Commercial: look the address up, load the lot, accept the frontage, convert and place the Best fit layout (src/commercial/place.js). */
-export async function loadAddressCommercial(store, address, { onStep, pick: given = null } = {}) {
+export async function loadAddressCommercial(store, address, { onStep, signal, pick: given = null } = {}) {
   const q = String(address || '').trim();
   if (q.length < 3) throw new Error('Type a street address first.');
   // A suggestion the visitor already chose carries its coordinates: use it directly (as the residential viewer does), no second search.
-  const pick = validPick(given) ? given : (await smartSearch(q, { onRetry: () => onStep?.('busy') }))[0];
+  const pick = validPick(given) ? given : (await smartSearch(q, { onRetry: () => onStep?.('busy'), signal }))[0];
   if (!pick) throw Object.assign(new Error(NOT_FOUND_TEXT), { notFound: true });
-  const { lot, warnings } = await applySiteLookup(store, pick, { onStep });
+  const { lot, warnings } = await applySiteLookup(store, pick, { onStep, signal });
   // The residential guided flow fetches the aerial again when the lookup left none (ensureFlowAerial); the commercial viewer never did, so a
   // lookup whose imagery request failed once stayed on the striped lawn with a greyed Aerial pill. Same recovery here.
   if (!store.project.site?.lot?.aerial?.extent) { try { const { ensureFlowAerial } = await import('../flow/flow-aerial.js'); await ensureFlowAerial(store); } catch { /* the lawn stays */ } }
   confirmFrontage(store, true);
+  onStep?.('place');
   const { placeCommercial } = await import('../commercial/place.js');
   await placeCommercial(store);
   return { lot, warnings, pick };
@@ -268,8 +276,15 @@ export async function loadDemo(store, catalogue, { after = null } = {}) {
  * Wire the viewer mode. `ctx`: { store, catalogue, shell, viewerMode }. Returns { run(address), dispose }.
  * In viewer mode the view is pinned to 3D and walk, and the page may send gi:find-address.
  */
-export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer = () => null, commercial = false }) {
+export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer = () => null, commercial = false, timeoutMs = RUN_TIMEOUT_MS }) {
   let busy = false;
+  let runAddress = '';
+  // The loading bar along the bottom of the view; its steps are also sent to the page around the frame (gi:status 'step').
+  const bar = createProgressBar(shell.querySelector('.ps-stage') || shell, {
+    variant: 'bottom',
+    labels: commercial ? { place: 'Placing the layout' } : {},
+    onChange: (st) => { if (st.status === 'running') postToParent(statusMessage(st, runAddress)); },
+  });
   let pending = null;
   let pendingNotify = false;
   let pendingPick = null;
@@ -288,6 +303,9 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
     try {
       const v = getViewer() || (await getViewer.ensure?.());
       v?.setEmbedFraming?.(true);
+      // The model is rebuilt on a short delay after the house moves. Frame the house where it is now, not where it was: on a large rural lot
+      // the old and new positions are hundreds of metres apart, and the first view looked at empty paddock.
+      v?.flush?.();
       await v?.snapToRoom?.('aerial', { duration: 0.01, site: true });
     } catch { /* the viewer keeps its own framing */ }
   }
@@ -300,15 +318,35 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
     if (busy) { pending = address; pendingNotify = notify; pendingPick = pick; return null; }
     busy = true;
     shell.dataset.embedBusy = '1';
+    runAddress = address;
+    const before = lotId(store);
     postToParent({ type: 'gi:status', state: 'loading', address });
+    const ctl = new AbortController();
+    let timedOut = false;
+    bar.tracker.start(validPick(pick) ? 'lot' : 'address');
+    const onStep = (s) => bar.tracker.step(s);
     try {
-      const r = commercial ? await loadAddressCommercial(store, address, { onStep: null, pick }) : await loadAddress(store, catalogue, address, { viewer: viewerMode, after: viewerMode ? settleAerial : null, pick });
+      const work = commercial
+        ? loadAddressCommercial(store, address, { onStep, signal: ctl.signal, pick })
+        : loadAddress(store, catalogue, address, { onStep, signal: ctl.signal, viewer: viewerMode, after: viewerMode ? settleAerial : null, pick });
+      // Nothing waits forever: past the time limit the lookup is aborted and the page gets an error with a retry.
+      const r = await withDeadline(work, Number(window.__ps?.runTimeoutMs) || timeoutMs, { onTimeout: () => { timedOut = true; ctl.abort(); } });
+      bar.tracker.step('place');
       if (viewerMode) { store.setUI({ view: '3d' }); await aerial(); }
+      bar.tracker.done();
       postToParent({ type: 'gi:status', state: 'done', address: r.lot?.address || address });
       return true;
     } catch (e) {
+      // The lot itself arrived and only the last steps ran over: show it, the setbacks and the house settle in as they finish.
+      if (timedOut && store.project.site?.lot && lotId(store) !== before) {
+        if (viewerMode) { store.setUI({ view: '3d' }); aerial().catch(() => {}); }
+        bar.tracker.done();
+        postToParent({ type: 'gi:status', state: 'done', address: store.project.site.lot.address || address });
+        return true;
+      }
       const message = e?.message || 'The address could not be loaded.';
-      postToParent({ type: 'gi:status', state: 'error', message, address, retry: e?.code === 'SLOW' });
+      bar.tracker.fail(message);
+      postToParent({ type: 'gi:status', state: 'error', message, address, retry: e?.code === 'SLOW' || timedOut });
       // Not found: a sample lot is always offered, so the pill never just reverts.
       if (notify) toast(message, e?.notFound ? { kind: 'warn', timeout: 14000, action: { label: 'Try a sample lot', onClick: () => startDemo() } } : { kind: 'error' });
       return false;
@@ -372,7 +410,7 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
       if ('view' in patch && patch.view !== '3d' && patch.view !== 'walk') store.setUI({ view: '3d' });
     });
   }
-  return { run, startDemo, dispose: () => { window.removeEventListener('message', onMessage); off?.(); refitOff?.(); } };
+  return { run, startDemo, progress: bar.tracker, dispose: () => { window.removeEventListener('message', onMessage); off?.(); refitOff?.(); bar.dispose(); } };
 }
 
 /** One-shot handoff slot: the viewer leaves the design here and the editor reads it once and clears it (src/app.js). The visitor's own autosave is never touched. */

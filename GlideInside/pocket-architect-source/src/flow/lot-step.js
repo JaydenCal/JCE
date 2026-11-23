@@ -9,12 +9,16 @@ import { runUpload } from '../site/upload/flow.js';
 import { confirmFrontage, waitForEnvelope } from '../ui/embed-viewer.js';
 import { lotOf } from '../model/placement.js';
 import { ensureFlowAerial } from './flow-aerial.js';
+import { createProgressBar } from '../ui/load-progress.js';
+import { withDeadline, RUN_TIMEOUT_MS } from '../site/load-steps.js';
 import { lotMapSvg, frontageM, aerialOf, setbacksText } from './lot-map.js';
 
 // ?sample=1 on the app link opens the sample lot once, as the "Try a sample lot" button does (used by the website's "Load a sample lot" links).
 let sampleLinkUsed = false;
 export const sampleLinkAsked = (search = typeof location !== 'undefined' ? location.search : '') => new URLSearchParams(search).get('sample') === '1';
 
+// The most the lookup may take (a test can shorten it with window.__ps.runTimeoutMs).
+const LOOKUP_LIMIT_MS = () => Number((typeof window !== 'undefined' && window.__ps?.runTimeoutMs) || 0) || RUN_TIMEOUT_MS;
 const fmt = (n, d = 0) => (n == null || !Number.isFinite(n) ? 'n/a' : n.toLocaleString('en-AU', { maximumFractionDigits: d, minimumFractionDigits: d }));
 
 /** Zone text for a lot, e.g. "R1 General Residential". */
@@ -46,6 +50,10 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     h('label', { class: 'gf-note', style: { margin: '0 0 6px', display: 'block', fontWeight: '600' } }, 'Street address'),
     h('div', { class: 'gf-field' }, input, findBtn, sugg), status, failActions, h('p', { class: 'gf-note gf-alts' }, sample, upload));
   const el = h('div', { class: 'gf-grid', style: { alignItems: 'start' } }, h('div', null, search), confirm);
+  // The loading bar under the status line: the steps of the lookup as they complete.
+  const bar = createProgressBar(null, { variant: 'inline', labels: sampleOptions?.commercial ? { place: 'Placing the layout' } : {} });
+  search.insertBefore(bar.el, failActions);
+  const prog = bar.tracker;
 
   const setSugg = (items) => {
     list = items;
@@ -68,13 +76,22 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     if (loading) return;
     setSugg([]);
     input.value = pick.label || input.value;
-    loading = true; error = ''; paint(); ctx.refresh();
+    loading = true; error = ''; slow = false; paint(); ctx.refresh();
+    prog.start('lot');
+    const ctl = new AbortController();
     try {
-      await applySiteLookup(store, pick, {});
-      confirmFrontage(store);
-      await waitForEnvelope(store, 8000);
+      // Never waits forever: past the time limit the lookup is aborted and the message offers Try again.
+      await withDeadline((async () => {
+        await applySiteLookup(store, pick, { onStep: (s) => prog.step(s), signal: ctl.signal });
+        prog.step('setbacks');
+        confirmFrontage(store);
+        await waitForEnvelope(store, 8000);
+      })(), LOOKUP_LIMIT_MS(), { onTimeout: () => ctl.abort() });
+      prog.done();
     } catch (e) {
       error = e?.message || 'That address could not be loaded.';
+      slow = e?.code === 'SLOW';
+      prog.fail(error);
     } finally {
       loading = false;
     }
@@ -86,11 +103,12 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     const q = input.value.trim();
     if (q.length < 3) { error = 'Type a street address first.'; paint(); return; }
     loading = true; error = ''; notFound = false; slow = false; paint();
+    prog.start('address');
     let pick = list.find((r) => String(r.label || '').toLowerCase() === q.toLowerCase()) || null; // a suggestion already shown: no second search
     let failed = false;
     if (!pick) {
       const r = await live.now(); // same debounce-free, aborting path as the suggestions; an identical query is not sent twice
-      if (r === null) { loading = false; paint(); return; } // superseded by typing
+      if (r === null) { loading = false; prog.reset(); paint(); return; } // superseded by typing
       pick = r[0] || null;
       failed = !!r.failed;
       if (!pick && failed) { error = SEARCH_BUSY_TEXT; slow = true; }
@@ -98,7 +116,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     }
     loading = false;
     if (!pick && !error) { error = NOT_FOUND_TEXT; notFound = true; }
-    if (pick) await choose(pick); else paint();
+    if (pick) await choose(pick); else { prog.fail(error); paint(); }
   }
 
   async function useUpload() {
@@ -109,11 +127,13 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
   async function useSample() {
     if (loading) return;
     loading = true; error = ''; paint(); ctx.refresh();
+    prog.start('lot');
     try {
       await applySiteLookup(store, { label: '' }, { prefetched: demoSite(sampleOptions) });
+      prog.done();
       confirmFrontage(store);
       await waitForEnvelope(store, 8000);
-    } catch (e) { error = e?.message || 'The sample lot could not be loaded.'; }
+    } catch (e) { error = e?.message || 'The sample lot could not be loaded.'; prog.fail(error); }
     loading = false;
     if (!disposed) { paint(); ctx.refresh(); }
   }
@@ -182,6 +202,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
 
   // A lookup that the page started (?address=): show it as it arrives.
   const pre = lotOf(store.project) ? null : app?.addressLoad;
+  const offShared = pre && app?.addressTracker?.subscribe ? app.addressTracker.subscribe((st) => bar.paint(st)) : null;
   if (pre) { loading = true; Promise.resolve(pre).catch((e) => { error = e?.message || ''; }).finally(() => { loading = false; if (!disposed) { paint(); ctx.refresh(); } }); }
   const adr = lotOf(store.project)?.address; if (adr) input.value = adr;
   paint();
@@ -191,6 +212,6 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     el,
     canNext: () => !!lotOf(store.project) && !loading,
     nextLabel: 'This is my lot',
-    dispose() { disposed = true; live.cancel(); clearTimeout(slowT); off?.(); },
+    dispose() { disposed = true; live.cancel(); clearTimeout(slowT); off?.(); offShared?.(); bar.dispose(); },
   };
 }

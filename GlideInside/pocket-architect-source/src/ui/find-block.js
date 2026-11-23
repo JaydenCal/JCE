@@ -11,6 +11,8 @@ import { demoSite } from '../site/demo-lot.js';
 import { applySiteLookup } from '../site/apply.js';
 import { runUpload } from '../site/upload/flow.js';
 import { arrangeOnLoadWatching } from '../flow/arrange-on-load.js';
+import { createProgressBar } from './load-progress.js';
+import { withDeadline, RUN_TIMEOUT_MS } from '../site/load-steps.js';
 
 const STEPS = { lot: 'Finding the lot', aerial: 'Loading the aerial image', contours: 'Loading ground levels', busy: 'Busy, trying again' };
 let seq = 0;
@@ -26,10 +28,13 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
   const status = h('div', { class: 'ps-find-status', role: 'status', 'aria-live': 'polite' });
   // Shown with the "not found" message: a sample lot is always a way forward, and the boundary upload sits beside it.
   const sample = h('button', { class: 'ps-btn ps-btn--ghost ps-find-sample', type: 'button', hidden: true, dataset: { ps: 'find-sample' }, onclick: () => useSample() }, 'Try a sample lot');
+  const bar = createProgressBar(null, { variant: 'inline', labels: store.project?.mode === 'commercial' ? { place: 'Placing the layout' } : {} });
+  const prog = bar.tracker;
   const wrap = h('div', { class: `ps-find${compact ? ' ps-find--compact' : ''}${large ? ' ps-find--large' : ''}`, dataset: { ps: 'find-block' } },
     h('div', { class: 'ps-find-box' }, icon('search', { size: large ? 22 : 16 }), input),
     list,
     status,
+    bar.el,
     sample,
     h('button', { class: 'ps-btn ps-btn--ghost ps-find-upload', type: 'button', dataset: { ps: 'find-upload' }, title: 'Use your own lot boundary, in Australia or anywhere in the world', onclick: () => runUpload(store, { viewer: false, after: (lot) => onDone?.(lot) }) }, 'Upload your own boundary'),
     CONFIG.siteMock ? h('p', { class: 'ps-hint ps-find-mock' }, 'Sample mode: example lots are shown until the live address lookup is switched on.') : null);
@@ -144,16 +149,23 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     input.disabled = true;
     controller?.abort();
     controller = new AbortController();
+    const ctl = controller;
+    prog.start('lot');
     try {
-      const { lot, warnings } = await applySiteLookup(store, pick, { signal: controller.signal, onStep: (s) => say(`${STEPS[s] || s}`) });
+      // Never waits forever: past the time limit the lookup is aborted and the message says so.
+      const { lot, warnings } = await withDeadline(applySiteLookup(store, pick, { signal: ctl.signal, onStep: (s) => { prog.step(s); say(`${STEPS[s] || s}`); } }), RUN_TIMEOUT_MS, { onTimeout: () => ctl.abort() });
+      prog.done();
       say('');
       toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' });
       for (const w of warnings) toast(w, { kind: 'warn', timeout: 6000 });
       arrangeOnLoadWatching(store, { swap: false }).catch(() => {});
       if (!disposed) onDone?.(lot);
     } catch (e) {
-      if (e?.name === 'AbortError') return;
-      say(e?.message || 'The lookup failed. You can keep drawing without a lot.', 'warn');
+      if (e?.name === 'AbortError') { prog.reset(); return; }
+      const msg = e?.message || 'The lookup failed. You can keep drawing without a lot.';
+      prog.fail(msg);
+      say(msg, 'warn');
+      if (e?.code === 'SLOW') status.append(' ', h('button', { class: 'ps-btn ps-btn--ghost', type: 'button', dataset: { ps: 'find-retry' }, onclick: () => search() }, 'Try again'));
     } finally {
       busy = false;
       input.disabled = false;
@@ -188,6 +200,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     focus: () => input.focus({ preventScroll: true }),
     dispose() {
       disposed = true;
+      bar.dispose();
       controller?.abort();
     },
   };
