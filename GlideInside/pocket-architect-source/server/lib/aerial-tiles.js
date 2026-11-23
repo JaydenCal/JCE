@@ -24,8 +24,14 @@ export function createAerialTiles(ctx) {
   const { baseUrl, upstream, doFetch, bytesCache, now, iso, captureDate, parseBbox, srsFor, stateParam, rateLimit, meta: baseMetaFor, UA } = ctx;
   let schemeMemo = null;
 
-  async function getScheme() {
-    if (schemeMemo && schemeMemo.until > now()) return schemeMemo.scheme;
+  // One request in flight per isolate: a burst of tile requests on a cold isolate shares it instead of each asking NSW for the service description.
+  let schemeInflight = null;
+  function getScheme() {
+    if (schemeMemo && schemeMemo.until > now()) return Promise.resolve(schemeMemo.scheme);
+    if (!schemeInflight) schemeInflight = loadScheme().finally(() => { schemeInflight = null; });
+    return schemeInflight;
+  }
+  async function loadScheme() {
     let scheme = STANDARD_SCHEME;
     let ttl = SCHEME_RETRY_MS;
     try {
@@ -55,10 +61,12 @@ export function createAerialTiles(ctx) {
     if (hit) {
       body = typeof hit.body === 'string' ? hit.body : new TextDecoder().decode(hit.body);
     } else {
+      // The capture date runs alongside the scheme and is only waited on briefly: the tiles matter more than the date label.
+      const capP = Promise.race([captureDate(box, zone).catch(() => null), new Promise((r) => setTimeout(() => r(null), 1500))]);
       const scheme = await getScheme();
       const p = planMosaic(box, zone, { scheme, res, maxTiles, maxPx });
       if (!p) throw new HttpError('SITE_UPSTREAM', 'The imagery tile cache has no usable zoom level.');
-      const capture = await Promise.race([captureDate(box, zone), new Promise((r) => setTimeout(() => r(null), 4000))]);
+      const capture = await capP;
       const meta = { ...baseMetaFor(capture), tiled: true, georef: 'web-mercator', srid, zone, bbox: box, webBbox: p.webBbox, widthPx: p.crop.widthPx, heightPx: p.crop.heightPx, outWidthPx: p.outWidthPx, outHeightPx: p.outHeightPx, mmPerPx: p.mmPerPx };
       body = JSON.stringify({ state, z: p.z, tileSize: p.tileSize, x0: p.x0, y0: p.y0, cols: p.cols, rows: p.rows, tiles: p.tiles, crop: p.crop, tilePath: 'tile', meta });
       await bytesCache.put(key, { body: new TextEncoder().encode(body).buffer, headers: { 'content-type': 'application/json' } }, 86400);

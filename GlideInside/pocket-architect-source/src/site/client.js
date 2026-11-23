@@ -362,8 +362,10 @@ export async function fetchAerial(params, opts = {}) {
     } finally { clearTimeout(tt); signal?.removeEventListener?.('abort', onA); }
   };
   if (Date.now() < exportDownUntil) {
-    try { return await tiles(); } catch (e) { if (e?.name === 'AbortError') throw e; /* tiles failed too: try the export once more */ }
-    return fetchAerialExport(params, opts);
+    try { return await tiles(); } catch (e) { if (e?.name === 'AbortError') throw e; /* tiles failed too: try the export once more, in what is left of the budget */ }
+    const left = budget ? budget - (Date.now() - t0) : 0;
+    if (budget && left < 2000) throw new SiteError('the imagery service took too long', 'TIMEOUT');
+    return fetchAerialExport(params, { ...opts, timeoutMs: budget ? left : opts.timeoutMs });
   }
   const ctl = typeof AbortController === 'function' ? new AbortController() : null;
   let slow = false;
