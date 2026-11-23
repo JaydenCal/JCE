@@ -1238,8 +1238,12 @@ html[data-phone="1"] .ps-modal-head { padding-top: 12px; }
 .ps-lp--bottom { position: absolute; left: 0; right: 0; bottom: 0; z-index: 46; display: flex; align-items: center; gap: 12px; min-height: 30px; padding: 6px max(14px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); background: rgba(14, 16, 20, 0.82); pointer-events: none; }
 .ps-lp--bottom[hidden] { display: none; }
 .ps-lp--bottom .ps-lp-row { display: contents; }
-.ps-lp--bottom .ps-lp-label { order: 0; white-space: nowrap; }
-.ps-lp--bottom .ps-lp-track { order: 1; flex: 1 1 auto; min-width: 40px; }
+.ps-lp--bottom .ps-lp-label { order: 0; flex: 0 1 auto; min-width: 0; max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-lp { transition: opacity 0.35s ease; }
+.ps-lp[data-fading] { opacity: 0; }
+/* The viewer's gesture hint gives way to the bar while it shows (the bar would sit on it on a phone). */
+.ps-stage:has(.ps-lp--bottom:not([hidden])) .ps3d-hints { display: none; }
+.ps-lp--bottom .ps-lp-track { order: 1; flex: 1 1 24px; min-width: 24px; }
 .ps-lp--bottom .ps-lp-count { order: 2; }
 .ps-lp--inline { --lp-fg: #26323d; --lp-track: rgba(38, 50, 61, 0.16); --lp-fill: #b9741f; margin: 10px 0 2px; }
 .ps-lp--inline[data-state="error"] { --lp-fill: #c0392b; }

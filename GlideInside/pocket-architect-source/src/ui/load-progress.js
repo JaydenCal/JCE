@@ -7,6 +7,7 @@ import { h } from './dom.js';
 import { createLoadTracker } from '../site/load-steps.js';
 
 const HIDE_DONE_MS = 900;
+const HIDE_ERROR_MS = 6000; // an error bar fades out after a few seconds (the page or toast carries the message on)
 
 /**
  * createProgressBar(parent, { variant, labels, steps, onChange }) -> { el, tracker, dispose }.
@@ -33,7 +34,10 @@ export function createProgressBar(parent, { variant = 'inline', labels = {}, ste
     label.textContent = text;
     count.textContent = s.status === 'running' ? `${Math.min(s.index, s.total - 1) + 1} of ${s.total}` : '';
     el.dataset.step = String(s.index);
+    label.title = text;
     if (s.status === 'done') hideT = setTimeout(() => { el.hidden = true; }, HIDE_DONE_MS);
+    else if (s.status === 'error') hideT = setTimeout(() => { el.dataset.fading = '1'; hideT = setTimeout(() => { el.hidden = true; delete el.dataset.fading; }, 400); }, HIDE_ERROR_MS);
+    else delete el.dataset.fading;
   };
   const tracker = createLoadTracker({ steps, labels, onChange: (s) => { paint(s); onChange?.(s); } });
   return { el, tracker, paint, dispose() { clearTimeout(hideT); el.remove(); } };

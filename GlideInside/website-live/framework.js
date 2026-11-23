@@ -154,6 +154,9 @@
     var el = document.createElement("div"); el.className = "as-prog"; el.hidden = true; el.setAttribute("role", "progressbar");
     el.setAttribute("aria-valuemin", "0"); el.setAttribute("aria-valuemax", "100"); el.setAttribute("aria-label", "Finding your block");
     el.innerHTML = '<span class="as-prog-track" aria-hidden="true"><span class="as-prog-fill"></span></span><span class="as-prog-label"></span>';
+    // The bar sits over the status line (it takes no room of its own, so nothing below it moves). A status line with no height of its own
+    // (the compact field in the steps) gets no bar: its text says "Loading your block" instead.
+    if (parseFloat(getComputedStyle(c.status).minHeight) < 20) { c.prog = { none: true }; return c.prog; }
     c.status.parentNode.insertBefore(el, c.status);
     c.prog = { el: el, fill: el.querySelector(".as-prog-fill"), label: el.querySelector(".as-prog-label") };
     return c.prog;
@@ -163,6 +166,7 @@
     searches.forEach(function (c) {
       if (!c.go && !c.input) return;
       var p = prog(c);
+      if (p.none) return;
       if (state === "hide") { p.el.hidden = true; return; }
       p.el.hidden = false;
       if (state === "wait") { p.el.classList.add("is-wait"); p.el.setAttribute("aria-valuenow", "0"); p.fill.style.width = ""; p.label.textContent = "Finding your block"; return; }
@@ -175,6 +179,7 @@
   }
   function setBusy(on) {
     clearTimeout(live.busyT);
+    if (on) clearTimeout(live.stT);
     if (on) { if (!live.progShown) { live.progShown = true; progress("wait"); } } else if (live.progShown) { live.progShown = false; if (!live.progDone) progress("hide"); live.progDone = false; }
     searches.forEach(function (c) { if (!c.go) return; if (on) { c.go.dataset.label = c.go.dataset.label || c.go.textContent; c.go.textContent = "Finding your block..."; c.go.disabled = true; } else if (c.go.dataset.label) { c.go.textContent = c.go.dataset.label; c.go.disabled = false; } });
     if (on) live.busyT = setTimeout(function () { setBusy(false); }, 60000);
@@ -195,9 +200,15 @@
     var m = e.data; if (!m || typeof m !== "object") return;
     if (m.type === "gi:ready") { live.ready = true; clearTimeout(live.fallback); if (live.pending) { var a = live.pending; live.pending = null; postFind(a, live.pendingPick); } }
     else if (m.type === "gi:status") {
-      if (m.state === "loading") setStatus("Loading your block");
+      if (m.state === "loading") { searches.forEach(function (c) { c.status.textContent = (live.progShown && c.prog && !c.prog.none) ? "" : "Loading your block"; c.status.dataset.kind = ""; }); }
       else if (m.state === "step") { if (m.step > 0 && m.total > 0) { live.progShown = true; progress("step", m); } }
-      else if (m.state === "done") { live.progDone = live.progShown; if (live.progShown) progress("done", m); setBusy(false); if (m.address) { live.last = m.address; syncEdit(); } setStatus(m.address ? "Showing " + m.address : "", ""); }
+      else if (m.state === "done") {
+        live.progDone = live.progShown; var shownBar = live.progShown; if (shownBar) progress("done", m);
+        setBusy(false); if (m.address) { live.last = m.address; syncEdit(); }
+        var txt = m.address ? "Showing " + m.address : "";
+        // The bar fills first and the "Showing" line follows once it has gone, so the two never sit on each other.
+        if (shownBar) { searches.forEach(function (c) { if (c.prog && !c.prog.none) { c.status.textContent = ""; } else { c.status.textContent = txt; c.status.dataset.kind = ""; } }); clearTimeout(live.stT); live.stT = setTimeout(function () { setStatus(txt, ""); }, 750); } else setStatus(txt, "");
+      }
       else if (m.state === "error") { setBusy(false); setStatus(m.message || "That address could not be loaded.", "warn", m.retry && live.last ? function () { setBusy(true); setStatus(""); postFind(live.last, live.lastPick); } : null); }
     }
   });

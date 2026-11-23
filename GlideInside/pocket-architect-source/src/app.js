@@ -56,6 +56,7 @@ import { offerSwitch, openInTool } from './ui/tool-switch.js';
 import { effectiveClass } from './commercial/zones.js';
 import { initGuidedFlow, shouldStart, openFlow, tutorialOf } from './flow/index.js';
 import { flowInProgress, portalDeepLink } from './flow/state.js';
+import { lotCommits } from './site/apply.js';
 import { createLoadTracker, withDeadline, RUN_TIMEOUT_MS } from './site/load-steps.js';
 import { viewerEmbedRequested, addressFromSearch, openFullEditor, sameAddress, initEmbedViewer, loadAddress, mountViewerChrome, takeHandoff } from './ui/embed-viewer.js';
 
@@ -596,7 +597,10 @@ async function main() {
     api.addressTracker = tracker;
     tracker.start('address');
     const lookupCtl = new AbortController();
-    api.addressLoad = withDeadline(loadAddress(store, catalogue, addressParam, { place: !startsFlow, onStep: (s) => tracker.step(s), signal: lookupCtl.signal }), RUN_TIMEOUT_MS, { onTimeout: () => lookupCtl.abort() });
+    const commits0 = lotCommits();
+    api.addressLoad = withDeadline(loadAddress(store, catalogue, addressParam, { place: !startsFlow, onStep: (s) => tracker.step(s), signal: lookupCtl.signal, deadlineAt: Date.now() + RUN_TIMEOUT_MS }), RUN_TIMEOUT_MS, { onTimeout: () => lookupCtl.abort() })
+      // The lot is on screen and only the last steps ran over: that is a load, not a "taking too long" error.
+      .catch((e) => { if (e?.timedOut && store.project.site?.lot && lotCommits() !== commits0) return { lot: store.project.site.lot }; throw e; });
     api.addressLoad.then(() => tracker.done(), (e) => tracker.fail(e?.message || ''));
     api.addressLoad
       .then(({ lot }) => {

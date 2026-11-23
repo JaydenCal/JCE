@@ -140,9 +140,11 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     }
   }
 
-  async function choose(i) {
-    const pick = results[i];
+  let lastPick = null;
+  function choose(i) { return load(results[i]); }
+  async function load(pick) {
     if (!pick || busy) return;
+    lastPick = pick;
     busy = true;
     closeList();
     input.value = pick.label;
@@ -151,9 +153,10 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     controller = new AbortController();
     const ctl = controller;
     prog.start('lot');
+    const commits0 = lotCommits();
     try {
       // Never waits forever: past the time limit the lookup is aborted and the message says so.
-      const { lot, warnings } = await withDeadline(applySiteLookup(store, pick, { signal: ctl.signal, onStep: (s) => { prog.step(s); say(`${STEPS[s] || s}`); } }), RUN_TIMEOUT_MS, { onTimeout: () => ctl.abort() });
+      const { lot, warnings } = await withDeadline(applySiteLookup(store, pick, { signal: ctl.signal, deadlineAt: Date.now() + RUN_TIMEOUT_MS, onStep: (s) => { prog.step(s); say(`${STEPS[s] || s}`); } }), RUN_TIMEOUT_MS, { onTimeout: () => ctl.abort() });
       prog.done();
       say('');
       toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' });
@@ -162,10 +165,15 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
       if (!disposed) onDone?.(lot);
     } catch (e) {
       if (e?.name === 'AbortError') { prog.reset(); return; }
+      if (e?.timedOut && store.project.site?.lot && lotCommits() !== commits0) { // the lot landed and only the last steps ran over
+        prog.done(); say('');
+        if (!disposed) onDone?.(store.project.site.lot);
+        return;
+      }
       const msg = e?.message || 'The lookup failed. You can keep drawing without a lot.';
-      prog.fail(msg);
+      prog.reset(); // the message below says it once
       say(msg, 'warn');
-      if (e?.code === 'SLOW') status.append(' ', h('button', { class: 'ps-btn ps-btn--ghost', type: 'button', dataset: { ps: 'find-retry' }, onclick: () => search() }, 'Try again'));
+      if (e?.code === 'SLOW') status.append(' ', h('button', { class: 'ps-btn ps-btn--ghost', type: 'button', dataset: { ps: 'find-retry' }, onclick: () => load(lastPick) }, 'Try again'));
     } finally {
       busy = false;
       input.disabled = false;

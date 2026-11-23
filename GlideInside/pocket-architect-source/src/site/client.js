@@ -188,10 +188,15 @@ export const WIDE_AERIAL_TIMEOUT_MS = 15000;
 
 /** The inner aerial request for a lot box: the finest resolution, or for a big lot one that keeps the picture to about 2048 px. */
 export function innerAerialRes(b, m = margin()) {
+  // Keyed on the requested box: past about 614 m a 4096 px export is coarser than the 0.15 m the service answers reliably.
   const span = Math.max(b.maxE - b.minE, b.maxN - b.minN) + 2 * m;
-  if (Math.max(b.maxE - b.minE, b.maxN - b.minN) <= BIG_LOT_SPAN_M) return INNER_RES;
+  if (span / MAX_EXPORT_PX <= 0.15) return INNER_RES;
   return Math.min(2, Math.max(Number(INNER_RES), span / BIG_AERIAL_PX)).toFixed(3);
 }
+export const MAX_EXPORT_PX = 4096;
+// Time kept back for the steps after the aerial (setbacks, placing the home) when a deadline is given.
+export const AFTER_AERIAL_RESERVE_MS = 12000;
+export const MIN_AERIAL_MS = 3000;
 
 export const CONTOURS_TIMEOUT_MS = 30000;
 const CONTOURS_KEEP_MS = 120000;
@@ -246,7 +251,7 @@ export async function fetchOverlays(request, { fetchImpl, timeoutMs = OVERLAYS_T
  * fetchSite(selection, { fetchImpl, signal, onStep, deferContours }) -> { lot, aerial: { blob, meta } | null, contours | null, warnings: [] }
  * selection: { label, state, lon, lat }. The lot is required. A failed aerial or elevation request only adds a warning.
  */
-export async function fetchSite(selection, { fetchImpl, signal, onStep, deferContours = false, retryDelayMs, sleepImpl, aerialTimeoutMs = 0 } = {}) {
+export async function fetchSite(selection, { fetchImpl, signal, onStep, deferContours = false, retryDelayMs, sleepImpl, aerialTimeoutMs = 0, deadlineAt = 0 } = {}) {
   const warnings = [];
   const step = (s) => onStep?.(s);
   if (CONFIG.siteMock) {
@@ -295,18 +300,26 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep, deferCon
   step('aerial');
   const spanM = Math.max(b.maxE - b.minE, b.maxN - b.minN);
   const big = spanM > BIG_LOT_SPAN_M;
+  // With a deadline the aerial only gets the time left (less a reserve for the steps after it): a slow photo never costs the lot.
+  const left = () => (deadlineAt ? deadlineAt - Date.now() - AFTER_AERIAL_RESERVE_MS : Infinity);
   let aerial = null;
-  try {
-    aerial = await fetchAerial({ ...common, bbox, res: innerAerialRes(b, m) }, { ...opts, timeoutMs: aerialTimeoutMs || (big ? BIG_AERIAL_TIMEOUT_MS : AERIAL_TIMEOUT_MS) });
-  } catch (e) {
-    if (e?.name === 'AbortError') throw e;
-    warnings.push(`No aerial image: ${e.message}`);
+  let aerialSkipped = false;
+  if (left() < MIN_AERIAL_MS) {
+    aerialSkipped = true;
+    warnings.push('No aerial image: the lookup was running out of time.');
+  } else {
+    try {
+      aerial = await fetchAerial({ ...common, bbox, res: innerAerialRes(b, m) }, { ...opts, timeoutMs: Math.min(aerialTimeoutMs || (big ? BIG_AERIAL_TIMEOUT_MS : AERIAL_TIMEOUT_MS), left()) });
+    } catch (e) {
+      if (e?.name === 'AbortError') throw e;
+      warnings.push(`No aerial image: ${e.message}`);
+    }
   }
   // The wide outer tile is optional: if it fails the view still works with the inner tile and the fade ring as before.
   let aerialWide = null;
-  if (aerial && spanM <= WIDE_SKIP_SPAN_M) {
+  if (aerial && spanM <= WIDE_SKIP_SPAN_M && left() >= MIN_AERIAL_MS) {
     try {
-      aerialWide = await fetchAerial({ ...common, ...wideAerialParams(b, lot.state === 'NSW' ? WIDE_PX_NSW : WIDE_PX) }, { ...opts, timeoutMs: aerialTimeoutMs || WIDE_AERIAL_TIMEOUT_MS });
+      aerialWide = await fetchAerial({ ...common, ...wideAerialParams(b, lot.state === 'NSW' ? WIDE_PX_NSW : WIDE_PX) }, { ...opts, timeoutMs: Math.min(aerialTimeoutMs || WIDE_AERIAL_TIMEOUT_MS, left()) });
     } catch (e) {
       if (e?.name === 'AbortError') throw e;
     }
@@ -314,10 +327,10 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep, deferCon
   // Ground levels come last and slowest. With deferContours the caller gets the lot, the aerial and a promise for the ground levels now.
   step('contours');
   const pending = fetchContours(lot, { fetchImpl });
-  if (deferContours) return { lot, aerial, aerialWide, contours: null, contoursPromise: pending, warnings };
+  if (deferContours) return { lot, aerial, aerialWide, contours: null, contoursPromise: pending, warnings, aerialSkipped };
   const contours = await pending;
   if (!contours) warnings.push('No contours were available for this lot.');
-  return { lot, aerial, aerialWide, contours, warnings };
+  return { lot, aerial, aerialWide, contours, warnings, aerialSkipped };
 }
 
 export async function fetchAerial(params, { signal, fetchImpl = globalThis.fetch, timeoutMs = 0 } = {}) {

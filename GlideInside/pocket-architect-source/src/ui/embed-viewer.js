@@ -14,7 +14,7 @@ import { toast } from './toast.js';
 import { CONFIG } from '../config.js';
 import { migrate } from '../model/schema.js';
 import { smartSearch, NOT_FOUND_TEXT } from '../site/address-search.js';
-import { applySiteLookup } from '../site/apply.js';
+import { applySiteLookup, lotCommits } from '../site/apply.js';
 import { demoSite } from '../site/demo-lot.js';
 import { publicDesigns } from '../lotcard/designs.js';
 import { swapHouse, poseFor } from '../lotcard/swap.js';
@@ -194,7 +194,7 @@ export function placeChoice(store, choice) {
  * setbacks could not be worked out yet (they arrive a moment later), place one now and again once they have loaded. The second pass is
  * skipped when the lot has been replaced in the meantime.
  */
-export async function placeBestDesign(store, catalogue, wantId = null, { after = null, onStep = null } = {}) {
+export async function placeBestDesign(store, catalogue, wantId = null, { after = null, onStep = null, signal = null } = {}) {
   const id0 = lotId(store);
   onStep?.('setbacks');
   const pool = await designPool(store, catalogue);
@@ -204,7 +204,7 @@ export async function placeBestDesign(store, catalogue, wantId = null, { after =
   // The widget opens on the builder's own first design when it sits on the block.
   const want = wantId || (pool.widget ? pool.list[0]?.id || null : null);
   try { choice = await chooseDesign(store, pool, want); } catch (e) { console.warn('[embed] design choice failed', e); }
-  if (lotId(store) !== id0) return null;
+  if (lotId(store) !== id0 || signal?.aborted) return null; // another lot was loaded, or this run was given up on
   if (!choice) return null;
   onStep?.('place');
   const first = placeChoice(store, choice);
@@ -226,27 +226,31 @@ export const validPick = (p) => !!p && typeof p === 'object' && Number.isFinite(
  * Find my block without any dialogs: look the address up, take the first result, load the lot, accept the detected frontage and
  * place the current design. Throws a readable Error when the address is not found.
  */
-export async function loadAddress(store, catalogue, address, { onStep, signal, viewer = false, after = null, place = true, pick: given = null } = {}) {
+export async function loadAddress(store, catalogue, address, { onStep, signal, deadlineAt = 0, viewer = false, after = null, place = true, pick: given = null } = {}) {
   const q = String(address || '').trim();
   if (q.length < 3) throw new Error('Type a street address first.');
   // A suggestion the visitor already chose carries its coordinates: use it directly, no second search.
   const pick = validPick(given) ? given : (await smartSearch(q, { onRetry: () => onStep?.('busy'), signal }))[0];
   if (!pick) throw Object.assign(new Error(NOT_FOUND_TEXT), { notFound: true });
   const wantId = store.ui.placedDesign?.id || null;
-  const { lot, warnings } = await applySiteLookup(store, pick, { onStep, signal });
+  const { lot, warnings, aerialSkipped } = await applySiteLookup(store, pick, { onStep, signal, deadlineAt });
+  if (signal?.aborted) throw Object.assign(new Error('aborted'), { name: 'AbortError' });
   confirmFrontage(store, viewer);
-  if (place) await placeBestDesign(store, catalogue, wantId, { after, onStep });
+  // The aerial was skipped to keep inside the time limit: it follows the lot in the background (never blocks, never throws).
+  if (aerialSkipped) import('../flow/flow-aerial.js').then((m) => m.ensureFlowAerial(store)).catch(() => {});
+  if (place) await placeBestDesign(store, catalogue, wantId, { after, onStep, signal });
   return { lot, warnings, pick };
 }
 
 /** Commercial: look the address up, load the lot, accept the frontage, convert and place the Best fit layout (src/commercial/place.js). */
-export async function loadAddressCommercial(store, address, { onStep, signal, pick: given = null } = {}) {
+export async function loadAddressCommercial(store, address, { onStep, signal, deadlineAt = 0, pick: given = null } = {}) {
   const q = String(address || '').trim();
   if (q.length < 3) throw new Error('Type a street address first.');
   // A suggestion the visitor already chose carries its coordinates: use it directly (as the residential viewer does), no second search.
   const pick = validPick(given) ? given : (await smartSearch(q, { onRetry: () => onStep?.('busy'), signal }))[0];
   if (!pick) throw Object.assign(new Error(NOT_FOUND_TEXT), { notFound: true });
-  const { lot, warnings } = await applySiteLookup(store, pick, { onStep, signal });
+  const { lot, warnings } = await applySiteLookup(store, pick, { onStep, signal, deadlineAt });
+  if (signal?.aborted) throw Object.assign(new Error('aborted'), { name: 'AbortError' });
   // The residential guided flow fetches the aerial again when the lookup left none (ensureFlowAerial); the commercial viewer never did, so a
   // lookup whose imagery request failed once stayed on the striped lawn with a greyed Aerial pill. Same recovery here.
   if (!store.project.site?.lot?.aerial?.extent) { try { const { ensureFlowAerial } = await import('../flow/flow-aerial.js'); await ensureFlowAerial(store); } catch { /* the lawn stays */ } }
@@ -314,32 +318,48 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
 
   /** Load an address. Resolves true when it loaded, false when it failed, null when it was queued behind a lookup in progress.
    *  `notify`: the search came from the viewer's own pill, so a failure is shown here (a search sent by the page around it is reported to that page). */
+  let current = null; // the lookup in progress: { supersede() } gives it up
+  const AERIAL_FRAME_MS = 4000; // the framing step after a load never holds "done" back longer than this
+  const framed = () => Promise.race([aerial(), new Promise((r) => setTimeout(r, AERIAL_FRAME_MS))]);
+
   async function run(address, { notify = false, pick = null } = {}) {
-    if (busy) { pending = address; pendingNotify = notify; pendingPick = pick; return null; }
+    if (busy) {
+      // A newer search replaces a lookup in progress at once (it starts as the old one settles); a demo load in progress is waited for.
+      pending = address; pendingNotify = notify; pendingPick = pick;
+      current?.supersede();
+      return null;
+    }
     busy = true;
     shell.dataset.embedBusy = '1';
     runAddress = address;
-    const before = lotId(store);
+    const commits0 = lotCommits();
     postToParent({ type: 'gi:status', state: 'loading', address });
     const ctl = new AbortController();
     let timedOut = false;
+    let giveUp = null;
+    const superseded = new Promise((_, rej) => { giveUp = () => rej(Object.assign(new Error('superseded'), { code: 'SUPERSEDED' })); });
+    superseded.catch(() => {});
+    current = { supersede: () => { ctl.abort(); giveUp(); } };
     bar.tracker.start(validPick(pick) ? 'lot' : 'address');
     const onStep = (s) => bar.tracker.step(s);
+    const limitMs = Number(window.__ps?.runTimeoutMs) || timeoutMs;
+    const deadlineAt = Date.now() + limitMs;
     try {
       const work = commercial
-        ? loadAddressCommercial(store, address, { onStep, signal: ctl.signal, pick })
-        : loadAddress(store, catalogue, address, { onStep, signal: ctl.signal, viewer: viewerMode, after: viewerMode ? settleAerial : null, pick });
+        ? loadAddressCommercial(store, address, { onStep, signal: ctl.signal, deadlineAt, pick })
+        : loadAddress(store, catalogue, address, { onStep, signal: ctl.signal, deadlineAt, viewer: viewerMode, after: viewerMode ? settleAerial : null, pick });
       // Nothing waits forever: past the time limit the lookup is aborted and the page gets an error with a retry.
-      const r = await withDeadline(work, Number(window.__ps?.runTimeoutMs) || timeoutMs, { onTimeout: () => { timedOut = true; ctl.abort(); } });
+      const r = await Promise.race([withDeadline(work, limitMs, { onTimeout: () => { timedOut = true; ctl.abort(); } }), superseded]);
       bar.tracker.step('place');
-      if (viewerMode) { store.setUI({ view: '3d' }); await aerial(); }
+      if (viewerMode) { store.setUI({ view: '3d' }); await framed(); }
       bar.tracker.done();
       postToParent({ type: 'gi:status', state: 'done', address: r.lot?.address || address });
       return true;
     } catch (e) {
-      // The lot itself arrived and only the last steps ran over: show it, the setbacks and the house settle in as they finish.
-      if (timedOut && store.project.site?.lot && lotId(store) !== before) {
-        if (viewerMode) { store.setUI({ view: '3d' }); aerial().catch(() => {}); }
+      if (e?.code === 'SUPERSEDED') return null; // the newer search reports for itself
+      // The lot itself arrived (even the one already shown, searched again) and only the last steps ran over: show it, the setbacks and the house settle in as they finish.
+      if (timedOut && store.project.site?.lot && lotCommits() !== commits0) {
+        if (viewerMode) { store.setUI({ view: '3d' }); framed().catch(() => {}); }
         bar.tracker.done();
         postToParent({ type: 'gi:status', state: 'done', address: store.project.site.lot.address || address });
         return true;
@@ -351,6 +371,7 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
       if (notify) toast(message, e?.notFound ? { kind: 'warn', timeout: 14000, action: { label: 'Try a sample lot', onClick: () => startDemo() } } : { kind: 'error' });
       return false;
     } finally {
+      current = null;
       settle();
     }
   }
@@ -358,6 +379,7 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
   /** Load the demo lot (viewer mode, no ?address=). A search sent meanwhile waits and then replaces it. */
   async function startDemo() {
     busy = true;
+    bar.tracker.reset(); // an error bar from a failed search does not stay over the sample lot
     shell.dataset.embedBusy = '1';
     try {
       if (commercial) await loadDemoCommercial(store); else await loadDemo(store, catalogue, { after: settleAerial });

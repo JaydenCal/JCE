@@ -3,7 +3,7 @@
 
 import { h } from '../ui/dom.js';
 import { NOT_FOUND_TEXT, SEARCH_BUSY_TEXT, createLiveSearch } from '../site/address-search.js';
-import { applySiteLookup } from '../site/apply.js';
+import { applySiteLookup, lotCommits } from '../site/apply.js';
 import { demoSite } from '../site/demo-lot.js';
 import { runUpload } from '../site/upload/flow.js';
 import { confirmFrontage, waitForEnvelope } from '../ui/embed-viewer.js';
@@ -72,6 +72,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
   };
   const live = createLiveSearch({ getText: () => input.value, onResults: (r) => { if (!disposed) setSugg(r.slice(0, 5)); }, onError: (t) => { if (!disposed) setBusy(t); } });
 
+  let lastPick = null;
   async function choose(pick) {
     if (loading) return;
     setSugg([]);
@@ -79,19 +80,26 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     loading = true; error = ''; slow = false; paint(); ctx.refresh();
     prog.start('lot');
     const ctl = new AbortController();
+    const commits0 = lotCommits();
+    const limit = LOOKUP_LIMIT_MS();
     try {
       // Never waits forever: past the time limit the lookup is aborted and the message offers Try again.
       await withDeadline((async () => {
-        await applySiteLookup(store, pick, { onStep: (s) => prog.step(s), signal: ctl.signal });
+        await applySiteLookup(store, pick, { onStep: (s) => prog.step(s), signal: ctl.signal, deadlineAt: Date.now() + limit });
         prog.step('setbacks');
         confirmFrontage(store);
         await waitForEnvelope(store, 8000);
-      })(), LOOKUP_LIMIT_MS(), { onTimeout: () => ctl.abort() });
+      })(), limit, { onTimeout: () => ctl.abort() });
       prog.done();
     } catch (e) {
-      error = e?.message || 'That address could not be loaded.';
-      slow = e?.code === 'SLOW';
-      prog.fail(error);
+      if (e?.timedOut && lotOf(store.project) && lotCommits() !== commits0) {
+        prog.done(); // the lot is on screen and only the last steps ran over: no "taking too long" error over it
+      } else {
+        error = e?.message || 'That address could not be loaded.';
+        slow = e?.code === 'SLOW';
+        lastPick = pick;
+        prog.reset(); // the message below says it once
+      }
     } finally {
       loading = false;
     }
@@ -116,7 +124,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     }
     loading = false;
     if (!pick && !error) { error = NOT_FOUND_TEXT; notFound = true; }
-    if (pick) await choose(pick); else { prog.fail(error); paint(); }
+    if (pick) await choose(pick); else { prog.reset(); paint(); }
   }
 
   async function useUpload() {
@@ -133,7 +141,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
       prog.done();
       confirmFrontage(store);
       await waitForEnvelope(store, 8000);
-    } catch (e) { error = e?.message || 'The sample lot could not be loaded.'; prog.fail(error); }
+    } catch (e) { error = e?.message || 'The sample lot could not be loaded.'; prog.reset(); }
     loading = false;
     if (!disposed) { paint(); ctx.refresh(); }
   }
@@ -187,7 +195,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     }
     confirm.classList.toggle('gf-dim', loading);
     confirm.setAttribute('aria-busy', String(!!loading));
-    if (slow && error && !loading) status.append(' ', h('button', { class: 'gf-skip', type: 'button', style: { padding: '0 0 0 6px', fontWeight: '700' }, dataset: { ps: 'flow-retry' }, onclick: () => find() }, 'Try again'));
+    if (slow && error && !loading) status.append(' ', h('button', { class: 'gf-skip', type: 'button', style: { padding: '0 0 0 6px', fontWeight: '700' }, dataset: { ps: 'flow-retry' }, onclick: () => (lastPick ? choose(lastPick) : find()) }, 'Try again'));
     status.className = `gf-note${error && !loading ? ' gf-note--bad' : ''}`;
     failActions.hidden = !(error && !loading);
     sample.hidden = !failActions.hidden;

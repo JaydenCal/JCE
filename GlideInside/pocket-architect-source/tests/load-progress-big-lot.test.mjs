@@ -51,6 +51,10 @@ test('viewer: when the lookup runs over the limit the page gets an error with a 
     // A retry from the page starts again cleanly.
     S.mode = 'ok';
     await send(page, '756 Quia Road Gunnedah');
-    await page.waitForFunction(() => window.__M.filter((m) => m.type === 'gi:status' && m.state === 'loading').length >= 2, null, { timeout: 15000 });
+    await page.waitForFunction(() => window.__M.some((m) => m.type === 'gi:status' && m.state === 'done'), null, { timeout: 90000 });
+    const st2 = await frame.evaluate(() => ({ lot: window.__ps.store.project.site?.lot?.lotLabel, bar: document.querySelector('.ps-lp')?.dataset.state }));
+    assert.equal(st2.lot, 'Lot 3 DP 263990');
+    assert.notEqual(st2.bar, 'error');
   } finally { await browser.close(); srv.close(); }
 });
+

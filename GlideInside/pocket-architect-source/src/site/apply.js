@@ -66,10 +66,14 @@ const titleCase = (s) => String(s || '').toLowerCase().replace(/\b[a-z]/g, (c) =
  * applySiteLookup(store, selection, { onStep, signal }) -> { lot, warnings }
  * Throws SiteError (readable message) when the lot cannot be found. A missing aerial or elevation grid only adds warnings.
  */
-export async function applySiteLookup(store, selection, { onStep, signal, fetchImpl, prefetched = null, deferContours = true } = {}) {
-  const res = prefetched || (await fetchSite(selection, { onStep, signal, fetchImpl, deferContours }));
+export async function applySiteLookup(store, selection, { onStep, signal, fetchImpl, prefetched = null, deferContours = true, deadlineAt = 0 } = {}) {
+  // A run that was given up on (its deadline passed, or a newer search replaced it) must never land its lot over what is on screen now.
+  const stale = () => { if (signal?.aborted) throw Object.assign(new Error('aborted'), { name: 'AbortError' }); };
+  const res = prefetched || (await fetchSite(selection, { onStep, signal, fetchImpl, deferContours, deadlineAt }));
+  stale();
   const warnings = [...res.warnings];
   const { aerialKey, aerialWideKey } = await storeAerials(store, res, warnings);
+  if (signal?.aborted) { if (aerialKey) removeImage(aerialKey); if (aerialWideKey) removeImage(aerialWideKey); stale(); }
   const lot = buildSiteLot({
     lot: res.lot,
     aerialMeta: aerialKey ? res.aerial.meta : null,
@@ -84,7 +88,7 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
   commitLot(store, lot, { label: 'Find my block', aerialKey, aerialWideKey });
   res.contoursPromise?.then((c) => addContours(store, lot, c)).catch(() => {});
   refreshOverlays(store, lot, { fetchImpl }).catch(() => {}); // late, optional, never blocks or fails the lot
-  return { lot, warnings };
+  return { lot, warnings, aerialSkipped: !!res.aerialSkipped };
 }
 
 // Put the aerial pictures of a lookup in the browser's image store. Returns the keys that could be read back (null when none).
@@ -110,7 +114,11 @@ export async function storeAerials(store, res, warnings) {
 
 // Make `lot` the project's lot as one undo step: title block, underlay, frontage step and the commercial offer. Shared by a looked up lot
 // and an uploaded boundary.
+let commits = 0;
+/** How many lots have been put on a project in this page view: a changed count means a lookup landed, even for the lot already shown. */
+export const lotCommits = () => commits;
 export function commitLot(store, lot, { label = 'Find my block', aerialKey = null, aerialWideKey = null, offer = true } = {}) {
+  commits += 1;
   const oldKey = store.project.site?.underlay?.key;
   const oldWide = store.project.site?.lot?.aerialWide?.key || null;
   const first = !store.project.site?.lot;

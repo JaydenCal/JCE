@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createLoadTracker, withDeadline, statusMessage, LOAD_STEPS, RUN_TIMEOUT_MS, TOO_LONG_TEXT } from '../src/site/load-steps.js';
+import { applySiteLookup } from '../src/site/apply.js';
 import { fetchAerial, fetchSite, innerAerialRes, BIG_LOT_SPAN_M, WIDE_SKIP_SPAN_M } from '../src/site/client.js';
 import { ruralLot, startStub, GL_ARGS } from './helpers/site-stub.mjs';
 
@@ -101,6 +102,33 @@ test('the 50.9 ha lot: the lot is returned with a warning when the aerial never 
   assert.ok(Math.max(r.lot.lot.bboxMga.maxE - r.lot.lot.bboxMga.minE, r.lot.lot.bboxMga.maxN - r.lot.lot.bboxMga.minN) < WIDE_SKIP_SPAN_M * 2);
 });
 
+test('with a deadline the aerial gets only the time left: out of time it is skipped and the lot still comes back', async () => {
+  const calls = [];
+  const fetchImpl = (url) => {
+    const u = new URL(url, 'http://x');
+    calls.push(u.pathname);
+    if (u.pathname.endsWith('/site/lot')) return Promise.resolve(new Response(JSON.stringify(ruralLot()), { status: 200, headers: { 'content-type': 'application/json' } }));
+    return Promise.resolve(new Response(JSON.stringify({ grid: null }), { status: 200, headers: { 'content-type': 'application/json' } }));
+  };
+  const r = await fetchSite({ label: 'x', state: 'NSW', lon: 150.1, lat: -30.9 }, { fetchImpl, deferContours: true, deadlineAt: Date.now() + 5000 });
+  assert.equal(r.aerialSkipped, true);
+  assert.equal(r.aerial, null);
+  assert.ok(!calls.some((c) => c.endsWith('/site/aerial')), 'no aerial request when there is no time for one');
+  assert.equal(r.lot.lot.lotLabel, 'Lot 3 DP 263990');
+});
+
+test('a run that was given up on never lands its lot: an aborted signal stops applySiteLookup before it touches the project', async () => {
+  const store = { project: { id: 'p', site: {} } };
+  const ctl = new AbortController(); ctl.abort();
+  await assert.rejects(applySiteLookup(store, { label: '' }, { prefetched: { lot: ruralLot(), aerial: null, contours: null, warnings: [] }, signal: ctl.signal }), (e) => e.name === 'AbortError');
+  assert.equal(store.project.site.lot, undefined);
+});
+
+test('the resolution cap follows the requested box: a 614 m box and over is coarser, a smaller one keeps the finest', () => {
+  assert.equal(innerAerialRes({ minE: 0, minN: 0, maxE: 540, maxN: 100 }, 30), '0.05'); // 600 m box
+  assert.ok(Number(innerAerialRes({ minE: 0, minN: 0, maxE: 560, maxN: 100 }, 30)) > 0.25); // 620 m box
+});
+
 test('the new strings follow the text rules: no en or em dashes, never "compliant", no old product name', () => {
   for (const f of ['../src/site/load-steps.js', '../src/ui/load-progress.js']) {
     const s = fs.readFileSync(path.join(HERE, f), 'utf8');
@@ -153,6 +181,7 @@ test('viewer, phone 390x844: the bar sits along the bottom edge inside the scree
     assert.ok(g.l >= 0 && g.r <= g.vw + 1, 'inside the width');
     assert.ok(Math.abs(g.bottom - g.vh) <= 2, `at the bottom edge (${g.bottom} of ${g.vh})`);
     assert.ok(g.h < 70, 'slim');
+    assert.equal(await frame.evaluate(() => { const e = document.querySelector('.ps3d-hints'); return !e || getComputedStyle(e).display; }), 'none', 'the gesture hint gives way to the bar');
   } finally { await browser.close(); srv.close(); }
 });
 

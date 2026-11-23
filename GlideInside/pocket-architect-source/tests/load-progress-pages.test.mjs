@@ -20,8 +20,12 @@ test('home page: the slim bar under the hero search follows gi:status steps and 
     await page.evaluate(() => { window.__P = []; new MutationObserver(() => { const p = document.querySelector('.as-prog'); if (p) window.__P.push({ hidden: p.hidden, now: Number(p.getAttribute('aria-valuenow')), label: p.querySelector('.as-prog-label').textContent, wait: p.classList.contains('is-wait') }); }).observe(document.body, { subtree: true, childList: true, attributes: true, characterData: true }); });
     const input = page.locator('[data-addr-input]').first();
     await input.fill('14 Sample Street Calala');
+    const below = () => page.evaluate(() => { const e = document.querySelector('.hero-free'); return e.getBoundingClientRect().top + scrollY; });
+    const y0 = await below();
     await input.press('Enter');
     await page.waitForSelector('.as-prog:not([hidden])', { timeout: 15000 });
+    assert.ok(Math.abs((await below()) - y0) < 1, 'the bar takes no room: nothing below it moves');
+    assert.equal(await page.evaluate(() => document.querySelector('.as-status').textContent.trim()), '', 'no duplicate "Loading your block" line under the bar');
     const go = await page.evaluate(() => document.querySelector('.as-go').textContent);
     assert.match(go, /Finding your block/);
     await page.waitForFunction(() => window.__P.some((p) => /of 6/.test(p.label)), null, { timeout: 60000 });
@@ -75,11 +79,13 @@ test('guided flow, Find your lot: the bar names each step and ends done; a faile
     const running = log.filter((b) => b.state === 'running');
     assert.ok(running.every((b) => b.now < 100));
     assert.deepEqual(running.map((b) => b.now), [...running.map((b) => b.now)].sort((a, b) => a - b));
-    // A failed lookup: the error state with the message, never left running.
+    // A failed lookup: the message shows once (in the status line, the bar steps aside), never left running.
     S.mode = '500';
     await page.fill('[data-ps=flow-address]', '16 Sample Street Calala');
     await page.press('[data-ps=flow-address]', 'Enter');
-    await page.waitForFunction(() => document.querySelector('[data-ps=flow-root] .ps-lp')?.dataset.state === 'error', null, { timeout: 60000 });
-    assert.equal(await page.evaluate(() => document.querySelector('[data-ps=flow-address]').closest('.gf-card').querySelector('.ps-lp').hidden), false);
+    await page.waitForFunction(() => document.querySelector('[data-ps=flow-lot-status]')?.classList.contains('gf-note--bad'), null, { timeout: 60000 });
+    const once = await page.evaluate(() => ({ bar: document.querySelector('[data-ps=flow-root] .ps-lp').hidden, text: [...document.querySelectorAll('[data-ps=flow-root]')[0].querySelectorAll('*')].filter((e) => !e.children.length && /government map service|could not be reached|lookup/i.test(e.textContent)).length }));
+    assert.equal(once.bar, true, 'the bar is not showing the error as well');
+    assert.equal(once.text, 1, 'the error text appears once');
   } finally { await browser.close(); srv.close(); }
 });

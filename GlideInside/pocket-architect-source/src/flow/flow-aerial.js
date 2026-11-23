@@ -1,6 +1,6 @@
 // Steps 3 and 4 of the guided flow need the lot's aerial. Step 1 normally stores it, but when that request failed or was skipped the flow fetches it
 // itself with the same service request the editor uses (/api/site/aerial: the inner high resolution tile plus the wider tile), once per lot.
-import { fetchAerial, margin, INNER_RES, wideAerialParams, WIDE_PX, WIDE_PX_NSW } from '../site/client.js';
+import { fetchAerial, margin, innerAerialRes, wideAerialParams, WIDE_PX, WIDE_PX_NSW, AERIAL_TIMEOUT_MS, WIDE_AERIAL_TIMEOUT_MS, WIDE_SKIP_SPAN_M } from '../site/client.js';
 import { aerialExtentPlan } from '../site/model.js';
 import { storeAerials } from '../site/apply.js';
 import { underlayFor } from '../site/model.js';
@@ -29,12 +29,12 @@ export function ensureFlowAerial(store, deps = {}) {
       const m = margin();
       const b = lotBboxMga(lot);
       const common = { state: lot.state, srid: String(lot.srid), origin: `${lot.origin.e},${lot.origin.n}` };
-      const opts = { fetchImpl: deps.fetchImpl || globalThis.fetch };
-      const innerParams = { ...common, bbox: `${b.minE - m},${b.minN - m},${b.maxE + m},${b.maxN + m}`, res: INNER_RES };
+      const opts = { fetchImpl: deps.fetchImpl || globalThis.fetch, timeoutMs: AERIAL_TIMEOUT_MS };
+      const innerParams = { ...common, bbox: `${b.minE - m},${b.minN - m},${b.maxE + m},${b.maxN + m}`, res: innerAerialRes(b, m) };
       let inner;
       try { inner = await fetchAerial(innerParams, opts); } catch { await new Promise((r) => setTimeout(r, deps.retryMs ?? 1500)); inner = await fetchAerial(innerParams, opts); } // one retry: the imagery service is busy now and then
       let wide = null;
-      try { wide = await fetchAerial({ ...common, ...wideAerialParams(b, lot.state === 'NSW' ? WIDE_PX_NSW : WIDE_PX) }, opts); } catch { /* optional */ }
+      if (Math.max(b.maxE - b.minE, b.maxN - b.minN) <= WIDE_SKIP_SPAN_M) { try { wide = await fetchAerial({ ...common, ...wideAerialParams(b, lot.state === 'NSW' ? WIDE_PX_NSW : WIDE_PX) }, { ...opts, timeoutMs: WIDE_AERIAL_TIMEOUT_MS }); } catch { /* optional */ } }
       const warnings = [];
       const { aerialKey, aerialWideKey } = await storeAerials(store, { aerial: inner, aerialWide: wide }, warnings);
       if (!aerialKey) return false;
