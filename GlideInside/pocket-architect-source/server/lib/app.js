@@ -742,7 +742,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       const res = await commercial.route(request, url, path);
       if (res) return res;
     }
-    const sub = /^\/site(\/[a-z]+)$/.exec(path);
+    const sub = /^\/site(\/[a-z]+(?:-[a-z]+)?)$/.exec(path);
     if (sub) return site.handle(sub[1], request, url);
     if (path.startsWith('/terms/')) {
       const res = await terms.route(request, url, path);
