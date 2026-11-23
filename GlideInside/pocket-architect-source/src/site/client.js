@@ -343,7 +343,24 @@ export const resetExportBreaker = () => { exportDownUntil = 0; };
 export async function fetchAerial(params, opts = {}) {
   if (params?.state !== 'NSW' || opts.noTiles || CONFIG.siteTiles === false) return fetchAerialExport(params, opts);
   const { signal, fetchImpl = globalThis.fetch, exportSlowMs = Number(globalThis.GI_CONFIG?.siteExportSlowMs) || EXPORT_SLOW_MS } = opts; // the host page may shorten it (tests)
-  const tiles = async () => (await import('./tile-mosaic.js')).fetchAerialTiles(params, { signal, fetchImpl, ...(opts.tileOpts || {}) });
+  // The caller's budget (timeoutMs, set by fetchSite from the lookup deadline) covers the export AND the tile fallback: the export gets under half of it
+  // so the tiles always have time, and the tiles are abandoned when the whole budget is spent.
+  const budget = Number(opts.timeoutMs) || 0;
+  const t0 = Date.now();
+  const exportMs = budget ? Math.min(exportSlowMs, Math.max(2000, Math.round(budget * 0.45))) : exportSlowMs;
+  const tiles = async () => {
+    const tc = typeof AbortController === 'function' ? new AbortController() : null;
+    const onA = () => tc?.abort();
+    if (signal?.aborted) tc?.abort(); else signal?.addEventListener?.('abort', onA, { once: true });
+    let over = false;
+    const tt = budget && tc ? setTimeout(() => { over = true; tc.abort(); }, Math.max(1500, budget - (Date.now() - t0))) : null;
+    try {
+      return await (await import('./tile-mosaic.js')).fetchAerialTiles(params, { signal: tc?.signal || signal, fetchImpl, ...(opts.tileOpts || {}) });
+    } catch (e) {
+      if (over && e?.name === 'AbortError') throw new SiteError('the imagery service took too long', 'TIMEOUT');
+      throw e;
+    } finally { clearTimeout(tt); signal?.removeEventListener?.('abort', onA); }
+  };
   if (Date.now() < exportDownUntil) {
     try { return await tiles(); } catch (e) { if (e?.name === 'AbortError') throw e; /* tiles failed too: try the export once more */ }
     return fetchAerialExport(params, opts);
@@ -353,9 +370,9 @@ export async function fetchAerial(params, opts = {}) {
   const onAbort = () => ctl?.abort();
   if (signal?.aborted) ctl?.abort();
   else signal?.addEventListener?.('abort', onAbort, { once: true });
-  const timer = ctl ? setTimeout(() => { slow = true; ctl.abort(); }, exportSlowMs) : null;
+  const timer = ctl ? setTimeout(() => { slow = true; ctl.abort(); }, exportMs) : null;
   try {
-    return await fetchAerialExport(params, { ...opts, signal: ctl?.signal || signal });
+    return await fetchAerialExport(params, { ...opts, timeoutMs: 0, signal: ctl?.signal || signal });
   } catch (first) {
     if (signal?.aborted) throw first; // the caller's own abort
     if (!slow && ['BAD_REQUEST', 'UNSUPPORTED_AREA', 'RATE_LIMITED', 'NOT_FOUND'].includes(first?.code)) throw first; // a refusal the tiles would not fix

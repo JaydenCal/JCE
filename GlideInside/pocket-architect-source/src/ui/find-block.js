@@ -8,7 +8,7 @@ import { openModal } from './modal.js';
 import { CONFIG } from '../config.js';
 import { smartSearch, NOT_FOUND_TEXT, SEARCH_DEBOUNCE_MS, SEARCH_BUSY_TEXT, isBusyFailure } from '../site/address-search.js';
 import { demoSite } from '../site/demo-lot.js';
-import { applySiteLookup } from '../site/apply.js';
+import { applySiteLookup, lotCommits } from '../site/apply.js';
 import { runUpload } from '../site/upload/flow.js';
 import { arrangeOnLoadWatching } from '../flow/arrange-on-load.js';
 import { createProgressBar } from './load-progress.js';

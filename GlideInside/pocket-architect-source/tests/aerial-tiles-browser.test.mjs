@@ -148,10 +148,9 @@ test('browser: the export hangs, the lot still gets an aerial from the cached ti
     await page.waitForFunction(() => window.__ps && window.__ps.store, null, { timeout: 60000 });
     await page.waitForTimeout(1500);
     for (const t of ['text=Skip tutorial', 'button:has-text("Not now")', 'text=Got it', 'text=Skip tips']) await page.click(t, { timeout: 250 }).catch(() => {});
-    const input = page.locator('[data-ps=find-block-input]:visible').first();
-    await input.fill('12 Smith Street Tamworth');
-    await page.locator('.ps-find-list:not([hidden]) .ps-find-item').first().waitFor({ timeout: 20000 });
-    await page.locator('.ps-find-list:not([hidden]) .ps-find-item').first().dispatchEvent('pointerdown');
+    // The guided flow's own address box (step 1), as a visitor uses it.
+    await page.locator('[data-ps=flow-address]').fill('12 Smith Street Tamworth');
+    await page.click('[data-ps=flow-find]');
     await page.waitForFunction(() => { const l = window.__ps.store.project?.site?.lot; return !!(l && l.aerial); }, null, { timeout: 90000 });
     const info = await page.evaluate(() => { const l = window.__ps.store.project.site.lot; return { key: l.aerial.key, mm: l.aerial.mmPerPx, wide: !!l.aerialWide, src: l.aerial.source || null, extent: l.aerial.extent }; });
     assert.ok(info.key, 'the lot has an aerial');
@@ -160,6 +159,7 @@ test('browser: the export hangs, the lot still gets an aerial from the cached ti
     assert.ok(info.mm > 200 && info.mm < 450, `about 0.3 m per pixel, got ${info.mm}`);
     await page.waitForTimeout(2500);
     if (SHOTS) { fs.mkdirSync(SHOTS, { recursive: true }); await page.screenshot({ path: path.join(SHOTS, 'guided-after-lookup.png') }); }
+    await page.waitForSelector('[data-ps=flow-next]:not([disabled])', { timeout: 60000 }); // "This is my lot" is enabled once the lookup is done
     if (SHOTS) {
       await page.waitForTimeout(4000);
       await page.screenshot({ path: path.join(SHOTS, 'guided-after-load.png') });

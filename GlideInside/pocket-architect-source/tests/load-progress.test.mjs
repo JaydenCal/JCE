@@ -95,7 +95,7 @@ test('the 50.9 ha lot: the lot is returned with a warning when the aerial never 
   assert.equal(r.aerial, null);
   assert.ok(r.warnings.some((w) => /No aerial image/.test(w)));
   assert.deepEqual(steps.slice(0, 3), ['lot', 'aerial', 'contours']);
-  const aerialCalls = calls.filter((c) => c.includes('/site/aerial'));
+  const aerialCalls = calls.filter((c) => c.includes('/site/aerial?'));
   assert.equal(aerialCalls.length, 1, 'the optional wide tile is not asked for when the inner aerial failed');
   const res = Number(new URLSearchParams(aerialCalls[0].split('?')[1]).get('res'));
   assert.ok(res > 0.6, 'a coarse resolution for a big lot');
