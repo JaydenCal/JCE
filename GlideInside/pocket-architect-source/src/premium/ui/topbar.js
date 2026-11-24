@@ -80,7 +80,7 @@ export function createTopbarUI({ root, config, getState, actions }) {
     const info = tokenInfo(st.token);
     menu.append(el('div', { class: 'psp-menu-foot' },
       locked
-        ? el('span', null, st.commercial ? `Commercial Developer, ${formatAud(50)} per month, unlimited plan sets. ` : `Exports come with the Plan Pack, ${formatAud(pack.priceAud ?? 30)} per job. `, el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { closeMenu(false); actions.restore(); } }, 'Restore purchase'))
+        ? el('span', null, st.commercial ? `Commercial Developer, ${formatAud(50)} per month, unlimited plan sets. ` : st.planSetFree ? `The PDF plan set is free with your details. The other files come with the Plan Pack, ${formatAud(pack.priceAud ?? 30)} per job. ` : `Exports come with the Plan Pack, ${formatAud(pack.priceAud ?? 30)} per job. `, el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { closeMenu(false); actions.restore(); } }, 'Restore purchase'))
         : st.csub ? el('span', null, st.csub.kind === 'trial' ? 'Trial login: unlimited plan sets, watermarked.' : 'Unlimited plan sets while your subscription is active.')
         : el('span', null, st.devUnlock && !st.token ? 'Developer unlock: files are built in this browser.' : info?.exp ? `Re-export as often as you like until ${ddmmyyyy(info.exp * 1000)}.` : 'Re-export as often as you like.')));
     // The plan set terms apply to every PDF and DXF; the link opens the public page with the same text.
@@ -105,10 +105,10 @@ export function createTopbarUI({ root, config, getState, actions }) {
         icon('check', 14), st.csub ? (st.csub.kind === 'trial' ? 'Commercial trial' : 'Commercial Developer') : st.portal ? 'Plans included' : st.token ? 'Plan Pack' : 'Dev unlock'));
     } else if (st.portalPending) {
       // The sign-in check is still running: show nothing rather than a paywall that a builder's client would not see.
-    } else if (isOn() || st.commercial) {
+    } else if (isOn() || st.commercial || st.planSetFree) { // the free plan set needs no payment service
       // Commercial mode always offers the subscription (the gate says Coming soon until a Stripe price is set), never the A$30 Plan Pack.
       slot.append(el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => actions.unlock('topbar') },
-        icon('lock', 14), st.commercial ? `Subscribe, ${formatAud(50)} per month` : `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`));
+        icon(st.planSetFree ? 'download' : 'lock', 14), st.commercial ? `Subscribe, ${formatAud(50)} per month` : st.planSetFree ? 'Get plan set, free' : `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`));
     } else {
       slot.append(el('button', { class: 'psp-btn', type: 'button', disabled: true, title: 'The Plan Pack (AI assistant and exports) is unavailable right now. Try again shortly.' }, icon('lock', 14), 'Plan Pack unavailable, try again'));
     }

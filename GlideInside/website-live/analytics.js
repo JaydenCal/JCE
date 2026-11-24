@@ -130,11 +130,22 @@
   // Events the app raises that count as starting a design (a template pick alone does not).
   var STARTERS = { ps_design_type: 1, ps_ai_request: 1, ps_project_saved: 1, ps_export: 1 };
   var FORWARD = { ps_template_selected: 1, ps_upgrade_click: 1, ps_checkout_started: 1, ps_export: 1 };
+  // The simple phone path of the Residential tool (src/flow/phone-simple.js): one GA event per step, with the type of design where there is one.
+  var PHONE_EVENTS = { phone_step_address: 1, phone_lot_loaded: 1, phone_pick_type: 1, phone_house_placed: 1, phone_planset_preview: 1, phone_full_editor: 1, phone_planset_lead_submit: 1, phone_planset_download: 1, planset_lead_submit: 1, planset_download: 1 };
   function onAppEvent(name, props) {
     if (!name) return;
     if (STARTERS[name]) designStarted(name, props && props.id ? { template: props.id } : null);
+    if (PHONE_EVENTS[name]) {
+      var pp = {};
+      if (props && props.type) pp.design_type = String(props.type).slice(0, 20);
+      if (props && props.source) pp.source = String(props.source).slice(0, 20);
+      if (props && props.from) pp.from = String(props.from).slice(0, 20);
+      if (props && props.fits) pp.fits = String(props.fits).slice(0, 10);
+      send(name, pp);
+    }
     if (FORWARD[name]) {
       var fp = {};
+      if (name === "ps_upgrade_click" && props && props.source) fp.source = String(props.source).slice(0, 40);
       if (props && props.id) fp.item_id = String(props.id).slice(0, 60);
       if (props && props.type) fp.export_type = String(props.type).slice(0, 20);
       send(name, fp);

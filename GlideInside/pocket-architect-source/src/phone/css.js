@@ -212,6 +212,66 @@ html[data-phone="1"] .ps-shell[data-phone-ui] .ps-stage,html[data-phone="1"] .lc
 
 /* 3D on a phone: the dock holds the Plan toggle, and the 3D overlays keep clear of the dock. */
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-hintbar{display:none}
+/* ---------------- The simple phone path: Address, Pick, Fit, Plans (src/flow/phone-simple.js) ---------------- */
+html[data-phone="1"] .gf-root[data-kind="residential"][data-step-id="lot"]:has(.gf-ps-addr) .gf-menu{display:none}
+html[data-phone="1"] .gf-root[data-kind="residential"] .gf-ps-addr .gf-alts{display:none}
+html[data-phone="1"] .gf-ps-addr .gf-grid{grid-template-columns:minmax(0,1fr)}
+html[data-phone="1"] .gf-ps-addr .gf-field input{min-height:56px;font-size:18px;border-radius:12px}
+html[data-phone="1"] .gf-ps-addr .gf-field .gf-btn{min-height:56px;font-size:17px}
+html[data-phone="1"] .gf-ps-picks{display:flex;flex-direction:column;gap:12px}
+html[data-phone="1"] .gf-ps-pick{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;min-height:96px;padding:14px 18px;text-align:left;border:2px solid var(--gf-border);border-radius:16px;background:var(--gf-panel);color:var(--gf-text);font:inherit}
+html[data-phone="1"] .gf-ps-pick b{font-size:22px}
+html[data-phone="1"] .gf-ps-pick span{color:var(--gf-muted);font-size:14px}
+html[data-phone="1"] .gf-ps-pick:active,html[data-phone="1"] .gf-ps-pick[aria-pressed="true"]{border-color:var(--gf-acc);background:var(--gf-acc-soft)}
+html[data-phone="1"] .gf-ps-fit,html[data-phone="1"] .gf-ps-plans{display:flex;flex-direction:column;gap:10px;min-height:0}
+html[data-phone="1"] .gf-ps-stage{position:relative;height:min(50vh,440px);min-height:260px;border-radius:14px;overflow:hidden;border:1px solid var(--gf-border);background:#cfd8e0}
+html[data-phone="1"] .gf-ps-3d,html[data-phone="1"] .gf-ps-plan{position:absolute;inset:0}
+html[data-phone="1"] .gf-ps-3d[hidden],html[data-phone="1"] .gf-ps-plan[hidden]{display:none}
+html[data-phone="1"] .gf-ps-plan{background:#e3ead9;touch-action:none}
+html[data-phone="1"] .gf-ps-plan .gf-map{width:100%;height:100%;max-height:none;border:0;border-radius:0}
+html[data-phone="1"] .gf-ps-stage .ps3d-viewbar,html[data-phone="1"] .gf-ps-stage .ps3d-hints,html[data-phone="1"] .gf-ps-stage .ps3d-chip--toggle,html[data-phone="1"] .gf-ps-stage .lc-root,html[data-phone="1"] .gf-ps-stage .ps3d-editbar,html[data-phone="1"] .gf-ps-stage .ps3d-edit-state,html[data-phone="1"] .gf-ps-stage .ps3d-edit,html[data-phone="1"] .gf-ps-stage .ps3d-chips{display:none!important}
+/* One thing at a time: the save your design card waits until the editor opens. */
+html.gf-ps-active .ps-prof-prompt{display:none!important}
+html[data-phone="1"] .gf-ps-chip{position:absolute;right:10px;top:10px;z-index:7;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid rgba(255,255,255,.5);background:rgba(18,38,58,.82);color:#fff;font-weight:600;font-size:15px;font-family:inherit}
+html[data-phone="1"] .gf-ps-chip[hidden]{display:none}
+html[data-phone="1"] .gf-ps-chip[aria-pressed="true"]{background:var(--gf-acc)}
+html[data-phone="1"] .gf-ps-busy{position:absolute;inset:0;z-index:8;display:grid;place-items:center;background:rgba(255,255,255,.7);font-weight:600}
+html[data-phone="1"] .gf-ps-name{font-size:18px;font-weight:700}
+html[data-phone="1"] .gf-ps-status{margin:0;padding:10px 12px;border-radius:12px;background:var(--gf-acc-soft);font-size:15px}
+html[data-phone="1"] .gf-ps-status[data-state="inside"]{background:var(--gf-ok-soft);color:var(--gf-ok)}
+html[data-phone="1"] .gf-ps-status[data-state="outside"]{background:var(--gf-warn-soft);color:var(--gf-warn)}
+html[data-phone="1"] .gf-ps-status:empty{display:none}
+html[data-phone="1"] .gf-ps-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+html[data-phone="1"] .gf-ps-actions .gf-btn{min-height:52px;font-size:16px;border-radius:12px}
+html[data-phone="1"] .gf-ps-link{align-self:center;min-height:44px;padding:0 12px;border:0;background:none;color:var(--gf-acc);font:600 15px system-ui,sans-serif;text-decoration:underline}
+html[data-phone="1"] .gf-ps-sheet{position:relative;aspect-ratio:420/297;background:#fff;border:1px solid #9aa0a8;box-shadow:0 2px 10px rgba(0,0,0,.14);overflow:hidden;display:flex;flex-direction:column}
+html[data-phone="1"] .gf-ps-sheet-plan{flex:1;min-height:0;margin:6px 6px 0;border:1px solid #2c2f36;display:flex}
+html[data-phone="1"] .gf-ps-sheet-plan svg{width:100%;height:100%;display:block}
+html[data-phone="1"] .gf-ps-sheet-tb{display:flex;flex-wrap:wrap;gap:2px 12px;align-items:baseline;margin:0 6px 6px;padding:4px 6px;border:1px solid #2c2f36;border-top:0;font-size:10px;color:#2c2f36;line-height:1.3}
+html[data-phone="1"] .gf-ps-sheet-tb b{font-size:11px}
+html[data-phone="1"] .gf-ps-mark{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-around;align-items:center;pointer-events:none;transform:rotate(-24deg) scale(1.3);font:800 42px/1 system-ui,sans-serif;letter-spacing:.2em;color:rgba(190,30,30,.22)}
+html[data-phone="1"] .gf-ps-buy{min-height:58px;font-size:17px;border-radius:14px}
+html[data-phone="1"] .gf-ps-free{min-height:52px;font-size:16px;border-radius:12px}
+html[data-phone="1"] .gf-ps-note{text-align:center;margin:0}
+html[data-phone="1"] .gf-ps-form{display:flex;flex-direction:column;gap:8px}
+html[data-phone="1"] .gf-ps-plans.is-form .gf-ps-sheetwrap,html[data-phone="1"] .gf-ps-plans.is-form .gf-ps-note,html[data-phone="1"] .gf-ps-plans.is-form .gf-ps-free{display:none}
+html[data-phone="1"] .gf-ps-q{border:0;margin:0;padding:0;min-width:0}
+html[data-phone="1"] .gf-ps-q legend{padding:0 0 4px;font-size:13px;font-weight:600;color:var(--gf-muted)}
+html[data-phone="1"] .gf-ps-chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+html[data-phone="1"] .gf-ps-chip2{position:relative;display:block}
+html[data-phone="1"] .gf-ps-chip2 input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+html[data-phone="1"] .gf-ps-chip2 span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:46px;padding:2px 4px;border:1px solid var(--gf-border);border-radius:10px;background:var(--gf-panel);font-size:13px;font-weight:600;line-height:1.15}
+html[data-phone="1"] .gf-ps-chip2 input:checked+span{border-color:var(--gf-acc);background:var(--gf-acc-soft);color:var(--gf-acc)}
+html[data-phone="1"] .gf-ps-chip2 input:focus-visible+span{outline:2px solid var(--gf-acc);outline-offset:2px}
+html[data-phone="1"] .gf-ps-privacy{font-size:12px}
+html[data-phone="1"] .gf-ps-form[hidden],html[data-phone="1"] .gf-ps-done[hidden],html[data-phone="1"] .gf-ps-buy[hidden]{display:none}
+html[data-phone="1"] .gf-ps-field{display:flex;flex-direction:column;gap:4px}
+html[data-phone="1"] .gf-ps-field label{font-size:13px;font-weight:600;color:var(--gf-muted)}
+html[data-phone="1"] .gf-ps-field input{min-height:46px;font-size:17px;padding:0 12px;border:1px solid var(--gf-border);border-radius:12px;background:var(--ps-field,#fff);color:var(--gf-text);font-family:inherit}
+html[data-phone="1"] .gf-ps-consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.3}
+html[data-phone="1"] .gf-ps-consent input{width:24px;height:24px;flex:none;margin:0}
+html[data-phone="1"] .gf-ps-done{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+html[data-phone="1"] .gf-ps-quote{align-self:flex-start;text-align:left;padding:8px 0;min-height:44px}
 `;
 
 let injected = false;

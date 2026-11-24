@@ -79,6 +79,8 @@ const html = `<!doctype html>
 <link rel="canonical" href="https://glideinside.com.au/plan-studio/app/">
 <!-- GI_CONFIG (portalEnabled, portalMock) comes from the site config; the portal stays closed if this file is missing -->
 <script src="../../site.config.js?v=20261111" defer></script>
+<!-- Opened directly (the phone link) the app reports to GA4 through the site analytics file. Framed by a site page it does not: that page reports for it. -->
+<script>(function(){try{if(window.top!==window)return;var q=[];function b(e){q.push(e.detail)}window.addEventListener('ps:analytics',b);document.addEventListener('DOMContentLoaded',function(){var s=document.createElement('script');s.src='../../analytics.js';s.onload=s.onerror=function(){window.removeEventListener('ps:analytics',b);q.forEach(function(d){window.dispatchEvent(new CustomEvent('ps:analytics',{detail:d}))})};document.head.appendChild(s)})}catch(e){}})()</script>
 <link rel="preload" href="../../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../assets/fonts/barlow-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../assets/fonts/barlow-condensed-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>

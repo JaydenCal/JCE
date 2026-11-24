@@ -18,6 +18,15 @@ export const CONFIG = {
   // On unless the host page sets GI_CONFIG.premiumEnabled = false. The paid version is only switched off when /api/health explicitly says payments are not configured.
   premiumEnabled: hasWindow && typeof window.GI_CONFIG?.premiumEnabled === 'boolean' ? window.GI_CONFIG.premiumEnabled : true,
   planPack: { priceAud: 30, gstInclusive: true, credits: 500, reexportMonths: 12 },
+  // Homeowner plan sets are free in exchange for contact details (25/11/2026): the PDF plan set downloads after a short form (name, email, suburb,
+  // consent) that is saved as a lead through POST /api/enquiry/jce with source "planset-free". The Stripe Plan Pack code stays in place and is
+  // used again for homeowners by setting this to false (or GI_CONFIG.homeownerPlanSetFree = false on the host page). It never applies to the
+  // builder portal, builder per job billing or the commercial tool, and the DXF, 3D files and AI assistant stay part of the Plan Pack.
+  // Builders that hold an area, by postcode, for the free plan set consent wording and lead: { '2340': { name: 'Example Homes' } }. Empty: no builder is named.
+  areaBuilders: {},
+  // The four step simple path on phones (address, pick, fit, plans). GI_CONFIG.phoneSimple = false keeps the older guided steps on phones.
+  phoneSimple: hasWindow && typeof window.GI_CONFIG?.phoneSimple === 'boolean' ? window.GI_CONFIG.phoneSimple : true,
+  homeownerPlanSetFree: hasWindow && typeof window.GI_CONFIG?.homeownerPlanSetFree === 'boolean' ? window.GI_CONFIG.homeownerPlanSetFree : true,
   links: {
     engineering: '', // engineering enquiry URL (configurable)
     flythrough: '',

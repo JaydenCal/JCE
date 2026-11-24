@@ -14,6 +14,7 @@ import { icon } from './icons.js';
 import { loadPdfjs } from './pdf-import.js';
 import { loadJsPDF, coverImage, exportPayload } from './export-client.js';
 import { termsForExport } from '../legal/terms-gate.js';
+import { FREE_WATERMARK, GET_LABEL } from './free-planset.js';
 
 export const PREVIEW_DPI = 70;
 export const WATERMARK_TEXT = 'PREVIEW, Plan Pack required to download';
@@ -61,7 +62,7 @@ async function renderPage(page, scale, watermark) {
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   await page.render({ canvasContext: ctx, viewport }).promise;
-  if (watermark) drawWatermark(canvas);
+  if (watermark) drawWatermark(canvas, typeof watermark === 'string' ? watermark : undefined);
   return canvas;
 }
 
@@ -83,7 +84,7 @@ const PAPER_CHOICES = ['A3', 'A1'];
 /**
  * hooks (tests and host pages): { buildPdf(project) -> Uint8Array, loadPdf(bytes) -> doc, renderPage(page, scale, watermark) -> canvas }.
  */
-export function openPdfPreview({ layer, project, store = null, config = {}, catalogue = null, getViewer = null, entitled = false, onUnlock = null, onDownload = null, hooks = {} } = {}) {
+export function openPdfPreview({ layer, project, store = null, config = {}, catalogue = null, getViewer = null, entitled = false, free = false, onUnlock = null, onDownload = null, hooks = {} } = {}) {
   const price = config.planPack?.priceAud ?? 30;
   const state = { index: 0, zoom: 'fit', pages: [], thumbs: [], names: [], total: 0, done: false, closed: false };
   const current = () => (store ? store.project : project);
@@ -207,12 +208,12 @@ export function openPdfPreview({ layer, project, store = null, config = {}, cata
   }
 
   const footer = (close) => [
-    el('span', { class: 'psp-pv-note' }, entitled ? 'Preview at screen resolution. The download is the full quality plan set.' : 'Low resolution preview with a watermark. The download is the full quality plan set.'),
+    el('span', { class: 'psp-pv-note' }, entitled ? 'Preview at screen resolution. The download is the full quality plan set.' : free ? 'Low resolution preview with a watermark. The free download is the full quality plan set.' : 'Low resolution preview with a watermark. The download is the full quality plan set.'),
     el('span', { class: 'psp-grow' }),
     el('button', { class: 'psp-btn', type: 'button', onclick: () => close('done') }, 'Close'),
     entitled
       ? el('button', { class: 'psp-btn psp-btn--primary', type: 'button', dataset: { act: 'download' }, onclick: async () => { close('download'); await onDownload?.(); } }, icon('download', 14), 'Download')
-      : el('button', { class: 'psp-btn psp-btn--primary', type: 'button', dataset: { act: 'unlock' }, onclick: () => { close('unlock'); onUnlock?.(); } }, icon('lock', 14), `Unlock to download, A$${price}`),
+      : el('button', { class: 'psp-btn psp-btn--primary', type: 'button', dataset: { act: 'unlock' }, onclick: () => { close('unlock'); onUnlock?.(); } }, icon(free ? 'download' : 'lock', 14), free ? GET_LABEL : `Unlock to download, A$${price}`),
   ];
 
   const onResize = () => state.zoom === 'fit' && layoutView();
@@ -276,7 +277,7 @@ export function openPdfPreview({ layer, project, store = null, config = {}, cata
         status.hidden = false;
         status.lastChild.textContent = ` Drawing sheet ${n} of ${doc.numPages}`;
         const page = await doc.getPage(n);
-        const canvas = await (hooks.renderPage || renderPage)(page, previewScale(), !entitled);
+        const canvas = await (hooks.renderPage || renderPage)(page, previewScale(), !entitled ? (free ? FREE_WATERMARK : true) : false);
         if (stale()) return { pages: 0, status: 'closed' };
         if (progressive) {
           state.pages.push(canvas);

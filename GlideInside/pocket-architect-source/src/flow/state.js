@@ -15,6 +15,15 @@ export const RESIDENTIAL_STEPS = Object.freeze([
   { id: 'edit', title: 'Edit and export', short: 'Edit' },
 ]);
 
+// The simple phone path (src/flow/phone-simple.js): the same four slots as the residential steps, named for what the person does.
+export const PHONE_STEPS = Object.freeze([
+  { id: 'lot', title: 'Address', short: 'Address' },
+  { id: 'home', title: 'Pick', short: 'Pick' },
+  { id: 'place', title: 'Fit', short: 'Fit' },
+  { id: 'check', title: 'Plans', short: 'Plans' },
+  { id: 'edit', title: 'Edit', short: 'Edit' },
+]);
+
 export const COMMERCIAL_STEPS = Object.freeze([
   { id: 'lot', title: 'Find your lot', short: 'Lot' },
   { id: 'build', title: 'Choose what to build', short: 'Build' },
@@ -44,7 +53,7 @@ export const flowInProgress = (project, kind = null) => {
 export function writeFlow(store, patch) {
   const cur = store.project.flow || {};
   const next = { ...cur, ...patch };
-  if (next.kind === cur.kind && next.step === cur.step && next.designId === cur.designId) return flowOf(store.project);
+  if (Object.keys(next).every((k) => next[k] === cur[k]) && Object.keys(cur).every((k) => k in next)) return flowOf(store.project); // nothing changed (the phone path keeps phoneType and phoneSimple here too)
   store.project.flow = next;
   store.emit('project', { label: 'flow' });
   return flowOf(store.project);

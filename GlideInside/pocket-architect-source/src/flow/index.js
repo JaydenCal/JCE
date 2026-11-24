@@ -14,6 +14,7 @@ import { isPhoneMode } from '../phone/mode.js';
 import { flowOf, flowInProgress, writeFlow, EDIT_STEP, portalDeepLink } from './state.js';
 import { residentialSteps, RESIDENTIAL_BRAND } from './residential.js';
 import { commercialSteps, COMMERCIAL_BRAND } from './commercial.js';
+import { withPhoneSteps } from './phone-simple.js';
 
 /** Which flow this project belongs to. */
 export const kindOf = (project, wantCommercial = false) => (project?.mode === 'commercial' || flowOf(project)?.kind === 'commercial' || wantCommercial ? 'commercial' : 'residential');
@@ -73,7 +74,7 @@ export async function openFlow({ api, store, refs, catalogue, kind, step = 1 }) 
 
 function makeFlow({ api, store, refs, catalogue, kind }) {
   if (api.flows?.[kind]) return api.flows[kind];
-  const steps = kind === 'commercial' ? commercialSteps({ catalogue, store, api }) : residentialSteps({ catalogue, store });
+  const steps = kind === 'commercial' ? commercialSteps({ catalogue, store, api }) : withPhoneSteps(residentialSteps({ catalogue, store }), { catalogue, store }); // a phone gets the simple four steps, a desktop the usual ones
   const flow = createGuidedFlow({
     store, kind, steps, host: document.body,
     brand: kind === 'commercial' ? COMMERCIAL_BRAND : RESIDENTIAL_BRAND,

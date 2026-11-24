@@ -66,9 +66,9 @@ export function createTermsGate(host = {}) {
     /** Resolves { version, acceptedAt } or null when the person cancelled. */
     /** True when a free profile is needed first (a PDF is requested by someone with no profile, no Plan Pack, no builder or trial login). */
     needsAccount,
-    async require({ context = 'export' } = {}) {
+    async require({ context = 'export', skipAccount = false } = {}) {
       // Account before PDF: the sign up / sign in dialog comes first, then straight on to the terms and the file.
-      if (typeof cfg.ensureAccount === 'function' && needsAccount()) {
+      if (!skipAccount && typeof cfg.ensureAccount === 'function' && needsAccount()) { // skipAccount: the free plan set form has already taken the person's details
         const ok = await cfg.ensureAccount({ context });
         if (!ok) return null;
         accountSeen = true;

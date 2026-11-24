@@ -45,16 +45,19 @@ export async function serve() {
 export const launch = () => chromium.launch({ args: ARGS });
 
 /** A page. `phone` gives a touch device (coarse pointer); otherwise a mouse window. `profile` stubs a signed in profile and the design save. */
-export async function newPage(browser, { width, height, phone = true, profile = false, share = 'stub' } = {}) {
+export async function newPage(browser, { width, height, phone = true, profile = false, share = 'stub', simple = false } = {}) {
   const ctx = await browser.newContext({ viewport: { width, height }, ...(phone ? { hasTouch: true, isMobile: true } : {}) });
   await ctx.route(/^https?:\/\/(?!127\.0\.0\.1)/, (r) => r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
   await ctx.route('**/api/site/**', (r) => r.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ code: 'UPSTREAM', message: 'offline in tests' }) }));
   await ctx.route('**/api/projects', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'abc123', editKey: 'k', url: 'https://glideinside.com.au/plan-studio/app/?share=abc123', expiresAt: Date.now() + 86400000 }) }));
-  await ctx.addInitScript((mode) => {
+  await ctx.addInitScript(({ mode, simple }) => {
+    // site.config.js assigns window.GI_CONFIG, so keep the phone path switch through that assignment.
+    let cfg = { phoneSimple: simple };
+    Object.defineProperty(window, 'GI_CONFIG', { configurable: true, get: () => cfg, set: (v) => { cfg = { ...v, phoneSimple: simple }; } });
     window.__shared = [];
     if (mode === 'stub') { navigator.share = async (d) => { window.__shared.push(d); }; navigator.canShare = () => true; }
     if (mode === 'none') { try { Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }); } catch { /* keep */ } window.__copied = []; try { Object.defineProperty(navigator, 'clipboard', { value: { writeText: async (t) => { window.__copied.push(t); } }, configurable: true }); } catch { /* keep */ } }
-  }, share);
+  }, { mode: share, simple });
   if (profile) {
     const j = (o) => ({ status: 200, contentType: 'application/json', body: JSON.stringify(o) });
     await ctx.route('**/api/profile/me', (r) => r.fulfill(j({ profile: { id: 'u1', name: 'Sam', email: 's@example.com', designLimit: 10 }, limits: { designs: 10 } })));

@@ -16,6 +16,7 @@ import { migrate } from '../model/schema.js';
 import { smartSearch, NOT_FOUND_TEXT } from '../site/address-search.js';
 import { applySiteLookup, lotCommits } from '../site/apply.js';
 import { demoSite } from '../site/demo-lot.js';
+import { loadSampleSite } from '../site/sample-lot.js';
 import { publicDesigns } from '../lotcard/designs.js';
 import { swapHouse, poseFor } from '../lotcard/swap.js';
 import { computeSetbacks } from '../site/setback-stage.js';
@@ -271,7 +272,7 @@ export async function loadDemoCommercial(store) {
 
 /** The demo lot with a Glide design placed: what the home page frame shows first. */
 export async function loadDemo(store, catalogue, { after = null } = {}) {
-  await applySiteLookup(store, { label: '' }, { prefetched: demoSite() });
+  await applySiteLookup(store, { label: '' }, { prefetched: await loadSampleSite() });
   confirmFrontage(store, true);
   return placeBestDesign(store, catalogue, null, { after });
 }
