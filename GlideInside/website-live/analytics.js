@@ -130,8 +130,17 @@
   // Events the app raises that count as starting a design (a template pick alone does not).
   var STARTERS = { ps_design_type: 1, ps_ai_request: 1, ps_project_saved: 1, ps_export: 1 };
   var FORWARD = { ps_template_selected: 1, ps_upgrade_click: 1, ps_checkout_started: 1, ps_export: 1 };
+  // Subdivision check events (src/subdiv/lead.js): a fixed list of names and a fixed list of safe parameters. No address, name, email or phone is ever sent.
+  var SUBDIV = { subdiv_check_start: 1, subdiv_lot_loaded: 1, subdiv_result_shown: 1, subdiv_lead_submit: 1, subdiv_pdf_download: 1 };
+  var SUBDIV_KEYS = ["role", "lots_low", "lots_high", "layout", "min_basis", "state", "owner"];
   function onAppEvent(name, props) {
     if (!name) return;
+    if (SUBDIV[name]) {
+      var sp = {};
+      SUBDIV_KEYS.forEach(function (k) { if (props && props[k] !== undefined && props[k] !== null) sp[k] = String(props[k]).slice(0, 30); });
+      send(name, sp);
+      return;
+    }
     if (STARTERS[name]) designStarted(name, props && props.id ? { template: props.id } : null);
     if (FORWARD[name]) {
       var fp = {};

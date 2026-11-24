@@ -6,6 +6,8 @@
 import { HttpError } from './http.js';
 import { migrate, validate } from '../../src/model/schema.js';
 
+export const SUBDIV_SOURCE = 'subdivision-check'; // the free subdivision check on /subdivision/ (src/subdiv). Phone is optional there, the lead is tagged with this source.
+export const SUBDIV_ROLES = ['Landowner', 'Agent', 'Developer', 'Buyer'];
 export const NEEDS = ['engineering', 'da', 'both', 'callback']; // CONCIERGE: 'callback' added (call back request from the website assistant)
 const NEED_TEXT = { engineering: 'Engineering', da: 'DA plans', both: 'Engineering and DA plans', callback: 'Call back request' };
 const REF_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0, 1, I or O: easy to read out
@@ -24,14 +26,25 @@ const text = (v, name, { max = 200, required = false, multiline = false } = {}) 
 export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 6_000_000 } = {}) {
   if (body.consent !== true) throw new HttpError('BAD_REQUEST', 'Please tick the box to agree to your plans and details being sent to JCE Infrastructure.');
   const name = text(body.name, 'Name', { required: true, max: 120 });
-  const phone = text(body.phone, 'Phone', { required: true, max: 40 });
+  const isSubdiv = body.source === SUBDIV_SOURCE;
+  const phone = text(body.phone, 'Phone', { required: !isSubdiv, max: 40 });
   const email = text(body.email, 'Email', { required: true, max: 200 }).toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new HttpError('BAD_REQUEST', 'That email address does not look right.');
-  if (!/[0-9]{6,}/.test(phone.replace(/[\s()+-]/g, ''))) throw new HttpError('BAD_REQUEST', 'That phone number does not look right.');
+  if (phone && !/[0-9]{6,}/.test(phone.replace(/[\s()+-]/g, ''))) throw new HttpError('BAD_REQUEST', 'That phone number does not look right.');
   const need = NEEDS.includes(body.need) ? body.need : null;
   if (!need) throw new HttpError('BAD_REQUEST', `need must be one of: ${NEEDS.join(', ')}.`);
   const lot = {};
   for (const k of ['address', 'lot', 'dp', 'lga', 'zone']) lot[k] = text(body.lot?.[k], `Lot ${k}`, { max: 200 });
+  if (isSubdiv) {
+    const sd = body.subdivision && typeof body.subdivision === 'object' ? body.subdivision : {};
+    const num = (v, max) => (Number.isFinite(Number(v)) && Number(v) >= 0 && Number(v) <= max ? Math.round(Number(v)) : null);
+    const role = SUBDIV_ROLES.includes(sd.role) ? sd.role : null;
+    if (!role) throw new HttpError('BAD_REQUEST', `role must be one of: ${SUBDIV_ROLES.join(', ')}.`);
+    lot.subdivision = {
+      role, lotAreaM2: num(sd.lotAreaM2, 1e9), lotsLow: num(sd.lotsLow, 500), lotsHigh: num(sd.lotsHigh, 500), minLotM2: num(sd.minLotM2, 1e9),
+      minBasis: ['council', 'default', 'user'].includes(sd.minBasis) ? sd.minBasis : 'default', layout: text(sd.layout, 'Layout', { max: 80 }),
+    };
+  }
   let project = null;
   if (body.project != null) {
     try {
@@ -60,7 +73,7 @@ export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 
   }
   return {
     callback, name, phone, email, need, notes: text(body.notes, 'Notes', { max: 4000, multiline: true }), userNotes: text(body.userNotes, 'Notes', { max: 1000, multiline: true }), lot,
-    source: ['public', 'builder', 'client'].includes(body.source) ? body.source : 'public',
+    source: ['public', 'builder', 'client', SUBDIV_SOURCE].includes(body.source) ? body.source : 'public',
     orgName: text(body.orgName, 'Builder', { max: 120 }),
     projectName: text(project?.name || body.projectName, 'Project name', { max: 120 }),
     project, pdfBase64,
@@ -82,6 +95,22 @@ export function summaryText(e, reference) {
       'No time has been promised and nothing has been booked. The person was told you will call, usually within one business day.',
       'Consent ticked: "I agree to Glide Inside calling me back about my request using these details".',
       'This email goes to you only. Nothing was sent to the visitor.',
+    ].join('\n');
+  }
+  if (e.source === SUBDIV_SOURCE) { // the free subdivision check: a lead for the owner only, nothing is sent to the person
+    const sd = lot.subdivision || {};
+    const range = sd.lotsHigh == null ? 'not given' : sd.lotsLow != null && sd.lotsLow < sd.lotsHigh ? `${sd.lotsLow} to ${sd.lotsHigh}` : `${sd.lotsHigh}`;
+    return [
+      'New lead from the Glide Inside subdivision check (source: subdivision-check)',
+      `Reference: ${reference}`, '',
+      `Name: ${e.name}`, `Phone: ${e.phone || 'not given'}`, `Email: ${e.email}`, `Role: ${sd.role || 'not given'}`, '',
+      `Address: ${lot.address || 'not given'}`, `Lot / DP: ${[lot.lot, lot.dp].filter(Boolean).join(' / ') || 'not given'}`,
+      `LGA: ${lot.lga || 'not given'}`, `Zone: ${lot.zone || 'not given'}`,
+      `Lot area: ${sd.lotAreaM2 == null ? 'not given' : `${sd.lotAreaM2} m2`}`,
+      `Minimum lot size used: ${sd.minLotM2 == null ? 'not given' : `${sd.minLotM2} m2`} (${sd.minBasis || 'default'})`,
+      `Indicative lot count: ${range}`, `Layout type: ${sd.layout || 'not given'}`, '',
+      'The person ticked: "I agree to Glide Inside and JCE Infrastructure contacting me about this site."',
+      'This email goes to you only. Nothing was sent to the person.',
     ].join('\n');
   }
   return [
@@ -122,7 +151,7 @@ export async function sendViaResend({ config, fetchImpl, enquiry, reference }) {
         from: config.enquiryFrom,
         to: [config.enquiryTo],
         reply_to: enquiry.email,
-        subject: enquiry.need === 'callback' ? `[${reference}] Call back request (${enquiry.callback?.type || 'Website'}): ${enquiry.name}, ${enquiry.phone}` : `[${reference}] ${NEED_TEXT[enquiry.need]} enquiry: ${enquiry.projectName || enquiry.lot.address || enquiry.name}`,
+        subject: enquiry.source === SUBDIV_SOURCE ? `[${reference}] Subdivision check lead (${enquiry.lot.subdivision?.role || 'role not given'}): ${enquiry.lot.address || enquiry.name}` : enquiry.need === 'callback' ? `[${reference}] Call back request (${enquiry.callback?.type || 'Website'}): ${enquiry.name}, ${enquiry.phone}` : `[${reference}] ${NEED_TEXT[enquiry.need]} enquiry: ${enquiry.projectName || enquiry.lot.address || enquiry.name}`,
         text: summaryText(enquiry, reference),
         attachments,
       }),

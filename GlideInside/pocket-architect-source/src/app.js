@@ -51,6 +51,7 @@ import { mountPanelHide } from './ui/panel-hide.js';
 import { createCommercialCard } from './commercial/lotcard.js';
 import { createCommercialPanel } from './commercial/ui/panel-commercial.js';
 import { enterCommercial, offerCommercial, commercialUi, convertToCommercial } from './commercial/mode.js';
+import { isSubdivisionCheck } from './toolmode.js';
 import { resolveTool, toolMode, toolName, toolOfProject, TOOL_INFO, PREV_AUTOSAVE_KEY } from './toolmode.js';
 import { offerSwitch, openInTool } from './ui/tool-switch.js';
 import { effectiveClass } from './commercial/zones.js';
@@ -150,6 +151,14 @@ function initialProject(catalogue) {
 }
 
 async function main() {
+  // ?mode=subdivision-check: the free subdivision check is a page of its own and never starts the editor or the phone chrome (src/subdiv/index.js).
+  if (isSubdivisionCheck(location.search)) {
+    const host = document.getElementById('app');
+    if (!host) throw new Error('#app is missing');
+    const m = await import('./subdiv/index.js');
+    await m.mountSubdivisionCheck(host);
+    return;
+  }
   initTheme();
   installPhoneMode(); // html[data-phone]: a finger on a window up to 700 px wide (src/phone/mode.js)
   injectPhoneCss();

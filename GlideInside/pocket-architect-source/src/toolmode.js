@@ -76,3 +76,11 @@ export const toolMode = { current: 'residential' };
 export const currentTool = () => toolMode.current;
 export const isCommercialTool = () => toolMode.current === 'commercial';
 export const toolName = (tool = toolMode.current) => TOOL_INFO[tool]?.name || TOOL_INFO.residential.name;
+
+/** ?mode=subdivision-check: the free "Check subdivision potential" page (src/subdiv). It is not one of the two tools: it never opens the editor. */
+export const SUBDIVISION_CHECK = 'subdivision-check';
+export function isSubdivisionCheck(search = '') {
+  let v = null;
+  try { v = new URLSearchParams(search).get('mode'); } catch { v = null; }
+  return String(v || '').toLowerCase() === SUBDIVISION_CHECK;
+}
