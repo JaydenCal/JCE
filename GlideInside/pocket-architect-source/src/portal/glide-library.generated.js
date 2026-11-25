@@ -13,6 +13,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 63,
     "widthMm": 9000,
     "depthMm": 7000,
+    "ownWidthMm": 9000,
+    "ownDepthMm": 7000,
     "storeys": 1,
     "frontageM": null,
     "areas": {
@@ -39,6 +41,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 135,
     "widthMm": 15000,
     "depthMm": 9000,
+    "ownWidthMm": 15000,
+    "ownDepthMm": 9000,
     "storeys": 1,
     "frontageM": null,
     "areas": {
@@ -65,6 +69,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 60,
     "widthMm": 9600,
     "depthMm": 6200,
+    "ownWidthMm": 9600,
+    "ownDepthMm": 6200,
     "storeys": 1,
     "frontageM": 12.5,
     "areas": {
@@ -91,6 +97,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 201,
     "widthMm": 17000,
     "depthMm": 17800,
+    "ownWidthMm": 17000,
+    "ownDepthMm": 17800,
     "storeys": 1,
     "frontageM": 20,
     "areas": {
@@ -117,6 +125,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 256,
     "widthMm": 14000,
     "depthMm": 12000,
+    "ownWidthMm": 14000,
+    "ownDepthMm": 12000,
     "storeys": 2,
     "frontageM": 16,
     "areas": {
@@ -143,6 +153,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 247,
     "widthMm": 17000,
     "depthMm": 17000,
+    "ownWidthMm": 17000,
+    "ownDepthMm": 17000,
     "storeys": 1,
     "frontageM": 20,
     "areas": {
@@ -169,6 +181,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 120,
     "widthMm": 8200,
     "depthMm": 17600,
+    "ownWidthMm": 8200,
+    "ownDepthMm": 17600,
     "storeys": 1,
     "frontageM": 10,
     "areas": {
@@ -195,6 +209,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 148,
     "widthMm": 10000,
     "depthMm": 18000,
+    "ownWidthMm": 10000,
+    "ownDepthMm": 18000,
     "storeys": 1,
     "frontageM": 12.5,
     "areas": {
@@ -221,6 +237,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 178,
     "widthMm": 11600,
     "depthMm": 18800,
+    "ownWidthMm": 11600,
+    "ownDepthMm": 18800,
     "storeys": 1,
     "frontageM": 14,
     "areas": {
@@ -247,6 +265,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 156,
     "widthMm": 12000,
     "depthMm": 17200,
+    "ownWidthMm": 12000,
+    "ownDepthMm": 17200,
     "storeys": 1,
     "frontageM": 15,
     "areas": {
@@ -273,6 +293,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 226,
     "widthMm": 8800,
     "depthMm": 15600,
+    "ownWidthMm": 8800,
+    "ownDepthMm": 15600,
     "storeys": 2,
     "frontageM": 12.5,
     "areas": {
@@ -299,6 +321,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 160,
     "widthMm": 6500,
     "depthMm": 14600,
+    "ownWidthMm": 6500,
+    "ownDepthMm": 14600,
     "storeys": 2,
     "frontageM": 8.5,
     "areas": {
@@ -325,6 +349,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 228,
     "widthMm": 15600,
     "depthMm": 17600,
+    "ownWidthMm": 15600,
+    "ownDepthMm": 17600,
     "storeys": 1,
     "frontageM": 18,
     "areas": {
@@ -351,6 +377,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 194,
     "widthMm": 24000,
     "depthMm": 10800,
+    "ownWidthMm": 24000,
+    "ownDepthMm": 10800,
     "storeys": 1,
     "frontageM": 30,
     "areas": {
@@ -377,6 +405,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 49,
     "widthMm": 9000,
     "depthMm": 5400,
+    "ownWidthMm": 9000,
+    "ownDepthMm": 5400,
     "storeys": 1,
     "frontageM": null,
     "areas": {
@@ -403,6 +433,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 37,
     "widthMm": 7400,
     "depthMm": 5000,
+    "ownWidthMm": 7400,
+    "ownDepthMm": 5000,
     "storeys": 1,
     "frontageM": null,
     "areas": {
@@ -429,6 +461,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 53,
     "widthMm": 11600,
     "depthMm": 6200,
+    "ownWidthMm": 11600,
+    "ownDepthMm": 6200,
     "storeys": 1,
     "frontageM": null,
     "areas": {
@@ -455,6 +489,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 137,
     "widthMm": 16800,
     "depthMm": 9000,
+    "ownWidthMm": 16800,
+    "ownDepthMm": 9000,
     "storeys": 2,
     "frontageM": 20,
     "areas": {
@@ -481,6 +517,8 @@ export const GLIDE_LIBRARY = [
     "floorAreaM2": 148,
     "widthMm": 13000,
     "depthMm": 14400,
+    "ownWidthMm": 13000,
+    "ownDepthMm": 14400,
     "storeys": 1,
     "frontageM": null,
     "areas": {

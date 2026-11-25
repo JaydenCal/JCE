@@ -17,6 +17,7 @@ import { roadReserve, deriveDriveway, buildingHull, orientedBox } from '../site/
 import { addDrawnWays } from './pave3d.js';
 import { pavementModel } from '../commercial/catalogue/pavements/logic.js';
 import { buildingsOf } from '../commercial/catalogue/buildings.js';
+import { existingBuildingsOf } from '../site/existing-buildings.js';
 import { frontFrame, houseSpec, toWorld, rng, ROOFS, WALLS } from '../site/neighbours.js';
 
 const hasDom = typeof document !== 'undefined';
@@ -423,6 +424,19 @@ export function addSiteExtras(ctx, root, project, surf, { extent = null, tm = nu
   treeSpots.push(...frontTrees);
   addTrees(group, treeSpots, H, stats);
   addBushes(group, bushSpots, H, stats);
+
+  // 6b. Existing buildings the person placed (project.site.existingBuildings): a light grey block each, flagged as ground so it never moves the camera.
+  for (const e of existingBuildingsOf(project)) {
+    const b = new GeoBuilder();
+    const cx = e.x / 1000;
+    const cz = e.y / 1000;
+    const sink = 0.02; // the block sits a little into the ground so a sloping lot shows no gap
+    const y0 = H(cx, cz) - sink;
+    const ang = (e.rotationDeg * Math.PI) / 180;
+    addOrientedBox(b, cx, cz, e.widthMm / 2000, e.depthMm / 2000, ang, y0, y0 + e.heightMm / 1000, 'wall');
+    addOrientedBox(b, cx, cz, e.widthMm / 2000 + 0.3, e.depthMm / 2000 + 0.3, ang, y0 + e.heightMm / 1000, y0 + e.heightMm / 1000 + 0.18, 'roof');
+    add(makeMesh(b.build(), { wall: mat('#d9dadc', { roughness: 0.95 }), roof: mat('#b4b8bc', { roughness: 0.8 }) }, { ground: true }, { cast: true, receive: false, name: `existing:${e.id}` }));
+  }
 
   // 7. Soft contact shadow under the house ---------------------------------------------------------------------------------------
   if (hasDom && tm) {

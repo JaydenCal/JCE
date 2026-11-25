@@ -8,6 +8,7 @@ import * as SITE from './placement.js';
 import { fitHouse } from '../site/fit-house.js';
 import { settleSiteItems } from '../site/site-items.js';
 import { COMMERCIAL_OPS, commercialToolSchemas } from '../premium/ai/commercial-schemas.js';
+import { addExistingBuilding, removeExistingBuilding } from '../site/existing-buildings.js';
 
 export class OpError extends Error {
   constructor(message) {
@@ -1060,6 +1061,26 @@ Object.assign(OPS, {
     run(p, a) {
       p.titleBlock = { ...S.defaultTitleBlock(), ...(p.titleBlock || {}) };
       for (const [k] of S.TITLE_BLOCK_FIELDS) if (a[k] != null) p.titleBlock[k] = String(a[k]).slice(0, 200);
+      return {};
+    },
+  },
+  add_existing_building: {
+    label: 'Existing building',
+    description: 'Place an existing building on the lot as a named rectangle (an existing dwelling, for instance). It is drawn on the site plan sheets as existing work and in 3D as a light grey block. x and y are the centre in plan mm; width, depth and height are in mm.',
+    params: { name: P.str('Label, e.g. EXISTING DWELLING'), x: P.num('Centre x, plan mm'), y: P.num('Centre y, plan mm'), width: P.num('Width mm'), depth: P.num('Depth mm'), rotation: P.num('Rotation degrees'), height: P.num('Height mm') },
+    required: ['x', 'y'],
+    run(p, a) {
+      const rec = addExistingBuilding(p, { name: a.name, x: a.x, y: a.y, widthMm: a.width, depthMm: a.depth, rotationDeg: a.rotation, heightMm: a.height });
+      return { id: rec.id };
+    },
+  },
+  remove_existing_building: {
+    label: 'Remove existing building',
+    description: 'Remove an existing building placed on the lot, by id.',
+    params: { id: P.str('Existing building id') },
+    required: ['id'],
+    run(p, a) {
+      if (!removeExistingBuilding(p, a.id)) fail('No existing building has that id');
       return {};
     },
   },

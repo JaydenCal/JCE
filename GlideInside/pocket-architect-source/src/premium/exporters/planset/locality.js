@@ -55,6 +55,29 @@ export function localityRequest(lot) {
   };
 }
 
+/**
+ * A second, tighter request for the site sheets: the lot plus about 80 m on every side at print resolution (at most 2048 px), used when the wide
+ * locality picture could not be had, so the site plan still prints on the aerial. Returns null for a lot with no MGA georeference.
+ */
+export function siteAerialRequest(lot) {
+  const base = localityRequest(lot);
+  if (!base) return null;
+  const xs = lot.boundary.map((p) => p.x);
+  const ys = lot.boundary.map((p) => p.y);
+  const lo = planToMga(lot.origin, { x: Math.min(...xs), y: Math.max(...ys) });
+  const hi = planToMga(lot.origin, { x: Math.max(...xs), y: Math.min(...ys) });
+  const cE = (lo.e + hi.e) / 2;
+  const cN = (lo.n + hi.n) / 2;
+  const half = snap(Math.max(60, Math.max(hi.e - lo.e, hi.n - lo.n) / 2 + 80), 10, true);
+  const box = { minE: cE - half, minN: cN - half, maxE: cE + half, maxN: cN + half };
+  const res = Math.min(2, Math.max(0.1, (2 * half) / LOCALITY_PX));
+  return {
+    ...base,
+    bbox: box,
+    aerialParams: { ...base.aerialParams, bbox: `${box.minE},${box.minN},${box.maxE},${box.maxN}`, res: res.toFixed(3), maxpx: String(LOCALITY_PX) },
+  };
+}
+
 const sniff = (u8) => (u8[0] === 0x89 && u8[1] === 0x50 ? 'PNG' : 'JPEG');
 
 /** An image in any accepted form as { data, format } for jsPDF.addImage, or null. */
@@ -135,7 +158,7 @@ export async function browserFetchSite({ lot, request }) {
     })(),
     (async () => {
       try {
-        if (!zone) return;
+        if (!zone || request.need?.cadastre === false) return;
         const m = mgaToLonLat(lot.origin.e, lot.origin.n, zone);
         const resp = await getJson('lot', { lon: m.lon, lat: m.lat, ...(lot.state ? { state: lot.state } : {}), radius: request.radius }, {});
         out.lot = neighboursFromResponse(resp, lot.origin);
@@ -170,9 +193,11 @@ export async function resolveLocality({ lot, aerial = null, fetchSite = undefine
   const result = { aerial: null };
   if (includeAerial === false) { aerial = null; loadImage = () => null; } // "Include aerial underlay" off: no picture, the cadastre still comes from the hook
   const good = (a) => a && coverage(a, view) >= 0.8;
-  const given = aerial ? await prepAerial(aerial) : null;
-  const stored = given || includeAerial === false ? [] : await storedAerial(lot, loadImage);
-  const have = [given, ...stored].find(good) || null;
+  // `aerial` may be one picture or a list (the server export gets the lot's sharp tile and its wide tile from the browser).
+  const givenAll = (await Promise.all((Array.isArray(aerial) ? aerial : aerial ? [aerial] : []).map(prepAerial))).filter(Boolean);
+  const stored = givenAll.length || includeAerial === false ? [] : await storedAerial(lot, loadImage);
+  const candidates = [...givenAll, ...stored];
+  const have = candidates.find(good) || null;
   if (have) result.aerial = have;
   const hook = fetchSite === undefined ? browserFetchSite : fetchSite;
   // The hook always gets the chance to supply the wider cadastre; `need.aerial` says whether it should also fetch a picture.
@@ -191,8 +216,19 @@ export async function resolveLocality({ lot, aerial = null, fetchSite = undefine
     if (a) result.aerial = a;
   }
   if (!result.aerial) {
-    const partial = [given, ...stored].filter(Boolean).sort((p, q) => coverage(q, view) - coverage(p, view))[0];
+    const partial = candidates.sort((p, q) => coverage(q, view) - coverage(p, view))[0];
     if (partial && coverage(partial, view) > 0.05) result.aerial = partial;
+  }
+  // Still nothing and the lot has a georeference: one more ask for a tight picture of the lot itself (the site sheets need no more than that).
+  if (!result.aerial && includeAerial !== false && typeof hook === 'function') {
+    const tight = siteAerialRequest(lot);
+    if (tight) {
+      try {
+        const more = await hook({ lot, request: { ...tight, need: { aerial: true, cadastre: false } } });
+        const a = more?.aerial ? await prepAerial(more.aerial) : null;
+        if (a) result.aerial = a;
+      } catch { /* the sheet says there is no aerial */ }
+    }
   }
   return result;
 }

@@ -342,9 +342,10 @@ test('locality plan: the wider fetch asks for about 500 m of aerial (2048 px) an
 test('locality plan: the hook is told not to fetch a picture when the aerial in the call already covers the view', async () => {
   let need = null;
   const g = { ...lot, state: 'NSW', srid: 7856, origin: { e: 380000, n: 6360000 } };
-  await run('site', { lot: g, aerial: aerialFor, fetchSite: async (a) => { need = a.request.need; return null; } });
+  await run('site', { lot: g, aerial: aerialFor, fetchSite: async (a) => { need ||= a.request.need; return null; } });
   assert.deepEqual(need, { aerial: false, cadastre: true });
-  await run('site', { lot: g, fetchSite: async (a) => { need = a.request.need; return null; } });
+  need = null; // the first ask is the wide one; with no picture a second, tight ask for the lot box follows (see hvs-shed-planset.test.mjs)
+  await run('site', { lot: g, fetchSite: async (a) => { need ||= a.request.need; return null; } });
   assert.deepEqual(need, { aerial: true, cadastre: true });
 });
 

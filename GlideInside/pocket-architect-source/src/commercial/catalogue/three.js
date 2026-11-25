@@ -292,7 +292,9 @@ export function addCatalogue3D(ctx, root, project, { showRoof = true } = {}) {
     if (showRoof) for (const { roof, baseMm } of resolveRoofs(b, project)) roofGeometry(b, parapetOf.has(b.id) ? { ...roof, type: 'flat', noParapet: true } : roof, { baseMm }, rb);
     const res = showRoof ? rb.build() : null;
     if (res) {
-      const ext = ctx.fin.externalWalls;
+      // A shed with its own cladding colour carries it on the gable infill too (the walls carry it as w.finish).
+      const own = b.def.wallFinish ? b.def.wallFinish(b.params) : null;
+      const ext = own ? { ...ctx.fin.externalWalls, material: own.material, colour: own.colour } : ctx.fin.externalWalls;
       const mats = { roof: lib.get(ctx.fin.roof.material || 'corrugated', ctx.hex(ctx.fin.roof.colour), { side: 'double' }), fascia: lib.plain(ctx.hex(ctx.fin.fascia.colour), { rough: 0.5, metal: 0.3 }), gable: lib.get(ext.material || 'paint', ctx.hex(ext.colour)) };
       const mesh = makeMesh(res, mats, { kind: 'roof', id: `${b.id}:roof`, levelId: project.levels[0]?.id, building: b.id }, { name: `roof:${b.id}`, cast: !ctx.walk });
       if (mesh) { root.add(mesh); n += 1; }
