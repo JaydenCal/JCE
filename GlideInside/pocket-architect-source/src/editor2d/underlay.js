@@ -3,7 +3,10 @@
 
 const DB_NAME = 'ps.underlay';
 const STORE = 'images';
-const MAX_SIDE = 4096;
+import { maxAerialSide } from '../site/device-limits.js';
+
+export const idb = { timeoutMs: 4000 }; // Safari (and in-app browsers) can leave indexedDB.open pending for ever: the image then stays in memory
+const maxSide = () => maxAerialSide();
 const memory = new Map();
 const bitmaps = new Map();
 
@@ -14,10 +17,11 @@ function openDb() {
     try {
       if (typeof indexedDB === 'undefined') return reject(new Error('IndexedDB unavailable'));
       const req = indexedDB.open(DB_NAME, 1);
+      const timer = setTimeout(() => reject(new Error('IndexedDB did not answer')), idb.timeoutMs);
       req.onupgradeneeded = () => req.result.createObjectStore(STORE);
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error);
-      req.onblocked = () => reject(new Error('IndexedDB blocked'));
+      req.onsuccess = () => { clearTimeout(timer); resolve(req.result); };
+      req.onerror = () => { clearTimeout(timer); reject(req.error); };
+      req.onblocked = () => { clearTimeout(timer); reject(new Error('IndexedDB blocked')); };
     } catch (e) {
       reject(e);
     }
@@ -28,11 +32,12 @@ async function withStore(mode, fn) {
   const db = await openDb();
   try {
     return await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('IndexedDB transaction timed out')), idb.timeoutMs * 2);
       const tx = db.transaction(STORE, mode);
       const result = fn(tx.objectStore(STORE));
-      tx.oncomplete = () => resolve(result?.result);
-      tx.onerror = () => reject(tx.error);
-      tx.onabort = () => reject(tx.error);
+      tx.oncomplete = () => { clearTimeout(timer); resolve(result?.result); };
+      tx.onerror = () => { clearTimeout(timer); reject(tx.error); };
+      tx.onabort = () => { clearTimeout(timer); reject(tx.error); };
     });
   } finally {
     db.close();
@@ -83,7 +88,10 @@ async function decode(blob) {
   try {
     const img = new Image();
     img.src = url;
-    await img.decode();
+    // img.decode() rejects on some Safari versions for a picture that loads fine: fall back to the load event.
+    try { await img.decode(); } catch {
+      if (!img.complete || !img.naturalWidth) await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = () => reject(new Error('The image could not be decoded')); });
+    }
     return img;
   } finally {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
@@ -113,8 +121,8 @@ export async function prepareImage(file) {
   const w = img.width || img.naturalWidth;
   const h = img.height || img.naturalHeight;
   if (!w || !h) throw new Error('That image could not be read');
-  if (Math.max(w, h) <= MAX_SIDE) return { blob: file, w, h, srcW: w, srcH: h };
-  const k = MAX_SIDE / Math.max(w, h);
+  if (Math.max(w, h) <= maxSide()) return { blob: file, w, h, srcW: w, srcH: h };
+  const k = maxSide() / Math.max(w, h);
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(w * k);
   canvas.height = Math.round(h * k);

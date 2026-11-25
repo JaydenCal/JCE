@@ -15,6 +15,7 @@ import { createEdit } from './edit.js';
 import { createAhead } from './ahead.js';
 import { VIEWER_CSS } from './viewer-css.js';
 import { loadBitmap } from '../editor2d/underlay.js';
+import { maxAerialSide } from '../site/device-limits.js';
 import { edgeColourOf } from './terrain.js';
 import { createRoomEdit } from './room-edit.js';
 import { snapToRoom as snapRoom, flyTo as flyToPose, enableRoomCutaway, createRoomBar, roomTabs as roomTabsOf } from './rooms.js';
@@ -394,7 +395,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     if (!key) return;
     loadBitmap(key).then((bmp) => {
       if (!bmp || site.wideKey !== key) return;
-      const maxTex = renderer.capabilities.maxTextureSize || 4096;
+      const maxTex = Math.min(renderer.capabilities.maxTextureSize || 4096, maxAerialSide()); // a phone: 2048 px, so the canvas copy is never over the iOS limit
       const k = Math.min(1, maxTex / Math.max(bmp.w, bmp.h));
       const c = document.createElement('canvas');
       c.width = Math.max(1, Math.round(bmp.w * k));
@@ -422,7 +423,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       if (!bmp || site.key !== key) return;
       // A canvas copy keeps the usual flipY behaviour (an ImageBitmap cannot be flipped) and is drawn 1:1 for a sharp texture.
       // Full resolution, scaled down only when the GPU cannot take it. No smoothing beyond the resample itself.
-      const maxTex = renderer.capabilities.maxTextureSize || 4096;
+      const maxTex = Math.min(renderer.capabilities.maxTextureSize || 4096, maxAerialSide()); // a phone: 2048 px, so the canvas copy is never over the iOS limit
       const k = Math.min(1, maxTex / Math.max(bmp.w, bmp.h));
       const c = document.createElement('canvas');
       c.width = Math.max(1, Math.round(bmp.w * k));

@@ -9,6 +9,7 @@
 // browser's own image store like every other aerial and is never uploaded. The attribution below must stay on screen and on the plan sheets.
 
 import { CONFIG } from '../config.js';
+import { maxAerialSide, fitScale } from './device-limits.js';
 import { stateAt, lonLatToFrame, frameToLonLat } from './upload/frame.js';
 
 export const MAPBOX_ATTRIBUTION = '© Mapbox © OpenStreetMap';
@@ -153,15 +154,17 @@ const toBlob = (cv, type, q) => (cv.convertToBlob ? cv.convertToBlob({ type, qua
  * centimetre over a lot). Shared by the Mapbox and the bring your own Nearmap key paths. Returns the output canvas.
  */
 export async function stitchMosaic(plan, blobs, { tilePx = TILE_PX, createCanvas = defaultCanvas, decode = (b) => createImageBitmap(b) } = {}) {
-  const mosaic = createCanvas(plan.cols * tilePx, plan.rows * tilePx);
+  // A phone cannot draw a mosaic of 3500 px or more a side: it is drawn smaller (the tile size on the mosaic shrinks with it).
+  const ms = maxAerialSide() < 4096 ? fitScale(plan.cols * tilePx, plan.rows * tilePx, maxAerialSide()) : 1;
+  const mosaic = createCanvas(Math.max(16, Math.round(plan.cols * tilePx * ms)), Math.max(16, Math.round(plan.rows * tilePx * ms)));
   const mctx = mosaic.getContext('2d');
   for (let i = 0; i < plan.tiles.length; i++) {
     const bmp = await decode(blobs[i]);
-    mctx.drawImage(bmp, plan.tiles[i].col * tilePx, plan.tiles[i].row * tilePx, tilePx, tilePx);
+    mctx.drawImage(bmp, Math.round(plan.tiles[i].col * tilePx * ms), Math.round(plan.tiles[i].row * tilePx * ms), Math.ceil(tilePx * ms), Math.ceil(tilePx * ms));
     bmp.close?.();
   }
   // Affine map from output pixels to mosaic pixels through the three corners (top left, top right, bottom left).
-  const px = (c) => ({ x: (mercX(c.lon, plan.z) - plan.x0) * tilePx, y: (mercY(c.lat, plan.z) - plan.y0) * tilePx });
+  const px = (c) => ({ x: (mercX(c.lon, plan.z) - plan.x0) * tilePx * ms, y: (mercY(c.lat, plan.z) - plan.y0) * tilePx * ms });
   const tl = px(plan.corners[0]);
   const tr = px(plan.corners[1]);
   const bl = px(plan.corners[3]);
@@ -193,7 +196,7 @@ export async function stitchMosaic(plan, blobs, { tilePx = TILE_PX, createCanvas
  */
 export async function fetchMapboxAerial({ frame, bbox, token = mapboxToken(), fetchImpl = globalThis.fetch, createCanvas = defaultCanvas, decode = (b) => createImageBitmap(b), signal, maxPx = MAX_OUT_PX, maxZoom }) {
   if (!token) throw new AerialError(NO_AERIAL_TEXT, 'NO_TOKEN');
-  const plan = planMosaic({ frame, bbox, maxPx, ...(maxZoom ? { maxZoom } : {}) });
+  const plan = planMosaic({ frame, bbox, maxPx: Math.min(maxPx, maxAerialSide()), ...(maxZoom ? { maxZoom } : {}) }); // a phone draws no more than 2048 px a side
   const blobs = await Promise.all(plan.tiles.map((t) => getTile(plan.z, t.x, t.y, token, fetchImpl, signal)));
   const out = await stitchMosaic(plan, blobs, { tilePx: TILE_PX, createCanvas, decode });
   const W = plan.widthPx;

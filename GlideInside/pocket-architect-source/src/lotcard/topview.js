@@ -304,7 +304,9 @@ export const TOPVIEW_CSS = `
 .lc-mini-x svg{width:14px;height:14px}
 .lc-root.is-compact .lc-mini-x{width:26px;height:26px;right:4px;bottom:4px}
 .lc-mini-hint{padding-right:40px!important}
-@media (max-width:640px){.tv-sub{display:none}.tv-btns{margin-left:auto;gap:3px;flex-wrap:wrap;justify-content:flex-end}.tv-btn{min-width:34px;height:34px;padding:0 6px!important}.tv-bar{gap:6px;padding:8px}.tv-bar .ps-aerial{height:34px;padding:0 10px 0 8px!important}}
+.tv-btn.tv-close-top{display:none}
+html.tv-open .gf-backpill,html.tv-open .ps-rot-box,html.tv-open .gf-resume{display:none!important}
+@media (max-width:640px){.tv-sub{display:none}.tv-bar{flex-wrap:wrap;gap:6px 8px;padding:8px;padding-top:calc(8px + env(safe-area-inset-top,0px))}.tv-title{flex:1 1 auto}.tv-bar .ps-aerial{height:44px;padding:0 12px 0 10px!important}.tv-btn.tv-close-top{display:inline-flex;min-width:88px;height:44px;font-size:15px;order:2}.tv-btns{flex:1 1 100%;order:3;margin:0;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}.tv-btns::-webkit-scrollbar{display:none}.tv-btns .tv-close{display:none}.tv-btn{min-width:44px;height:44px;padding:0 10px!important;flex:none}}
 @media (max-width:640px),(max-height:480px){.tv-dlg{left:0;top:0;transform:none;width:100%;height:100%;border-radius:0;border:0}.tv-help{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}}
 @media (prefers-reduced-motion:no-preference){.tv-ov{animation:tvfade .16s ease-out}@keyframes tvfade{from{opacity:0}to{opacity:1}}}
 `;
@@ -695,6 +697,8 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     els.sub = h('span', { class: 'tv-sub' });
     els.close = btn('Close top view', '×', 'tv-close', () => close(), { dataset: { ps: 'topview-close' } });
     els.close.style.fontSize = '24px';
+    // On a phone the toolbar scrolls sideways, so the way out is a second Close at the top left of the bar (44 px), always on screen.
+    els.closeTop = btn('Close top view and go back', 'Close', 'tv-close-top', () => close(), { dataset: { ps: 'topview-close-top' } });
     svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('class', 'tv-svg');
     svg.setAttribute('role', 'img');
@@ -717,6 +721,7 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     const dlg = h('div', { class: 'tv-dlg', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'tv-title', dataset: { ps: 'topview-dialog' } },
       h('div', { class: 'tv-bar' },
         h('h2', { class: 'tv-title', id: 'tv-title' }, 'TOP VIEW'),
+        els.closeTop,
         els.sub,
         ...(store ? [(els.aerial = createAerialToggle({ store, dataPs: 'topview-aerial' })).el] : []),
         h('div', { class: 'tv-btns' },
@@ -753,6 +758,7 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     build();
     const root = rootEl();
     root.append(ov);
+    document.documentElement.classList.add('tv-open');
     inerted = [...root.children].filter((c) => c !== ov && !c.inert);
     for (const c of inerted) c.inert = true;
     fit = null;
@@ -786,6 +792,7 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
     els.aerial = null;
     ov.remove();
     ov = null;
+    document.documentElement.classList.remove('tv-open');
     svg = null;
     scene = null;
     ptrs.clear();

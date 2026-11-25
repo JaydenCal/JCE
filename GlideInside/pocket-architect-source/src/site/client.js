@@ -2,6 +2,7 @@
 // With CONFIG.siteMock true the recorded-shape samples in ./fixtures are served instead of calling /api/site/*.
 
 import { CONFIG } from '../config.js';
+import { maxAerialSide } from './device-limits.js';
 
 export class SiteError extends Error {
   constructor(message, code = 'SITE_ERROR', status = null) {
@@ -338,9 +339,16 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep, deferCon
 export const EXPORT_SLOW_MS = 12000;
 export const EXPORT_DOWN_MS = 120000;
 let exportDownUntil = 0;
+/** On a phone the picture is asked for at no more than 2048 px a side (the service lowers its own pixel count to fit); elsewhere the request is unchanged. */
+export function phoneAerialParams(params, side = maxAerialSide()) {
+  if (!params || side >= 4096) return params;
+  const asked = Number(params.maxpx) || 4096;
+  return asked > side ? { ...params, maxpx: String(side) } : params;
+}
 export const resetExportBreaker = () => { exportDownUntil = 0; };
 
 export async function fetchAerial(params, opts = {}) {
+  params = phoneAerialParams(params);
   if (params?.state !== 'NSW' || opts.noTiles || CONFIG.siteTiles === false) return fetchAerialExport(params, opts);
   const { signal, fetchImpl = globalThis.fetch, exportSlowMs = Number(globalThis.GI_CONFIG?.siteExportSlowMs) || EXPORT_SLOW_MS } = opts; // the host page may shorten it (tests)
   // The caller's budget (timeoutMs, set by fetchSite from the lookup deadline) covers the export AND the tile fallback: the export gets under half of it
@@ -392,6 +400,7 @@ export async function fetchAerial(params, opts = {}) {
 }
 
 export async function fetchAerialExport(params, { signal, fetchImpl = globalThis.fetch, timeoutMs = 0 } = {}) {
+  params = phoneAerialParams(params);
   let res;
   // A request that never answers is given up on after timeoutMs (a TIMEOUT error, not an abort), still honouring the caller's own signal.
   const ctl = new AbortController();
