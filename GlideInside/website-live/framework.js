@@ -252,7 +252,8 @@
         var li = document.createElement("li"); li.className = "as-opt"; li.id = uid + i; li.setAttribute("role", "option"); li.setAttribute("aria-selected", String(i === active));
         li.appendChild(document.createTextNode(r.label));
         if (r.state) { var sm = document.createElement("small"); sm.textContent = r.state; li.appendChild(sm); }
-        li.addEventListener("pointerdown", function (e) { e.preventDefault(); choose(i); });
+        li.addEventListener("pointerdown", function (e) { e.preventDefault(); }); // keeps focus in the box; the choice is made on click, so a touch does not fall through to the link under the closed list
+        li.addEventListener("click", function (e) { e.preventDefault(); choose(i); });
         list.appendChild(li);
       });
       if (searching) { var sr = document.createElement("li"); sr.className = "as-opt as-searching"; sr.setAttribute("role", "presentation"); sr.textContent = "Searching..."; list.appendChild(sr); }

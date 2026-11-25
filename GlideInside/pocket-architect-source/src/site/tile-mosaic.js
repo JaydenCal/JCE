@@ -2,6 +2,7 @@
 // draw them, crop to the requested box and re-sample north up with the web mercator to MGA warp. Returns the same { blob, meta } as fetchAerial.
 
 import { CONFIG } from '../config.js';
+import { makeWorkingCanvas, maxAerialSide } from './device-limits.js';
 
 export const TILE_CONCURRENCY = 8;
 export const MAX_MISSING_FRACTION = 0.1; // tiles that failed twice; more than this and the mosaic is refused
@@ -24,18 +25,24 @@ export async function mapLimit(items, limit, fn, signal) {
   return out;
 }
 
-/** Draw decoded tiles onto a canvas of the crop size and encode it as JPEG. `tiles` is [{ x, y, img }] (img null = missing). Replaceable in tests. */
-export async function composeMosaic(plan, tiles) {
+/**
+ * Draw decoded tiles onto a canvas of the crop size and encode it as JPEG. `tiles` is [{ x, y, img }] (img null = missing). Replaceable in tests.
+ * The canvas is kept inside what the device can draw (a phone: 2048 px a side; a canvas that comes out blank is made again smaller) and the
+ * tiles are drawn scaled to match, so the picture is the same ground at a lower resolution.
+ */
+export async function composeMosaic(plan, tiles, { side = maxAerialSide(), make } = {}) {
   const { crop, x0, y0, tileSize } = plan;
-  const canvas = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(crop.widthPx, crop.heightPx) : Object.assign(document.createElement('canvas'), { width: crop.widthPx, height: crop.heightPx });
-  const ctx = canvas.getContext('2d');
+  const { canvas, ctx, scale } = makeWorkingCanvas(crop.widthPx, crop.heightPx, { side, ...(make ? { make } : {}) });
   ctx.fillStyle = '#6b7a5a';
-  ctx.fillRect(0, 0, crop.widthPx, crop.heightPx);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.scale(scale, scale);
   for (const t of tiles) {
     if (!t.img) continue;
     ctx.drawImage(t.img, (t.x - x0) * tileSize - crop.sx, (t.y - y0) * tileSize - crop.sy);
     t.img.close?.();
   }
+  ctx.restore();
   return canvas.convertToBlob ? canvas.convertToBlob({ type: 'image/jpeg', quality: 0.95 }) : new Promise((r) => canvas.toBlob(r, 'image/jpeg', 0.95));
 }
 
@@ -57,8 +64,10 @@ async function loadTile(plan, t, { signal, fetchImpl, decode }) {
 /** fetchAerialTiles(params, { signal, fetchImpl }) -> { blob, meta }. params are the /api/site/aerial params (state, srid, origin, bbox, res, maxpx). */
 export async function fetchAerialTiles(params, { signal, fetchImpl = globalThis.fetch, concurrency = TILE_CONCURRENCY, compose = composeMosaic, decode = (b) => createImageBitmap(b), warp = null } = {}) {
   const { SiteError } = await import('./client.js');
-  const q = { state: params.state, srid: params.srid, bbox: params.bbox, ...(params.res ? { res: params.res } : {}), ...(params.maxpx ? { maxpx: params.maxpx } : {}) };
-  if (Number(params.maxpx) >= 2048) q.maxtiles = '100'; // the wide outer picture may use more tiles
+  const side = maxAerialSide();
+  const maxpx = Math.min(Number(params.maxpx) || 4096, side); // a phone asks for no more than it can draw
+  const q = { state: params.state, srid: params.srid, bbox: params.bbox, ...(params.res ? { res: params.res } : {}), ...(params.maxpx || maxpx < 4096 ? { maxpx: String(maxpx) } : {}) };
+  if (Number(params.maxpx) >= 2048 && side >= 4096) q.maxtiles = '100'; // the wide outer picture may use more tiles
   let res;
   try {
     res = await fetchImpl(`${base()}/site/aerial-tiles?${new URLSearchParams(q)}`, { signal });

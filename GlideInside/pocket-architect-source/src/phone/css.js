@@ -196,6 +196,10 @@ html[data-phone="1"] .lc-root .lc-tab,html[data-phone="1"] .lc-root.is-compact .
 html[data-phone="1"] .lc-root .lc-btn,html[data-phone="1"] .lc-root.is-compact .lc-btn,html[data-phone="1"] .lc-root .lc-sendbtn{min-height:44px;height:auto}
 html[data-phone="1"] .lc-root .lc-pager button,html[data-phone="1"] .lc-root.is-compact .lc-pager button{width:44px;height:44px;line-height:42px}
 html[data-phone="1"] .lc-root .lc-pager,html[data-phone="1"] .lc-root.is-compact .lc-pager{height:48px}
+/* Every close control on a phone is a 44 px target (tutorial menu and video, commercial details panel, tutorial skip, tour skip). */
+html[data-phone="1"] .tut-x{width:44px;height:44px;border-radius:22px}
+html[data-phone="1"] .cc-panel .cc-x{width:44px;height:44px;line-height:42px;right:6px;top:6px}
+html[data-phone="1"] .tut-skip,html[data-phone="1"] .pso-link{min-height:44px;min-width:44px}
 html[data-phone="1"] .lc-mini-x{position:relative}
 html[data-phone="1"] .lc-mini-x::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%)}
 html[data-phone="1"] .ps3d-roombar .ps3d-chip,html[data-phone="1"] .ps3d-chip--toggle,html[data-phone="1"] .ps3d-chip--btn,html[data-phone="1"] .ps3d-btn,html[data-phone="1"] .ps-backplan{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
