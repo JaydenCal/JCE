@@ -27,7 +27,10 @@ function injectStyle() {
 export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {}, onSkip = null, onHelp = null, host = document.body }) {
   injectStyle();
   // The residential tool on a phone shows the simple four step path (Address, Pick, Fit, Plans); everything else keeps its own steps.
-  const metaNow = () => (kind === 'residential' && isPhoneMode() && CONFIG.phoneSimple !== false ? PHONE_STEPS : stepsFor(kind));
+  const simpleNow = () => kind === 'residential' && isPhoneMode() && CONFIG.phoneSimple !== false;
+  const metaNow = () => (simpleNow() ? PHONE_STEPS : stepsFor(kind));
+  // The simple phone path shows a slim 4 step bar (Address, Pick, Place, Free plans); its fifth slot is the editor, which has no overlay.
+  const shownNow = () => (simpleNow() ? metaNow().slice(0, 4) : metaNow());
   const total = metaNow().length;
   let current = 0;
   let live = null; // the mounted step
@@ -70,7 +73,7 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
   const offPhone = onPhoneChange(() => { if (!root.hidden && live) show(current + 1); });
 
   function paintProgress() {
-    prog.replaceChildren(...metaNow().map((m, i) => {
+    prog.replaceChildren(...shownNow().map((m, i) => {
       const state = i < current ? 'done' : i === current ? 'current' : 'todo';
       const inner = [h('span', { class: 'gf-num', 'aria-hidden': 'true' }, state === 'done' ? '✓' : String(i + 1)), h('span', { class: 'gf-lbl' }, m.title)];
       const el = h('li', { dataset: { step: String(i + 1), state }, ...(state === 'current' ? { 'aria-current': 'step' } : {}) },
@@ -85,7 +88,7 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
     nextBtn.textContent = live?.nextLabel || (current === total - 2 ? 'Open the editor' : 'Next');
     nextBtn.hidden = !!live?.hideNext;
     back.disabled = current === 0;
-    count.textContent = `Step ${current + 1} of ${total}`;
+    count.textContent = `Step ${current + 1} of ${shownNow().length}`;
   }
 
   function leave() {
@@ -104,6 +107,7 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
     introEl.textContent = def.intro || '';
     root.dataset.step = String(current + 1);
     root.dataset.stepId = def.id;
+    root.dataset.simple = simpleNow() ? '1' : '0';
     paintProgress();
     ctx = { store, flow: api, refresh, go: (k) => go(k), next: () => go(stepNo() + 1), back: () => go(stepNo() - 1) };
     let step = null;

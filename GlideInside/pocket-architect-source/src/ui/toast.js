@@ -20,7 +20,9 @@ export function toast(message, { kind = 'info', timeout, action } = {}) {
   const nowT = Date.now();
   const prev = recent.get(message);
   if (prev && nowT - prev.at < TOAST_DEDUPE_MS && prev.el?.isConnected) { prev.at = nowT; return prev.handle; }
-  const ms = timeout ?? (kind === 'error' ? 8000 : kind === 'warn' ? 6000 : 3800);
+  let ms = timeout ?? (kind === 'error' ? 8000 : kind === 'warn' ? 6000 : 3800);
+  // The phone house screen (src/phone/house-ui.js): notices hide themselves after 3 seconds and sit above the bottom bar (never over it). Errors stay.
+  if (kind !== 'error' && typeof document !== 'undefined' && document.documentElement.classList.contains('ph-house')) ms = Math.min(ms || 3000, 3000);
   let timer = null;
   const el = h('div', { class: 'ps-toast', role: kind === 'error' ? 'alert' : 'status', dataset: { kind } }, h('span', null, message));
   const dismiss = () => {

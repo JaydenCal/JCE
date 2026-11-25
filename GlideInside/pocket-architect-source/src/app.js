@@ -556,16 +556,20 @@ async function main() {
   const openFull = () => (WIDGET ? null : openFullEditor(store.project));
   if (WIDGET) { document.body.classList.add('gw-widget', 'gw-widget-wait'); api.widgetMode = true; api.lotDesigns = async () => []; } // until the builder's designs arrive nothing from the Glide library is offered
   // The home page card's call to action starts the guided flow at step 2 (choose a home) with the lot already set; "Open full editor" goes straight to the editor.
-  const openGuided = () => {
+  // `opts.step` names the step to open on (the phone house screen's Change home goes to 2, its step bar can go back to 1).
+  const openGuided = (opts) => {
     if (WIDGET) return;
     const p = store.project;
     const kind = p.mode === 'commercial' ? 'commercial' : 'residential';
-    openFullEditor({ ...p, flow: { kind, step: p.site?.lot ? 2 : 1, designId: p.placedHouse?.id || null } });
+    const step = Number.isInteger(opts?.step) && opts.step >= 1 && opts.step <= 4 ? opts.step : p.site?.lot ? 2 : 1;
+    openFullEditor({ ...p, flow: { kind, step: p.site?.lot ? step : 1, designId: p.placedHouse?.id || null } });
   };
+  // The phone house screen's "Get my free plans": straight to the plan set step of the simple phone path, with the lot and the house carried over.
+  const openPlans = () => (WIDGET ? null : openFullEditor({ ...store.project, flow: { kind: 'residential', step: 4, designId: store.project.placedHouse?.id || null, phoneSimple: true } }));
   const openEditorDirect = () => WIDGET ? null : openFullEditor({ ...store.project, flow: { kind: store.project.mode === 'commercial' ? 'commercial' : 'residential', step: 5 } });
   const lotCard = COMMERCIAL_VIEWER
     ? createCommercialCard({ store, host: refs.stage, viewerHost: refs.host3d, getViewer, getApp: () => api, onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a, row) => api.embedViewer?.run(a, row ? { pick: row } : {}) })
-    : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onFind: (a, row) => api.embedViewer?.run(a, row ? { pick: row } : {}), onMini: () => {}, embed: true, widget: WIDGET } : {}) });
+    : createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openGuided, onFullEditor: openEditorDirect, onPlans: openPlans, onFind: (a, row) => api.embedViewer?.run(a, row ? { pick: row } : {}), onMini: () => {}, embed: true, widget: WIDGET } : {}) });
   api.lotCard = lotCard;
   // "Make it narrower" in the homepage viewer hands over to this editor: say how, once it has opened.
   if (!VIEWER) import('./ui/fit-card.js').then((m) => { const g = m.takeGuidance(); if (g) setTimeout(() => { store.setUI({ view: '2d' }); toast(g, { kind: 'info', timeout: 20000 }); }, 1800); }).catch(() => {});

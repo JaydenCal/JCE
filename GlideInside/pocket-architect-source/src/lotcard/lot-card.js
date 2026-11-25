@@ -35,8 +35,11 @@ import { createAerialToggle } from '../ui/aerial-toggle.js';
 import { moveHouseBy, turnHouseBy } from '../site/site-items.js';
 import { createFitCard, stashGuidance } from '../ui/fit-card.js';
 import { createCoach, TOPVIEW_COACH } from '../ui/fit-coach.js';
-import { aerialOn } from '../site/aerial-pref.js';
+import { aerialOn, hasAerial, setAerial } from '../site/aerial-pref.js';
 import { injectUploadCss } from '../site/upload/css.js';
+import { isPhoneMode, onPhoneChange } from '../phone/mode.js';
+import { openSheet, sheetButton } from '../phone/sheet.js';
+import { createStepBar, createBottomBar, houseMenuModel, houseMenuBody, housePillText, turnPlacedHouse, injectHouseCss, NOTICE_MS } from '../phone/house-ui.js';
 
 const STYLE_ID = 'lc-style';
 const COMPACT_W = 980;
@@ -46,7 +49,7 @@ const DOT = { inside: '#6fd39a', outside: '#ff8a7a', check: '#f2b94b' };
 /** The muted header line: "Builder name · Concept only" in the portal, "Concept only" in the public app. */
 export const mutedLine = (builderName) => (builderName ? `${builderName} · Concept only` : 'Concept only');
 
-export function createLotCard({ store, host, viewerHost = host, catalogue = null, getApp = () => (typeof window !== 'undefined' ? window.__ps : null), getViewer = () => null, onEdit = null, onMini = null, onFind = null, onFullEditor = null, embed = false, widget = false }) {
+export function createLotCard({ store, host, viewerHost = host, catalogue = null, getApp = () => (typeof window !== 'undefined' ? window.__ps : null), getViewer = () => null, onEdit = null, onMini = null, onFind = null, onFullEditor = null, onPlans = null, embed = false, widget = false }) {
   if (!document.getElementById(STYLE_ID)) {
     const st = document.createElement('style');
     st.id = STYLE_ID;
@@ -82,9 +85,12 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   // The fit card and the first placement tips sit in the design card under its title (never over the lot), so they show on a phone too,
   // where the rest of the card is folded away.
   let breachSides = [];
+  // The phone house screen (owner 25/11/2026): phones only, in the home page viewer. Desktop and the builder widget are not touched.
+  const phoneUi = () => embed && !widget && isPhoneMode();
   let tipsRef = null; // the homepage "How to" tips: they step aside while the fit card has something to say
   const fitCard = createFitCard({
     store, theme: 'glass', compact: true,
+    doneMs: () => (phoneUi() ? NOTICE_MS : 0), // on the phone house screen an "Auto fit done. Undo" notice hides itself after 3 seconds
     onSides: (s) => { breachSides = s; },
     onChange: () => { try { const up = !fitCard.el.hidden && !['fits', 'tight'].includes(fitCard.el.dataset.verdict); fit.classList.toggle('lc-fit-off', up); advice.classList.toggle('has-problem', up); if (up) tipsRef?.hide(); sizeInset(); schedule(); } catch { /* not ready */ } },
     getDesigns: () => designs,
@@ -175,14 +181,39 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const fullBtn = embed && !widget ? h('button', { class: 'lc-full', type: 'button', dataset: { ps: 'lc-full-editor' }, title: 'Open this lot and design in the full editor', onclick: () => (onFullEditor || onEdit)?.() }, 'Open full editor', h('span', { 'aria-hidden': 'true' }, ' \u2197')) : null;
   const menuList = embed ? h('div', { class: 'lc-menu-list lc-glass', role: 'menu', hidden: true }, ...menuItems.map(([label, fn]) => h('button', { class: 'lc-menu-item', type: 'button', role: 'menuitem', onclick: () => { menuList.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); fn(); paintMenu(); } }, label))) : null;
   const menuBtn = embed ? (() => {
-    const b = h('button', { class: 'lc-menu lc-glass', type: 'button', 'aria-label': 'Menu', 'aria-haspopup': 'menu', 'aria-expanded': 'false', dataset: { ps: 'lc-menu' }, onclick: () => { paintMenu(); menuList.hidden = !menuList.hidden; b.setAttribute('aria-expanded', String(!menuList.hidden)); } });
+    const b = h('button', { class: 'lc-menu lc-glass', type: 'button', 'aria-label': 'Menu', 'aria-haspopup': 'menu', 'aria-expanded': 'false', dataset: { ps: 'lc-menu' }, onclick: () => { if (phoneUi()) { openPhoneMenu(); return; } paintMenu(); menuList.hidden = !menuList.hidden; b.setAttribute('aria-expanded', String(!menuList.hidden)); } });
     b.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>';
     return b;
   })() : null;
   // The last menu item names what it will do: "Enlarge top view" or "Shrink top view".
   function paintMenu() { const it = menuList?.lastElementChild; if (it) it.textContent = topView.isOpen() ? 'Close top view' : 'Enlarge top view'; }
   const foot = embed ? E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, FOOT_BASE) : null;
-  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, ...(compass ? [compass] : []), ...(fullBtn ? [fullBtn] : []), findPill, ...(uploadBtn ? [uploadBtn] : []), ...(menuBtn ? [menuBtn, menuList] : []), card, rooms, pager, ...(embed ? [aerialT.el] : []), mini, ...(foot ? [foot] : []));
+
+  // The phone house screen: step bar, bottom bar, a notice area for the fit card. Built once, shown by CSS (.lc-phone) on phones only.
+  const hasPhone = embed && !widget;
+  if (hasPhone) injectHouseCss();
+  let rotating = false;
+  const stepWrap = hasPhone ? E('lc-pstep', 'div', { dataset: { ps: 'lc-phone-steps' } }, createStepBar(3, { onGo: (n) => onEdit?.({ step: n }) })) : null;
+  const phoneAdvice = hasPhone ? E('lc-padvice', 'div', { dataset: { ps: 'lc-phone-advice' } }) : null;
+  const pbar = hasPhone ? createBottomBar({
+    onChange: () => onEdit?.({ step: 2 }), // back to the Pick step, keeping the lot
+    onMove: () => { rotating = false; if (canMoveHouse(store.project)) topView.open(); schedule(); }, // drag the house on the lot in the top view
+    onRotate: () => { rotating = !rotating; pbar.setMode(rotating ? 'rotate' : null); schedule(); setTimeout(sizeInset, 0); },
+    onTurn: (d) => { if (turnPlacedHouse(store, d)) coach.did('move'); },
+    onPlans: () => (onPlans || onFullEditor || onEdit)?.(),
+  }) : null;
+  function openPhoneMenu() {
+    const rows = houseMenuModel({
+      aerial: { has: hasAerial(store.project), on: aerialOn(store.project), toggle: () => { setAerial(store, !aerialOn(store.project)); aerialT.sync(); } },
+      upload: () => runUpload(store, { viewer: true, catalogue }),
+      rooms: tabs.filter((t) => t.id !== 'aerial').map((t) => ({ id: t.id, label: t.label })), tour: (id) => pickTab(id),
+      northUp: () => { selTab = 'aerial'; bedI = 0; schedule(); go('aerial'); },
+      extra: menuItems.filter(([l]) => l !== 'Upload boundary' && l !== 'Enlarge top view'),
+    });
+    let sheet = null;
+    sheet = openSheet({ title: 'Menu', id: 'phone-house-menu', body: houseMenuBody(rows, { sheetButton, close: () => sheet?.close() }) });
+  }
+  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, ...(compass ? [compass] : []), ...(fullBtn ? [fullBtn] : []), findPill, ...(uploadBtn ? [uploadBtn] : []), ...(menuBtn ? [menuBtn, menuList] : []), card, rooms, pager, ...(embed ? [aerialT.el] : []), mini, ...(foot ? [foot] : []), ...(hasPhone ? [stepWrap, phoneAdvice, pbar.el] : []));
   if (embed) {
     root.classList.add('lc-embed');
     // No "How to" panel: it covered the design card and the view (owner 18/11/2026). tipsRef stays null.
@@ -197,7 +228,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   let finding = false;
   // One source of truth: the pill text is derived from the loaded lot (lotIdentity), never from what was last typed or picked.
   const syncPill = (lot) => {
-    const lotText = lotIdentity(lot).pill;
+    const lotText = phoneUi() ? housePillText(lot) : lotIdentity(lot).pill;
     shownText = lotText;
     if (findInput) { if (document.activeElement !== findInput && !finding) findInput.value = lotText; }
     else if (findPill) findPill.lastChild.textContent = lotText || 'Find my block';
@@ -490,6 +521,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     if (foot) foot.textContent = FOOT_BASE + creditText(lot);
     headS.textContent = mutedLine(builderName());
     title.textContent = name;
+    if (pbar) { pbar.setName(name); pbar.setBusy(stepping); pbar.setMode(topView.isOpen() ? 'move' : rotating ? 'rotate' : null); }
     sub.replaceChildren(h('span', null, lotLine(lot)), h('span', { class: 'lc-sc' }, schemeLine(scheme)));
     stats.replaceChildren(...cardStats(p).map((c) => h('div', { dataset: { stat: c.key } }, h('b', null, c.value), h('i', null, c.label))));
     for (const b of chips.children) b.setAttribute('aria-pressed', String(b.dataset.scheme === sid));
@@ -527,6 +559,15 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     root.classList.toggle('is-compact', compact);
     root.classList.toggle('is-phone', w < PHONE_W);
     viewerHost.classList.toggle('lc-compact', compact);
+    if (hasPhone) {
+      const ph = phoneUi();
+      root.classList.toggle('lc-phone', ph);
+      document.documentElement.classList.toggle('ph-house', ph && !root.hidden);
+      // The fit card rides above the bottom bar on a phone (a notice that hides itself); elsewhere it stays in the design card.
+      if (ph && advice.parentElement !== phoneAdvice) phoneAdvice.append(advice);
+      else if (!ph && advice.parentElement !== card) card.insertBefore(advice, body);
+      if (!ph) rotating = false;
+    }
   }
   function schedule() { if (!raf) raf = requestAnimationFrame(render); }
 
@@ -800,6 +841,11 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     if (root.hidden) { if (store.project.mode !== 'commercial') ed?.setInset?.({}); return; } // commercial mode: the dock and the strip set the plan inset
     root.style.setProperty('--lc-card-h', `${Math.round(card.getBoundingClientRect().height)}px`);
     const els = [card, rooms, pager, mini, head];
+    if (phoneUi()) {
+      const bh = Math.round(pbar.el.getBoundingClientRect().height);
+      if (bh) { root.style.setProperty('--ph-bar-h', `${bh}px`); document.documentElement.style.setProperty('--ph-bar-h', `${bh}px`); }
+      els.push(pbar.el, findPill, stepWrap, phoneAdvice);
+    }
     // 3D: framed in what the cards leave clear. 2D and split: the plan is framed the same way, so the lot is not under the card.
     const credit = host.querySelector('.ps-credit');
     if (credit) els.push(credit);
@@ -814,7 +860,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   layoutClasses();
   const mo = typeof MutationObserver === 'function' ? new MutationObserver(() => schedule()) : null;
   mo?.observe(host, { childList: true });
-  const offs = [store.on('project', schedule), store.on('ui', (patch = {}) => { schedule(); if ('view' in patch) setTimeout(sizeInset, 700); })];
+  const offs = [onPhoneChange(() => { layoutClasses(); schedule(); setTimeout(sizeInset, 50); }), store.on('project', schedule), store.on('ui', (patch = {}) => { schedule(); if ('view' in patch) setTimeout(sizeInset, 700); })];
   const onAerial = () => { selTab = 'aerial'; bedI = 0; schedule(); };
   window.addEventListener('ps:room-aerial', onAerial);
   schedule();
@@ -823,6 +869,6 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     /** Reload the designs (a sign-in finished after the card was drawn). */
     refresh() { designsKey = null; schedule(); },
     get designs() { return designs; },
-    dispose() { disposed = true; window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); fitCard.dispose(); coach.dispose(); topView.dispose(); aerialT.dispose(); ro?.disconnect(); mo?.disconnect(); root.remove(); },
+    dispose() { disposed = true; document.documentElement.classList.remove('ph-house'); window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); fitCard.dispose(); coach.dispose(); topView.dispose(); aerialT.dispose(); ro?.disconnect(); mo?.disconnect(); root.remove(); },
   };
 }

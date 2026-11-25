@@ -15,12 +15,12 @@ export const RESIDENTIAL_STEPS = Object.freeze([
   { id: 'edit', title: 'Edit and export', short: 'Edit' },
 ]);
 
-// The simple phone path (src/flow/phone-simple.js): the same four slots as the residential steps, named for what the person does.
+// The simple phone path (src/flow/phone-simple.js): the same four slots as the residential steps, named for what the person does (Address, Pick, Place, Free plans; the fifth slot is the editor and is not shown in the 4 step bar).
 export const PHONE_STEPS = Object.freeze([
   { id: 'lot', title: 'Address', short: 'Address' },
   { id: 'home', title: 'Pick', short: 'Pick' },
-  { id: 'place', title: 'Fit', short: 'Fit' },
-  { id: 'check', title: 'Plans', short: 'Plans' },
+  { id: 'place', title: 'Place', short: 'Place' },
+  { id: 'check', title: 'Free plans', short: 'Free plans' },
   { id: 'edit', title: 'Edit', short: 'Edit' },
 ]);
 

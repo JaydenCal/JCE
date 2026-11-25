@@ -901,3 +901,16 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 @keyframes vh-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 @media(max-width:480px){.vid-hint .vh-arrow{font-size:14px;padding-left:16px;gap:10px;text-wrap:balance}}
 @media(max-width:400px){.vid-hint .vh-arrow{font-size:13px;padding-left:14px;gap:8px}}
+
+/* Release 7 (25/11/2026): on wide screens the hero address search is the first and biggest thing on the page. */
+@media(min-width:1000px){
+  .cine-top.has-search{grid-template-columns:minmax(0,1fr);align-items:start;gap:clamp(18px,2vw,28px)}
+  .cine-top.has-search h1{max-width:26ch;font-size:clamp(34px,3.6vw,56px)}
+  .cine .hero-as{max-width:900px;min-width:640px;width:100%;margin:0 0 16px}
+  .cine .hero-as .as-field{height:72px;border-radius:20px}
+  .cine .hero-as .as-field>svg{width:26px;height:26px;margin-left:24px}
+  .cine .hero-as .as-input{font-size:22px;padding:0 18px}
+  .cine .hero-as .as-go{height:56px;padding:0 34px;margin-right:8px;font-size:18px;border-radius:14px}
+  .cine .hero-as .as-status{font-size:15px}
+  .cine-side .hero-free{font-size:16px}
+}

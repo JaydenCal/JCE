@@ -214,4 +214,24 @@ export const LOT_CARD_CSS = `
 .lc-card.is-min .lc-title{font-size:15px}
 .lc-card.is-min .lc-hd{align-items:center}
 .gf-backpill{min-height:30px!important;height:30px;padding:0 12px!important;font-size:12px!important;line-height:28px}
+/* The phone house screen (owner 25/11/2026), phones only: a slim step bar, one address pill with the lot number, the 3D view, and the bottom bar
+   (house name, Change home, Move, Rotate, Get my free plans). The minimap, label box, compass, room chips, Open full editor, Upload boundary,
+   Aerial and the design card move into the menu or are gone. Desktop is unchanged: every rule here needs .lc-phone. */
+.lc-pstep,.lc-padvice,.lc-root .ph-bar{display:none}
+.lc-root.lc-phone{--ph-navy:#0a111e;--ph-navy-2:#121b2b;--ph-gold:#e9b66f;--ph-on-2:#a9b3c4;--ph-line:rgba(255,255,255,.16)}
+.lc-root.lc-phone :is(.lc-head,.lc-compass,.lc-mini,.lc-full,.lc-upload,.lc-aerial,.lc-rooms,.lc-card,.lc-pager,.lc-foot,.lc-menu-list){display:none!important}
+.lc-root.lc-phone .lc-pstep{display:block;position:absolute;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top)) 12px 30px;background:linear-gradient(180deg,rgba(10,17,30,.92) 0,rgba(10,17,30,.92) 55%,rgba(10,17,30,0))}
+.lc-root.lc-phone .lc-pstep{pointer-events:none}.lc-root.lc-phone .lc-pstep button{pointer-events:auto}
+.lc-root.lc-phone .lc-padvice .fitcoach,.lc-root.lc-phone .lc-padvice [data-ps=fit-coach]{display:none}
+.lc-root.lc-phone .lc-find{display:flex;left:12px;right:68px;top:calc(34px + env(safe-area-inset-top));width:auto;max-width:none;height:40px;padding:0 14px!important;border-radius:20px;background:rgba(10,17,30,.9);border-color:var(--ph-line)}
+.lc-root.lc-phone .lc-find-in{font-size:15px;font-weight:600}
+.lc-root.lc-phone .lc-menu{display:flex!important;right:12px;top:calc(32px + env(safe-area-inset-top));width:44px;height:44px;background:rgba(10,17,30,.9);border-color:var(--ph-line)}
+.lc-root.lc-phone .lc-find-list{top:46px}
+.lc-root.lc-phone .ph-bar{display:flex}
+.lc-root.lc-phone .lc-padvice{display:block;position:absolute;left:12px;right:12px;bottom:calc(var(--ph-bar-h,168px) + 10px);z-index:31;max-height:34vh;overflow:auto;pointer-events:none}
+.lc-root.lc-phone .lc-padvice>*{pointer-events:auto}
+.lc-root.lc-phone .lc-padvice .fitc[hidden]{display:none}
+.lc-root.lc-phone:has(.tv-ov) :is(.ph-bar,.lc-find,.lc-menu,.lc-pstep,.lc-padvice){display:none!important}
+.ps-stage:has(.lc-root.lc-phone:not([hidden])) .ps-credit{bottom:calc(var(--ph-bar-h,168px) + 8px)}
+html.ph-house .ps-toasts{bottom:calc(var(--ph-bar-h,168px) + 14px)}
 `;

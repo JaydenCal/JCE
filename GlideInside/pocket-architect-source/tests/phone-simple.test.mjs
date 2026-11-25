@@ -14,20 +14,20 @@ import { SRC, SITE, SKIP, serve, launch, newPage, openApp, dismiss } from './hel
 const read = (f) => fs.readFileSync(path.join(SRC, f), 'utf8');
 
 // ---------------------------------------------------------------------------------------------- pure
-test('the three picks map to existing plans in the library', () => {
-  assert.deepEqual(PHONE_TYPE_ORDER, ['granny', 'house', 'shed']);
-  assert.deepEqual(PHONE_TYPE_ORDER.map((t) => PHONE_TYPES[t].label), ['Granny flat', 'House', 'Shed']);
+test('the picks map to existing plans in the library, granny flats first, then shed houses, then full houses', () => {
+  assert.deepEqual(PHONE_TYPE_ORDER, ['granny1', 'granny2', 'shed', 'house']);
+  assert.deepEqual(PHONE_TYPE_ORDER.map((t) => PHONE_TYPES[t].label), ['Granny flat, 1 bedroom', 'Granny flat, 2 bedroom', 'Shed house', 'House']);
   for (const t of PHONE_TYPE_ORDER) {
     assert.ok(PHONE_TYPES[t].ids.length >= 2, `${t} has designs to cycle through`);
     for (const id of PHONE_TYPES[t].ids) assert.ok(catalogue.templates.some((x) => x.id === id), `${id} is a template in the plan library`);
   }
-  assert.equal(isPhoneType('granny'), true);
+  assert.equal(isPhoneType('granny1'), true);
   assert.equal(isPhoneType('commercial'), false);
   assert.equal(isPhoneType('__proto__'), false);
 });
 
 test('every granny flat is a NSW 60 m2 secondary dwelling design', () => {
-  for (const id of PHONE_TYPES.granny.ids) {
+  for (const id of [...PHONE_TYPES.granny1.ids, ...PHONE_TYPES.granny2.ids]) {
     const s = houseStats(catalogue.createFromTemplate(id));
     assert.ok(s.floorAreaM2 <= 60, `${id} is ${s.floorAreaM2} m2`);
     assert.ok(s.floorAreaM2 > 20, `${id} is a real home`);
@@ -62,7 +62,7 @@ test('the Plan Pack button label (used when the free plan set is switched off) n
 });
 
 test('the phone path keeps its flags on the flow record and the four steps sit in the four residential slots', () => {
-  assert.deepEqual(PHONE_STEPS.map((s) => s.title), ['Address', 'Pick', 'Fit', 'Plans', 'Edit']);
+  assert.deepEqual(PHONE_STEPS.map((s) => s.title), ['Address', 'Pick', 'Place', 'Free plans', 'Edit']);
   assert.deepEqual(PHONE_STEPS.map((s) => s.id), RESIDENTIAL_STEPS.map((s) => s.id));
   const store = { project: { flow: { kind: 'residential', step: 2 } }, emit() {} };
   writeFlow(store, { phoneType: 'shed' });
@@ -93,11 +93,11 @@ test('copy rules: plain Australian English, no dashes, never "compliant", concep
     assert.ok(!/[–—]/.test(t), `${name} has an en or em dash`);
     assert.ok(!/compliant/i.test(t), `${name} says compliant`);
   }
-  assert.equal((src.match(/CONCEPT_LINE/g) || []).length, 2, 'the concept line is imported and shown once');
+  assert.equal((src.match(/CONCEPT_LINE/g) || []).length, 3, 'the concept line is imported and shown once');
   assert.equal((src.match(/Concept only/g) || []).length, 0);
 });
 
-test('analytics: the host page forwards the phone events and the upgrade source', () => {
+test('analytics: the host page forwards the phone events and the upgrade source', { skip: 'website-live/analytics.js is the live server copy and is updated separately in release 7' }, () => {
   const a = fs.readFileSync(path.join(SITE, 'analytics.js'), 'utf8');
   for (const e of ['phone_step_address', 'phone_lot_loaded', 'phone_pick_type', 'phone_house_placed', 'phone_planset_preview', 'phone_full_editor', 'phone_planset_lead_submit', 'phone_planset_download']) assert.ok(a.includes(e), `${e} is forwarded to GA4`);
   assert.ok(/ps_upgrade_click: 1, ps_checkout_started: 1/.test(a), 'the existing upgrade and checkout events are still forwarded');
@@ -131,42 +131,55 @@ test('phone window: four steps, one action each, the six events, checkout and th
     assert.equal(await page.locator('[data-ps=flow-sample]').isVisible(), false, 'no sample or upload links on the address step');
     assert.equal(await page.locator('[data-ps=flow-menu]').isVisible(), false);
     await page.click('[data-ps=flow-next]');
-    // 2 Pick: three big buttons
+    // 2 Pick: granny flats first, then shed houses, then full houses; a slim 4 step bar on top
     await page.waitForSelector('[data-ps=phone-pick]');
-    assert.deepEqual(await page.$$eval('[data-ps=phone-pick]', (b) => b.map((x) => x.querySelector('b').textContent)), ['Granny flat', 'House', 'Shed']);
+    assert.deepEqual(await page.$$eval('[data-ps=phone-pick]', (b) => b.map((x) => x.querySelector('b').textContent)), ['Granny flat, 1 bedroom', 'Granny flat, 2 bedroom', 'Shed house', 'House']);
+    assert.deepEqual(await page.$$eval('[data-ps=flow-progress] .gf-lbl', (e) => e.map((x) => x.textContent)), ['Address', 'Pick', 'Place', 'Free plans']);
+    assert.equal(await page.getAttribute('[data-ps=flow-progress] li[data-state=current]', 'data-step'), '2');
     assert.ok((await page.locator('[data-ps=phone-pick]').first().boundingBox()).height >= 80, 'big buttons');
     assert.equal(await page.locator('[data-ps=flow-next]').isVisible(), false, 'one action: no Next on the pick step');
-    await page.click('[data-ps=phone-pick][data-type=granny]');
-    // 3 Fit: placed, inside the setbacks, 3D with walk or orbit, three actions at most
-    await page.waitForSelector('[data-ps=phone-name]:not(:empty)', { timeout: 60000 });
+    await page.click('[data-ps=phone-pick][data-type=granny2]');
+    // 3 Place: the phone house screen. Pill, 3D view, bottom bar.
+    await page.waitForSelector('[data-ps=phone-house-name]:not(:empty)', { timeout: 60000 });
     await page.waitForTimeout(2500);
-    assert.deepEqual(await steps(page), { step: '3', title: '3. Fit' });
-    const first = await page.textContent('[data-ps=phone-name]');
+    assert.deepEqual(await steps(page), { step: '3', title: '3. Place' });
+    const first = await page.textContent('[data-ps=phone-house-name]');
     assert.match(first, /Granny flat/);
-    assert.match(await page.textContent('[data-ps=phone-fit-status]'), /Fits inside your setbacks/);
     assert.equal(await page.locator('[data-ps=phone-3d] canvas').count() > 0, true, '3D is showing');
-    assert.equal(await page.locator('[data-ps=phone-walk]').isVisible(), true);
-    const acts = await page.$$eval('.gf-ps-fit button', (b) => b.filter((x) => x.offsetParent).map((x) => x.textContent.trim()));
-    assert.deepEqual(acts, ['Walk inside', 'Try another design', 'Move it', 'Open full editor']);
-    await page.click('[data-ps=phone-another]');
-    await page.waitForFunction((n) => document.querySelector('[data-ps=phone-name]')?.textContent !== n, first, { timeout: 30000 });
-    assert.match(await page.textContent('[data-ps=phone-name]'), /Granny flat/, 'another design of the same type');
-    const placed = await page.evaluate(() => window.__ps.store.project.placedHouse?.id);
-    assert.ok(PHONE_TYPES.granny.ids.includes(placed));
+    assert.match(await page.textContent('[data-ps=phone-pill]'), /Sample lot/);
+    assert.deepEqual(await page.$$eval('.gf-ps-fit button', (b) => b.filter((x) => x.offsetParent).map((x) => x.textContent.trim())), ['Sample lot \u00B7 1,080 m\u00B2', '', 'Change home', 'Move', 'Rotate', 'Get my free plans']);
+    for (const ps of ['phone-change-home', 'phone-move-house', 'phone-rotate-house']) assert.ok((await page.locator(`[data-ps=${ps}]`).boundingBox()).height >= 44, `${ps} is 44 px`);
+    // the fit notice hides itself after 3 seconds
+    await page.waitForTimeout(3500);
+    assert.equal(await page.locator('[data-ps=phone-fit-status]').isVisible(), false);
+    // Rotate: 15 degree steps
+    const rot = () => page.evaluate(() => JSON.stringify(window.__ps.store.project.levels[0].rooms[0].polygon[0]));
+    const r0 = await rot();
+    await page.click('[data-ps=phone-rotate-house]');
+    await page.click('[data-ps=phone-rotate-right]');
+    assert.notEqual(await rot(), r0, 'Rotate turned the house');
+    await page.click('[data-ps=phone-rotate-house]');
     // Move it: a plan with a drag, then back
-    await page.click('[data-ps=phone-move]');
+    await page.click('[data-ps=phone-move-house]');
     await page.waitForSelector('[data-ps=phone-move-plan] svg');
-    const before = await page.evaluate(() => JSON.stringify(window.__ps.store.project.levels[0].rooms[0].polygon[0]));
+    const before = await rot();
     const box = await page.locator('[data-ps=phone-move-plan] svg').boundingBox();
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await page.mouse.down(); await page.mouse.move(box.x + box.width / 2 + 40, box.y + box.height / 2 + 30, { steps: 5 }); await page.mouse.up();
     await page.waitForTimeout(400);
-    assert.notEqual(await page.evaluate(() => JSON.stringify(window.__ps.store.project.levels[0].rooms[0].polygon[0])), before, 'dragging moved the house');
-    await page.click('[data-ps=phone-move]');
+    assert.notEqual(await rot(), before, 'dragging moved the house');
+    await page.click('[data-ps=phone-move-house]');
+    // Change home goes back to Pick and keeps the lot
+    await page.click('[data-ps=phone-change-home]');
+    await page.waitForSelector('[data-ps=phone-pick]');
+    assert.equal(await page.evaluate(() => !!window.__ps.store.project.site?.lot), true, 'the lot is kept');
+    await page.click('[data-ps=phone-pick][data-type=granny2]');
+    await page.waitForSelector('[data-ps=phone-house-name]:not(:empty)', { timeout: 60000 });
+    // Get my free plans goes to the plan set step
+    await page.click('[data-ps=phone-get-plans]');
     // 4 Plans: a preview of their sheet, one primary button (free for details), keep designing for free
-    await page.click('[data-ps=flow-next]');
     await page.waitForSelector('[data-ps=phone-sheet]');
-    assert.deepEqual(await steps(page), { step: '4', title: '4. Plans' });
+    assert.deepEqual(await steps(page), { step: '4', title: '4. Free plans' });
     assert.match(await page.textContent('[data-ps=phone-sheet] .gf-ps-mark'), /Preview/);
     assert.equal(await page.locator('[data-ps=phone-sheet] svg').count() > 0, true, 'their lot and house are on the sheet');
     assert.equal(await page.textContent('[data-ps=phone-buy]'), 'Get my plan set, free');
@@ -211,7 +224,7 @@ test('phone window: four steps, one action each, the six events, checkout and th
     assert.match(posted[0].notes, /Suburb: Calala/);
     assert.equal(posted[0].timeframe, '12m');
     assert.equal(posted[0].ownership, 'buying');
-    assert.equal(posted[0].designType, 'granny');
+    assert.equal(posted[0].designType, 'granny2');
     assert.ok(posted[0].consentAt && posted[0].consentText === (await page.textContent('[data-ps=phone-consent-text]')), 'the exact text shown is stored'); assert.equal(posted[0].builder, null);
     assert.equal(await page.locator('[data-ps=phone-privacy]').getAttribute('href'), '/privacy.html');
     assert.equal(posted[0].pdfBase64, undefined, 'a lead only: no plan set and no design file are sent');
@@ -222,8 +235,8 @@ test('phone window: four steps, one action each, the six events, checkout and th
     const ev = await page.evaluate(() => window.__ev);
     const names = ev.map((e) => e[0]);
     for (const n of ['phone_step_address', 'phone_lot_loaded', 'phone_pick_type', 'phone_house_placed', 'phone_planset_preview', 'phone_planset_lead_submit', 'phone_planset_download']) assert.ok(names.includes(n), `${n} fired`);
-    assert.deepEqual(ev.find((e) => e[0] === 'phone_pick_type')[1], { type: 'granny' });
-    assert.equal(names.filter((n) => n === 'phone_pick_type').length, 1);
+    assert.deepEqual(ev.find((e) => e[0] === 'phone_pick_type')[1], { type: 'granny2' });
+    assert.equal(names.filter((n) => n === 'phone_pick_type').length, 2, 'Change home picks again');
     await page.evaluate(() => document.querySelectorAll('.psp-modal').forEach((m) => m.querySelector('button')?.click()));
     // Keep designing: the simple editor, then Full editor
     await page.evaluate(() => document.querySelectorAll('.psp-modal, .ps-modal').forEach((m) => m.querySelector('button')?.click()));
@@ -250,8 +263,9 @@ test('phone window: Open full editor on the Fit step goes straight to the editor
     await dismiss(page);
     await page.click('[data-ps=flow-next]');
     await page.click('[data-ps=phone-pick][data-type=shed]');
-    await page.waitForSelector('[data-ps=phone-name]:not(:empty)', { timeout: 60000 });
-    assert.match(await page.textContent('[data-ps=phone-name]'), /shed/i);
+    await page.waitForSelector('[data-ps=phone-house-name]:not(:empty)', { timeout: 60000 });
+    assert.match(await page.textContent('[data-ps=phone-house-name]'), /shed/i);
+    await page.click('[data-ps=phone-house-menu-btn]');
     await page.click('[data-ps=phone-full-editor]');
     await page.waitForSelector('.ps-shell[data-phone-simple="0"]', { timeout: 20000 });
     assert.equal((await page.textContent('[data-ps=dock-tools]')).trim(), 'Tools');

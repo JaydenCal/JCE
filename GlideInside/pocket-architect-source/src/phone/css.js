@@ -216,7 +216,7 @@ html[data-phone="1"] .ps-shell[data-phone-ui] .ps-stage,html[data-phone="1"] .lc
 
 /* 3D on a phone: the dock holds the Plan toggle, and the 3D overlays keep clear of the dock. */
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-hintbar{display:none}
-/* ---------------- The simple phone path: Address, Pick, Fit, Plans (src/flow/phone-simple.js) ---------------- */
+/* ---------------- The simple phone path: Address, Pick, Place, Free plans (src/flow/phone-simple.js) ---------------- */
 html[data-phone="1"] .gf-root[data-kind="residential"][data-step-id="lot"]:has(.gf-ps-addr) .gf-menu{display:none}
 html[data-phone="1"] .gf-root[data-kind="residential"] .gf-ps-addr .gf-alts{display:none}
 html[data-phone="1"] .gf-ps-addr .gf-grid{grid-template-columns:minmax(0,1fr)}
@@ -227,7 +227,7 @@ html[data-phone="1"] .gf-ps-pick{display:flex;flex-direction:column;align-items:
 html[data-phone="1"] .gf-ps-pick b{font-size:22px}
 html[data-phone="1"] .gf-ps-pick span{color:var(--gf-muted);font-size:14px}
 html[data-phone="1"] .gf-ps-pick:active,html[data-phone="1"] .gf-ps-pick[aria-pressed="true"]{border-color:var(--gf-acc);background:var(--gf-acc-soft)}
-html[data-phone="1"] .gf-ps-fit,html[data-phone="1"] .gf-ps-plans{display:flex;flex-direction:column;gap:10px;min-height:0}
+html[data-phone="1"] .gf-ps-plans{display:flex;flex-direction:column;gap:10px;min-height:0}
 html[data-phone="1"] .gf-ps-stage{position:relative;height:min(50vh,440px);min-height:260px;border-radius:14px;overflow:hidden;border:1px solid var(--gf-border);background:#cfd8e0}
 html[data-phone="1"] .gf-ps-3d,html[data-phone="1"] .gf-ps-plan{position:absolute;inset:0}
 html[data-phone="1"] .gf-ps-3d[hidden],html[data-phone="1"] .gf-ps-plan[hidden]{display:none}
@@ -236,17 +236,7 @@ html[data-phone="1"] .gf-ps-plan .gf-map{width:100%;height:100%;max-height:none;
 html[data-phone="1"] .gf-ps-stage .ps3d-viewbar,html[data-phone="1"] .gf-ps-stage .ps3d-hints,html[data-phone="1"] .gf-ps-stage .ps3d-chip--toggle,html[data-phone="1"] .gf-ps-stage .lc-root,html[data-phone="1"] .gf-ps-stage .ps3d-editbar,html[data-phone="1"] .gf-ps-stage .ps3d-edit-state,html[data-phone="1"] .gf-ps-stage .ps3d-edit,html[data-phone="1"] .gf-ps-stage .ps3d-chips{display:none!important}
 /* One thing at a time: the save your design card waits until the editor opens. */
 html.gf-ps-active .ps-prof-prompt{display:none!important}
-html[data-phone="1"] .gf-ps-chip{position:absolute;right:10px;top:10px;z-index:7;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid rgba(255,255,255,.5);background:rgba(18,38,58,.82);color:#fff;font-weight:600;font-size:15px;font-family:inherit}
-html[data-phone="1"] .gf-ps-chip[hidden]{display:none}
-html[data-phone="1"] .gf-ps-chip[aria-pressed="true"]{background:var(--gf-acc)}
 html[data-phone="1"] .gf-ps-busy{position:absolute;inset:0;z-index:8;display:grid;place-items:center;background:rgba(255,255,255,.7);font-weight:600}
-html[data-phone="1"] .gf-ps-name{font-size:18px;font-weight:700}
-html[data-phone="1"] .gf-ps-status{margin:0;padding:10px 12px;border-radius:12px;background:var(--gf-acc-soft);font-size:15px}
-html[data-phone="1"] .gf-ps-status[data-state="inside"]{background:var(--gf-ok-soft);color:var(--gf-ok)}
-html[data-phone="1"] .gf-ps-status[data-state="outside"]{background:var(--gf-warn-soft);color:var(--gf-warn)}
-html[data-phone="1"] .gf-ps-status:empty{display:none}
-html[data-phone="1"] .gf-ps-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-html[data-phone="1"] .gf-ps-actions .gf-btn{min-height:52px;font-size:16px;border-radius:12px}
 html[data-phone="1"] .gf-ps-link{align-self:center;min-height:44px;padding:0 12px;border:0;background:none;color:var(--gf-acc);font:600 15px system-ui,sans-serif;text-decoration:underline}
 html[data-phone="1"] .gf-ps-sheet{position:relative;aspect-ratio:420/297;background:#fff;border:1px solid #9aa0a8;box-shadow:0 2px 10px rgba(0,0,0,.14);overflow:hidden;display:flex;flex-direction:column}
 html[data-phone="1"] .gf-ps-sheet-plan{flex:1;min-height:0;margin:6px 6px 0;border:1px solid #2c2f36;display:flex}
@@ -276,6 +266,44 @@ html[data-phone="1"] .gf-ps-consent{display:flex;gap:10px;align-items:flex-start
 html[data-phone="1"] .gf-ps-consent input{width:24px;height:24px;flex:none;margin:0}
 html[data-phone="1"] .gf-ps-done{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 html[data-phone="1"] .gf-ps-quote{align-self:flex-start;text-align:left;padding:8px 0;min-height:44px}
+/* The website's navy and gold on the whole simple path (owner 25/11/2026): the flow's own variables are set once, so every step follows. */
+html[data-phone="1"] .gf-root[data-simple="1"]{--gf-bg:#0a111e;--gf-panel:#121b2b;--gf-text:#eef1f6;--gf-muted:#a9b3c4;--gf-border:rgba(255,255,255,.16);--gf-acc:#e9b66f;--gf-acc-ink:#1c1407;--gf-acc-soft:rgba(233,182,111,.14);--gf-ok:#6fd39a;--gf-ok-soft:rgba(63,191,122,.16);--gf-warn:#f2b94b;--gf-warn-soft:rgba(242,185,75,.16);--gf-bad:#ff8a7a;--ps-field:#0a111e;--ps-hover:rgba(255,255,255,.08);color-scheme:dark}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-head{background:#0a111e;border-bottom:1px solid rgba(255,255,255,.1);padding:8px 12px 8px;grid-template-columns:minmax(0,1fr) auto}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-brand{display:none}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-menu{grid-column:2;grid-row:1;background:#121b2b;color:#fff;border-color:rgba(255,255,255,.16)}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-prog{grid-column:1;grid-row:1;order:0;display:flex;gap:6px;justify-content:stretch}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-prog li,html[data-phone="1"] .gf-root[data-simple="1"] .gf-prog li[data-state="current"]{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding:0;background:none;border-radius:0;color:#a9b3c4}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-prog li::before{content:"";display:block;height:4px;border-radius:2px;background:rgba(255,255,255,.2)}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-prog li[data-state="done"]::before{background:rgba(233,182,111,.55)}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-prog li[data-state="current"]::before{background:#e9b66f}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-prog li[data-state="current"]{color:#e9b66f}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-prog li>*{display:flex!important;flex-direction:column;gap:0!important;min-width:0;width:100%}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-prog li button{min-height:0}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-num{display:none}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-prog li .gf-lbl,html[data-phone="1"] .gf-root[data-simple="1"] .gf-prog li:not([data-state="current"]) .gf-lbl{display:block;font-size:10.5px;line-height:1.1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-foot{background:#0a111e;border-top:1px solid rgba(255,255,255,.1);box-shadow:none}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-foot .gf-count{display:none}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-btn{background:#121b2b;color:#fff;border-color:rgba(255,255,255,.16)}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-btn--primary{background:#e9b66f;color:#1c1407;border-color:#e9b66f}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-field input{background:#0a111e;color:#fff;border-color:rgba(255,255,255,.2)}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-card{background:#121b2b;border-color:rgba(255,255,255,.12)}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-note{color:#a9b3c4}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-ps-link{color:#e9b66f}
+html[data-phone="1"] .gf-root[data-simple="1"][data-step-id="home"] .gf-content>div>:first-child{order:0}
+/* Place: the phone house screen. The 3D view fills the step; the address pill and menu ride on top, the bottom bar at the foot. */
+html[data-phone="1"] .gf-root[data-simple="1"][data-step-id="place"] :is(.gf-title,.gf-intro,.gf-foot,.gf-menu){display:none}
+html[data-phone="1"] .gf-root[data-simple="1"][data-step-id="place"] .gf-body{padding:0;overflow:hidden}
+html[data-phone="1"] .gf-root[data-simple="1"][data-step-id="place"] .gf-wrap,html[data-phone="1"] .gf-root[data-simple="1"][data-step-id="place"] .gf-content{max-width:none}
+html[data-phone="1"] .gf-root[data-simple="1"] .gf-ps-fit.ph-screen{position:relative;display:block;flex:1;min-height:0;height:100%}
+html[data-phone="1"] .gf-ps-fit .gf-ps-stage{position:absolute;inset:0;height:auto;min-height:0;border:0;border-radius:0;background:#0a111e}
+html[data-phone="1"] .gf-ps-fit .ph-top{position:absolute;left:12px;right:12px;top:10px;z-index:20;display:flex;gap:8px;align-items:center}
+html[data-phone="1"] .gf-ps-fit .ph-pill{flex:1;min-width:0;font:600 15px system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;cursor:pointer;text-align:left}
+html[data-phone="1"] .gf-ps-fit .gf-ps-pilltext{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html[data-phone="1"] .gf-ps-fit .ph-status{position:absolute;left:12px;right:12px;bottom:calc(var(--ph-bar-h,168px) + 10px);z-index:31;margin:0 auto;width:fit-content;max-width:calc(100% - 24px);padding:10px 14px;border-radius:12px;background:#0a111e;color:#fff;border:1px solid rgba(255,255,255,.16);box-shadow:0 8px 24px rgba(0,0,0,.4);font:500 14px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+html[data-phone="1"] .gf-ps-fit .ph-status[hidden]{display:none}
+html[data-phone="1"] .gf-ps-fit .ph-status[data-state="inside"]{color:#6fd39a}
+html[data-phone="1"] .gf-ps-fit .ph-status[data-state="outside"]{color:#ff8a7a}
+html[data-phone="1"] .gf-ps-fit .gf-ps-busy{background:rgba(10,17,30,.72);color:#fff}
 `;
 
 let injected = false;

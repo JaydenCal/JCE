@@ -94,7 +94,7 @@ function thumbOf(d) {
  *   onSides      (sides) => void                the breaching boundary edges, for the host to highlight ([] when it fits)
  *   compact      true: one line of text (phone and the lot card)
  */
-export function createFitCard({ store, theme = 'light', getDesigns = null, onSwapped = null, onGuide = null, onEngineer = null, canEngineer = () => true, onSides = null, compact = false, onChange = null }) {
+export function createFitCard({ store, theme = 'light', getDesigns = null, onSwapped = null, onGuide = null, onEngineer = null, canEngineer = () => true, onSides = null, compact = false, onChange = null, doneMs = null }) {
   injectCss();
   const el = h('section', { class: `fitc fitc--${theme}`, hidden: true, role: 'status', 'aria-live': 'polite', 'aria-label': 'House fit', dataset: { ps: 'fit-card' } });
   let disposed = false;
@@ -116,7 +116,14 @@ export function createFitCard({ store, theme = 'light', getDesigns = null, onSwa
   const btn = (a) => h('button', { class: `fitc-btn${a.primary ? ' is-pri' : ''}`, type: 'button', dataset: { ps: `fit-act-${a.id}` }, onclick: () => act(a.id) }, a.label);
   const undoBtn = (ps) => h('button', { class: 'fitc-link', type: 'button', dataset: { ps }, onclick: () => { done = null; note = null; store.undo(); } }, 'Undo');
   const applied = (fn) => { applying = true; try { return fn(); } finally { applying = false; } };
-  const afterApply = (text) => { minimised = false; done = { text, stamp: stamp() }; if (note) note.stamp = stamp(); paint(); };
+  let doneTimer = 0;
+  // doneMs() > 0 (the phone house screen): the "done" notice hides itself after that long. The fit state itself is never hidden.
+  const afterApply = (text) => {
+    minimised = false; done = { text, stamp: stamp() }; if (note) note.stamp = stamp(); paint();
+    clearTimeout(doneTimer);
+    const ms = Number(doneMs?.()) || 0;
+    if (ms > 0) { const mine = done; doneTimer = setTimeout(() => { if (done === mine && !disposed) { done = null; paint(); } }, ms); }
+  };
 
   function act(id) {
     if (id === 'narrower') { onGuide?.(narrowerGuidance(store.project)); return; }

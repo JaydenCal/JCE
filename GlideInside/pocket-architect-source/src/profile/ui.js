@@ -272,6 +272,7 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   const useCard = (reason) => viewer || ((reason === 'placed' || reason === 'edit') && isPhoneMode());
   function showPrompt(reason) {
     if (prompt) return;
+    if (isPhoneMode()) return; // phones never see the Save your design card (owner 25/11/2026): the email is asked for at the free plans step. Desktop keeps it.
     const card = useCard(reason);
     track('ps_profile_prompt', { reason, card: card ? 'compact' : 'full' });
     const title = h('h2', { id: 'ps-prof-prompt-title' }, 'Save your design');

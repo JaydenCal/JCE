@@ -1,11 +1,12 @@
 // The simple phone path of the Residential tool: four steps, one clear action each.
 //
-//   1 Address  type the address, the lot loads (the existing lot step, with its extras hidden)
-//   2 Pick     three big buttons: Granny flat, House, Shed (each maps to starting plans in the plan library)
-//   3 Fit      the pick is dropped in, auto fitted inside the setbacks (the existing fit logic), shown in 3D with orbit or walk.
-//              Offers: Try another design (cycles inside the same type), Move it (simple drag), Open full editor.
-//   4 Plans    a preview of their plan set (sheet 1 with their lot and house, marked Preview), one primary button into the existing
-//              checkout, and Keep designing for free.
+//   1 Address     type the address, the lot loads (the existing lot step, with its extras hidden)
+//   2 Pick        big buttons, granny flats first (1 and 2 bedroom), then shed houses, then full houses (each maps to plans in the library)
+//   3 Place       the pick is dropped in, auto fitted inside the setbacks (the existing fit logic), shown in 3D. The phone house screen
+//                 (src/phone/house-ui.js): an address and lot pill with a menu on top, the 3D view, and a bottom bar with the house name,
+//                 Change home (back to Pick), Move, Rotate and the gold "Get my free plans" button.
+//   4 Free plans  a preview of their plan set (sheet 1 with their lot and house, marked Preview), one primary button (free for contact
+//                 details while CONFIG.homeownerPlanSetFree is on), and Keep designing for free.
 //
 // It only runs on a phone (isPhoneMode). `withPhoneSteps` wraps the desktop steps so a desktop window keeps the existing steps, byte for
 // byte: every step delegates to the desktop step unless the page is in phone mode when the step opens.
@@ -25,17 +26,24 @@ import { planWithHouseSvg } from './phone-plan.js';
 import { mount3dPreview } from './preview3d.js';
 import { ensureFlowAerial } from './flow-aerial.js';
 import { placementStatus, nudgeHouse, previewCopy } from './res-logic.js';
+import { createBottomBar, houseMenuModel, houseMenuBody, housePillText, turnPlacedHouse, injectHouseCss, NOTICE_MS } from '../phone/house-ui.js';
+import { openSheet, sheetButton } from '../phone/sheet.js';
+import { listRoomTabs } from '../viewer3d/rooms.js';
+import { aerialOn, hasAerial, setAerial } from '../site/aerial-pref.js';
+import { runUpload } from '../site/upload/flow.js';
 import { writeFlow, flowOf } from './state.js';
 import { GET_LABEL, QUOTE_LINE, CONCEPT_LINE, consentText, areaBuilderFor, TIMEFRAME_Q, TIMEFRAMES, OWNERSHIP_Q, OWNERSHIPS, PRIVACY_PATH, PRIVACY_LINE, leadProblems, rememberedLead, alreadyGave } from '../premium/free-planset.js';
 
-// What the three buttons start from. Every id is an existing template in the plan library (src/catalogue). The granny flats are the
-// designs under the NSW 60 m2 secondary dwelling limit (59.5, 53, 49 and 37 m2). The order is the order "Try another design" cycles in.
+// What the buttons start from. Every id is an existing template in the plan library (src/catalogue). The granny flats are the designs under
+// the NSW 60 m2 secondary dwelling limit. Order on the Pick step (owner 25/11/2026): granny flats first (1 and 2 bedroom), then shed houses,
+// then full houses. The order of ids is the order the designs are tried in.
 export const PHONE_TYPES = Object.freeze({
-  granny: Object.freeze({ id: 'granny', label: 'Granny flat', hint: 'Up to 60 m2, a second home in the backyard', ids: Object.freeze(['granny_flat', 'granny_2bed_carport', 'granny_1bed', 'granny_studio']) }),
+  granny1: Object.freeze({ id: 'granny1', label: 'Granny flat, 1 bedroom', hint: 'Up to 60 m2, a small second home in the backyard', ids: Object.freeze(['granny_1bed', 'granny_studio']) }),
+  granny2: Object.freeze({ id: 'granny2', label: 'Granny flat, 2 bedroom', hint: 'Up to 60 m2, room for two bedrooms', ids: Object.freeze(['granny_flat', 'granny_2bed_carport']) }),
+  shed: Object.freeze({ id: 'shed', label: 'Shed house', hint: 'A shed with living quarters, or a workshop shed', ids: Object.freeze(['shed_house_barn', 'shed_workshop', 'shed_farm']) }),
   house: Object.freeze({ id: 'house', label: 'House', hint: 'A family home on the lot', ids: Object.freeze(['house_single', 'single_3bed_starter', 'narrow_14_3bed_media', 'narrow_125_4bed', 'narrow_10_3bed', 'narrow_double_4bed', 'house_double', 'townhouse_3bed']) }),
-  shed: Object.freeze({ id: 'shed', label: 'Shed', hint: 'A workshop or machinery shed', ids: Object.freeze(['shed_workshop', 'shed_farm']) }),
 });
-export const PHONE_TYPE_ORDER = Object.freeze(['granny', 'house', 'shed']);
+export const PHONE_TYPE_ORDER = Object.freeze(['granny1', 'granny2', 'shed', 'house']);
 export const isPhoneType = (t) => Object.prototype.hasOwnProperty.call(PHONE_TYPES, t);
 
 /** The designs of a type in the plan library, in cycle order, with the fit of each for the lot (when its setbacks are known). */
@@ -75,28 +83,6 @@ export async function placeOfType(store, catalogue, type, { wantId = null } = {}
   if (!choice?.pick) return null;
   placeChoice(store, choice);
   return { design: choice.pick, fits: choice.fits, tooBig: !!store.project.placedHouse?.tooBig };
-}
-
-/**
- * Try another design: the next design of the type that fits the lot, else simply the next one. Returns { design, fits } or null.
- */
-export async function placeAnother(store, catalogue, type, currentId) {
-  const list = designsForType(catalogue, store.project, type);
-  if (list.length < 2) return null;
-  const ids = PHONE_TYPES[type].ids.filter((id) => list.some((d) => d.id === id));
-  let id = currentId;
-  let first = null;
-  for (let k = 0; k < ids.length; k++) {
-    id = ids[(Math.max(0, ids.indexOf(id)) + 1) % ids.length];
-    if (id === currentId) break;
-    const d = list.find((x) => x.id === id);
-    const choice = await chooseDesign(store, { list: [d], own: false, empty: false }, id);
-    first = first || choice;
-    if (choice?.fits !== false && !(choice?.pick?.fit?.status === 'too-big')) { placeChoice(store, choice); return { design: choice.pick, fits: choice.fits, tooBig: !!store.project.placedHouse?.tooBig }; }
-  }
-  if (!first?.pick) return null;
-  placeChoice(store, first);
-  return { design: first.pick, fits: first.fits, tooBig: true };
 }
 
 /** One short line for the status under the 3D view. */
@@ -161,60 +147,93 @@ function mountPick(ctx) {
   return { el, hideNext: true, canNext: () => false };
 }
 
+// The Place step is the phone house screen (src/phone/house-ui.js): the same layout as the home page viewer on a phone.
 function mountFit(ctx, { catalogue }) {
   const { store } = ctx;
   const type = cleanType(store.project.flow?.phoneType) || 'house';
   hold(true);
+  injectHouseCss();
   let disposed = false;
   let busy = false;
   let viewer = null;
-  let mode = 'orbit';
   let moving = false;
+  let rotating = false;
   let aerial = null;
   let drag = null;
   let refits = 0;
+  let statusTimer = 0;
   const view = h('div', { class: 'gf-ps-3d', dataset: { ps: 'phone-3d' } });
   const planHost = h('div', { class: 'gf-ps-plan', hidden: true, dataset: { ps: 'phone-move-plan' } });
   const busyEl = h('div', { class: 'gf-ps-busy', role: 'status', dataset: { ps: 'phone-placing' } }, 'Placing it on your lot');
-  const walkBtn = h('button', { class: 'gf-ps-chip', type: 'button', 'aria-pressed': 'false', dataset: { ps: 'phone-walk' }, onclick: () => setViewMode(mode === 'walk' ? 'orbit' : 'walk') }, 'Walk inside');
-  const stage = h('div', { class: 'gf-ps-stage' }, view, planHost, walkBtn, busyEl);
-  const nameEl = h('div', { class: 'gf-ps-name', dataset: { ps: 'phone-name' } });
-  const statusEl = h('p', { class: 'gf-ps-status', role: 'status', 'aria-live': 'polite', dataset: { ps: 'phone-fit-status' } });
-  const another = h('button', { class: 'gf-btn', type: 'button', dataset: { ps: 'phone-another' }, onclick: () => tryAnother() }, 'Try another design');
-  const moveBtn = h('button', { class: 'gf-btn', type: 'button', 'aria-pressed': 'false', dataset: { ps: 'phone-move' }, onclick: () => setMoving(!moving) }, 'Move it');
-  const full = h('button', { class: 'gf-ps-link', type: 'button', dataset: { ps: 'phone-full-editor' }, onclick: () => goFull() }, 'Open full editor');
-  const el = h('div', { class: 'gf-ps gf-ps-fit', dataset: { ps: 'phone-fit' } }, stage, nameEl, statusEl, h('div', { class: 'gf-ps-actions' }, another, moveBtn), full);
+  const stage = h('div', { class: 'gf-ps-stage' }, view, planHost, busyEl);
+  const statusEl = h('p', { class: 'ph-status', role: 'status', 'aria-live': 'polite', hidden: true, dataset: { ps: 'phone-fit-status' } });
+  const bar = createBottomBar({
+    onChange: () => ctx.go(2), // back to the Pick step, the lot stays
+    onMove: () => setMoving(!moving),
+    onRotate: () => setRotating(!rotating),
+    onTurn: (d) => { if (!busy && turnPlacedHouse(store, d)) paint(); },
+    onPlans: () => ctx.go(4),
+  });
+  const pillText = h('span', { class: 'gf-ps-pilltext' });
+  const pill = h('button', { class: 'ph-pill gf-ps-pill', type: 'button', 'aria-label': 'Change the address', dataset: { ps: 'phone-pill' }, onclick: () => ctx.go(1) }, pillText);
+  const menuBtn = h('button', { class: 'ph-menu-btn', type: 'button', 'aria-label': 'Menu', dataset: { ps: 'phone-house-menu-btn' }, onclick: () => openMenu(), html: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>' });
+  const top = h('div', { class: 'ph-top', dataset: { ps: 'phone-top' } }, pill, menuBtn);
+  const el = h('div', { class: 'gf-ps gf-ps-fit ph-screen', dataset: { ps: 'phone-fit' } }, stage, top, statusEl, bar.el);
+
+  // The status line is a notice: it shows for 3 seconds (NOTICE_MS) above the bottom bar, then hides. A real problem (outside the setbacks) stays.
+  function say(text, state) {
+    statusEl.textContent = text || '';
+    statusEl.dataset.state = state || 'none';
+    clearTimeout(statusTimer);
+    if (!text) { statusEl.hidden = true; return; }
+    statusEl.hidden = false;
+    if (state !== 'outside') statusTimer = setTimeout(() => { statusEl.hidden = true; }, NOTICE_MS);
+  }
 
   function paint() {
     const ph = store.project.placedHouse;
-    nameEl.textContent = ph?.name ? ph.name : '';
+    bar.setName(ph?.name || '');
+    pillText.textContent = housePillText(lotOf(store.project));
     const f = fitLine(store.project);
-    statusEl.textContent = moving ? (f.ok === false ? 'Too close to the boundary. Drag it back inside the green area.' : 'Drag the house to move it.') : f.text;
-    statusEl.dataset.state = f.ok === true ? 'inside' : f.ok === false ? 'outside' : 'none';
-    another.disabled = busy;
-    moveBtn.disabled = busy;
-    moveBtn.textContent = moving ? 'Done moving' : 'Move it';
-    moveBtn.setAttribute('aria-pressed', String(moving));
+    if (moving) say(f.ok === false ? 'Too close to the boundary. Drag it back inside the green area.' : 'Drag the house to move it.', f.ok === false ? 'outside' : 'inside');
+    else say(f.text, f.ok === true ? 'inside' : f.ok === false ? 'outside' : 'none');
+    bar.setBusy(busy);
+    bar.setMode(moving ? 'move' : rotating ? 'rotate' : null);
     ctx.refresh();
   }
 
-  function setViewMode(m) {
-    mode = m;
-    try { viewer?.setMode?.(m); } catch { /* the viewer keeps its mode */ }
-    walkBtn.setAttribute('aria-pressed', String(m === 'walk'));
-    walkBtn.textContent = m === 'walk' ? 'Look around' : 'Walk inside';
+  function setRotating(on) {
+    rotating = !!on;
+    if (rotating && moving) setMoving(false);
+    bar.setMode(moving ? 'move' : rotating ? 'rotate' : null);
+    sizeBar();
   }
 
-  // Move it: the lot plan with the house on it, drag the house. Snaps to 50 mm on release; the status line says when it is too close.
+  function openMenu() {
+    const tabs = (() => { try { return listRoomTabs(store.project, null, { groupBedrooms: true }); } catch { return []; } })();
+    const rows = houseMenuModel({
+      aerial: { has: hasAerial(store.project), on: aerialOn(store.project), toggle: () => setAerial(store, !aerialOn(store.project)) },
+      upload: () => runUpload(store, { catalogue }),
+      rooms: tabs.filter((t) => t.id !== 'aerial').map((t) => ({ id: t.id, label: t.label })),
+      tour: (id) => { try { viewer?.snapToRoom?.(id, { duration: 1.1 }); } catch { /* the viewer keeps its view */ } },
+      northUp: () => { try { viewer?.snapToRoom?.('aerial', { duration: 1.1, site: true }); } catch { /* the viewer keeps its view */ } },
+      extra: [['Open full editor', () => goFull(), 'phone-full-editor']],
+    });
+    let sheet = null;
+    sheet = openSheet({ title: 'Menu', id: 'phone-house-menu', body: houseMenuBody(rows, { sheetButton, close: () => sheet?.close(), concept: CONCEPT_LINE }) });
+  }
+
+  // Move: the lot plan with the house on it, drag the house. Snaps to 50 mm on release; the status line says when it is too close.
   const drawPlan = (project) => { planHost.innerHTML = planWithHouseSvg(project, { aerial }); };
   function setMoving(on) {
     moving = !!on;
+    if (moving && rotating) rotating = false;
     view.hidden = moving;
     planHost.hidden = !moving;
-    walkBtn.hidden = moving;
-    if (moving) { if (mode === 'walk') setViewMode('orbit'); drawPlan(store.project); }
+    if (moving) drawPlan(store.project);
     else { try { viewer?.setActive?.(true); } catch { /* none */ } }
     paint();
+    sizeBar();
   }
   const toMm = (svg, ev) => { const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; const m = svg.getScreenCTM(); return m ? p.matrixTransform(m.inverse()) : { x: 0, y: 0 }; };
   planHost.addEventListener('pointerdown', (ev) => {
@@ -248,16 +267,12 @@ function mountFit(ctx, { catalogue }) {
   planHost.addEventListener('pointerup', endDrag);
   planHost.addEventListener('pointercancel', endDrag);
 
-  async function tryAnother() {
-    if (busy) return;
-    if (moving) setMoving(false);
-    busy = true; stage.append(busyEl); paint();
-    try {
-      const r = await placeAnother(store, catalogue, type, store.project.placedHouse?.id);
-      if (r) writeFlow(store, { designId: r.design.id });
-    } catch (e) { console.warn('[phone] another design failed', e); } finally { busy = false; busyEl.remove(); }
-    if (!disposed) paint();
+  // The bar's height is published so the notices and the Map data chip sit above it, never over it.
+  function sizeBar() {
+    try { const bh = Math.round(bar.el.getBoundingClientRect().height); if (bh) el.style.setProperty('--ph-bar-h', `${bh}px`); } catch { /* not laid out */ }
   }
+  const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(sizeBar) : null;
+  ro?.observe(bar.el);
 
   async function goFull() {
     openFullEditorOnPhone(store, 'fit');
@@ -272,14 +287,14 @@ function mountFit(ctx, { catalogue }) {
     if (moving && !drag) drawPlan(store.project);
   });
   async function refit() {
-    busy = true; stage.append(busyEl);
+    busy = true; stage.append(busyEl); paint();
     try { await placeOfType(store, catalogue, type, { wantId: store.project.placedHouse?.id || null }); } finally { busy = false; busyEl.remove(); }
     if (!disposed) paint();
   }
 
   return {
     el,
-    nextLabel: 'See my plan set',
+    hideNext: true,
     canNext: () => !busy && !!lotOf(store.project) && !!store.project.placedHouse,
     async onEnter() {
       const lot = lotOf(store.project);
@@ -299,12 +314,12 @@ function mountFit(ctx, { catalogue }) {
       }
       if (disposed) return;
       paint();
+      sizeBar();
       (async () => { try { aerial = await aerialOf(lotOf(store.project)); if (!aerial) { await ensureFlowAerial(store); aerial = await aerialOf(lotOf(store.project)); } } catch { aerial = null; } })();
       viewer = await mount3dPreview(view, store, catalogue);
       if (disposed) { viewer?.dispose?.(); viewer = null; return; }
-      if (!viewer || viewer.unavailable) walkBtn.hidden = true;
     },
-    dispose() { disposed = true; hold(false); off?.(); try { viewer?.dispose?.(); } catch { /* gone */ } },
+    dispose() { disposed = true; hold(false); clearTimeout(statusTimer); ro?.disconnect(); off?.(); try { viewer?.dispose?.(); } catch { /* gone */ } },
   };
 }
 
@@ -425,14 +440,14 @@ function mountPlans(ctx) {
   };
 }
 
-/** The four phone steps, in the same slots (lot, home, place, check) as the desktop steps. */
+/** The four phone steps (Address, Pick, Place, Free plans), in the same slots (lot, home, place, check) as the desktop steps. */
 export function phoneStepDefs({ catalogue, store }) {
   void store;
   return [
     { title: 'Address', intro: 'Type the street address of the lot.', mount: (ctx) => mountAddress(ctx) },
     { title: 'Pick', intro: 'What do you want to add?', mount: (ctx) => mountPick(ctx) },
-    { title: 'Fit', intro: '', mount: (ctx) => mountFit(ctx, { catalogue }) },
-    { title: 'Plans', intro: '', mount: (ctx) => mountPlans(ctx) },
+    { title: 'Place', intro: '', mount: (ctx) => mountFit(ctx, { catalogue }) },
+    { title: 'Free plans', intro: '', mount: (ctx) => mountPlans(ctx) },
   ];
 }
 
