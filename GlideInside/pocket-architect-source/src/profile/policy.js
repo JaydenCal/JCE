@@ -4,6 +4,8 @@
 //   b. when the person tries to leave with work that is not saved to a profile (only where the browser allows a leave prompt)
 //   c. when they use Save or Share while signed out
 //   d. the small Save to profile button, which always opens it
+//   e. a house placed on the person's own lot (the phone viewer, the home page frame, the phone guided flow): a few seconds later the small
+//      Save your design card is offered once (noteHousePlaced)
 // "Not now" stops a, b and c for the rest of the session (d still works, because the person asked for it).
 // Never mid drag, never over another dialog, never to someone who already has an account here (builder or client login, Commercial
 // subscriber or trial login, internal account) and never when the server has no profile service.
@@ -14,7 +16,7 @@ const SESSION_KEY = 'ps.profile.prompt';
 
 export function createPromptPolicy({
   status = () => 'out', otherAccount = () => false, isBusy = () => false, show = () => {}, session = null,
-  setTimer = (fn, ms) => setTimeout(fn, ms), clearTimer = (t) => clearTimeout(t), idleMs = 1000, maxIdleTries = 1800,
+  setTimer = (fn, ms) => setTimeout(fn, ms), clearTimer = (t) => clearTimeout(t), idleMs = 1000, maxIdleTries = 1800, placedDelayMs = 4000,
 } = {}) {
   // sessionStorage can be blocked: the flags then live in memory for this page.
   const memory = new Map();
@@ -37,6 +39,7 @@ export function createPromptPolicy({
 
   let edited = false; // a meaningful edit has happened in this session
   let pending = null;
+  let placedTimer = null;
   let open = false;
 
   const available = () => status() === 'out' && !otherAccount();
@@ -71,6 +74,17 @@ export function createPromptPolicy({
       write('edit', '1'); // once per session, whether or not it was shown
       whenIdle('edit');
     },
+    /** A house was just placed on a real lot. After placedDelayMs the card is offered once per session (the same "once" flag as the first edit). */
+    noteHousePlaced() {
+      if (!eligible() || read('edit') === '1') return false;
+      write('edit', '1');
+      clearTimer(placedTimer);
+      placedTimer = setTimer(() => {
+        placedTimer = null;
+        whenIdle('placed');
+      }, placedDelayMs);
+      return true;
+    },
     /** Save or Share while signed out. Resolves true when the prompt was shown (the save itself carries on either way). */
     onSaveOrShare(kind) {
       if (!eligible() || open) return false;
@@ -102,6 +116,8 @@ export function createPromptPolicy({
     get edited() { return edited; },
     eligible, suppressed, available,
     dispose() {
+      clearTimer(placedTimer);
+      placedTimer = null;
       clearTimer(pending);
       pending = null;
     },

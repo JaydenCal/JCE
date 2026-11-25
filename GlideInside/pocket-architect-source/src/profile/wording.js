@@ -17,6 +17,9 @@ export const MARKETING_TEXT = MARKETING_TEXTS[MARKETING_TEXT_VERSION];
 /** Said at the top of the save dialog and the save prompt: saving never involves payment. */
 export const SAVE_INCLUDED_TEXT = 'Saving is included. No payment or card needed. Your design is saved to your profile straight away and you can open it on any device.';
 
+/** One line on the small Save your design card (shown a few seconds after a house is placed on the person's own lot). */
+export const SAVE_CARD_TEXT = 'Keep this design and open it on any device. Free, no card needed.';
+
 export const ROLES = [
   ['homeowner', 'Homeowner'],
   ['builder', 'Builder'],

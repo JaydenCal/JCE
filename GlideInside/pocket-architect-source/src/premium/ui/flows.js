@@ -197,7 +197,7 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
       try {
         const res = await waitForEntitlement({ api, sessionId, projectId, ...timing });
         const outcome = accept(res);
-        track('ps_checkout_completed', {});
+        track('ps_checkout_completed', { sessionId });
         modal.setContent({
           title: 'Plan Pack unlocked',
           dismissible: true,

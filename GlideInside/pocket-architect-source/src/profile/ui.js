@@ -5,12 +5,13 @@ import { h, clear } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { openModal, askConfirm } from '../ui/modal.js';
 import { toast } from '../ui/toast.js';
-import { track } from '../ui/analytics.js';
+import { track, isStandalonePage } from '../ui/analytics.js';
+import { isPhoneMode } from '../phone/mode.js';
 import { projectToSvg, svgDataUri } from '../portal/thumbnail.js';
 import { passwordProblem } from '../portal/credentials.js';
 import { ddmmyyyyOf } from '../ui/cloud.js';
 import { ProfileError } from './api.js';
-import { MARKETING_TEXT, MARKETING_TEXT_VERSION, SAVE_INCLUDED_TEXT, passwordStrength } from './wording.js';
+import { MARKETING_TEXT, MARKETING_TEXT_VERSION, SAVE_INCLUDED_TEXT, SAVE_CARD_TEXT, passwordStrength } from './wording.js';
 
 const STYLE = `
 .ps-prof-btn .ps-prof-dot{display:none}
@@ -62,6 +63,23 @@ const STYLE = `
 .ps-prof-status[data-state="error"],.ps-prof-status[data-state="limit"]{color:var(--ps-danger)}
 .ps-prof-status button{border:0;background:transparent;color:inherit;text-decoration:underline;padding:0;font:inherit}
 @media (max-width:599.98px){.ps-prof-prompt{right:8px;left:8px;width:auto;transform:none;top:56px}}
+/* The small save card (a house placed on the person's own lot): phone tool, home page viewer and the phone editor. Sits above the bottom bar, never over the lot card. */
+.ps-prof-card{top:auto;bottom:14px;left:14px;transform:none;width:min(340px,calc(100% - 28px));padding:10px 12px 8px;border-left-width:4px}
+.ps-prof-card h2{margin:0 0 2px;font-size:15px}
+.ps-prof-card p{margin:0 0 8px;font-size:13px;line-height:1.35}
+.ps-prof-card-row{display:flex;gap:8px;align-items:stretch}
+.ps-prof-card-row .ps-input{flex:1;min-width:0;height:44px;font-size:16px}
+.ps-prof-card-row .ps-btn{height:44px;min-width:76px;padding:0 18px}
+.ps-prof-card-err{margin:6px 0 0;font-size:12px;color:var(--ps-danger)}
+.ps-prof-card-err[hidden]{display:none}
+.ps-prof-card .ps-prof-nn{margin:2px 0 0;min-height:44px;min-width:88px;padding:0 6px;font-size:13px}
+@media (max-width:640px){.ps-prof-card{left:8px;right:8px;width:auto;bottom:12px}}
+html[data-phone="1"] .ps-shell>.ps-prof-card{bottom:76px}
+.ps-stage>.ps-prof-card{position:absolute;z-index:45}
+.ps-prof-card:focus{outline:none}
+@media (min-width:701px){.ps-stage>.ps-prof-card{left:56%;bottom:84px;transform:translateX(-50%);width:min(320px,calc(100% - 28px))}}
+html[data-phone="1"] .ps-stage:has(.lc-root.is-phone:not([hidden]))>.ps-prof-card{bottom:122px}
+.ps-stage:has(.lc-card.is-open)>.ps-prof-card{display:none}
 `;
 
 function ensureStyle() {
@@ -144,7 +162,7 @@ const GLYPH = {
   person: '<circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c.8-3.6 3.6-5.4 7-5.4s6.2 1.8 7 5.4"/>',
 };
 
-export function initProfileUi({ app, controller, policy, refs, store, config, otherAccount }) {
+export function initProfileUi({ app, controller, policy, refs, store, config, otherAccount, viewer = false }) {
   ensureStyle();
   const termsUrl = siteUrl(config, 'terms', '../../terms.html');
   const privacyUrl = siteUrl(config, 'privacy', '../../privacy.html');
@@ -174,23 +192,23 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   }
   const designsBtn = h('button', { class: 'ps-btn ps-prof-btn', type: 'button', title: 'My designs', 'aria-label': 'My designs', dataset: { action: 'my-designs' }, onclick: () => openDesigns() }, glyph(GLYPH.designs), h('span', { class: 'ps-btn-text' }, 'My designs'));
   const accountBtn = h('button', { class: 'ps-btn ps-prof-btn', type: 'button', title: 'Your profile', 'aria-label': 'Your profile', dataset: { action: 'profile-account', state: 'in' }, onclick: () => openAccount() }, glyph(GLYPH.person), h('i', { class: 'ps-prof-dot' }));
-  if (anchor) anchor.after(designsBtn, accountBtn);
-  else refs.topbar?.append(designsBtn, accountBtn);
+  if (!viewer) { if (anchor) anchor.after(designsBtn, accountBtn); else refs.topbar?.append(designsBtn, accountBtn); }
   // The big Save design button sits on the right beside Exports and Unlock (owner 15/11/2026), so it is easy to find.
   const placeSave = () => {
     const ex = refs.topbar?.querySelector('.psp-bar .psp-menu-wrap');
     if (ex) ex.before(saveBtn);
     else if (!saveBtn.isConnected) (anchor ? anchor.after(saveBtn) : refs.topbar?.append(saveBtn));
   };
-  placeSave();
-  if (!refs.topbar?.querySelector('.psp-bar')) setTimeout(placeSave, 0), setTimeout(placeSave, 800);
+  if (!viewer) {
+    placeSave();
+    if (!refs.topbar?.querySelector('.psp-bar')) setTimeout(placeSave, 0), setTimeout(placeSave, 800);
+  }
 
   // Status bar ------------------------------------------------------------------------------------------------------------------
   const statusText = h('span', { class: 'ps-prof-status', role: 'status', 'aria-live': 'polite', dataset: { role: 'profile-status' } });
   statusText.hidden = true;
   const localSaved = refs.statusbar?.querySelector('.ps-autosave');
-  if (localSaved) localSaved.before(statusText);
-  else refs.statusbar?.append(statusText);
+  if (!viewer) { if (localSaved) localSaved.before(statusText); else refs.statusbar?.append(statusText); }
 
   function renderStatus() {
     const s = controller.state;
@@ -250,10 +268,29 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
     prompt = null;
     policy.closed();
   }
+  // The small card (email and Save) goes with the moment a house is placed on a lot or the first edit on a phone, and always in the lot viewer.
+  const useCard = (reason) => viewer || ((reason === 'placed' || reason === 'edit') && isPhoneMode());
   function showPrompt(reason) {
     if (prompt) return;
-    track('ps_profile_prompt', { reason });
+    const card = useCard(reason);
+    track('ps_profile_prompt', { reason, card: card ? 'compact' : 'full' });
     const title = h('h2', { id: 'ps-prof-prompt-title' }, 'Save your design');
+    if (card) {
+      const email = h('input', { class: 'ps-input', type: 'email', name: 'email', autocomplete: 'email', inputmode: 'email', maxlength: '254', placeholder: 'Your email', 'aria-label': 'Email address', dataset: { role: 'card-email' } });
+      const err = h('p', { class: 'ps-prof-card-err', role: 'alert', hidden: true });
+      const row = h('form', { class: 'ps-prof-card-row', novalidate: true, onsubmit: (ev) => {
+        ev.preventDefault();
+        const value = email.value.trim();
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) { err.textContent = 'Enter a valid email address.'; err.hidden = false; email.focus(); return; }
+        closePrompt();
+        openAuth('create', { purpose: 'save', email: value }); // the free profile dialog, with the email filled in
+      } }, email, h('button', { class: 'ps-btn ps-btn--primary', type: 'submit', dataset: { action: 'card-save' } }, 'Save'));
+      prompt = h('section', { class: 'ps-prof-prompt ps-prof-card', role: 'region', 'aria-labelledby': 'ps-prof-prompt-title', dataset: { role: 'profile-prompt', reason, variant: 'card' } },
+        title, h('p', null, SAVE_CARD_TEXT), row, err,
+        h('button', { class: 'ps-btn ps-btn--ghost ps-prof-nn', type: 'button', dataset: { action: 'prompt-notnow' }, onclick: () => notNow() }, 'Not now'));
+      placePrompt();
+      return;
+    }
     prompt = h('section', { class: 'ps-prof-prompt', role: 'region', 'aria-labelledby': 'ps-prof-prompt-title', dataset: { role: 'profile-prompt', reason } },
       h('button', { class: 'ps-btn ps-btn--ghost ps-btn--icon ps-prof-x', type: 'button', 'aria-label': 'Not now', onclick: () => notNow() }, icon('close', { size: 16 })),
       title,
@@ -262,6 +299,9 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
         h('button', { class: 'ps-btn ps-btn--primary', type: 'button', dataset: { action: 'prompt-create' }, onclick: () => { closePrompt(); openAuth('create'); } }, 'Create profile'),
         h('button', { class: 'ps-btn', type: 'button', dataset: { action: 'prompt-signin' }, onclick: () => { closePrompt(); openAuth('signin'); } }, 'Sign in'),
         h('button', { class: 'ps-btn ps-btn--ghost', type: 'button', dataset: { action: 'prompt-notnow' }, onclick: () => notNow() }, 'Not now')));
+    placePrompt();
+  }
+  function placePrompt() {
     // Inside the guided flow (Check it step) the prompt stands above the flow, in the page itself.
     const flowRoot = document.documentElement.classList.contains('gf-open') ? document.querySelector('.gf-root:not([hidden])') : null;
     const flowFoot = flowRoot?.querySelector(':scope > .gf-foot');
@@ -273,11 +313,13 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
         if (!document.documentElement.classList.contains('gf-open')) { (refs.shell || document.body).append(prompt); mo.disconnect(); }
       });
       mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    } else (refs.shell || document.body).append(prompt);
+    } else if (viewer) (refs.stage || refs.shell || document.body).append(prompt);
+    else (refs.shell || document.body).append(prompt);
     document.addEventListener('keydown', onPromptKey, true);
     window.addEventListener('keydown', onPromptKey, true);
     // Focus belongs to the prompt while it is open: a leftover onboarding button must not keep it (Escape then goes to the prompt).
     try {
+      if (!isStandalonePage()) return; // inside a frame the host page keeps the focus
       const ae = document.activeElement;
       if (!ae || ae === document.body || ae.closest?.('.pso-card, .pso-dock, .pso-pop, [class*="pso-"]')) { prompt.tabIndex = -1; prompt.focus({ preventScroll: true }); }
     } catch { /* focus is a convenience */ }
@@ -301,7 +343,7 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
   // Create profile and sign in ---------------------------------------------------------------------------------------------------
   let authClosed = null;
   let accountWait = null;
-  function openAuth(initial = 'create', { purpose = 'save' } = {}) {
+  function openAuth(initial = 'create', { purpose = 'save', email: prefill = '' } = {}) {
     if (modal) modal.close('replace');
     let tab = initial;
     const body = h('div');
@@ -329,6 +371,7 @@ export function initProfileUi({ app, controller, policy, refs, store, config, ot
     function createForm() {
       const name = h('input', { class: 'ps-input', id: 'ps-prof-name', type: 'text', autocomplete: 'name', maxlength: '80', required: true });
       const email = h('input', { class: 'ps-input', id: 'ps-prof-email', type: 'email', autocomplete: 'email', maxlength: '254', required: true });
+      if (prefill) email.value = String(prefill).slice(0, 254);
       const pw = pwBox('ps-prof-pw', 'new-password');
       const meter = h('div', { class: 'ps-prof-meter', 'aria-hidden': 'true', dataset: { score: '0' } }, h('i'), h('i'), h('i'), h('i'));
       const PW_HINT = 'At least 10 characters.';

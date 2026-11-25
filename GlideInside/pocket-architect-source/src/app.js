@@ -31,7 +31,7 @@ import { createFrontageBar } from './ui/frontage.js';
 import { saveDesign, pickDesignFile } from './ui/files.js';
 import { createEmbed } from './ui/embed.js';
 import { initShare } from './ui/share.js';
-import { initProfiles } from './profile/index.js';
+import { initProfiles, isSampleLot, placedLotKey } from './profile/index.js';
 import { createViewManager } from './ui/views.js';
 import { createSampleProject, SAMPLE_TEMPLATE } from './ui/sample.js';
 import { setTool } from './ui/toolstate.js';
@@ -39,7 +39,8 @@ import { createWheel } from './ui/wheel.js';
 import { createInventory } from './ui/inventory.js';
 import { openTitleBlockForm, getLogo } from './ui/titleblock.js';
 import { TOOL_DEFS, DOOR_FAMILY, KIND_LABEL } from './editor2d/tools-meta.js';
-import { track } from './ui/analytics.js';
+import { track, isStandalonePage } from './ui/analytics.js';
+import { initGoogleAnalytics, watchDesignStarted } from './ui/ga.js';
 import { designTypeOf, changeDesignType, applyDesignType } from './ui/design-type.js';
 import { createAerialSourceButton } from './ui/aerial-source.js';
 import { backTarget, backLabel } from './ui/back-target.js';
@@ -151,6 +152,7 @@ function initialProject(catalogue) {
 
 async function main() {
   initTheme();
+  const ga = initGoogleAnalytics({ widget: WIDGET }); // the standalone app page only (src/ui/ga.js); a frame is reported by its host page
   installPhoneMode(); // html[data-phone]: a finger on a window up to 700 px wide (src/phone/mode.js)
   injectPhoneCss();
   const root = document.getElementById('app');
@@ -530,6 +532,25 @@ async function main() {
   store.on('project', defaultTool);
   defaultTool();
   track('ps_open', { embedMode: CONFIG.embedMode });
+  {
+    // app_opened: on the app's own page at once; inside a frame (the home page) when the first real lot lands. house_placed: once per placed lot.
+    const phone = !!phoneApi()?.isPhone();
+    const from = params.get('sample') ? 'sample' : addressFromSearch() ? 'home_search' : 'direct';
+    if (isStandalonePage()) track('app_opened', { entry: phone ? 'phone' : 'desktop', from });
+    else {
+      const off = store.on('project', () => { if (store.project.site?.lot && !isSampleLot(store.project)) { off?.(); track('app_opened', { entry: 'desktop', from: 'home_search' }); } });
+    }
+    if (ga.active) watchDesignStarted(store, { track });
+    let lastPlaced = null;
+    store.on('project', () => {
+      const key = placedLotKey(store.project);
+      if (!key || key === lastPlaced) return;
+      lastPlaced = key;
+      const sample = isSampleLot(store.project);
+      if (sample && !isStandalonePage()) return;
+      track('house_placed', { sample });
+    });
+  }
 
   const openFull = () => (WIDGET ? null : openFullEditor(store.project));
   if (WIDGET) { document.body.classList.add('gw-widget', 'gw-widget-wait'); api.widgetMode = true; api.lotDesigns = async () => []; } // until the builder's designs arrive nothing from the Glide library is offered
@@ -617,7 +638,7 @@ async function main() {
   if (!demoMode() && !VIEWER && CONFIG.portalEnabled) await import('./portal/client-mode.js').then((m) => m.initPortalMode(window.__ps)).catch((e) => console.warn('[portal] client mode not available', e)).finally(() => window.__ps?.premium?.setPortalPending?.(false));
   else window.__ps?.premium?.setPortalPending?.(false);
   // Free user profiles: save designs to an account. Hidden for builder and client logins, subscribers and internal accounts, and when the server has no profile service.
-  if (!demoMode() && !VIEWER) api.profilesReady = initProfiles(window.__ps, { refs }).then((p) => { profiles = p; window.__ps.profiles = p; return p; }).catch((e) => { console.warn('[profile] not available', e); return null; });
+  if (!demoMode() && (!VIEWER || (!WIDGET && !COMMERCIAL_VIEWER))) api.profilesReady = initProfiles(window.__ps, { refs, viewer: VIEWER }).then((p) => { profiles = p; window.__ps.profiles = p; return p; }).catch((e) => { console.warn('[profile] not available', e); return null; });
   // The guided flow opens before the tour: the tour starts when the person reaches the editor.
   let flowOpen = false;
   if (startsFlow && !VIEWER && !demoMode()) {

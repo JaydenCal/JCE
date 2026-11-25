@@ -56,14 +56,8 @@ export const storage = {
   },
 };
 
-// Events go to the host page (docs/SCOPE.md 12.7). Same channel as src/ui/analytics.js.
-export function track(event, props = {}) {
-  try {
-    window.dispatchEvent(new CustomEvent('ps:analytics', { detail: { event, props } }));
-  } catch {
-    /* analytics must never break the tool */
-  }
-}
+// Events go to the host page and, on the standalone app page, to Google Analytics (docs/SCOPE.md 12.7). One channel: src/ui/analytics.js.
+export { track } from '../ui/analytics.js';
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

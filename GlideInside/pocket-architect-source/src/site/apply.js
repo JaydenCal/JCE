@@ -9,6 +9,7 @@ import { rotateHouse, translateHouse } from '../model/placement.js';
 import * as G from '../model/geometry.js';
 import { offerCommercial } from '../commercial/mode.js';
 import { saveImage, loadBitmap, removeImage, underlayKey } from '../editor2d/underlay.js';
+import { track } from '../ui/analytics.js';
 
 // Move the whole design so the middle of its footprint sits on the lot centroid (plan 0, 0). Only for the first lot.
 export function recentreDesign(p) {
@@ -66,7 +67,21 @@ const titleCase = (s) => String(s || '').toLowerCase().replace(/\b[a-z]/g, (c) =
  * applySiteLookup(store, selection, { onStep, signal }) -> { lot, warnings }
  * Throws SiteError (readable message) when the lot cannot be found. A missing aerial or elevation grid only adds warnings.
  */
-export async function applySiteLookup(store, selection, { onStep, signal, fetchImpl, prefetched = null, deferContours = true, deadlineAt = 0 } = {}) {
+export async function applySiteLookup(store, selection, opts = {}) {
+  // lot_loaded for analytics: whether the lookup worked and how long it took. Never the address.
+  const t0 = Date.now();
+  const sample = !!opts.prefetched?.lot?.sample;
+  try {
+    const out = await lookupAndCommit(store, selection, opts);
+    track('lot_loaded', { success: true, ms: Date.now() - t0, sample: sample || out.lot?.source === 'sample' });
+    return out;
+  } catch (e) {
+    if (e?.name !== 'AbortError') track('lot_loaded', { success: false, ms: Date.now() - t0, sample });
+    throw e;
+  }
+}
+
+async function lookupAndCommit(store, selection, { onStep, signal, fetchImpl, prefetched = null, deferContours = true, deadlineAt = 0 } = {}) {
   // A run that was given up on (its deadline passed, or a newer search replaced it) must never land its lot over what is on screen now.
   const stale = () => { if (signal?.aborted) throw Object.assign(new Error('aborted'), { name: 'AbortError' }); };
   const res = prefetched || (await fetchSite(selection, { onStep, signal, fetchImpl, deferContours, deadlineAt }));

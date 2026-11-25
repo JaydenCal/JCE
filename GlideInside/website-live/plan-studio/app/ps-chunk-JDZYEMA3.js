@@ -1,0 +1,1 @@
+var n=null;function a(t){n=t}function c(t,e={}){try{window.dispatchEvent(new CustomEvent("ps:analytics",{detail:{event:t,props:e}})),n?.(t,e)}catch{}}function o(t=window){try{return t.self===t.top&&!/[?&]embed=/.test(t.location?.search||"")}catch{return!1}}export{a,c as b,o as c};
