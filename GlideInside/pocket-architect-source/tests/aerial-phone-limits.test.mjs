@@ -40,6 +40,37 @@ test('isConstrainedDevice: iPhone, iPad as Mac, small memory; not a desktop', ()
   assert.equal(maxAerialSide({ navigator: { userAgent: 'iPhone' } }), PHONE_MAX_SIDE);
 });
 
+test('low reported memory counts only with a coarse pointer: a desktop keeps full sharpness, an iPad stays capped', () => {
+  const mm = (coarse) => () => ({ matches: coarse });
+  const desktop = { navigator: { userAgent: 'Mozilla/5.0 (Windows NT 10.0)', deviceMemory: 4 }, innerWidth: 1600, matchMedia: mm(false) };
+  assert.equal(isConstrainedDevice(desktop), false);
+  assert.equal(maxAerialSide(desktop), 4096);
+  assert.equal(isConstrainedDevice({ navigator: { userAgent: 'Mozilla/5.0 (Linux; Android 13)', deviceMemory: 2 }, innerWidth: 1600, matchMedia: mm(true) }), true);
+  assert.equal(isConstrainedDevice({ navigator: { userAgent: 'Mozilla/5.0 (iPad; CPU OS 17_0)', deviceMemory: 8 }, innerWidth: 1600, matchMedia: mm(false) }), true);
+  assert.equal(maxAerialSide({ navigator: { userAgent: 'Mozilla/5.0 (Macintosh)', platform: 'MacIntel', maxTouchPoints: 5 }, matchMedia: mm(true) }), PHONE_MAX_SIDE);
+});
+
+test('after the first IndexedDB timeout the rest of the session skips IndexedDB and goes straight to memory', async () => {
+  const u = await import('../src/editor2d/underlay.js');
+  u.resetIdbState();
+  u.idb.timeoutMs = 60;
+  let opens = 0;
+  globalThis.indexedDB = { open: () => { opens++; return {}; } };
+  globalThis.createImageBitmap = async () => ({ width: 100, height: 100 });
+  try {
+    const blob = { size: 1, type: 'image/jpeg' };
+    assert.equal(await u.saveImage('k.a', blob), false);
+    assert.equal(opens, 1);
+    assert.equal(u.idbUsable(), false);
+    const t0 = Date.now();
+    assert.equal(await u.saveImage('k.b', blob), false);
+    assert.equal(await u.loadImageBlob('k.zzz'), null);
+    assert.ok(await u.loadBitmap('k.b'));
+    assert.equal(opens, 1, 'no further open was attempted');
+    assert.ok(Date.now() - t0 < 50, 'no second wait');
+  } finally { delete globalThis.indexedDB; delete globalThis.createImageBitmap; u.idb.timeoutMs = 4000; u.resetIdbState(); }
+});
+
 test('makeWorkingCanvas shrinks a canvas that the device would blank and returns one that draws', () => {
   const log = [];
   const got = makeWorkingCanvas(4096, 4096, { side: 4096, make: fakeFactory(2048 * 2048, log) });

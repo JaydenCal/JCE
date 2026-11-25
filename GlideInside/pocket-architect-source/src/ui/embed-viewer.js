@@ -34,7 +34,34 @@ export function viewerEmbedRequested(search = typeof location !== 'undefined' ? 
   return p.get('embed') === '1' || p.get('view') === 'viewer';
 }
 
-export const addressFromSearch = (search = typeof location !== 'undefined' ? location.search : '') => (new URLSearchParams(search).get('address') || '').trim().slice(0, 160);
+const clip = (v) => String(v || '').trim().slice(0, 160);
+let heldAddress = null; // the ?address= of this page view, held in memory after it is taken out of the page address
+const ADDR_KEY = 'gi_addr';
+const wasReload = (win) => { try { return win.performance?.getEntriesByType?.('navigation')?.[0]?.type === 'reload'; } catch { return false; } };
+/** Test hook: forget the held address. */
+export const resetHeldAddress = () => { heldAddress = null; };
+/**
+ * The address the page was asked for. With no argument it reads the page address once, then removes ?address= from it (history.replaceState), so the
+ * street address never stays in the URL that referrers, analytics and shared screenshots can see. It is kept in memory, and in sessionStorage
+ * only to survive a reload of the same tab.
+ */
+export function addressFromSearch(search, win = typeof window !== 'undefined' ? window : null) {
+  if (search !== undefined) return clip(new URLSearchParams(search).get('address'));
+  if (!win?.location) return heldAddress || '';
+  const u = new URL(win.location.href);
+  if (u.searchParams.has('address')) {
+    heldAddress = clip(u.searchParams.get('address'));
+    try { win.sessionStorage?.setItem(ADDR_KEY, heldAddress); } catch { /* storage blocked */ }
+    u.searchParams.delete('address');
+    try { win.history?.replaceState(win.history.state, '', `${u.pathname}${u.search}${u.hash}`); } catch { /* no history */ }
+    return heldAddress;
+  }
+  if (heldAddress !== null) return heldAddress;
+  if (wasReload(win)) { try { heldAddress = clip(win.sessionStorage?.getItem(ADDR_KEY)); } catch { heldAddress = ''; } return heldAddress || ''; }
+  try { win.sessionStorage?.removeItem(ADDR_KEY); } catch { /* storage blocked */ }
+  heldAddress = '';
+  return '';
+}
 
 /** The full editor URL, carrying the address of a loaded real lot (the demo lot has none). */
 export function fullEditorUrl(project) {

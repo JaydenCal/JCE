@@ -541,7 +541,8 @@ async function main() {
       const off = store.on('project', () => { if (store.project.site?.lot && !isSampleLot(store.project)) { off?.(); track('app_opened', { entry: 'desktop', from: 'home_search' }); } });
     }
     if (ga.active) watchDesignStarted(store, { track });
-    let lastPlaced = null;
+    // A saved design reopened already has its house: that is not a new placement (no event, no save card). Only a key that appears after the page has loaded counts.
+    let lastPlaced = placedLotKey(store.project);
     store.on('project', () => {
       const key = placedLotKey(store.project);
       if (!key || key === lastPlaced) return;

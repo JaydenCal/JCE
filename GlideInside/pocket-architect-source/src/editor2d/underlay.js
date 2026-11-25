@@ -7,6 +7,10 @@ import { maxAerialSide } from '../site/device-limits.js';
 
 export const idb = { timeoutMs: 4000 }; // Safari (and in-app browsers) can leave indexedDB.open pending for ever: the image then stays in memory
 const maxSide = () => maxAerialSide();
+let idbBroken = false; // after the first open failure or timeout IndexedDB is not tried again this session: every call goes straight to memory
+/** Test hook: forget a recorded IndexedDB failure. */
+export const resetIdbState = () => { idbBroken = false; };
+export const idbUsable = () => !idbBroken;
 const memory = new Map();
 const bitmaps = new Map();
 
@@ -29,10 +33,12 @@ function openDb() {
 }
 
 async function withStore(mode, fn) {
-  const db = await openDb();
+  if (idbBroken) throw new Error('IndexedDB unusable this session');
+  let db;
+  try { db = await openDb(); } catch (e) { idbBroken = true; throw e; }
   try {
     return await new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error('IndexedDB transaction timed out')), idb.timeoutMs * 2);
+      const timer = setTimeout(() => { idbBroken = true; reject(new Error('IndexedDB transaction timed out')); }, idb.timeoutMs * 2);
       const tx = db.transaction(STORE, mode);
       const result = fn(tx.objectStore(STORE));
       tx.oncomplete = () => { clearTimeout(timer); resolve(result?.result); };

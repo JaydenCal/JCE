@@ -1,7 +1,9 @@
 /* Glide Inside tracking. No dependencies. Loaded on every site page.
    Does nothing except UTM passthrough unless GI_CONFIG.ga4Id is set. Setup steps: docs/marketing/TRACKING.md.
-   Events sent to GA4: book_demo, design_started, purchase, generate_lead, start_design_click, plus ps_template_selected,
-   ps_upgrade_click, ps_checkout_started and ps_export forwarded from the app. */
+   Events sent to GA4: book_demo, design_started, purchase, generate_lead, start_design_click, plus the app events forwarded from the framed app
+   (app_opened, lot_loaded, house_placed, ps_profile_*, ps_share_*, ps_export, ps_upgrade_click, ps_checkout_*, ps_template_selected, ps_project_saved).
+   Privacy (24/11/2026): page_location and page_referrer are cleaned (origin, path and a short allow list of plain query values; never ?address=),
+   event values are checked, a checkout.stripe.com referrer is dropped, and ?gi_internal=1 tags the browser as internal exactly as src/ui/ga.js does. */
 (function () {
   "use strict";
   var cfg = window.GI_CONFIG || {};
@@ -50,11 +52,62 @@
   var framed = false; try { framed = window.parent !== window; } catch (e) { framed = true; }
 
   var adsId = cfg.adsConversion ? String(cfg.adsConversion).split("/")[0] : "";
-  if (!framed) {
+
+  /* ---- Privacy: what may leave the browser (same rules as src/ui/ga.js) ---- */
+  var KEEP_PARAMS = { embed: 1, mode: 1, sample: 1, template: 1, view: 1, utm_source: 1, utm_medium: 1, utm_campaign: 1, utm_term: 1, utm_content: 1 };
+  function cleanLocation(href) {
+    try {
+      var u = new URL(href, location.href), keep = new URLSearchParams();
+      u.searchParams.forEach(function (v, k) { if (KEEP_PARAMS[k] && /^[a-z0-9_.-]{1,60}$/i.test(v)) keep.set(k, v); });
+      var q = keep.toString();
+      return u.origin + u.pathname + (q ? "?" + q : "");
+    } catch (e) { return ""; }
+  }
+  function cleanReferrer(ref) {
+    try {
+      if (!ref) return "";
+      var u = new URL(ref);
+      if (u.hostname === "checkout.stripe.com") return ""; // Stripe must not take over attribution on the return from checkout
+      return u.origin + u.pathname;
+    } catch (e) { return ""; }
+  }
+  /* Any string value that looks like a page address is cut to origin and path; keys that could hold personal text are dropped. */
+  var BAD_KEY = /address|street|email|phone|name$|^q$|query|search/i;
+  function scrub(params) {
+    var out = {};
+    Object.keys(params || {}).forEach(function (k) {
+      var v = params[k];
+      if (BAD_KEY.test(k) && !/^(item_name|link_text)$/.test(k)) return;
+      if (typeof v === "string") {
+        if (/^https?:\/\//i.test(v)) v = cleanLocation(v);
+        else if (/[?&](address|street|q|query)=/i.test(v)) v = v.split(/[?#]/)[0];
+        else if (k === "link_text") v = v.slice(0, 60);
+      }
+      out[k] = v;
+    });
+    return out;
+  }
+  /* Internal traffic: ?gi_internal=1 tags this browser (localStorage, as in ga.js), ?gi_internal=0 clears it, automated browsers count as internal. */
+  var internal = (function () {
+    try {
+      var f = new URLSearchParams(location.search).get("gi_internal");
+      if (f === "1") set("localStorage", "gi_internal", "1");
+      else if (f === "0") { try { window.localStorage.removeItem("gi_internal"); } catch (e) {} }
+    } catch (e) {}
+    if (get("localStorage", "gi_internal") === "1") return true;
+    try { return navigator.webdriver === true; } catch (e) { return false; }
+  })();
+  var pageLoc = cleanLocation(location.href), pageRef = cleanReferrer(document.referrer);
+  var viaApp = /\/plan-studio\/app\/(index\.html)?$/.test(location.pathname); // the app page reports for itself through src/ui/ga.js
+
+  if (!framed && !viaApp) {
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
     window.gtag("js", new Date());
-    window.gtag("config", gaId);
+    var base = { page_location: pageLoc, page_referrer: pageRef };
+    if (internal) base.traffic_type = "internal";
+    window.gtag("set", base); // later events of this page use the cleaned address too, never the raw one
+    window.gtag("config", gaId, base);
     if (adsId) window.gtag("config", adsId);
     // The gtag library (about 180 KB) is added as an async script once this deferred file runs (after the HTML is parsed),
     // so it never blocks the first paint but still loads early enough that quick visits and fast clicks from ads are counted.
@@ -65,8 +118,10 @@
   }
 
   function send(name, params) {
-    if (framed || !window.gtag) return;
-    window.gtag("event", name, params || {});
+    if (framed || viaApp || !window.gtag) return;
+    var p = scrub(params);
+    if (internal) p.traffic_type = "internal";
+    window.gtag("event", name, p);
   }
   window.giTrack = send;
 
@@ -129,16 +184,51 @@
   }
   // Events the app raises that count as starting a design (a template pick alone does not).
   var STARTERS = { ps_design_type: 1, ps_ai_request: 1, ps_project_saved: 1, ps_export: 1 };
-  var FORWARD = { ps_template_selected: 1, ps_upgrade_click: 1, ps_checkout_started: 1, ps_export: 1 };
+  /* Events forwarded from the framed app. Same checks as mapEvent in src/ui/ga.js. The framed app never reports itself (isStandalonePage is false there),
+     so each event is counted once, here. design_started goes through the once per session gate above. */
+  var FORWARD = { app_opened: 1, lot_loaded: 1, house_placed: 1, ps_profile_prompt: 1, ps_profile_signup: 1, ps_template_selected: 1, ps_project_saved: 1,
+    ps_share_copy: 1, ps_share_open: 1, ps_export: 1, ps_upgrade_click: 1, ps_checkout_started: 1, ps_checkout_completed: 1 };
+  var PLAIN = /^[a-z0-9_.-]{1,40}$/i;
+  function tok(v, list) { v = String(v == null ? "" : v).toLowerCase(); if (list) return list.indexOf(v) !== -1 ? v : null; return PLAIN.test(v) ? v : null; }
+  function yn(v) { return v === true || v === "yes" ? "yes" : v === false || v === "no" ? "no" : null; }
+  function whole(v, max) { var n = Math.round(Number(v)); return isFinite(n) && n >= 0 ? Math.min(n, max) : null; }
+  function defd(o) { var r = {}; Object.keys(o).forEach(function (k) { if (o[k] != null) r[k] = o[k]; }); return r; }
+  function once(key) {
+    if (bkSent[key] || get("localStorage", key) || get("sessionStorage", key)) return false;
+    bkSent[key] = 1; set("localStorage", key, "1"); set("sessionStorage", key, "1");
+    return true;
+  }
+  function withUtm(p) { Object.keys(utm).forEach(function (k) { p[k] = utm[k]; }); return p; }
+  function mapApp(name, p) {
+    p = p && typeof p === "object" ? p : {};
+    switch (name) {
+      case "app_opened": return [["app_opened", defd({ entry: tok(p.entry, ["phone", "desktop"]), from: tok(p.from, ["home_search", "sample", "direct"]) })]];
+      case "lot_loaded": return [["lot_loaded", defd({ result: p.success === false ? "fail" : "success", ms: whole(p.ms, 600000), sample: yn(p.sample) })]];
+      case "house_placed": return [["house_placed", defd({ sample: yn(p.sample) })]];
+      case "ps_profile_prompt": return [["ps_profile_prompt", defd({ reason: tok(p.reason), card: tok(p.card, ["compact", "full"]) })]];
+      case "ps_profile_signup": {
+        var o = [["ps_profile_signup", defd({ marketing: yn(p.marketing) })]];
+        if (once("gi_lead_profile")) o.push(["generate_lead", withUtm({ lead_type: "free_profile", method: "app" })]);
+        return o;
+      }
+      case "ps_template_selected": return [["ps_template_selected", defd({ item_id: tok(p.id) })]];
+      case "ps_project_saved": case "ps_share_copy": case "ps_share_open": case "ps_checkout_started": return [[name, {}]];
+      case "ps_export": return [["ps_export", defd({ export_type: tok(p.type) })]];
+      case "ps_upgrade_click": return [["ps_upgrade_click", defd({ source: tok(p.source) })]];
+      case "ps_checkout_completed": {
+        var id = typeof p.sessionId === "string" && /^[A-Za-z0-9_-]{6,120}$/.test(p.sessionId) ? p.sessionId : null;
+        var out = [["ps_checkout_completed", {}]];
+        if (id && once("gi_purchase_" + id.slice(0, 80))) out.push(["purchase", withUtm({ transaction_id: id, value: PLAN_PRICE, currency: "AUD", items: [{ item_id: "plan_pack", item_name: "Glide Inside Plan Pack", price: PLAN_PRICE, quantity: 1 }] })]);
+        return out;
+      }
+    }
+    return [];
+  }
   function onAppEvent(name, props) {
     if (!name) return;
+    if (name === "design_started") { designStarted(tok(props && props.method) || "edit", props && props.template ? { template: tok(props.template) || "none" } : null); return; }
     if (STARTERS[name]) designStarted(name, props && props.id ? { template: props.id } : null);
-    if (FORWARD[name]) {
-      var fp = {};
-      if (props && props.id) fp.item_id = String(props.id).slice(0, 60);
-      if (props && props.type) fp.export_type = String(props.type).slice(0, 20);
-      send(name, fp);
-    }
+    if (FORWARD[name]) mapApp(name, props).forEach(function (g) { send(g[0], g[1]); });
   }
   // The real edit signal: the app's store emits "history" after every change; canUndo is true after the first edit.
   function watchStore(win) {

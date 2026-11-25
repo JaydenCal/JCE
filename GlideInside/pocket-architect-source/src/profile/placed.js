@@ -17,7 +17,7 @@ const realHousePlaced = (project) => !!placedLotKey(project) && !isSampleLot(pro
 
 /** Calls onPlaced(project) once for each real (not sample) lot that gets a house. Returns the unsubscribe function. */
 export function watchHousePlaced(store, onPlaced) {
-  let last = null;
+  let last = placedLotKey(store.project); // a project that already has its house when the page opens (a saved design reopened) is not a new placement
   return store.on('project', () => {
     if (!realHousePlaced(store.project)) return;
     const key = placedLotKey(store.project);

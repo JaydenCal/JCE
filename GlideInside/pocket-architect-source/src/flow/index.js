@@ -40,7 +40,9 @@ export const commercialAddressAsked = (search = '') => {
 };
 
 export async function initGuidedFlow({ api, store, refs, catalogue, viewer = false, demo = false, shareId = null, fromAutosave = false, wantCommercial = false, hasAddress = false }) {
-  const search = typeof location !== 'undefined' ? location.search : '';
+  let search = typeof location !== 'undefined' ? location.search : '';
+  // The page address no longer carries ?address= (the app removes it); hasAddress says the link asked for one.
+  if (hasAddress && !new URLSearchParams(search).get('address')) search += `${search ? '&' : '?'}address=1`;
   if (!shouldStart({ project: store.project, search, viewer, demo, shareId, fromAutosave })) {
     attachBackPill({ api, store, refs, catalogue, wantCommercial });
     return null;

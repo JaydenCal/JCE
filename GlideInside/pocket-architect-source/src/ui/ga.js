@@ -48,6 +48,7 @@ export function cleanReferrer(referrer) {
   try {
     if (!referrer) return '';
     const u = new URL(referrer);
+    if (u.hostname === 'checkout.stripe.com') return ''; // the return from Stripe must not take over attribution
     return `${u.origin}${u.pathname}`;
   } catch {
     return '';

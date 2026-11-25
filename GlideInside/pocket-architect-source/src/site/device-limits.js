@@ -13,9 +13,9 @@ export function isConstrainedDevice(win = globalThis) {
     const ua = String(nav.userAgent || '');
     if (/iPhone|iPad|iPod/i.test(ua)) return true;
     if (nav.platform === 'MacIntel' && Number(nav.maxTouchPoints) > 1) return true; // iPadOS asks for the desktop site
-    if (Number(nav.deviceMemory) > 0 && Number(nav.deviceMemory) <= 4) return true;
     const mm = win.matchMedia?.bind(win);
     const coarse = !!mm?.('(pointer: coarse)')?.matches;
+    if (coarse && Number(nav.deviceMemory) > 0 && Number(nav.deviceMemory) <= 4) return true; // low memory counts only on a touch device: a desktop keeps full sharpness
     return coarse && Number(win.innerWidth || 1024) <= 900;
   } catch {
     return false;

@@ -778,6 +778,10 @@ export function createTopView({ root: rootRef, getScene, store = null, trigger =
 
   function close() {
     if (!ov) return;
+    // Closing mid-drag: finish the move first so the last position is applied and no drag state is left behind.
+    hsDrag = false;
+    turning = false;
+    endDrag();
     cancelAnimationFrame(raf);
     raf = 0;
     token++;
