@@ -39,7 +39,7 @@ export function readConfig(env = {}) {
     maxOutputTokens: Math.round(num(env.AI_MAX_OUTPUT_TOKENS, 1500)),
     maxContextTokens: Math.round(num(env.AI_MAX_CONTEXT_TOKENS, 40000)),
     creditUsd: num(env.CREDIT_USD, 0.001),
-    planPackCredits: Math.round(num(env.PLAN_PACK_CREDITS, 500)),
+    planPackCredits: Math.round(num(env.PLAN_PACK_CREDITS, 1000)),
     warnThresholds: thresholds.length ? thresholds : [0.5, 0.8, 0.95],
     // Builder and client logins are off until the public launch is done (PORTAL_ENABLED=1).
     portalEnabled: ['1', 'true', 'yes'].includes(str(env.PORTAL_ENABLED).toLowerCase()),

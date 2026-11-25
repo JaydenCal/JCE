@@ -171,7 +171,7 @@
   // no address, email or other personal data can be forwarded even by mistake.
   var FORWARD = { app_opened: 1, lot_loaded: 1, house_placed: 1, ps_template_selected: 1, ps_upgrade_click: 1, ps_checkout_started: 1, ps_checkout_completed: 1, ps_export: 1, ps_project_saved: 1, ps_share_copy: 1, ps_share_open: 1, ps_profile_prompt: 1, ps_profile_signup: 1 };
   var WORD = /^[a-z0-9_.-]{1,40}$/i;
-  var PHONE_EVENTS = { phone_step_address: 1, phone_lot_loaded: 1, phone_pick_type: 1, phone_house_placed: 1, phone_planset_preview: 1, phone_full_editor: 1, phone_planset_lead_submit: 1, phone_planset_download: 1, planset_lead_submit: 1, planset_download: 1 };
+  var PHONE_EVENTS = { phone_step_address: 1, phone_lot_loaded: 1, phone_pick_type: 1, phone_house_placed: 1, phone_planset_preview: 1, phone_full_editor: 1, phone_planset_lead_submit: 1, phone_planset_download: 1, planset_lead_submit: 1, planset_download: 1, export_unlocked_by_lead: 1 };
   function word(v, list) { var t = String(v == null ? "" : v).toLowerCase(); return list ? (list.indexOf(t) !== -1 ? t : null) : (WORD.test(t) ? t : null); }
   function yn(v) { return v === true || v === "yes" ? "yes" : v === false || v === "no" ? "no" : null; }
   function put(o, k, v) { if (v !== null && v !== undefined) o[k] = v; }

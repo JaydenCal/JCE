@@ -17,11 +17,13 @@ export const CONFIG = {
   aiMock: false, // true serves canned assistant replies in the browser (review builds only)
   // On unless the host page sets GI_CONFIG.premiumEnabled = false. The paid version is only switched off when /api/health explicitly says payments are not configured.
   premiumEnabled: hasWindow && typeof window.GI_CONFIG?.premiumEnabled === 'boolean' ? window.GI_CONFIG.premiumEnabled : true,
-  planPack: { priceAud: 30, gstInclusive: true, credits: 500, reexportMonths: 12 },
+  // planPack is the A$30 AI design assistant purchase (1,000 AI credits). Exports are free for homeowners behind the lead form (25/11/2026); the key name is kept so
+  // stored tokens and the Stripe checkout code are unchanged.
+  planPack: { priceAud: 30, gstInclusive: true, credits: 1000, reexportMonths: 12 },
   // Homeowner plan sets are free in exchange for contact details (25/11/2026): the PDF plan set downloads after a short form (name, email, suburb,
-  // consent) that is saved as a lead through POST /api/enquiry/jce with source "planset-free". The Stripe Plan Pack code stays in place and is
-  // used again for homeowners by setting this to false (or GI_CONFIG.homeownerPlanSetFree = false on the host page). It never applies to the
-  // builder portal, builder per job billing or the commercial tool, and the DXF, 3D files and AI assistant stay part of the Plan Pack.
+  // consent) that is saved as a lead through POST /api/enquiry/jce with source "planset-free". From 25/11/2026 the same form unlocks every export (PDF, 3D model,
+  // interactive 3D, DXF). Setting this to false (or GI_CONFIG.homeownerPlanSetFree = false on the host page) puts the old paid exports back. It never applies to the
+  // builder portal, builder per job billing or the commercial tool. The A$30 purchase is the AI design assistant (1,000 credits).
   // Builders that hold an area, by postcode, for the free plan set consent wording and lead: { '2340': { name: 'Example Homes' } }. Empty: no builder is named.
   areaBuilders: {},
   // The four step simple path on phones (address, pick, fit, plans). GI_CONFIG.phoneSimple = false keeps the older guided steps on phones.

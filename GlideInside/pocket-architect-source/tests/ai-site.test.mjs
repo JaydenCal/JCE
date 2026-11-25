@@ -308,7 +308,7 @@ test('client credits: monthly meter, reset date, top-up offer and wording', () =
   assert.equal(meterText(pub), '312 of 500 credits left');
   assert.equal(resetText(pub), '');
   assert.equal(canTopUp(pub), false);
-  assert.match(warningText({ level: 0.8, usedPercent: 80, remaining: 100 }, pub), /Plan Pack/);
+  assert.match(warningText({ level: 0.8, usedPercent: 80, remaining: 100 }, pub), /AI design assistant pack/);
   for (const t of [warningText({ level: 0.5, remaining: 5 }, c), exhaustedText(c), topUpLabel(c)]) assert.ok(!/compliant/i.test(t));
 });
 

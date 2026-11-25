@@ -17,8 +17,8 @@ export const TOOL_INFO = Object.freeze({
     id: 'residential',
     name: 'Glide Inside Residential',
     tabTitle: 'Glide Inside Residential | Find your block and place a home',
-    cta: 'Plan Pack',
-    ctaText: 'Unlock plans',
+    cta: 'AI design assistant',
+    ctaText: 'AI design assistant',
     otherId: 'commercial',
   }),
   commercial: Object.freeze({

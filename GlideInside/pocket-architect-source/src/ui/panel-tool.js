@@ -143,7 +143,7 @@ export function buildToolPanel(ctx, tool) {
     body.append(input);
     // PDF import belongs to the Plan Pack. The premium module supplies importPdf when it is loaded.
     const pdfBtn = () => h('div', { class: 'ps-sec' }, h('button', { class: 'ps-btn ps-btn--block', type: 'button', dataset: { action: 'import-pdf' }, onclick: importPdf },
-      icon('plan', { size: 16 }), 'Import PDF plan', h('span', { class: 'ps-badge' }, 'Plan Pack')));
+      icon('plan', { size: 16 }), 'Import PDF plan', h('span', { class: 'ps-badge' }, 'AI pack')));
     function importPdf() {
       const premium = window.__ps?.premium;
       if (premium && typeof premium.importPdf === 'function') {
@@ -153,7 +153,7 @@ export function buildToolPanel(ctx, tool) {
         } catch (e) {
           ctx.toast(e?.message || 'That PDF could not be imported.', { kind: 'warn' });
         }
-      } else ctx.toast('PDF import comes with the Plan Pack.', { kind: 'info' });
+      } else ctx.toast('PDF import comes with the AI design assistant, A$30 for 1,000 credits.', { kind: 'info' });
     }
     if (!u) {
       body.append(h('p', { class: 'ps-hint' }, 'Upload a PNG or JPG of an existing plan, then trace over it. The image stays in this browser and is not part of the saved project file.'));

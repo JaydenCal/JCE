@@ -111,7 +111,7 @@ test('the buy button goes to the existing checkout with its own source', () => {
   const p = read('src/premium/premium.js');
   assert.ok(/openUpgrade: \(o\) => openUpgrade\(\{ source:/.test(p), 'premium.openUpgrade takes a source');
   const f = read('src/premium/ui/flows.js');
-  assert.ok(f.includes("track('ps_upgrade_click', { source })") && f.includes("track('ps_checkout_started', {})"), 'the events still fire in the checkout flow');
+  assert.ok(f.includes("track('ps_upgrade_click', { source: 'ai_pack', from: source })") && f.includes("track('ps_checkout_started', {})"), 'the events still fire in the checkout flow');
 });
 
 // ---------------------------------------------------------------------------------------------- browser

@@ -28,11 +28,11 @@ export async function createCheckoutSession({ config, fetchImpl, projectId, proj
   p.set('metadata[projectId]', projectId);
   p.set('metadata[app]', STRIPE_APP_TAG);
   p.set('payment_intent_data[metadata][projectId]', projectId);
-  p.set('payment_intent_data[description]', `Plan Pack for ${projectName || projectId}`.slice(0, 200));
+  p.set('payment_intent_data[description]', `AI design assistant for ${projectName || projectId}`.slice(0, 200));
   // Carried over from the live Worker: a customer record and a Stripe invoice (the tax invoice for the A$30 including GST).
   p.set('customer_creation', 'always');
   p.set('invoice_creation[enabled]', 'true');
-  p.set('invoice_creation[invoice_data][description]', `Plan Pack: ${projectName || projectId}`.slice(0, 200));
+  p.set('invoice_creation[invoice_data][description]', `AI design assistant: ${projectName || projectId}`.slice(0, 200));
   p.set('invoice_creation[invoice_data][metadata][projectId]', projectId);
   if (typeof email === 'string' && email.length <= 254 && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) p.set('customer_email', email.trim());
   p.set('line_items[0][quantity]', '1');
@@ -42,8 +42,8 @@ export async function createCheckoutSession({ config, fetchImpl, projectId, proj
     p.set('line_items[0][price_data][currency]', 'aud');
     p.set('line_items[0][price_data][unit_amount]', String(config.planPackPriceCents));
     p.set('line_items[0][price_data][tax_behavior]', 'inclusive');
-    p.set('line_items[0][price_data][product_data][name]', 'Plan Pack');
-    p.set('line_items[0][price_data][product_data][description]', `AI design assistant and PDF, DXF and 3D exports for ${projectName || 'this design'}`.slice(0, 300));
+    p.set('line_items[0][price_data][product_data][name]', 'AI design assistant');
+    p.set('line_items[0][price_data][product_data][description]', `AI design assistant, 1,000 credits, for ${projectName || 'this design'}`.slice(0, 300));
   }
   p.set('success_url', withQuery(config.appUrl, `checkout=success&session_id={CHECKOUT_SESSION_ID}&project=${encodeURIComponent(projectId)}`));
   p.set('cancel_url', withQuery(config.appUrl, 'checkout=cancel'));

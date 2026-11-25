@@ -44,7 +44,7 @@ export function friendlyError(e, { area = 'general', dev = false } = {}) {
       return 'That export is not available right now. Try again, or try a different format.';
     case 'UNAUTHORISED':
     case 'NOT_ENTITLED':
-      return area === 'restore' && !/subscription/i.test(fallback) ? 'We could not find a Plan Pack with those details. Check the email used at checkout and the reference.' : fallback;
+      return area === 'restore' && !/subscription/i.test(fallback) ? 'We could not find a purchase with those details. Check the email used at checkout and the reference.' : fallback;
     default:
       return fallback;
   }

@@ -207,7 +207,7 @@ test('issueOrgToken output is accepted by the AI branch contract: { oid, lid, ro
   const token = await issueOrgToken({ orgId: 'org_1', loginId: 'u_1', role: 'client', cap: 300 }, cfg, T0);
   const p = await verifyToken(token, 's3cret', Math.floor(T0 / 1000));
   assert.equal(p.oid, 'org_1', 'verifyToken accepts a signed org token; authenticate() refuses it for Plan Pack routes');
-  await assert.rejects(authenticate(new Request('https://x/api/credits', { headers: { authorization: `Bearer ${token}` } }), { store: {}, config: cfg, now: () => T0 }), /Plan Pack/);
+  await assert.rejects(authenticate(new Request('https://x/api/credits', { headers: { authorization: `Bearer ${token}` } }), { store: {}, config: cfg, now: () => T0 }), /purchase/);
   const [body] = token.split('.');
   const payload = JSON.parse(Buffer.from(body.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString());
   assert.deepEqual(Object.keys(payload).sort(), ['cap', 'exp', 'lid', 'oid', 'role', 'se']); // se: the session epoch (security review M2)

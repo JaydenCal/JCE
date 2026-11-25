@@ -1,6 +1,6 @@
 window.GI_CONFIG = {
   planPackPrice: "A$30",
-  planPackCredits: "500",
+  planPackCredits: "1,000",
   addonFlyThroughPrice: 10,
   addonRendersPrice: 10,
   stripeFlyThrough: "",

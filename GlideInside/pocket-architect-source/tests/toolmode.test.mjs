@@ -43,7 +43,7 @@ test('names, tab titles and prices differ by tool, with no dashes and no old pro
   assert.equal(TOOL_INFO.residential.name, 'Glide Inside Residential');
   assert.equal(TOOL_INFO.commercial.name, 'Glide Inside Commercial');
   assert.notEqual(TOOL_INFO.residential.tabTitle, TOOL_INFO.commercial.tabTitle);
-  assert.equal(TOOL_INFO.residential.cta, 'Plan Pack');
+  assert.equal(TOOL_INFO.residential.cta, 'AI design assistant');
   assert.match(TOOL_INFO.commercial.cta, /Commercial Developer subscription/);
   for (const t of Object.values(TOOL_INFO)) for (const v of [t.name, t.tabTitle, t.cta, t.ctaText]) {
     assert.ok(!/[–—]/.test(v), v);

@@ -1,4 +1,4 @@
-// Upgrade, restore, checkout return and Plan Pack details: the dialogs around buying and recovering a Plan Pack.
+// Upgrade, restore, checkout return and purchase details: the dialogs around buying and recovering the A$30 AI design assistant (1,000 credits).
 
 import { createCheckoutTick } from '../../legal/checkout-tick.js';
 import { el, formatAud, ddmmyyyy, track } from '../util.js';
@@ -28,12 +28,9 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
   const priceText = `${formatAud(pack.priceAud ?? 30)}${pack.gstInclusive ? ' incl. GST' : ''}`;
 
   const includes = () => [
-    `AI design assistant. Describe a change in plain English and it edits your plan. ${pack.credits ?? 500} AI credits for this project.`,
-    'PDF plan set. A3 sheets to scale with dimensions, door and window schedules, and a title block.',
-    'DXF drawing for your CAD software.',
-    '3D model files (GLB and OBJ) for Blender, viewers and game engines.',
-    'Interactive HTML file with the plan and a 3D model you can turn around. It opens offline in any browser, so you can send it to a client.',
-    `Re-export this project as often as you like for ${pack.reexportMonths ?? 12} months.`,
+    `AI design assistant. Describe a change in plain English and it edits your plan. ${(pack.credits ?? 1000).toLocaleString('en-AU')} AI credits for this project.`,
+    'Each change is one step you can undo. Manual editing, the 3D view and walking through your design stay free.',
+    'Your PDF plans, 3D model files, interactive 3D file and DXF are free to download and are not part of this purchase.',
   ];
 
   const linkRow = () => {
@@ -47,7 +44,7 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
   // Upgrade ------------------------------------------------------------------------------------------------------------
   function openUpgrade({ source = 'unknown' } = {}) {
     if (getState().token) return openDetails();
-    track('ps_upgrade_click', { source });
+    track('ps_upgrade_click', { source: 'ai_pack', from: source }); // the A$30 purchase is the AI design assistant
     const projectName = store.project?.name || 'this design';
     const errorBox = el('p', { class: 'psp-error', role: 'alert', hidden: true });
     let modal;
@@ -84,21 +81,21 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
     }
 
     checkoutBtn = el('button', { class: 'psp-btn psp-btn--primary', type: 'button', disabled: true, onclick: startCheckout },
-      isOn() ? 'Continue to secure checkout' : 'Plan Pack unavailable, try again');
+      isOn() ? 'Continue to secure checkout' : 'AI design assistant unavailable, try again');
 
     modal = layer.openModal({
-      title: isOn() ? 'Unlock the Plan Pack' : 'Plan Pack unavailable, try again',
+      title: isOn() ? 'AI design assistant, 1,000 credits' : 'AI design assistant unavailable, try again',
       body: el('div', null,
-        !isOn() ? el('div', { class: 'psp-note psp-note--warn' }, icon('info', 16), el('span', null, 'The Plan Pack is unavailable right now, so try again shortly. The drawing tools, 3D view and walk-through stay free and need no account.')) : null,
+        !isOn() ? el('div', { class: 'psp-note psp-note--warn' }, icon('info', 16), el('span', null, 'The AI design assistant purchase is unavailable right now, so try again shortly. The drawing tools, 3D view and walk-through stay free and need no account.')) : null,
         el('div', { class: 'psp-hero' },
           el('span', { class: 'psp-price' }, priceText.replace(' incl. GST', '')),
           el('span', { class: 'psp-price-note' }, `${pack.gstInclusive ? 'incl. GST, ' : ''}one payment for this project`)),
-        el('p', null, 'The Plan Pack unlocks ', el('strong', null, projectName), ' only. Other designs need their own Plan Pack.'),
+        el('p', null, 'The AI design assistant credits are for ', el('strong', null, projectName), ' only. Other designs need their own pack.'),
         el('ul', { class: 'psp-includes' }, includes().map((t) => el('li', null, icon('check', 16), el('span', null, t)))),
         el('p', { class: 'psp-fine' }, config.disclaimer || ''),
         linkRow(),
         isOn() ? tick.el : null,
-        isOn() ? el('p', { class: 'psp-fine' }, 'Already bought a Plan Pack? ', el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => openRestore({ modal }) }, 'Restore purchase'), '.') : null,
+        isOn() ? el('p', { class: 'psp-fine' }, 'Already bought the AI design assistant? ', el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => openRestore({ modal }) }, 'Restore purchase'), '.') : null,
         errorBox),
       footer: (close) => [
         el('button', { class: 'psp-btn', type: 'button', onclick: () => close('cancel') }, isOn() ? 'Not now' : 'Close'),
@@ -115,7 +112,7 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
     const errorBox = el('p', { class: 'psp-error', role: 'alert', hidden: true });
     const submit = el('button', { class: 'psp-btn psp-btn--primary', type: 'submit' }, 'Restore purchase');
     const form = el('form', { novalidate: true },
-      el('p', null, 'Use the email address you gave at checkout and the receipt reference or checkout session ID. Your Plan Pack will unlock on this browser.'),
+      el('p', null, 'Use the email address you gave at checkout and the receipt reference or checkout session ID. Your AI design assistant will unlock on this browser.'),
       el('div', { class: 'psp-field' }, el('label', { class: 'psp-label', for: 'psp-restore-email' }, 'Email address'), email),
       el('div', { class: 'psp-field' }, el('label', { class: 'psp-label', for: 'psp-restore-ref' }, 'Receipt reference or session ID'), ref),
       errorBox);
@@ -143,7 +140,7 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
       try {
         const res = await api.restore({ email: em, sessionOrReceipt: rf });
         const outcome = accept(res);
-        modal.setContent({ title: 'Plan Pack restored', body: restoredBody(res, outcome), footer: (close) => el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => close('done') }, 'Done') });
+        modal.setContent({ title: 'AI design assistant restored', body: restoredBody(res, outcome), footer: (close) => el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => close('done') }, 'Done') });
       } catch (err) {
         showError(friendlyError(err, { area: 'restore', dev: dev() }));
         submit.disabled = false;
@@ -163,8 +160,8 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
     return el('div', null,
       el('div', { class: `psp-note ${outcome.active ? 'psp-note--ok' : 'psp-note--warn'}` }, icon(outcome.active ? 'check' : 'info', 16),
         el('span', null, outcome.active
-          ? 'Your Plan Pack is active for the design that is open now.'
-          : 'This Plan Pack belongs to a different design from the one open now. Open that design (File, Open) and the Plan Pack will unlock on this browser.')),
+          ? 'Your AI design assistant is active for the design that is open now.'
+          : 'This purchase belongs to a different design from the one open now. Open that design (File, Open) and the AI design assistant will unlock on this browser.')),
       detailsList(res));
   }
 
@@ -199,7 +196,7 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
         const outcome = accept(res);
         track('ps_checkout_completed', { sessionId });
         modal.setContent({
-          title: 'Plan Pack unlocked',
+          title: 'AI design assistant unlocked',
           dismissible: true,
           body: el('div', null,
             el('div', { class: `psp-note ${outcome.active ? 'psp-note--ok' : 'psp-note--warn'}` }, icon(outcome.active ? 'check' : 'info', 16),
@@ -207,21 +204,21 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
                 ? 'Payment received. The assistant and the exports are now unlocked for this design.'
                 : 'Payment received, but it is for a different design from the one open now. Open that design (File, Open) to use it.')),
             detailsList(res),
-            el('p', { class: 'psp-fine' }, 'Stripe emails your receipt. Keep the receipt reference above: with your email address it restores this Plan Pack on another browser.')),
+            el('p', { class: 'psp-fine' }, 'Stripe emails your receipt. Keep the receipt reference above: with your email address it restores this purchase on another browser.')),
           footer: (close) => el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => close('done') }, 'Start using it'),
         });
         return res;
       } catch (e) {
         const pending = e?.code === 'PAYMENT_PENDING';
         modal.setContent({
-          title: pending ? 'Still confirming your payment' : 'We could not unlock your Plan Pack',
+          title: pending ? 'Still confirming your payment' : 'We could not unlock your AI design assistant',
           dismissible: true,
           body: el('div', null,
             el('div', { class: `psp-note ${pending ? 'psp-note--warn' : 'psp-note--danger'}` }, icon(pending ? 'info' : 'warning', 16),
               el('span', null, pending
-                ? 'Payments can take a minute to be confirmed. If you were charged, your Plan Pack will unlock shortly. Check again in a moment.'
+                ? 'Payments can take a minute to be confirmed. If you were charged, your AI design assistant will unlock shortly. Check again in a moment.'
                 : friendlyError(e, { area: 'checkout', dev: dev() }))),
-            el('p', { class: 'psp-fine' }, 'Your checkout reference is ', el('span', { class: 'psp-mono' }, sessionId), '. Keep it: with your email address it restores your Plan Pack if this page does not.')),
+            el('p', { class: 'psp-fine' }, 'Your checkout reference is ', el('span', { class: 'psp-mono' }, sessionId), '. Keep it: with your email address it restores your purchase if this page does not.')),
           footer: (close) => [
             el('button', { class: 'psp-btn psp-btn--link psp-grow', type: 'button', onclick: () => openRestore({ modal, prefill: { reference: sessionId }, back: () => attempt() }) }, 'Restore purchase'),
             el('button', { class: 'psp-btn', type: 'button', onclick: () => close('later') }, 'Close'),
@@ -244,13 +241,13 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
     if (info?.exp) rows.push(['Exports until', ddmmyyyy(info.exp * 1000)]);
     if (info?.eid) rows.push(['Receipt reference', el('span', { class: 'psp-mono' }, info.eid)]);
     return layer.openModal({
-      title: 'Your Plan Pack',
+      title: 'Your AI design assistant',
       body: el('div', null,
         state.devUnlock && !state.token
           ? el('div', { class: 'psp-note psp-note--warn' }, icon('info', 16), el('span', null, 'Developer unlock is on (localhost only). Exports are built in this browser for testing. The assistant still needs the server (see server/README.md).'))
           : el('div', { class: 'psp-note psp-note--ok' }, icon('check', 16), el('span', null, 'The assistant and all exports are unlocked for this design.')),
         rows.length ? el('dl', { class: 'psp-kv' }, rows.flatMap(([k, v]) => [el('dt', null, k), el('dd', null, v)])) : null,
-        info ? el('p', { class: 'psp-fine' }, 'Keep the receipt reference. With your email address it restores this Plan Pack on another browser. Credits are for this project only. Exports and manual editing never use credits.') : null),
+        info ? el('p', { class: 'psp-fine' }, 'Keep the receipt reference. With your email address it restores this purchase on another browser. Credits are for this project only. Exports and manual editing never use credits.') : null),
       footer: (close) => el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => close('done') }, 'Close'),
     });
   }

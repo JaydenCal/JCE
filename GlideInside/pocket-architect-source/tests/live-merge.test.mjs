@@ -559,7 +559,7 @@ test('payments: which Checkout sessions grant a Plan Pack', opts, async () => {
   assert.equal(await go({}, 'checkout.session.expired'), 1);
   assert.equal(await go({ amount_total: 4000, currency: 'AUD' }), 2, 'higher amount, upper case currency');
   const r = m.rows().at(-1);
-  assert.deepEqual([r.currency, r.credits_total, r.status, r.pdf_allowed, r.credits_reserved], ['AUD', 500, 'active', 1, 0]);
+  assert.deepEqual([r.currency, r.credits_total, r.status, r.pdf_allowed, r.credits_reserved], ['AUD', 1000, 'active', 1, 0]);
   assert.match(r.id, /^ent_/);
   assert.equal(r.payment_intent, 'pi_g12', 'the payment intent goes in the live column payment_intent');
   const m2 = mk({ PLAN_PRICE_CENTS: '4900' });
@@ -646,7 +646,7 @@ test('payments: restore purchase and the friends code', opts, async () => {
   assert.equal(a.status, 200);
   const aj = await j(a);
   assert.equal(aj.projectId, '*');
-  assert.equal(aj.credits.remaining, 500);
+  assert.equal(aj.credits.remaining, 1000);
   assert.equal((await c.call('/credits', { headers: { authorization: `Bearer ${aj.token}` } })).status, 200);
   const bound = await j(await c.restore('f1@x.com', 'PA-FRIENDS-TEST', { projectId: 'p_mine1' }));
   assert.equal(bound.projectId, 'p_mine1');

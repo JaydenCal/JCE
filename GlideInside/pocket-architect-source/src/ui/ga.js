@@ -66,7 +66,7 @@ const yesNo = (v) => (v === true || v === 'yes' ? 'yes' : v === false || v === '
 const whole = (v, max) => { const n = Math.round(Number(v)); return Number.isFinite(n) && n >= 0 ? Math.min(n, max) : null; };
 const defined = (o) => Object.fromEntries(Object.entries(o).filter(([, v]) => v != null));
 
-/** "A$30" or 30 -> 30. Falls back to the standard Plan Pack price. */
+/** "A$30" or 30 -> 30. Falls back to the standard AI design assistant price. */
 export function priceNumber(v, fallback = 30) {
   const n = parseFloat(String(v ?? '').replace(/[^0-9.]/g, ''));
   return Number.isFinite(n) && n > 0 ? n : fallback;
@@ -106,14 +106,16 @@ export function mapEvent(name, props = {}, options = {}) {
     case 'ps_export':
       return [{ name: 'ps_export', params: defined({ export_type: token(p.type) }) }];
     case 'ps_upgrade_click':
-      return [{ name: 'ps_upgrade_click', params: defined({ source: token(p.source) }) }];
+      return [{ name: 'ps_upgrade_click', params: defined({ source: token(p.source), from: token(p.from) }) }]; // source is ai_pack: the A$30 purchase is the AI design assistant
+    case 'export_unlocked_by_lead': // a homeowner gave the free exports form: surface and file type only, never a name, email or suburb
+      return [{ name: 'export_unlocked_by_lead', params: defined({ surface: token(p.surface, ['phone', 'desktop']), export_type: token(p.type) }) }];
     case 'ps_checkout_completed': {
       const id = typeof p.sessionId === 'string' && /^[A-Za-z0-9_-]{6,120}$/.test(p.sessionId) ? p.sessionId : null;
       const out = [{ name: 'ps_checkout_completed', params: {} }];
       // purchase: once per Stripe session (a reload of the return page must not count twice), value in AUD.
       if (id && once(`gi_purchase_${id.slice(0, 80)}`)) {
         const price = options.price || 30;
-        out.push({ name: 'purchase', params: { transaction_id: id, value: price, currency: 'AUD', items: [{ item_id: 'plan_pack', item_name: 'Glide Inside Plan Pack', price, quantity: 1 }], ...utm } });
+        out.push({ name: 'purchase', params: { transaction_id: id, value: price, currency: 'AUD', items: [{ item_id: 'ai_design_assistant', item_name: 'AI design assistant', price, quantity: 1 }], ...utm } });
       }
       return out;
     }

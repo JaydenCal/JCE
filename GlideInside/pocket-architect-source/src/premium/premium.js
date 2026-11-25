@@ -198,7 +198,7 @@ export function createPremium(store, options = {}) {
   // The server said this token no longer works (refunded, expired, unknown). Forget it and offer to restore.
   const authText = (e) => {
     const said = typeof e?.message === 'string' ? e.message.trim() : '';
-    if (!said) return 'Your Plan Pack could not be verified. Restore your purchase to continue.';
+    if (!said) return 'Your purchase could not be verified. Restore your purchase to continue.';
     return /restore/i.test(said) ? said : `${said} If you think this is a mistake, restore your purchase.`;
   };
 
@@ -257,12 +257,12 @@ export function createPremium(store, options = {}) {
   }
   /** Every "unlock" entry point: the commercial gate in commercial mode, the A$30 Plan Pack otherwise. */
   // The plan set sources go to the free form while it is on; the DXF, 3D files and AI assistant still go to the Plan Pack.
-  const PLANSET_SOURCES = new Set(['topbar', 'export-pdf', 'export-pdf-preview', 'phone-planset', 'api']);
+  const PLANSET_SOURCES = new Set(['export-pdf', 'export-pdf-preview', 'phone-planset', 'api']);
   const openUpgrade = (o) => (commercialNow() ? commercialUi.openGate(o) : planSetFree() && PLANSET_SOURCES.has(o?.source || 'api') ? openFreePlanSetDialog() : flows.openUpgrade(o));
   const openRestore = (o) => (commercialNow() ? commercialUi.openRestore() : flows.openRestore(o));
 
   // Free plan set (homeowner): save the lead, then build the PDF in this browser and download it. Nothing is emailed to the person.
-  async function saveLead(lead) {
+  async function saveLead(lead, { type = 'pdf' } = {}) {
     const bad = leadProblems(lead);
     if (bad.length) throw new Error(bad[0].message);
     const body = leadBody(lead, store.project);
@@ -274,29 +274,49 @@ export function createPremium(store, options = {}) {
     }
     rememberLead(lead, store.project?.id);
     track(`${lead.surface === 'phone' ? 'phone_' : ''}planset_lead_submit`, {});
+    track('export_unlocked_by_lead', { surface: lead.surface === 'phone' ? 'phone' : 'desktop', type }); // no personal data
   }
-  async function downloadFreePlanSet({ surface = 'desktop' } = {}) {
+  async function downloadFreePlanSet({ surface = 'desktop', type = 'pdf' } = {}) {
     if (!planSetFree()) throw new Error('The plan set is not free here.');
-    if (!(await planTermsGate.require({ context: 'free-planset', skipAccount: true }))) throw new Error('The plan set terms need to be accepted before it downloads.');
+    if (!EXPORT_ITEMS.some((i) => i.type === type)) throw new Error('That file type is not available.');
+    if (!(await planTermsGate.require({ context: type === 'pdf' ? 'free-planset' : `export-${type}`, skipAccount: true }))) throw new Error('The plan set terms need to be accepted before it downloads.');
     if (state.exporting) throw new Error('A file is already being prepared.');
-    state.exporting = 'pdf';
+    state.exporting = type;
+    topbar?.setBusy(type, `Preparing ${exportLabel(type)}`);
     try {
-      const out = await runExport('pdf', store.project, { api, token: null, devUnlock: true, watermark: false, config: cfg, catalogue, getViewer, save: saveFile, terms: termsForExport() });
-      track(`${surface === 'phone' ? 'phone_' : ''}planset_download`, {});
-      track('ps_export', { type: 'pdf' });
+      const planFile = type === 'pdf' || type === 'dxf';
+      const out = await runExport(type, store.project, { api, token: null, devUnlock: true, watermark: false, config: cfg, catalogue, getViewer, save: saveFile, terms: planFile ? termsForExport() : null });
+      track(`${surface === 'phone' ? 'phone_' : ''}planset_download`, type === 'pdf' ? {} : { type });
+      track('ps_export', { type });
       return out;
-    } finally { state.exporting = null; }
+    } finally { state.exporting = null; topbar?.setBusy(null, ''); }
   }
-  /** Used by the phone step: lead first, then the download. */
-  async function submitFreePlanSet(lead) {
+  /** Lead first, then the download of the chosen file (the PDF plan set by default). `then` replaces the download (e.g. the siting report). */
+  async function submitFreePlanSet(lead, { type = 'pdf', then = null } = {}) {
     const surface = lead?.surface === 'phone' ? 'phone' : 'desktop';
     if (!planSetFree()) throw new Error('The plan set is not free here.');
-    await saveLead({ ...lead, surface });
-    return downloadFreePlanSet({ surface });
+    await saveLead({ ...lead, surface }, { type: then ? 'pdf' : type });
+    if (then) { const out = await then(); if (!out) throw new Error('That file could not be built. Try again.'); return out; }
+    return downloadFreePlanSet({ surface, type });
   }
-  function openFreePlanSetDialog() {
+  /** Phone Export sheet and any other caller: the lead form once, then the file. Resolves the download result, or null while the form is open. */
+  async function exportFree(type, { surface = 'desktop' } = {}) {
+    if (store.readOnly) { layer.notify('This shared design is view only, so nothing can be exported from it.', 'info', 6000); return null; }
+    if (!planSetFree()) return exportAs(type);
+    if (alreadyGave(store.project?.id)) {
+      try {
+        const out = await downloadFreePlanSet({ surface, type });
+        layer.notify(`${exportLabel(type)} downloaded as ${out.filename}.`, 'ok');
+        return out;
+      } catch (e) { layer.notify(e?.message || 'That file could not be built. Try again.', 'error', 8000); return null; }
+    }
+    openFreePlanSetDialog({ type, surface });
+    return null;
+  }
+  function openFreePlanSetDialog({ type = 'pdf', then = null, fileLabel = null, surface = 'desktop' } = {}) {
     if (store.readOnly) { layer.notify('This shared design is view only, so plans cannot be made from it.', 'info', 6000); return null; }
-    return openFreePlanSet({ layer, project: store.project, submit: (lead) => submitFreePlanSet(lead), orderEngineering: () => openOrderPanel() });
+    const label = fileLabel || (type === 'pdf' ? 'plan set' : exportLabel(type));
+    return openFreePlanSet({ layer, project: store.project, fileLabel: label, surface, submit: (lead) => submitFreePlanSet(lead, { type, then }), orderEngineering: () => openOrderPanel() });
   }
 
   async function exportAs(type) {
@@ -306,9 +326,16 @@ export function createPremium(store, options = {}) {
       layer.notify('Your builder provides the PDF plans. Ask them if you need other file types.', 'info', 6000);
       return null;
     }
-    if (!isEntitled() && planSetFree() && type === 'pdf') {
-      if (alreadyGave(store.project?.id)) return downloadFreePlanSet({ surface: 'desktop' });
-      openFreePlanSetDialog();
+    if (!isEntitled() && planSetFree()) { // every homeowner export is free behind the one lead form (25/11/2026)
+      if (alreadyGave(store.project?.id)) {
+        try {
+          const out = await downloadFreePlanSet({ surface: 'desktop', type });
+          layer.notify(`${exportLabel(type)} downloaded as ${out.filename}.`, 'ok');
+          topbar?.announce(`${exportLabel(type)} downloaded`);
+          return out;
+        } catch (e) { layer.notify(e?.message || 'That file could not be built. Try again, or try a different format.', 'error', 8000); return null; }
+      }
+      openFreePlanSetDialog({ type });
       return null;
     }
     if (!isEntitled()) {
@@ -368,7 +395,7 @@ export function createPremium(store, options = {}) {
   function openEnquiryForm(extra = {}) {
     const { anyone = false, prefill: servicePrefill = null, service: _service = null, ...rest } = extra; // servicePrefill: an Order engineering service (need and notes); the form still needs consent and a press of Send
     if (!(anyone ? canSendPlans() : canEnquire())) {
-      layer.notify(portalOn() ? 'Your builder has turned off sending to JCE.' : 'Sending to JCE comes with the Plan Pack.', 'info', 6000);
+      layer.notify(portalOn() ? 'Your builder has turned off sending to JCE.' : 'Sending to JCE comes with the AI design assistant pack.', 'info', 6000);
       return null;
     }
     const send = state.portal?.sendEnquiry || ((body) => api.enquiryJce(body));
@@ -395,7 +422,11 @@ export function createPremium(store, options = {}) {
   });
   async function exportSitingReport({ layout = 'full', widget = false } = {}) {
     if (store.readOnly) { layer.notify('This shared design is view only, so a report cannot be made from it.', 'info', 6000); return null; }
-    if (!widget && !isEntitled()) { openUpgrade({ source: 'export-siting-report' }); return null; }
+    if (!widget && !isEntitled()) {
+      if (planSetFree()) { // free behind the lead form: ask once, then build the report
+        if (!alreadyGave(store.project?.id)) { openFreePlanSetDialog({ then: () => exportSitingReport({ layout, widget: true }), fileLabel: layout === 'summary' ? 'one page summary' : 'siting report' }); return null; }
+      } else { openUpgrade({ source: 'export-siting-report' }); return null; }
+    }
     if (!store.project?.site?.lot) { layer.notify('Find the lot first. The siting report needs a lot on the design.', 'info', 6000); return null; }
     if (state.exporting) return null;
     if (!(await planTermsGate.require({ context: 'siting-report' }))) return null;
@@ -439,7 +470,7 @@ export function createPremium(store, options = {}) {
     if (!r.ok) { const e = new Error(j?.error?.message || j?.message || 'That could not be sent. Please try again.'); e.status = r.status; e.code = j?.error?.code; throw e; }
     return j;
   };
-  const openOrderPanel = () => (canEnquire() ? openOrderRequest({ layer, send: sendOrder, project: store.project, job: jobOf(store.project, { href: globalThis.location?.href || '', portalLot: globalThis.__ps?.portal?.getLot?.() || {} }) }) : layer.notify(portalOn() ? 'Your builder has turned off sending to JCE.' : 'Ordering engineering comes with the Plan Pack.', 'info', 6000));
+  const openOrderPanel = () => (canEnquire() ? openOrderRequest({ layer, send: sendOrder, project: store.project, job: jobOf(store.project, { href: globalThis.location?.href || '', portalLot: globalThis.__ps?.portal?.getLot?.() || {} }) }) : layer.notify(portalOn() ? 'Your builder has turned off sending to JCE.' : 'Ordering engineering comes with the AI design assistant pack.', 'info', 6000));
 
   // PDF plans: everyone sees the sheets first (watermarked and low resolution when free). Download is the paid path.
   let previewing = null;
@@ -473,10 +504,11 @@ export function createPremium(store, options = {}) {
           onclick: () => {
             close('pick');
             if (item.type === 'pdf') previewPdf();
-            else if (locked) openUpgrade({ source: `export-${item.type}` });
+            else if (locked && !planSetFree()) openUpgrade({ source: `export-${item.type}` });
+            else if (locked) exportAs(item.type);
             else exportAs(item.type);
           },
-        }, el('span', null, item.label), icon(locked ? 'lock' : 'download', 16), el('small', null, locked ? `${item.hint}. Locked.` : item.hint)))),
+        }, el('span', null, item.label), icon(locked && !planSetFree() ? 'lock' : 'download', 16), el('small', null, locked && !planSetFree() ? `${item.hint}. Locked.` : item.hint)))),
       footer: (close) => el('button', { class: 'psp-btn', type: 'button', onclick: () => close('done') }, 'Close'),
     });
   }
@@ -491,6 +523,7 @@ export function createPremium(store, options = {}) {
         details: () => (csubOn() ? commercialUi.openAccount() : portalOn() ? layer.notify(`Plans and the AI design assistant are included with your login${state.portal.orgName ? ` by ${state.portal.orgName}` : ''}.`, 'info', 6000) : flows.openDetails()),
         restore: () => openRestore(),
         exportAs,
+        exportFree,
         previewPdf: () => previewPdf(),
         enquiry: () => openEnquiryForm(),
         sitingReport: () => exportSitingReport(),
@@ -678,6 +711,7 @@ export function createPremium(store, options = {}) {
     },
     // Extras for the host page and tests.
     exportAs,
+    exportFree,
     previewPdf,
     planSetFree,
     submitFreePlanSet,

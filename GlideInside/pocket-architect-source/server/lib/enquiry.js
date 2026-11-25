@@ -109,7 +109,7 @@ export function summaryText(e, reference) {
     `Project: ${e.projectName || '(unnamed)'}`,
     `Lot address: ${lot.address || 'not given'}`, `Lot / DP: ${[lot.lot, lot.dp].filter(Boolean).join(' / ') || 'not given'}`,
     `LGA: ${lot.lga || 'not given'}`, `Zone: ${lot.zone || 'not given'}`,
-    e.orgName ? `Sent from the builder portal of: ${e.orgName} (${e.source})` : `Sent by: ${e.source === 'public' ? 'a Plan Pack user' : e.source}`,
+    e.orgName ? `Sent from the builder portal of: ${e.orgName} (${e.source})` : `Sent by: ${e.source === 'public' ? 'an AI design assistant user' : e.source}`,
     '',
     'The person ticked: "I agree to my plans and details being sent to JCE Infrastructure to prepare a quote".',
     'Attached: the PDF plan set and the design file (.json, opens in Glide Inside).',

@@ -233,7 +233,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
     if (!ent) throw new HttpError('NOT_ENTITLED', 'Your payment has not been confirmed yet.', { pending: true }, 404);
     if (ent.projectId !== projectId) throw new HttpError('NOT_ENTITLED', 'That payment belongs to a different project.');
-    if (ent.status !== 'active') throw new HttpError('NOT_ENTITLED', 'This Plan Pack is no longer active.');
+    if (ent.status !== 'active') throw new HttpError('NOT_ENTITLED', 'This AI design assistant purchase is no longer active.');
     return json({ token: await issueToken(ent, config, now()), credits: balanceOf(ent), projectId: ent.projectId, receipt: ent.id, expiresAt: ent.expiresAt });
   }
 
@@ -253,7 +253,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (codeMatch && store.grantTestCode) return restoreWithCode(email, ref, body.projectId, nowMs);
     const ent = await store.findForRestore(email, ref);
     if (!ent || ent.status !== 'active' || (ent.expiresAt && Date.parse(ent.expiresAt) <= nowMs)) {
-      throw new HttpError('NOT_ENTITLED', 'We could not find a Plan Pack with those details.');
+      throw new HttpError('NOT_ENTITLED', 'We could not find an AI design assistant purchase with those details.');
     }
     // `project` is the field name the live Worker used; kept so an older app still reads it.
     return json({ token: await issueToken(ent, config, nowMs), projectId: ent.projectId, project: ent.projectId, credits: balanceOf(ent), receipt: ent.id, expiresAt: ent.expiresAt });
@@ -267,7 +267,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       pdfAllowed: config.testCodePdfSets, maxUses: config.testCodeMaxUses, createdAt: iso(nowMs), expiresAt: iso(nowMs + day30),
     });
     if (!ent) throw new HttpError('NOT_ENTITLED', 'That code has been used too many times.', { code: 'CODE_EXHAUSTED' }, 403);
-    if (ent.status !== 'active') throw new HttpError('NOT_ENTITLED', 'This Plan Pack is no longer active.');
+    if (ent.status !== 'active') throw new HttpError('NOT_ENTITLED', 'This AI design assistant purchase is no longer active.');
     if (ent.expiresAt && Date.parse(ent.expiresAt) <= nowMs) {
       await store.setEntitlementExpiry(ent.id, iso(nowMs + day30));
       ent = await store.getEntitlement(ent.id);
@@ -394,7 +394,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (org) return json(await (await orgAccount(org, await portal?.isInternal(org.oid))).snapshot());
     const ent = await authenticate(request, { store, config, now });
     const project = url.searchParams.get('project');
-    if (project && !coversProject(ent, project)) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
+    if (project && !coversProject(ent, project)) throw new HttpError('NOT_ENTITLED', 'This AI design assistant purchase is for a different project.');
     return json({ ...balanceOf(ent), reserved: ent.creditsReserved || 0 });
   }
 
@@ -476,7 +476,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     const { tools, systemTokens, mode } = await getTools(context);
     const est = acct.messageBased ? { credits: 1 } : credits.estimateRequest({ config, context, message, history, systemTokens });
     const remaining = await acct.available();
-    const what = acct.kind === 'org' ? 'AI credits for this month' : acct.messageBased ? 'AI messages' : 'AI credits in this Plan Pack';
+    const what = acct.kind === 'org' ? 'AI credits for this month' : acct.messageBased ? 'AI messages' : 'AI credits in this pack';
     if (remaining < est.credits) {
       throw new HttpError('CREDITS_EXHAUSTED', remaining <= 0 ? `All ${what} have been used.` : `Only ${remaining} AI ${remaining === 1 ? 'credit remains' : 'credits remain'}, which is not enough for another request.`, { remaining, estimatedCredits: est.credits, ...(await acct.exhaustedDetails()) });
     }
@@ -622,7 +622,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       project.titleBlock.company = 'INTERNAL TEST';
     }
     if (commercialAcct && project.mode !== 'commercial') throw new HttpError('NOT_ENTITLED', 'The commercial access covers commercial layouts only.');
-    if (ent && !coversProject(ent, project.id)) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
+    if (ent && !coversProject(ent, project.id)) throw new HttpError('NOT_ENTITLED', 'This AI design assistant purchase is for a different project.');
     const image = typeof body.image === 'string' && /^data:image\/png;base64,/.test(body.image) && body.image.length < 1_900_000 ? body.image : null;
 
     // A per Plan Pack hourly limit. The live rule of ONE PDF plan set per job (a repeat gets the same file back) is only applied when PDF_SET_LIMIT=1.
