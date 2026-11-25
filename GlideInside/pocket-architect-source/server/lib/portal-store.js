@@ -15,6 +15,7 @@ const SPECS = {
       brandPrimary: 'brand_primary', brandAccent: 'brand_accent', brandDarkInk: 'brand_dark_ink', brandDarkBg: 'brand_dark_bg', slug: 'slug', // builder colours (migration 0010)
       directoryListed: 'directory_listed:b', directoryRegion: 'directory_region', // opt in to the public builder search (migration 0022)
       brandLicence: 'brand_licence', brandAbn: 'brand_abn', brandAddress: 'brand_address', brandPhone: 'brand_phone', brandEmail: 'brand_email', brandWebsite: 'brand_website', // title block details (migration 0024)
+      builderType: 'builder_type', areas: 'areas_json:j', // free plan set lead areas, owner only (migration 0026)
       customLoginCents: 'custom_login_cents', // nullable: the owner's per-login price for this org (migration 0008)
     },
   },

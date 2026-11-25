@@ -9,7 +9,10 @@ export const SCHEMA_VERSION = 2;
 export const PROJECT_TYPES = ['house', 'unit', 'shed', 'extension', 'commercial'];
 // Commercial mode (project.mode === 'commercial' with project.commercial, src/commercial/) is additive: SCHEMA_VERSION stays 2.
 export const STATUS = ['new', 'existing', 'demolish'];
-export const ROOF_TYPES = ['hip', 'gable', 'skillion', 'flat'];
+// 'dutch' is a Dutch gable roof: a hip with a small vertical gablet at every ridge end (size: roof.gabletSize). A plain hip can carry gablets on chosen
+// wings and ends instead: roof.gablets = [{ x, y, ends, size }] (see viewer3d/roof.js).
+export const ROOF_TYPES = ['hip', 'dutch', 'gable', 'skillion', 'flat'];
+export const GABLET_ENDS = ['n', 's', 'e', 'w'];
 export const OPENING_KINDS = ['window', 'door', 'sliding_door', 'garage_door', 'roller_door', 'opening'];
 export const WINDOW_STYLES = ['sliding', 'awning', 'fixed', 'double_hung', 'louvre'];
 export const ROOM_TYPES = [
@@ -109,6 +112,7 @@ export function createLevel(opts = {}) {
     rooms: [],
     furniture: [],
     stairs: [],
+    voids: [], // openings cut in this level's floor (a stair well), see createVoid
   };
 }
 
@@ -198,8 +202,18 @@ export function createFurniture({ item, x, y, rotation = 0, w = null, d = null }
   return { id: uid('f'), item, x: Number(x), y: Number(y), rotation: Number(rotation) || 0, w, d };
 }
 
-export function createStair({ x, y, width = 1000, length = 3600, rotation = 0 }) {
-  return { id: uid('s'), x: Number(x), y: Number(y), width: Number(width), length: Number(length), rotation: Number(rotation) || 0 };
+export const VOID_RAILS = ['balustrade', 'half_wall', 'none'];
+
+// A stair is straight by default. An L or U stair also carries shape, risers, riser (mm), going (mm), landingAt, turn, gap and landingDepth
+// (see model/stair-geom.js); `extra` holds those.
+export function createStair({ x, y, width = 1000, length = 3600, rotation = 0, ...extra }) {
+  return { id: uid('s'), x: Number(x), y: Number(y), width: Number(width), length: Number(length), rotation: Number(rotation) || 0, ...extra };
+}
+
+// A void is an opening cut in the floor of the level that owns it (the floor above a stair). rail: balustrade (glass and rail, drawn on the open
+// edges), half_wall (half height walls on the open edges, made as walls) or none (the edges are already walled or guarded).
+export function createVoid({ polygon, rail = 'balustrade', stairId = null, status = 'new' }) {
+  return { id: uid('v'), polygon: polygon.map(pt), rail, stairId, status };
 }
 
 export function createTank({ x, y, capacityL = 5000, colour, status = 'new' }) {
@@ -231,7 +245,7 @@ export function migrate(input) {
   p.schema = SCHEMA_VERSION; // version 1 to 2: site.lot added, nothing else changed
   if (!Array.isArray(p.levels) || !p.levels.length) p.levels = [createLevel()];
   for (const l of p.levels) {
-    for (const key of ['walls', 'openings', 'rooms', 'furniture', 'stairs']) if (!Array.isArray(l[key])) l[key] = [];
+    for (const key of ['walls', 'openings', 'rooms', 'furniture', 'stairs', 'voids']) if (!Array.isArray(l[key])) l[key] = [];
     l.roof = { ...roofDefaults(p.type), ...(l.roof || {}) };
   }
   if (p.mode === 'commercial') p.commercial = normaliseCommercial(p.commercial);
@@ -276,6 +290,10 @@ export function validate(p) {
       if (![f.x, f.y].every(finite)) errors.push(`furniture ${f.id} has an invalid position`);
     }
     for (const s of l.stairs) seen(s.id, 'stair');
+    for (const v of l.voids || []) {
+      seen(v.id, 'void');
+      if (!Array.isArray(v.polygon) || v.polygon.length < 3 || !v.polygon.every((q) => finite(q.x) && finite(q.y))) errors.push(`void ${v.id} has an invalid outline`);
+    }
   }
   for (const t of p.site?.tanks || []) seen(t.id, 'tank');
   return errors;

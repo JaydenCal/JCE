@@ -1,5 +1,6 @@
 // Plan symbols: openings, stairs, furniture and tanks.
 
+import { stairLayout, isShaped } from '../model/stair-geom.js';
 import { worldToScreen, openingFrame, doorGeometry, toWorld, drawStatus, furnitureSize } from './math.js';
 
 const strokeFor = (theme, status) => (status === 'demolish' ? theme.c.demolish : status === 'existing' ? theme.c.lineSoft : theme.c.line);
@@ -100,7 +101,107 @@ export function drawOpenings(ctx, st, scene) {
 }
 
 // Stairs ---------------------------------------------------------------------------------------------
-export function drawStairSymbol(ctx, view, theme, s, { alpha = 1 } = {}) {
+// An L or U stair: an outline for each flight and the landing, a line at every nosing, the walking line with its arrow and UP.
+function drawShapedStairSymbol(ctx, view, theme, s, alpha, label) {
+  const L = stairLayout(s);
+  const S = (p) => worldToScreen(view, p);
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  for (const o of L.outlines) {
+    polyPath(ctx, o.map(S));
+    ctx.fillStyle = theme.c.canvas;
+    ctx.fill();
+    ctx.strokeStyle = theme.c.line;
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+  }
+  ctx.strokeStyle = theme.c.lineSoft;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (const t of L.treads) {
+    if (!t.nose) continue;
+    const a = S(t.nose[0]);
+    const b = S(t.nose[1]);
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+  }
+  ctx.stroke();
+  // walking line with an arrow head at the top
+  const pts = L.walk.map(S);
+  ctx.strokeStyle = theme.c.line;
+  ctx.fillStyle = theme.c.line;
+  ctx.lineWidth = 1.3;
+  ctx.beginPath();
+  pts.forEach((q, i) => (i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y)));
+  ctx.stroke();
+  const tip = pts[pts.length - 1];
+  const prev = pts[pts.length - 2];
+  const d = Math.hypot(tip.x - prev.x, tip.y - prev.y) || 1;
+  const ux = (tip.x - prev.x) / d;
+  const uy = (tip.y - prev.y) / d;
+  const hs = Math.max(5, Math.min(11, view.scale * L.width * 0.2));
+  polyPath(ctx, [tip, { x: tip.x - ux * hs * 1.5 - uy * hs, y: tip.y - uy * hs * 1.5 + ux * hs }, { x: tip.x - ux * hs * 1.5 + uy * hs, y: tip.y - uy * hs * 1.5 - ux * hs }]);
+  ctx.fill();
+  const lp = S(L.walk[0]);
+  if (view.scale * s.width > 26) {
+    ctx.font = `600 10px ${theme.f.label}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const tw = ctx.measureText(label).width + 6;
+    ctx.fillStyle = theme.c.canvas;
+    ctx.fillRect(lp.x - tw / 2, lp.y - 6, tw, 12);
+    ctx.fillStyle = theme.c.text;
+    ctx.fillText(label, lp.x, lp.y + 0.5);
+  }
+  ctx.restore();
+}
+
+// A floor void: dashed outline with the corner to corner cross of a stair well, and VOID in the middle.
+export function drawVoidSymbol(ctx, view, theme, v, { alpha = 1 } = {}) {
+  if (!v.polygon || v.polygon.length < 3) return;
+  const pts = v.polygon.map((p) => worldToScreen(view, p));
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  polyPath(ctx, pts);
+  ctx.fillStyle = theme.c.canvas;
+  ctx.fill();
+  ctx.setLineDash([6, 4]);
+  ctx.strokeStyle = theme.c.line;
+  ctx.lineWidth = 1.4;
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.save();
+  polyPath(ctx, pts);
+  ctx.clip();
+  const xs = pts.map((q) => q.x);
+  const ys = pts.map((q) => q.y);
+  const x0 = Math.min(...xs);
+  const x1 = Math.max(...xs);
+  const y0 = Math.min(...ys);
+  const y1 = Math.max(...ys);
+  ctx.strokeStyle = theme.c.lineSoft;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let k = -(y1 - y0); k < x1 - x0; k += 14) { ctx.moveTo(x0 + k, y1); ctx.lineTo(x0 + k + (y1 - y0), y0); }
+  ctx.stroke();
+  ctx.restore();
+  if ((x1 - x0) > 50 && (y1 - y0) > 22) {
+    ctx.font = `600 10px ${theme.f.label}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const cx = (x0 + x1) / 2;
+    const cy = (y0 + y1) / 2;
+    const tw = ctx.measureText('VOID').width + 6;
+    ctx.fillStyle = theme.c.canvas;
+    ctx.fillRect(cx - tw / 2, cy - 6, tw, 12);
+    ctx.fillStyle = theme.c.text;
+    ctx.fillText('VOID', cx, cy + 0.5);
+  }
+  ctx.restore();
+}
+
+export function drawStairSymbol(ctx, view, theme, s, { alpha = 1, label = 'UP' } = {}) {
+  if (isShaped(s)) { drawShapedStairSymbol(ctx, view, theme, s, alpha, label); return; }
   const rot = s.rotation || 0;
   const hw = s.width / 2;
   const hl = s.length / 2;
@@ -149,18 +250,21 @@ export function drawStairSymbol(ctx, view, theme, s, { alpha = 1 } = {}) {
     ctx.font = `600 10px ${theme.f.label}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const tw = ctx.measureText('UP').width + 6;
+    const tw = ctx.measureText(label).width + 6;
     if (bbw > tw) {
       ctx.fillStyle = theme.c.canvas;
       ctx.fillRect(lab.x - tw / 2, lab.y - 6, tw, 12);
       ctx.fillStyle = theme.c.text;
-      ctx.fillText('UP', lab.x, lab.y + 0.5);
+      ctx.fillText(label, lab.x, lab.y + 0.5);
     }
   }
   ctx.restore();
 }
 
-export function drawStairs(ctx, st, level) {
+export function drawStairs(ctx, st, level, below = null) {
+  for (const v of level.voids || []) drawVoidSymbol(ctx, st.view, st.theme, v);
+  // the stair of the level below, where it arrives on this floor (L and U stairs only, so the top flight and the void read together)
+  for (const s of below?.stairs || []) if (isShaped(s)) drawStairSymbol(ctx, st.view, st.theme, s, { alpha: 0.55, label: 'DN' });
   for (const s of level.stairs) drawStairSymbol(ctx, st.view, st.theme, s);
 }
 

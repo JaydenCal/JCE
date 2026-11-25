@@ -1007,7 +1007,7 @@ export function drawRoofPlan(doc, ctx, tris, area) {
   doc.setFontSize(TXT.label);
   doc.text('ROOF DATA', px0 + 3, area.y0 + 7);
   const rows = [
-    ['Roof form', type ? `${cap(type)} roof` : 'Not stated'],
+    ['Roof form', type ? (type === 'dutch' ? 'Dutch gable roof (hip with gablets)' : `${cap(type)} roof${project.levels.some((l) => l.roof?.gablets?.length) ? ' with gablets' : ''}`) : 'Not stated'],
     ['Pitch', pitch != null ? `${Number(pitch).toFixed(1)}°` : 'Not stated'],
     ['Eaves overhang', over != null ? `${over} mm` : 'Not stated'],
     ['Roof area (sloped)', `${roofM2.toFixed(0)} m²`],

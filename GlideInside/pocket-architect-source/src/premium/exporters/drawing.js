@@ -36,7 +36,7 @@ export function levelContent(project, level, withSite, catalogue) {
     pts.push(d.a, d.b, { x: d.textAt.x - 250, y: d.textAt.y - 200 }, { x: d.textAt.x + 250, y: d.textAt.y + 200 });
   }
   for (const f of level.furniture) pts.push(...furnitureCorners(f, furnitureSize(catalogue, f)));
-  for (const s of level.stairs) pts.push(...stairGeometry(s).corners);
+  for (const s of level.stairs) pts.push(...stairGeometry(s).outlines.flat());
   if (withSite) for (const t of project.site?.tanks || []) pts.push({ x: t.x - t.diameter / 2, y: t.y - t.diameter / 2 }, { x: t.x + t.diameter / 2, y: t.y + t.diameter / 2 });
   const box = pts.length ? G.bbox(pts) : { minX: 0, minY: 0, maxX: 10000, maxY: 8000, w: 10000, h: 8000 };
   return { level, shapes, dims, box };

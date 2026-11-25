@@ -209,6 +209,18 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
         }) }, 'Create account')],
     });
   }
+  function areasCell(o) {
+    const type = h('select', { name: 'builderType', 'aria-label': `Builder type for ${o.name}` }, h('option', { value: 'house' }, 'House builder'), h('option', { value: 'shed' }, 'Shed builder'));
+    type.value = o.builderType || 'house';
+    const list = h('input', { type: 'text', name: 'areas', value: (o.areas || []).join(', '), placeholder: '2340, 2341, Tamworth', maxlength: '2000', 'aria-label': `Postcodes held by ${o.name}`, dataset: { ps: 'org-areas' } });
+    const msg = h('div', { class: 'pp-sub', role: 'status' });
+    const save = h('button', { class: 'pp-btn pp-btn--sm', type: 'button', dataset: { ps: 'org-areas-save' }, onclick: async () => {
+      save.disabled = true; msg.textContent = ''; msg.classList.remove('pp-adm-err');
+      try { const r = await api.setAreas(o.id, { builderType: type.value, areas: list.value }); o.builderType = r.builderType; o.areas = r.areas; list.value = r.areas.join(', '); msg.textContent = 'Saved.'; } catch (ex) { msg.textContent = errorMessage(ex); msg.classList.add('pp-adm-err'); }
+      save.disabled = false;
+    } }, 'Save areas');
+    return h('div', null, type, list, save, msg, h('div', { class: 'pp-sub' }, 'Free plan set leads for these postcodes or suburbs go to this builder. One builder of each type holds an area.'));
+  }
   function orgRow(o) {
     const [label, kind] = STATUS_CHIP[o.account.status] || [o.account.status, 'muted'];
     const last = o.invoices[0];
@@ -226,6 +238,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
         o.jobs.unbilledCount ? h('div', { class: 'pp-sub pp-adm-err' }, `${o.jobs.unbilledCount} not charged: price not configured`) : null),
       td('AI this month', o.internal ? 'Not reported' : `${o.ai.creditsUsed} credits used`, o.internal ? null : h('div', { class: 'pp-sub' }, `${o.ai.topUps} ${o.ai.topUps === 1 ? 'top-up' : 'top-ups'}`)),
       td('Invoices', o.internal ? 'Never invoiced' : o.invoices.length ? `${o.invoices.length}, last ${last.number} ${last.status}` : 'None', owed ? h('div', { class: 'pp-sub' }, `${formatAud(owed)} open`) : null, last?.error ? h('div', { class: 'pp-sub pp-adm-err' }, last.error) : null),
+      td('Lead areas', areasCell(o)),
       td('Actions', h('div', { class: 'pp-actions pp-actions--tight' },
         h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => toggleInternal(o, e.currentTarget) }, o.internal ? 'Make ordinary' : 'Mark internal'),
         !o.internal && o.account.status !== 'active' ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => extend(o, e.currentTarget) }, 'Extend 7 days') : null,
@@ -412,7 +425,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
     const jobMsg = orgs.find((o) => !o.internal && o.jobs && o.jobs.billingReady === false)?.jobs.billingMessage;
     const jobNote = jobMsg ? h('p', { class: 'pp-notice pp-adm-skip', id: 'job-billing-note', role: 'status' }, icon('info', 18), jobMsg) : null;
     const orgTable = orgs.length
-      ? h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table pp-table--stack' }, h('thead', null, h('tr', null, ...['Builder', 'Status', 'Client logins issued', 'Jobs this month', 'AI use', 'Invoices', 'Actions'].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', null, ...orgs.map(orgRow))))
+      ? h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table pp-table--stack' }, h('thead', null, h('tr', null, ...['Builder', 'Status', 'Client logins issued', 'Jobs this month', 'AI use', 'Invoices', 'Lead areas', 'Actions'].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', null, ...orgs.map(orgRow))))
       : h('p', { class: 'pp-empty' }, 'No builder accounts yet.');
     root.append(h('div', { class: 'pp-brandbar' }, h('div', { class: 'pp-brand' }, h('div', null, h('strong', null, 'Glide Inside admin'), h('small', null, 'Trial requests and builder accounts'))), h('div', { class: 'pp-who' }, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => reload() }, 'Refresh'), h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => signOut() }, icon('logout', 15), 'Lock'))),
       h('main', { class: 'pp-main' },

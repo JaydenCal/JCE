@@ -18,7 +18,7 @@ import { lotChecks } from '../site/lot-checks.js';
 import { createFinance } from '../finance/ui.js';
 import { isCommercial } from '../commercial/mode.js';
 
-const ROOF_LABEL = { hip: 'Hip', gable: 'Gable', skillion: 'Skillion', flat: 'Flat' };
+const ROOF_LABEL = { hip: 'Hip', dutch: 'Dutch gable (hip with gablets)', gable: 'Gable', skillion: 'Skillion', flat: 'Flat' };
 const m2 = (v) => `${v.toFixed(2)} m²`;
 
 export function buildSummary(ctx) {
@@ -90,6 +90,7 @@ export function buildSummary(ctx) {
     }
     add(checkField({ label: 'Roof on this level', get: () => level().roof.enabled !== false, commit: (v) => ctx.run('set_roof', { level: id, enabled: v }) }));
     add(selectField({ label: 'Roof type', options: ROOF_TYPES.map((t) => [t, ROOF_LABEL[t]]), get: () => level().roof.type, commit: (v) => ctx.run('set_roof', { level: id, type: v }) }));
+    if (level().roof.type === 'dutch' || (level().roof.gablets || []).length) add(numberField({ label: 'Gablet height', min: 150, max: 3000, step: 50, get: () => level().roof.gabletSize || 600, commit: (n) => ctx.run('set_roof', { level: id, gablet_size: n }) }));
     add(numberField({ label: 'Pitch', unit: '°', min: 1, max: 60, step: 0.5, decimals: 1, get: () => level().roof.pitch, commit: (n) => ctx.run('set_roof', { level: id, pitch: n }) }));
     add(numberField({ label: 'Eaves', min: 0, max: 1500, step: 50, get: () => level().roof.overhang, commit: (n) => ctx.run('set_roof', { level: id, overhang: n }) }));
     if (store.project.levels.length > 1) {

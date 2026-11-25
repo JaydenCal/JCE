@@ -232,6 +232,10 @@ export function buildModel(project, opts = {}) {
     const elev = level.elevation / 1000;
     const fp = fpOf(level);
     const upperFp = upper ? fpOf(upper) : null;
+    // floor voids (stair wells): cells of the slab and the default floor that are cut away
+    const voidMask = level.voids?.length ? new Uint8Array(grid.nx * grid.ny) : null;
+    if (voidMask) for (const v of level.voids) if (vis(v.status) && v.polygon?.length >= 3) F.rasterPolygon(grid, voidMask, v.polygon.map((q) => toFrame(q)));
+    const slabMask = voidMask ? F.maskMinus(fp.footprint, voidMask) : fp.footprint;
     const rooms = level.rooms.filter((r) => vis(r.status));
     const walls = level.walls.filter((w) => vis(w.status) && G.wallLength(w) >= 10 && Number.isFinite(w.a.x + w.a.y + w.b.x + w.b.y));
     const shownIndoor = rooms.filter((r) => !r.outdoor && r.polygon.length >= 3);
@@ -240,7 +244,7 @@ export function buildModel(project, opts = {}) {
     if (fp.any) {
       const isGround = li === 0;
       const b = new GeoBuilder();
-      const rects = F.disjointRects(grid, fp.footprint);
+      const rects = F.disjointRects(grid, slabMask);
       const y1 = elev - 0.003;
       const y0 = isGround ? groundY - 0.12 : elev - SLAB.upper;
       for (const r of rects) {
@@ -250,7 +254,7 @@ export function buildModel(project, opts = {}) {
         const Z1 = r.y1 / 1000;
         b.quad('slab', [X0, y1, Z0], [X1, y1, Z0], [X1, y1, Z1], [X0, y1, Z1], [[X0, Z0], [X1, Z0], [X1, Z1], [X0, Z1]], [0, 1, 0]);
         if (!isGround) b.quad('slab', [X0, y0, Z0], [X1, y0, Z0], [X1, y0, Z1], [X0, y0, Z1], [[X0, Z0], [X1, Z0], [X1, Z1], [X0, Z1]], [0, -1, 0]);
-        slabSides(b, grid, fp.footprint, r, y0, y1);
+        slabSides(b, grid, slabMask, r, y0, y1);
       }
       const mesh = makeMesh(b.build(), { slab: lib.get('concrete', '#b9b7b1') }, { decor: true, levelId: level.id }, { name: 'slab' });
       if (mesh) group.add(unframe(mesh));
@@ -262,7 +266,8 @@ export function buildModel(project, opts = {}) {
       if (room.polygon.length < 3) return;
       const f = floorFinish(room);
       const b = new GeoBuilder();
-      addFloorPoly(b, 'floor', room.polygon, elev + 0.0004 * (ri % 8));
+      const holes = (level.voids || []).filter((v) => v.polygon?.length >= 3 && v.polygon.every((q) => G.pointInPolygon(q, room.polygon))).map((v) => v.polygon);
+      addFloorPoly(b, 'floor', room.polygon, elev + 0.0004 * (ri % 8), true, holes);
       const mesh = makeMesh(b.build(), { floor: lib.get(f.material, f.hex, { tint: tint(room.status) }) }, { kind: 'floor', id: room.id, levelId: level.id, finish: { material: f.material, colour: f.colour } }, { cast: false, name: `floor:${room.id}` });
       if (mesh) group.add(mesh);
       if (room.balustrade && !room.outdoor) addRoomBalustrade(ctx, group, level, room, levels.flatMap((l) => l.walls));
@@ -271,7 +276,7 @@ export function buildModel(project, opts = {}) {
       const leftover = new Uint8Array(grid.nx * grid.ny);
       let count = 0;
       for (let k = 0; k < leftover.length; k++) {
-        if (fp.enclosed[k] && !fp.rooms[k]) {
+        if (fp.enclosed[k] && !fp.rooms[k] && !(voidMask && voidMask[k])) {
           leftover[k] = 1;
           count++;
         }
@@ -414,6 +419,9 @@ export function buildModel(project, opts = {}) {
       }
     }
 
+    // edge protection round floor voids: glass and rail on the open edges (half walls are real walls)
+    for (const v of level.voids || []) if (v.rail === 'balustrade' && vis(v.status) && v.polygon?.length >= 3) addRoomBalustrade(ctx, group, level, { polygon: v.polygon, id: v.id, status: v.status }, levels.flatMap((l) => l.walls));
+
     // decks, stairs, furniture
     for (const room of rooms) if (room.outdoor && !room.roofed && room.polygon.length >= 3) addDeck(ctx, group, level, room, walls);
     for (const s of level.stairs) {
@@ -461,7 +469,10 @@ export function buildModel(project, opts = {}) {
         grid, footprint: fp.footprint, above: upperFp?.any ? upperFp.footprint : null,
         H0: (level.elevation + level.height) / 1000,
         // Concrete walls with a parapet hide the roof: it stops at the wall (no overhang).
-        roof: level.walls.some((w) => w.panel && !w.bldg && w.panel.parapetMm > 0) ? { ...(level.roof || {}), overhang: 0 } : level.roof || {},
+        roof: (() => {
+          const rf = level.walls.some((w) => w.panel && !w.bldg && w.panel.parapetMm > 0) ? { ...(level.roof || {}), overhang: 0 } : level.roof || {};
+          return rf.gablets?.length ? { ...rf, gablets: rf.gablets.map((g) => ({ ...g, ...toFrame({ x: g.x, y: g.y }) })) } : rf;
+        })(),
       });
       const res = builder.build();
       if (!res) return;

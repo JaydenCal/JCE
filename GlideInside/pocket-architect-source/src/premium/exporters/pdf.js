@@ -391,11 +391,35 @@ export function planGeometry(doc, content, T, detail, catalogue) {
     const g = stairGeometry(st);
     ink(doc);
     doc.setLineWidth(0.18);
-    polygon(doc, g.corners.map(T), 'S');
+    for (const o of g.outlines) polygon(doc, o.map(T), 'S');
     doc.setLineWidth(0.1);
     for (const t of g.treads) doc.line(T(t[0]).x, T(t[0]).y, T(t[1]).x, T(t[1]).y);
     doc.setLineWidth(0.2);
     for (const a of g.arrow) doc.line(T(a[0]).x, T(a[0]).y, T(a[1]).x, T(a[1]).y);
+  }
+  // Floor voids (a stair well): dashed outline, a cross over the opening and the word VOID.
+  for (const v of level.voids || []) {
+    if (!v.polygon || v.polygon.length < 3) continue;
+    const pts = v.polygon.map(T);
+    ink(doc);
+    doc.setLineWidth(0.18);
+    doc.setLineDashPattern([2, 1], 0);
+    polygon(doc, pts, 'S');
+    doc.setLineDashPattern([], 0);
+    doc.setLineWidth(0.08);
+    const xs = pts.map((q) => q.x);
+    const ys = pts.map((q) => q.y);
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+    const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    for (const q of pts) doc.line(q.x, q.y, cx, cy);
+    if (Math.max(...xs) - Math.min(...xs) > 14) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      const tw = doc.getTextWidth('VOID') + 1.4;
+      doc.setFillColor(255, 255, 255);
+      doc.rect(cx - tw / 2, cy - 1.9, tw, 3.2, 'F');
+      doc.text('VOID', cx, cy + 0.5, { align: 'center' });
+    }
   }
 
   // Walls, poched by status.

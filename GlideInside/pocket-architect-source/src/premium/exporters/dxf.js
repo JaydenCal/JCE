@@ -190,7 +190,7 @@ function emitLevel(w, project, level, dx, { catalogue, withSite, sheet }) {
   }
   for (const st of level.stairs) {
     const g = stairGeometry(st);
-    w.poly('PS-STAIR', g.corners.map(S), true);
+    for (const o of g.outlines) w.poly('PS-STAIR', o.map(S), true);
     for (const t of g.treads) w.line('PS-STAIR', S(t[0]), S(t[1]));
     for (const a of g.arrow) w.line('PS-STAIR', S(a[0]), S(a[1]));
   }

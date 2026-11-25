@@ -43,7 +43,7 @@ export function drawRoomLabels(doc, { content, T, catalogue, bounds, extra = [] 
   doc.setFontSize(7);
   for (const b of dimensionBoxes(doc, dims || [], T)) field.addBox(b);
   for (const d of dims || []) field.addSeg(T(d.a), T(d.b));
-  for (const st of level.stairs || []) field.addBox(boxOfPts(stairGeometry(st).corners.map(T), 0.4));
+  for (const st of level.stairs || []) for (const o of stairGeometry(st).outlines) field.addBox(boxOfPts(o.map(T), 0.4));
   for (const b of extra) field.addBox(b);
   for (const b of doorBoxes) field.addBox(b);
   const rooms = [...(level.rooms || [])].filter((r) => r.polygon?.length >= 3 && r.status !== 'demolish').sort((p, q) => G.polygonArea(p.polygon) - G.polygonArea(q.polygon));

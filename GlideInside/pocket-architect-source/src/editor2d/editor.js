@@ -306,7 +306,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     drawSchemeTint(ctx, st);
     drawCommercial(ctx, st);
     drawOpenings(ctx, st, scene);
-    drawStairs(ctx, st, level);
+    drawStairs(ctx, st, level, M.levelBelow(project, level));
     drawFurniture(ctx, st, level, catalogue, clashes);
     drawTanks(ctx, st, tanks, { ghost: !ground });
     drawRoomLabels(ctx, st, scene);

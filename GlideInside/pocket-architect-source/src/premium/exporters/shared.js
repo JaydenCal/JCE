@@ -2,6 +2,7 @@
 // Plan coordinates: mm, x right, y down the screen.
 
 import * as G from '../../model/geometry.js';
+import { stairLayout, isShaped } from '../../model/stair-geom.js';
 import { ROOM_LABELS } from '../../model/schema.js';
 
 const add = G.add;
@@ -185,6 +186,20 @@ export function openingLines(shape, o) {
 
 // Stairs -----------------------------------------------------------------------
 export function stairGeometry(stair) {
+  if (isShaped(stair)) { // L and U stairs: every flight and the landing is an outline, a tread line across each flight, a walking line with its arrow
+    const L = stairLayout(stair);
+    const noses = L.treads.filter((t) => t.nose).map((t) => t.nose);
+    const w = L.walk;
+    const tip = w[w.length - 1];
+    const prev = w[w.length - 2];
+    const dir = G.norm(G.sub(tip, prev));
+    const nrm = { x: -dir.y, y: dir.x };
+    const back = (k, n) => ({ x: tip.x - dir.x * k + nrm.x * n, y: tip.y - dir.y * k + nrm.y * n });
+    const arrow = [];
+    for (let i = 0; i + 1 < w.length; i++) arrow.push([w[i], w[i + 1]]);
+    arrow.push([tip, back(300, 120)], [tip, back(300, -120)]);
+    return { corners: L.outlines[0], outlines: L.outlines, treads: noses, arrow, start: w[0], label: G.polygonCentroid(L.outlines[0]) };
+  }
   const c = { x: stair.x, y: stair.y };
   const loc = (lx, ly) => G.rotatePoint({ x: c.x + lx, y: c.y + ly }, c, stair.rotation || 0);
   const w2 = stair.width / 2;
@@ -201,7 +216,8 @@ export function stairGeometry(stair) {
     [tip, loc(-120, l2 - 450)],
     [tip, loc(120, l2 - 450)],
   ];
-  return { corners: [loc(-w2, -l2), loc(w2, -l2), loc(w2, l2), loc(-w2, l2)], treads, arrow, start: loc(0, -l2) };
+  const corners = [loc(-w2, -l2), loc(w2, -l2), loc(w2, l2), loc(-w2, l2)];
+  return { corners, outlines: [corners], treads, arrow, start: loc(0, -l2), label: loc(0, 0) };
 }
 
 // Furniture --------------------------------------------------------------------

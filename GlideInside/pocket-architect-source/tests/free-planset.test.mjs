@@ -15,7 +15,7 @@ const call = (store, body) => handleEnquiry({ body, request: new Request('http:/
 const good = { name: 'Sam Citizen', email: 'sam@example.com', suburb: 'Calala', timeframe: '12m', ownership: 'buying', consent: true };
 
 test('the wording is the owner\'s and has no dashes', () => {
-  assert.equal(LEAD_CONSENT, 'I agree to Glide Inside contacting me, and passing my details and design to a local builder in my area, so they can contact me about building it.');
+  assert.equal(LEAD_CONSENT, 'I agree to Glide Inside sharing my details and design with the local builder who covers my area, so they can contact me about building.');
   assert.equal(consentText('Example Homes'), LEAD_CONSENT, 'no builder is named in the wording');
   assert.equal(GET_LABEL, 'Get my plan set, free');
   assert.equal(QUOTE_LINE, 'Need stormwater, site classification or footings? Get a quote from JCE');
@@ -45,7 +45,7 @@ test('the lead body is a lead only, tagged planset-free, with the lot from the d
   assert.match(b.notes, /Building: Within 12 months/);
   assert.match(b.notes, /Owns the block: Buying/);
   assert.match(b.notes, /Design type: granny/);
-  assert.match(b.notes, /Consent: I agree to Glide Inside contacting me, and passing/);
+  assert.match(b.notes, /Consent: I agree to Glide Inside sharing my details and design with the local builder who covers my area/);
   assert.equal(b.builder, null, 'no builder holds the area, so none is named');
   assert.doesNotMatch(b.notes, /Builder named/);
   const named = leadBody({ ...good, builder: 'Example Homes' }, project);

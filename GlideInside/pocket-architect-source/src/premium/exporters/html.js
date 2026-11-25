@@ -72,7 +72,7 @@ export function levelSvg(project, level, { catalogue = null, withSite = false } 
 
   for (const st of level.stairs) {
     const g = stairGeometry(st);
-    out.push(`<polygon points="${pts(g.corners)}" fill="#fff" stroke="${INK}" stroke-width="${mid}"/>`);
+    for (const o of g.outlines) out.push(`<polygon points="${pts(o)}" fill="#fff" stroke="${INK}" stroke-width="${mid}"/>`);
     for (const t of g.treads) out.push(`<line x1="${r1(t[0].x)}" y1="${r1(t[0].y)}" x2="${r1(t[1].x)}" y2="${r1(t[1].y)}" stroke="${INK}" stroke-width="${thin}"/>`);
     for (const a of g.arrow) out.push(`<polyline points="${pts(a)}" fill="none" stroke="${INK}" stroke-width="${mid}"/>`);
   }
