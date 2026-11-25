@@ -64,6 +64,7 @@
   if (!gaId) return;
   // Inside an iframe (the app within the launch page) the parent page reports. Avoid double counting.
   var framed = false; try { framed = window.parent !== window; } catch (e) { framed = true; }
+  var viaApp = /\/plan-studio\/app\/(index\.html)?$/.test(location.pathname); // the app page reports for itself through src/ui/ga.js, so this file stays quiet there
 
   var SAFE_Q = { utm_source: 1, utm_medium: 1, utm_campaign: 1, utm_term: 1, utm_content: 1, gclid: 1, gbraid: 1, wbraid: 1, dclid: 1, msclkid: 1, fbclid: 1, template: 1, mode: 1, sample: 1 };
   function safeLocation() {
@@ -80,7 +81,7 @@
   function safeReferrer(r) { try { if (!r) return ""; var u = new URL(r); if (u.hostname === "checkout.stripe.com") return ""; return u.origin + u.pathname; } catch (e) { return ""; } } // the return from Stripe must not take over attribution
 
   var adsId = cfg.adsConversion ? String(cfg.adsConversion).split("/")[0] : "";
-  if (!framed) {
+  if (!framed && !viaApp) {
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
     window.gtag("js", new Date());
@@ -100,7 +101,7 @@
   }
 
   function send(name, params) {
-    if (framed || !window.gtag) return;
+    if (framed || viaApp || !window.gtag) return;
     params = params || {};
     if (internal) params.traffic_type = "internal";
     window.gtag("event", name, params);
@@ -183,7 +184,7 @@
     var p = { transaction_id: sid, value: value, currency: "AUD", items: [{ item_id: id, item_name: name, price: value, quantity: 1 }] };
     Object.keys(utm).forEach(function (k) { p[k] = utm[k]; });
     send("purchase", p);
-    if (cfg.adsConversion && window.gtag) window.gtag("event", "conversion", { send_to: cfg.adsConversion, value: value, currency: "AUD", transaction_id: sid });
+    if (cfg.adsConversion && !framed && !viaApp && window.gtag) window.gtag("event", "conversion", { send_to: cfg.adsConversion, value: value, currency: "AUD", transaction_id: sid });
   }
   var lastFwd = { k: "", t: 0 };
   function onAppEvent(name, props) {

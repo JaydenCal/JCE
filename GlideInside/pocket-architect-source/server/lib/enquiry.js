@@ -22,7 +22,7 @@ const text = (v, name, { max = 200, required = false, multiline = false } = {}) 
 
 /** Checks and cleans the request body. Throws HttpError BAD_REQUEST. Returns the enquiry without the PDF bytes. */
 export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 6_000_000 } = {}) {
-  if (body.consent !== true) throw new HttpError('BAD_REQUEST', 'Please tick the box to agree to your plans and details being sent to JCE Infrastructure.');
+  if (body.consent !== true) throw new HttpError('BAD_REQUEST', body.source === 'planset-free' ? 'Please tick the box so we can contact you about this design.' : 'Please tick the box to agree to your plans and details being sent to JCE Infrastructure.');
   const name = text(body.name, 'Name', { required: true, max: 120 });
   const phone = text(body.phone, 'Phone', { required: body.need !== 'planset', max: 40 });
   const email = text(body.email, 'Email', { required: true, max: 200 }).toLowerCase();
@@ -61,8 +61,9 @@ export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 
   }
   return {
     callback, name, phone, email, need, notes: text(body.notes, 'Notes', { max: 4000, multiline: true }), userNotes: text(body.userNotes, 'Notes', { max: 1000, multiline: true }), lot,
+    consentText: text(body.consentText, 'Consent text', { max: 600 }), // the wording the visitor actually saw, stored with the lead
     source: ['public', 'builder', 'client', 'planset-free'].includes(body.source) ? body.source : 'public',
-    orgName: text(body.orgName, 'Builder', { max: 120 }),
+    orgName: body.source === 'planset-free' ? '' : text(body.orgName, 'Builder', { max: 120 }), // a free plan set lead is never tied to a builder: stored for the owner only
     projectName: text(project?.name || body.projectName, 'Project name', { max: 120 }),
     project, pdfBase64,
   };
@@ -93,7 +94,7 @@ export function summaryText(e, reference) {
       e.notes ? `Notes: ${e.notes}` : null,
       `Design: ${e.projectName || '(unnamed)'}`,
       `Lot address: ${lot.address || 'not given'}`, `LGA: ${lot.lga || 'not given'}`, `Zone: ${lot.zone || 'not given'}`, '',
-      'The person ticked: "I agree to Glide Inside contacting me about this design".',
+      `The person ticked: "${e.consentText || 'consent wording not recorded'}"`,
       'They downloaded the plan set in their browser. This email goes to you only. Nothing was sent to the visitor.',
     ].filter((l) => l !== null).join('\n');
   }
@@ -158,14 +159,20 @@ export async function handleEnquiry({ body, request, store, config, fetchImpl, n
   const enquiry = parseEnquiry(body, { maxProjectBytes: config.exportMaxProjectBytes, maxPdfBytes: config.enquiryMaxPdfBytes });
   const t = now();
   const byIp = await store.hitRate(`enquiry:ip:${clientIp(request)}`, 3600, t);
-  const byEmail = await store.hitRate(`enquiry:email:${enquiry.email}`, 86400, t);
+  const free = enquiry.need === 'planset' && enquiry.source === 'planset-free';
+  // A free plan set lead is never refused for the per email daily limit: the same email and design within a day is recorded once instead.
+  const byEmail = free ? 0 : await store.hitRate(`enquiry:email:${enquiry.email}`, 86400, t);
+  if (free) {
+    const seen = await store.hitRate(`enquiry:dup:${enquiry.email}:${String(enquiry.projectName).toLowerCase().slice(0, 80)}`, 86400, t);
+    if (byIp <= 5 && seen > 1) return { ok: true, reference: /^GI-[A-Z2-9]{5}$/.test(fixedRef || '') ? fixedRef : randomRef(), emailed: false, duplicate: true };
+  }
   if (byIp > 5 || byEmail > 3) throw new HttpError('RATE_LIMITED', 'You have sent several requests already. Please wait before sending another.', { retryAfter: 3600 });
   const reference = /^GI-[A-Z2-9]{5}$/.test(fixedRef || '') ? fixedRef : randomRef(); // CONCIERGE: a fixed reference makes a replayed submit idempotent
   const projectJson = enquiry.project ? JSON.stringify({ ...enquiry.project, site: { ...enquiry.project.site, underlay: null } }) : null;
   const emailOn = !!config.resendApiKey;
   await store.saveEnquiry({
     id: reference, reference, createdAt: new Date(t).toISOString(), name: enquiry.name, phone: enquiry.phone, email: enquiry.email, need: enquiry.need,
-    notes: enquiry.notes, lot: enquiry.lot, source: enquiry.source, orgName: enquiry.orgName, projectName: enquiry.projectName,
+    notes: enquiry.notes, consentText: enquiry.consentText || null, lot: enquiry.lot, source: enquiry.source, orgName: enquiry.orgName, projectName: enquiry.projectName,
     projectJson: projectJson && projectJson.length <= 1_800_000 ? projectJson : null, pdfBytes: enquiry.pdfBase64 ? Math.floor((enquiry.pdfBase64.length * 3) / 4) : 0,
     consent: true, emailStatus: emailOn ? 'pending' : 'not_configured',
   });

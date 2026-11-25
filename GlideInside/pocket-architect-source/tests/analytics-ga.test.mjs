@@ -130,3 +130,16 @@ test('a house on a real lot is told apart from the sample lot', () => {
   assert.equal(isSampleLot({ site: { lot: { lotLabel: 'Sample lot' } } }), true);
   assert.equal(isSampleLot(real), false);
 });
+
+test('the phone path and plan set funnel events are mapped with checked parameters only', () => {
+  const names = ['phone_step_address', 'phone_lot_loaded', 'phone_pick_type', 'phone_house_placed', 'phone_planset_preview', 'phone_full_editor', 'phone_planset_lead_submit', 'phone_planset_download', 'planset_lead_submit', 'planset_download'];
+  for (const n of names) {
+    const out = mapEvent(n, { type: 'granny', source: 'planset-free', from: 'home_search', fits: true, name: 'Jo Bloggs', email: 'a@b.co', suburb: 'Tamworth', address: '1 Example St' });
+    assert.equal(out.length, 1, n);
+    assert.equal(out[0].name, n);
+    assert.deepEqual(out[0].params, { design_type: 'granny', source: 'planset-free', from: 'home_search', fits: 'yes' }, n);
+  }
+  const bad = mapEvent('planset_download', { type: '12 Example St', source: 'a b', from: 'x@y.com', fits: 'maybe' });
+  assert.deepEqual(bad[0].params, {}, 'free text and unknown values are dropped');
+  assert.deepEqual(mapEvent('planset_download', {})[0].params, {});
+});

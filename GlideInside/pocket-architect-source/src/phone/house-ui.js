@@ -133,7 +133,7 @@ html[data-phone="1"]{--ph-navy:#0a111e;--ph-navy-2:#121b2b;--ph-gold:#e9b66f;--p
 .ph-steps{display:flex;gap:6px;margin:0;padding:0;list-style:none;width:100%}
 .ph-steps li{flex:1;min-width:0}
 .ph-steps li>*{all:unset;display:flex;flex-direction:column;gap:3px;width:100%;box-sizing:border-box}
-.ph-steps li button{cursor:pointer}
+.ph-steps li button{cursor:pointer;min-height:44px;justify-content:center}
 .ph-seg{display:block;height:4px;border-radius:2px;background:rgba(255,255,255,.2)}
 .ph-lbl{font:600 10.5px/1.1 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ph-on-2,#a9b3c4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ph-steps li[data-state="done"] .ph-seg{background:rgba(233,182,111,.55)}

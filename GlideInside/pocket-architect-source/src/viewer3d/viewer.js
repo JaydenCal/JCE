@@ -20,6 +20,7 @@ import { edgeColourOf } from './terrain.js';
 import { createRoomEdit } from './room-edit.js';
 import { snapToRoom as snapRoom, flyTo as flyToPose, enableRoomCutaway, createRoomBar, roomTabs as roomTabsOf } from './rooms.js';
 import { isPhoneMode } from '../phone/mode.js';
+import { clampOrbit, orbitLimits } from './camera-limits.js';
 
 const STYLE_ID = 'ps3d-style';
 const RAD = Math.PI / 180;
@@ -375,6 +376,15 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   syncRoofBtn();
   viewBar.append(vbHero, vbFront, vbAerial, vbBuilding, vbDev, vbSun, vbRoof);
   rootEl.appendChild(viewBar);
+  // Reset view (top right of the 3D area, every 3D view): back to the opening framing of the lot and house. Also a double tap on touch.
+  const resetBtn = document.createElement('button');
+  resetBtn.type = 'button';
+  resetBtn.className = 'ps3d-reset';
+  resetBtn.dataset.ps = 'view3d-reset';
+  resetBtn.title = 'Back to the opening view of the lot and house';
+  resetBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 1 0 2.6-5.9M4 4v4.5h4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Reset view</span>';
+  resetBtn.addEventListener('click', () => resetView());
+  rootEl.appendChild(resetBtn);
   let sunKey = 'warm'; // warm afternoon light unless the person switched it off
   try {
     sunKey = localStorage.getItem('ps.view3d.sun') === 'day' ? 'day' : 'warm';
@@ -522,8 +532,9 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     if (turntable) return;
     if (!bounds) return;
     const r = Math.max(bounds.getSize(new THREE.Vector3()).length() / 2, 3);
-    controls.minDistance = 1.2;
-    controls.maxDistance = r * 9 + 20;
+    const lim = orbitLimits(bounds);
+    controls.minDistance = lim.minDist;
+    controls.maxDistance = lim.maxDist;
   }
 
   function rebuild() {
@@ -808,6 +819,22 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     viewBar.hidden = !hasLot || mode === 'walk';
   };
 
+  // Reset view: the opening framing (the same pose as when the lot first loads), animated. Leaves the walk mode and any room view first.
+  function resetView() {
+    if (mode === 'walk') store.setUI({ view: '3d' });
+    frameCamera(true, null);
+    constrainCamera();
+  }
+  // Keep the camera findable: target inside the lot plus a margin, camera above the ground, zoom within a range (see camera-limits.js).
+  function constrainCamera() {
+    if (mode !== 'orbit' || turntable || !bounds || anim) return false;
+    const r = clampOrbit(controls.target, camera.position, bounds, orbitLimits(bounds));
+    if (!r.changed) return false;
+    controls.target.set(r.target.x, r.target.y, r.target.z);
+    camera.position.set(r.position.x, r.position.y, r.position.z);
+    return true;
+  }
+
   function stepAnim(now) {
     if (!anim) return false;
     const t = Math.min(1, (now - anim.t0) / anim.dur);
@@ -875,6 +902,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     const now = performance.now();
     const double = lastClick && now - lastClick.t < 350 && Math.hypot(e.clientX - lastClick.x, e.clientY - lastClick.y) < 24;
     lastClick = { t: now, x: e.clientX, y: e.clientY };
+    if (double && e.pointerType === 'touch') { lastClick = null; resetView(); return; } // a double tap on touch resets the view
     if (double) {
       lastClick = null;
       picker.close();
@@ -1000,6 +1028,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     if (mode === 'orbit') {
       if (stepAnim(now)) need = true;
       if (controls.update(dt)) need = true;
+      if (constrainCamera()) { controls.update(); need = true; }
     } else {
       // Walk mode renders every frame: look and move input arrive from several sources.
       walk.update(dt);
@@ -1234,6 +1263,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     stopAnim: () => {
       anim = null;
     },
+    resetView,
+    constrainCamera,
     aerialPose: () => {
       const pose = poseFor('aerial');
       return { position: pose.pos.clone(), target: pose.target.clone() };

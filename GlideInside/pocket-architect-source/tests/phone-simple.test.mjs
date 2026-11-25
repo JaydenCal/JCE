@@ -147,7 +147,7 @@ test('phone window: four steps, one action each, the six events, checkout and th
     assert.match(first, /Granny flat/);
     assert.equal(await page.locator('[data-ps=phone-3d] canvas').count() > 0, true, '3D is showing');
     assert.match(await page.textContent('[data-ps=phone-pill]'), /Sample lot/);
-    assert.deepEqual(await page.$$eval('.gf-ps-fit button', (b) => b.filter((x) => x.offsetParent).map((x) => x.textContent.trim())), ['Sample lot \u00B7 1,080 m\u00B2', '', 'Change home', 'Move', 'Rotate', 'Get my free plans']);
+    assert.deepEqual(await page.$$eval('.gf-ps-fit button', (b) => b.filter((x) => x.offsetParent).map((x) => x.textContent.trim())), ['Reset view', 'Sample lot \u00B7 1,080 m\u00B2', '', 'Change home', 'Move', 'Rotate', 'Get my free plans']);
     for (const ps of ['phone-change-home', 'phone-move-house', 'phone-rotate-house']) assert.ok((await page.locator(`[data-ps=${ps}]`).boundingBox()).height >= 44, `${ps} is 44 px`);
     // the fit notice hides itself after 3 seconds
     await page.waitForTimeout(3500);

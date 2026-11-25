@@ -6,10 +6,9 @@ import { el, track } from './util.js';
 import { CONFIG } from '../config.js';
 
 export const LEAD_SOURCE = 'planset-free';
-export const consentText = (builderName = null) => {
-  const who = String(builderName || '').trim();
-  return `I agree to Glide Inside contacting me, and sharing my details and design with ${who ? `${who}, the local builder for my area` : 'a local builder for my area'}, who may contact me by phone, email or SMS about building it.`;
-};
+// Leads are stored for the owner only and are not forwarded to any builder (owner decision 25/11/2026), so the wording says the details MAY be passed on.
+// The builder argument is kept for old callers and is ignored.
+export const consentText = () => 'I agree to Glide Inside contacting me, and passing my details and design to a local builder in my area, so they can contact me about building it.';
 export const LEAD_CONSENT = consentText(null); // the wording when no builder holds the area
 
 /**
@@ -54,8 +53,8 @@ export function leadBody(lead, project, { now = () => new Date() } = {}) {
   return {
     name: String(lead.name).trim(), email: String(lead.email).trim(), phone: '', need: 'planset', consent: true, source: LEAD_SOURCE,
     projectName: design,
-    consentText: lead.consentText || consentText(lead.builder || areaBuilderFor(project, CONFIG)?.name), builder: lead.builder || areaBuilderFor(project, CONFIG)?.name || null, consentAt: now().toISOString(), suburb: String(lead.suburb).trim(), timeframe: lead.timeframe, ownership: lead.ownership, designType: lead.designType || '',
-    notes: [`FREE PLAN SET (${LEAD_SOURCE})`, `Suburb: ${String(lead.suburb).trim()}`, `Building: ${(TIMEFRAMES.find(([v]) => v === lead.timeframe) || [])[1] || ''}`, `Owns the block: ${(OWNERSHIPS.find(([v]) => v === lead.ownership) || [])[1] || ''}`, `Design: ${design || 'not named'}`, `Design type: ${lead.designType || 'not given'}`, `Surface: ${lead.surface || 'desktop'}`, `Builder named: ${lead.builder || areaBuilderFor(project, CONFIG)?.name || 'none (a local builder for my area)'}`, `Consent: ${lead.consentText || consentText(lead.builder || areaBuilderFor(project, CONFIG)?.name)}`, `Consent given: ${now().toISOString()}`].join('\n'),
+    consentText: lead.consentText || consentText(), builder: null, consentAt: now().toISOString(), suburb: String(lead.suburb).trim(), timeframe: lead.timeframe, ownership: lead.ownership, designType: lead.designType || '',
+    notes: [`FREE PLAN SET (${LEAD_SOURCE})`, `Suburb: ${String(lead.suburb).trim()}`, `Building: ${(TIMEFRAMES.find(([v]) => v === lead.timeframe) || [])[1] || ''}`, `Owns the block: ${(OWNERSHIPS.find(([v]) => v === lead.ownership) || [])[1] || ''}`, `Design: ${design || 'not named'}`, `Design type: ${lead.designType || 'not given'}`, `Surface: ${lead.surface || 'desktop'}`, `Consent: ${lead.consentText || consentText()}`, `Consent given: ${now().toISOString()}`].join('\n'),
     lot: { address: sl.address || '', lot: sl.lotNumber || '', dp: sl.planLabel || '', lga: sl.lga || '', zone: sl.zoning?.code ? `${sl.zoning.code}${sl.zoning.name ? ` ${sl.zoning.name}` : ''}` : '' },
   };
 }
@@ -70,6 +69,33 @@ export function rememberLead(lead, projectId, storage = (() => { try { return gl
     const projects = [...new Set([...(cur.projects || []), projectId].filter(Boolean))].slice(-20);
     storage?.setItem(KEY, JSON.stringify({ name: lead.name, email: lead.email, suburb: lead.suburb, projects }));
   } catch { /* not remembered */ }
+}
+/**
+ * A small queue of leads the server did not take (network error, a 4xx or a 429). They are kept in this browser, tried again on the next load or
+ * the next submit, at most QUEUE_MAX of them, and removed once the server accepts one. After QUEUE_TRIES failed tries an entry is dropped.
+ */
+const QUEUE_KEY = 'gi.planset.queue';
+export const QUEUE_MAX = 3;
+export const QUEUE_TRIES = 5;
+const defStorage = () => { try { return globalThis.localStorage; } catch { return null; } };
+export function queuedLeads(storage = defStorage()) {
+  try { const q = JSON.parse(storage?.getItem(QUEUE_KEY) || '[]'); return Array.isArray(q) ? q.filter((e) => e && e.body && typeof e.body === 'object') : []; } catch { return []; }
+}
+const writeQueue = (q, storage) => { try { storage?.setItem(QUEUE_KEY, JSON.stringify(q)); } catch { /* storage blocked */ } };
+export function queueLead(body, storage = defStorage()) {
+  const key = `${String(body?.email || '').toLowerCase()}|${body?.projectName || ''}`;
+  const q = queuedLeads(storage).filter((e) => e.key !== key);
+  q.push({ key, body, tries: 0 });
+  writeQueue(q.slice(-QUEUE_MAX), storage);
+}
+/** Try each queued lead once with send(body). Accepted ones are removed; the rest stay (until QUEUE_TRIES). Never throws. */
+export async function flushLeadQueue(send, storage = defStorage()) {
+  const left = [];
+  for (const e of queuedLeads(storage)) {
+    try { await send(e.body); } catch { if (e.tries + 1 < QUEUE_TRIES) left.push({ ...e, tries: e.tries + 1 }); }
+  }
+  writeQueue(left, storage);
+  return left.length;
 }
 export const alreadyGave = (projectId, storage) => !!projectId && !!rememberedLead(storage)?.projects?.includes(projectId);
 
@@ -87,7 +113,7 @@ export function openFreePlanSet({ layer, project, submit, orderEngineering = nul
   };
   const timeframe = choice('timeframe', TIMEFRAME_Q, TIMEFRAMES);
   const ownership = choice('ownership', OWNERSHIP_Q, OWNERSHIPS);
-  const builder = areaBuilderFor(project, CONFIG)?.name || null;
+  const builder = null; // no builder is named: leads are not forwarded to builders yet
   const shownConsent = consentText(builder);
   const consent = el('input', { type: 'checkbox', id: 'fps-consent' });
   const status = el('p', { role: 'alert', 'aria-live': 'polite', class: 'psp-error', hidden: true });

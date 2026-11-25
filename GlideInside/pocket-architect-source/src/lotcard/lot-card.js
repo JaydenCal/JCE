@@ -208,7 +208,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       upload: () => runUpload(store, { viewer: true, catalogue }),
       rooms: tabs.filter((t) => t.id !== 'aerial').map((t) => ({ id: t.id, label: t.label })), tour: (id) => pickTab(id),
       northUp: () => { selTab = 'aerial'; bedI = 0; schedule(); go('aerial'); },
-      extra: menuItems.filter(([l]) => l !== 'Upload boundary' && l !== 'Enlarge top view'),
+      extra: menuItems.filter(([l]) => l !== 'Upload boundary' && l !== 'Enlarge top view' && l !== 'Open full editor'),
     });
     let sheet = null;
     sheet = openSheet({ title: 'Menu', id: 'phone-house-menu', body: houseMenuBody(rows, { sheetButton, close: () => sheet?.close() }) });

@@ -117,6 +117,18 @@ export function mapEvent(name, props = {}, options = {}) {
       }
       return out;
     }
+    case 'phone_step_address':
+    case 'phone_lot_loaded':
+    case 'phone_pick_type':
+    case 'phone_house_placed':
+    case 'phone_planset_preview':
+    case 'phone_full_editor':
+    case 'phone_planset_lead_submit':
+    case 'phone_planset_download':
+    case 'planset_lead_submit':
+    case 'planset_download':
+      // The simple phone path and the free plan set: short word parameters only (never a name, email, suburb or address).
+      return [{ name, params: defined({ design_type: token(p.type), source: token(p.source), from: token(p.from), fits: yesNo(p.fits) || token(p.fits, ['yes', 'no']) }) }];
     default:
       return [];
   }

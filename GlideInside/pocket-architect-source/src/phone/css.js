@@ -110,6 +110,7 @@ html[data-phone="1"] .gf-viewbox .ps3d-viewbar,html[data-phone="1"] .gf-viewbox 
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-prof-prompt{top:auto;bottom:calc(150px + env(safe-area-inset-bottom));left:8px;right:8px;width:auto;transform:none}
 html[data-phone="1"] .ps-shell[data-phone-ui] .lc-root[data-view="2d"]{display:none!important}
 html[data-phone="1"] .ps3d-edit-state{display:none}
+html[data-phone="1"] .ps3d-reset{top:86px}
 
 /* ---------------- The editor on a phone ---------------- */
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-topbar .ps-back .ps-btn-text{display:none!important}

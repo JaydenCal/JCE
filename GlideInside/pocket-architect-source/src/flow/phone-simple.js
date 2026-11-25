@@ -365,7 +365,7 @@ function mountPlans(ctx) {
   };
   const timeframe = chips('timeframe', TIMEFRAME_Q, TIMEFRAMES);
   const ownership = chips('ownership', OWNERSHIP_Q, OWNERSHIPS);
-  const builder = areaBuilderFor(store.project, CONFIG)?.name || null;
+  const builder = null; // no builder is named: leads are not forwarded to builders yet
   const shownConsent = consentText(builder);
   const consent = h('input', { type: 'checkbox', id: 'gfps-consent', dataset: { ps: 'phone-lead-consent' } });
   const err = h('p', { class: 'gf-note gf-note--bad', role: 'alert', hidden: true, dataset: { ps: 'phone-lead-error' } });
@@ -373,6 +373,7 @@ function mountPlans(ctx) {
   const form = h('form', { class: 'gf-ps-form', hidden: true, novalidate: true, dataset: { ps: 'phone-lead-form' } },
     f.name.row, f.email.row, f.suburb.row, timeframe.row, ownership.row,
     h('label', { class: 'gf-ps-consent' }, consent, h('span', { dataset: { ps: 'phone-consent-text' } }, shownConsent)), err, submit,
+    h('p', { class: 'gf-note', style: { margin: '0 0 6px' }, dataset: { ps: 'phone-no-email' } }, 'Nothing is emailed to you.'),
     h('p', { class: 'gf-note gf-ps-privacy', style: { margin: '0' } }, PRIVACY_LINE, ' ', h('a', { href: PRIVACY_PATH, target: '_blank', rel: 'noopener', dataset: { ps: 'phone-privacy' } }, 'Privacy policy')));
   const done = h('div', { class: 'gf-card gf-ps-done', hidden: true, role: 'status', dataset: { ps: 'phone-planset-done' } });
   const el = h('div', { class: 'gf-ps gf-ps-plans', dataset: { ps: 'phone-plans' } }, holder, buy, form, done, free, note);
@@ -399,7 +400,9 @@ function mountPlans(ctx) {
     if (bad.length) return;
     busy = true; submit.disabled = true; submit.textContent = 'Preparing your plan set';
     try {
-      const out = await prem().submitFreePlanSet(lead);
+      const pm = prem();
+      if (!pm?.submitFreePlanSet) throw new Error('The plan set is not ready yet. Try again in a moment.');
+      const out = await pm.submitFreePlanSet(lead);
       form.hidden = true; done.hidden = false; el.classList.remove('is-form');
       done.replaceChildren(
         h('b', null, 'Your plan set has downloaded.'), out?.filename ? h('span', { class: 'gf-note', style: { display: 'block' } }, out.filename) : null,

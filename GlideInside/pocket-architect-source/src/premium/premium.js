@@ -30,7 +30,7 @@ import { createCommercialBilling } from './ui/commercial-billing.js';
 import { createGraceBanner } from './ui/grace-banner.js';
 import { storage } from './util.js';
 import { planTermsGate, termsForExport } from '../legal/terms-gate.js';
-import { openFreePlanSet, leadProblems, leadBody, rememberLead, alreadyGave } from './free-planset.js';
+import { openFreePlanSet, leadProblems, leadBody, rememberLead, alreadyGave, queueLead, flushLeadQueue } from './free-planset.js';
 
 export function createPremium(store, options = {}) {
   const {
@@ -265,7 +265,13 @@ export function createPremium(store, options = {}) {
   async function saveLead(lead) {
     const bad = leadProblems(lead);
     if (bad.length) throw new Error(bad[0].message);
-    try { await api.enquiryJce(leadBody(lead, store.project)); } catch (e) { throw new Error(e?.status === 429 || e?.code === 'RATE_LIMITED' ? 'You have sent several requests already. Please wait a little and try again.' : 'Your details could not be saved, so the plan set was not downloaded. Check your connection and try again.'); }
+    const body = leadBody(lead, store.project);
+    flushLeadQueue((b) => api.enquiryJce(b)).catch(() => {}); // earlier leads the server did not take
+    try { await api.enquiryJce(body); } catch {
+      // A network error, a 4xx or a 429: the lead is kept in this browser and sent again later, and the plan set still downloads.
+      queueLead(body);
+      layer.notify('Your plan set is downloading. Your details will be passed on shortly.', 'info', 6000);
+    }
     rememberLead(lead, store.project?.id);
     track(`${lead.surface === 'phone' ? 'phone_' : ''}planset_lead_submit`, {});
   }
@@ -629,6 +635,9 @@ export function createPremium(store, options = {}) {
     if (aiToken()) refreshCredits(); // a login or mock session needs no Plan Pack to show its credits
     if (probe && !mockOn) ready = probeBackend();
   }
+
+  // Free plan set leads the server did not take earlier are tried again once on load (kept in this browser, never lost).
+  if (planSetFree() && typeof setTimeout === 'function') setTimeout(() => { flushLeadQueue((b) => api.enquiryJce(b)).catch(() => {}); }, 4000);
 
   // The app api (window.__ps) is how the PDF import reaches the editor; the store is always ours.
   const psApp = () => ({ ...(typeof window !== 'undefined' ? window.__ps : null), store, premium: self });

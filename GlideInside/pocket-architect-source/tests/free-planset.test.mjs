@@ -5,17 +5,18 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { CONFIG } from '../src/config.js';
-import { consentText, areaBuilderFor, leadProblems, leadBody, rememberLead, rememberedLead, alreadyGave, LEAD_SOURCE, LEAD_CONSENT, GET_LABEL, QUOTE_LINE, CONCEPT_LINE } from '../src/premium/free-planset.js';
+import { queueLead, queuedLeads, flushLeadQueue, QUEUE_MAX, consentText, areaBuilderFor, leadProblems, leadBody, rememberLead, rememberedLead, alreadyGave, LEAD_SOURCE, LEAD_CONSENT, GET_LABEL, QUOTE_LINE, CONCEPT_LINE } from '../src/premium/free-planset.js';
 import { parseEnquiry, handleEnquiry, summaryText } from '../server/lib/enquiry.js';
 import { createMemoryStore } from '../server/lib/store.js';
 import { SRC, SKIP, serve, launch, newPage, openApp, dismiss } from './helpers/phone-harness.mjs';
 
 const mem = () => { const m = new Map(); return { getItem: (k) => m.get(k) ?? null, setItem: (k, v) => m.set(k, v) }; };
+const call = (store, body) => handleEnquiry({ body, request: new Request('http://x/api/enquiry/jce'), store, config: {}, fetchImpl: null, now: () => Date.now(), clientIp: () => `9.9.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}` });
 const good = { name: 'Sam Citizen', email: 'sam@example.com', suburb: 'Calala', timeframe: '12m', ownership: 'buying', consent: true };
 
 test('the wording is the owner\'s and has no dashes', () => {
-  assert.equal(LEAD_CONSENT, 'I agree to Glide Inside contacting me, and sharing my details and design with a local builder for my area, who may contact me by phone, email or SMS about building it.');
-  assert.equal(consentText('Example Homes'), 'I agree to Glide Inside contacting me, and sharing my details and design with Example Homes, the local builder for my area, who may contact me by phone, email or SMS about building it.');
+  assert.equal(LEAD_CONSENT, 'I agree to Glide Inside contacting me, and passing my details and design to a local builder in my area, so they can contact me about building it.');
+  assert.equal(consentText('Example Homes'), LEAD_CONSENT, 'no builder is named in the wording');
   assert.equal(GET_LABEL, 'Get my plan set, free');
   assert.equal(QUOTE_LINE, 'Need stormwater, site classification or footings? Get a quote from JCE');
   assert.equal(CONCEPT_LINE, 'Concept only. Not for construction or approval.');
@@ -44,13 +45,12 @@ test('the lead body is a lead only, tagged planset-free, with the lot from the d
   assert.match(b.notes, /Building: Within 12 months/);
   assert.match(b.notes, /Owns the block: Buying/);
   assert.match(b.notes, /Design type: granny/);
-  assert.match(b.notes, /Consent: I agree to Glide Inside contacting me, and sharing/);
+  assert.match(b.notes, /Consent: I agree to Glide Inside contacting me, and passing/);
   assert.equal(b.builder, null, 'no builder holds the area, so none is named');
-  assert.match(b.notes, /Builder named: none/);
-  const named = leadBody({ ...good, consentText: consentText('Example Homes'), builder: 'Example Homes' }, project);
-  assert.equal(named.builder, 'Example Homes');
-  assert.match(named.consentText, /with Example Homes, the local builder for my area/);
-  assert.match(named.notes, /Builder named: Example Homes/);
+  assert.doesNotMatch(b.notes, /Builder named/);
+  const named = leadBody({ ...good, builder: 'Example Homes' }, project);
+  assert.equal(named.builder, null, 'no builder is named: leads are not shared with builders yet');
+  assert.doesNotMatch(named.notes, /Builder named/);
   assert.match(b.notes, /Consent given: 2026-11-25T01:02:03/);
   assert.equal(b.source, LEAD_SOURCE);
   assert.equal(b.source, 'planset-free');
@@ -152,4 +152,57 @@ test('desktop: the PDF plan set is free for details; the builder and commercial 
     assert.equal(await page.evaluate(() => { window.__ps.premium.setPortalEntitlement?.(null); window.__ps.store.project.mode = 'commercial'; const v = window.__ps.premium.planSetFree(); window.__ps.store.project.mode = 'residential'; return v; }), false, 'commercial: not free');
     assert.deepEqual(page.errs, []);
   } finally { await br.close(); server.close(); }
+});
+
+test('the server never refuses a free plan set for the per email daily limit; the same email and design in a day is recorded once', async () => {
+  const store = createMemoryStore();
+  const body = leadBody({ ...good, consentText: 'I agree, shown text.' }, { name: 'Design A', site: { lot: {} } });
+  const outs = [];
+  for (let i = 0; i < 6; i++) outs.push(await call(store, body));
+  assert.ok(outs.every((o) => o.ok === true), 'never refused');
+  assert.equal((await store.listEnquiries()).length, 1, 'the same email and design is recorded once');
+  for (let i = 0; i < 5; i++) assert.equal((await call(store, leadBody(good, { name: `Design ${i + 10}`, site: { lot: {} } }))).ok, true, 'other designs from the same email are recorded too');
+  assert.equal((await store.listEnquiries()).length, 6);
+  const other = await handleEnquiry({ body: { ...body, need: 'engineering', source: 'public', phone: '0412345678', email: 'x@example.com' }, request: new Request('http://x'), store: createMemoryStore(), config: {}, fetchImpl: null, now: () => Date.now(), clientIp: () => '5.5.5.5' });
+  assert.equal(other.ok, true);
+});
+
+test('the real consent text the visitor saw is stored and shown, and Glide Inside lead errors do not name JCE Infrastructure', async () => {
+  const body = leadBody({ ...good, consentText: 'Wording shown on the form.', builder: 'Example Homes' }, { name: 'D', site: { lot: {} } });
+  const e = parseEnquiry(body);
+  assert.equal(e.consentText, 'Wording shown on the form.');
+  const text = summaryText(e, 'GI-ABCDE');
+  assert.ok(text.includes('Wording shown on the form.') && !text.includes('about this design".'), 'the email shows the wording the visitor saw');
+  const store = createMemoryStore();
+  await call(store, body);
+  assert.equal((await store.listEnquiries())[0].consentText, 'Wording shown on the form.');
+  assert.equal((await store.listEnquiries())[0].orgName, '', 'never tied to a builder');
+  const sent = await parseEnquiry({ ...body, orgName: 'Some Builder' });
+  assert.equal(sent.orgName, '', 'a builder name on a free plan set lead is ignored: nothing is forwarded to builders');
+  assert.throws(() => parseEnquiry({ ...body, consent: false }), (err) => /tick/i.test(err.message) && !/JCE/.test(err.message));
+});
+
+test('a lead the server did not take is kept in a small queue, tried again, and cleared once accepted', async () => {
+  const st = mem();
+  for (let i = 0; i < QUEUE_MAX + 2; i++) queueLead({ email: `a${i}@example.com`, projectName: 'D' }, st);
+  assert.equal(queuedLeads(st).length, QUEUE_MAX, 'only a few entries');
+  queueLead({ email: 'a4@example.com', projectName: 'D', again: 1 }, st);
+  assert.equal(queuedLeads(st).length, QUEUE_MAX, 'the same email and design is one entry');
+  let n = await flushLeadQueue(async () => { throw new Error('rejected'); }, st);
+  assert.equal(n, QUEUE_MAX, 'still kept when the server says no');
+  const sent = [];
+  n = await flushLeadQueue(async (b) => { sent.push(b.email); }, st);
+  assert.equal(n, 0);
+  assert.equal(sent.length, QUEUE_MAX);
+  assert.deepEqual(queuedLeads(st), [], 'cleared once accepted');
+});
+
+test('premium.saveLead keeps the lead and still downloads when the server refuses it, with neutral wording', () => {
+  const p = fs.readFileSync(path.join(SRC, 'src/premium/premium.js'), 'utf8');
+  const i = p.indexOf('async function saveLead');
+  const block = p.slice(i, p.indexOf('async function downloadFreePlanSet'));
+  assert.match(block, /queueLead\(body\)/);
+  assert.ok(!/throw new Error\([^)]*(connection|could not be saved)/.test(block), 'a refusal no longer blocks the download or blames the connection');
+  assert.ok(!/check your connection/i.test(block));
+  assert.match(block, /rememberLead/);
 });
