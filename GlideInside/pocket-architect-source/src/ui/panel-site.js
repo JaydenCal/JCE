@@ -122,7 +122,7 @@ export function buildSiteSection(ctx) {
 
     const credits = siteCredits(lot).map((c) => c.text);
     credits.push(INDICATIVE);
-    if (lot.sample) credits.unshift('SAMPLE DATA: this lot is invented for testing.');
+    if (lot.sample) credits.unshift(lot.aerial?.key && lot.provenance?.aerial?.attribution ? 'Sample lot. The aerial and ground levels are real, from NSW Spatial Services.' : 'SAMPLE DATA: this lot is invented for testing.');
     sec.append(h('div', { class: 'ps-hint' }, ...credits.map((t) => h('p', { style: { margin: '0 0 4px' } }, t))));
 
     // Searching again replaces the lot (one undo step).

@@ -68,6 +68,7 @@
     import { createStore } from '../../src/model/store.js';
     import { createProject } from '../../src/model/schema.js';
     import { CONFIG } from '../../src/config.js';
+    CONFIG.homeownerPlanSetFree = false; // these tests cover the paid Plan Pack; tests/free-planset.test.mjs covers the free homeowner path
     import { createPremium } from '../../src/premium/premium.js';
 
     const q = new URLSearchParams(location.search);

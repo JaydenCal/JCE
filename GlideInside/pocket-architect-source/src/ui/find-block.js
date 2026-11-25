@@ -7,7 +7,7 @@ import { toast } from './toast.js';
 import { openModal } from './modal.js';
 import { CONFIG } from '../config.js';
 import { smartSearch, NOT_FOUND_TEXT, SEARCH_DEBOUNCE_MS, SEARCH_BUSY_TEXT, isBusyFailure } from '../site/address-search.js';
-import { demoSite } from '../site/demo-lot.js';
+import { loadSampleSite } from '../site/sample-lot.js';
 import { applySiteLookup, lotCommits } from '../site/apply.js';
 import { runUpload } from '../site/upload/flow.js';
 import { arrangeOnLoadWatching } from '../flow/arrange-on-load.js';
@@ -126,7 +126,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     busy = true;
     closeList();
     try {
-      const { lot, warnings } = await applySiteLookup(store, { label: '' }, { prefetched: demoSite({ commercial: store.project?.mode === 'commercial' }) });
+      const { lot, warnings } = await applySiteLookup(store, { label: '' }, { prefetched: await loadSampleSite({ commercial: store.project?.mode === 'commercial' }) });
       say('');
       sample.hidden = true;
       toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' });

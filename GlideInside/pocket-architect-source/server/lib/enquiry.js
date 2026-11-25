@@ -6,8 +6,8 @@
 import { HttpError } from './http.js';
 import { migrate, validate } from '../../src/model/schema.js';
 
-export const NEEDS = ['engineering', 'da', 'both', 'callback']; // CONCIERGE: 'callback' added (call back request from the website assistant)
-const NEED_TEXT = { engineering: 'Engineering', da: 'DA plans', both: 'Engineering and DA plans', callback: 'Call back request' };
+export const NEEDS = ['engineering', 'da', 'both', 'callback', 'planset']; // CONCIERGE: 'callback' added (call back request from the website assistant)
+const NEED_TEXT = { engineering: 'Engineering', da: 'DA plans', both: 'Engineering and DA plans', callback: 'Call back request', planset: 'Free plan set' };
 const REF_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0, 1, I or O: easy to read out
 const randomRef = () => `GI-${Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => REF_ALPHABET[b % REF_ALPHABET.length]).join('')}`;
 // Single line fields lose control characters and line breaks, so a name or project name cannot break the email subject or
@@ -24,11 +24,12 @@ const text = (v, name, { max = 200, required = false, multiline = false } = {}) 
 export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 6_000_000 } = {}) {
   if (body.consent !== true) throw new HttpError('BAD_REQUEST', 'Please tick the box to agree to your plans and details being sent to JCE Infrastructure.');
   const name = text(body.name, 'Name', { required: true, max: 120 });
-  const phone = text(body.phone, 'Phone', { required: true, max: 40 });
+  const phone = text(body.phone, 'Phone', { required: body.need !== 'planset', max: 40 });
   const email = text(body.email, 'Email', { required: true, max: 200 }).toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new HttpError('BAD_REQUEST', 'That email address does not look right.');
-  if (!/[0-9]{6,}/.test(phone.replace(/[\s()+-]/g, ''))) throw new HttpError('BAD_REQUEST', 'That phone number does not look right.');
   const need = NEEDS.includes(body.need) ? body.need : null;
+  // The free plan set form (source planset-free) asks for name, email and suburb only, so its phone is optional; a phone that is given must still look right.
+  if ((need !== 'planset' || phone) && !/[0-9]{6,}/.test(phone.replace(/[\s()+-]/g, ''))) throw new HttpError('BAD_REQUEST', 'That phone number does not look right.');
   if (!need) throw new HttpError('BAD_REQUEST', `need must be one of: ${NEEDS.join(', ')}.`);
   const lot = {};
   for (const k of ['address', 'lot', 'dp', 'lga', 'zone']) lot[k] = text(body.lot?.[k], `Lot ${k}`, { max: 200 });
@@ -60,7 +61,7 @@ export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 
   }
   return {
     callback, name, phone, email, need, notes: text(body.notes, 'Notes', { max: 4000, multiline: true }), userNotes: text(body.userNotes, 'Notes', { max: 1000, multiline: true }), lot,
-    source: ['public', 'builder', 'client'].includes(body.source) ? body.source : 'public',
+    source: ['public', 'builder', 'client', 'planset-free'].includes(body.source) ? body.source : 'public',
     orgName: text(body.orgName, 'Builder', { max: 120 }),
     projectName: text(project?.name || body.projectName, 'Project name', { max: 120 }),
     project, pdfBase64,
@@ -83,6 +84,18 @@ export function summaryText(e, reference) {
       'Consent ticked: "I agree to Glide Inside calling me back about my request using these details".',
       'This email goes to you only. Nothing was sent to the visitor.',
     ].join('\n');
+  }
+  if (e.need === 'planset') { // a free plan set download: a lead only, nothing was promised and nothing is sent to the person
+    return [
+      'New free plan set lead from Glide Inside (source: planset-free)',
+      `Reference: ${reference}`, '',
+      `Name: ${e.name}`, `Email: ${e.email}`, e.phone ? `Phone: ${e.phone}` : null,
+      e.notes ? `Notes: ${e.notes}` : null,
+      `Design: ${e.projectName || '(unnamed)'}`,
+      `Lot address: ${lot.address || 'not given'}`, `LGA: ${lot.lga || 'not given'}`, `Zone: ${lot.zone || 'not given'}`, '',
+      'The person ticked: "I agree to Glide Inside contacting me about this design".',
+      'They downloaded the plan set in their browser. This email goes to you only. Nothing was sent to the visitor.',
+    ].filter((l) => l !== null).join('\n');
   }
   return [
     `New engineering / DA enquiry from Glide Inside`,

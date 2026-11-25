@@ -8,8 +8,9 @@
 
 import { h } from '../ui/dom.js';
 import { FLOW_CSS } from './css.js';
-import { stepsFor, EDIT_STEP, clampStep, flowOf, writeFlow } from './state.js';
-import { onPhoneChange, phoneApi } from '../phone/mode.js';
+import { stepsFor, PHONE_STEPS, EDIT_STEP, clampStep, flowOf, writeFlow } from './state.js';
+import { CONFIG } from '../config.js';
+import { onPhoneChange, phoneApi, isPhoneMode } from '../phone/mode.js';
 import { openSheet, sheetButton } from '../phone/sheet.js';
 import { saveDesign, shareDesign, isSaved } from '../phone/actions.js';
 
@@ -25,8 +26,9 @@ function injectStyle() {
 
 export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {}, onSkip = null, onHelp = null, host = document.body }) {
   injectStyle();
-  const meta = stepsFor(kind);
-  const total = meta.length;
+  // The residential tool on a phone shows the simple four step path (Address, Pick, Fit, Plans); everything else keeps its own steps.
+  const metaNow = () => (kind === 'residential' && isPhoneMode() && CONFIG.phoneSimple !== false ? PHONE_STEPS : stepsFor(kind));
+  const total = metaNow().length;
   let current = 0;
   let live = null; // the mounted step
   let seq = 0;
@@ -68,7 +70,7 @@ export function createGuidedFlow({ store, kind, brand, steps, onEditor = () => {
   const offPhone = onPhoneChange(() => { if (!root.hidden && live) show(current + 1); });
 
   function paintProgress() {
-    prog.replaceChildren(...meta.map((m, i) => {
+    prog.replaceChildren(...metaNow().map((m, i) => {
       const state = i < current ? 'done' : i === current ? 'current' : 'todo';
       const inner = [h('span', { class: 'gf-num', 'aria-hidden': 'true' }, state === 'done' ? '✓' : String(i + 1)), h('span', { class: 'gf-lbl' }, m.title)];
       const el = h('li', { dataset: { step: String(i + 1), state }, ...(state === 'current' ? { 'aria-current': 'step' } : {}) },

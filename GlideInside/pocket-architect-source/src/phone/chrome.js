@@ -13,6 +13,8 @@ import { moveHouseBy, turnHouseBy } from '../site/site-items.js';
 import { openSheet } from './sheet.js';
 import { phoneApi, onPhoneChange, isPhoneMode } from './mode.js';
 import { onSaveState, shareDesign, isSaved } from './actions.js';
+import { track } from '../ui/analytics.js';
+import { writeFlow } from '../flow/state.js';
 
 // The five tools the phone leads with, then the rest behind "More tools".
 export const MAIN_TOOLS = [['movehouse', 'Move house', 'Drag the house on the lot'], ['rotate', 'Rotate', 'Turn what you select'], ['room', 'Rooms', 'Draw or change rooms'], ['drivepi', 'Driveway', 'Bend and place the driveway'], ['furniture', 'Furniture', 'Add furniture to a room']];
@@ -23,7 +25,14 @@ const iconOf = (id) => TOOL_DEFS.find((t) => t.id === id)?.icon || id;
 
 export function createPhoneChrome({ store, refs, editor = null, openMore = () => {} }) {
   const dockBtn = (ps, ic, text, onClick) => h('button', { class: 'ps-dock-btn', type: 'button', dataset: { ps }, onclick: onClick }, icon(ic, { size: 22 }), h('span', null, text));
-  const toolsBtn = dockBtn('dock-tools', 'movehouse', 'Tools', () => openTools());
+  // After the simple phone path (project.flow.phoneSimple) the advanced tools stay out of the way: this button reads Full editor and
+  // opens the whole toolbox once tapped. Anywhere else it is the Tools button, as ever.
+  const simple = () => isPhoneMode() && store.project?.flow?.phoneSimple === true;
+  const toolsBtn = dockBtn('dock-tools', 'movehouse', 'Tools', () => {
+    if (!simple()) { openTools(); return; }
+    track('phone_full_editor', { from: 'editor' });
+    writeFlow(store, { phoneSimple: false });
+  });
   const viewBtn = dockBtn('dock-view', 'cube', '3D', () => store.setUI({ view: hasPlan(store.ui.view) ? '3d' : '2d' }));
   const detailsBtn = dockBtn('dock-details', 'info', 'Details', () => { refs.panel.dataset.open = refs.panel.dataset.open === 'true' ? 'false' : 'true'; syncDock(); });
   const menuBtn = dockBtn('dock-menu', 'more', 'Menu', () => openMore());
@@ -58,7 +67,8 @@ export function createPhoneChrome({ store, refs, editor = null, openMore = () =>
     viewBtn.setAttribute('aria-label', plan ? 'Show the 3D view' : 'Back to the plan');
     detailsBtn.setAttribute('aria-pressed', String(refs.panel.dataset.open === 'true'));
     const tool = store.ui.tool;
-    toolsBtn.replaceChildren(icon(plan ? iconOf(tool || 'movehouse') : 'movehouse', { size: 22 }), h('span', null, 'Tools'));
+    toolsBtn.replaceChildren(icon(plan && !simple() ? iconOf(tool || 'movehouse') : 'movehouse', { size: 22 }), h('span', null, simple() ? 'Full editor' : 'Tools'));
+    refs.shell.dataset.phoneSimple = simple() ? '1' : '0';
     quick.hidden = !(isPhoneMode() && plan && v !== 'split' && tool === 'movehouse' && canMoveHouse(store.project));
   }
   function syncShare() {

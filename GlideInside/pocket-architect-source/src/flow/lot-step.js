@@ -4,7 +4,7 @@
 import { h } from '../ui/dom.js';
 import { NOT_FOUND_TEXT, SEARCH_BUSY_TEXT, createLiveSearch } from '../site/address-search.js';
 import { applySiteLookup, lotCommits } from '../site/apply.js';
-import { demoSite } from '../site/demo-lot.js';
+import { loadSampleSite } from '../site/sample-lot.js';
 import { runUpload } from '../site/upload/flow.js';
 import { confirmFrontage, waitForEnvelope } from '../ui/embed-viewer.js';
 import { lotOf } from '../model/placement.js';
@@ -137,7 +137,7 @@ export function mountLotStep(ctx, { extra = null, sampleOptions = { commercial: 
     loading = true; error = ''; paint(); ctx.refresh();
     prog.start('lot');
     try {
-      await applySiteLookup(store, { label: '' }, { prefetched: demoSite(sampleOptions) });
+      await applySiteLookup(store, { label: '' }, { prefetched: await loadSampleSite(sampleOptions) });
       prog.done();
       confirmFrontage(store);
       await waitForEnvelope(store, 8000);

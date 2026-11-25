@@ -30,6 +30,7 @@ import { createCommercialBilling } from './ui/commercial-billing.js';
 import { createGraceBanner } from './ui/grace-banner.js';
 import { storage } from './util.js';
 import { planTermsGate, termsForExport } from '../legal/terms-gate.js';
+import { openFreePlanSet, leadProblems, leadBody, rememberLead, alreadyGave } from './free-planset.js';
 
 export function createPremium(store, options = {}) {
   const {
@@ -84,6 +85,9 @@ export function createPremium(store, options = {}) {
   const state = { portalPending: !!cfg.portalEnabled && !cfg.portalMock, projectId: store.project.id, token: null, credits: null, creditsError: false, notice: null, exporting: null, portal: null, csub: readCsub() };
   const commercialNow = () => store.project?.mode === 'commercial' || isCommercialTool(); // the commercial tool always shows the subscription, never the Plan Pack
   const csubOn = () => !!state.csub?.token && commercialNow();
+  // Homeowner plan sets are free for contact details (CONFIG.homeownerPlanSetFree). Homeowner residential only: never a builder or client login,
+  // a commercial trial or subscription, or the commercial tool, and never once a Plan Pack is held (that path is unchanged).
+  const planSetFree = () => !!cfg.homeownerPlanSetFree && !portalOn() && !commercialNow() && !csubOn() && !state.token;
   // The token the server should see: the commercial login in commercial mode, otherwise the Plan Pack or portal token.
   const bearer = () => (csubOn() ? state.csub.token : state.token || state.portal?.token || null);
   // Plan set terms (src/legal): who is accepting, and where a signed in acceptance is recorded. A bearer token (Plan Pack, commercial login)
@@ -129,12 +133,12 @@ export function createPremium(store, options = {}) {
   // Which downloads this person may have. Public Plan Pack and builder staff: all. Client logins: the builder's choice (PDF only by default).
   const allowedExports = () => (portalOn() && Array.isArray(state.portal.exports) ? state.portal.exports : EXPORT_ITEMS.map((i) => i.type));
   // "Send to JCE": public Plan Pack users, builder staff, and clients when the builder allows it.
-  const canEnquire = () => (portalOn() ? state.portal.enquiry !== false : isEntitled());
+  const canEnquire = () => (portalOn() ? state.portal.enquiry !== false : isEntitled() || planSetFree()); // a free plan set also opens the JCE quote path
   // "Send plans to a registered engineer" on the lot viewer card: open to anyone who can see the plan set PDFs (the PDFs are free), except a
   // client login whose builder has turned sending off (allowClientEnquiries).
   const canSendPlans = () => (portalOn() ? state.portal.enquiry !== false : true);
   const isEntitled = () => dev() || !!state.token || portalOn() || csubOn();
-  const view = () => ({ entitled: isEntitled(), token: bearer(), csub: csubOn() ? { kind: state.csub.kind } : null, devUnlock: dev(), portalPending: !!state.portalPending, credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', role: state.portal.role || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire(), commercial: commercialNow() });
+  const view = () => ({ planSetFree: planSetFree(), entitled: isEntitled(), token: bearer(), csub: csubOn() ? { kind: state.csub.kind } : null, devUnlock: dev(), portalPending: !!state.portalPending, credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', role: state.portal.role || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire(), commercial: commercialNow() });
   // Builder and client logins have the AI included; mock mode lets the owner review it for any session.
   const aiEntitled = () => isEntitled() || orgSession || mockOn;
   const aiView = () => ({ ...view(), entitled: aiEntitled(), token: aiToken(), session: effSession });
@@ -252,14 +256,53 @@ export function createPremium(store, options = {}) {
     graceBanner.render();
   }
   /** Every "unlock" entry point: the commercial gate in commercial mode, the A$30 Plan Pack otherwise. */
-  const openUpgrade = (o) => (commercialNow() ? commercialUi.openGate(o) : flows.openUpgrade(o));
+  // The plan set sources go to the free form while it is on; the DXF, 3D files and AI assistant still go to the Plan Pack.
+  const PLANSET_SOURCES = new Set(['topbar', 'export-pdf', 'export-pdf-preview', 'phone-planset', 'api']);
+  const openUpgrade = (o) => (commercialNow() ? commercialUi.openGate(o) : planSetFree() && PLANSET_SOURCES.has(o?.source || 'api') ? openFreePlanSetDialog() : flows.openUpgrade(o));
   const openRestore = (o) => (commercialNow() ? commercialUi.openRestore() : flows.openRestore(o));
+
+  // Free plan set (homeowner): save the lead, then build the PDF in this browser and download it. Nothing is emailed to the person.
+  async function saveLead(lead) {
+    const bad = leadProblems(lead);
+    if (bad.length) throw new Error(bad[0].message);
+    try { await api.enquiryJce(leadBody(lead, store.project)); } catch (e) { throw new Error(e?.status === 429 || e?.code === 'RATE_LIMITED' ? 'You have sent several requests already. Please wait a little and try again.' : 'Your details could not be saved, so the plan set was not downloaded. Check your connection and try again.'); }
+    rememberLead(lead, store.project?.id);
+    track(`${lead.surface === 'phone' ? 'phone_' : ''}planset_lead_submit`, {});
+  }
+  async function downloadFreePlanSet({ surface = 'desktop' } = {}) {
+    if (!planSetFree()) throw new Error('The plan set is not free here.');
+    if (!(await planTermsGate.require({ context: 'free-planset', skipAccount: true }))) throw new Error('The plan set terms need to be accepted before it downloads.');
+    if (state.exporting) throw new Error('A file is already being prepared.');
+    state.exporting = 'pdf';
+    try {
+      const out = await runExport('pdf', store.project, { api, token: null, devUnlock: true, watermark: false, config: cfg, catalogue, getViewer, save: saveFile, terms: termsForExport() });
+      track(`${surface === 'phone' ? 'phone_' : ''}planset_download`, {});
+      track('ps_export', { type: 'pdf' });
+      return out;
+    } finally { state.exporting = null; }
+  }
+  /** Used by the phone step: lead first, then the download. */
+  async function submitFreePlanSet(lead) {
+    const surface = lead?.surface === 'phone' ? 'phone' : 'desktop';
+    if (!planSetFree()) throw new Error('The plan set is not free here.');
+    await saveLead({ ...lead, surface });
+    return downloadFreePlanSet({ surface });
+  }
+  function openFreePlanSetDialog() {
+    if (store.readOnly) { layer.notify('This shared design is view only, so plans cannot be made from it.', 'info', 6000); return null; }
+    return openFreePlanSet({ layer, project: store.project, submit: (lead) => submitFreePlanSet(lead), orderEngineering: () => openOrderPanel() });
+  }
 
   async function exportAs(type) {
     if (!EXPORT_ITEMS.some((i) => i.type === type)) return null;
     if (store.readOnly) { layer.notify('This shared design is view only, so nothing can be exported from it. Use Make your own to start a design of your own.', 'info', 6000); return null; } // a view only share link never exports
     if (!allowedExports().includes(type)) {
       layer.notify('Your builder provides the PDF plans. Ask them if you need other file types.', 'info', 6000);
+      return null;
+    }
+    if (!isEntitled() && planSetFree() && type === 'pdf') {
+      if (alreadyGave(store.project?.id)) return downloadFreePlanSet({ surface: 'desktop' });
+      openFreePlanSetDialog();
       return null;
     }
     if (!isEntitled()) {
@@ -404,7 +447,7 @@ export function createPremium(store, options = {}) {
     }
     const entitled = isEntitled();
     previewing = openPdfPreview({
-      layer, project: store.project, store, config: cfg, catalogue, getViewer, entitled, hooks,
+      layer, project: store.project, store, config: cfg, catalogue, getViewer, entitled, hooks, free: planSetFree(),
       onUnlock: () => openUpgrade({ source: 'export-pdf-preview' }),
       onDownload: () => exportAs('pdf'),
     });
@@ -609,7 +652,7 @@ export function createPremium(store, options = {}) {
     isEntitled,
     setPortalEntitlement,
     setPortalPending,
-    openUpgrade: () => openUpgrade({ source: 'api' }),
+    openUpgrade: (o) => openUpgrade({ source: (o && typeof o.source === 'string' && o.source) || 'api' }),
     openExports() {
       if (topbar) topbar.open();
       else openExportsFallback();
@@ -627,6 +670,9 @@ export function createPremium(store, options = {}) {
     // Extras for the host page and tests.
     exportAs,
     previewPdf,
+    planSetFree,
+    submitFreePlanSet,
+    openFreePlanSet: openFreePlanSetDialog,
     openEnquiry: openEnquiryForm,
     sitingReport: () => exportSitingReport(),
     sitingSummary: (o) => exportSitingReport({ ...(o || {}), layout: 'summary' }),
