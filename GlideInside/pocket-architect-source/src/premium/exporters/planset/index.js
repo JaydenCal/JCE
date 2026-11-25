@@ -163,9 +163,12 @@ export async function exportPlanSet({ project, lot = null, kind: kindIn = 'site'
   const dateStr = clean(project.titleBlock?.date) || ddmmyyyy(date);
   // Ground and floor levels, from the same model the 3D uses (loaded on demand; none when the lot has no ground data).
   const levels = siteLot ? levelsModel(wp, siteLot, { tm: await loadTerrainModel(wp) }) : null;
+  // Real aerial and the wider cadastre for the cover locality plan. Never fatal: without them the sheet says so.
+  const locality = siteLot ? await resolveLocality({ lot: siteLot, aerial, fetchSite, loadImage, view: localityView(siteLot).view, includeAerial }) : { aerial: null };
+  // The 3D views drape the same aerial the sheets print: the lot's own stored one, else the locality aerial resolved above (and none when "Include aerial underlay" is off).
   // 3D renders from the app's 3D scene (cover picture and the 3D VIEWS sheet). A server build is sent the browser's pictures (views3d); a browser build draws them
   // offscreen here. With no WebGL, or no lot, there are none: the sheet and the cover picture are left out rather than printing an empty frame.
-  const v3 = views3d !== undefined ? cleanViews3d(views3d) : typeof document !== 'undefined' && siteLot ? await renderSetViews(wp, { catalogue }).catch(() => null) : null;
+  const v3 = views3d !== undefined ? cleanViews3d(views3d) : typeof document !== 'undefined' && siteLot ? await renderSetViews(wp, { catalogue, aerial: locality.aerial, includeAerial }).catch(() => null) : null;
   const sheets = planSetSheets({ project: wp, lot: kind === 'site' || placed ? siteLot : null, kind, catalogue, feasibility, levels, has3d: !!v3?.views?.length });
   const aligned = placed ? { project: wp } : alignProject(wp);
   const id = projectCode(wp);
@@ -197,8 +200,6 @@ export async function exportPlanSet({ project, lot = null, kind: kindIn = 'site'
   const lotDp = clean(siteLot ? titleLotDp(wp) || siteLot.lotLabel || '' : '');
   const base = { project: wp, builder: bld, client: bld ? bld.client.name || 'Not stated' : 'Glide Inside customer', projectTitle: title, address, lotDp, total: sheets.length, dateStr, jobId: id, terms };
   const facts = {};
-  // Real aerial and the wider cadastre for the cover locality plan. Never fatal: without them the sheet says so.
-  const locality = siteLot ? await resolveLocality({ lot: siteLot, aerial, fetchSite, loadImage, view: localityView(siteLot).view, includeAerial }) : { aerial: null };
 
   // The existing site sheet cannot be turned under an aerial (the image stays upright), so its scale label follows the aerial.
   if (commercial && !preview && locality.aerial) {

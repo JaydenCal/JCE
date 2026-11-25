@@ -21,7 +21,7 @@ async function bundleText() {
   return bundle;
 }
 
-export async function renderPlanSet(project, { aerial = null, kind = 'commercial', views = true, width = 1280, height = 800, phone = false } = {}) {
+export async function renderPlanSet(project, { aerial = null, kind = 'commercial', views = true, builder = null, storedAerial = true, width = 1280, height = 800, phone = false } = {}) {
   const br = await chromium.launch({ args: ARGS });
   try {
     const ctx = await br.newContext({ viewport: { width, height }, ...(phone ? { hasTouch: true, isMobile: true } : {}) });
@@ -31,19 +31,19 @@ export async function renderPlanSet(project, { aerial = null, kind = 'commercial
     await page.route('http://planset.test/**', (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><meta charset=utf-8><body></body>' }));
     await page.goto('http://planset.test/', { waitUntil: 'domcontentloaded' });
     await page.addScriptTag({ content: await bundleText() });
-    const out = await page.evaluate(async ({ project, aerial, kind, views }) => {
+    const out = await page.evaluate(async ({ project, aerial, kind, views, builder, storedAerial }) => {
       const t0 = performance.now();
       if (aerial) {
         const b = await (await fetch(aerial.image)).blob();
         await window.PS3D.saveImage('ps.test.aerial', b);
-        project.site.lot.aerial = { key: 'ps.test.aerial', source: 'test', attribution: aerial.attribution || '', extent: aerial.extent, mmPerPx: (aerial.extent.x1 - aerial.extent.x0) / 640 };
+        if (storedAerial) project.site.lot.aerial = { key: 'ps.test.aerial', source: 'test', attribution: aerial.attribution || '', extent: aerial.extent, mmPerPx: (aerial.extent.x1 - aerial.extent.x0) / 640 };
       }
-      const r = await window.PS3D.exportPlanSet({ project, kind, download: false, fetchSite: null, aerial: aerial ? [aerial] : null, ...(views ? {} : { views3d: null }) });
+      const r = await window.PS3D.exportPlanSet({ project, kind, download: false, fetchSite: null, ...(builder ? { builder, builderName: builder.name } : {}), aerial: aerial ? [aerial] : null, ...(views ? {} : { views3d: null }) });
       const buf = new Uint8Array(await r.blob.arrayBuffer());
       let s = '';
       for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode(...buf.subarray(i, i + 0x8000));
       return { b64: btoa(s), sheets: r.sheets, pages: r.pages, ms: Math.round(performance.now() - t0) };
-    }, { project, aerial, kind, views });
+    }, { project, aerial, kind, views, builder, storedAerial });
     return { bytes: Buffer.from(out.b64, 'base64'), sheets: out.sheets, pages: out.pages, ms: out.ms, errs };
   } finally { await br.close(); }
 }

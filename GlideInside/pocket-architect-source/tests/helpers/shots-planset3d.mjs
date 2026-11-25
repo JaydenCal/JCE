@@ -2,11 +2,11 @@
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { renderPlanSet } from './planset3d-browser.mjs';
-import { hvsShedProject, syntheticAerial } from './hvs-shed-fixture.mjs';
+import { hvsShedProject, syntheticAerial, BUILDER } from './hvs-shed-fixture.mjs';
 
 const out = process.argv[2] || '/home/claude/shots-7final';
 fs.mkdirSync(out, { recursive: true });
-const r = await renderPlanSet(hvsShedProject(), { aerial: syntheticAerial() });
+const r = await renderPlanSet(hvsShedProject(), { aerial: syntheticAerial(), builder: BUILDER });
 const pdf = `${out}/HVS-shed-plan-set-3d.pdf`;
 fs.writeFileSync(pdf, r.bytes);
 const codes = r.sheets.map((s) => s.no.split('-').pop());

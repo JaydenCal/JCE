@@ -47,17 +47,29 @@ async function toJpeg(blob, quality = 0.9) {
  * Render the pictures from the app's 3D scene, offscreen. `project` is the design on its lot (the same one the sheets draw). Returns null when there is no
  * document or WebGL, when the design has no lot, or when any render fails (an empty frame is never printed).
  */
-export async function renderSetViews(project, { catalogue = null, phone } = {}) {
+export async function renderSetViews(project, { catalogue = null, phone, aerial = null, includeAerial = true } = {}) {
   if (typeof document === 'undefined' || !project?.site?.lot?.boundary?.length) return null;
   let host = null;
   let viewer = null;
+  let tempKey = null;
   try {
     const [{ createViewer3D }, { createStore }] = await Promise.all([import('../../../viewer3d/viewer.js'), import('../../../model/store.js')]);
     host = document.createElement('div');
     host.setAttribute('aria-hidden', 'true');
     host.style.cssText = 'position:fixed;left:-12000px;top:0;width:900px;height:640px;overflow:hidden;pointer-events:none;';
     document.body.appendChild(host);
-    const store = createStore(structuredClone(project), {});
+    const given = structuredClone(project);
+    // The ground carries the aerial the sheets print: the lot's own stored picture when it has one, else the aerial the set resolved for the locality plan.
+    if (includeAerial === false) given.site.lot.layers = { ...(given.site.lot.layers || {}), aerial: false };
+    else if (!given.site.lot.aerial?.key && aerial?.data && aerial.extent) {
+      const { saveImage } = await import('../../../editor2d/underlay.js');
+      const blob = typeof aerial.data === 'string' ? await (await fetch(aerial.data)).blob() : new Blob([aerial.data], { type: aerial.format === 'PNG' ? 'image/png' : 'image/jpeg' });
+      tempKey = `ps.planset.aerial.${Date.now().toString(36)}`;
+      await saveImage(tempKey, blob);
+      given.site.lot.aerial = { key: tempKey, source: 'planset', attribution: aerial.attribution || '', extent: aerial.extent, mmPerPx: 0 };
+      given.site.lot.layers = { ...(given.site.lot.layers || {}), aerial: true };
+    }
+    const store = createStore(given, {});
     viewer = createViewer3D(host, store, { catalogue, adaptive: false });
     if (!viewer || viewer.unavailable) return null;
     await viewer.ready?.().catch(() => null);
@@ -76,6 +88,7 @@ export async function renderSetViews(project, { catalogue = null, phone } = {}) 
   } finally {
     try { viewer?.dispose?.(); } catch { /* gone */ }
     host?.remove();
+    if (tempKey) import('../../../editor2d/underlay.js').then((m) => m.removeImage(tempKey)).catch(() => null);
   }
 }
 

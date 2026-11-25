@@ -8,7 +8,7 @@ import { viewSizes, SHEET_VIEWS } from '../src/premium/exporters/planset/views3d
 import { createProject } from '../src/model/schema.js';
 import { applyOp } from '../src/model/ops.js';
 import { recordingPDF } from './helpers/planset-fixtures.mjs';
-import { hvsShedProject, syntheticAerial } from './helpers/hvs-shed-fixture.mjs';
+import { hvsShedProject, syntheticAerial, BUILDER } from './helpers/hvs-shed-fixture.mjs';
 import { renderPlanSet, SKIP } from './helpers/planset3d-browser.mjs';
 
 // A 4 x 3 pixel PNG (valid header and size), as a data URL.
@@ -62,6 +62,17 @@ test('with pictures: the cover carries the render, A400 has four captioned views
   assert.match(all(cover), /3D VIEW, FRONT THREE QUARTER/);
   assert.match(all(cover), /A400/);
   assert.equal(r.pages, codes.length);
+});
+
+test('every sheet, A400 included, carries the builder title block (never the Glide Inside customer block)', async () => {
+  const { pages, codes } = await run({ views3d: pics(), builder: BUILDER, builderName: BUILDER.name });
+  assert.ok(codes.includes('A400'));
+  pages.forEach((pg, i) => {
+    const text = all(pg);
+    assert.ok(text.includes(BUILDER.name), `${codes[i]} names the builder`);
+    assert.ok(text.includes('Powered by Glide Inside'), `${codes[i]} has the Powered by mark`);
+    assert.ok(!text.includes('Glide Inside customer'), `${codes[i]} has no public block`);
+  });
 });
 
 test('without pictures the sheet and the cover picture are left out', async () => {
