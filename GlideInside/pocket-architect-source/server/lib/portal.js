@@ -90,10 +90,13 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (!origin && site && !['same-origin', 'same-site', 'none'].includes(site)) throw new HttpError('FORBIDDEN', 'That request was blocked.');
   }
 
-  async function startSession(r, user) {
+  async function startSession(r, user, parent = null) {
     const { token, idHash } = await newSessionToken();
     const nowMs = now();
-    await pstore.createSession({ idHash, userId: user.id, createdAt: iso(nowMs), lastSeenAt: iso(nowMs), expiresAt: iso(nowMs + config.sessionDays * DAY) });
+    // A tab session inherits its parent's start and end, so tab keys can never stretch a sign in past its absolute limit.
+    const createdAt = parent?.createdAt || iso(nowMs);
+    const expiresAt = parent?.expiresAt || iso(nowMs + config.sessionDays * DAY);
+    await pstore.createSession({ idHash, userId: user.id, createdAt, lastSeenAt: iso(nowMs), expiresAt });
     r.setCookie = sessionCookie(token, Math.round(config.sessionDays * 86400));
     r.tabKey = token; // returned to the page in X-GI-Tab, which keeps it for this tab only
     return idHash;
@@ -267,8 +270,11 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
    * must be valid. A NEW session for the same login is made and returned in X-GI-Tab, so signing out in one tab never ends another.
    */
   async function tabSession(r) {
+    const { fromTab, token } = sessionToken(r.request);
+    if (fromTab) throw new HttpError('BAD_REQUEST', 'This tab already has its own session.'); // only the shared cookie can start a tab session
     const { user, org } = await auth(r, { allowChange: true, allowReadOnly: true });
-    await startSession(r, user);
+    const parent = await pstore.getSession(await sha256Hex(token));
+    await startSession(r, user, parent);
     r.setCookie = null; // the shared cookie stays as it is
     return json(await meBody(user, org));
   }
