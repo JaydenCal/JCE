@@ -63,8 +63,9 @@ export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 
     callback, name, phone, email, need, notes: text(body.notes, 'Notes', { max: 4000, multiline: true }), userNotes: text(body.userNotes, 'Notes', { max: 1000, multiline: true }), lot,
     consentText: text(body.consentText, 'Consent text', { max: 600 }), // the wording the visitor actually saw, stored with the lead
     source: ['public', 'builder', 'client', 'planset-free'].includes(body.source) ? body.source : 'public',
-    orgName: body.source === 'planset-free' ? '' : text(body.orgName, 'Builder', { max: 120 }), // a free plan set lead is never tied to a builder: stored for the owner only
+    orgName: body.source === 'planset-free' ? '' : text(body.orgName, 'Builder', { max: 120 }), // the owner copy of a free plan set lead carries no builder name; the builder who holds the area gets its own copy in their Leads tab (routeLead)
     projectName: text(project?.name || body.projectName, 'Project name', { max: 120 }),
+    suburb: text(body.suburb, 'Suburb', { max: 80 }), postcode: text(body.postcode, 'Postcode', { max: 8 }), designType: text(body.designType, 'Design type', { max: 60 }), // used to find the builder who holds the area (free plan set leads)
     project, pdfBase64,
   };
 }
@@ -155,7 +156,7 @@ export async function sendViaResend({ config, fetchImpl, enquiry, reference }) {
  * Returns { ok: true, reference, emailed }. If saving fails the error is returned. If the email fails the enquiry is already
  * saved and EMAIL_FAILED carries the reference (the person is still told it was saved).
  */
-export async function handleEnquiry({ body, request, store, config, fetchImpl, now, clientIp, reference: fixedRef }) {
+export async function handleEnquiry({ body, request, store, config, fetchImpl, now, clientIp, reference: fixedRef, routeLead = null }) {
   const enquiry = parseEnquiry(body, { maxProjectBytes: config.exportMaxProjectBytes, maxPdfBytes: config.enquiryMaxPdfBytes });
   const t = now();
   const byIp = await store.hitRate(`enquiry:ip:${clientIp(request)}`, 3600, t);
@@ -170,6 +171,12 @@ export async function handleEnquiry({ body, request, store, config, fetchImpl, n
   const reference = /^GI-[A-Z2-9]{5}$/.test(fixedRef || '') ? fixedRef : randomRef(); // CONCIERGE: a fixed reference makes a replayed submit idempotent
   const projectJson = enquiry.project ? JSON.stringify({ ...enquiry.project, site: { ...enquiry.project.site, underlay: null } }) : null;
   const emailOn = !!config.resendApiKey;
+  // A free plan set lead is also given to the one builder who holds the area, for the lead's type. No email goes to the builder or the visitor. The owner copy below is always kept.
+  let routedTo = null;
+  if (free && typeof routeLead === 'function') {
+    try { routedTo = await routeLead({ enquiry, reference, at: new Date(t).toISOString() }); } catch { routedTo = null; } // routing never loses the lead
+  }
+  if (routedTo) enquiry.notes = [enquiry.notes, `Shared with builder: ${routedTo.orgName}`].filter(Boolean).join('\n');
   await store.saveEnquiry({
     id: reference, reference, createdAt: new Date(t).toISOString(), name: enquiry.name, phone: enquiry.phone, email: enquiry.email, need: enquiry.need,
     notes: enquiry.notes, consentText: enquiry.consentText || null, lot: enquiry.lot, source: enquiry.source, orgName: enquiry.orgName, projectName: enquiry.projectName,

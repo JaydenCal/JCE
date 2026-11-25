@@ -26,6 +26,8 @@ function filenameFrom(res, fallback) {
   }
 }
 
+import { tabHeaders } from '../portal/tab-session.js';
+
 /**
  * createApi({ base, fetchImpl, timeoutMs }) returns the endpoint methods. `token` arguments are bearer tokens.
  * `fetchImpl` lets tests and hosts supply their own fetch.
@@ -36,7 +38,7 @@ export function createApi({ base = '/api', fetchImpl = null, timeoutMs = 45000 }
 
   async function send(method, path, { token, body, query, timeout = timeoutMs, headers: extra } = {}) {
     const qs = query ? `?${new URLSearchParams(query)}` : '';
-    const headers = { accept: 'application/json' };
+    const headers = { accept: 'application/json', ...tabHeaders() }; // this tab's own portal session key (src/portal/tab-session.js)
     if (token) headers.authorization = `Bearer ${token}`;
     if (extra) Object.assign(headers, extra);
     if (body !== undefined) headers['content-type'] = 'application/json';

@@ -71,15 +71,17 @@ function drawStairNotes(doc, project, level, T) {
       doc.setDrawColor(90, 94, 102);
       doc.setLineWidth(0.18);
       doc.setLineDashPattern([2, 1], 0);
-      const c = g.corners.map(T);
-      for (let i = 0; i < 4; i++) doc.line(c[i].x, c[i].y, c[(i + 1) % 4].x, c[(i + 1) % 4].y);
+      for (const o of g.outlines) {
+        const c = o.map(T);
+        for (let i = 0; i < 4; i++) doc.line(c[i].x, c[i].y, c[(i + 1) % 4].x, c[(i + 1) % 4].y);
+      }
       doc.setLineWidth(0.1);
       for (const t of g.treads) doc.line(T(t[0]).x, T(t[0]).y, T(t[1]).x, T(t[1]).y);
       doc.setLineDashPattern([], 0);
     }
-    const c0 = g.corners.map(T);
+    const c0 = g.outlines.flat().map(T);
     boxes.push({ x0: Math.min(...c0.map((q) => q.x)) - 0.5, y0: Math.min(...c0.map((q) => q.y)) - 0.5, x1: Math.max(...c0.map((q) => q.x)) + 0.5, y1: Math.max(...c0.map((q) => q.y)) + 0.5 });
-    const mid = { x: c0.reduce((a, q) => a + q.x, 0) / 4, y: c0.reduce((a, q) => a + q.y, 0) / 4 };
+    const mid = T(g.label || { x: st.x, y: st.y });
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
     doc.setTextColor(40, 44, 52);

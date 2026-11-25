@@ -12,6 +12,7 @@
 //  - the eye follows the surface (a ramp through the treads), and the active level changes near the top or bottom.
 
 import { resolveCollisions } from './colliders.js';
+import { isShaped } from '../model/stair-geom.js';
 
 const DEG = Math.PI / 180;
 
@@ -36,6 +37,7 @@ export function stairInfos(project) {
   levels.forEach((level, i) => {
     const upper = levels[i + 1] || null;
     for (const s of level.stairs || []) {
+      if (isShaped(s)) continue; // walk mode follows straight flights only; an L or U stair is solid to the player
       const rise = upper ? (upper.elevation - level.elevation) / 1000 : floorToFloor;
       const a = (s.rotation || 0) * DEG;
       const length = s.length / 1000;

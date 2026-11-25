@@ -1,5 +1,7 @@
 // Roof generation: footprint minus the level above, covered with (overlapping) rectangles, each
-// rectangle roofed as hip, gable, skillion or flat. Pure geometry, no DOM.
+// rectangle roofed as hip, gable, skillion or flat. A hip may carry Dutch gables (gablets): a small vertical gable at a ridge end, set by
+// roof.gabletSize (mm, the height of the gablet) and roof.gablets = [{ x, y, ends, size }] per roof wing, or for every wing with type 'dutch'.
+// Pure geometry, no DOM.
 //
 // Slots in the returned builder: roof, fascia, gable (gable infill in the external wall finish).
 
@@ -64,10 +66,49 @@ function freeRuns(states, cell) {
   return runs;
 }
 
-// opts: { grid, footprint, above, H0 (m, wall top), roof: { type, pitch, overhang } }
+
+export const GABLET_DEFAULT_MM = 600;
+export const GABLET_MIN_MM = 150;
+
+// Which ridge ends of which wings carry a gablet. Returns Map(rect index -> { n, s, e, w } sizes in metres, 0 for a plain hip end).
+// roof.gablets entries pick a wing by a plan point (mm, the smallest rectangle that contains it, else the nearest one), then name the ends
+// ('n' 's' 'e' 'w', 'ridge' or 'both' for both ridge ends, 'all') and may give their own size. size 0 or ends [] makes plain hips.
+export function resolveGablets(roof, rects) {
+  const out = new Map();
+  const dutch = roof?.type === 'dutch';
+  const base = Math.max(0, Number(roof?.gabletSize) || GABLET_DEFAULT_MM);
+  const ridgeEnds = (r) => ((r.x1 - r.x0) >= (r.y1 - r.y0) ? ['w', 'e'] : ['n', 's']);
+  rects.forEach((r, i) => { out.set(i, { n: 0, s: 0, e: 0, w: 0 }); if (dutch) for (const e of ridgeEnds(r)) out.get(i)[e] = base / 1000; });
+  const pick = (x, y) => {
+    let best = -1; let bestA = Infinity; let nearest = -1; let nd = Infinity;
+    rects.forEach((r, i) => {
+      const inside = x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1;
+      const a = (r.x1 - r.x0) * (r.y1 - r.y0);
+      if (inside && a < bestA) { best = i; bestA = a; }
+      const d = Math.hypot(Math.max(r.x0 - x, 0, x - r.x1), Math.max(r.y0 - y, 0, y - r.y1));
+      if (d < nd) { nd = d; nearest = i; }
+    });
+    return best >= 0 ? best : nd < 1500 ? nearest : -1;
+  };
+  for (const g of roof?.gablets || []) {
+    const i = pick(Number(g.x), Number(g.y));
+    if (i < 0) continue;
+    const r = rects[i];
+    const size = g.size == null ? base : Math.max(0, Number(g.size) || 0);
+    const ridge = ridgeEnds(r);
+    const ends = g.ends == null || g.ends === 'ridge' || g.ends === 'both' || g.ends === 'all' ? ridge : (Array.isArray(g.ends) ? g.ends : [String(g.ends)]).filter((e) => ridge.includes(e));
+    const slot = out.get(i);
+    if (Array.isArray(g.ends) && !g.ends.length) for (const e of ridge) slot[e] = 0; // an empty list turns this wing's gablets off
+    for (const e of ends) slot[e] = size / 1000;
+  }
+  return out;
+}
+
+// opts: { grid, footprint, above, H0 (m, wall top), roof: { type, pitch, overhang, gabletSize, gablets } }
 export function buildLevelRoof(opts) {
   const { grid, footprint, above, H0 } = opts;
-  const type = opts.roof.type || 'hip';
+  const formType = opts.roof.type || 'hip';
+  const type = formType === 'dutch' ? 'hip' : formType; // a Dutch gable roof is a hip with gablets
   const pitchDeg = type === 'flat' ? 2 : Math.max(1, Math.min(60, Number(opts.roof.pitch) || 22.5));
   const th = Math.tan(pitchDeg * RAD);
   const cs = Math.cos(pitchDeg * RAD);
@@ -78,6 +119,7 @@ export function buildLevelRoof(opts) {
   const rects = type === 'skillion' || type === 'flat'
     ? disjointRects(grid, mask).filter((r) => (r.x1 - r.x0) * (r.y1 - r.y0) >= 0.5e6 && Math.min(r.x1 - r.x0, r.y1 - r.y0) >= 300)
     : coverRects(grid, mask);
+  const gablets = type === 'hip' ? resolveGablets({ ...opts.roof, type: formType }, rects) : new Map();
   const b = new GeoBuilder();
   const rectInfo = [];
 
@@ -124,12 +166,33 @@ export function buildLevelRoof(opts) {
     else if (free('v+') && !free('v-')) hs = -1;
     else if (free('v-') && !free('v+')) hs = 1;
 
+    let gabletInfo = null;
     if (type === 'hip') {
       const rl = Math.max(0, (W - D) / 2);
-      emit('roof', [[-eu, he, ev], [eu, he, ev], [rl, hr, 0], [-rl, hr, 0]], (p) => [p[0], (ev - p[2]) / cs]);
-      emit('roof', [[-eu, he, -ev], [-rl, hr, 0], [rl, hr, 0], [eu, he, -ev]], (p) => [p[0], (p[2] + ev) / cs]);
-      emit('roof', [[eu, he, ev], [eu, he, -ev], [rl, hr, 0]], (p) => [p[2], (eu - p[0]) / cs]);
-      emit('roof', [[-eu, he, ev], [-rl, hr, 0], [-eu, he, -ev]], (p) => [p[2], (p[0] + eu) / cs]);
+      // Dutch gables: a vertical triangle of height G stands at the ridge end, which is G / th beyond the hip apex. The hip rafters then stop at
+      // height hr - G, and the long planes run on up to the gablet. Sizes are limited so the hip end plane keeps a sensible depth.
+      const gs = gablets.get(index) || {};
+      const gOf = (le) => Math.max(0, Math.min(gs[edgeOf[le]] || 0, (hr - he) * 0.75));
+      const gN = gOf('u-') >= GABLET_MIN_MM / 1000 ? gOf('u-') : 0;
+      const gP = gOf('u+') >= GABLET_MIN_MM / 1000 ? gOf('u+') : 0;
+      const kN = gN / th; // how far the gablet face stands beyond the hip apex, and its half width
+      const kP = gP / th;
+      const endPts = (sgn, g, k) => (g ? [[sgn * (rl + k), hr - g, k], [sgn * (rl + k), hr, 0]] : [[sgn * rl, hr, 0]]);
+      for (const side of [1, -1]) {
+        const pts = [[-eu, he, side * ev], [eu, he, side * ev]];
+        const p1 = endPts(1, gP, kP).map((q) => [q[0], q[1], side * q[2]]);
+        const p0 = endPts(-1, gN, kN).map((q) => [q[0], q[1], side * q[2]]).reverse();
+        emit('roof', [...pts, ...p1, ...p0], side > 0 ? (p) => [p[0], (ev - p[2]) / cs] : (p) => [p[0], (p[2] + ev) / cs]);
+      }
+      const endPlane = (sgn, g, k) => {
+        const sx = sgn * eu;
+        const poly = g ? [[sx, he, ev], [sx, he, -ev], [sgn * (rl + k), hr - g, -k], [sgn * (rl + k), hr - g, k]] : [[sx, he, sgn > 0 ? ev : -ev], [sx, he, sgn > 0 ? -ev : ev], [sgn * rl, hr, 0]];
+        emit('roof', poly, (p) => [p[2], (eu - sgn * p[0]) / cs]);
+        if (g) emit('gable', [[sgn * (rl + k), hr - g, k], [sgn * (rl + k), hr - g, -k], [sgn * (rl + k), hr, 0]], (p) => [p[2], p[1]], [sgn, 0, 0]);
+      };
+      endPlane(1, gP, kP);
+      endPlane(-1, gN, kN);
+      gabletInfo = { [edgeOf['u-']]: gN, [edgeOf['u+']]: gP };
     } else if (type === 'gable') {
       emit('roof', [[-eu, he, ev], [eu, he, ev], [eu, hr, 0], [-eu, hr, 0]], (p) => [p[0], (ev - p[2]) / cs]);
       emit('roof', [[-eu, he, -ev], [-eu, hr, 0], [eu, hr, 0], [eu, he, -ev]], (p) => [p[0], (p[2] + ev) / cs]);
@@ -184,13 +247,17 @@ export function buildLevelRoof(opts) {
       }
     }
 
-    // Ridge capping: a low cap along the ridge of a hip or a gable.
+    // Ridge capping: a low cap along the ridge of a hip or a gable (a hip's ridge runs on to the gablets).
     if (type === 'hip' || type === 'gable') {
-      const rl2 = type === 'hip' ? Math.max(0, (W - D) / 2) : eu;
+      const rl0 = type === 'hip' ? Math.max(0, (W - D) / 2) : eu;
+      const kn = gabletInfo ? (gabletInfo[edgeOf['u-']] || 0) / th : 0;
+      const kp = gabletInfo ? (gabletInfo[edgeOf['u+']] || 0) / th : 0;
+      const u0 = -(rl0 + kn);
+      const u1 = rl0 + kp;
       const yr = hr + lift;
-      if (rl2 > 0.2) {
-        if (alongX) addAxisBox(b, cx - rl2, cx + rl2, yr - 0.03, yr + 0.07, cz - 0.11, cz + 0.11);
-        else addAxisBox(b, cx - 0.11, cx + 0.11, yr - 0.03, yr + 0.07, cz - rl2, cz + rl2);
+      if (u1 - u0 > 0.4) {
+        if (alongX) addAxisBox(b, cx + u0, cx + u1, yr - 0.03, yr + 0.07, cz - 0.11, cz + 0.11);
+        else addAxisBox(b, cx - 0.11, cx + 0.11, yr - 0.03, yr + 0.07, cz + u0, cz + u1);
       }
     }
 
@@ -231,7 +298,7 @@ export function buildLevelRoof(opts) {
         if (o > 0.12) face(line - sgn * o, line, y0 + 0.002, y0 + 0.022); // soffit: the flat board under the overhang
       }
     }
-    rectInfo.push({ x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1, type });
+    rectInfo.push({ x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1, type: formType, ...(gabletInfo && (gabletInfo[edgeOf['u-']] || gabletInfo[edgeOf['u+']]) ? { gablets: gabletInfo } : {}) });
   });
   return { builder: b, rects: rectInfo };
 }

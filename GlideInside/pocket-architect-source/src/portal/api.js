@@ -87,8 +87,9 @@ const ID_CALLS = new Set(['updateLead', 'deleteLead', 'retryWebhookDelivery', 'a
 // With no flag an anonymous visitor never calls /portal/me, so public pages log no 401 in the console. Server auth is unchanged.
 export const SESSION_HINT_KEY = 'gi.portal.hint';
 const hintStore = () => { try { return globalThis.localStorage || null; } catch { return null; } };
-export const hasSessionHint = () => { const ls = hintStore(); if (!ls) return true; try { return ls.getItem(SESSION_HINT_KEY) === '1'; } catch { return true; } }; // storage blocked: cannot tell, so ask the server
+export const hasSessionHint = () => { if (getTabKey()) return true;  const ls = hintStore(); if (!ls) return true; try { return ls.getItem(SESSION_HINT_KEY) === '1'; } catch { return true; } }; // storage blocked: cannot tell, so ask the server
 export const setSessionHint = (on) => { const ls = hintStore(); if (!ls) return; try { if (on) ls.setItem(SESSION_HINT_KEY, '1'); else ls.removeItem(SESSION_HINT_KEY); } catch { /* storage blocked */ } };
+import { tabHeaders, keepTabKey, getTabKey, clearTabKey } from './tab-session.js';
 const SIGNS_IN = new Set(['signIn', 'changePassword', 'completePasswordReset']);
 
 /** Real HTTP implementation of the same calls. `me` resolves null on 401. `archiveHouse(id, archived)` sends { archived }. */
@@ -111,18 +112,22 @@ export function createHttpApi({ base = CONFIG.apiBase, fetchImpl = null } = {}) 
     else body = rest[0] ?? {};
     let res;
     try {
-      res = await doFetch(`${root}${path}${query}`, { method, headers: { accept: 'application/json', 'x-gi-request': '1', ...(body !== undefined ? { 'content-type': 'application/json' } : {}) }, body: body === undefined ? undefined : JSON.stringify(body), credentials: 'same-origin', cache: 'no-store' });
+      res = await doFetch(`${root}${path}${query}`, { method, headers: { accept: 'application/json', 'x-gi-request': '1', ...tabHeaders(), ...(body !== undefined ? { 'content-type': 'application/json' } : {}) }, body: body === undefined ? undefined : JSON.stringify(body), credentials: 'same-origin', cache: 'no-store' });
     } catch {
       throw new ApiError('NETWORK', 'Could not reach the Glide Inside server. Check your connection and try again.');
     }
     const data = await res.json().catch(() => null);
+    if (SIGNS_IN.has(name)) keepTabKey(res); // this tab now holds its own session key
     if (!res.ok) {
-      if (name === 'me' && res.status === 401) { setSessionHint(false); return null; }
+      if (name === 'me' && res.status === 401) { clearTabKey(); setSessionHint(false); return null; }
       const e = data?.error && typeof data.error === 'object' ? data.error : data || {};
       throw new ApiError(e.code || 'ERROR', e.message || 'Something went wrong.', { status: res.status, details: e });
     }
+    if (name === 'me' && data?.user && !getTabKey()) { // a tab with no key of its own pins itself to the account it is showing now
+      try { const t = await doFetch(`${root}/portal/session/tab`, { method: 'POST', headers: { accept: 'application/json', 'x-gi-request': '1', 'content-type': 'application/json' }, body: '{}', credentials: 'same-origin', cache: 'no-store' }); if (t.ok) keepTabKey(t); } catch { /* keeps using the shared cookie */ }
+    }
     if (SIGNS_IN.has(name) || (name === 'me' && data?.user)) setSessionHint(true);
-    else if (name === 'signOut') setSessionHint(false);
+    else if (name === 'signOut') { clearTabKey(); setSessionHint(false); }
     return data;
   }
   return Object.fromEntries(CALLS.map((n) => [n, (...args) => call(n, args)]));

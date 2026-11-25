@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import * as G from '../model/geometry.js';
 import { GeoBuilder, addBox, addOrientedBox, addCylinder } from './mesh-builder.js';
 import { makeMesh, flattenGroup } from './model-util.js';
+import { stairLayout, isShaped } from '../model/stair-geom.js';
 
 const DEG = Math.PI / 180;
 
@@ -171,6 +172,7 @@ export function shade(hex, f) {
 export function addStair(ctx, parent, level, stair, rise) {
   const elev = level.elevation / 1000;
   const b = new GeoBuilder();
+  if (isShaped(stair)) { addShapedStair(ctx, parent, level, stair, rise, b, elev); return; }
   const nr = Math.max(3, Math.round(rise / 0.18));
   const riser = rise / nr;
   const going = stair.length / 1000 / nr;
@@ -188,6 +190,26 @@ export function addStair(ctx, parent, level, stair, rise) {
     const sx = cx - s * vm;
     const sz = cz + c * vm;
     addOrientedBox(b, sx, sz, w / 2, going / 2, ang, elev, elev + k * riser, { pu: 'step', nu: 'step', pv: 'step', nv: 'step', py: 'tread', ny: null });
+  }
+  const fin = ctx.floorFinish({ type: 'living', floor: null }, 'timber');
+  const mat = ctx.lib.get(fin.material, fin.hex);
+  const mesh = makeMesh(b.build(), { step: ctx.lib.plain(shade(fin.hex, 0.78), { rough: 0.7 }), tread: mat }, { kind: 'stair', id: stair.id, levelId: level.id }, { name: `stair:${stair.id}` });
+  if (mesh) parent.add(mesh);
+}
+
+// An L or U stair: every tread (and the landing) is a slab 180 mm thick at its own height, so the space under the landing stays open
+// (a store, a cupboard) and the sawtooth reads in section. The treads follow the layout in model/stair-geom.js.
+function addShapedStair(ctx, parent, level, stair, rise, b, elev) {
+  const L = stairLayout(stair, rise * 1000);
+  const ang = (stair.rotation || 0) * DEG;
+  for (const t of L.treads) {
+    const [p0, p1, p2] = t.poly;
+    const cx = (p0.x + t.poly[2].x) / 2000;
+    const cz = (p0.y + t.poly[2].y) / 2000;
+    const hu = G.dist(p0, p1) / 2000;
+    const hv = G.dist(p1, p2) / 2000;
+    const top = elev + t.top / 1000;
+    addOrientedBox(b, cx, cz, hu, hv, ang, top - (t.landing ? 0.2 : 0.18), top, { pu: 'step', nu: 'step', pv: 'step', nv: 'step', py: 'tread', ny: 'step' });
   }
   const fin = ctx.floorFinish({ type: 'living', floor: null }, 'timber');
   const mat = ctx.lib.get(fin.material, fin.hex);

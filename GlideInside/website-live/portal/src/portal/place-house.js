@@ -76,7 +76,14 @@ function transformer(house, pose) {
     const v = (((deg % 360) + 540) % 360) - 180; // -180..180
     return v === -180 ? 180 : v;
   };
-  return { pt, rot: (deg) => norm((deg || 0) + (pose.rotation || 0)) };
+  // Dutch gable points move with the house and their ends (n, e, s, w) turn with it, to the nearest quarter turn
+  const quarter = (((Math.round((pose.rotation || 0) / 90) % 4) + 4) % 4);
+  const turnEnd = (e) => { let v = e; for (let i = 0; i < quarter; i++) v = { n: 'e', e: 's', s: 'w', w: 'n' }[v] || v; return v; };
+  const roof = (r) => {
+    if (!r?.gablets) return r;
+    return { ...r, gablets: r.gablets.map((g) => ({ ...g, ...pt(g), ...(Array.isArray(g.ends) ? { ends: g.ends.map(turnEnd) } : {}) })) };
+  };
+  return { pt, roof, rot: (deg) => norm((deg || 0) + (pose.rotation || 0)) };
 }
 
 const sameElevation = (a, b) => Math.abs(a - b) <= ELEV_TOL;
@@ -98,16 +105,17 @@ export function placeHouse(project, house, pose = {}) {
   const record = { id: uid('pl'), houseName: house.name || 'House', pose: p, mirrored: !!pose.mirrored, levels: [], entityIds: [], wallIds: [], tankIds: [] };
   const wasEmpty = !project.levels.some((l) => l.walls.length || l.rooms.length || l.furniture.length || l.stairs.length);
 
+  const stairMap = new Map(); // a void sits on the level above its stair
   for (const src of [...house.levels].sort((a, b) => a.elevation - b.elevation)) {
     let target = project.levels.find((l) => sameElevation(l.elevation, src.elevation));
     let added = false;
     if (!target) {
-      target = createLevel({ name: src.name, elevation: src.elevation, height: src.height, roof: structuredClone(src.roof) });
+      target = createLevel({ name: src.name, elevation: src.elevation, height: src.height, roof: T.roof(structuredClone(src.roof)) });
       project.levels.push(target);
       added = true;
     } else if (!target.walls.length && !target.rooms.length) {
       // An empty level takes the house's roof and ceiling height; a level with content keeps its own.
-      target.roof = structuredClone(src.roof);
+      target.roof = T.roof(structuredClone(src.roof));
       target.height = src.height;
     }
     record.levels.push({ levelId: target.id, added });
@@ -149,10 +157,19 @@ export function placeHouse(project, house, pose = {}) {
     for (const s of src.stairs) {
       const ns = structuredClone(s);
       ns.id = uid('s');
+      stairMap.set(s.id, ns.id);
       Object.assign(ns, T.pt(s));
       ns.rotation = T.rot(s.rotation);
       target.stairs.push(ns);
       record.entityIds.push(ns.id);
+    }
+    for (const v of src.voids || []) {
+      const nv = structuredClone(v);
+      nv.id = uid('v');
+      nv.polygon = v.polygon.map(T.pt);
+      if (v.stairId) nv.stairId = stairMap.get(v.stairId) || null;
+      (target.voids ||= []).push(nv);
+      record.entityIds.push(nv.id);
     }
   }
   for (const t of house.site?.tanks || []) {

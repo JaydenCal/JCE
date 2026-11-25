@@ -718,7 +718,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
 
   async function enquiryJce(request) {
     const body = await readJson(request, 10_000_000);
-    return json(await handleEnquiry({ body, request, store, config, fetchImpl: doFetch, now, clientIp }));
+    return json(await handleEnquiry({ body, request, store, config, fetchImpl: doFetch, now, clientIp, routeLead: leads ? (a) => leads.routePlansetLead(a) : null }));
   }
 
   // Router ----------------------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 // team, branding and org settings, plus the admin-token jobs (create an organisation, run month end invoicing).
 // Web-standard Request in, Response out, like app.js. Mounted by createApp under /api/portal/* and /api/billing/run-month.
 
+import { BUILDER_TYPES, builderTypeOf, areasOf, cleanAreas, findAreaConflict } from './areas.js';
 import { migrate, validate } from '../../src/model/schema.js';
 import { GLIDE_LIBRARY } from '../../src/portal/glide-library.generated.js';
 import { houseStats } from '../../src/portal/house-stats.js';
@@ -39,6 +40,17 @@ const rid = (prefix) => `${prefix}_${[...crypto.getRandomValues(new Uint8Array(1
 const clone = (v) => (v == null ? v : JSON.parse(JSON.stringify(v)));
 const emailOk = (e) => !e || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 const isStaff = (u) => u.role !== 'client';
+/**
+ * The session token of a request. A tab that signed in sends its own token in X-GI-Tab (kept in that tab's sessionStorage), and that header
+ * decides alone: a bad or ended tab token is never replaced by the shared cookie, so two tabs signed in as two builders never see each other's
+ * data. Only a request with no header (an old page, a new tab) falls back to the cookie, which follows the most recent sign in in the browser.
+ */
+export const TAB_HEADER = 'x-gi-tab';
+const sessionToken = (request) => {
+  const h = request.headers.get(TAB_HEADER);
+  if (h != null && h !== '') return { token: h, fromTab: true };
+  return { token: cookies(request)[COOKIE], fromTab: false };
+};
 const cookies = (request) => Object.fromEntries((request.headers.get('cookie') || '').split(';').map((c) => c.trim().split(/=(.*)/s).slice(0, 2)).filter(([k]) => k));
 
 function text(v, name, { max = 120, required = false } = {}) {
@@ -83,12 +95,13 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const nowMs = now();
     await pstore.createSession({ idHash, userId: user.id, createdAt: iso(nowMs), lastSeenAt: iso(nowMs), expiresAt: iso(nowMs + config.sessionDays * DAY) });
     r.setCookie = sessionCookie(token, Math.round(config.sessionDays * 86400));
+    r.tabKey = token; // returned to the page in X-GI-Tab, which keeps it for this tab only
     return idHash;
   }
 
   /** The signed in user and org, or throws. `need` is a permission; the forced password change blocks everything else. */
   async function auth(r, { need = null, allowChange = false, allowReadOnly = false } = {}) {
-    const token = cookies(r.request)[COOKIE];
+    const { token, fromTab } = sessionToken(r.request);
     if (!token || token.length > 100) throw new HttpError('UNAUTHORISED', 'Please sign in.');
     const idHash = await sha256Hex(token);
     const session = await pstore.getSession(idHash);
@@ -106,7 +119,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (!org) throw new HttpError('UNAUTHORISED', 'Please sign in.');
     if (nowMs - Date.parse(session.lastSeenAt) > SESSION_TOUCH_MS) {
       await pstore.touchSession(idHash, iso(nowMs), iso(nowMs + config.sessionDays * DAY)); // sliding expiry
-      r.setCookie = sessionCookie(token, Math.round(config.sessionDays * 86400));
+      if (!fromTab) r.setCookie = sessionCookie(token, Math.round(config.sessionDays * 86400)); // a tab with its own key never rewrites the shared cookie
     }
     if (user.mustChangePassword && !allowChange) throw new HttpError('PASSWORD_CHANGE_REQUIRED', 'Choose a new password before you continue.');
     if (need && !PERMS[user.role].includes(need)) throw new HttpError('FORBIDDEN', 'Your role does not allow that.');
@@ -236,15 +249,28 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   }
 
   async function signOut(r) {
-    const token = cookies(r.request)[COOKIE];
+    const { token, fromTab } = sessionToken(r.request);
+    const cookieToken = cookies(r.request)[COOKIE];
     if (token && token.length <= 100) {
       const idHash = await sha256Hex(token);
       const session = await pstore.getSession(idHash);
       await pstore.deleteSession(idHash);
       if (session) await pstore.bumpSessionEpoch(session.userId); // AI bearer tokens issued to this login stop working
     }
-    r.setCookie = sessionCookie('', 0);
+    // Signing out in a tab that has its own key ends only that tab's session. The shared cookie is cleared only when it is the same session.
+    if (!fromTab || !cookieToken || cookieToken === token) r.setCookie = sessionCookie('', 0);
     return json({ ok: true });
+  }
+
+  /**
+   * POST /portal/session/tab: a tab that has no key yet (opened after a sign in elsewhere, or an old page) asks for its own. The shared cookie
+   * must be valid. A NEW session for the same login is made and returned in X-GI-Tab, so signing out in one tab never ends another.
+   */
+  async function tabSession(r) {
+    const { user, org } = await auth(r, { allowChange: true, allowReadOnly: true });
+    await startSession(r, user);
+    r.setCookie = null; // the shared cookie stays as it is
+    return json(await meBody(user, org));
   }
 
   async function meBody(user, org) {
@@ -1016,6 +1042,26 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     await pstore.updateOrg(org.id, { slug });
     return json({ id: org.id, slug });
   }
+  /**
+   * POST /portal/admin/orgs/:id/areas (bearer admin token): { builderType?: 'house'|'shed', areas?: ['2340', 'Tamworth'] }. The owner sets which
+   * postcodes and suburbs an org holds for free plan set leads. One org of each builder type holds an area: an area already held by another org
+   * of the same type is refused with CONFLICT. Builders cannot change their own areas.
+   */
+  async function adminAreas(r, id) {
+    await adminAuth(r.request);
+    const org = await adminOrg(r, id);
+    const b = await readJson(r.request, 20000).catch(() => ({}));
+    const type = b.builderType === undefined ? builderTypeOf(org) : b.builderType;
+    if (!BUILDER_TYPES.includes(type)) throw new HttpError('BAD_REQUEST', 'builderType must be house or shed.');
+    let areas = areasOf(org);
+    if (b.areas !== undefined) {
+      try { areas = cleanAreas(b.areas); } catch (e) { throw new HttpError('BAD_REQUEST', e.message); }
+    }
+    const clash = findAreaConflict(await pstore.listOrgs(), org.id, type, areas);
+    if (clash) throw new HttpError('CONFLICT', `${clash.area} is already held by ${clash.orgName}, another ${type} builder.`, { area: clash.area });
+    await pstore.updateOrg(org.id, { builderType: type, areas });
+    return json({ id: org.id, builderType: type, areas });
+  }
   async function createOrg(r) {
     await adminAuth(r.request);
     const b = await readJson(r.request, 4096);
@@ -1161,7 +1207,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       id: org.id, internal: org.internal === true, name: org.name, slug: org.slug || null, shortCode: org.shortCode, legalName: org.legalName || '', abn: org.abn || '', createdAt: org.createdAt, requestId: org.requestId || null,
       account: accountView(org, nowMs), trialExtendedDays: org.trialExtendedDays || 0, convertedAt: org.convertedAt || null, convertedHow: org.convertedHow || null,
       admin: admin ? { id: admin.id, name: admin.name, username: admin.username, email: admin.email || '', mustChangePassword: !!admin.mustChangePassword, lastSignInAt: admin.lastSignInAt || null } : null,
-      directoryListed: org.directoryListed === true, pendingClientRequests: await pstore.countPendingClientRequests(org.id),
+      directoryListed: org.directoryListed === true, builderType: builderTypeOf(org), areas: areasOf(org), pendingClientRequests: await pstore.countPendingClientRequests(org.id),
       billingContact: billingContact(org), billingReady: org.internal === true || contactComplete(org) || !!org.paymentMethodId,
       billingSkipRisk: org.internal !== true && accountView(org, nowMs).status === 'active' && !contactComplete(org) && !org.paymentMethodId && (topUps > 0 || issues.some((i) => i.month === month && Date.parse(i.issuedAt) < LOGIN_WAIVER_FROM_MS)), // something is billable at month end (AI top-ups, or login rows from before 11/11/2026; later login rows are waived) but there is no way to invoice it
       staffCount: staff.length,
@@ -1184,7 +1230,8 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
    * Owner import of a builder's own designs into that org's house library. Each house goes through the same checks as saveHouse
    * (migrate, validate, size cap, name rules, stats, thumbnail). Idempotent by name: a design with the same name (any case) in THIS org is
    * replaced in place (same id, unarchived), otherwise a new one is added. Only the org in the URL is read or written.
-   * Answers 200 { orgId, created, replaced, failed, results: [{ name, status, id?, error? }] }; a bad house fails alone.
+   * Optional exclusive: true archives every other design of this org once all houses imported, so the library holds only this request's designs.
+   * Answers 200 { orgId, created, replaced, failed, archived, results: [{ name, status, id?, error? }] }; a bad house fails alone.
    */
   async function adminImportHouses(r, id) {
     await adminAuth(r.request);
@@ -1223,7 +1270,16 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       }
     }
     const n = (k) => results.filter((x) => x.status === k).length;
-    return json({ orgId: org.id, created: n('created'), replaced: n('replaced'), failed: n('failed'), results });
+    // exclusive: true makes this request the org's whole library: every other design of THIS org is archived (never deleted). Other orgs are never touched.
+    let archived = 0;
+    if (body.exclusive === true && !n('failed')) {
+      for (const h of await pstore.listHouses(org.id)) {
+        if (h.archived || seen.has(h.name.toLowerCase())) continue;
+        const full = await pstore.getHouse(org.id, h.id);
+        if (full) { await pstore.saveHouse({ ...full, archived: true, updatedAt: iso() }); archived += 1; }
+      }
+    }
+    return json({ orgId: org.id, created: n('created'), replaced: n('replaced'), failed: n('failed'), archived, results });
   }
   async function adminOrg(r, id) {
     const org = await pstore.getOrg(id);
@@ -1406,7 +1462,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     }
   };
   const ROUTES = [
-    ['POST', '/session', signIn, { open: true }], ['DELETE', '/session', signOut, { open: true }], ['GET', '/me', me], ['POST', '/password', changePassword],
+    ['POST', '/session', signIn, { open: true }], ['DELETE', '/session', signOut, { open: true }], ['POST', '/session/tab', tabSession], ['GET', '/me', me], ['POST', '/password', changePassword],
     ['POST', '/password/reset-request', resetRequest, { open: true }], ['POST', '/password/reset', resetComplete, { open: true }],
     ['GET', '/houses', listHouses], ['POST', '/houses', saveHouse], ['GET', `/houses/${ID}`, getHouse], ['POST', `/houses/${ID}/duplicate`, duplicateHouse], ['POST', `/houses/${ID}/archive`, archiveHouse],
     ['GET', '/glide-library', listGlide], ['GET', `/glide-library/${ID}`, getGlide],
@@ -1424,7 +1480,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     ['GET', '/admin/client-requests', adminClientRequests, { token: true }],
     ['POST', '/admin/orgs', createOrg, { token: true }],
     ['POST', '/billing/setup', billingSetup], ['POST', '/billing/setup/confirm', billingSetupConfirm],
-    ['POST', '/trial-request', trialRequest, { noCsrf: true }], ['GET', `/brand/${ID}`, brandBySlug, { noCsrf: true }], ['POST', `/admin/orgs/${ID}/slug`, adminSlug, { token: true }],
+    ['POST', '/trial-request', trialRequest, { noCsrf: true }], ['GET', `/brand/${ID}`, brandBySlug, { noCsrf: true }], ['POST', `/admin/orgs/${ID}/slug`, adminSlug, { token: true }], ['POST', `/admin/orgs/${ID}/areas`, adminAreas, { token: true }],
     ['GET', '/admin/trial-requests', adminRequests, { token: true }], ['POST', `/admin/trial-requests/${ID}/approve`, adminApprove, { token: true }], ['POST', `/admin/trial-requests/${ID}/decline`, adminDecline, { token: true }],
     ['GET', '/admin/enquiries', adminEnquiries, { token: true }], ['GET', `/admin/enquiries/${ID}/pdf`, adminEnquiryPdf, { token: true }],
     ['GET', '/admin/orgs', adminOrgs, { token: true }], ['POST', `/admin/orgs/${ID}/extend-trial`, adminExtend, { token: true }], ['POST', `/admin/orgs/${ID}/convert`, adminConvert, { token: true }], ['POST', `/admin/orgs/${ID}/login-rate`, adminLoginRate, { token: true }], ['GET', `/admin/orgs/${ID}/jobs`, adminJobs, { token: true }], ['POST', `/admin/orgs/${ID}/job-plan`, adminJobPlan, { token: true }], ['POST', `/admin/orgs/${ID}/brand-colours`, adminBrandColours, { token: true }], ['POST', `/admin/orgs/${ID}/reset-admin`, adminResetAdmin, { token: true }],
@@ -1453,6 +1509,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       if (!rt.opts.token && !rt.opts.noCsrf) checkCsrf(request, url); // bearer token routes carry no cookie, so there is nothing to forge
       const res = await rt.handler(r, ...m.slice(1).map(decode));
       if (r.setCookie) res.headers.append('set-cookie', r.setCookie);
+      if (r.tabKey) res.headers.set(TAB_HEADER, r.tabKey);
       return res;
     }
     if (matchedPath) throw new HttpError('BAD_REQUEST', 'That method is not allowed for this endpoint.', {}, 405);

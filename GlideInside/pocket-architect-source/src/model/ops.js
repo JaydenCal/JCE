@@ -3,6 +3,7 @@
 // ctx: { activeLevelId, catalogue } where catalogue (optional) validates ids.
 
 import * as S from './schema.js';
+import { stairLayout, shapedParams, isShaped, STAIR_SHAPES, STAIR_TURNS } from './stair-geom.js';
 import * as G from './geometry.js';
 import * as SITE from './placement.js';
 import { fitHouse } from '../site/fit-house.js';
@@ -54,8 +55,9 @@ export function findEntity(project, id) {
       ['room', 'rooms'],
       ['furniture', 'furniture'],
       ['stair', 'stairs'],
+      ['void', 'voids'],
     ]) {
-      const item = level[key].find((e) => e.id === id);
+      const item = (level[key] || []).find((e) => e.id === id);
       if (item) return { kind, item, level, list: level[key] };
     }
   }
@@ -199,6 +201,14 @@ export function classifyWalls(project, level) {
   }
 }
 
+// End margins of an opening along its wall (mm). Where the wall ends on another wall the opening may run right up to it (0), at a free
+// end a small margin of 30 stays. These are small so that a door or window sits where the plan puts it.
+export const FREE_END_MARGIN = 30;
+export function endMargins(level, wall) {
+  const touches = (pt) => level.walls.some((w) => w.id !== wall.id && G.wallLength(w) >= MIN_WALL && G.pointOnSegment(pt, w.a, w.b));
+  return [touches(wall.a) ? 0 : FREE_END_MARGIN, touches(wall.b) ? 0 : FREE_END_MARGIN];
+}
+
 // Keep every opening inside its wall. Shrinks or drops openings that no longer fit.
 function refitOpenings(level) {
   level.openings = level.openings.filter((o) => {
@@ -206,23 +216,30 @@ function refitOpenings(level) {
     if (!w) return false;
     const L = G.wallLength(w);
     if (L < 500) return false;
-    o.width = Math.min(o.width, L - 200);
-    o.offset = G.clamp(o.offset, 100 + o.width / 2, L - 100 - o.width / 2);
+    const [m0, m1] = endMargins(level, w);
+    o.width = Math.min(o.width, L - m0 - m1);
+    o.offset = G.clamp(o.offset, m0 + o.width / 2, L - m1 - o.width / 2);
     return true;
   });
 }
 
-export function fitOpening(level, wall, o) {
+// Fits an opening to its wall. By default the opening is nudged to fit (the editor wants that). With `exact` the opening is never moved or
+// narrowed: one that does not fit, or overlaps another opening, is reported as a problem (an Error) instead.
+export function fitOpening(level, wall, o, { exact = false } = {}) {
   const L = G.wallLength(wall);
-  const margin = 100;
-  if (L - 2 * margin < 300) fail('That wall is too short for an opening');
-  if (o.width > L - 2 * margin) o.width = Math.floor(L - 2 * margin);
-  o.offset = G.clamp(o.offset, margin + o.width / 2, L - margin - o.width / 2);
+  const [m0, m1] = endMargins(level, wall);
+  if (L - m0 - m1 < 300) fail('That wall is too short for an opening');
+  if (exact) {
+    if (o.offset - o.width / 2 < m0 - 0.5 || o.offset + o.width / 2 > L - m1 + 0.5) fail(`That opening does not fit the wall (it needs ${Math.round(o.offset - o.width / 2)} to ${Math.round(o.offset + o.width / 2)} of a ${Math.round(L)} wall)`);
+  } else {
+    if (o.width > L - m0 - m1) o.width = Math.floor(L - m0 - m1);
+    o.offset = G.clamp(o.offset, m0 + o.width / 2, L - m1 - o.width / 2);
+  }
   const span = G.openingSpan(o);
   const clash = level.openings.find((q) => {
     if (q.wallId !== wall.id || q.id === o.id) return false;
     const s = G.openingSpan(q);
-    return s.start < span.end && s.end > span.start;
+    return s.start < span.end - 0.5 && s.end > span.start + 0.5;
   });
   if (clash) fail(`That overlaps ${clash.kind.replace('_', ' ')} ${clash.id} on the same wall`);
   const top = wall.height ?? level.height;
@@ -377,7 +394,7 @@ export function addOpening(project, level, args) {
     side: args.side,
     status: args.status,
   });
-  fitOpening(level, wall, o);
+  fitOpening(level, wall, o, { exact: args.exact === true });
   level.openings.push(o);
   return o;
 }
@@ -418,6 +435,12 @@ export function mirrorPlan(project, axis) {
       it.y = p.y;
       it.rotation = lr ? -it.rotation : 180 - it.rotation;
     }
+    for (const st of l.stairs) if (st.turn) st.turn = st.turn === 'left' ? 'right' : 'left'; // a mirror swaps hands
+    for (const v of l.voids || []) v.polygon = v.polygon.map(f);
+    if (l.roof?.gablets) {
+      const swap = lr ? { e: 'w', w: 'e' } : { n: 's', s: 'n' };
+      l.roof.gablets = l.roof.gablets.map((g) => ({ ...g, ...f(g), ...(Array.isArray(g.ends) ? { ends: g.ends.map((e) => swap[e] || e) } : {}) }));
+    }
     classifyWalls(project, l);
   }
   for (const t of project.site.tanks) {
@@ -428,6 +451,42 @@ export function mirrorPlan(project, axis) {
 }
 
 // Registry ---------------------------------------------------------------------
+// Floor to floor height of a level in mm: up to the next level, else the project default.
+function floorRiseOf(project, level) {
+  const up = project.levels.filter((l) => l.elevation > level.elevation).sort((x, y) => x.elevation - y.elevation)[0];
+  return up ? up.elevation - level.elevation : project.settings.floorToFloor || 3000;
+}
+
+const HALF_WALL_MM = 1000;
+// Half height walls along the void edges that are not already against a wall (90 mm thick, 1000 mm high).
+function voidHalfWalls(project, level, v) {
+  const n = v.polygon.length;
+  for (let i = 0; i < n; i++) {
+    const a = v.polygon[i];
+    const b = v.polygon[(i + 1) % n];
+    if (G.dist(a, b) < 300) continue;
+    const mid = G.lerp(a, b, 0.5);
+    const d = G.norm(G.sub(b, a));
+    const against = level.walls.some((w) => Math.abs(G.dot(d, G.wallDir(w))) > 0.95 && G.projectToSegment(mid, w.a, w.b).d < (w.thickness || 100) / 2 + 150);
+    if (against) continue;
+    splitWallsAtPoints(level, [a, b]);
+    addWallSegment(level, a, b, { thickness: 90, height: HALF_WALL_MM, status: v.status || 'new' });
+  }
+  normaliseWalls(level);
+  classifyWalls(project, level);
+}
+
+// Cut the stair well in the floor of the level above a stair.
+function cutStairVoid(project, level, stair, rail, rise) {
+  const upper = project.levels.filter((l) => l.elevation > level.elevation).sort((x, y) => x.elevation - y.elevation)[0];
+  if (!upper) fail('There is no level above for the stair void');
+  if (!Array.isArray(upper.voids)) upper.voids = [];
+  const v = S.createVoid({ polygon: stairLayout(stair, rise).voidPoly.map((q) => ({ x: Math.round(q.x), y: Math.round(q.y) })), rail, stairId: stair.id });
+  upper.voids.push(v);
+  if (rail === 'half_wall') voidHalfWalls(project, upper, v);
+  return v;
+}
+
 const P = {
   num: (description) => ({ type: 'number', description }),
   str: (description) => ({ type: 'string', description }),
@@ -589,6 +648,7 @@ export const OPS = {
       style: P.str('Window style: sliding, awning, fixed, double_hung, louvre'),
       hinge: P.enm(['a', 'b'], 'Door hinge end'),
       side: P.num('Door swing side: 1 or -1'),
+      exact: P.bool('Never move or narrow the opening: report a problem when it does not fit'),
       status: STATUS_P,
     },
     required: ['kind'],
@@ -719,8 +779,8 @@ export const OPS = {
   },
   set_roof: {
     label: 'Change roof',
-    description: 'Set the roof type, pitch (degrees), eave overhang (mm) or turn the roof off for a level.',
-    params: { level: LEVEL, type: P.enm(S.ROOF_TYPES, 'Roof type'), pitch: P.num('Degrees'), overhang: P.num('Eave overhang mm'), enabled: P.bool('Roof on or off') },
+    description: 'Set the roof type (hip, dutch gable, gable, skillion, flat), pitch (degrees), eave overhang (mm) or turn the roof off for a level. A dutch gable roof is a hip with a small vertical gablet at each ridge end; gablet_size is the height of the gablet in mm. gablets picks wings and ends one by one: [{ x, y, ends, size }] where (x, y) is a plan point inside the roof wing, ends is a list of n, s, e, w ridge ends (or "ridge" for both, [] for none) and size is the gablet height in mm.',
+    params: { level: LEVEL, type: P.enm(S.ROOF_TYPES, 'Roof type'), pitch: P.num('Degrees'), overhang: P.num('Eave overhang mm'), enabled: P.bool('Roof on or off'), gablet_size: P.num('Gablet height mm, 150 to 3000'), gablets: { type: 'array', description: 'Per wing gablets [{ x, y, ends, size }]; an empty list clears them', items: { type: 'object' } } },
     required: [],
     run(p, a, ctx) {
       const level = getLevel(p, a.level, ctx);
@@ -728,6 +788,21 @@ export const OPS = {
       if (a.pitch != null) level.roof.pitch = num(a.pitch, 'pitch', { min: 1, max: 60 });
       if (a.overhang != null) level.roof.overhang = num(a.overhang, 'overhang', { min: 0, max: 1500 });
       if (a.enabled != null) level.roof.enabled = !!a.enabled;
+      if (a.gablet_size != null) level.roof.gabletSize = Math.round(num(a.gablet_size, 'gablet_size', { min: 150, max: 3000 }));
+      if (a.gablets != null) {
+        if (!Array.isArray(a.gablets)) fail('gablets must be a list');
+        if (a.gablets.length > 24) fail('At most 24 gablet settings');
+        level.roof.gablets = a.gablets.map((g, i) => {
+          const o = { x: Math.round(num(g?.x, `gablets[${i}].x`)), y: Math.round(num(g?.y, `gablets[${i}].y`)) };
+          if (g.ends != null) {
+            if (Array.isArray(g.ends)) o.ends = g.ends.map((e) => oneOf(e, S.GABLET_ENDS, 'gablet end'));
+            else o.ends = oneOf(g.ends, [...S.GABLET_ENDS, 'ridge', 'both'], 'gablet ends');
+          }
+          if (g.size != null) o.size = Math.round(num(g.size, `gablets[${i}].size`, { min: 0, max: 3000 }));
+          return o;
+        });
+        if (!level.roof.gablets.length) delete level.roof.gablets;
+      }
       return { level: level.id };
     },
   },
@@ -813,20 +888,60 @@ export const OPS = {
   },
   add_stair: {
     label: 'Add stairs',
-    description: 'Add a straight stair. (x, y) is its centre; length runs along the climb.',
-    params: { level: LEVEL, x: P.num('Centre x mm'), y: P.num('Centre y mm'), width: P.num('mm, default 1000'), length: P.num('mm, default 3600'), rotation: P.num('Degrees clockwise') },
+    description: 'Add a stair. By default a straight flight: (x, y) is its centre and length runs along the climb. With shape "L" or "U" the stair has a flat landing and a turn: (x, y) is the centre of the FIRST flight, risers is the total riser count, riser the riser height in mm (default floor to floor / risers), going the tread depth in mm, landing_at the number of the tread that is the landing, turn left or right as the climber sees it, landing_depth the landing depth in mm (default the width) and gap the space between the flights of a U. The first flight length is worked out. void_rail ("balustrade", "half_wall" or "none") also cuts a stair void in the floor of the level above, with that edge protection.',
+    params: {
+      level: LEVEL, x: P.num('Centre x mm'), y: P.num('Centre y mm'), width: P.num('mm, default 1000'), length: P.num('mm, default 3600 (straight stairs)'), rotation: P.num('Degrees clockwise'),
+      shape: P.enm(STAIR_SHAPES, 'straight (default), L or U'), risers: P.num('Total risers, L and U'), riser: P.num('Riser height mm'), going: P.num('Going mm'), landing_at: P.num('Tread number of the landing'),
+      turn: P.enm(STAIR_TURNS, 'Turn direction as the climber sees it'), gap: P.num('Gap between the flights of a U, mm'), landing_depth: P.num('Landing depth mm'),
+      void_rail: P.enm(S.VOID_RAILS, 'Cut a stair void in the floor above with this edge protection'),
+    },
     required: ['x', 'y'],
     run(p, a, ctx) {
       const level = getLevel(p, a.level, ctx);
-      const s = S.createStair({
-        x: Math.round(num(a.x, 'x')),
-        y: Math.round(num(a.y, 'y')),
-        width: num(a.width ?? 1000, 'width', { min: 600, max: 3000 }),
-        length: num(a.length ?? 3600, 'length', { min: 1000, max: 8000 }),
-        rotation: num(a.rotation ?? 0, 'rotation', { min: -3600, max: 3600 }),
-      });
+      const base = { x: Math.round(num(a.x, 'x')), y: Math.round(num(a.y, 'y')), width: num(a.width ?? 1000, 'width', { min: 600, max: 3000 }), rotation: num(a.rotation ?? 0, 'rotation', { min: -3600, max: 3600 }) };
+      const shape = a.shape == null ? 'straight' : oneOf(a.shape, STAIR_SHAPES, 'shape');
+      const rise = floorRiseOf(p, level);
+      let s;
+      if (shape === 'straight') s = S.createStair({ ...base, length: num(a.length ?? 3600, 'length', { min: 1000, max: 8000 }) });
+      else {
+        let P1;
+        try { P1 = shapedParams({ shape, risers: a.risers, riser: a.riser, going: a.going, landingAt: a.landing_at, turn: a.turn, gap: a.gap, width: base.width, landingDepth: a.landing_depth }, rise); } catch (e) { fail(e.message); }
+        s = S.createStair({ ...base, length: (P1.landingAt - 1) * P1.going, shape, risers: P1.risers, riser: P1.riser, going: P1.going, landingAt: P1.landingAt, turn: P1.turn, ...(shape === 'U' ? { gap: P1.gap } : {}), ...(P1.landingDepth ? { landingDepth: P1.landingDepth } : {}) });
+      }
       level.stairs.push(s);
-      return { id: s.id };
+      const out = { id: s.id };
+      if (a.void_rail != null) out.voidId = cutStairVoid(p, level, s, oneOf(a.void_rail, S.VOID_RAILS, 'void_rail'), rise).id;
+      return out;
+    },
+  },
+  add_void: {
+    label: 'Add floor void',
+    description: 'Cut an opening in the floor of a level (a stair void) given by its corner points. rail is balustrade (glass and rail on the open edges), half_wall (half height walls on the open edges) or none.',
+    params: { level: LEVEL, points: P.points('Corner points in order'), rail: P.enm(S.VOID_RAILS, 'Edge protection, default balustrade') },
+    required: ['points'],
+    run(p, a, ctx) {
+      const level = getLevel(p, a.level, ctx);
+      if (!Array.isArray(a.points) || a.points.length < 3) fail('A void needs at least 3 corner points');
+      const v = S.createVoid({ polygon: a.points.map((q) => ({ x: Math.round(num(q.x, 'x')), y: Math.round(num(q.y, 'y')) })), rail: a.rail == null ? 'balustrade' : oneOf(a.rail, S.VOID_RAILS, 'rail') });
+      level.voids.push(v);
+      if (v.rail === 'half_wall') voidHalfWalls(p, level, v);
+      return { id: v.id };
+    },
+  },
+  update_void: {
+    label: 'Edit floor void',
+    description: 'Change the corners or edge protection of a floor void.',
+    params: { id: P.str('Void id'), points: P.points('Corner points in order'), rail: P.enm(S.VOID_RAILS, 'Edge protection') },
+    required: ['id'],
+    run(p, a) {
+      const { item: v, level } = need(p, a.id, 'void');
+      if (a.points != null) {
+        if (!Array.isArray(a.points) || a.points.length < 3) fail('A void needs at least 3 corner points');
+        v.polygon = a.points.map((q) => ({ x: Math.round(num(q.x, 'x')), y: Math.round(num(q.y, 'y')) }));
+      }
+      if (a.rail != null) v.rail = oneOf(a.rail, S.VOID_RAILS, 'rail');
+      if (v.rail === 'half_wall') voidHalfWalls(p, level, v);
+      return { id: v.id };
     },
   },
   set_status: {
@@ -1015,16 +1130,24 @@ export function furnitureClashes(project, sizeOf = () => null) {
 Object.assign(OPS, {
   update_stair: {
     label: 'Edit stairs',
-    description: 'Move, resize or rotate stairs.',
-    params: { id: P.str('Stair id'), x: P.num('Centre x mm'), y: P.num('Centre y mm'), width: P.num('mm'), length: P.num('mm'), rotation: P.num('Degrees clockwise') },
+    description: 'Move, resize or rotate stairs. For an L or U stair the riser, going, landing, turn and gap can be changed too.',
+    params: { id: P.str('Stair id'), x: P.num('Centre x mm'), y: P.num('Centre y mm'), width: P.num('mm'), length: P.num('mm'), rotation: P.num('Degrees clockwise'), risers: P.num('Total risers (L and U)'), riser: P.num('Riser height mm (L and U)'), going: P.num('Going mm (L and U)'), landing_at: P.num('Landing tread number (L and U)'), turn: P.enm(STAIR_TURNS, 'Turn direction'), gap: P.num('Gap between U flights mm'), landing_depth: P.num('Landing depth mm') },
     required: ['id'],
     run(p, a) {
-      const { item: s } = need(p, a.id, 'stair');
+      const { item: s, level } = need(p, a.id, 'stair');
       if (a.x != null) s.x = Math.round(num(a.x, 'x'));
       if (a.y != null) s.y = Math.round(num(a.y, 'y'));
       if (a.width != null) s.width = num(a.width, 'width', { min: 600, max: 3000 });
-      if (a.length != null) s.length = num(a.length, 'length', { min: 1000, max: 8000 });
+      if (a.length != null && !isShaped(s)) s.length = num(a.length, 'length', { min: 1000, max: 8000 });
       if (a.rotation != null) s.rotation = num(a.rotation, 'rotation', { min: -3600, max: 3600 }) % 360;
+      if (isShaped(s) && ['risers', 'riser', 'going', 'landing_at', 'turn', 'gap', 'landing_depth'].some((k) => a[k] != null)) {
+        const merged = { shape: s.shape, risers: a.risers ?? s.risers, riser: a.riser ?? s.riser, going: a.going ?? s.going, landingAt: a.landing_at ?? s.landingAt, turn: a.turn ?? s.turn, gap: a.gap ?? s.gap, width: s.width, landingDepth: a.landing_depth ?? s.landingDepth };
+        let P1;
+        try { P1 = shapedParams(merged, floorRiseOf(p, level)); } catch (e) { fail(e.message); }
+        Object.assign(s, { risers: P1.risers, riser: P1.riser, going: P1.going, landingAt: P1.landingAt, turn: P1.turn, length: (P1.landingAt - 1) * P1.going });
+        if (s.shape === 'U') s.gap = P1.gap;
+        if (P1.landingDepth) s.landingDepth = P1.landingDepth;
+      } else if (isShaped(s) && a.width != null) s.length = (s.landingAt - 1) * s.going;
       return { id: s.id };
     },
   },

@@ -9,6 +9,7 @@
 import { CONFIG as DEFAULT_CONFIG } from '../config.js';
 import { isCommercialTool } from '../toolmode.js';
 import { injectStyles } from './styles.js';
+import { tabHeaders } from '../portal/tab-session.js';
 import { createApi } from './api.js';
 import { createMockApi } from './ai/mock.js';
 import { loadToken, saveToken, clearToken, tokenKey } from './entitlement.js';
@@ -465,7 +466,7 @@ export function createPremium(store, options = {}) {
   };
   // Order engineering: an order request saved on the server for JCE (POST /api/order/engineering), shown in the admin portal. Nothing is emailed.
   const sendOrder = async (body) => {
-    const r = await (fetchImpl || globalThis.fetch)(`${cfg.apiBase}/order/engineering`, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json', 'x-gi-request': '1' }, body: JSON.stringify(body) });
+    const r = await (fetchImpl || globalThis.fetch)(`${cfg.apiBase}/order/engineering`, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json', 'x-gi-request': '1', ...tabHeaders() }, body: JSON.stringify(body) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) { const e = new Error(j?.error?.message || j?.message || 'That could not be sent. Please try again.'); e.status = r.status; e.code = j?.error?.code; throw e; }
     return j;

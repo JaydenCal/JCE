@@ -6,9 +6,9 @@ import { el, track } from './util.js';
 import { CONFIG } from '../config.js';
 
 export const LEAD_SOURCE = 'planset-free';
-// Leads are stored for the owner only and are not forwarded to any builder (owner decision 25/11/2026), so the wording says the details MAY be passed on.
+// A free plan set lead is shared with the one builder who holds the lot's area (server side, matched by postcode or suburb), and always kept for the owner too.
 // The builder argument is kept for old callers and is ignored.
-export const consentText = () => 'I agree to Glide Inside contacting me, and passing my details and design to a local builder in my area, so they can contact me about building it.';
+export const consentText = () => 'I agree to Glide Inside sharing my details and design with the local builder who covers my area, so they can contact me about building.';
 export const LEAD_CONSENT = consentText(null); // the wording when no builder holds the area
 
 /**
@@ -22,6 +22,8 @@ export function areaBuilderFor(project, config = {}) {
   const name = typeof hit === 'string' ? hit : hit?.name;
   return name ? { name: String(name), postcode: String(pc) } : null;
 }
+/** The kind of design for routing the lead: 'shed' for sheds and outbuildings, else 'house' (houses and granny flats). */
+export const designKindOf = (project) => (project?.type === 'shed' || /shed|outbuild/i.test(String(project?.placedHouse?.id || '')) ? 'shed' : 'house');
 export const TIMEFRAME_Q = 'When are you hoping to build?';
 export const TIMEFRAMES = Object.freeze([['6m', 'Within 6 months'], ['12m', 'Within 12 months'], ['looking', 'Just looking']]);
 export const OWNERSHIP_Q = 'Do you own the block?';
@@ -53,7 +55,7 @@ export function leadBody(lead, project, { now = () => new Date() } = {}) {
   return {
     name: String(lead.name).trim(), email: String(lead.email).trim(), phone: '', need: 'planset', consent: true, source: LEAD_SOURCE,
     projectName: design,
-    consentText: lead.consentText || consentText(), builder: null, consentAt: now().toISOString(), suburb: String(lead.suburb).trim(), timeframe: lead.timeframe, ownership: lead.ownership, designType: lead.designType || '',
+    consentText: lead.consentText || consentText(), builder: null, consentAt: now().toISOString(), suburb: String(lead.suburb).trim(), postcode: String(sl.postcode || ''), timeframe: lead.timeframe, ownership: lead.ownership, designType: lead.designType || '',
     notes: [`FREE PLAN SET (${LEAD_SOURCE})`, `Suburb: ${String(lead.suburb).trim()}`, `Building: ${(TIMEFRAMES.find(([v]) => v === lead.timeframe) || [])[1] || ''}`, `Owns the block: ${(OWNERSHIPS.find(([v]) => v === lead.ownership) || [])[1] || ''}`, `Design: ${design || 'not named'}`, `Design type: ${lead.designType || 'not given'}`, `Surface: ${lead.surface || 'desktop'}`, `Consent: ${lead.consentText || consentText()}`, `Consent given: ${now().toISOString()}`].join('\n'),
     lot: { address: sl.address || '', lot: sl.lotNumber || '', dp: sl.planLabel || '', lga: sl.lga || '', zone: sl.zoning?.code ? `${sl.zoning.code}${sl.zoning.name ? ` ${sl.zoning.name}` : ''}` : '' },
   };
@@ -130,7 +132,7 @@ export function openFreePlanSet({ layer, project, submit, orderEngineering = nul
   let modal = null;
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const lead = { name: f.name.input.value, email: f.email.input.value, suburb: f.suburb.input.value, timeframe: timeframe.value, ownership: ownership.value, designType: project?.placedHouse?.id || '', consentText: shownConsent, builder, consent: consent.checked, surface };
+    const lead = { name: f.name.input.value, email: f.email.input.value, suburb: f.suburb.input.value, timeframe: timeframe.value, ownership: ownership.value, designType: designKindOf(project), consentText: shownConsent, builder, consent: consent.checked, surface };
     const bad = leadProblems(lead);
     status.hidden = !bad.length; status.textContent = bad[0]?.message || '';
     if (bad.length) return;

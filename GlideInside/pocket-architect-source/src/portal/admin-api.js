@@ -61,6 +61,8 @@ export function createAdminApi({ token, base = CONFIG.apiBase, fetchImpl = null 
     /** Owner only: the internal test account. The owner types the username and password; the password is hashed on the server and never returned. */
     createInternal: ({ orgName, username, password }) => call('POST', '/internal-orgs', { orgName, username, password }),
     setInternal: (id, internal) => call('POST', `/orgs/${encodeURIComponent(id)}/internal`, { internal }),
+    /** Owner only: the builder type ('house' or 'shed') and the postcodes and suburbs an org holds for free plan set leads. Resolves { id, builderType, areas }. */
+    setAreas: (id, { builderType, areas }) => call('POST', `/orgs/${encodeURIComponent(id)}/areas`, { builderType, areas }),
     resetAdmin: (id) => call('POST', `/orgs/${encodeURIComponent(id)}/reset-admin`, {}),
     // Free profile contacts (server/lib/profiles.js). Filters: consent (yes|no), type, from, to (YYYY-MM-DD), designs (none|some), mode (residential|commercial|both), suburb, q.
     profileContacts: (filters = {}) => call('GET', `/contacts${contactQuery(filters)}`, undefined, '/profile/admin'),

@@ -13,12 +13,15 @@
 // Nothing here sends email. A new lead is shown in the portal inbox and, if the builder set a webhook, POSTed to it as signed JSON.
 // :id is the builder's slug (or the organisation id when the builder has no slug).
 
+import { matchOrgForLead } from './areas.js';
 import { HttpError, json, readJson, clientIp } from './http.js';
 import { cleanSlug } from '../../src/portal/builders.js';
 
 export const LEAD_CONSENT_VERSION = '2026-11-19';
 export const consentTextFor = (name) => `I agree to ${name || 'this builder'} contacting me about this design and my block, using the details I have entered.`;
 export const WEBHOOK_MAX_ATTEMPTS = 5;
+// Free plan set leads shared with the builder who holds the area: the wording the visitor saw is stored with the lead.
+export const PLANSET_CONSENT_FALLBACK = 'I agree to Glide Inside sharing my details and design with the local builder who covers my area, so they can contact me about building.';
 const RETRY_DELAYS_MS = [60e3, 5 * 60e3, 30 * 60e3, 2 * 3600e3]; // after attempt 1, 2, 3, 4
 const rid = (p) => `${p}_${[...crypto.getRandomValues(new Uint8Array(8))].map((x) => x.toString(16).padStart(2, '0')).join('')}`;
 const emailOk = (e) => /^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/.test(e) && e.length <= 200;
@@ -88,6 +91,23 @@ export const leadsToCsv = (leads) => `${[LEAD_CSV_HEADER, ...leads.map((l) => [d
 export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, now = () => Date.now() }) {
   const siteHost = (() => { try { return new URL(config.siteOrigin).origin; } catch { return ''; } })();
   const iso = (ms = now()) => new Date(ms).toISOString();
+  /**
+   * Gives a free plan set enquiry (source planset-free) to the org that holds its area for its type: a row in that org's Leads tab. Matched by
+   * postcode, then suburb. Sheds and outbuildings go to shed builders, houses and granny flats to house builders. Nothing is emailed. Resolves
+   * { orgId, orgName, leadId } or null when no org matches (the lead then stays with the owner only).
+   */
+  async function routePlansetLead({ enquiry: e, reference, at }) {
+    const org = matchOrgForLead(await pstore.listOrgs(), e);
+    if (!org) return null;
+    const lot = e.lot || {};
+    const lead = {
+      id: `lead_${reference}`, orgId: org.id, createdAt: at, source: 'planset-free', name: e.name, email: e.email, phone: e.phone || '',
+      address: lot.address || [e.suburb, e.postcode].filter(Boolean).join(' '), lotLabel: [lot.lot, lot.dp].filter(Boolean).join(' '), houseId: '', houseName: e.projectName || '', hostOrigin: '',
+      consentAt: at, consentText: e.consentText || PLANSET_CONSENT_FALLBACK, consentVersion: LEAD_CONSENT_VERSION, status: 'new', note: [e.suburb ? `Suburb: ${e.suburb}` : '', e.userNotes || ''].filter(Boolean).join('. '),
+    };
+    await lstore.insertLead(lead);
+    return { orgId: org.id, orgName: org.name, leadId: lead.id };
+  }
   const leadView = (l) => ({ id: l.id, createdAt: l.createdAt, source: l.source, name: l.name, email: l.email, phone: l.phone, address: l.address, lotLabel: l.lotLabel, houseId: l.houseId, houseName: l.houseName, hostOrigin: l.hostOrigin, status: l.status, note: l.note, consentAt: l.consentAt });
 
   async function orgOfWidget(id) {
@@ -389,5 +409,5 @@ export function createLeads({ lstore, pstore, portal, store, config, fetchImpl, 
     if (matched) throw new HttpError('BAD_REQUEST', 'That method is not allowed for this endpoint.', {}, 405);
     return null;
   }
-  return { route, retryAllDue, purgeOld };
+  return { route, retryAllDue, purgeOld, routePlansetLead };
 }

@@ -229,7 +229,9 @@ CREATE TABLE IF NOT EXISTS orgs (
   brand_address TEXT,
   brand_phone TEXT,
   brand_email TEXT,
-  brand_website TEXT
+  brand_website TEXT,
+  builder_type TEXT,                 -- 'house' or 'shed' (NULL reads as house): which kind of free plan set lead the org receives (migration 0026)
+  areas_json TEXT                    -- JSON array of postcodes and suburbs the org holds, set by the owner only (migration 0026)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_orgs_slug ON orgs(slug);
 
