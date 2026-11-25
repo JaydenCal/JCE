@@ -52,3 +52,27 @@ export function removeExistingBuilding(project, id) {
   project.site.existingBuildings = next;
   return next.length !== list.length;
 }
+
+/** Change fields of one record (only the fields that are given). Returns the new record, or null when the id is unknown. */
+export function updateExistingBuilding(project, id, patch = {}) {
+  const list = project?.site?.existingBuildings;
+  const i = Array.isArray(list) ? list.findIndex((e) => e.id === id) : -1;
+  if (i < 0) return null;
+  const merged = { ...list[i] };
+  for (const [k, v] of Object.entries(patch)) if (v != null) merged[k] = v;
+  const rec = cleanExisting(merged);
+  project.site.existingBuildings = list.map((e, j) => (j === i ? rec : e));
+  return rec;
+}
+
+/** True when the plan point lies inside the building. */
+export function pointInExisting(e, pt) {
+  const poly = e.poly || existingPoly(e);
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const a = poly[i];
+    const b = poly[j];
+    if ((a.y > pt.y) !== (b.y > pt.y) && pt.x < ((b.x - a.x) * (pt.y - a.y)) / (b.y - a.y) + a.x) inside = !inside;
+  }
+  return inside;
+}

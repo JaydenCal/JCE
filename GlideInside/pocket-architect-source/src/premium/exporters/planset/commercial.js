@@ -269,7 +269,7 @@ export function existingScale(project, lot, { aerial = false } = {}) {
  * plans, one elevation sheet (C200, C201...) and one section sheet (C300, C301...) for every building or unit row, then C900 yield and C910
  * feasibility. A sheet with nothing to draw is not issued.
  */
-export function commercialSheetPlan(project, lot, { levels = null } = {}) {
+export function commercialSheetPlan(project, lot, { levels = null, has3d = false } = {}) {
   const out = [
     { id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX', scale: 'AS SHOWN' },
     { id: 'existing', code: 'C100', title: 'EXISTING SITE AND LEVELS', scale: 'NTS' },
@@ -301,6 +301,7 @@ export function commercialSheetPlan(project, lot, { levels = null } = {}) {
   targets.forEach((t, i) => {
     out.push({ id: 'sect', code: `C${300 + i}`, title: many ? `SECTIONS, ${t.tag}` : 'SECTIONS', scale: sectionScaleOf(t, levels), target: t.key });
   });
+  if (has3d) out.push({ id: 'views3d', code: 'C400', title: '3D VIEWS', scale: 'NTS' });
   out.push({ id: 'yield', code: 'C900', title: 'YIELD SUMMARY AND SCHEDULES', scale: 'NTS' }, { id: 'finance', code: 'C910', title: 'DEVELOPMENT FEASIBILITY', scale: 'NTS' });
   return out;
 }

@@ -12,6 +12,8 @@ import { carparkPanel } from '../commercial/ui/panel-carpark.js';
 import { pavePanel } from './panel-pave.js';
 import { drivePIPanel } from './panel-drivepi.js';
 import { tt } from '../phone/touch-text.js';
+import { existingBuildingsOf } from '../site/existing-buildings.js';
+import { textField } from './panel-forms.js';
 
 function helpCard(title, lines) {
   return h('div', null, h('div', { class: 'ps-sel-title' }, h('strong', null, title)), h('ul', { class: 'ps-hint', style: { paddingLeft: '18px', margin: '0 0 10px' } }, lines.map((l) => h('li', { style: { marginBottom: '3px' } }, l))));
@@ -194,8 +196,28 @@ export function buildToolPanel(ctx, tool) {
     body.append(h('div', { class: 'ps-sec' }, button('Remove underlay', () => editor?.removeUnderlay(), { cls: 'ps-btn--danger', icon: icon('trash', { size: 16 }) })));
   }
 
+  let existingId = null;
+  function existingPanel() {
+    existingId = store.ui.existingSel || null;
+    const rec = () => existingBuildingsOf(store.project).find((e) => e.id === existingId) || null;
+    body.append(h('div', { class: 'ps-sel-title' }, h('strong', null, 'Existing building')));
+    if (!rec()) {
+      body.append(h('p', { class: 'ps-hint' }, tt('Click the plan to place an existing building, for example the existing dwelling. Click one to change it, drag it to move it.', 'Tap the plan to place an existing building, for example the existing dwelling. Tap one to change it, drag it to move it.')));
+      return;
+    }
+    const upd = (label, patch) => ctx.run('update_existing_building', { id: existingId, ...patch });
+    const name = textField({ label: 'Name', get: () => rec()?.name, commit: (v) => upd('Name', { name: v || 'Existing dwelling' }), maxlength: 60 });
+    const wid = numberField({ label: 'Width', unit: 'm', step: 0.1, decimals: 2, min: 1, max: 200, get: () => (rec() ? rec().widthMm / 1000 : null), commit: (n) => upd('Width', { width: Math.round(n * 1000) }) });
+    const len = numberField({ label: 'Length', unit: 'm', step: 0.1, decimals: 2, min: 1, max: 200, get: () => (rec() ? rec().depthMm / 1000 : null), commit: (n) => upd('Length', { depth: Math.round(n * 1000) }) });
+    const rot = numberField({ label: 'Rotation', unit: '°', step: 1, decimals: 1, min: -360, max: 360, get: () => rec()?.rotationDeg, commit: (n) => upd('Rotation', { rotation: n }) });
+    for (const f of [name, wid, len, rot]) body.append(fb.add(f));
+    body.append(h('div', { class: 'ps-sec' }, button('Delete existing building', () => { if (ctx.run('remove_existing_building', { id: existingId })) store.setUI({ existingSel: null }); }, { cls: 'ps-btn--danger', icon: icon('trash', { size: 16 }) })));
+    body.append(h('p', { class: 'ps-hint' }, tt('Drag the building to move it. Click empty ground to place another. Delete removes it. Undo reverses each change.', 'Drag the building to move it. Tap empty ground to place another. Undo reverses each change.')));
+  }
+
   function render() {
-    if (tool in OPENING_TOOL_KIND) openingPanel();
+    if (tool === 'existing') existingPanel();
+    else if (tool in OPENING_TOOL_KIND) openingPanel();
     else if (tool === 'furniture') furniturePanel();
     else if (tool === 'tank') tankPanel();
     else if (tool === 'deck') deckPanel();
@@ -212,5 +234,6 @@ export function buildToolPanel(ctx, tool) {
 
   render();
   // Tool panels rebuild fully when the armed option or project changes (they hold no typed text).
-  return { el: root, refresh: redo, key: `tool:${tool}` };
+  const refresh = () => { if (tool === 'existing') { const rec = existingBuildingsOf(store.project).some((e) => e.id === store.ui.existingSel); if ((store.ui.existingSel || null) !== existingId || (existingId && !rec)) { redo(); return; } fb.refresh(); return; } redo(); };
+  return { el: root, refresh, key: `tool:${tool}` };
 }

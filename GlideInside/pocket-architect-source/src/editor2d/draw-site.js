@@ -10,6 +10,7 @@ import { boundaryDims, lotLabelLines, buildingHull } from '../site/lotplan.js';
 import { drawLotPlan } from './draw-lotplan.js';
 import { drawPavedWays } from './draw-pave.js';
 import { drawOverlays } from './draw-overlays.js';
+import { existingBuildingsOf } from '../site/existing-buildings.js';
 
 const BOUNDARY = '#d62828'; // red, so the lot reads clearly over an aerial and is never mistaken for proposed work
 const CONTOUR_MINOR = 'rgba(150,102,48,0.6)';
@@ -320,6 +321,47 @@ export function drawCredits(ctx, st) {
 }
 
 // All site layers in drawing order (called after the aerial underlay, before the plan).
+// Existing buildings the person placed: grey fill with a diagonal hatch, a dark grey outline, the name and the size in metres.
+export function drawExistingBuildings(ctx, st) {
+  const list = existingBuildingsOf(st.project);
+  if (!list.length) return;
+  const { view, theme } = st;
+  for (const e of list) {
+    ctx.save();
+    ctx.beginPath();
+    tracePoly(ctx, view, e.poly);
+    ctx.fillStyle = 'rgba(140,144,151,0.35)';
+    ctx.fill();
+    ctx.clip();
+    ctx.strokeStyle = 'rgba(110,114,121,0.55)';
+    ctx.lineWidth = 1;
+    const c = toScreen(view, { x: e.x, y: e.y });
+    const reach = (Math.hypot(e.widthMm, e.depthMm) / 2) * view.scale + 4;
+    ctx.beginPath();
+    for (let k = -reach; k <= reach; k += 9) { ctx.moveTo(c.x + k - reach, c.y + reach); ctx.lineTo(c.x + k + reach, c.y - reach); }
+    ctx.stroke();
+    ctx.restore();
+    ctx.save();
+    ctx.beginPath();
+    tracePoly(ctx, view, e.poly);
+    ctx.strokeStyle = '#6e7279';
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    const px = Math.min(e.widthMm, e.depthMm) * view.scale;
+    if (px > 46) {
+      ctx.fillStyle = theme.c.text || '#222';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = '600 12px system-ui, sans-serif';
+      ctx.fillText(String(e.name).toUpperCase(), c.x, c.y - 7);
+      ctx.font = '11px system-ui, sans-serif';
+      ctx.fillText(`${(e.widthMm / 1000).toFixed(1)} x ${(e.depthMm / 1000).toFixed(1)} m`, c.x, c.y + 8);
+    }
+    ctx.restore();
+  }
+}
+
 export function drawSite(ctx, st) {
   if (!st.project.site?.lot) return;
   drawOverlays(ctx, st); // site constraint overlays (off until switched on), under everything else; their legend is a separate final pass (drawOverlayLegend, editor.js)
@@ -328,5 +370,6 @@ export function drawSite(ctx, st) {
   drawLot(ctx, st);
   // Road, setback envelope (status coloured, edge labelled) and driveway come from the lot planner layers.
   drawLotPlan(ctx, st);
+  drawExistingBuildings(ctx, st); // existing buildings placed with the Existing building tool
   drawPavedWays(ctx, st); // driveways and roads drawn with the Driveway and road tool
 }

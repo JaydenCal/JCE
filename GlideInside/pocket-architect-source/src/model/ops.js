@@ -8,7 +8,7 @@ import * as SITE from './placement.js';
 import { fitHouse } from '../site/fit-house.js';
 import { settleSiteItems } from '../site/site-items.js';
 import { COMMERCIAL_OPS, commercialToolSchemas } from '../premium/ai/commercial-schemas.js';
-import { addExistingBuilding, removeExistingBuilding } from '../site/existing-buildings.js';
+import { addExistingBuilding, removeExistingBuilding, updateExistingBuilding } from '../site/existing-buildings.js';
 
 export class OpError extends Error {
   constructor(message) {
@@ -1072,6 +1072,16 @@ Object.assign(OPS, {
     run(p, a) {
       const rec = addExistingBuilding(p, { name: a.name, x: a.x, y: a.y, widthMm: a.width, depthMm: a.depth, rotationDeg: a.rotation, heightMm: a.height });
       return { id: rec.id };
+    },
+  },
+  update_existing_building: {
+    label: 'Change existing building',
+    description: 'Change an existing building placed on the lot: its name, centre (x, y in plan mm), width, depth (mm) and rotation (degrees). Only the fields given change.',
+    params: { id: P.str('Existing building id'), name: P.str('Label'), x: P.num('Centre x, plan mm'), y: P.num('Centre y, plan mm'), width: P.num('Width mm'), depth: P.num('Depth mm'), rotation: P.num('Rotation degrees') },
+    required: ['id'],
+    run(p, a) {
+      if (!updateExistingBuilding(p, a.id, { name: a.name, x: a.x, y: a.y, widthMm: a.width, depthMm: a.depth, rotationDeg: a.rotation })) fail('No existing building has that id');
+      return {};
     },
   },
   remove_existing_building: {

@@ -8,7 +8,7 @@ import path from 'node:path';
 import { SRC, SKIP, serve, launch, newPage, openApp, toEditor, dismiss } from './helpers/phone-harness.mjs';
 import { toGrannyEditor, overlayBoxes } from './helpers/phone-editor.mjs';
 import { extrasModel, COMPUTER_NOTE, CONCEPT_SHORT } from '../src/phone/menu-extras.js';
-import { openExportSheet } from '../src/phone/export-entry.js';
+import { openExportSheet, EXPORT_SHEET_ITEMS } from '../src/phone/export-entry.js';
 import { showHintOnce, resetHintOnce, HINT_MS } from '../src/phone/hint.js';
 
 const SIZES = [[375, 667], [390, 844], [430, 932]];
@@ -24,17 +24,14 @@ test('the copy: the computer note, the concept line, no dashes, never "compliant
   }
 });
 
-test('export-entry.js: the Export slot calls openExportSheet(), which opens the existing exports UI', () => {
+test('export-entry.js: the Export slot opens the free Export sheet (round 2 part B: every homeowner file is free behind the lead form)', () => {
   assert.equal(typeof openExportSheet, 'function');
+  assert.deepEqual(EXPORT_SHEET_ITEMS.map((i) => i.type), ['pdf', 'glb', 'html', 'dxf']);
   const chrome = read('src/phone/chrome.js');
   assert.match(chrome, /from '\.\/export-entry\.js'/);
   assert.match(chrome, /dockBtn\('dock-export', 'save', 'Export', \(\) => openExportSheet\(\)\)/);
   assert.match(chrome, /toolsBtn, viewBtn, exportBtn, detailsBtn, menuBtn/, 'Tools, Plan, Export, Details, Menu in that order');
-  const calls = [];
-  globalThis.window = { __ps: { premium: { openExports: () => calls.push('open') } } };
-  assert.equal(openExportSheet(), true);
-  assert.deepEqual(calls, ['open']);
-  delete globalThis.window;
+  assert.match(read('src/phone/export-entry.js'), /exportFree/, 'a file is built through the free export path (lead form first)');
 });
 
 test('the hint shows once and hides itself after 3 seconds', async () => {
@@ -188,16 +185,20 @@ test('390x844: no share sheet means the link is copied', { skip: SKIP, timeout: 
   } finally { await br.close(); server.close(); }
 });
 
-test('390x844: the Export slot opens the exports UI, and the hint shows once in 3D and hides after 3 seconds', { skip: SKIP, timeout: 300000 }, async () => {
+test('390x844: the Export slot opens the free Export sheet, and the hint shows once in 3D and hides after 3 seconds', { skip: SKIP, timeout: 300000 }, async () => {
   const { server, origin } = await serve();
   const br = await launch();
   try {
     const { page } = await newPage(br, { width: 390, height: 844, simple: true });
     await openApp(page, origin, '?mode=residential&sample=1');
     await toGrannyEditor(page, { view3d: false });
-    await page.evaluate(() => { window.__ps.premium = { openExports() { window.__exportOpened = (window.__exportOpened || 0) + 1; } }; });
+    await page.evaluate(() => { window.__ps.premium = { exportFree(type, o) { window.__exported = [...(window.__exported || []), [type, o?.surface]]; return Promise.resolve(); } }; });
     await page.click('[data-ps=dock-export]');
-    assert.equal(await page.evaluate(() => window.__exportOpened), 1, 'Export calls openExportSheet, which opens the exports UI');
+    await page.waitForSelector('[data-ps=export-sheet-list]');
+    for (const t of ['pdf', 'glb', 'html', 'dxf']) assert.equal(await page.locator(`[data-ps=export-${t}]`).count(), 1, `the sheet offers ${t}`);
+    assert.match(await page.textContent('[data-ps=export-sheet-note]'), /^Free\./);
+    await page.click('[data-ps=export-pdf]');
+    assert.deepEqual(await page.evaluate(() => window.__exported), [['pdf', 'phone']], 'a tap builds the file through the free export path');
     // the hint
     await page.evaluate(() => { try { localStorage.removeItem('ps.phone3d.hinted'); } catch { /* none */ } window.__ps.store.setUI({ view: '3d' }); });
     await page.waitForSelector('[data-ps=phone-hint].is-on', { timeout: 8000 });

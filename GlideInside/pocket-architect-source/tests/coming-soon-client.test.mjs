@@ -154,7 +154,7 @@ test('embed bridge: the widget has no listeners, posts nothing and takes no mess
 test('widget lockdown, wiring: the editor routes are no-ops, hidden from the first paint, and the Glide library is not offered', () => {
   const app = readSrc('src/app.js');
   assert.match(app, /const WIDGET = VIEWER && !COMMERCIAL_VIEWER/);
-  assert.match(app, /const openGuided = \(\) => \{\s*if \(WIDGET\) return;/);
+  assert.match(app, /const openGuided = \(\w*\) => \{\s*if \(WIDGET\) return;/);
   assert.match(app, /openEditorDirect = \(\) => WIDGET \? null/);
   assert.match(app, /widget: WIDGET \} : \{\}/);
   assert.match(app, /api\.widgetMode = true; api\.lotDesigns = async \(\) => \[\]/);
@@ -197,7 +197,8 @@ test('mock api (review mode) keeps the secret out of the settings, as the server
 });
 
 test('website: the widget card is Coming soon, the other five stay Available, the comparison cell is current, nothing uses a dash', () => {
-  for (const f of ['index.html', 'for-builders/index.html']) {
+  // Release 7 home page: the home page no longer carries the feature cards or the comparison table (marketing round 7), so only for-builders holds them.
+  for (const f of ['for-builders/index.html']) {
     const s = readSite(f);
     assert.match(s, /gx-badge soon">Coming soon<\/span><h3>See it on your block widget<\/h3>/, `${f}: widget is Coming soon`);
     for (const t of ['Site overlays', 'Branded siting report', 'Site cost estimator', 'Engineering order menu from JCE', 'Lead inbox and integrations']) assert.match(s, new RegExp(`gx-badge now">Available</span><h3>${t}</h3>`), `${f}: ${t} is Available`);

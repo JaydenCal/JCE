@@ -112,7 +112,7 @@ export function createPanel(refs, store, { catalogue, editor } = {}) {
       if (store.ui.selection) setTab('props', { open: false });
     }),
     store.on('ui', (patch = {}) => {
-      if ('tool' in patch || 'toolArg' in patch || 'activeLevelId' in patch || 'statusView' in patch) render(true);
+      if ('tool' in patch || 'toolArg' in patch || 'activeLevelId' in patch || 'statusView' in patch || 'existingSel' in patch) render(true);
     }),
     store.on('plan:underlay', () => render(true)),
     store.on('plan:calibrating', () => render(true)),

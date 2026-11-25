@@ -8,6 +8,7 @@ import { termsLines } from '../../../legal/sheet-note.js';
 import { wallShapes } from '../shared.js';
 import { groundLevel, areaTotals } from './lot.js';
 import { levelContent } from '../drawing.js';
+import { drawCover3d } from './views3d.js';
 import { AREA, ENTITY, ABN, EMAIL, REV_TEXT, fit } from './frame.js';
 
 const GREY = [120, 124, 132];
@@ -420,6 +421,6 @@ export function drawCover(doc, ctx) {
   });
 
   const locScale = locality(doc, lot, project, ctx.locality || {});
-  if (ctx.thumbnail) { frame(doc, THUMB, ctx.thumbnail.title); ctx.thumbnail.draw(doc, THUMB); } else thumbnail(doc, project, ctx.catalogue, 'HOUSE PLAN (GROUND FLOOR)');
+  if (ctx.views3d?.cover && drawCover3d(doc, ctx.views3d)) { /* the 3D render takes the place of the plan thumbnail */ } else if (ctx.thumbnail) { frame(doc, THUMB, ctx.thumbnail.title); ctx.thumbnail.draw(doc, THUMB); } else thumbnail(doc, project, ctx.catalogue, 'HOUSE PLAN (GROUND FLOOR)');
   return { locScale };
 }

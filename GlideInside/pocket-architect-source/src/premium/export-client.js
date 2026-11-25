@@ -95,6 +95,8 @@ export async function runExport(type, project, { api, token, devUnlock = false, 
   const image = type === 'pdf' ? await coverImage(getViewer) : null;
   // The server cannot read this browser's stored aerial: send it with the PDF request so every site sheet prints on it (src/premium/aerial-payload.js).
   const aerial = type === 'pdf' && (portalServer || token) ? await aerialPayload(project).catch(() => null) : null;
+  // The server has no WebGL: a commercial or outbuilding plan set built there gets the 3D renders from this browser, drawn offscreen from the app's 3D scene.
+  const views3d = type === 'pdf' && (portalServer || token) && project?.mode === 'commercial' ? await import('./exporters/planset/views3d.js').then((m) => m.renderSetViews(project, { catalogue })).catch(() => null) : null;
   let file;
   let source;
   if (portalServer && api?.portalExportFile) {
@@ -102,6 +104,7 @@ export async function runExport(type, project, { api, token, devUnlock = false, 
     const body = { project: exportPayload(project) };
     if (image) body.image = image;
     if (aerial) body.aerial = aerial;
+    if (views3d) body.views3d = views3d;
     file = await api.portalExportFile(type, body, `${project.name || 'design'}.${type}`);
     source = 'server';
   } else if (token) {
@@ -109,6 +112,7 @@ export async function runExport(type, project, { api, token, devUnlock = false, 
     const body = { project: exportPayload(project) };
     if (image) body.image = image;
     if (aerial) body.aerial = aerial;
+    if (views3d) body.views3d = views3d;
     file = await api.exportFile(token, type, body, `${project.name || 'design'}.${type}`);
     source = 'server';
   } else if (devUnlock) {

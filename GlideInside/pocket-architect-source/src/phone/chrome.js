@@ -21,7 +21,7 @@ import { writeFlow } from '../flow/state.js';
 
 // The five tools the phone leads with, then the rest behind "More tools".
 export const MAIN_TOOLS = [['movehouse', 'Move house', 'Drag the house on the lot'], ['rotate', 'Rotate', 'Turn what you select'], ['room', 'Rooms', 'Draw or change rooms'], ['drivepi', 'Driveway', 'Bend and place the driveway'], ['furniture', 'Furniture', 'Add furniture to a room']];
-export const MORE_TOOLS = ['select', 'wall', 'door', 'window', 'stairs', 'deck', 'tank', 'pave', 'measure'];
+export const MORE_TOOLS = ['select', 'wall', 'door', 'window', 'stairs', 'deck', 'tank', 'existing', 'pave', 'measure'];
 
 const label = (id) => TOOL_DEFS.find((t) => t.id === id)?.label || id;
 const iconOf = (id) => TOOL_DEFS.find((t) => t.id === id)?.icon || id;

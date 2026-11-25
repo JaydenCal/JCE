@@ -403,7 +403,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   }
   vbSun.setAttribute('aria-pressed', String(sunKey === 'warm'));
   // Aerial texture for the site terrain: loaded from the underlay store, rebuilt when the image changes.
-  const site = { key: null, texture: null, edgeColour: null, loading: null, wideKey: null, wideTexture: null, wideEdgeColour: null };
+  const site = { key: null, texture: null, edgeColour: null, loading: null, wideLoading: null, wideKey: null, wideTexture: null, wideEdgeColour: null };
   // The wide outer tile (about 2048 px): drawn on the ground ring beyond the sharp inner tile.
   function syncWideTexture() {
     const key = store.project.site?.lot?.aerialWide?.key || null;
@@ -413,7 +413,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     site.wideTexture = null;
     site.wideEdgeColour = null;
     if (!key) return;
-    loadBitmap(key).then((bmp) => {
+    site.wideLoading = loadBitmap(key).then((bmp) => {
       if (!bmp || site.wideKey !== key) return;
       const maxTex = Math.min(renderer.capabilities.maxTextureSize || 4096, maxAerialSide()); // a phone: 2048 px, so the canvas copy is never over the iOS limit
       const k = Math.min(1, maxTex / Math.max(bmp.w, bmp.h));
@@ -719,7 +719,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
 
   // Embed (home page frame) opening view: an elevated three quarter view of the lot and house from the street side, centred in the area
     // the lot card leaves clear. A small lot is framed whole; a big lot (over 70 m) frames the house and 22 m of surrounds, not the whole site.
-  function embedBase() {
+  function embedBase(cam = camera, azOff = 0, elev = 34) {
     const lot = store.project.site?.lot;
     const bd = lot?.boundary;
     if (!bd?.length) return null;
@@ -743,7 +743,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     const ang = 28 * RAD;
     const az = sf ? (Math.atan2(sf.n.x * Math.cos(ang) + sf.u.x * Math.sin(ang), sf.n.y * Math.cos(ang) + sf.u.y * Math.sin(ang)) * 180) / Math.PI : 30;
     // 34 degrees up: low enough to read the front of the house, high enough to show the whole lot behind it.
-    const pose = framedPose(camera, pts, box, az, 34);
+    const pose = framedPose(cam, pts, box, az + azOff, elev);
     return pose;
   }
 
@@ -1145,8 +1145,11 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   });
 
   // Snapshot ------------------------------------------------------------------------------------------
-  async function snapshot({ width = 1600, height = 1000, current = false } = {}) {
-    if (!model || dirtyModel) rebuild();
+  async function snapshot({ width = 1600, height = 1000, current = false, view = null } = {}) {
+    // view: { azOff, elev } frames the whole lot and house from the street side, turned by azOff degrees and looking down at elev degrees (the plan set 3D views).
+    const pending = [site.loading, site.wideLoading].filter(Boolean);
+    if (pending.length) { await Promise.all(pending); await new Promise((r) => setTimeout(r, 80)); }
+    if (!model || dirtyModel || rebuildTimer) rebuild();
     const cam = new THREE.PerspectiveCamera(38, width / height, 0.1, 2000);
     if (current) {
       cam.copy(camera);
@@ -1156,7 +1159,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       cam.far = camera.far;
     } else {
       const box = bounds || new THREE.Box3(new THREE.Vector3(-5, 0, -5), new THREE.Vector3(10, 4, 8));
-      const pose = framedPose(cam, points, box, 35, 28);
+      const pose = (view && embedBase(cam, view.azOff || 0, view.elev || 34)) || framedPose(cam, points, box, 35 + (view?.azOff || 0), view?.elev || 28);
       cam.position.copy(pose.pos);
       cam.lookAt(pose.target);
       cam.near = Math.max(0.1, pose.pos.distanceTo(pose.target) * 0.01);
@@ -1167,7 +1170,10 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     renderer.setPixelRatio(1);
     renderer.setSize(width, height, false);
     sky.position.copy(cam.position);
+    const hiddenLabels = [];
+    if (view) scene.traverse((o) => { if (o.userData?.label && o.visible) { o.visible = false; hiddenLabels.push(o); } }); // a print view carries no on screen labels
     renderer.render(scene, cam);
+    for (const o of hiddenLabels) o.visible = true;
     const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
     renderer.setPixelRatio(prevRatio);
     renderer.setSize(prevSize.x, prevSize.y, false);
@@ -1231,6 +1237,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     resetCamera: () => frameCamera(true),
     getModel: () => model,
     snapshot,
+    /** Resolves when the aerial pictures (sharp tile and wide tile) have loaded into the scene. */
+    ready: () => Promise.all([site.loading, site.wideLoading].filter(Boolean)).then(() => undefined),
     dispose,
     // extras for tests and tools
     get stats() {

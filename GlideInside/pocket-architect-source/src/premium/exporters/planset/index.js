@@ -24,6 +24,8 @@ import { prepare, toSiteLot } from './lot.js';
 import { builderOf } from './titleblock.js';
 import { drawStrip, drawConceptNote, drawWatermark, ddmmyyyy, ABN, ENTITY, AREA } from './frame.js';
 import { drawCover, localityScale, localityView } from './cover.js';
+import { renderSetViews, drawViews3dSheet } from './views3d.js';
+import { cleanViews3d } from './views3d-clean.js';
 import { resolveLocality } from './locality.js';
 import { syncCurrency } from '../../../site/custom-rules.js';
 import { sheetNotes } from '../../../site/upload/sheet-text.js';
@@ -66,13 +68,13 @@ async function loadJsPDF(given) {
  * The sheet plan with no drawing done, so the cover's drawing list and the page count always agree.
  * Returns [{ id: 'cover'|'site'|'house', code: 'C000'|'C100'|'A100', title, scale }].
  */
-export function planSetSheets({ project, lot, kind, catalogue = null, feasibility = false, levels = null }) {
+export function planSetSheets({ project, lot, kind, catalogue = null, feasibility = false, levels = null, has3d = false }) {
   if (kind === 'commercial' && isOutbuildingSet(project)) kind = 'shed';
   if (kind === 'shed') {
     const sl = toSiteLot(lot) || (lotOf(project) ? project.site.lot : null);
-    return shedSheetPlan(project, sl, { levels, siteScale: sl ? `1:${siteView({ ...project, site: { ...(project.site || {}), lot: sl } }, sl).scale} @ A3` : 'NTS' });
+    return shedSheetPlan(project, sl, { levels, has3d, siteScale: sl ? `1:${siteView({ ...project, site: { ...(project.site || {}), lot: sl } }, sl).scale} @ A3` : 'NTS' });
   }
-  if (kind === 'commercial') return commercialSheetPlan(project, toSiteLot(lot) || (lotOf(project) ? project.site.lot : null), { levels });
+  if (kind === 'commercial') return commercialSheetPlan(project, toSiteLot(lot) || (lotOf(project) ? project.site.lot : null), { levels, has3d });
   const sheets = [{ id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX', scale: 'AS SHOWN' }];
   if (kind === 'site') {
     sheets.push({ id: 'site', code: 'C100', title: 'SITE PLAN', scale: lot ? `1:${siteView(project, lot).scale} @ A3` : 'NTS' });
@@ -92,6 +94,7 @@ export function planSetSheets({ project, lot, kind, catalogue = null, feasibilit
     sheets.push({ id: 'sect', code: 'A300', title: 'SECTION A-A', scale: 'AS SHOWN', axis: 'short', letter: 'A' });
     if (axes && axes.widthMm >= 6000 && axes.lengthMm >= 6000) sheets.push({ id: 'sect', code: 'A301', title: 'SECTION B-B', scale: 'AS SHOWN', axis: 'long', letter: 'B' });
   }
+  if (has3d) sheets.push({ id: 'views3d', code: 'A400', title: '3D VIEWS', scale: 'NTS' });
   if (feasibility) sheets.push({ id: 'finance', code: 'F100', title: 'DEVELOPMENT FEASIBILITY', scale: 'NTS' });
   return sheets;
 }
@@ -132,7 +135,7 @@ function withoutScales(JsPDF) {
  * @param {Date} [o.date]
  * @returns {Promise<{ blob: Blob, filename: string, sheets: Array, pages: number }>}
  */
-export async function exportPlanSet({ project, lot = null, kind: kindIn = 'site', feasibility = false, builderName = '', builder: builderIn = null, download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null, terms = null } = {}) {
+export async function exportPlanSet({ project, lot = null, kind: kindIn = 'site', feasibility = false, builderName = '', builder: builderIn = null, download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null, terms = null, views3d = undefined } = {}) {
   syncCurrency(project);
   if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Glide Inside project');
   if (kindIn !== 'site' && kindIn !== 'house' && kindIn !== 'commercial' && kindIn !== 'shed') throw new Error("exportPlanSet kind must be 'site', 'house', 'commercial' or 'shed'");
@@ -160,7 +163,10 @@ export async function exportPlanSet({ project, lot = null, kind: kindIn = 'site'
   const dateStr = clean(project.titleBlock?.date) || ddmmyyyy(date);
   // Ground and floor levels, from the same model the 3D uses (loaded on demand; none when the lot has no ground data).
   const levels = siteLot ? levelsModel(wp, siteLot, { tm: await loadTerrainModel(wp) }) : null;
-  const sheets = planSetSheets({ project: wp, lot: kind === 'site' || placed ? siteLot : null, kind, catalogue, feasibility, levels });
+  // 3D renders from the app's 3D scene (cover picture and the 3D VIEWS sheet). A server build is sent the browser's pictures (views3d); a browser build draws them
+  // offscreen here. With no WebGL, or no lot, there are none: the sheet and the cover picture are left out rather than printing an empty frame.
+  const v3 = views3d !== undefined ? cleanViews3d(views3d) : typeof document !== 'undefined' && siteLot ? await renderSetViews(wp, { catalogue }).catch(() => null) : null;
+  const sheets = planSetSheets({ project: wp, lot: kind === 'site' || placed ? siteLot : null, kind, catalogue, feasibility, levels, has3d: !!v3?.views?.length });
   const aligned = placed ? { project: wp } : alignProject(wp);
   const id = projectCode(wp);
   const title = placed ? commercialTitle(wp) : projectTitle(wp);
@@ -208,11 +214,14 @@ export async function exportPlanSet({ project, lot = null, kind: kindIn = 'site'
     if (i > 0) raw.addPage('a3', 'landscape');
     doc.setLineDashPattern([], 0);
     let strip = { n: s.n, no: s.no, title: s.title, scale: s.scale, rev: 'A', kv: [], notes: [] };
-    if (shed) {
+    if (s.id === 'views3d') {
+      const r = drawViews3dSheet(doc, v3);
+      strip = { ...strip, subtitle: ascii(title), kvTitle: '3D VIEW DATA', kv: r.kv, notes: r.notes };
+    } else if (shed) {
       let r = null;
       if (s.id === 'cover') {
         const z = siteLot.zoning ? [siteLot.zoning.code && `Zone ${siteLot.zoning.code}`, siteLot.zoning.name].filter(Boolean).join(' ') : '';
-        drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes(shedNotes(), siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: shedThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
+        drawCover(doc, { views3d: v3, terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes(shedNotes(), siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: shedThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
         strip = { ...strip, subtitle: 'Shed or outbuilding plans', kvTitle: 'SITE DATA', kv: [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`]], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
       } else if (s.id === 'site' || s.id === 'siteclean') {
         const over = s.id === 'site' && siteAerial ? aerialUnder(doc, siteAerial, siteView(wp, siteLot, { turn: false }).T) : false;
@@ -232,7 +241,7 @@ export async function exportPlanSet({ project, lot = null, kind: kindIn = 'site'
       let r = null;
       if (s.id === 'cover') {
         const z = siteLot.zoning ? [siteLot.zoning.code && `Zone ${siteLot.zoning.code}`, siteLot.zoning.name].filter(Boolean).join(' ') : '';
-        drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes([...(zoneMismatch(siteLot) ? [`${RESIDENTIAL_NOTE}.`] : []), ...commercialNotes(cmodel.stats)], siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
+        drawCover(doc, { views3d: v3, terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes([...(zoneMismatch(siteLot) ? [`${RESIDENTIAL_NOTE}.`] : []), ...commercialNotes(cmodel.stats)], siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: coverThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
         strip = { ...strip, subtitle: cap1(layoutKind(cmodel.stats)), kvTitle: 'SITE DATA', kv: [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`], ...(cmodel.stats.units ? [['Units', String(cmodel.stats.units)]] : [])], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
       } else {
         if (s.id === 'existing') r = drawExisting(doc, wp, siteLot, { aerial: locality.aerial || null, levels });
@@ -247,7 +256,7 @@ export async function exportPlanSet({ project, lot = null, kind: kindIn = 'site'
         strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'existing' || s.id === 'existingclean' ? 'SITE DATA' : s.id === 'yield' || s.id === 'finance' ? 'KEY FIGURES' : s.id === 'upper' ? 'UPPER LEVEL DATA' : s.id === 'levels' ? 'LEVELS DATA' : s.id === 'elev' ? 'ELEVATION DATA' : s.id === 'sect' ? 'SECTION DATA' : 'LAYOUT DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
       }
     } else if (s.id === 'cover') {
-      drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
+      drawCover(doc, { views3d: v3, terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
       strip = { ...strip, subtitle: kind === 'site' ? 'Site plan and house plan' : 'House plan', kvTitle: 'SITE DATA', kv: siteLot ? [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`]] : [], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
     } else if (s.id === 'site' || s.id === 'siteclean') {
       // C100A is drawn with no aerial image: white sheet, cadastre and linework only. C100 goes over the washed aerial with red boundaries.

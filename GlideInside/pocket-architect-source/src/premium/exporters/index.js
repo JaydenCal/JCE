@@ -46,7 +46,7 @@ export async function buildPdfBytes(project, o) {
   if (project?.mode === 'commercial' && project.commercial) {
     // Commercial layouts: the commercial plan set (C000 to C104). The same gating applies as for any PDF (trial watermark via o.jsPDF, Plan Pack on the server).
     const { exportPlanSet } = await import('./planset/index.js');
-    const out = await exportPlanSet({ project, kind: 'commercial', download: false, jsPDF: o.jsPDF, aerial: o.aerial || null, includeAerial: o.includeAerial !== false && project.drawing?.includeAerial !== false, builderName: o.builder?.name || '', builder: o.builder || null, terms: o.terms || null });
+    const out = await exportPlanSet({ project, kind: 'commercial', download: false, jsPDF: o.jsPDF, aerial: o.aerial || null, views3d: o.views3d || undefined, includeAerial: o.includeAerial !== false && project.drawing?.includeAerial !== false, builderName: o.builder?.name || '', builder: o.builder || null, terms: o.terms || null });
     return new Uint8Array(await out.blob.arrayBuffer());
   }
   if (o.style !== 'legacy') {
@@ -78,7 +78,7 @@ export async function buildExport(type, project, options = {}) {
   } else if (type === 'pdf') {
     const baseJsPDF = options.jsPDF || (await options.loadJsPDF?.());
     const jsPDF = trial && typeof baseJsPDF === 'function' ? trialJsPDF(baseJsPDF, options.watermarkTitle || undefined, options.watermarkTitle || undefined) : options.internalTest === true && typeof baseJsPDF === 'function' ? internalJsPDF(baseJsPDF) : baseJsPDF;
-    bytes = await buildPdfBytes(project, { jsPDF, image: options.image || null, config, catalogue, scale: options.scale || null, style: options.style, builder: options.builder, aerial: options.aerial || null, terms: options.terms || null });
+    bytes = await buildPdfBytes(project, { jsPDF, image: options.image || null, config, catalogue, scale: options.scale || null, style: options.style, builder: options.builder, aerial: options.aerial || null, views3d: options.views3d, terms: options.terms || null });
   } else if (type === 'html') {
     const { toHTML } = await import('./html.js');
     let model = { glb: '', glbEncoding: '' };

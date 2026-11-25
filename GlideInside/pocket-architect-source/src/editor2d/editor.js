@@ -28,6 +28,7 @@ import { createLabelLayer } from './label-layer.js';
 import { createDrawTools } from './tool-draw.js';
 import { createPlaceTools } from './tool-place.js';
 import { createMiscTools } from './tool-misc.js';
+import { createExistingTool } from './tool-existing.js';
 import { toast } from '../ui/toast.js';
 import { openPopover } from '../ui/popover.js';
 import { h, isTyping } from '../ui/dom.js';
@@ -940,6 +941,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     ...createDrivePITool(ed),
     ...createDrawTools(ed),
     ...createPlaceTools(ed),
+    ...createExistingTool(ed),
     ...createMiscTools(ed, { onCalibrated: () => { state.calibrating = false; store.emit('plan:calibrating', false); } }),
   };
 

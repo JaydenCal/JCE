@@ -34,7 +34,7 @@ test('phone 390x844: touch move, orbit off the house, twist, 15 degree buttons, 
     const T = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map((p, i) => ({ x: p[0], y: p[1], id: i })) });
     const keepIfAsked = async () => { // a drop outside the setbacks asks first: keep it
       const b = page.locator('button:has-text("Keep this position")');
-      try { await b.first().waitFor({ state: 'visible', timeout: 2500 }); await b.first().click(); } catch { /* no question was asked */ }
+      try { await b.first().waitFor({ state: 'visible', timeout: 7000 }); await b.first().click(); } catch { /* no question was asked */ }
       await page.waitForTimeout(600);
     };
     const i0 = await info();

@@ -27,6 +27,7 @@ import { createOrders } from './orders.js';
 import { createCommercial, COMMERCIAL_EXPORT_TYPES } from './commercial.js';
 import { createTerms } from './terms.js';
 import { cleanAerials } from './aerial-body.js';
+import { cleanViews3d } from '../../src/premium/exporters/planset/views3d-clean.js';
 import { secretEqual } from './password.js';
 import { createConcierge } from './concierge.js'; // CONCIERGE: AI booking concierge (off unless CONCIERGE_ENABLED=1)
 
@@ -607,7 +608,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   async function exportCore(request, type, { ent, watermark = false, orgId = null, internalTest = false, builder = null, commercial: commercialAcct = null, subject = null }) {
     // Plan PDFs and DXF files need the current plan set terms on record for this account (409 TERMS_REQUIRED otherwise).
     const acceptedTerms = await terms.requireAccepted(subject, type);
-    const body = await readJson(request, config.exportMaxProjectBytes + (type === 'pdf' ? 6_000_000 : 0)); // the PDF body also carries the cover image and the lot's aerial pictures
+    const body = await readJson(request, config.exportMaxProjectBytes + (type === 'pdf' ? 16_000_000 : 0)); // the PDF body also carries the cover image, the lot's aerial pictures and the 3D renders
     let project;
     try {
       project = migrate(body.project);
@@ -625,6 +626,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (commercialAcct && project.mode !== 'commercial') throw new HttpError('NOT_ENTITLED', 'The commercial access covers commercial layouts only.');
     if (ent && !coversProject(ent, project.id)) throw new HttpError('NOT_ENTITLED', 'This AI design assistant purchase is for a different project.');
     const image = typeof body.image === 'string' && /^data:image\/png;base64,/.test(body.image) && body.image.length < 1_900_000 ? body.image : null;
+    const views3d = type === 'pdf' ? cleanViews3d(body.views3d) : null; // the browser draws the 3D renders (WebGL); the server only checks and prints them
     const aerial = type === 'pdf' ? cleanAerials(body.aerial) : null; // the browser holds the lot's aerial picture, the project JSON only its key
 
     // A per Plan Pack hourly limit. The live rule of ONE PDF plan set per job (a repeat gets the same file back) is only applied when PDF_SET_LIMIT=1.
@@ -668,6 +670,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       file = await exportSlot(async () => mod.buildExport(type, project, {
         image,
         aerial,
+        ...(views3d ? { views3d } : {}),
         // A builder login's own name and logo go on every sheet (from the org on the server, never from the request).
         ...(builder ? { builder } : {}),
         terms: acceptedTerms,

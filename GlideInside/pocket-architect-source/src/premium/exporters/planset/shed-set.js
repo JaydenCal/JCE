@@ -33,7 +33,7 @@ export function isOutbuildingSet(project) {
 }
 
 /** [{ id, code, title, scale, target? }] for the outbuilding set, without drawing anything. */
-export function shedSheetPlan(project, lot, { levels = null, siteScale = 'NTS' } = {}) {
+export function shedSheetPlan(project, lot, { levels = null, siteScale = 'NTS', has3d = false } = {}) {
   const out = [
     { id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX', scale: 'AS SHOWN' },
     { id: 'site', code: 'C100', title: 'SITE PLAN', scale: siteScale },
@@ -49,6 +49,7 @@ export function shedSheetPlan(project, lot, { levels = null, siteScale = 'NTS' }
     out.push({ id: 'elev', code: `A${200 + i}`, title: many ? `ELEVATIONS, ${t.tag}` : 'ELEVATIONS', scale, target: t.key });
   });
   targets.forEach((t, i) => out.push({ id: 'sect', code: `A${300 + i}`, title: many ? `SECTIONS, ${t.tag}` : 'SECTIONS', scale: sectionScaleOf(t, levels), target: t.key }));
+  if (has3d) out.push({ id: 'views3d', code: 'A400', title: '3D VIEWS', scale: 'NTS' });
   void lot;
   return out;
 }
