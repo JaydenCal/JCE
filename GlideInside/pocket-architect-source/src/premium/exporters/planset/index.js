@@ -3,6 +3,9 @@
 //   kind 'house': 1. cover sheet (C000)  2. house plan (A100)
 //   kind 'commercial': C000 cover and locality, C100 existing site, C101 proposed layout, C102 mezzanine level plan, C103 yield summary
 //     (the project is in commercial mode: project.mode 'commercial' with project.commercial; see ./commercial.js)
+//   kind 'shed': the outbuilding set (cover C000, site plan C100 and C100A, floor plan A100, roof plan A150, elevations A200, sections A300): a shed, garage or
+//     carport on a residential or rural lot. A 'commercial' request for such a project (see isOutbuildingSet) is answered with this set, never with the
+//     yield summary and feasibility pages: the set follows the design and the zone, not the account.
 //
 //   const { blob, filename } = await exportPlanSet({ project, lot, kind: 'site', builderName: 'Hunter Homes', download: true });
 //
@@ -36,6 +39,8 @@ import { drawLevelsPlan } from './commercial-levels.js';
 import { viewTargets } from './commercial-targets.js';
 import { aerialUnder, withLotIds, commercialModel, commercialSheetPlan, commercialTitle, drawExisting, existingScale, drawLayout, drawMezzanine, drawYield, drawFinancePage, coverThumbnail, commercialNotes, layoutKind, cap1 } from './commercial.js';
 import { lotOf } from '../../../model/placement.js';
+import { isOutbuildingSet, shedSheetPlan, shedNotes, drawShedPlan, drawShedRoof, shedThumbnail } from './shed-set.js';
+import { existingBuildingsOf } from '../../../site/existing-buildings.js';
 
 void schemeColours;
 
@@ -62,6 +67,11 @@ async function loadJsPDF(given) {
  * Returns [{ id: 'cover'|'site'|'house', code: 'C000'|'C100'|'A100', title, scale }].
  */
 export function planSetSheets({ project, lot, kind, catalogue = null, feasibility = false, levels = null }) {
+  if (kind === 'commercial' && isOutbuildingSet(project)) kind = 'shed';
+  if (kind === 'shed') {
+    const sl = toSiteLot(lot) || (lotOf(project) ? project.site.lot : null);
+    return shedSheetPlan(project, sl, { levels, siteScale: sl ? `1:${siteView({ ...project, site: { ...(project.site || {}), lot: sl } }, sl).scale} @ A3` : 'NTS' });
+  }
   if (kind === 'commercial') return commercialSheetPlan(project, toSiteLot(lot) || (lotOf(project) ? project.site.lot : null), { levels });
   const sheets = [{ id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX', scale: 'AS SHOWN' }];
   if (kind === 'site') {
@@ -88,6 +98,9 @@ export function planSetSheets({ project, lot, kind, catalogue = null, feasibilit
 
 /** Preview only: any printed scale ratio ("1:200 @ A3") becomes "NOT TO SCALE", so the free set never states a scale. */
 const noScaleText = (t) => (typeof t === 'string' ? t.replace(/Scale 1:\d+ @ A3\.?/g, 'Not to scale.').replace(/Outline at 1:\d+ @ A3/g, 'Outline, not to scale').replace(/1:\d+ @ A3/g, 'NOT TO SCALE') : t);
+/** The cladding line of an outbuilding's elevation notes. */
+const cladNote = (t) => { const f = t?.building?.def?.wallFinish ? t.building.def.wallFinish(t.params) : null; return f ? `Wall cladding: ${f.name}.` : ''; };
+
 function withoutScales(JsPDF) {
   function PreviewPDF(...args) {
     const doc = new JsPDF(...args);
@@ -119,17 +132,21 @@ function withoutScales(JsPDF) {
  * @param {Date} [o.date]
  * @returns {Promise<{ blob: Blob, filename: string, sheets: Array, pages: number }>}
  */
-export async function exportPlanSet({ project, lot = null, kind = 'site', feasibility = false, builderName = '', builder: builderIn = null, download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null, terms = null } = {}) {
+export async function exportPlanSet({ project, lot = null, kind: kindIn = 'site', feasibility = false, builderName = '', builder: builderIn = null, download = true, preview = false, includeAerial = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null, terms = null } = {}) {
   syncCurrency(project);
   if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Glide Inside project');
-  if (kind !== 'site' && kind !== 'house' && kind !== 'commercial') throw new Error("exportPlanSet kind must be 'site', 'house' or 'commercial'");
+  if (kindIn !== 'site' && kindIn !== 'house' && kindIn !== 'commercial' && kindIn !== 'shed') throw new Error("exportPlanSet kind must be 'site', 'house', 'commercial' or 'shed'");
+  // The set follows the design and the zone, never the account: a shed, garage or carport on a residential or rural lot gets the outbuilding set.
+  const kind = kindIn === 'commercial' && isOutbuildingSet(project) ? 'shed' : kindIn;
+  const shed = kind === 'shed';
   const commercial = kind === 'commercial';
-  if (commercial && !(project.mode === 'commercial' && project.commercial)) throw new Error('A commercial plan set needs a project in commercial mode.');
+  const placed = commercial || shed; // the design is a catalogue layout that is never moved onto the lot
+  if (placed && !(project.mode === 'commercial' && project.commercial)) throw new Error(`A ${shed ? 'shed' : 'commercial'} plan set needs a project in commercial mode.`);
   // A commercial layout is never moved onto the lot (the house placement would drag its generated walls away from the spec).
-  const prep = commercial ? { project: structuredClone(project), lot: withLotIds(toSiteLot(lot) || (lotOf(project) ? project.site.lot : null)) } : prepare(project, lot);
-  if ((kind === 'site' || commercial) && !prep.lot) throw new Error(`A ${commercial ? 'commercial plan set' : 'site plan'} needs the lot (boundary polygon).`);
+  const prep = placed ? { project: structuredClone(project), lot: withLotIds(toSiteLot(lot) || (lotOf(project) ? project.site.lot : null)) } : prepare(project, lot);
+  if ((kind === 'site' || placed) && !prep.lot) throw new Error(`A ${placed ? (shed ? 'shed plan set' : 'commercial plan set') : 'site plan'} needs the lot (boundary polygon).`);
   const wp = prep.project;
-  if (commercial) wp.site = { ...(wp.site || {}), lot: prep.lot };
+  if (placed) wp.site = { ...(wp.site || {}), lot: prep.lot };
   const siteLot = prep.lot; // the house plan also quotes the lot when there is one
   // One indicative line for the site sheet notes: the site cost estimate, GST excluded and included. Loaded on demand; any failure just leaves the line out.
   const siteCostNote = kind === 'site' && !preview && siteLot ? await import('../site-costs/note.js').then((m) => m.siteCostNote(wp, siteLot)).catch(() => null) : null;
@@ -143,24 +160,24 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
   const dateStr = clean(project.titleBlock?.date) || ddmmyyyy(date);
   // Ground and floor levels, from the same model the 3D uses (loaded on demand; none when the lot has no ground data).
   const levels = siteLot ? levelsModel(wp, siteLot, { tm: await loadTerrainModel(wp) }) : null;
-  const sheets = planSetSheets({ project: wp, lot: kind === 'site' || commercial ? siteLot : null, kind, catalogue, feasibility, levels });
-  const aligned = commercial ? { project: wp } : alignProject(wp);
+  const sheets = planSetSheets({ project: wp, lot: kind === 'site' || placed ? siteLot : null, kind, catalogue, feasibility, levels });
+  const aligned = placed ? { project: wp } : alignProject(wp);
   const id = projectCode(wp);
-  const title = commercial ? commercialTitle(wp) : projectTitle(wp);
-  const cmodel = commercial ? commercialModel(wp, siteLot, { levels }) : null;
-  const targets = commercial ? viewTargets(wp) : [];
+  const title = placed ? commercialTitle(wp) : projectTitle(wp);
+  const cmodel = placed ? commercialModel(wp, siteLot, { levels }) : null;
+  const targets = placed ? viewTargets(wp) : [];
   const targetsByKey = new Map(targets.map((x) => [x.key, x]));
   const letters = sectionLetters(targets);
   sheets.forEach((s, i) => { s.n = i + 1; s.no = `GI-${id}-${s.code}`; if (preview) s.scale = 'NOT TO SCALE'; });
 
   const raw = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3', compress: true });
   raw.giStampMargin = true; // the trial or sample stamp line goes in the sheet margin below the border, clear of the notes and the strip (watermark.js)
-  raw.setProperties({ title: `${ascii(title)} concept plan set`, subject: 'Concept design plans, to be checked by a suitably qualified person', author: bld?.name || ENTITY, creator: bld ? `${bld.name || 'Builder'} plan set` : commercial ? 'Glide Inside commercial layout' : 'Glide Inside lot viewer' });
+  raw.setProperties({ title: `${ascii(title)} concept plan set`, subject: 'Concept design plans, to be checked by a suitably qualified person', author: bld?.name || ENTITY, creator: bld ? `${bld.name || 'Builder'} plan set` : shed ? 'Glide Inside outbuilding plans' : commercial ? 'Glide Inside commercial layout' : 'Glide Inside lot viewer' });
   const doc = withSuperscripts(cleanedDoc(raw));
   // House elevations and sections (A200, A300, A301): one pass over the 3D model, the sheet scales follow what fits.
   const viewArea = { x0: AREA.x0 + 2, y0: AREA.y0 + 2, x1: AREA.x1 - 2, y1: AREA.y1 - 8 };
   let tris = [];
-  if (!commercial && sheets.some((x) => x.id === 'elev' || x.id === 'sect')) {
+  if (!placed && sheets.some((x) => x.id === 'elev' || x.id === 'sect')) {
     try { tris = await collectTriangles(aligned.project, catalogue); } catch { tris = []; }
     for (const x of sheets.filter(() => !preview)) {
       if (x.id === 'elev') x.scale = tris.length ? `1:${elevationScale(doc, aligned.project, tris, viewArea, 1)} @ A3` : 'NTS';
@@ -168,7 +185,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
     }
   }
   // The house views read the finished floor level from the lot: give them the one level every sheet uses (the 3D model's), so the natural ground and RL tags draw.
-  const viewProject = levels?.has && !commercial ? { ...aligned.project, site: { ...aligned.project.site, lot: { ...aligned.project.site.lot, floorRL: roundRL(levels.floorRL) } } } : aligned.project;
+  const viewProject = levels?.has && !placed ? { ...aligned.project, site: { ...aligned.project.site, lot: { ...aligned.project.site.lot, floorRL: roundRL(levels.floorRL) } } } : aligned.project;
   const viewCtx = { project: viewProject, k: 1, colours: schemeColours(wp), unalign: aligned.unalign || null, paper: 'A3', ground: levels ? { lot: siteLot, levels, align: aligned.align || null, unalign: aligned.unalign || null } : null, levels };
   const address = clean(wp.titleBlock?.address || siteLot?.address || '');
   const lotDp = clean(siteLot ? titleLotDp(wp) || siteLot.lotLabel || '' : '');
@@ -191,7 +208,27 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
     if (i > 0) raw.addPage('a3', 'landscape');
     doc.setLineDashPattern([], 0);
     let strip = { n: s.n, no: s.no, title: s.title, scale: s.scale, rev: 'A', kv: [], notes: [] };
-    if (commercial) {
+    if (shed) {
+      let r = null;
+      if (s.id === 'cover') {
+        const z = siteLot.zoning ? [siteLot.zoning.code && `Zone ${siteLot.zoning.code}`, siteLot.zoning.name].filter(Boolean).join(' ') : '';
+        drawCover(doc, { terms, project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, notes: sheetNotes(shedNotes(), siteLot, { aerialShown: !!locality.aerial, aerial: locality.aerial }), lotLine: [siteLot.lga, z, siteLot.areaM2 && `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`].filter(Boolean).join('   |   '), thumbnail: shedThumbnail(cmodel), index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
+        strip = { ...strip, subtitle: 'Shed or outbuilding plans', kvTitle: 'SITE DATA', kv: [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`]], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
+      } else if (s.id === 'site' || s.id === 'siteclean') {
+        const over = s.id === 'site' && siteAerial ? aerialUnder(doc, siteAerial, siteView(wp, siteLot, { turn: false }).T) : false;
+        Object.assign(facts, drawSite(doc, wp, siteLot, { levels, overAerial: over, turn: !over }));
+        const kv = facts.kv.map(([k, v]) => [k === 'House footprint' ? 'Building footprint' : k, v]);
+        strip = { ...strip, subtitle: ascii(title), kvTitle: 'SITE DATA', kv, notes: [...(s.id === 'site' && !siteAerial && !preview ? [...facts.notes, 'Aerial not available for this sheet.'] : facts.notes).filter((n) => !/driveway and crossover/i.test(n)), ...(existingBuildingsOf(wp).length ? ['Existing buildings are placed by the designer and are not surveyed.'] : [])], blocks: facts.blocks };
+      } else {
+        const tg = targetsByKey.get(s.target);
+        if (s.id === 'plan') r = drawShedPlan(doc, cmodel, tg, levels);
+        else if (s.id === 'roofplan') r = drawShedRoof(doc, cmodel, tg, levels);
+        else if (s.id === 'elev') r = drawElevations(doc, cmodel, tg, levels);
+        else r = drawSections(doc, cmodel, tg, letters.get(s.target), levels);
+        if (s.id === 'elev') r = { ...r, notes: [...r.notes.filter((n) => !/^Panel joints|constructionLine/.test(n)), ...(cladNote(tg) ? [cladNote(tg)] : [])] };
+        strip = { ...strip, subtitle: ascii(title), kvTitle: s.id === 'plan' ? 'SHED DATA' : s.id === 'roofplan' ? 'ROOF DATA' : s.id === 'elev' ? 'ELEVATION DATA' : 'SECTION DATA', kv: r.kv, notes: r.notes, blocks: r.blocks };
+      }
+    } else if (commercial) {
       let r = null;
       if (s.id === 'cover') {
         const z = siteLot.zoning ? [siteLot.zoning.code && `Zone ${siteLot.zoning.code}`, siteLot.zoning.name].filter(Boolean).join(' ') : '';
@@ -242,7 +279,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
 
   const bytes = new Uint8Array(raw.output('arraybuffer'));
   const blob = new Blob([bytes], { type: 'application/pdf' });
-  const filename = `${bld?.name ? slugify(bld.name, 'builder') : 'Glide-Inside'}-${slugify(title, 'concept')}-${commercial ? 'commercial-plan-set' : kind === 'site' ? 'site-plan-set' : 'house-plan-set'}${preview ? '-preview' : ''}.pdf`;
+  const filename = `${bld?.name ? slugify(bld.name, 'builder') : 'Glide-Inside'}-${slugify(title, 'concept')}-${shed ? 'shed-plan-set' : commercial ? 'commercial-plan-set' : kind === 'site' ? 'site-plan-set' : 'house-plan-set'}${preview ? '-preview' : ''}.pdf`;
   if (download && typeof document !== 'undefined') {
     const { downloadBlob } = await import('../download.js');
     downloadBlob(blob, filename);

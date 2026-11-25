@@ -26,6 +26,7 @@ import { createLeads } from './leads.js';
 import { createOrders } from './orders.js';
 import { createCommercial, COMMERCIAL_EXPORT_TYPES } from './commercial.js';
 import { createTerms } from './terms.js';
+import { cleanAerials } from './aerial-body.js';
 import { secretEqual } from './password.js';
 import { createConcierge } from './concierge.js'; // CONCIERGE: AI booking concierge (off unless CONCIERGE_ENABLED=1)
 
@@ -600,13 +601,13 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (!portal) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not available on this server.');
     if (!config.portalEnabled) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not open yet.');
     const ctx = await portal.exportContext(request, url, type);
-    return exportCore(request, type, { ent: null, watermark: ctx.watermark, orgId: ctx.org.id, internalTest: ctx.internalTest === true, subject: { id: `portal:${ctx.user.id}`, kind: 'portal' } });
+    return exportCore(request, type, { ent: null, watermark: ctx.watermark, orgId: ctx.org.id, internalTest: ctx.internalTest === true, builder: ctx.builder || null, subject: { id: `portal:${ctx.user.id}`, kind: 'portal' } });
   }
 
-  async function exportCore(request, type, { ent, watermark = false, orgId = null, internalTest = false, commercial: commercialAcct = null, subject = null }) {
+  async function exportCore(request, type, { ent, watermark = false, orgId = null, internalTest = false, builder = null, commercial: commercialAcct = null, subject = null }) {
     // Plan PDFs and DXF files need the current plan set terms on record for this account (409 TERMS_REQUIRED otherwise).
     const acceptedTerms = await terms.requireAccepted(subject, type);
-    const body = await readJson(request, config.exportMaxProjectBytes + (type === 'pdf' ? 2_000_000 : 0));
+    const body = await readJson(request, config.exportMaxProjectBytes + (type === 'pdf' ? 6_000_000 : 0)); // the PDF body also carries the cover image and the lot's aerial pictures
     let project;
     try {
       project = migrate(body.project);
@@ -624,6 +625,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (commercialAcct && project.mode !== 'commercial') throw new HttpError('NOT_ENTITLED', 'The commercial access covers commercial layouts only.');
     if (ent && !coversProject(ent, project.id)) throw new HttpError('NOT_ENTITLED', 'This AI design assistant purchase is for a different project.');
     const image = typeof body.image === 'string' && /^data:image\/png;base64,/.test(body.image) && body.image.length < 1_900_000 ? body.image : null;
+    const aerial = type === 'pdf' ? cleanAerials(body.aerial) : null; // the browser holds the lot's aerial picture, the project JSON only its key
 
     // A per Plan Pack hourly limit. The live rule of ONE PDF plan set per job (a repeat gets the same file back) is only applied when PDF_SET_LIMIT=1.
     const rateKey = commercialAcct ? commercialAcct.rateKey : ent ? ent.id : `org:${orgId}`;
@@ -665,6 +667,9 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     try {
       file = await exportSlot(async () => mod.buildExport(type, project, {
         image,
+        aerial,
+        // A builder login's own name and logo go on every sheet (from the org on the server, never from the request).
+        ...(builder ? { builder } : {}),
         terms: acceptedTerms,
         watermark: watermark === true,
         ...(internalTest ? { internalTest: true } : {}),

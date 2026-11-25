@@ -6,6 +6,7 @@ import { withoutAerial } from '../site/aerial-pref.js';
 import { blobToDataUrl, downloadBlob } from './util.js';
 import { ApiError } from './api.js';
 import { termsForExport } from '../legal/terms-gate.js';
+import { aerialPayload } from './aerial-payload.js';
 
 export const EXPORT_ITEMS = [
   { type: 'pdf', label: 'PDF plans', hint: 'A3 sheets to scale, with schedules' },
@@ -92,18 +93,22 @@ export async function buildLocal(type, project, { config, catalogue, image = nul
  */
 export async function runExport(type, project, { api, token, devUnlock = false, config, catalogue, getViewer = null, save = downloadBlob, portalServer = false, watermark = false, terms = null } = {}) {
   const image = type === 'pdf' ? await coverImage(getViewer) : null;
+  // The server cannot read this browser's stored aerial: send it with the PDF request so every site sheet prints on it (src/premium/aerial-payload.js).
+  const aerial = type === 'pdf' && (portalServer || token) ? await aerialPayload(project).catch(() => null) : null;
   let file;
   let source;
   if (portalServer && api?.portalExportFile) {
     // Free trial builder login: the server builds the file and decides the watermark from the account state.
     const body = { project: exportPayload(project) };
     if (image) body.image = image;
+    if (aerial) body.aerial = aerial;
     file = await api.portalExportFile(type, body, `${project.name || 'design'}.${type}`);
     source = 'server';
   } else if (token) {
     // A Plan Pack token (bought, restored or the local development grant) always uses the server.
     const body = { project: exportPayload(project) };
     if (image) body.image = image;
+    if (aerial) body.aerial = aerial;
     file = await api.exportFile(token, type, body, `${project.name || 'design'}.${type}`);
     source = 'server';
   } else if (devUnlock) {

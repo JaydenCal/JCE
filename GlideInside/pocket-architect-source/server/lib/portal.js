@@ -1476,7 +1476,10 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const allowed = exportsFor(user, org);
     if (state.readOnly) throw readOnlyError(state);
     if (!allowed.includes(type)) throw new HttpError('FORBIDDEN', 'Your builder has not turned that file type on for your login.', {}, 403);
-    return { user, org, allowed, watermark: state.isTrial, internalTest: org.internal === true };
+    // The builder's own name, logo and details for the title block of every sheet (never another org's, never on an internal test file).
+    const b = publicOrg(org, user.role).branding;
+    const builder = org.internal === true ? null : { name: b.displayName, logo: b.logoDataUrl, details: b.details, colours: b.colours, client: user.role === 'client' ? { name: user.name || '', lotAddress: user.lotAddress || '' } : null };
+    return { user, org, allowed, watermark: state.isTrial, internalTest: org.internal === true, builder };
   }
 
   /** For POST /api/terms/accept: the signed in portal user and org (cookie session), or throws UNAUTHORISED. No export permission is needed. */

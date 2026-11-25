@@ -20,6 +20,11 @@ import { levelsModel, fflText } from './levels.js';
 import { PEN, PHANTOM, clipSegment, clipPolygon, hatch, dimLine, haloText, alongLabel, LabelField, boxOfPts, clean } from '../eng/kit.js';
 import { AREA } from './frame.js';
 import { groundLevel, envelopePoly, groundFootprintM2 } from './lot.js';
+import { ownSize } from '../../../portal/house-stats.js';
+import { existingBuildingsOf, EXISTING_LABEL } from '../../../site/existing-buildings.js';
+
+/** The hatch of existing buildings: grey, at 135 degrees, so it never reads as the blue proposed hatch. */
+export const EXISTING_HATCH = { angle: 135, spacing: 1.5, width: 0.07, colour: [120, 124, 132] };
 
 /** The standard drawing scales a site plan may use, largest first. Lots beyond 1:2500 go through SCALES_BEYOND, then keep doubling. */
 export const SITE_SCALES = [100, 200, 250, 300, 400, 500, 750, 1000, 1250, 1500, 2000, 2500];
@@ -221,7 +226,7 @@ export function drawnContext(lot) {
 }
 
 /** Legend block for the title strip. Rows for the road reserve and the adjoining lots appear only when drawn (roads, neighbours). */
-export function legendBlock({ contours = [], paved = null, extra = [], roads = false, neighbours = true, encroach = true } = {}, avail = null) {
+export function legendBlock({ contours = [], paved = null, extra = [], roads = false, neighbours = true, encroach = true, existing = false } = {}, avail = null) {
   const items = [
     ['Lot boundary (DCDB)', (doc, a, b) => { doc.setLineWidth(0.7); doc.setDrawColor(...PEN.ink); doc.line(a, b, a + 12, b); }],
     ...(neighbours ? [['Adjoining lot boundary', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.line(a, b, a + 12, b); }]] : []),
@@ -229,6 +234,7 @@ export function legendBlock({ contours = [], paved = null, extra = [], roads = f
     ['Building setback line', (doc, a, b) => { doc.setLineWidth(0.2); doc.setDrawColor(...GREYLINE); doc.setLineDashPattern([1.6, 1], 0); doc.line(a, b, a + 12, b); doc.setLineDashPattern([], 0); }],
     ['Walls', (doc, a, b) => { doc.setLineWidth(0.8); doc.setDrawColor(...PEN.ink); doc.line(a, b, a + 12, b); }],
     ['Roof line (eaves)', (doc, a, b) => { doc.setLineWidth(0.25); doc.setDrawColor(...PEN.ink); doc.setLineDashPattern([3, 1.2], 0); doc.line(a, b, a + 12, b); doc.setLineDashPattern([], 0); }],
+    ...(existing ? [['Existing building (grey hatch)', (doc, a, b) => { doc.setLineWidth(0.3); doc.setDrawColor(96, 100, 108); doc.setFillColor(232, 233, 236); doc.rect(a, b - 1.4, 12, 2.8, 'FD'); hatch(doc, [{ x: a, y: b - 1.4 }, { x: a + 12, y: b - 1.4 }, { x: a + 12, y: b + 1.4 }, { x: a, y: b + 1.4 }], 'proposed', EXISTING_HATCH); }]] : []),
     ...(roads ? [['Kerb and gutter', (doc, a, b) => { doc.setLineWidth(0.25); doc.setDrawColor(...PEN.ink); doc.line(a, b - 0.5, a + 12, b - 0.5); doc.line(a, b + 0.5, a + 12, b + 0.5); }]] : []),
     ...((paved && paved.length ? paved : [{ material: 'concrete' }]).map((e) => [paved && paved.length ? `${PAVE_MATERIALS[e.material].label} paving, ${Math.round(e.areaM2)} m2` : 'Concrete driveway', (doc, a, b) => { doc.setLineWidth(0.15); doc.setDrawColor(...GREYLINE); doc.rect(a, b - 1.4, 12, 2.8, 'S'); hatch(doc, [{ x: a, y: b - 1.4 }, { x: a + 12, y: b - 1.4 }, { x: a + 12, y: b + 1.4 }, { x: a, y: b + 1.4 }], HATCH_KIND[e.material]); }])),
     ...(contours || []),
@@ -240,7 +246,7 @@ export function legendBlock({ contours = [], paved = null, extra = [], roads = f
     title: 'LEGEND',
     h: 4 + items.length * rowH + 2.5,
     // The title strip asks a legend that does not fit to close up its rows (down to 2.6 mm) instead of being dropped.
-    fitTo: (h) => ((h - 6.5) / items.length >= 2.4 ? legendBlock({ contours, paved, extra, roads, neighbours, encroach }, h) : null),
+    fitTo: (h) => ((h - 6.5) / items.length >= 2.4 ? legendBlock({ contours, paved, extra, roads, neighbours, encroach, existing }, h) : null),
     draw(doc, x, y) {
       items.forEach(([t, draw], i) => {
         const ly = y + 2.4 + i * rowH;
@@ -357,6 +363,27 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
     polyLine(doc, env.map(S));
     dashOff();
     regRing(field, env.map(S), true, true);
+  }
+
+  // Existing buildings the person placed (grey hatch, labelled): a different convention from the proposed work, never the same fill.
+  const exb = existingBuildingsOf(project);
+  for (const e of exb) {
+    const sp = e.poly.map(S);
+    doc.setFillColor(232, 233, 236);
+    doc.setDrawColor(...(overAerial ? [50, 54, 62] : [96, 100, 108]));
+    doc.setLineWidth(0.3);
+    const cq = fillClipped(doc, sp, 'FD');
+    if (cq.length >= 3) hatch(doc, cq, 'proposed', EXISTING_HATCH);
+    regRing(field, sp, true);
+    const c = S(G.polygonCentroid(e.poly));
+    const nm = String(e.name || EXISTING_LABEL).toUpperCase();
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6.6);
+    const w = doc.getTextWidth(nm);
+    if (inVP(c) && w + 1 <= G.bbox(sp).w && scale <= 500) {
+      haloText(doc, nm, c.x, c.y + 0.8, { size: 6.6, bold: true, align: 'center', halo: 1 });
+      field.addBox({ x0: c.x - w / 2 - 0.5, y0: c.y - 2, x1: c.x + w / 2 + 0.5, y1: c.y + 1.4 });
+    }
   }
 
   // House: floor shading, walls and doors, eaves line.
@@ -707,7 +734,7 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
   const fp = groundFootprintM2(project);
   const sb = lot.setbacks || {};
   const m = (v) => (typeof v === 'number' ? v : v?.minM);
-  const hb2 = hullPoly.length ? G.bbox(hullPoly) : null;
+  const hb2 = hullPoly.length ? (() => { const o = ownSize(hullPoly, hullPoly.map((q, i) => ({ a: q, b: hullPoly[(i + 1) % hullPoly.length] }))); return { w: o.widthMm, h: o.depthMm }; })() : null; // the building's own size, not the bounding box of a turned plan
   const dimsLot = (() => {
     const f = edges.find((e) => e.kind === 'front');
     if (!f) return null;
@@ -726,7 +753,7 @@ export function drawSite(doc, project, lot, { overAerial = false, turn = true, l
     ['Setback check', cl.status === 'ok' ? 'Inside setbacks (indicative)' : cl.status === 'breach' ? 'Outside setbacks (indicative)' : 'Setbacks not loaded'],
   ].filter(Boolean);
   const pavedSum = pavedSummary(project);
-  const blocks = [legendBlock({ contours: gl.legend, paved: pavedSum.byMaterial, extra: overlayLegendItems(lot), ...drawnContext(lot), encroach: cl.status === 'breach' })];
+  const blocks = [legendBlock({ contours: gl.legend, paved: pavedSum.byMaterial, extra: overlayLegendItems(lot), ...drawnContext(lot), encroach: cl.status === 'breach', existing: exb.length > 0 })];
   if (schedule.length) blocks.push(scheduleBlock(schedule));
   const notes = ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines and dimensions are indicative.', 'Driveway and crossover are typical values.'];
   notes.push(ground0 ? gl.note : `No ground levels for this lot.${hullPoly.length ? ' Floor level is on an assumed datum.' : ''}`);

@@ -126,6 +126,7 @@ export function defineType(def) {
           const b = wd.b(s.W, s.D);
           const w = S.createWall({ a: T(a), b: T(b), thickness: ext });
           w.kind = 'exterior'; w.outside = outsideSign(a, b, s.W, s.D); w.auto = false; w.generated = GEN; w.level = lv.name; w.side = wd.id;
+          if (s.wallFinish) w.finish = { material: s.wallFinish.material, colour: s.wallFinish.colour };
           walls.push(w);
           wallIndex.set(`${li}:${wd.id}`, w);
         }
@@ -142,13 +143,14 @@ export function defineType(def) {
         // (see openingSpan in model/geometry.js), so the 3D, the plans and the elevations all read the same place.
         const o = S.createOpening({ wallId: w.id, kind: op.kind, offset: op.offset + op.width / 2, width: op.width, height: op.height, sill: op.sill ?? 0, style: op.style });
         o.auto = true; o.generated = GEN; o.level = w.level;
+        if (op.mark) o.mark = op.mark;
         if (op.dock) o.dockDoor = true;
         if (op.seal) o.seal = true;
         if (op.shelter) o.shelter = true;
         openings.push(o);
       }
       const rooms = (s.rooms || []).map((r) => ({ name: r.name, polygon: r.poly.map(T), level: levels[r.level ?? 0].name, outdoor: !!r.outdoor, generated: GEN }));
-      const roofs = (s.roofs || [{ type: 'flat', pitchDeg: 2 }]).map((r) => ({ polygon: (r.poly || rect(0, 0, s.W, s.D)).map(T), type: r.type, pitchDeg: r.pitchDeg }));
+      const roofs = (s.roofs || [{ type: 'flat', pitchDeg: 2 }]).map((r) => ({ polygon: (r.poly || rect(0, 0, s.W, s.D)).map(T), type: r.type, pitchDeg: r.pitchDeg, ...(r.fall ? { fall: r.fall } : {}), ...(r.ridge ? { ridge: r.ridge } : {}) }));
       return { walls, openings, rooms, levels: levels.map((l) => ({ heightMm: s.wallH, ...l })), roofs, generated: GEN };
     },
 

@@ -1,7 +1,8 @@
 // Sheds: gable roof shed, skillion (mono-pitch) shed, barn style shed and a lean-to or free standing carport. Plain rectangles with the front on
 // local y = 0 facing the street, built through the shared kit. Sheds need no customer parking.
 import { defineType, NUM, SEL, BOOL, rect, m2, round1, poly, symPoly, symLine, symText } from './_kit.js';
-import { doorOffsets, fitDoors, doorParams, planSymbols, noParkingSite } from './_kitD.js';
+import { doorOffsets, fitDoors, doorParams, planSymbols, noParkingSite, rollerDoors, perDoorParams } from './_kitD.js';
+import { SHED_COLOUR_OPTIONS, DEFAULT_SHED_COLOUR, shedColourById } from './_shedColours.js';
 
 const ZONES = ['RU1', 'RU2', 'RU5', 'R5', 'E3', 'E4', 'IN1', 'IN2', 'IN4', 'SP2'];
 
@@ -17,26 +18,59 @@ function shedOpenings(p, W, D, H) {
   return { ops, doors: n };
 }
 
-function shedType({ id, label, planLabel, rateKey, params, roof, extras, presets, notes }) {
+/**
+ * The openings of a shed whose roller doors have their own size and place: doors in the front wall (RD1, RD2 ...) with a mullion between doors side
+ * by side, personnel doors on the ends, the low long wall (rear) or the high long wall (front), windows on the ends.
+ */
+function perDoorOpenings(p, W, D, H) {
+  const dh = Math.max(2000, H - 150);
+  const doors = rollerDoors(p, W, { maxHeight: dh });
+  // Positions are "from the left" as the front of the building is SEEN from outside (the street), which is the high local x end: RD1 is the left
+  // door in the front elevation and in the floor plan, as on a shed supplier's drawing. The model stores the left edge in local x (from x = 0).
+  const ops = doors.map((d) => ({ wall: 'front', kind: 'roller_door', offset: W - d.offset - d.width, width: d.width, height: Math.min(d.height, dh), sill: 0, mark: d.mark }));
+  const pa = (i, wall, off) => ({ wall, kind: 'door', offset: off, width: 920, height: 2040, sill: 0, mark: `PA${i + 1}` });
+  const nPa = p.personnelDoors || 0;
+  for (let i = 0; i < nPa; i++) {
+    if (p.paWall === 'rear' || p.paWall === 'front') {
+      const wall = p.paWall;
+      // From the left as seen from outside: along the low long wall (rear, seen from behind) that is the low x end; on the front it is the high x end.
+      const left = Math.round(Math.min(W - 1200, (p.paX > 0 && i === 0 ? p.paX : 1500 + 3000 * i)) / 10) * 10;
+      ops.push(pa(i, wall, wall === 'front' ? clearOf(W - left - 920, ops.filter((o) => o.kind === 'roller_door'), W) : left));
+    } else ops.push(pa(i, i % 2 ? 'left' : 'right', Math.round(Math.min(D - 1200, 1500 + 3000 * Math.floor(i / 2)))));
+  }
+  const wins = p.windows || 0;
+  for (let i = 0; i < wins; i++) ops.push({ wall: i % 2 ? 'left' : 'right', kind: 'window', offset: Math.round(Math.max(600, Math.min(D - 1800, D * (0.35 + 0.3 * Math.floor(i / 2))))), width: 1200, height: 900, sill: 1200, style: 'fixed' });
+  return { ops, doors: doors.length };
+}
+/** A left edge for a 920 mm door on a wall with roller doors that does not overlap one: the wanted place, else the first free gap or the far end. */
+function clearOf(x, rollers, W) {
+  const hit = (a) => rollers.some((r) => a < r.offset + r.width + 150 && a + 920 > r.offset - 150);
+  if (!hit(x)) return x;
+  for (let a = 300; a + 920 <= W - 300; a += 50) if (!hit(a)) return a;
+  return x;
+}
+
+function shedType({ id, label, planLabel, rateKey, params, roof, extras, presets, notes, openings = shedOpenings, wallColour = false }) {
   const base = defineType({
     id, label, category: 'sheds', zonesHint: ZONES, params, planLabel, buildRateKey: rateKey, costNotes: `${label}. ESTIMATE, check current rates.`,
     spec(p) {
       const { W, D, H } = p;
-      const { ops } = shedOpenings(p, W, D, H);
+      const { ops } = openings(p, W, D, H);
       const ex = extras ? extras(p) : { extras: [], boxes: [], symbols: [], extraGfa: 0 };
       const boxes = [{ x0: -120, x1: W + 120, y0: -120, y1: 0, z0: H - 80, z1: H + 40, slot: 'steel' }, ...ex.boxes];
       if (p.doorCount > 0) boxes.push({ x0: 300, x1: W - 300, y0: -2500, y1: 0, z0: 0, z1: 60, slot: 'concrete' });
       const gfa = m2(W * D);
       return {
         W, D, storeys: 1, wallH: H, rooms: [{ name: planLabel, poly: rect(0, 0, W, D), level: 0 }], interior: [], openings: ops, extras: ex.extras, boxes,
+        ...(wallColour ? { wallFinish: { material: 'corrugated', colour: shedColourById(p.wallColour).hex, id: shedColourById(p.wallColour).id, name: shedColourById(p.wallColour).name } } : {}),
         symbols: planSymbols(W, D, `${label.toUpperCase()} ${(W / 1000).toFixed(1)} x ${(D / 1000).toFixed(1)}`, ex.symbols), roofs: [roof(p)],
-        extraQuantities: { ridgeHeightM: round1((H + (roof(p).type === 'gable' ? (W / 2) : roof(p).type === 'skillion' ? W : 0) * Math.tan((roof(p).pitchDeg * Math.PI) / 180)) / 1000) },
+        extraQuantities: { ridgeHeightM: round1((H + (roof(p).type === 'gable' ? (W / 2) : roof(p).type === 'skillion' ? D : 0) * Math.tan((roof(p).pitchDeg * Math.PI) / 180)) / 1000) },
         perUse: () => ({ [id]: round1(gfa) }),
         site: noParkingSite(notes || ['No customer parking is required for a shed. Rural and exempt development limits on size and setbacks vary, check with council.']),
       };
     },
   });
-  return { ...base, presets };
+  return { ...base, presets, ...(wallColour ? { wallFinish: (p) => { const c = shedColourById(base.normalise(p).wallColour); return { material: 'corrugated', colour: c.hex, id: c.id, name: c.name }; } } : {}) };
 }
 
 const commonSize = (w, d, h, wMax = 30000, dMax = 60000) => [
@@ -54,12 +88,19 @@ export const gableShed = shedType({
     { id: 'large', label: 'Large 9 x 15 m', params: { W: 9000, D: 15000, H: 3600, doorCount: 2, doorW: 3600, doorH: 3000, doorPos: 'spread' } }, { id: 'workshop', label: 'Workshop 12 x 18 m', params: { W: 12000, D: 18000, H: 4200, doorCount: 2, doorW: 4200, doorH: 3600, doorPos: 'spread', windows: 2 } }],
 });
 
+const PA_WALLS = [{ value: 'ends', label: 'On the ends' }, { value: 'rear', label: 'On the low long wall (rear)' }, { value: 'front', label: 'On the high long wall (front, with the roller doors)' }];
+// Roller door width and height here are to the millimetre (a shed builder quotes doors such as 3849 x 3315), unlike the other sheds.
+const exact = (list) => list.map((d) => (d.key === 'doorW' || d.key === 'doorH' ? { ...d, step: 1 } : d));
 export const skillionShed = shedType({
   id: 'skillion-shed', label: 'Skillion shed', planLabel: 'PROPOSED SKILLION SHED', rateKey: 'shed-small',
-  params: [...commonSize(6000, 9000, 3000), NUM('roofPitchDeg', 'Roof pitch', 'deg', 2, 20, 0.5, 7), ...doorParams(1, 3000, 2700, 4), ...sideParams],
-  roof: (p) => ({ type: 'skillion', pitchDeg: p.roofPitchDeg }),
+  params: [...commonSize(6000, 9000, 3000), NUM('roofPitchDeg', 'Roof pitch', 'deg', 2, 20, 0.5, 7), ...exact(doorParams(1, 3000, 2700, 4)), ...perDoorParams(4), ...sideParams,
+    SEL('paWall', 'Personnel doors', PA_WALLS, 'ends'), NUM('paX', 'First personnel door position from the left (0 = automatic)', 'mm', 0, 60000, 10, 0),
+    SEL('wallColour', 'Wall cladding colour', SHED_COLOUR_OPTIONS, DEFAULT_SHED_COLOUR)],
+  roof: (p) => ({ type: 'skillion', pitchDeg: p.roofPitchDeg, fall: 'rear' }),
+  openings: perDoorOpenings, wallColour: true,
   presets: [{ id: 'small', label: 'Small 3.6 x 6 m', params: { W: 3600, D: 6000, H: 2700, doorW: 2700, doorH: 2400 } }, { id: 'standard', label: 'Standard 6 x 9 m', params: { W: 6000, D: 9000 } },
-    { id: 'large', label: 'Large 9 x 12 m', params: { W: 9000, D: 12000, H: 3600, doorCount: 2, doorW: 3600, doorH: 3000, doorPos: 'spread' } }],
+    { id: 'large', label: 'Large 9 x 12 m', params: { W: 9000, D: 12000, H: 3600, doorCount: 2, doorW: 3600, doorH: 3000, doorPos: 'spread' } },
+    { id: 'wide', label: 'Wide frontage 15 x 9 m, two roller doors', params: { W: 15000, D: 9000, H: 3500, roofPitchDeg: 5, doorCount: 2, doorW: 3849, doorH: 3315, door2W: 3850, door2H: 2925, doorPos: 'centre', mullionMm: 589, personnelDoors: 1, paWall: 'rear' } }],
 });
 
 export const barnShed = shedType({

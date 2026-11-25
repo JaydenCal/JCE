@@ -23,6 +23,8 @@ const TXT = 5.6; // smallest text on a paid sheet
 const hexRgb = (h) => { const m = /^#?([0-9a-f]{6})$/i.exec(String(h || '')); const n = m ? parseInt(m[1], 16) : 0xdcdcd6; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
 const lighten = (rgb, k) => rgb.map((c) => Math.round(c + (255 - c) * k));
 const darken = (rgb, k) => rgb.map((c) => Math.round(c * (1 - k)));
+/** The cladding fill: a shed's own colour (rgb.own) is lightened much less, so the chosen colour reads on the sheet. */
+const tone = (rgb, k) => lighten(rgb, rgb.own ? k * 0.2 : k);
 const wlen = (w) => Math.hypot(w.b.x - w.a.x, w.b.y - w.a.y);
 const dot = (a, b) => a.x * b.x + a.y * b.y;
 
@@ -264,7 +266,7 @@ function drawLevelRuns(doc, f, g, ctx) {
       if (spec.system === 'tilt_up_metal_upper') {
         const dado = Math.min(spec.dadoMm, run.H);
         const q = rect(0, L, dado, run.H);
-        doc.setFillColor(...lighten(wallRgb, 0.35)); doc.setDrawColor(...GREY); doc.setLineWidth(0.1);
+        doc.setFillColor(...tone(wallRgb, 0.35)); doc.setDrawColor(...GREY); doc.setLineWidth(0.1);
         doc.rect(q.x, q.y, q.w, q.h, 'FD');
         doc.setLineWidth(0.06);
         for (let x = q.x + 1.4; x < q.x + q.w; x += 1.4) doc.line(x, q.y, x, q.y + q.h);
@@ -272,7 +274,7 @@ function drawLevelRuns(doc, f, g, ctx) {
       }
     } else {
       const q = rect(0, L, 0, run.H + (spec.system === 'blockwork' ? parapet : 0));
-      doc.setFillColor(...(spec.system === 'blockwork' ? lighten(wallRgb, 0.15) : lighten(wallRgb, 0.35))); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.18);
+      doc.setFillColor(...(spec.system === 'blockwork' ? tone(wallRgb, 0.15) : tone(wallRgb, 0.35))); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.18);
       doc.rect(q.x, q.y, q.w, q.h, 'FD');
       doc.setDrawColor(...(spec.system === 'blockwork' ? darken(wallRgb, 0.3) : GREY)); doc.setLineWidth(0.05);
       if (spec.system === 'blockwork') for (let y = 200; y < run.H + parapet; y += 200) { const yy = Y(L0 + y); if (px(200) > 0.7) doc.line(q.x, yy, q.x + q.w, yy); }
@@ -288,6 +290,11 @@ function drawLevelRuns(doc, f, g, ctx) {
         doc.setFillColor(...lighten(PEN.grey, 0.5)); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.16); doc.rect(q.x, q.y, q.w, q.h, 'FD');
         doc.setLineWidth(0.05); for (let y = q.y + 0.9; y < q.y + q.h; y += 0.9) doc.line(q.x, y, q.x + q.w, y);
       } else { doc.setFillColor(255, 255, 255); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.16); doc.rect(q.x, q.y, q.w, q.h, 'FD'); }
+      // Door marks (RD1, RD2, PA1) with the size when the door is wide enough on the sheet.
+      if (o.mark && (o.kind === 'roller_door' || o.kind === 'door')) {
+        const lab = q.w > 40 ? `${o.mark}  ${Math.round(o.width)} x ${Math.round(o.height)}` : q.w > 4.5 ? o.mark : '';
+        if (lab) haloText(doc, lab, q.x + q.w / 2, q.y + q.h / 2 + 0.8, { size: TXT, bold: true, align: 'center', halo: 0.7 });
+      }
     }
     if (parapet > 0 && pl) { doc.setDrawColor(...GREY); dash(doc, true); doc.setLineWidth(0.1); doc.line(XL(0), Y(L0 + run.H), XL(L), Y(L0 + run.H)); dash(doc, false); }
   }
@@ -371,7 +378,7 @@ function drawSide(doc, t, d, box, scale, levels, wallRgb) {
   if (t.kind === 'row' && d.side.id !== 'front') {
     // Rows: the rear and end walls are plain sheet.
     const w = d.width; const H = t.levels[0].h;
-    doc.setFillColor(...lighten(wallRgb, 0.35)); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.18); doc.rect(X(d.sMin), Y(H), px(w), px(H), 'FD');
+    doc.setFillColor(...tone(wallRgb, 0.35)); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.18); doc.rect(X(d.sMin), Y(H), px(w), px(H), 'FD');
     doc.setDrawColor(...GREY); doc.setLineWidth(0.05);
     for (let x = X(d.sMin) + 1.4; x < X(d.sMin) + px(w); x += 1.4) doc.line(x, Y(H), x, Y(0));
   }
@@ -389,7 +396,7 @@ function drawSide(doc, t, d, box, scale, levels, wallRgb) {
   if (rise > Math.max(80, t.parapetMm) + 1) {
     const poly = [{ x: X0, y: Y(t.wallTop) }, ...sil, { x: X0 + px(wMm), y: Y(t.wallTop) }];
     const lines = poly.map((q, i) => (i === 0 ? [q.x, q.y] : [q.x - poly[i - 1].x, q.y - poly[i - 1].y]));
-    doc.setFillColor(...lighten(wallRgb, 0.55)); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.22);
+    doc.setFillColor(...tone(wallRgb, 0.55)); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.22);
     doc.lines(lines.slice(1), lines[0][0], lines[0][1], [1, 1], 'FD', true);
     if (t.roof.type === 'gable' && ((t.roof.ridge === 'y') === (d.side.id === 'front' || d.side.id === 'rear'))) {
       // seen from the gable end: sheeting lines up the roof slope are not shown, the verge is the outline
@@ -402,7 +409,7 @@ function drawSide(doc, t, d, box, scale, levels, wallRgb) {
     doc.line(X0, Y(t.wallTop + rise), X0 + px(wMm), Y(t.wallTop + rise)); dash(doc, false);
   }
   if (t.parapetMm > 0 && t.kind === 'building' && spec.system !== 'blockwork' && !d.lv.some((l) => l.walls.some((w) => w.panel))) {
-    doc.setFillColor(...lighten(wallRgb, 0.3)); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.18);
+    doc.setFillColor(...tone(wallRgb, 0.3)); doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.18);
     doc.rect(X0, Y(t.wallTop + t.parapetMm), px(wMm), px(t.parapetMm), 'FD');
   }
 
@@ -453,7 +460,9 @@ export function drawElevations(doc, model, target, levels = null) {
     return { kv: [], notes: [], blocks: [] };
   }
   const lay = elevationLayout(t, lv);
-  const wallRgb = hexRgb(project.finishes?.externalWalls?.colour || '#e8e5da');
+  const own = t.building?.def?.wallFinish ? t.building.def.wallFinish(t.params) : null; // a shed's own cladding colour
+  const wallRgb = hexRgb(own?.colour || project.finishes?.externalWalls?.colour || '#e8e5da');
+  if (own) wallRgb.own = true;
   doc.setLineDashPattern([], 0);
   const bounds = [];
   SIDES.forEach((side, i) => {
