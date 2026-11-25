@@ -1,9 +1,11 @@
 /* Glide Inside tracking. No dependencies. Loaded on every site page.
    Does nothing except UTM passthrough unless GI_CONFIG.ga4Id is set. Setup steps: docs/marketing/TRACKING.md.
-   Events sent to GA4: book_demo, design_started, purchase, generate_lead, start_design_click, plus the app events forwarded from the framed app
-   (app_opened, lot_loaded, house_placed, ps_profile_*, ps_share_*, ps_export, ps_upgrade_click, ps_checkout_*, ps_template_selected, ps_project_saved).
-   Privacy (24/11/2026): page_location and page_referrer are cleaned (origin, path and a short allow list of plain query values; never ?address=),
-   event values are checked, a checkout.stripe.com referrer is dropped, and ?gi_internal=1 tags the browser as internal exactly as src/ui/ga.js does. */
+   Events sent to GA4: book_demo, design_started, purchase, generate_lead, start_design_click, plus the app events forwarded from the embedded
+   app (see FORWARD below: app_opened, lot_loaded, house_placed, ps_template_selected, ps_upgrade_click, ps_checkout_started, ps_checkout_completed,
+   ps_export, ps_project_saved, ps_share_copy, ps_share_open, ps_profile_prompt, ps_profile_signup). A purchase follows ps_checkout_completed and a
+   generate_lead follows ps_profile_signup. When the app is its own top level page (a phone visitor) it reports for itself (src/ui/ga.js).
+   Internal traffic: ?gi_internal=1 sets a flag in this browser, ?gi_internal=0 clears it; while it is set every event carries
+   traffic_type=internal. See docs/ANALYTICS-INTERNAL.md. */
 (function () {
   "use strict";
   var cfg = window.GI_CONFIG || {};
@@ -12,6 +14,18 @@
   function store(kind) { try { return window[kind]; } catch (e) { return null; } }
   function get(kind, k) { try { var s = store(kind); return s ? s.getItem(k) : null; } catch (e) { return null; } }
   function set(kind, k, v) { try { var s = store(kind); if (s) s.setItem(k, v); } catch (e) {} }
+  function del(kind, k) { try { var s = store(kind); if (s) s.removeItem(k); } catch (e) {} }
+
+  /* ---- Internal traffic flag (owner and our own testing). Automated browsers (navigator.webdriver) count as internal as well. ---- */
+  var internal = (function () {
+    try {
+      var q = new URLSearchParams(location.search).get("gi_internal");
+      if (q === "1") set("localStorage", "gi_internal", "1");
+      else if (q === "0") del("localStorage", "gi_internal");
+    } catch (e) {}
+    if (get("localStorage", "gi_internal") === "1") return true;
+    try { return typeof navigator !== "undefined" && navigator.webdriver === true; } catch (e) { return false; }
+  })();
 
   /* ---- UTM capture (first touch of the session) and passthrough on internal links ---- */
   var utm = {};
@@ -51,63 +65,31 @@
   // Inside an iframe (the app within the launch page) the parent page reports. Avoid double counting.
   var framed = false; try { framed = window.parent !== window; } catch (e) { framed = true; }
 
-  var adsId = cfg.adsConversion ? String(cfg.adsConversion).split("/")[0] : "";
-
-  /* ---- Privacy: what may leave the browser (same rules as src/ui/ga.js) ---- */
-  var KEEP_PARAMS = { embed: 1, mode: 1, sample: 1, template: 1, view: 1, utm_source: 1, utm_medium: 1, utm_campaign: 1, utm_term: 1, utm_content: 1 };
-  function cleanLocation(href) {
+  var SAFE_Q = { utm_source: 1, utm_medium: 1, utm_campaign: 1, utm_term: 1, utm_content: 1, gclid: 1, gbraid: 1, wbraid: 1, dclid: 1, msclkid: 1, fbclid: 1, template: 1, mode: 1, sample: 1 };
+  function safeLocation() {
     try {
-      var u = new URL(href, location.href), keep = new URLSearchParams();
-      u.searchParams.forEach(function (v, k) { if (KEEP_PARAMS[k] && /^[a-z0-9_.-]{1,60}$/i.test(v)) keep.set(k, v); });
+      var u = new URL(location.href), keep = new URLSearchParams();
+      u.searchParams.forEach(function (v, k) {
+        if (!SAFE_Q[k]) return;
+        if (/^(utm_|gclid|gbraid|wbraid|dclid|msclkid|fbclid)/.test(k) ? (v.length <= 150 && v.indexOf("@") === -1) : /^[a-z0-9_.-]{1,60}$/i.test(v)) keep.set(k, v);
+      });
       var q = keep.toString();
       return u.origin + u.pathname + (q ? "?" + q : "");
-    } catch (e) { return ""; }
+    } catch (e) { return location.origin + location.pathname; }
   }
-  function cleanReferrer(ref) {
-    try {
-      if (!ref) return "";
-      var u = new URL(ref);
-      if (u.hostname === "checkout.stripe.com") return ""; // Stripe must not take over attribution on the return from checkout
-      return u.origin + u.pathname;
-    } catch (e) { return ""; }
-  }
-  /* Any string value that looks like a page address is cut to origin and path; keys that could hold personal text are dropped. */
-  var BAD_KEY = /address|street|email|phone|name$|^q$|query|search/i;
-  function scrub(params) {
-    var out = {};
-    Object.keys(params || {}).forEach(function (k) {
-      var v = params[k];
-      if (BAD_KEY.test(k) && !/^(item_name|link_text)$/.test(k)) return;
-      if (typeof v === "string") {
-        if (/^https?:\/\//i.test(v)) v = cleanLocation(v);
-        else if (/[?&](address|street|q|query)=/i.test(v)) v = v.split(/[?#]/)[0];
-        else if (k === "link_text") v = v.slice(0, 60);
-      }
-      out[k] = v;
-    });
-    return out;
-  }
-  /* Internal traffic: ?gi_internal=1 tags this browser (localStorage, as in ga.js), ?gi_internal=0 clears it, automated browsers count as internal. */
-  var internal = (function () {
-    try {
-      var f = new URLSearchParams(location.search).get("gi_internal");
-      if (f === "1") set("localStorage", "gi_internal", "1");
-      else if (f === "0") { try { window.localStorage.removeItem("gi_internal"); } catch (e) {} }
-    } catch (e) {}
-    if (get("localStorage", "gi_internal") === "1") return true;
-    try { return navigator.webdriver === true; } catch (e) { return false; }
-  })();
-  var pageLoc = cleanLocation(location.href), pageRef = cleanReferrer(document.referrer);
-  var viaApp = /\/plan-studio\/app\/(index\.html)?$/.test(location.pathname); // the app page reports for itself through src/ui/ga.js
+  function safeReferrer(r) { try { if (!r) return ""; var u = new URL(r); if (u.hostname === "checkout.stripe.com") return ""; return u.origin + u.pathname; } catch (e) { return ""; } } // the return from Stripe must not take over attribution
 
-  if (!framed && !viaApp) {
+  var adsId = cfg.adsConversion ? String(cfg.adsConversion).split("/")[0] : "";
+  if (!framed) {
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
     window.gtag("js", new Date());
-    var base = { page_location: pageLoc, page_referrer: pageRef };
-    if (internal) base.traffic_type = "internal";
-    window.gtag("set", base); // later events of this page use the cleaned address too, never the raw one
-    window.gtag("config", gaId, base);
+    // The page address and referrer Google sees keep only a safe list of query parameters (attribution and harmless view switches), so an
+    // address, email, share id or checkout reference in a link never reaches Google, on the page view or on any later event.
+    var page = { page_location: safeLocation(), page_referrer: safeReferrer(document.referrer) };
+    if (internal) page.traffic_type = "internal";
+    window.gtag("set", page);
+    window.gtag("config", gaId, page);
     if (adsId) window.gtag("config", adsId);
     // The gtag library (about 180 KB) is added as an async script once this deferred file runs (after the HTML is parsed),
     // so it never blocks the first paint but still loads early enough that quick visits and fast clicks from ads are counted.
@@ -118,10 +100,10 @@
   }
 
   function send(name, params) {
-    if (framed || viaApp || !window.gtag) return;
-    var p = scrub(params);
-    if (internal) p.traffic_type = "internal";
-    window.gtag("event", name, p);
+    if (framed || !window.gtag) return;
+    params = params || {};
+    if (internal) params.traffic_type = "internal";
+    window.gtag("event", name, params);
   }
   window.giTrack = send;
 
@@ -184,51 +166,62 @@
   }
   // Events the app raises that count as starting a design (a template pick alone does not).
   var STARTERS = { ps_design_type: 1, ps_ai_request: 1, ps_project_saved: 1, ps_export: 1 };
-  /* Events forwarded from the framed app. Same checks as mapEvent in src/ui/ga.js. The framed app never reports itself (isStandalonePage is false there),
-     so each event is counted once, here. design_started goes through the once per session gate above. */
-  var FORWARD = { app_opened: 1, lot_loaded: 1, house_placed: 1, ps_profile_prompt: 1, ps_profile_signup: 1, ps_template_selected: 1, ps_project_saved: 1,
-    ps_share_copy: 1, ps_share_open: 1, ps_export: 1, ps_upgrade_click: 1, ps_checkout_started: 1, ps_checkout_completed: 1 };
-  var PLAIN = /^[a-z0-9_.-]{1,40}$/i;
-  function tok(v, list) { v = String(v == null ? "" : v).toLowerCase(); if (list) return list.indexOf(v) !== -1 ? v : null; return PLAIN.test(v) ? v : null; }
+  // App events forwarded from the embedded app. Only these names, and only the parameters below, each checked against a list or a strict pattern:
+  // no address, email or other personal data can be forwarded even by mistake.
+  var FORWARD = { app_opened: 1, lot_loaded: 1, house_placed: 1, ps_template_selected: 1, ps_upgrade_click: 1, ps_checkout_started: 1, ps_checkout_completed: 1, ps_export: 1, ps_project_saved: 1, ps_share_copy: 1, ps_share_open: 1, ps_profile_prompt: 1, ps_profile_signup: 1 };
+  var WORD = /^[a-z0-9_.-]{1,40}$/i;
+  var PHONE_EVENTS = { phone_step_address: 1, phone_lot_loaded: 1, phone_pick_type: 1, phone_house_placed: 1, phone_planset_preview: 1, phone_full_editor: 1, phone_planset_lead_submit: 1, phone_planset_download: 1, planset_lead_submit: 1, planset_download: 1 };
+  function word(v, list) { var t = String(v == null ? "" : v).toLowerCase(); return list ? (list.indexOf(t) !== -1 ? t : null) : (WORD.test(t) ? t : null); }
   function yn(v) { return v === true || v === "yes" ? "yes" : v === false || v === "no" ? "no" : null; }
-  function whole(v, max) { var n = Math.round(Number(v)); return isFinite(n) && n >= 0 ? Math.min(n, max) : null; }
-  function defd(o) { var r = {}; Object.keys(o).forEach(function (k) { if (o[k] != null) r[k] = o[k]; }); return r; }
+  function put(o, k, v) { if (v !== null && v !== undefined) o[k] = v; }
   function once(key) {
-    if (bkSent[key] || get("localStorage", key) || get("sessionStorage", key)) return false;
-    bkSent[key] = 1; set("localStorage", key, "1"); set("sessionStorage", key, "1");
+    if (get("localStorage", key) || get("sessionStorage", key)) return false;
+    set("localStorage", key, "1"); set("sessionStorage", key, "1");
     return true;
   }
-  function withUtm(p) { Object.keys(utm).forEach(function (k) { p[k] = utm[k]; }); return p; }
-  function mapApp(name, p) {
-    p = p && typeof p === "object" ? p : {};
-    switch (name) {
-      case "app_opened": return [["app_opened", defd({ entry: tok(p.entry, ["phone", "desktop"]), from: tok(p.from, ["home_search", "sample", "direct"]) })]];
-      case "lot_loaded": return [["lot_loaded", defd({ result: p.success === false ? "fail" : "success", ms: whole(p.ms, 600000), sample: yn(p.sample) })]];
-      case "house_placed": return [["house_placed", defd({ sample: yn(p.sample) })]];
-      case "ps_profile_prompt": return [["ps_profile_prompt", defd({ reason: tok(p.reason), card: tok(p.card, ["compact", "full"]) })]];
-      case "ps_profile_signup": {
-        var o = [["ps_profile_signup", defd({ marketing: yn(p.marketing) })]];
-        if (once("gi_lead_profile")) o.push(["generate_lead", withUtm({ lead_type: "free_profile", method: "app" })]);
-        return o;
-      }
-      case "ps_template_selected": return [["ps_template_selected", defd({ item_id: tok(p.id) })]];
-      case "ps_project_saved": case "ps_share_copy": case "ps_share_open": case "ps_checkout_started": return [[name, {}]];
-      case "ps_export": return [["ps_export", defd({ export_type: tok(p.type) })]];
-      case "ps_upgrade_click": return [["ps_upgrade_click", defd({ source: tok(p.source) })]];
-      case "ps_checkout_completed": {
-        var id = typeof p.sessionId === "string" && /^[A-Za-z0-9_-]{6,120}$/.test(p.sessionId) ? p.sessionId : null;
-        var out = [["ps_checkout_completed", {}]];
-        if (id && once("gi_purchase_" + id.slice(0, 80))) out.push(["purchase", withUtm({ transaction_id: id, value: PLAN_PRICE, currency: "AUD", items: [{ item_id: "plan_pack", item_name: "Glide Inside Plan Pack", price: PLAN_PRICE, quantity: 1 }] })]);
-        return out;
-      }
-    }
-    return [];
+  function sendPurchase(sid, value, name, id) {
+    var p = { transaction_id: sid, value: value, currency: "AUD", items: [{ item_id: id, item_name: name, price: value, quantity: 1 }] };
+    Object.keys(utm).forEach(function (k) { p[k] = utm[k]; });
+    send("purchase", p);
+    if (cfg.adsConversion && window.gtag) window.gtag("event", "conversion", { send_to: cfg.adsConversion, value: value, currency: "AUD", transaction_id: sid });
   }
+  var lastFwd = { k: "", t: 0 };
   function onAppEvent(name, props) {
     if (!name) return;
-    if (name === "design_started") { designStarted(tok(props && props.method) || "edit", props && props.template ? { template: tok(props.template) || "none" } : null); return; }
-    if (STARTERS[name]) designStarted(name, props && props.id ? { template: props.id } : null);
-    if (FORWARD[name]) mapApp(name, props).forEach(function (g) { send(g[0], g[1]); });
+    props = props && typeof props === "object" ? props : {};
+    if (STARTERS[name]) designStarted(name, props.id ? { template: props.id } : null);
+    // The simple phone path (src/flow/phone-simple.js): one event per step, parameters checked against strict lists only.
+    if (PHONE_EVENTS[name]) {
+      var pe = {};
+      put(pe, "design_type", word(props.type)); put(pe, "source", word(props.source)); put(pe, "from", word(props.from)); put(pe, "fits", yn(props.fits) || word(props.fits));
+      send(name, pe);
+      return;
+    }
+    if (!FORWARD[name]) return;
+    // The same message twice within a moment is one action.
+    var k = name + JSON.stringify(props), now = Date.now();
+    if (lastFwd.k === k && now - lastFwd.t < 400) return;
+    lastFwd = { k: k, t: now };
+    var fp = {};
+    if (name === "app_opened") { put(fp, "entry", word(props.entry, ["phone", "desktop"])); put(fp, "from", word(props.from, ["home_search", "sample", "direct"])); }
+    else if (name === "lot_loaded") { fp.result = props.success === false ? "fail" : "success"; var ms = Math.round(Number(props.ms)); if (isFinite(ms) && ms >= 0) fp.ms = Math.min(ms, 600000); put(fp, "sample", yn(props.sample)); }
+    else if (name === "house_placed") { put(fp, "sample", yn(props.sample)); }
+    else if (name === "ps_profile_prompt") { put(fp, "reason", word(props.reason)); put(fp, "card", word(props.card, ["compact", "full"])); }
+    else if (name === "ps_profile_signup") { put(fp, "marketing", yn(props.marketing)); }
+    else if (name === "ps_export") { put(fp, "export_type", word(props.type)); }
+    else if (name === "ps_upgrade_click") { put(fp, "source", word(props.source)); }
+    else if (name === "ps_template_selected") { put(fp, "item_id", word(props.id)); }
+    send(name, fp);
+    if (name === "ps_profile_signup" && once("gi_lead_profile")) {
+      var lp = { lead_type: "free_profile", method: "app" };
+      Object.keys(utm).forEach(function (u) { lp[u] = utm[u]; });
+      send("generate_lead", lp);
+    }
+    if (name === "ps_checkout_completed") {
+      var sid = typeof props.sessionId === "string" && /^[A-Za-z0-9_-]{6,120}$/.test(props.sessionId) ? props.sessionId : "";
+      // One purchase per Stripe session, shared with the checkout return handler below and with the app's own page (same storage key).
+      if (sid && once("gi_purchase_" + sid.slice(0, 80))) sendPurchase(sid, PLAN_PRICE, "Glide Inside Plan Pack", "plan_pack");
+    }
   }
   // The real edit signal: the app's store emits "history" after every change; canUndo is true after the first edit.
   function watchStore(win) {
@@ -262,18 +255,13 @@
     if (q.get("checkout") !== "success") return;
     var sid = q.get("session_id");
     if (!sid) return;
-    var key = "gi_purchase_" + sid.slice(0, 80);
-    if (get("localStorage", key) || get("sessionStorage", key)) return;
-    set("localStorage", key, "1"); set("sessionStorage", key, "1");
+    if (!once("gi_purchase_" + sid.slice(0, 80))) return;
     var addon = q.get("addon"), value = PLAN_PRICE, name = "Glide Inside Plan Pack", id = "plan_pack";
     var fly = priceNumber(cfg.addonFlyThroughPrice, 10), ren = priceNumber(cfg.addonRendersPrice, 10);
     if (addon === "fly") { value = fly; name = "3D fly-through"; id = "addon_fly_through"; }
     else if (addon === "renders") { value = ren; name = "Complex renderings"; id = "addon_renders"; }
     else if (addon === "both") { value = fly + ren; name = "3D fly-through and complex renderings"; id = "addon_both"; }
-    var p = { transaction_id: sid, value: value, currency: "AUD", items: [{ item_id: id, item_name: name, price: value, quantity: 1 }] };
-    Object.keys(utm).forEach(function (k) { p[k] = utm[k]; });
-    send("purchase", p);
-    if (cfg.adsConversion && window.gtag) window.gtag("event", "conversion", { send_to: cfg.adsConversion, value: value, currency: "AUD", transaction_id: sid });
+    sendPurchase(sid, value, name, id);
   })();
 
   /* ---- generate_lead on mailto clicks; start_design_click on links into the tool ---- */
