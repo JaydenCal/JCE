@@ -1,4 +1,4 @@
-// Top bar slot: the Exports menu and the unlock button (or, once unlocked, the Plan Pack chip).
+// Top bar slot: the Exports menu and the AI design assistant button (or, once bought, the AI credits chip). Homeowner exports are free behind one lead form.
 
 import { el, clear, formatAud, ddmmyyyy, clamp } from '../util.js';
 import { icon } from '../icons.js';
@@ -33,10 +33,11 @@ export function createTopbarUI({ root, config, getState, actions }) {
 
   function renderMenu() {
     const st = getState();
-    const locked = !st.entitled;
+    const free = !st.entitled && !!st.planSetFree; // homeowner: every file is free once the lead form has been filled in
+    const locked = !st.entitled && !free;
     clear(menu);
     itemButtons.clear();
-    menu.append(el('div', { class: 'psp-menu-head' }, locked ? (st.commercial ? 'Part of the Commercial Developer subscription' : 'Part of the Plan Pack') : 'Download for this design'));
+    menu.append(el('div', { class: 'psp-menu-head' }, locked ? (st.commercial ? 'Part of the Commercial Developer subscription' : 'Part of the AI design assistant pack') : free ? 'Free to download, one short form' : 'Download for this design'));
     const allowed = st.portal?.exports || null; // client logins: the builder's choice, PDF only by default
     for (const base of EXPORT_ITEMS) {
       if (allowed && !allowed.includes(base.type)) continue;
@@ -79,8 +80,8 @@ export function createTopbarUI({ root, config, getState, actions }) {
     if (st.portal?.watermark) menu.append(trialNote());
     const info = tokenInfo(st.token);
     menu.append(el('div', { class: 'psp-menu-foot' },
-      locked
-        ? el('span', null, st.commercial ? `Commercial Developer, ${formatAud(50)} per month, unlimited plan sets. ` : st.planSetFree ? `The PDF plan set is free with your details. The other files come with the Plan Pack, ${formatAud(pack.priceAud ?? 30)} per job. ` : `Exports come with the Plan Pack, ${formatAud(pack.priceAud ?? 30)} per job. `, el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { closeMenu(false); actions.restore(); } }, 'Restore purchase'))
+      locked || free
+        ? el('span', null, st.commercial ? `Commercial Developer, ${formatAud(50)} per month, unlimited plan sets. ` : st.planSetFree ? `Every file is free. Share your details once and they all download for this design. The AI design assistant is ${formatAud(pack.priceAud ?? 30)} for ${(pack.credits ?? 1000).toLocaleString('en-AU')} credits. ` : `Exports come with the AI design assistant pack, ${formatAud(pack.priceAud ?? 30)} for ${(pack.credits ?? 1000).toLocaleString('en-AU')} credits. `, el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { closeMenu(false); actions.restore(); } }, 'Restore purchase'))
         : st.csub ? el('span', null, st.csub.kind === 'trial' ? 'Trial login: unlimited plan sets, watermarked.' : 'Unlimited plan sets while your subscription is active.')
         : el('span', null, st.devUnlock && !st.token ? 'Developer unlock: files are built in this browser.' : info?.exp ? `Re-export as often as you like until ${ddmmyyyy(info.exp * 1000)}.` : 'Re-export as often as you like.')));
     // The plan set terms apply to every PDF and DXF; the link opens the public page with the same text.
@@ -101,16 +102,16 @@ export function createTopbarUI({ root, config, getState, actions }) {
     if (st.portal?.watermark) slot.append(el('span', { class: 'psp-trial-badge', title: 'Exports are watermarked during your free trial' }, 'Trial'));
     if (st.entitled) {
       const left = st.credits && Number.isFinite(st.credits.remaining) ? ` ${st.credits.remaining} of ${st.credits.total} AI credits left.` : '';
-      slot.append(el('button', { class: 'psp-chip', type: 'button', title: st.csub ? 'Your commercial account' : `Plan Pack active.${left}`, onclick: () => actions.details() },
-        icon('check', 14), st.csub ? (st.csub.kind === 'trial' ? 'Commercial trial' : 'Commercial Developer') : st.portal ? 'Plans included' : st.token ? 'Plan Pack' : 'Dev unlock'));
+      slot.append(el('button', { class: 'psp-chip', type: 'button', title: st.csub ? 'Your commercial account' : `AI design assistant active.${left}`, onclick: () => actions.details() },
+        icon('check', 14), st.csub ? (st.csub.kind === 'trial' ? 'Commercial trial' : 'Commercial Developer') : st.portal ? 'Plans included' : st.token ? 'AI assistant' : 'Dev unlock'));
     } else if (st.portalPending) {
       // The sign-in check is still running: show nothing rather than a paywall that a builder's client would not see.
     } else if (isOn() || st.commercial || st.planSetFree) { // the free plan set needs no payment service
-      // Commercial mode always offers the subscription (the gate says Coming soon until a Stripe price is set), never the A$30 Plan Pack.
-      slot.append(el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => actions.unlock('topbar') },
-        icon(st.planSetFree ? 'download' : 'lock', 14), st.commercial ? `Subscribe, ${formatAud(50)} per month` : st.planSetFree ? 'Get plan set, free' : `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`));
+      // Commercial mode always offers the subscription (the gate says Coming soon until a Stripe price is set), never the A$30 AI design assistant.
+      slot.append(el('button', { class: 'psp-btn psp-btn--primary', type: 'button', dataset: { ps: 'ai-pack' }, title: `${(pack.credits ?? 1000).toLocaleString('en-AU')} AI credits for this design`, onclick: () => actions.unlock(st.commercial ? 'topbar' : 'ai_pack') },
+        icon(st.commercial ? 'lock' : 'spark', 14), st.commercial ? `Subscribe, ${formatAud(50)} per month` : `AI design assistant, ${formatAud(pack.priceAud ?? 30)}`));
     } else {
-      slot.append(el('button', { class: 'psp-btn', type: 'button', disabled: true, title: 'The Plan Pack (AI assistant and exports) is unavailable right now. Try again shortly.' }, icon('lock', 14), 'Plan Pack unavailable, try again'));
+      slot.append(el('button', { class: 'psp-btn', type: 'button', disabled: true, title: 'The AI design assistant is unavailable right now. Try again shortly.' }, icon('lock', 14), 'AI design assistant unavailable, try again'));
     }
   }
 

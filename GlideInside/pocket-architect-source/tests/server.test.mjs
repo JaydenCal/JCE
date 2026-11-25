@@ -144,7 +144,7 @@ test('config reads every SCOPE 11.6 variable with its default', () => {
   assert.equal(c.maxOutputTokens, 1500);
   assert.equal(c.maxContextTokens, 40000);
   assert.equal(c.creditUsd, 0.001);
-  assert.equal(c.planPackCredits, 500);
+  assert.equal(c.planPackCredits, 1000);
   assert.deepEqual(c.warnThresholds, [0.5, 0.8, 0.95]);
   assert.equal(c.largeRequestCredits, 10);
   assert.equal(c.ratePerMin, 6);
@@ -211,7 +211,7 @@ test('7. an expired token is refused even with a live entitlement', async () => 
 });
 
 // Test 8: Stripe flow -------------------------------------------------------------------------------
-test('8. checkout creates a Stripe session with the A$30 Plan Pack for the project', async () => {
+test('8. checkout creates a Stripe session with the A$30 AI design assistant for the project', async () => {
   const w = makeWorld({ APP_URL: 'https://site.test/floor-plan-designer/app/' });
   const r = await w.call('POST', '/api/checkout', { body: { projectId: 'p_abc123', projectName: 'Smith residence' } });
   assert.equal(r.status, 200);
@@ -228,6 +228,9 @@ test('8. checkout creates a Stripe session with the A$30 Plan Pack for the proje
   assert.equal(f.get('line_items[0][price_data][currency]'), 'aud');
   assert.equal(f.get('line_items[0][price_data][unit_amount]'), '3000');
   assert.equal(f.get('line_items[0][quantity]'), '1');
+  assert.equal(f.get('line_items[0][price_data][product_data][name]'), 'AI design assistant');
+  assert.match(f.get('line_items[0][price_data][product_data][description]'), /1,000 credits/);
+  assert.doesNotMatch(f.toString(), /Plan\+Pack|Plan%20Pack/);
   assert.equal(f.get('success_url'), 'https://site.test/floor-plan-designer/app/?checkout=success&session_id={CHECKOUT_SESSION_ID}&project=p_abc123');
   assert.equal(f.get('cancel_url'), 'https://site.test/floor-plan-designer/app/?checkout=cancel');
   assert.equal(f.get('line_items[0][price]'), null);
@@ -241,10 +244,10 @@ test('8. checkout creates a Stripe session with the A$30 Plan Pack for the proje
 });
 
 test('8. a paid webhook creates one entitlement, a repeat does not, a refund ends it', async () => {
-  const w = makeWorld({ PLAN_PACK_CREDITS: '500' });
+  const w = makeWorld(); // the default grant is 1,000 AI credits (the A$30 AI design assistant, 25/11/2026)
   const { token, body, projectId } = await w.buy();
-  assert.equal(body.credits.total, 500);
-  assert.equal(body.credits.remaining, 500);
+  assert.equal(body.credits.total, 1000);
+  assert.equal(body.credits.remaining, 1000);
   assert.equal(body.projectId, projectId);
   const ents = [...w.store._ents.values()];
   assert.equal(ents.length, 1);
@@ -357,7 +360,7 @@ test('11. "Make the roof dark grey" changes the roof colour as one undo step and
   assert.deepEqual(r.json.ops, [{ op: 'set_finish', args: { target: 'roof', colour: 'steel-charcoal' } }]);
   assert.ok(r.json.credits.charged >= 1 && r.json.credits.charged <= 3, `charged ${r.json.credits.charged}`);
   assert.equal(r.json.credits.charged, 1);
-  assert.equal(r.json.credits.remaining, 499);
+  assert.equal(r.json.credits.remaining, 999);
   assert.equal(r.json.warning, null);
   // The browser applies the operations as one batch.
   const results = store.runBatch('AI: roof colour', r.json.ops.map((o) => ({ op: o.op, args: o.args })));
@@ -376,7 +379,7 @@ test('11. "Make the roof dark grey" changes the roof colour as one undo step and
   assert.equal(log.inputTokens, 5200);
   assert.equal(log.cacheReadTokens, 5800);
   assert.equal(log.model, 'claude-haiku-5-5');
-  assert.deepEqual((await w.call('GET', '/api/credits?project=p_test1', { token })).json, { total: 500, used: 1, remaining: 499, warnLevel: 0, reserved: 0 });
+  assert.deepEqual((await w.call('GET', '/api/credits?project=p_test1', { token })).json, { total: 1000, used: 1, remaining: 999, warnLevel: 0, reserved: 0 });
   // A cold cache request is charged for the cache write.
   w.anthropic = () => anthropicOk([{ type: 'text', text: 'Done.' }, ROOF_CALL], COLD);
   w.clock.t += 61000;
@@ -497,7 +500,7 @@ test('14. a request estimated above the threshold asks for confirmation first', 
   assert.equal(est.status, 200);
   assert.ok(est.json.estimatedCredits > 2);
   assert.equal(est.json.requiresConfirm, true);
-  assert.equal(est.json.remaining, 500);
+  assert.equal(est.json.remaining, 1000);
   const small = await w.call('POST', '/api/ai/estimate', { token, body: { message: 'Make the roof dark grey', context: 'PROJECT "T" type=house' } });
   assert.equal(small.json.requiresConfirm, false);
   assert.equal(w.calls.anthropic.length, 0, 'estimating makes no model call');
@@ -633,7 +636,7 @@ test('a reply with no operations (a refusal) charges no credit, but the model sp
   assert.equal(r.status, 200);
   assert.deepEqual(r.json.ops, []);
   assert.equal(r.json.credits.charged, 0);
-  assert.equal(r.json.credits.remaining, 500);
+  assert.equal(r.json.credits.remaining, 1000);
   const ent = [...w.store._ents.values()][0];
   assert.equal(ent.creditsUsed, 0);
   assert.equal(ent.creditsReserved, 0);
@@ -936,11 +939,11 @@ test('the development grant exists only when the host turns it on, and is idempo
   assert.equal((await on.call('GET', '/api/health')).json.devGrant, true);
   const a = await on.call('GET', '/api/entitlement?dev=1&project=p_dev1');
   assert.equal(a.status, 200, JSON.stringify(a.json));
-  assert.equal(a.json.credits.total, 500);
+  assert.equal(a.json.credits.total, 1000);
   assert.equal(a.json.projectId, 'p_dev1');
   const b = await on.call('GET', '/api/entitlement?dev=1&project=p_dev1');
   assert.equal(b.json.receipt, a.json.receipt, 'the same entitlement comes back');
-  assert.equal((await on.call('GET', '/api/credits?project=p_dev1', { token: a.json.token })).json.remaining, 500);
+  assert.equal((await on.call('GET', '/api/credits?project=p_dev1', { token: a.json.token })).json.remaining, 1000);
   assert.equal((await on.call('GET', '/api/entitlement?dev=1&project=bad%20id')).status, 400);
   const ex = await on.call('POST', '/api/export/dxf', { token: a.json.token, body: { project: sampleProject('p_dev1') } });
   assert.equal(ex.status, 200);

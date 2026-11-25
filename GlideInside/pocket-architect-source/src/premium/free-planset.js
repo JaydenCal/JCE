@@ -100,7 +100,9 @@ export async function flushLeadQueue(send, storage = defStorage()) {
 export const alreadyGave = (projectId, storage) => !!projectId && !!rememberedLead(storage)?.projects?.includes(projectId);
 
 /** The desktop dialog: the short form, then the download, then the quote line. `submit(lead)` resolves { filename }; `orderEngineering()` opens the order path. */
-export function openFreePlanSet({ layer, project, submit, orderEngineering = null } = {}) {
+export function openFreePlanSet({ layer, project, submit, orderEngineering = null, fileLabel = 'plan set', surface = 'desktop' } = {}) {
+  const isSet = fileLabel === 'plan set';
+  const getLabel = isSet ? GET_LABEL : 'Download my file, free';
   const mem = rememberedLead() || {};
   const field = (name, label, attrs = {}) => {
     const input = el('input', { id: `fps-${name}`, class: 'psp-input', type: attrs.type || 'text', autocomplete: attrs.autocomplete || 'off', maxlength: '120', value: mem[name] || '', required: true });
@@ -117,10 +119,10 @@ export function openFreePlanSet({ layer, project, submit, orderEngineering = nul
   const shownConsent = consentText(builder);
   const consent = el('input', { type: 'checkbox', id: 'fps-consent' });
   const status = el('p', { role: 'alert', 'aria-live': 'polite', class: 'psp-error', hidden: true });
-  const go = el('button', { class: 'psp-btn psp-btn--primary', type: 'submit' }, GET_LABEL);
+  const go = el('button', { class: 'psp-btn psp-btn--primary', type: 'submit' }, getLabel);
   const done = el('div', { hidden: true, dataset: { ps: 'planset-done' } });
   const form = el('form', { novalidate: true, dataset: { ps: 'planset-form' } },
-    el('p', { style: { marginTop: 0 } }, 'Your plan set downloads straight away. Nothing is emailed to you.'),
+    el('p', { style: { marginTop: 0 } }, `Your ${fileLabel} downloads straight away. Every other file for this design is free too, and you will not be asked again. Nothing is emailed to you.`),
     f.name.row, f.email.row, f.suburb.row, timeframe.row, ownership.row,
     el('label', { style: { display: 'flex', gap: '8px', alignItems: 'flex-start', margin: '6px 0' } }, consent, el('span', { dataset: { ps: 'planset-consent-text' } }, shownConsent)),
     status, el('div', { style: { display: 'flex', gap: '8px', marginTop: '10px' } }, go),
@@ -128,22 +130,22 @@ export function openFreePlanSet({ layer, project, submit, orderEngineering = nul
   let modal = null;
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const lead = { name: f.name.input.value, email: f.email.input.value, suburb: f.suburb.input.value, timeframe: timeframe.value, ownership: ownership.value, designType: project?.placedHouse?.id || '', consentText: shownConsent, builder, consent: consent.checked, surface: 'desktop' };
+    const lead = { name: f.name.input.value, email: f.email.input.value, suburb: f.suburb.input.value, timeframe: timeframe.value, ownership: ownership.value, designType: project?.placedHouse?.id || '', consentText: shownConsent, builder, consent: consent.checked, surface };
     const bad = leadProblems(lead);
     status.hidden = !bad.length; status.textContent = bad[0]?.message || '';
     if (bad.length) return;
-    go.disabled = true; go.textContent = 'Preparing your plan set';
+    go.disabled = true; go.textContent = `Preparing your ${fileLabel}`;
     try {
       const out = await submit(lead);
       form.hidden = true; done.hidden = false;
-      done.replaceChildren(el('p', { style: { marginTop: 0 } }, `Your plan set has downloaded${out?.filename ? ` as ${out.filename}` : ''}.`), el('p', { class: 'psp-fine' }, CONCEPT_LINE),
+      done.replaceChildren(el('p', { style: { marginTop: 0 } }, `Your ${fileLabel} has downloaded${out?.filename ? ` as ${out.filename}` : ''}.`), el('p', { class: 'psp-fine' }, CONCEPT_LINE),
         orderEngineering ? el('button', { class: 'psp-btn psp-btn--link', type: 'button', dataset: { ps: 'planset-quote' }, onclick: () => { modal?.close('quote'); orderEngineering(); } }, QUOTE_LINE) : null);
     } catch (err) {
       status.hidden = false; status.textContent = err?.message || 'That did not work. Try again.';
-      go.disabled = false; go.textContent = GET_LABEL;
+      go.disabled = false; go.textContent = getLabel;
     }
   });
-  modal = layer.openModal({ title: GET_LABEL, body: () => el('div', null, form, done), footer: (close) => el('button', { class: 'psp-btn', type: 'button', onclick: () => close('done') }, 'Close') });
+  modal = layer.openModal({ title: getLabel, body: () => el('div', null, form, done), footer: (close) => el('button', { class: 'psp-btn', type: 'button', onclick: () => close('done') }, 'Close') });
   void project; void track;
   return modal;
 }

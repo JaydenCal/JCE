@@ -17,7 +17,7 @@ import { termsForExport } from '../legal/terms-gate.js';
 import { FREE_WATERMARK, GET_LABEL } from './free-planset.js';
 
 export const PREVIEW_DPI = 70;
-export const WATERMARK_TEXT = 'PREVIEW, Plan Pack required to download';
+export const WATERMARK_TEXT = 'PREVIEW, download the full plan set';
 
 /** Pixels per PDF point for the preview render. */
 export const previewScale = (dpi = PREVIEW_DPI) => dpi / 72;

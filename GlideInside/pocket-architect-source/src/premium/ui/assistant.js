@@ -59,16 +59,16 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       st.notice ? el('div', { class: 'psp-note psp-note--warn', role: 'status' }, icon('info', 16), el('span', null, st.notice)) : null,
       el('div', { class: 'psp-ai-head' },
         el('h3', { class: 'psp-ai-title' }, icon('spark', 16), 'AI design assistant'),
-        el('span', { class: 'psp-badge' }, st.commercial ? 'Subscription' : 'Plan Pack')),
-      el('p', { class: 'psp-ai-lead' }, st.commercial ? 'Describe a change in plain English and the assistant edits your layout, as one step you can undo. It comes with the Commercial Developer subscription.' : 'Describe a change in plain English and the assistant edits your plan, as one step you can undo. It is part of the Plan Pack.'),
+        el('span', { class: 'psp-badge' }, st.commercial ? 'Subscription' : 'AI credits')),
+      el('p', { class: 'psp-ai-lead' }, st.commercial ? 'Describe a change in plain English and the assistant edits your layout, as one step you can undo. It comes with the Commercial Developer subscription.' : 'Describe a change in plain English and the assistant edits your plan, as one step you can undo. It comes with the AI design assistant, A$30 for 1,000 credits.'),
       el('p', { class: 'psp-ai-label' }, 'Try asking'),
       el('div', { class: 'psp-prompts', role: 'list' },
-        (st.commercial ? COMMERCIAL_PROMPTS : EXAMPLE_PROMPTS).map((text) => el('button', { class: 'psp-prompt', type: 'button', disabled: true, role: 'listitem', title: st.commercial ? 'Subscribe to use the assistant' : 'Unlock the Plan Pack to use the assistant' }, icon('lock', 12), text))),
+        (st.commercial ? COMMERCIAL_PROMPTS : EXAMPLE_PROMPTS).map((text) => el('button', { class: 'psp-prompt', type: 'button', disabled: true, role: 'listitem', title: st.commercial ? 'Subscribe to use the assistant' : 'Buy the AI design assistant to use it' }, icon('lock', 12), text))),
       el('div', { class: 'psp-locked-box' },
-        el('p', { class: 'psp-muted' }, st.commercial ? 'Commercial Developer, A$50 per month, unlimited plan sets, plus a monthly allowance of AI messages. Drawing and the 3D view stay free.' : `${pack.credits ?? 500} AI credits per job, plus PDF, DXF and 3D model exports. Drawing, the 3D view and walking through your design stay free.`),
+        el('p', { class: 'psp-muted' }, st.commercial ? 'Commercial Developer, A$50 per month, unlimited plan sets, plus a monthly allowance of AI messages. Drawing and the 3D view stay free.' : `${(pack.credits ?? 1000).toLocaleString('en-AU')} AI credits for this design. Drawing, the 3D view, walking through your design and downloading your plans stay free.`),
         isOn() || st.commercial
-          ? el('button', { class: 'psp-btn psp-btn--primary psp-btn--block', type: 'button', onclick: () => actions.unlock('assistant') }, icon('lock', 14), st.commercial ? `Subscribe, ${formatAud(50)} per month` : `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`)
-          : el('button', { class: 'psp-btn psp-btn--block', type: 'button', disabled: true }, icon('lock', 14), 'Plan Pack unavailable, try again'),
+          ? el('button', { class: 'psp-btn psp-btn--primary psp-btn--block', type: 'button', onclick: () => actions.unlock('assistant') }, icon('lock', 14), st.commercial ? `Subscribe, ${formatAud(50)} per month` : `AI design assistant, ${formatAud(pack.priceAud ?? 30)}`)
+          : el('button', { class: 'psp-btn psp-btn--block', type: 'button', disabled: true }, icon('lock', 14), 'AI design assistant unavailable, try again'),
         isOn() || st.commercial ? el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => actions.restore() }, st.commercial ? 'Already subscribed? Restore subscription' : 'Already bought? Restore purchase') : null),
     ];
   }
@@ -458,7 +458,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     } else if (e?.code === 'CREDITS_EXHAUSTED' && !(Number(e.details?.remaining) > 0)) {
       const c = getState().credits;
       actions.setCredits({ total: c?.total ?? pack.credits ?? 0, used: c?.total ?? pack.credits ?? 0, remaining: 0, warnLevel: 1 });
-      msg.text = 'All AI credits in this Plan Pack have been used, so the assistant is read-only now. Manual editing and exports still work.';
+      msg.text = 'All AI credits in this pack have been used, so the assistant is read-only now. Manual editing and exports still work.';
       track('ps_ai_credits_exhausted', {});
     } else {
       msg.text = friendlyError(e, { area: 'ai', dev: dev() });
@@ -476,10 +476,10 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     }
     if (!st.token) {
       add({ role: 'system', error: true, text: dev()
-        ? 'Developer unlock builds the exports in this browser, but the assistant needs the Glide Inside server running and a Plan Pack for this design. See server/README.md to start the server, then make a test purchase or restore one.'
+        ? 'Developer unlock builds the exports in this browser, but the assistant needs the Glide Inside server running and an AI design assistant purchase for this design. See server/README.md to start the server, then make a test purchase or restore one.'
         : st.session && (st.session.kind === 'builder' || st.session.kind === 'client') || st.portal
           ? 'Your sign-in could not be verified. Sign in again to use the AI design assistant.'
-          : 'Your Plan Pack could not be verified. Restore your purchase to use the assistant.' });
+          : 'Your purchase could not be verified. Restore your purchase to use the assistant.' });
       return;
     }
     const pid = store.project.id;

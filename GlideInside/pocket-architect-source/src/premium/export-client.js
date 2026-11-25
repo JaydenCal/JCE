@@ -111,7 +111,7 @@ export async function runExport(type, project, { api, token, devUnlock = false, 
     file = await buildLocal(type, exportPayload(project), { config, catalogue, image, watermark, terms: terms || termsForExport() });
     source = 'local';
   } else {
-    throw new ApiError('NOT_ENTITLED', project?.mode === 'commercial' ? 'A Commercial Developer subscription is needed for exports.' : 'A Plan Pack is needed for exports.');
+    throw new ApiError('NOT_ENTITLED', project?.mode === 'commercial' ? 'A Commercial Developer subscription is needed for exports.' : 'Your details are needed first, then exports are free.');
   }
   save(file.blob, file.filename);
   return { filename: file.filename, bytes: file.blob.size, source };

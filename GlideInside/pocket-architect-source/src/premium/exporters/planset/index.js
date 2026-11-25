@@ -40,7 +40,7 @@ import { lotOf } from '../../../model/placement.js';
 void schemeColours;
 
 export const PREVIEW_TITLE = 'PREVIEW, NOT TO SCALE';
-export const PREVIEW_FOOTER = 'Preview only, not to scale. A Plan Pack gives you the to-scale plan set.';
+export const PREVIEW_FOOTER = 'Preview only, not to scale. The to-scale plan set is free with your details in the full tool.';
 
 async function loadJsPDF(given) {
   if (typeof given === 'function') return given;
@@ -133,7 +133,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', feasib
   const siteLot = prep.lot; // the house plan also quotes the lot when there is one
   // One indicative line for the site sheet notes: the site cost estimate, GST excluded and included. Loaded on demand; any failure just leaves the line out.
   const siteCostNote = kind === 'site' && !preview && siteLot ? await import('../site-costs/note.js').then((m) => m.siteCostNote(wp, siteLot)).catch(() => null) : null;
-  // The free preview: every page is stamped "PREVIEW, NOT TO SCALE" and the scale labels say so. The to-scale set needs a Plan Pack, a builder
+  // The free preview: every page is stamped "PREVIEW, NOT TO SCALE" and the scale labels say so. The to-scale set needs an AI design assistant purchase, a builder
   // or client login, a commercial subscription or an internal account (the caller decides, see src/lotcard/lot-card.js).
   const baseJsPDF = await loadJsPDF(jsPDF);
   const JsPDF = preview ? trialJsPDF(withoutScales(baseJsPDF), PREVIEW_TITLE, PREVIEW_FOOTER) : baseJsPDF;

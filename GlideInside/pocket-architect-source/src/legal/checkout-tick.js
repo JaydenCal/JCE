@@ -1,4 +1,4 @@
-// The required tick box shown before a Stripe checkout starts (Plan Pack, commercial subscription, AI top ups).
+// The required tick box shown before a Stripe checkout starts (AI design assistant, commercial subscription, AI top ups).
 // Unticked by default; the caller keeps its button disabled until `checked()` is true.
 import { el } from '../premium/util.js';
 

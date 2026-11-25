@@ -79,16 +79,16 @@ export async function authenticate(request, { store, config, now, missing = 'UNA
   const nowMs = now();
   const payload = await verifyToken(bearerToken(request), config.entitlementSecret, Math.floor(nowMs / 1000));
   if (!payload || payload.oid) {
-    if (missing === 'NOT_ENTITLED') throw new HttpError('NOT_ENTITLED', 'A Plan Pack is needed for this feature.');
-    throw new HttpError('UNAUTHORISED', 'Your Plan Pack could not be verified. Restore your purchase to continue.');
+    if (missing === 'NOT_ENTITLED') throw new HttpError('NOT_ENTITLED', 'An AI design assistant purchase is needed for this feature.');
+    throw new HttpError('UNAUTHORISED', 'Your purchase could not be verified. Restore your purchase to continue.');
   }
   const ent = await store.getEntitlement(payload.eid);
   // projectId '*' is a friends and testing code pack (live Worker behaviour): valid for whichever project the token names.
-  if (!ent || (ent.projectId !== payload.pid && ent.projectId !== '*')) throw new HttpError('NOT_ENTITLED', 'No Plan Pack was found for this project.');
+  if (!ent || (ent.projectId !== payload.pid && ent.projectId !== '*')) throw new HttpError('NOT_ENTITLED', 'No AI design assistant purchase was found for this project.');
   if (ent.status !== 'active') {
-    throw new HttpError('NOT_ENTITLED', ent.status === 'refunded' ? 'This Plan Pack has been refunded.' : 'This Plan Pack is no longer active.');
+    throw new HttpError('NOT_ENTITLED', ent.status === 'refunded' ? 'This purchase has been refunded.' : 'This AI design assistant purchase is no longer active.');
   }
-  if (ent.expiresAt && Date.parse(ent.expiresAt) <= nowMs) throw new HttpError('NOT_ENTITLED', 'This Plan Pack has expired.');
+  if (ent.expiresAt && Date.parse(ent.expiresAt) <= nowMs) throw new HttpError('NOT_ENTITLED', 'This AI design assistant purchase has expired.');
   return ent;
 }
 

@@ -131,7 +131,7 @@ export function panelMarkup() {
   const toggle = h('button', { class: 'ps-btn ps-btn--ghost ps-btn--icon ps-sheet-toggle', type: 'button' });
   const propsSection = h('section', { class: 'ps-tab-props', 'aria-label': 'Properties' });
   const aiMount = h('div', { class: 'ps-ai-mount', id: 'ps-ai-mount' });
-  const aiFallback = h('div', { class: 'ps-ai-fallback', hidden: true }, 'The assistant is part of the Plan Pack and could not be loaded in this session. Everything else keeps working.');
+  const aiFallback = h('div', { class: 'ps-ai-fallback', hidden: true }, 'The AI design assistant could not be loaded in this session. Everything else keeps working.');
   const aiSection = h('section', { class: 'ps-tab-ai', 'aria-label': 'AI design assistant', hidden: true }, aiMount, aiFallback);
   const panel = h('aside', { class: 'ps-panel', 'aria-label': 'Design panel', dataset: { open: 'true' } },
     h('div', { class: 'ps-panel-head' }, tabs, toggle),

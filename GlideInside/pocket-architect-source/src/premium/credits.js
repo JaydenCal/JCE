@@ -97,9 +97,9 @@ export function warningText(w, c = null) {
     return `You have used ${w.level >= 0.5 && w.level < 0.6 ? 'half' : `${percent}%`} of this month's AI credits. ${cap}.${reset}`;
   }
   if (w.level >= 0.95) return `Only ${left}. When they run out the assistant becomes read-only. Editing and exports keep working.`;
-  if (w.level >= 0.8) return `You have used ${percent}% of the AI credits in this Plan Pack. ${cap}.`;
-  if (w.level >= 0.5 && w.level < 0.6) return `You have used half of the AI credits in this Plan Pack. ${cap}.`;
-  return `You have used ${percent}% of the AI credits in this Plan Pack. ${cap}.`;
+  if (w.level >= 0.8) return `You have used ${percent}% of the AI credits in your AI design assistant pack. ${cap}.`;
+  if (w.level >= 0.5 && w.level < 0.6) return `You have used half of the AI credits in your AI design assistant pack. ${cap}.`;
+  return `You have used ${percent}% of the AI credits in your AI design assistant pack. ${cap}.`;
 }
 
 export const exhaustedText = (c) =>
@@ -109,7 +109,7 @@ export const exhaustedText = (c) =>
       : `You have used all your AI messages${c.renewsOn ? ` until your allowance renews on ${ddmmyyyy(c.renewsOn)}` : ''}, so the assistant is read-only. Buy more AI messages to keep going. Plan sets and manual editing still work.`)
     : c?.kind === 'org'
     ? `You have used all your AI credits for this month, so the assistant is read-only${c.monthResetsOn ? ` until the credits reset on ${resetDate(c.monthResetsOn)}` : ''}. Manual editing and exports still work.`
-    : `You have used all ${c?.total ?? ''} AI credits in this Plan Pack, so the assistant is now read-only. Manual editing and exports still work.`.replace('  ', ' ');
+    : `You have used all ${c?.total ?? ''} AI credits in your AI design assistant pack, so the assistant is now read-only. Manual editing and exports still work.`.replace('  ', ' ');
 
 // Each threshold is shown once per project, even across reloads.
 const key = (projectId) => `ps.ai.warned.${projectId}`;

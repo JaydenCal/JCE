@@ -128,7 +128,7 @@ test('desktop: the PDF plan set is free for details; the builder and commercial 
     await dismiss(page);
     await page.waitForFunction(() => window.__ps.premium, null, { timeout: 30000 });
     assert.equal(await page.evaluate(() => window.__ps.premium.planSetFree()), true);
-    assert.equal((await page.locator('.ps-topbar').first().textContent()).includes('Get plan set, free'), true, 'the top bar button no longer shows a price');
+    assert.equal((await page.locator('.ps-topbar').first().textContent()).includes('AI design assistant, A$30'), true, 'the top bar button is the A$30 AI design assistant, not the plans');
     await page.evaluate(() => { window.__ps.premium.exportAs('pdf'); });
     await page.waitForSelector('[data-ps=planset-form]');
     assert.equal(await page.textContent('[data-ps=planset-consent-text]'), LEAD_CONSENT, 'no builder holds the area, so the wording names none');
@@ -146,6 +146,12 @@ test('desktop: the PDF plan set is free for details; the builder and commercial 
     assert.equal(await page.textContent('[data-ps=planset-quote]'), QUOTE_LINE);
     const names = (await page.evaluate(() => window.__ev)).map((e) => e[0]);
     assert.ok(names.includes('planset_lead_submit') && names.includes('planset_download'));
+    assert.ok(names.includes('export_unlocked_by_lead'), 'the lead unlock event fires once the form is sent');
+    // every other file is now free without asking again: no form, the file just downloads
+    const dxf = page.waitForEvent('download', { timeout: 120000 });
+    await page.evaluate(() => { window.__ps.premium.exportAs('dxf'); });
+    assert.match((await dxf).suggestedFilename(), /\.dxf$/i);
+    assert.equal(await page.locator('[data-ps=planset-form]:visible').count(), 0, 'the form is not shown a second time');
     assert.ok(!names.includes('phone_planset_download'), 'the phone events are for the phone path');
     // a builder login, a commercial design and the DXF keep their own paths
     assert.equal(await page.evaluate(() => { const p = window.__ps.premium; p.setPortalEntitlement?.({ entitled: true, exports: ['pdf'], orgName: 'B' }); return p.planSetFree(); }), false, 'builder portal: not free');

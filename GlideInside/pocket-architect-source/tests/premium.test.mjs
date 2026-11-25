@@ -303,7 +303,7 @@ test('friendly messages for every failure, in Australian English with no dashes'
     [E('SERVER_UNAVAILABLE'), { area: 'ai' }, /not available right now/],
     [E('PAYLOAD_TOO_LARGE'), { area: 'ai' }, /too large for the assistant/],
     [E('PAYLOAD_TOO_LARGE'), { area: 'export' }, /too large to export/],
-    [E('NOT_ENTITLED'), { area: 'restore' }, /could not find a Plan Pack/],
+    [E('NOT_ENTITLED'), { area: 'restore' }, /could not find a purchase/],
     [E('EXPORT_UNAVAILABLE'), { area: 'export' }, /not available right now/],
     [E('PAYMENTS_UNAVAILABLE'), { area: 'checkout' }, /Payments are not available/],
     [E('SOMETHING_NEW'), {}, /server says SOMETHING_NEW/],
@@ -826,7 +826,7 @@ test('UI, locked by default: Unlock button, locked Exports menu, locked assistan
     await sleep(60);
     out.closedOnEscape = !$('.psp-modal');
   `);
-  assert.equal(r.topbar, 'Unlock plans, A$30');
+  assert.equal(r.topbar, 'AI design assistant, A$30');
   assert.ok(r.requestsAtStart <= 1, 'the locked state makes no network calls beyond the one health check (payments off switch)');
   assert.deepEqual(r.items, ['PDF plans', 'DXF drawing', '3D model (GLB)', '3D model (OBJ)', 'Interactive HTML', 'Siting report', 'One page siting summary', 'Site costs']);
   assert.equal(r.itemsLocked, true);
@@ -837,12 +837,12 @@ test('UI, locked by default: Unlock button, locked Exports menu, locked assistan
   assert.ok(r.prompts.every(([, disabled]) => disabled), 'example prompts are disabled chips');
   const promptText = r.prompts.map(([t]) => t).join(' | ').toLowerCase();
   for (const word of ['roof', 'deck', 'study', 'flip']) assert.ok(promptText.includes(word), `prompt about ${word}`);
-  assert.ok(r.aiButtons.some((t) => /Unlock plans, A\$30/.test(t)));
+  assert.ok(r.aiButtons.some((t) => /AI design assistant, A\$30/.test(t)));
   assert.equal(r.noInput, true, 'no input box while locked');
   assert.equal(r.storeEntitled, false);
   assert.equal(r.isEntitled, false);
-  assert.equal(r.modalTitle, 'Unlock the Plan Pack');
-  for (const s of ['A$30', 'incl. GST', 'AI design assistant', '500 AI credits', 'PDF plan set', 'DXF', '3D model files', 'Re-export', '12 months', 'Concept design only', 'Continue to secure checkout', 'Restore purchase']) assert.ok(r.modalText.includes(s), `modal text has "${s}"`);
+  assert.equal(r.modalTitle, 'AI design assistant, 1,000 credits');
+  for (const s of ['A$30', 'incl. GST', 'AI design assistant', '1,000 AI credits', 'free to download', 'Concept design only', 'Continue to secure checkout', 'Restore purchase']) assert.ok(r.modalText.includes(s), `modal text has "${s}"`);
   assert.ok(!/[–—]/.test(r.modalText), 'no dashes in the copy');
   assert.equal(r.menuClosed, true, 'the menu closes when an item is chosen');
   assert.equal(r.navigated, 'https://checkout.stripe.com/c/pay/cs_test_mock');
@@ -863,14 +863,14 @@ test('UI, unavailable: the button is disabled and says so, and the modal cannot 
     await sleep(100);
     const modal = $('.psp-modal');
     out.title = text(modal.querySelector('h2'));
-    out.checkout = button(modal, 'Plan Pack unavailable, try again').disabled;
+    out.checkout = button(modal, 'AI design assistant unavailable, try again').disabled;
     out.requests = T.requests.length;
   `);
-  assert.equal(r.topbar, 'Plan Pack unavailable, try again');
+  assert.equal(r.topbar, 'AI design assistant unavailable, try again');
   assert.equal(r.topbarDisabled, true);
-  assert.equal(r.aiButton, 'Plan Pack unavailable, try again');
+  assert.equal(r.aiButton, 'AI design assistant unavailable, try again');
   assert.equal(r.aiDisabled, true);
-  assert.equal(r.title, 'Plan Pack unavailable, try again');
+  assert.equal(r.title, 'AI design assistant unavailable, try again');
   assert.equal(r.checkout, true);
   assert.equal(r.requests, 1, 'only the health check goes out when there is no back end');
 });
@@ -981,7 +981,7 @@ test('UI, assistant: 11 roof colour as one undo step, 14 confirmation, friendly 
   assert.ok(r.maxHistory <= 8);
   assert.equal(r.errorTurnsInHistory, false, 'failed turns are not sent back as history');
   for (const e of ['ps_ai_request']) assert.ok(r.events.includes(e), e);
-  assert.match(r.exhaustedMsg, /All AI credits in this Plan Pack have been used.*read-only.*Manual editing and exports still work/);
+  assert.match(r.exhaustedMsg, /All AI credits in this pack have been used.*read-only.*Manual editing and exports still work/);
   assert.equal(r.readOnly.input, true);
   assert.equal(r.readOnly.send, true);
   assert.match(r.readOnly.banner, /read-only/);
@@ -1064,14 +1064,14 @@ test('UI, exports with a Plan Pack: all four files come from the server with the
   assert.equal(r.underlay, null);
   assert.equal(r.projectId, 'p_testpage');
   assert.deepEqual(r.events, ['pdf', 'dxf', 'glb', 'obj']);
-  assert.equal(r.chip, 'Plan Pack');
+  assert.equal(r.chip, 'AI assistant');
   assert.match(r.menuFoot, /Re-export as often as you like until \d\d\/\d\d\/\d{4}\./);
 });
 
 test('8. UI, checkout return: waits for the webhook, stores the token, unlocks; restore purchase works with email and reference', { skip: skipUi }, () => {
   const back = browser('?open=return', String.raw`
     out.waiting = text($('.psp-modal'));
-    await until(() => /Plan Pack unlocked/.test(text($('.psp-modal'))), 8000);
+    await until(() => /AI design assistant unlocked/.test(text($('.psp-modal'))), 8000);
     out.done = text($('.psp-modal'));
     out.entitled = T.premium.isEntitled();
     out.stored = Object.keys(localStorage).filter((k) => k.startsWith('ps.ent.'));
@@ -1086,13 +1086,13 @@ test('8. UI, checkout return: waits for the webhook, stores the token, unlocks; 
     out.storeUi = S.ui.premium;
   `);
   assert.match(back.waiting, /waiting for the payment to be confirmed/);
-  assert.match(back.done, /Plan Pack unlocked.*Payment received.*312 of 500 left.*Exports until\s*\d\d\/\d\d\/\d{4}.*ent_test0001/);
+  assert.match(back.done, /AI design assistant unlocked.*Payment received.*312 of 500 left.*Exports until\s*\d\d\/\d\d\/\d{4}.*ent_test0001/);
   assert.equal(back.entitled, true);
   assert.deepEqual(back.stored, ['ps.ent.p_testpage']);
   assert.equal(back.url, '?open=return', 'the checkout parameters are removed from the address');
   assert.ok(back.polls >= 3, `${back.polls} polls`);
   assert.equal(back.meter, '312 of 500 credits left');
-  assert.equal(back.chip, 'Plan Pack');
+  assert.equal(back.chip, 'AI assistant');
   assert.deepEqual(back.events, ['ps_checkout_completed']);
   assert.deepEqual(back.storeUi, { entitled: true, credits: { total: 500, used: 188, remaining: 312 } });
 
@@ -1118,8 +1118,8 @@ test('8. UI, checkout return: waits for the webhook, stores the token, unlocks; 
   `);
   assert.equal(restore.focus, true);
   assert.match(restore.emptyError, /Enter the email address used at checkout/);
-  assert.match(restore.badError, /could not find a Plan Pack/);
-  assert.equal(restore.title, 'Plan Pack restored');
+  assert.match(restore.badError, /could not find a purchase/);
+  assert.equal(restore.title, 'AI design assistant restored');
   assert.match(restore.body, /active for the design that is open now/);
   assert.equal(restore.entitled, true);
   assert.deepEqual(restore.restoreBody, { email: 'jayden@example.com', sessionOrReceipt: 'cs_test_paid1' });
@@ -1138,7 +1138,7 @@ test('UI, a refunded or expired Plan Pack: the token is forgotten and the locked
   assert.equal(r.entitled, false);
   assert.deepEqual(r.stored, []);
   assert.equal(r.notice, 'This Plan Pack has been refunded. If you think this is a mistake, restore your purchase.');
-  assert.equal(r.topbar, 'Unlock plans, A$30');
+  assert.equal(r.topbar, 'AI design assistant, A$30');
   assert.equal(r.input, false);
 });
 
@@ -1313,7 +1313,7 @@ test('UI, no back end: the Plan Pack stays unavailable and health is asked once'
     out.paths = T.requests.map((x) => x.path);
     out.enabled = T.premium.state.entitled;
   `);
-  assert.equal(r.topbar, 'Plan Pack unavailable, try again');
+  assert.equal(r.topbar, 'AI design assistant unavailable, try again');
   assert.deepEqual(r.paths, ['/health']);
 });
 
@@ -1331,9 +1331,9 @@ test('UI, back end present: a healthy /api/health turns checkout on for the sess
     out.checkoutEnabled = !button($('.psp-modal'), 'Continue to secure checkout').disabled;
     out.paths = T.requests.map((x) => x.path);
   `);
-  assert.equal(r.topbar, 'Unlock plans, A$30');
+  assert.equal(r.topbar, 'AI design assistant, A$30');
   assert.equal(r.topbarDisabled, false);
-  assert.match(r.aiButton, /Unlock plans/);
+  assert.match(r.aiButton, /AI design assistant/);
   assert.equal(r.checkoutDisabledUntilTick, true, 'the terms box is required before checkout');
   assert.equal(r.checkoutEnabled, true);
   assert.deepEqual(r.paths, ['/health']);
@@ -1352,7 +1352,7 @@ test('UI, development grant: on localhost with the dev flag the test entitlement
   `);
   assert.equal(r.hasToken, true);
   assert.equal(r.stored, true);
-  assert.match(r.chip, /Plan Pack/);
+  assert.match(r.chip, /AI assistant/);
   assert.equal(r.credits, 312);
   assert.ok(r.paths.includes('/entitlement'));
 });
@@ -1384,7 +1384,7 @@ test('UI, PDF import: the locked state opens the upgrade modal, the unlocked sta
     out.undoLabel = S.undoLabel();
   `);
   const locked = run('locked');
-  assert.equal(locked.modalAfterStart, 'Unlock the Plan Pack');
+  assert.equal(locked.modalAfterStart, 'AI design assistant, 1,000 credits');
   assert.equal(locked.result.status, 'locked');
   assert.equal(locked.underlay, null);
   const dev = run('dev');
@@ -1403,7 +1403,7 @@ test('UI, PDF import: the locked state opens the upgrade modal, the unlocked sta
 test('PDF preview: module never exposes bytes, builds canvases with a baked watermark in free mode, and stays out of the static graph', () => {
   const src = fs.readFileSync(path.join(ROOT, 'src/premium/pdf-preview.js'), 'utf8');
   assert.doesNotMatch(src, /createObjectURL|toDataURL|toBlob|\.download\b|new Blob/);
-  assert.match(src, /PREVIEW, Plan Pack required to download/);
+  assert.match(src, /PREVIEW, download the full plan set/);
   assert.match(src, /Unlock to download, A\$/);
   assert.doesNotMatch(src, /\balert\(|\bconfirm\(|\bprompt\(/);
   assert.doesNotMatch(src, /[–—]/);
