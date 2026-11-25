@@ -211,7 +211,7 @@ test(`phone mode in the browser (${GROUP})`, { skip: SKIP, timeout: 900000 }, as
     await ctx.close();
   });
 
-  await sub('g', 'the room buttons row wraps on a phone: nothing runs past the edge', async () => {
+  await sub('g', 'the room buttons (Room tour in the Menu) wrap on a phone: nothing runs past the edge', async () => {
     for (const [W, H] of SIZES) {
       const { ctx, page } = await newPage(browser, { width: W, height: H });
       await openApp(page, origin);
@@ -219,11 +219,15 @@ test(`phone mode in the browser (${GROUP})`, { skip: SKIP, timeout: 900000 }, as
       await page.evaluate(() => window.__ps.store.setUI({ view: '3d' }));
       await page.waitForSelector('[data-ps=lc-tabs-compact] .lc-tab', { timeout: 30000, state: 'attached' });
       await page.waitForTimeout(800);
-      const r = await page.evaluate(() => { const t = document.querySelector('[data-ps=lc-tabs-compact]'); const p = t.closest('.lc-rooms').getBoundingClientRect(); const tabs = [...t.querySelectorAll('.lc-tab')].map((b) => b.getBoundingClientRect()); return { scroll: t.scrollWidth - t.clientWidth, count: tabs.length, maxRight: Math.max(...tabs.map((b) => b.right)), panelRight: p.right, vw: innerWidth, rows: new Set(tabs.map((b) => Math.round(b.top))).size }; });
+      assert.equal(await page.locator('[data-ps=lc-rooms]').isVisible(), false, `${W}: the room chips no longer float over the 3D view`);
+      await page.click('[data-ps=dock-menu]');
+      await page.waitForSelector('[data-ps=pme-rooms] .ps-pme-chip', { timeout: 10000 });
+      const r = await page.evaluate(() => { const box = document.querySelector('[data-ps=pme-rooms] .ps-pme-chips'); const p = document.querySelector('.ps-more-pop').getBoundingClientRect(); const tabs = [...box.querySelectorAll('.ps-pme-chip')].map((b) => b.getBoundingClientRect()); return { scroll: box.scrollWidth - box.clientWidth, count: tabs.length, maxRight: Math.max(...tabs.map((b) => b.right)), panelRight: p.right, vw: innerWidth, rows: new Set(tabs.map((b) => Math.round(b.top))).size, minH: Math.min(...tabs.map((b) => b.height)) }; });
       assert.ok(r.count >= 3, 'the rooms are listed');
       assert.ok(r.scroll <= 0, `${W}: the row does not scroll sideways`);
-      assert.ok(r.maxRight <= r.panelRight + 1 && r.maxRight <= r.vw, `${W}: every room button is inside the panel`);
+      assert.ok(r.maxRight <= r.panelRight + 1 && r.maxRight <= r.vw, `${W}: every room button is inside the Menu`);
       assert.ok(r.rows >= 2, `${W}: the buttons wrap onto rows`);
+      assert.ok(r.minH >= 44, `${W}: 44 px buttons`);
       await ctx.close();
     }
   });

@@ -6,7 +6,9 @@
 import { lotChecks } from '../site/lot-checks.js';
 import { confirmBreach, statusFromMessages } from '../flow/breach.js';
 import * as G from '../model/geometry.js';
-import { translateHouse, rotateHouse, houseCentre, lotOf, footprint } from '../model/placement.js';
+import { translateHouse, rotateHouse, houseCentre, lotOf, footprint, envelopeOf } from '../model/placement.js';
+import { buildingRings } from '../site/lotplan.js';
+import { snapToSetbacks, smoothMove, haptic, pairAngle, twistTotal, HANDLE_PX as TOUCH_HANDLE_PX } from '../phone/house-gesture.js';
 import { moveHouseBy, turnHouseBy } from '../site/site-items.js';
 import { ringOf } from './draw-lotplan.js';
 
@@ -41,6 +43,7 @@ export function createMoveHouseTool(ed) {
   let rot = 0; // degrees the ring handle has turned this session (only positions the handle)
   let over = null; // 'house' | 'ring' | null, for the cursor
   let chip = null;
+  let twist = null;
 
   const hinted = () => { try { return localStorage.getItem(HINT_KEY) === '1'; } catch { return true; } };
   const markHinted = () => { try { localStorage.setItem(HINT_KEY, '1'); } catch { /* storage blocked */ } };
@@ -58,17 +61,35 @@ export function createMoveHouseTool(ed) {
     const ring = ringOf(project, rot);
     if (!ring) return null;
     const s = ed.toScreen(ring.handle);
-    return Math.hypot(s.x - ev.screen.x, s.y - ev.screen.y) <= HANDLE_PX ? ring : null;
+    return Math.hypot(s.x - ev.screen.x, s.y - ev.screen.y) <= (ev.type === 'touch' ? TOUCH_HANDLE_PX / 2 + 6 : HANDLE_PX) ? ring : null; // a finger gets a 44 px target
   };
   const angleAt = (ev, centre) => {
     const c = ed.toScreen(centre);
     return (Math.atan2(ev.screen.y - c.y, ev.screen.x - c.x) * 180) / Math.PI;
   };
 
+  const touchTargets = () => {
+    const lot = lotOf(store.project);
+    const env = lot ? envelopeOf(lot).polygon : null;
+    return { rings: buildingRings(store.project), targets: [env && env.length >= 3 ? env : null, lot?.boundary?.length >= 3 ? lot.boundary : null].filter(Boolean) };
+  };
   function update(ev) {
     if (drag.mode === 'move') {
-      const dx = Math.round(ev.world.x - drag.start.x);
-      const dy = Math.round(ev.world.y - drag.start.y);
+      let dx = Math.round(ev.world.x - drag.start.x);
+      let dy = Math.round(ev.world.y - drag.start.y);
+      if (ev.type === 'touch') {
+        // A finger: light smoothing, and a corner within 0.3 m of a setback line snaps onto it with a short tick. The grab offset is kept because the move is the finger's travel.
+        const t = touchTargets();
+        const raw = { dx, dy };
+        const sm = smoothMove(drag.shown || { dx: 0, dy: 0 }, raw, 0.6);
+        const snap = snapToSetbacks(t.rings, raw, t.targets, 300);
+        if (snap.snapped && !drag.snapped) haptic();
+        drag.snapped = snap.snapped;
+        drag.shown = sm;
+        dx = snap.snapped ? snap.dx : Math.round(sm.dx);
+        dy = snap.snapped ? snap.dy : Math.round(sm.dy);
+        drag.target = { dx: snap.snapped ? snap.dx : Math.round(raw.dx / 50) * 50, dy: snap.snapped ? snap.dy : Math.round(raw.dy / 50) * 50 };
+      }
       if (dx === drag.dx && dy === drag.dy) return;
       drag.dx = dx;
       drag.dy = dy;
@@ -96,7 +117,7 @@ export function createMoveHouseTool(ed) {
   }
 
   function commit(d) {
-    if (d.mode === 'move' && (d.dx || d.dy)) ed.apply('Move house', (p) => { moveHouseBy(p, d.dx, d.dy); });
+    if (d.mode === 'move' && (d.dx || d.dy)) { const t = d.target || d; ed.apply('Move house', (p) => { moveHouseBy(p, t.dx, t.dy); }); }
     else if (d.mode === 'turn' && d.deg) {
       ed.apply('Rotate house', (p) => { turnHouseBy(p, d.deg, d.centre); });
       rot = (((rot + d.deg) % 360) + 360) % 360;
@@ -164,6 +185,37 @@ export function createMoveHouseTool(ed) {
         confirmIfBreach(before);
       }
       ed.canvas.style.cursor = tool.cursor();
+      ed.draw();
+    },
+    // Two fingers on the house turn it (the editor hands the pair over; two fingers off the house still pinch and pan).
+    twistStart(pts) {
+      const project = store.project;
+      if (!canMoveHouse(project)) return false;
+      const mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      const world = ed.toWorld ? ed.toWorld(mid) : null;
+      const onIt = drag?.mode === 'move' || (world && onHouse(project, world)) || pts.some((q) => q.world && onHouse(project, q.world));
+      if (!onIt) return false;
+      if (drag?.moved) { const d = drag; drag = null; try { commit(d); } finally { ed.clearPreview(); } } else drag = null;
+      twist = { centre: houseCentre(project), prev: pairAngle(pts[0], pts[1]), total: 0, deg: 0 };
+      return true;
+    },
+    twistMove(pts) {
+      if (!twist) return;
+      const a = pairAngle(pts[0], pts[1]);
+      twist.total = twistTotal(twist.total, twist.prev, a);
+      twist.prev = a;
+      const deg = Math.round(twist.total);
+      if (deg === twist.deg) return;
+      twist.deg = deg;
+      setOverlay(rot + deg);
+      ed.previewFn((p) => rotateHouse(p, deg, twist.centre));
+    },
+    twistEnd() {
+      const t = twist; twist = null;
+      if (!t) return;
+      const before = worstShort(store.project);
+      try { if (t.deg) commit({ mode: 'turn', deg: t.deg, centre: t.centre }); } finally { ed.clearPreview(); }
+      if (t.deg) confirmIfBreach(before);
       ed.draw();
     },
     cancel() {

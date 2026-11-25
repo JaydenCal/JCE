@@ -1,4 +1,4 @@
-// The phone editor's chrome: a bottom dock (Tools, Plan or 3D, Details, Menu), a tools sheet, a quick move and turn bar for Move house,
+// The phone editor's chrome: a bottom dock (Tools, Plan or 3D, Export, Details, Menu), a tools sheet, a quick move and turn bar for Move house,
 // the Share button that appears once the design is saved, and the "Phone view" pill when Desktop view is on. Everything is hidden by CSS
 // unless html[data-phone="1"], so the desktop layout is untouched.
 
@@ -11,6 +11,9 @@ import { canMoveHouse } from '../editor2d/tool-movehouse.js';
 import { houseCentre } from '../model/placement.js';
 import { moveHouseBy, turnHouseBy } from '../site/site-items.js';
 import { openSheet } from './sheet.js';
+import { openExportSheet } from './export-entry.js';
+import { buildMenuExtras } from './menu-extras.js';
+import { showHintOnce } from './hint.js';
 import { phoneApi, onPhoneChange, isPhoneMode } from './mode.js';
 import { onSaveState, shareDesign, isSaved } from './actions.js';
 import { track } from '../ui/analytics.js';
@@ -35,8 +38,16 @@ export function createPhoneChrome({ store, refs, editor = null, openMore = () =>
   });
   const viewBtn = dockBtn('dock-view', 'cube', '3D', () => store.setUI({ view: hasPlan(store.ui.view) ? '3d' : '2d' }));
   const detailsBtn = dockBtn('dock-details', 'info', 'Details', () => { refs.panel.dataset.open = refs.panel.dataset.open === 'true' ? 'false' : 'true'; syncDock(); });
-  const menuBtn = dockBtn('dock-menu', 'more', 'Menu', () => openMore());
-  const dock = h('nav', { class: 'ps-dock', 'aria-label': 'Design tools', dataset: { ps: 'phone-dock' } }, toolsBtn, viewBtn, detailsBtn, menuBtn);
+  const exportBtn = dockBtn('dock-export', 'save', 'Export', () => openExportSheet());
+  // Menu: the pieces that used to float over the 3D view (room tour, top view, Edit room, design switcher, lot label ...) are listed first, then the usual menu.
+  const popOf = () => refs.topbar.querySelector('[data-ps="topbar-more-menu"]');
+  const closeMenu = () => { const pop = popOf(); if (pop && !pop.hidden) refs.topbar.querySelector('[data-ps="topbar-more"]')?.click(); };
+  const menuBtn = dockBtn('dock-menu', 'more', 'Menu', () => {
+    const pop = popOf();
+    if (pop) { pop.querySelector('.ps-pme')?.remove(); if (pop.hidden) pop.prepend(buildMenuExtras({ store, close: closeMenu })); }
+    openMore();
+  });
+  const dock = h('nav', { class: 'ps-dock', 'aria-label': 'Design tools', dataset: { ps: 'phone-dock' } }, toolsBtn, viewBtn, exportBtn, detailsBtn, menuBtn);
   refs.shell.append(dock);
 
   // Move house: big nudge and turn buttons over the bottom of the plan.
@@ -85,8 +96,9 @@ export function createPhoneChrome({ store, refs, editor = null, openMore = () =>
     sheet = openSheet({ title: 'Tools', id: 'tools-sheet', body: h('div', null, h('div', { class: 'ps-tool-grid' }, ...MAIN_TOOLS.map(([id, t, hint]) => tile(id, t, hint))), moreBtn, more) });
   }
 
+  let lastView = store.ui.view;
   const offs = [
-    store.on('ui', () => syncDock()),
+    store.on('ui', () => { syncDock(); if (store.ui.view !== lastView) { lastView = store.ui.view; if (lastView === '3d' && isPhoneMode()) setTimeout(() => { if (store.ui.view === '3d' && refs.shell.dataset.flow === 'editor' && ![...document.querySelectorAll('.gf-root')].some((e) => e.offsetParent)) showHintOnce({ host: refs.stage }); }, 700); } }),
     store.on('project', syncDock),
     onSaveState(syncShare),
     onPhoneChange(() => { syncDock(); syncDesktopPill(); }),

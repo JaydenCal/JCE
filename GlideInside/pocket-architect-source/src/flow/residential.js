@@ -24,6 +24,7 @@ import { toast } from '../ui/toast.js';
 import { isPhoneMode } from '../phone/mode.js';
 import { planWithHouseSvg } from './phone-plan.js';
 import { MOVE_HINT } from '../phone/hint.js';
+import { isGrannyDesign } from '../model/granny-sizes.js';
 
 // The fit card's host side, shared by steps 3 and 4: the designs that are loaded (for the other sizes), a guide handed to the editor,
 // and send to a registered engineer.
@@ -190,6 +191,7 @@ function mountPlaceStep(ctx, { getHomes, want = {} }) {
         mk('Turn left 90°', () => turn(-90), 'flow-rot-left'),
         mk('Turn right 90°', () => turn(90), 'flow-rot-right'),
         mk('Mirror', () => { touched = true; mirrorHouse(store); }, 'flow-mirror')),
+      isGrannyDesign(store.project) ? h('div', { style: { marginTop: '8px' } }, mk('Size and rooms', () => import('../ui/granny-designer.js').then((m) => m.openGrannyDesigner({ store })), 'flow-size-rooms')) : null,
       h('div', { style: { height: '10px' } }),
       pad,
       h('label', { class: 'gf-note', style: { display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center' } }, 'Nudge step', stepSel),

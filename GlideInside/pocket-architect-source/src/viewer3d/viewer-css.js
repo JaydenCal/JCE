@@ -150,5 +150,9 @@ export const VIEWER_CSS = `
 .ps3d-redit.is-compact .ps3d-redit-eyebrow{display:none}
 @container (max-width:720px){.ps3d-redit{top:auto;left:8px;right:8px;bottom:8px;width:auto;max-width:none;max-height:46%}.ps3d-redit-toast{top:56px}}
 @media (max-width:560px){.ps3d-hudtop{flex-wrap:wrap;align-items:flex-start}.ps3d-hudhint{border-radius:12px;max-width:calc(100% - 100px)}.ps3d-hints{bottom:8px}}
+.ps3d-rot-handle{position:absolute;z-index:8;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:50%;border:2px solid #fff;background:#c7a256;color:#1c2430;box-shadow:0 2px 10px rgba(0,0,0,.35);touch-action:none;cursor:grab}
+.ps3d-rot-handle[hidden],.ps3d-house-bar[hidden]{display:none}
+.ps3d-house-bar{position:absolute;z-index:8;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:8px}
+.ps3d-house-step{min-width:88px;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--ps-border,#cfd6de);background:var(--ps-panel,#fff);color:var(--ps-text,#1c2430);font:600 15px/1 var(--ps-font-ui,system-ui,sans-serif);box-shadow:0 2px 8px rgba(0,0,0,.18)}
 @media (prefers-reduced-motion:reduce){.ps3d-rlabel{transition:none}.ps3d-edit-sw,.ps3d-edit-sw::after{transition:none}.ps3d-hints,.ps3d-hudhint{transition:none}.ps3d-swatch:hover{transform:none}}
 `;

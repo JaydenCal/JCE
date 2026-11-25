@@ -25,6 +25,7 @@ import { lotMapSvg, aerialOf } from './lot-map.js';
 import { planWithHouseSvg } from './phone-plan.js';
 import { mount3dPreview } from './preview3d.js';
 import { ensureFlowAerial } from './flow-aerial.js';
+import { isGrannyDesign } from '../model/granny-sizes.js';
 import { placementStatus, nudgeHouse, previewCopy } from './res-logic.js';
 import { createBottomBar, houseMenuModel, houseMenuBody, housePillText, turnPlacedHouse, injectHouseCss, NOTICE_MS } from '../phone/house-ui.js';
 import { openSheet, sheetButton } from '../phone/sheet.js';
@@ -217,7 +218,7 @@ function mountFit(ctx, { catalogue }) {
       rooms: tabs.filter((t) => t.id !== 'aerial').map((t) => ({ id: t.id, label: t.label })),
       tour: (id) => { try { viewer?.snapToRoom?.(id, { duration: 1.1 }); } catch { /* the viewer keeps its view */ } },
       northUp: () => { try { viewer?.snapToRoom?.('aerial', { duration: 1.1, site: true }); } catch { /* the viewer keeps its view */ } },
-      extra: [['Open full editor', () => goFull(), 'phone-full-editor']],
+      extra: [...(isGrannyDesign(store.project) ? [['Size and rooms', () => import('../ui/granny-designer.js').then((m) => m.openGrannyDesigner({ store })), 'phone-size-rooms']] : []), ['Open full editor', () => goFull(), 'phone-full-editor']],
     });
     let sheet = null;
     sheet = openSheet({ title: 'Menu', id: 'phone-house-menu', body: houseMenuBody(rows, { sheetButton, close: () => sheet?.close(), concept: CONCEPT_LINE }) });

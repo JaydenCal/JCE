@@ -278,18 +278,19 @@ export function drawArrangeOverlay(ctx, st) {
     ctx.stroke();
     const h = S(st, ring.handle);
     ctx.beginPath();
-    ctx.arc(h.x, h.y, 10, 0, Math.PI * 2);
+    const hr = typeof document !== 'undefined' && document.documentElement?.dataset?.phone === '1' ? 22 : 10; // 44 px across on a phone
+    ctx.arc(h.x, h.y, hr, 0, Math.PI * 2);
     ctx.fillStyle = GOLD;
     ctx.fill();
     ctx.strokeStyle = '#1b1b1b';
     ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.fillStyle = '#1b1b1b';
-    ctx.font = `700 12px ${st.theme.f.ui}`;
+    ctx.font = `700 ${hr > 10 ? 24 : 12}px ${st.theme.f.ui}`;
     ctx.fillText('⟳', h.x, h.y + 0.5);
     ctx.font = `600 11px ${st.theme.f.ui}`;
     ctx.fillStyle = '#6a5421';
-    halo(ctx, `${Math.round(((ov.rotation || 0) % 360 + 360) % 360)}°`, h.x, h.y - 18, st.theme);
+    halo(ctx, `${Math.round(((ov.rotation || 0) % 360 + 360) % 360)}°`, h.x, h.y - hr - 8, st.theme);
     // The garage door, marked so it is clear which way the garage faces.
     const door = garageDoor(st.project);
     if (door) {

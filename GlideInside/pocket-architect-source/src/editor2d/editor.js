@@ -452,6 +452,8 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       /* synthetic pointers have no capture */
     }
     if (pointers.size === 2) {
+      const pts = [...pointers.values()].map((q) => ({ x: q.x, y: q.y, world: M.screenToWorld(state.view, q) }));
+      if (e.pointerType === 'touch' && current?.twistStart?.(pts)) { state.twisting = true; state.ignoreUntilUp = true; state.pan = null; return; }
       beginGesture();
       return;
     }
@@ -510,6 +512,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     if (!state.active) return;
     const ev = evFrom(e);
     if (pointers.has(e.pointerId)) pointers.set(e.pointerId, ev.screen);
+    if (state.twisting && pointers.size >= 2) { current?.twistMove?.([...pointers.values()]); requestDraw(); return; }
     if (state.gesture && pointers.size >= 2) {
       const [a, b] = [...pointers.values()];
       const dist = Math.hypot(a.x - b.x, a.y - b.y) || 1;
@@ -563,6 +566,11 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       canvas.releasePointerCapture(e.pointerId);
     } catch {
       /* not captured */
+    }
+    if (state.twisting) {
+      if (pointers.size < 2) { state.twisting = false; current?.twistEnd?.(); }
+      if (!pointers.size) state.ignoreUntilUp = false;
+      return;
     }
     if (state.gesture) {
       if (pointers.size < 2) state.gesture = null;

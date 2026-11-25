@@ -20,6 +20,7 @@ import { edgeColourOf } from './terrain.js';
 import { createRoomEdit } from './room-edit.js';
 import { snapToRoom as snapRoom, flyTo as flyToPose, enableRoomCutaway, createRoomBar, roomTabs as roomTabsOf } from './rooms.js';
 import { isPhoneMode } from '../phone/mode.js';
+import { createHouseDrag } from './house-drag.js';
 import { clampOrbit, orbitLimits } from './camera-limits.js';
 
 const STYLE_ID = 'ps3d-style';
@@ -283,6 +284,15 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     keysOk: () => keysOk(),
   });
   walk.setItems(edit.items);
+  // A finger on the house drags it, two fingers on the house turn it (phones only, see house-drag.js). Registered before the viewer's own pointer handlers.
+  const houseDrag = createHouseDrag({
+    canvas, rootEl, scene, camera, controls, store,
+    pickAt: (x, y) => pickAt(x, y),
+    getModel: () => model,
+    isEnabled: () => mode === 'orbit' && active && !edit.enabled && !roomEdit?.busy && !ahead?.isArmed && !turntable && !anim,
+    invalidate,
+  });
+  controls.addEventListener('change', () => houseDrag.reposition());
   const ahead = createAhead({
     scene, camera, canvas, rootEl, store, catalogue, controls, walk, edit,
     pickAt: (x, y) => pickAt(x, y),
@@ -556,6 +566,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     model = next;
     try { addBreachOverlay(model, store.project); } catch (e) { console.warn('[viewer3d] breach overlay failed', e); }
     scene.add(model);
+    houseDrag.onRebuild();
     doors.attach(model);
     bounds = modelBounds(model);
     points = collectPoints(model);
@@ -1126,6 +1137,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       else if (patch.view === '3d' || patch.view === 'split') setMode('orbit');
     }
     if ('showRoof' in patch) syncRoofBtn();
+    if ('view' in patch || 'tool' in patch) houseDrag.refresh();
     if ('levelFilter' in patch || 'showRoof' in patch || 'statusView' in patch) {
       scheduleRebuild(20);
       if (mode === 'walk') walk.refresh();
@@ -1179,6 +1191,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     canvas.removeEventListener('pointermove', onPointerMove);
     canvas.removeEventListener('webglcontextlost', onContextLost);
     canvas.removeEventListener('webglcontextrestored', onContextRestored);
+    houseDrag.dispose();
     ahead.dispose();
     edit.dispose();
     walk.dispose();
@@ -1210,6 +1223,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   resize();
 
   const api = {
+    houseDrag, // the touch move and turn of the house (tests read its state)
     setActive,
     setMode,
     setInset,

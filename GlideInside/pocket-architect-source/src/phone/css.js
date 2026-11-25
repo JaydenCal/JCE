@@ -110,7 +110,7 @@ html[data-phone="1"] .gf-viewbox .ps3d-viewbar,html[data-phone="1"] .gf-viewbox 
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-prof-prompt{top:auto;bottom:calc(150px + env(safe-area-inset-bottom));left:8px;right:8px;width:auto;transform:none}
 html[data-phone="1"] .ps-shell[data-phone-ui] .lc-root[data-view="2d"]{display:none!important}
 html[data-phone="1"] .ps3d-edit-state{display:none}
-html[data-phone="1"] .ps3d-reset{top:86px}
+html[data-phone="1"] .ps3d-reset{top:10px}
 
 /* ---------------- The editor on a phone ---------------- */
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-topbar .ps-back .ps-btn-text{display:none!important}
@@ -148,7 +148,7 @@ html[data-phone="1"] .ps-shell[data-phone-ui] .ps-status-hint{flex:1 1 100%;orde
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-status-hint:empty{display:none}
 html[data-phone="1"] .ps-shell[data-phone-ui] .ps-status-btn{height:32px}
 /* The bottom dock. */
-html[data-phone="1"] .ps-shell[data-phone-ui] .ps-dock{grid-row:4;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:var(--ps-panel);border-top:1px solid var(--ps-border-strong)}
+html[data-phone="1"] .ps-shell[data-phone-ui] .ps-dock{grid-row:4;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:var(--ps-panel);border-top:1px solid var(--ps-border-strong)}
 html[data-phone="1"] .ps-dock-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:52px;border:0;border-radius:12px;background:transparent;color:var(--ps-text);font:600 12px/1.1 var(--ps-font-ui,system-ui,sans-serif)}
 html[data-phone="1"] .ps-dock-btn[aria-pressed="true"]{background:var(--ps-accent-soft);color:var(--ps-accent)}
 html[data-phone="1"] .ps-dock-btn:active{background:var(--ps-hover)}
@@ -305,6 +305,33 @@ html[data-phone="1"] .gf-ps-fit .ph-status[hidden]{display:none}
 html[data-phone="1"] .gf-ps-fit .ph-status[data-state="inside"]{color:#6fd39a}
 html[data-phone="1"] .gf-ps-fit .ph-status[data-state="outside"]{color:#ff8a7a}
 html[data-phone="1"] .gf-ps-fit .gf-ps-busy{background:rgba(10,17,30,.72);color:#fff}
+
+/* ---------------- The phone editor, 3D view: one clean screen (owner 25/11/2026) ----------------
+   Top bar (back, title, undo, Save), the 3D view with Reset view top right, one bottom toolbar. Everything else is in the Menu
+   (Room tour, top view, Edit room, Edit toggle, design switcher, lot label, aerial, concept line). The real controls stay in the page, hidden,
+   so the Menu rows tap them. */
+html[data-phone="1"] .ps-shell[data-phone-ui][data-view="3d"] :is(.lc-head,.lc-rooms,.lc-pager,.lc-mini,.lc-card,.lc-aerial,.lc-foot,.lc-compass,.ps-backplan,.gf-backpill,.ps-credit,.ps-statusbar,.ps3d-hints,.ps3d-viewbar,.ps3d-chip--toggle,.ps3d-hudtop,.ps-chips,.ps-pillrow){display:none!important}
+html[data-phone="1"] .ps-shell[data-phone-ui] .gf-backpill{display:none!important}
+html[data-phone="1"] .ps-shell[data-phone-ui][data-view="3d"] .ps3d-editbar:not(:has(.ps3d-edit[aria-pressed="true"])){display:none!important}
+html[data-phone="1"] .ps-shell[data-phone-ui][data-view="3d"] .ps3d-editbar{top:10px!important;left:10px!important;right:auto!important}
+html[data-phone="1"] .ps-shell[data-phone-ui][data-view="3d"] .ps3d-reset{top:10px;right:10px}
+html[data-phone="1"] .ps-phone-hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:30;max-width:calc(100% - 32px);padding:10px 14px;border-radius:12px;background:rgba(16,22,32,.86);color:#fff;font:600 14px/1.3 var(--ps-font-ui,system-ui,sans-serif);text-align:center;pointer-events:none;opacity:0;transition:opacity .25s}
+html[data-phone="1"] .ps-phone-hint.is-on{opacity:1}
+/* The Menu extras. */
+html[data-phone="1"] .ps-pme{display:flex;flex-direction:column;gap:8px;width:100%;padding-bottom:6px;border-bottom:1px solid var(--ps-border-strong);margin-bottom:2px}
+html[data-phone="1"] .ps-pme-lot{margin:0;font:600 13px/1.3 var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-muted)}
+html[data-phone="1"] .ps-pme-row{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:50px;padding:8px 14px;border:1px solid var(--ps-border-strong);border-radius:12px;background:var(--ps-panel);color:var(--ps-text);font:600 16px/1.2 var(--ps-font-ui,system-ui,sans-serif);text-align:left}
+html[data-phone="1"] .ps-pme-row small,html[data-phone="1"] .ps-pme-block small{font:400 13px/1.3 var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-muted)}
+html[data-phone="1"] .ps-pme-row[aria-pressed="true"]{border-color:var(--ps-accent);background:var(--ps-accent-soft)}
+html[data-phone="1"] .ps-pme-block{display:flex;flex-direction:column;gap:6px;font:600 16px/1.2 var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-text)}
+html[data-phone="1"] .ps-pme-chips{display:flex;flex-wrap:wrap;gap:8px}
+html[data-phone="1"] .ps-pme-chip{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--ps-border-strong);border-radius:999px;background:var(--ps-panel);color:var(--ps-text);font:600 15px/1 var(--ps-font-ui,system-ui,sans-serif)}
+html[data-phone="1"] .ps-pme-chip[aria-pressed="true"]{border-color:var(--ps-accent);background:var(--ps-accent-soft);color:var(--ps-accent)}
+html[data-phone="1"] .ps-pme-switch{display:flex;align-items:center;gap:8px}
+html[data-phone="1"] .ps-pme-cur{flex:1;min-width:0;font:600 14px/1.25 var(--ps-font-ui,system-ui,sans-serif);text-align:center}
+html[data-phone="1"] .ps-pme-small{margin:0;font:400 12px/1.3 var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-muted)}
+html[data-phone="1"] .ps-pme-note{margin:0;font:400 14px/1.4 var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-text)}
+html[data-phone="1"] .ps-pme-send{align-items:center;justify-content:center;text-align:center;background:var(--ps-accent);border-color:var(--ps-accent);color:#fff}
 `;
 
 let injected = false;

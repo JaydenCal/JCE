@@ -32,3 +32,30 @@ export function phoneHint(text, tool) {
   if (tool && TOUCH_HINTS[tool] && KEYS.test(out)) return TOUCH_HINTS[tool];
   return out;
 }
+
+export const HINT_MS = 3000;
+export const HINT_KEY = 'ps.phone3d.hinted';
+
+/**
+ * A hint that shows once and hides itself after 3 seconds (the phone editor 3D view, owner 25/11/2026). Returns the element, or null when it
+ * has been shown before (or storage says so). `storage` is localStorage; a blocked storage shows it once per page load.
+ */
+let shownThisLoad = false;
+export function showHintOnce({ host, text = MOVE_HINT, ms = HINT_MS, storage = globalThis.localStorage, doc = globalThis.document } = {}) {
+  if (!host || !doc) return null;
+  let remembered = null; // true when storage says it was shown, null when storage cannot say
+  try { remembered = storage?.getItem(HINT_KEY) === '1'; } catch { remembered = null; }
+  if (remembered === true || (remembered === null && shownThisLoad)) return null;
+  shownThisLoad = true;
+  try { storage?.setItem(HINT_KEY, '1'); } catch { /* not remembered: once per page load */ }
+  const el = doc.createElement('div');
+  el.className = 'ps-phone-hint';
+  el.dataset.ps = 'phone-hint';
+  el.setAttribute('role', 'status');
+  el.textContent = text;
+  host.append(el);
+  requestAnimationFrame?.(() => el.classList.add('is-on'));
+  setTimeout(() => { el.classList.remove('is-on'); setTimeout(() => el.remove(), 300); }, ms);
+  return el;
+}
+export const resetHintOnce = () => { shownThisLoad = false; };

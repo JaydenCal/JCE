@@ -485,7 +485,7 @@ async function main() {
     ...DOOR_FAMILY.filter((id) => id !== 'door').map((id) => ({ id, label: KIND_LABEL[id], keys: [] })),
   ];
   const keys = { wheel: 'Q', inventory: 'I', rotateLeft: ',', rotateRight: '.', rotateFine: 'Shift', pan: 'Right drag', quickMeasure: 'Right click' };
-  const api = { changeDesignType: (id, opts) => changeDesignType(store, id, catalogue, opts), share, applyDesignType: (id) => applyDesignType(store, id, catalogue), designTypeOf: () => designTypeOf(store.project), tools, keys, setTool: (id, arg) => setTool(store, id, arg), wheel, inventory, openInventory, openTitleBlock: () => openTitleBlockForm(store), getLogo, store, editor, getViewer, premium: null, catalogue, CONFIG, embed, panel, topbar, toolbox, drawer, statusbar, chips, views, openNew, loadTemplate, loadBlank, replaceProject, setMode, buildingOps };
+  const api = { openGrannyDesigner: () => import('./ui/granny-designer.js').then((m) => m.openGrannyDesigner({ store })), changeDesignType: (id, opts) => changeDesignType(store, id, catalogue, opts), share, applyDesignType: (id) => applyDesignType(store, id, catalogue), designTypeOf: () => designTypeOf(store.project), tools, keys, setTool: (id, arg) => setTool(store, id, arg), wheel, inventory, openInventory, openTitleBlock: () => openTitleBlockForm(store), getLogo, store, editor, getViewer, premium: null, catalogue, CONFIG, embed, panel, topbar, toolbox, drawer, statusbar, chips, views, openNew, loadTemplate, loadBlank, replaceProject, setMode, buildingOps };
   window.__ps = api;
 
   // Start state ------------------------------------------------------------------------------------------------------------------
